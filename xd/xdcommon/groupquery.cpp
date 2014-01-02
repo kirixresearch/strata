@@ -1099,6 +1099,9 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
     xd::IRowInserterPtr output_inserter = db->bulkInsert(info->output);
     if (output_inserter.isNull())
         return false;
+    if (!output_inserter->startInsert(L"*"))
+        return false;
+
 
 
     for (out_it = output_fields.begin(); out_it != output_fields.end(); ++out_it)
@@ -1402,8 +1405,6 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
 
 
     current_row = 0;
-    output_inserter->startInsert(L"*");
-
 
     for (it = begin_it; it != end_it; ++it)
     {
