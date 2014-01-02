@@ -31,8 +31,6 @@
 #endif
 
 
-extern size_t wxGetAvailableDrives(wxArrayString &paths, wxArrayString &names, wxArrayInt &icon_ids);
-
 
 
 IMPLEMENT_DYNAMIC_CLASS(kcl::FilePanelEvent, wxEvent)
@@ -413,6 +411,68 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
 
     wxTreeItemId computer_id = m_location_tree->AppendItem(root_id, _("Computer"), wxFileIconsTable::computer);
 
+#ifdef WIN32
+    TCHAR buf[255];
+    GetLogicalDriveStrings(sizeof(buf), buf);
+    TCHAR* drive = buf;
+    int icon;
+    while (*drive)
+    {
+        wxString path = drive;
+
+        wxString label = path;
+        if (path.Length() > 0)
+            label.RemoveLast();
+        label = "(" + label + ")";
+
+        bool remote = false;
+        switch (GetDriveType(drive))
+        {
+            case DRIVE_REMOVABLE:
+            case DRIVE_CDROM:
+                icon = wxFileIconsTable::cdrom;
+                break;
+            case DRIVE_REMOTE:
+                remote = true;
+                icon = wxFileIconsTable::drive;
+                break;
+            default:
+                icon = wxFileIconsTable::drive;
+                break;
+        }
+        
+        if (remote)
+        {
+            
+            unsigned char buffer[1024];
+            DWORD buffer_size = 1024;
+            UNIVERSAL_NAME_INFO* info = (UNIVERSAL_NAME_INFO*)buffer;
+            info->lpUniversalName = _T("");
+            WNetGetUniversalName(path, UNIVERSAL_NAME_INFO_LEVEL, (void*)info, &buffer_size);
+            wxString netpath = info->lpUniversalName;
+            if (netpath.Length() > 0 && netpath.Last() == '\\')
+                netpath.RemoveLast();
+            if (netpath.Length() > 0)
+                label = netpath + " " + label;
+        }
+         else
+        {
+            TCHAR volname[255];
+            volname[0];
+            GetVolumeInformation(path, volname, 255, NULL, NULL, NULL, NULL, NULL);
+            if (_tcslen(volname) > 0)
+                label = volname + (" " + label);
+        }
+
+
+
+        m_location_tree->AppendItem(computer_id, label, icon, -1, new LocationTreeData(path));
+        drive += _tcslen(drive)+1;
+    }
+#else
+    m_location_tree->AppendItem(computer_id, drive_names[i], drive_icons[i],  -1, new LocationTreeData(drives[i]));
+#endif
+/*
     wxArrayString drives, drive_names;
     wxArrayInt drive_icons;
     wxGetAvailableDrives(drives, drive_names, drive_icons);
@@ -421,7 +481,7 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
     {
         m_location_tree->AppendItem(computer_id, drive_names[i], drive_icons[i],  -1, new LocationTreeData(drives[i]));
     }
-
+    */
     m_location_tree->ExpandAll();
 
     m_file_ctrl = new FileCtrl(this, ID_File_Ctrl, wxDefaultPosition, wxSize(150,150), wxLC_REPORT | wxBORDER_NONE);
