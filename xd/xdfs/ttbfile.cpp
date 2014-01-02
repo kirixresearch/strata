@@ -604,9 +604,6 @@ void TtbTable::updateHeaderWithGuid()
     xf_unlock(m_file, 0, ttb_header_len);
 }
 
-void updateHeaderWithGuid();
-
-
 
 int TtbTable::getRows(unsigned char* buf,
                          xd::rowpos_t* rowpos_arr,
