@@ -39,8 +39,6 @@ public:
 
     bool init(const std::wstring& filename);
 
-    std::wstring getSetId();
-
     xd::IStructurePtr getStructure();
     bool modifyStructure(xd::IStructure* struct_config, 
                          xd::IJob* job);

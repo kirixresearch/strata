@@ -60,22 +60,7 @@ bool TtbSet::init(const std::wstring& filename)
 }
 
 
-std::wstring TtbSet::getSetId()
-{
-    std::wstring set_id;
-    
-    set_id = L"xdfs:";
-    set_id += xf_get_network_path(m_file.getFilename());
 
-#ifdef WIN32
-    // win32's filenames are case-insensitive, so
-    // when generating the set id, make the whole filename
-    // lowercase to avoid multiple id's for the same file
-    kl::makeLower(set_id);
-#endif
-
-    return kl::md5str(set_id);
-}
 
 xd::IStructurePtr TtbSet::getStructure()
 {

@@ -36,6 +36,8 @@
 #include "../xdcommon/formatdefinition.h"
 #include "../xdcommon/cmndynamicset.h"
 #include "../xdcommon/groupquery.h"
+#include "../xdcommon/util.h"
+#include "ttbfile.h"
 #include <kl/url.h>
 #include <kl/hex.h>
 #include <kl/json.h>
@@ -717,15 +719,43 @@ bool FsDatabase::detectMountPoint(const std::wstring& path,
 std::wstring FsDatabase::getObjectIdFromPath(const std::wstring& path)
 {
     std::wstring object_id;
-    
+
+
+    std::wstring ext = kl::afterLast(path, '.');
+    if (kl::iequals(ext, L"TTB"))
+    {
+        unsigned char guid[16];
+        bool guid_ok = false;
+
+        {
+            // fetch TTB object id from the header
+            TtbTable ttb;
+            if (ttb.open(path))
+            {
+                guid_ok = ttb.getGuid(guid);
+                ttb.close();
+            }
+        }
+
+        if (guid_ok)
+        {
+            object_id = kl::stdswprintf(L"%08x%08x%08x%08x",
+                                         buf2int(guid), buf2int(guid+4), buf2int(guid+8), buf2int(guid+12));
+            return object_id;
+        }
+
+    }
+
+
+
     object_id = L"xdfs:";
     object_id += xf_get_network_path(path);
     
 #ifdef WIN32
-    // win32's filenames are case-insensitive, so
-    // when generating the set id, make the whole filename
-    // lowercase to avoid multiple id's for the same file
-    kl::makeLower(object_id);
+        // win32's filenames are case-insensitive, so
+        // when generating the set id, make the whole filename
+        // lowercase to avoid multiple id's for the same file
+        kl::makeLower(object_id);
 #endif
     
     return kl::md5str(object_id);
@@ -985,6 +1015,19 @@ bool FsDatabase::moveFile(const std::wstring& src_path,
     std::wstring src_phys_path = makeFullPath(src_path);
     std::wstring dest_phys_path = makeFullPath(dest_path);
     
+    if (xf_get_file_exist(src_phys_path + L".ttb"))
+    {
+        if (xf_get_file_exist(dest_phys_path + L".ttb"))
+        {
+            // destination already exists
+            return false;
+        }
+
+        xf_remove(dest_phys_path + L".map");
+        xf_move(src_phys_path + L".map", dest_phys_path + L".map");
+        return xf_move(src_phys_path + L".ttb", dest_phys_path + L".ttb");
+    }
+
     return xf_move(src_phys_path, dest_phys_path);
 }
 
@@ -1173,6 +1216,9 @@ bool FsDatabase::getLocalFileExist(const std::wstring& path)
     return true;
 }
 
+
+
+
 class XdfsFileInfo : public xd::IFileInfo
 {
     XCM_CLASS_NAME("xdnative.FileInfo")
@@ -1189,7 +1235,6 @@ public:
 
         type = -1;
         format = -1;
-        fetched_format = false;
         is_mount = false;
         row_count = 0;
     }
@@ -1229,14 +1274,13 @@ public:
     
     int getFormat()
     {
-        if (fetched_format)
+        if (format != -1)
             return format;
             
         // get the format and cache the result
         FsSetFormatInfo info;
         db->getFileFormat(phys_path, &info, FsSetFormatInfo::maskFormat);
         format = info.format;
-        fetched_format = true;
         
         return format;
     }
@@ -1297,7 +1341,6 @@ public:
     int format;
     bool is_mount;
     FsDatabase* db;
-    bool fetched_format;
     xd::rowpos_t row_count;
 };
 
@@ -1390,11 +1433,13 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
 
     if (xf_get_file_exist(phys_path + L".ttb"))
     {
-        xdcommon::FileInfo* f = new xdcommon::FileInfo;
+        XdfsFileInfo* f = new XdfsFileInfo(this);
         f->name = kl::afterLast(phys_path, PATH_SEPARATOR_CHAR);
         kl::trim(f->name);
         f->type = xd::filetypeTable;
         f->format = xd::formatTTB;
+        f->path = path;
+        f->phys_path = phys_path + L".ttb";
 
         return static_cast<xd::IFileInfo*>(f);
     }

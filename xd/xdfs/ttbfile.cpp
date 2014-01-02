@@ -24,17 +24,22 @@
 #include "../xdcommon/columninfo.h"
 #include "../xdcommon/util.h"
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 
 // ------------------ FILE FORMAT: TTB Table --------------------
 //
 // -- file header --
-// offset   00:   (uint32) signature 0xddaa2299;
-// offset   04:   (uint32) version
-// offset   08:   (uint32) data begin offset
-// offset   12:   (uint32) row width
-// offset   16:   (uint32) column count
-// offset   20:   (uint64) row count
-// offset   28:   (uint64) last structure modify time
+// offset   00:   (uint32)  signature 0xddaa2299;
+// offset   04:   (uint32)  version
+// offset   08:   (uint32)  data begin offset
+// offset   12:   (uint32)  row width
+// offset   16:   (uint32)  column count
+// offset   20:   (uint64)  row count
+// offset   28:   (uint64)  last structure modify time
+// offset   36:   (uint128) GUID for this file; 0 in older file versions
 // (null padding)
 // offset 1024:   column descriptor list
 
@@ -106,13 +111,22 @@ int convertType_ttb2xd(int native_type)
     return xd::typeInvalid;
 }
 
+static bool isGuidZero(const unsigned char* guid)
+{
+    for (int i = 0; i < 16; ++i)
+    {
+        if (guid[i]) return false;
+    }
 
+    return true;
+}
 
 
 TtbTable::TtbTable()
 {
     m_file = NULL;
     m_map_file = NULL;
+    memset(m_guid, 0, 16);
 }
 
 TtbTable::~TtbTable()
@@ -295,6 +309,10 @@ bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
     int2buf(header+20, 0); // lower 32 bits
     int2buf(header+24, 0); // upper 32 bits
 
+    // guid
+    generateGuid(header+36);
+
+
     // write out the header info
     
     if (xf_write(f, header, ttb_header_len, 1) != 1)
@@ -383,9 +401,15 @@ bool TtbTable::open(const std::wstring& filename)
         return false;
     }
 
+    // get guid
+    memcpy(m_guid, header+36, 16);
+    if (isGuidZero(m_guid))
+    {
+        updateHeaderWithGuid();
+    }
 
-    // check file version and upgrade it if necessary
 
+    // check file version
     if (version == 1)
         return false; // no longer supported
 
@@ -511,6 +535,76 @@ void TtbTable::close()
 }
 
 
+void TtbTable::generateGuid(unsigned char* guid /* 16 bytes */)
+{
+#ifdef WIN32
+    GUID gid;
+    CoCreateGuid(&gid);
+    int size = sizeof(gid);
+    if (sizeof(gid) == 16)
+    {
+        memcpy(guid, &gid, 16);
+        return;
+    }
+#else
+    // try to generate a new guid ourselves
+    unsigned int i1 = (time(NULL) & 0xffffffff);
+    unsigned int i2 = (clock() & 0xffffffff);
+    unsigned int i3 = (unsigned int)rand();
+    unsigned int i4 = (unsigned int)rand();
+    int2buf(guid, i1);
+    int2buf(guid+4, i2);
+    int2buf(guid+8, i3);
+    int2buf(guid+12, i4);
+#endif
+}
+
+bool TtbTable::getGuid(unsigned char* guid /* 16 bytes */)
+{
+    memset(guid, 0, 16);
+    if (isGuidZero(m_guid))
+        return false;
+    memcpy(guid, m_guid, 16);
+    return true;
+}
+
+void TtbTable::updateHeaderWithGuid()
+{
+    unsigned char guid[16];
+
+    // lock the header
+    if (!xf_trylock(m_file, 0, ttb_header_len, 10000))
+        return;
+
+    xf_seek(m_file, 36, xfSeekSet);
+
+    int res = xf_read(m_file, guid, 1, 16);
+    if (res != 16)
+    {
+        xf_unlock(m_file, 0, ttb_header_len);
+        return;
+    }
+
+
+    if (isGuidZero(guid))
+    {
+        generateGuid(guid);
+
+        xf_seek(m_file, 36, xfSeekSet);
+        if (16 != xf_write(m_file, guid, 1, 16))
+        {
+            xf_unlock(m_file, 0, ttb_header_len);
+            return;
+        }
+    }
+
+    memcpy(m_guid, guid, 16);
+
+    // unlock the header
+    xf_unlock(m_file, 0, ttb_header_len);
+}
+
+void updateHeaderWithGuid();
 
 
 

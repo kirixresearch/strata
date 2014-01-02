@@ -52,6 +52,7 @@ public:
     bool reopen(bool exclusive);
     void close();
 
+    bool getGuid(unsigned char* guid /* 16 bytes */);
     std::wstring getFilename();
     std::wstring getMapFilename();
 
@@ -90,6 +91,9 @@ private:
                                     xd::rowpos_t offset,
                                     int delta);
 
+    static void generateGuid(unsigned char* guid);
+    void updateHeaderWithGuid();
+
 private:
 
     xcm::mutex m_object_mutex;
@@ -105,6 +109,8 @@ private:
     unsigned int m_row_width;          // row width
     unsigned int m_data_offset;        // offset where the data rows begin
     long long m_modified_time;         // time that an update has occurred
+
+    unsigned char m_guid[16];
 };
 
 
