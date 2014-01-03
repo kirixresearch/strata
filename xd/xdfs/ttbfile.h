@@ -174,8 +174,9 @@ class TtbRow
 {
 public:
 
-    TtbRow(TtbTable* table);
+    TtbRow();
 
+    void setTable(TtbTable* table) { m_table = table; }
     void setRowPtr(unsigned char* rowptr) { m_rowptr = rowptr; }
     void clearRow();
 

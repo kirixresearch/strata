@@ -17,6 +17,25 @@
 #include "../xdcommonsql/xdcommonsql.h"
 #include "ttbfile.h"
 
+inline xd::rowid_t rowidCreate(xd::tableord_t table_ordinal,
+                                  xd::rowpos_t row_num)
+{
+    xd::rowid_t r;
+    r = ((xd::rowid_t)table_ordinal) << 36;
+    r |= row_num;
+    return r;
+}
+
+inline xd::rowpos_t rowidGetRowPos(xd::rowid_t rowid)
+{
+    return (rowid & 0xfffffffffLL);
+}
+
+inline xd::tableord_t rowidGetTableOrd(xd::rowid_t rowid)
+{
+    return (rowid >> 36);
+}
+
 
 class TtbSet : public CommonBaseSet,
                public IXdfsSet,
@@ -62,6 +81,8 @@ private:
 
     FsDatabase* m_database;
     TtbTable m_file;
+    unsigned char* m_update_buf;
+    TtbRow m_update_row;
 };
 
 

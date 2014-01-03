@@ -1292,9 +1292,9 @@ static void dbl2decstr(char* dest, double d, int width, int scale)
 
 
 
-TtbRow::TtbRow(TtbTable* table)
+TtbRow::TtbRow()
 {
-    m_table = table;
+    m_table = NULL;
     m_rowptr = NULL;
 }
 

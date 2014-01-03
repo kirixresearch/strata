@@ -35,6 +35,9 @@ TtbSet::TtbSet(FsDatabase* db)
 {
     m_database = db;
     m_database->ref();
+
+    m_update_buf = NULL;
+    m_update_row.setTable(&m_file);
 }
 
 TtbSet::~TtbSet()
@@ -153,6 +156,141 @@ bool TtbSet::updateRow(xd::rowid_t rowid,
                        xd::ColumnUpdateInfo* info,
                        size_t info_size)
 {
+    size_t coli;
+    xd::ColumnUpdateInfo* col_it;
+
+    xd::rowpos_t row = rowidGetRowPos(rowid);
+
+
+    if (!m_update_buf)
+    {
+        m_update_buf = new unsigned char[m_file.getRowWidth()];
+        m_update_row.setRowPtr(m_update_buf);
+    }
+
+
+    // read the row
+    m_file.getRow(row, m_update_buf);
+
+    /*
+    // determine which indexes need updating
+    
+    std::vector<IndexEntry>::iterator idx_it;
+    for (idx_it = m_indexes.begin();
+         idx_it != m_indexes.end(); ++idx_it)
+    {
+        idx_it->update = false;
+
+        for (coli = 0; coli < info_size; ++coli)
+        {
+            DataAccessInfo* dai = (DataAccessInfo*)(info[coli].handle);
+
+            if (idx_it->active_columns[dai->ordinal])
+            {
+                idx_it->update = true;
+                break;
+            }
+        }
+
+        if (idx_it->update)
+        {
+            memcpy(idx_it->orig_key,
+                   idx_it->key_expr->getKey(),
+                   idx_it->key_length);
+        }
+    }
+    */
+
+
+    // modify the buffer
+
+    for (coli = 0; coli < info_size; ++coli)
+    {
+        col_it = &info[coli];
+
+        xd::objhandle_t handle = col_it->handle;
+        TtbDataAccessInfo* dai = (TtbDataAccessInfo*)handle;
+        if (!dai)
+            continue;
+
+        if (col_it->null)
+        {
+            m_update_row.putNull(dai->ordinal);
+            continue;
+        }
+
+        switch (dai->type)
+        {
+            case xd::typeCharacter:
+                m_update_row.putString(dai->ordinal, col_it->str_val);
+                break;
+
+            case xd::typeWideCharacter:
+                m_update_row.putWideString(dai->ordinal, col_it->wstr_val);
+                break;
+
+            case xd::typeNumeric:
+            case xd::typeDouble:
+                m_update_row.putDouble(dai->ordinal, col_it->dbl_val);
+                break;
+
+            case xd::typeInteger:
+                m_update_row.putInteger(dai->ordinal, col_it->int_val);
+                break;
+
+            case xd::typeDate:
+            case xd::typeDateTime:
+                m_update_row.putDateTime(dai->ordinal, col_it->date_val);
+                break;
+
+            case xd::typeBoolean:
+                m_update_row.putBoolean(dai->ordinal, col_it->bool_val);
+                break;
+        }
+    }
+
+
+    // write the resulting row
+    m_file.writeRow(row, m_update_buf);
+
+/*
+    // update the indexes
+    for (idx_it = m_indexes.begin();
+         idx_it != m_indexes.end(); ++idx_it)
+    {
+        if (!idx_it->update)
+            continue;
+
+        // if present key is the same as the last key, don't do anything
+        const unsigned char* new_key = idx_it->key_expr->getKey();
+        
+        if (0 == memcmp(idx_it->orig_key, new_key, idx_it->key_length))
+            continue;
+
+        
+        IIndexIterator* index_iter;
+
+        index_iter = seekRow(idx_it->index,
+                             idx_it->orig_key,
+                             idx_it->key_length,
+                             rowid);
+
+        if (index_iter)
+        {
+            // remove old key
+            idx_it->index->remove(index_iter);
+            index_iter->unref();
+        }
+
+
+        idx_it->index->insert(new_key,
+                              idx_it->key_length,
+                              &rowid,
+                              sizeof(xd::rowid_t));
+    }
+
+*/
+
     return true;
 }
 
@@ -162,12 +300,13 @@ bool TtbSet::updateRow(xd::rowid_t rowid,
 
 const int ttb_inserter_buf_rows = 500;
 
-TtbRowInserter::TtbRowInserter(TtbSet* set) : m_row(&set->m_file)
+TtbRowInserter::TtbRowInserter(TtbSet* set)
 {
     m_set = set;
     m_set->ref();
 
     m_file = &(m_set->m_file);
+    m_row.setTable(m_file);
 
     m_row_width = m_file->getRowWidth();
     m_buf_row = 0;
