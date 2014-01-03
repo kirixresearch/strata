@@ -149,8 +149,19 @@ int xdcmnInsert(xd::IDatabasePtr dest_db,
         ijob->setStatus(xd::jobRunning);
         ijob->setStartTime(time(NULL));
 
-        if (ijob->getMaxCount() != 0)
+        if (ijob->getMaxCount() == 0)
+        {
+            if ((sp_source_iter->getIteratorFlags() & xd::ifFastRowCount) != 0)
+            {
+                ijob->setMaxCount(sp_source_iter->getRowCount());
+                max_count_known = true;
+            }
+
+        } 
+         else
+        {
             max_count_known = true;
+        }
     }
 
 
