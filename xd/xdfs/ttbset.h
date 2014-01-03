@@ -71,6 +71,7 @@ class TtbInsertData
 public:
     
     std::wstring name;
+    int ordinal;
     int type;
     int width;
     int scale;
@@ -133,12 +134,12 @@ private:
 
     TtbSet* m_set;
     TtbTable* m_file;  // pointer to m_set's TtbTable;
+    TtbRow m_row;
 
     int m_row_width;
     int m_buf_row;
     std::wstring m_tbl_filename;
     unsigned char* m_buf;
-    unsigned char* m_rowptr;
     
     bool m_inserting;
 

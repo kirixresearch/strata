@@ -18,6 +18,7 @@
 #include <ctime>
 #include <xcm/xcm.h>
 #include <kl/file.h>
+#include <kl/math.h>
 #include <xd/xd.h>
 #include "ttbfile.h"
 #include "../xdcommon/structure.h"
@@ -1256,59 +1257,296 @@ bool TtbTable::restoreDeleted()
 
 
 
-
-
-
-TtbRow::TtbRow(TtbTable* table, unsigned char* rowptr)
+static void dbl2decstr(char* dest, double d, int width, int scale)
 {
-    m_table = table;
-    m_rowptr = rowptr;
+    double intpart;
+
+    // check for negative
+    if (d < 0.0)
+    {
+        *dest = '-';
+        dest++;
+        width--;
+        d = fabs(d);
+    }
+
+    // rounding
+    d += (0.5/kl::pow10(scale));
+
+    // put everything to the right of the decimal
+    d /= kl::pow10(width-scale);
+
+    while (width)
+    {
+        d *= 10;
+        d = modf(d, &intpart);
+        if (intpart > 9.1)
+            intpart = 0.0;
+
+        *dest = int(intpart) + '0';
+        dest++;
+        width--;
+    }
 }
 
+
+
+
+TtbRow::TtbRow(TtbTable* table)
+{
+    m_table = table;
+    m_rowptr = NULL;
+}
+
+
+void TtbRow::clearRow()
+{
+    memset(m_rowptr, 0, m_table->m_row_width);
+}
 
 bool TtbRow::putRawPtr(int column_ordinal,
                        const unsigned char* value,
                        int length)
 {
-    return true;
+    TtbField* dai = &m_table->m_fields[column_ordinal];
+
+    int write_len = length;
+    if (write_len > dai->width)
+        write_len = dai->width;
+
+    memset(m_rowptr + dai->offset, 0, dai->width);
+    memcpy(m_rowptr + dai->offset, value, write_len);
+
+    // check null
+    if (dai->nulls_allowed)
+    {
+        // remove the null bit, if any
+        *(m_rowptr + dai->offset - 1) &= 0xfe;
+    }
+
+    return false;
 }
+
 
 bool TtbRow::putString(int column_ordinal,
                        const std::string& value)
 {
+    TtbField* dai = &m_table->m_fields[column_ordinal];
+
+    // set data
+    if (dai->ttb_type == TtbTable::typeCharacter)
+    {
+        memset(m_rowptr + dai->offset, 0, dai->width);
+
+        int write_len = value.length();
+        if (write_len > dai->width)
+            write_len = dai->width;
+
+        memcpy(m_rowptr + dai->offset, value.c_str(), write_len);
+    }
+     else if (dai->ttb_type == TtbTable::typeWideCharacter)
+    {
+        kl::string2ucsle(m_rowptr + dai->offset, value, dai->width);
+    }
+     else
+    {
+        return false;
+    }
+
+    // check null
+    if (dai->nulls_allowed)
+    {
+        // remove the null bit, if any
+        *(m_rowptr + dai->offset - 1) &= 0xfe;
+    }
+
     return true;
 }
 
 bool TtbRow::putWideString(int column_ordinal,
                            const std::wstring& value)
 {
+    TtbField* dai = &m_table->m_fields[column_ordinal];
+
+    // set data
+    if (dai->ttb_type == TtbTable::typeWideCharacter)
+    {
+        kl::wstring2ucsle(m_rowptr + dai->offset, value, dai->width);
+    }
+     else if (dai->ttb_type == TtbTable::typeCharacter)
+    {
+        memset(m_rowptr + dai->offset, 0, dai->width);
+
+        std::string ascvalue = kl::tostring(value);
+
+        int write_len = ascvalue.length();
+        if (write_len > dai->width)
+            write_len = dai->width;
+
+        memcpy(m_rowptr + dai->offset, ascvalue.c_str(), write_len);
+    }
+     else
+    {
+        return false;
+    }
+
+    // check null
+    if (dai->nulls_allowed)
+    {
+        // remove the null bit, if any
+        *(m_rowptr + dai->offset - 1) &= 0xfe;
+    }
+
     return true;
 }
 
 bool TtbRow::putDouble(int column_ordinal,
                        double value)
 {
+    TtbField* dai = &m_table->m_fields[column_ordinal];
+
+    if (dai->width < 1)
+        return false;
+
+    if (dai->ttb_type == TtbTable::typeNumeric)
+    {
+        dbl2decstr((char*)m_rowptr + dai->offset,
+                   value,
+                   dai->width,
+                   dai->scale);
+    }
+     else if (dai->ttb_type == TtbTable::typeDouble)
+    {
+        // FIXME: this will only work on little-endian (intel) processors
+        memcpy(m_rowptr + dai->offset, &value, sizeof(double));
+    }
+     else if (dai->ttb_type == TtbTable::typeInteger)
+    {
+        int2buf(m_rowptr + dai->offset, (int)value);
+    }
+     else
+    {
+        return false;
+    }
+
+    // check null
+    if (dai->nulls_allowed)
+    {
+        // remove the null bit, if any
+        *(m_rowptr + dai->offset - 1) &= 0xfe;
+    }
+
     return true;
 }
 
 bool TtbRow::putInteger(int column_ordinal,
                         int value)
 {
+    TtbField* dai = &m_table->m_fields[column_ordinal];
+
+
+    if (dai->ttb_type == TtbTable::typeInteger)
+    {
+        // set data
+        unsigned char* ptr = m_rowptr+dai->offset;
+        unsigned int v = (unsigned int)value;
+        *(ptr)   = (v) & 0xff;
+        *(ptr+1) = (v >> 8) & 0xff;
+        *(ptr+2) = (v >> 16) & 0xff;
+        *(ptr+3) = (v >> 24) & 0xff;
+    }
+     else if (dai->ttb_type == TtbTable::typeNumeric)
+    {
+        dbl2decstr((char*)m_rowptr + dai->offset,
+                   value,
+                   dai->width,
+                   dai->scale);
+    }
+     else if (dai->ttb_type == TtbTable::typeDouble)
+    {
+        // FIXME: this will only work on little-endian (intel) processors
+        double d = value;
+        memcpy(m_rowptr + dai->offset, &d, sizeof(double));
+    }
+
+    // check null
+    if (dai->nulls_allowed)
+    {
+        // remove the null bit, if any
+        *(m_rowptr + dai->offset - 1) &= 0xfe;
+    }
+
     return true;
+
 }
 
 bool TtbRow::putBoolean(int column_ordinal,
                         bool value)
 {
+    TtbField* dai = &m_table->m_fields[column_ordinal];
+
+    // set data
+    *(m_rowptr + dai->offset) = (value ? 'T' : 'F');
+
+    // check null
+    if (dai->nulls_allowed)
+    {
+        // remove the null bit, if any
+        *(m_rowptr + dai->offset - 1) &= 0xfe;
+    }
+
     return true;
+
 }
 
 bool TtbRow::putDateTime(int column_ordinal,
                          xd::datetime_t value)
 {
+    TtbField* dai = &m_table->m_fields[column_ordinal];
+
+    // set data
+    if (dai->ttb_type == TtbTable::typeDate)
+    {
+        unsigned int julian_day = (unsigned int)(value >> 32);
+
+        int2buf(m_rowptr+dai->offset, julian_day);
+    }
+     else if (dai->ttb_type == TtbTable::typeDateTime)
+    {
+        unsigned int julian_day = (unsigned int)(value >> 32);
+        unsigned int time_stamp = (unsigned int)(value & 0xffffffff);
+
+        int2buf(m_rowptr+dai->offset, julian_day);
+        int2buf(m_rowptr+dai->offset+4, time_stamp);
+    }
+     else
+    {
+        return false;
+    }
+
+    // check null
+    if (dai->nulls_allowed)
+    {
+        // remove the null bit, if any
+        *(m_rowptr + dai->offset - 1) &= 0xfe;
+    }
+
     return true;
+
 }
 
+
+bool TtbRow::putNull(int column_ordinal)
+{
+    TtbField* dai = &m_table->m_fields[column_ordinal];
+
+    if (!dai->nulls_allowed)
+        return false;
+
+    *(m_rowptr + dai->offset - 1) |= 0x01;
+
+    return true;
+}
 
 
 

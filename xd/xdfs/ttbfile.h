@@ -51,7 +51,22 @@ class TtbTable
 {
     friend class TtbRowDeleter;
     friend class TtbRowInserter;
-    
+    friend class TtbRow;
+
+public:
+
+    enum
+    {
+        typeCharacter =     'C',
+        typeWideCharacter = 'W',
+        typeNumeric =       'N',
+        typeDouble =        'B',
+        typeDate =          'D',
+        typeDateTime =      'T',
+        typeBoolean =       'L',
+        typeInteger =       'I'
+    };
+
 public:
     static bool create(const std::wstring& filename, xd::IStructure* structure);
 
@@ -159,7 +174,10 @@ class TtbRow
 {
 public:
 
-    TtbRow(TtbTable* table, unsigned char* rowptr);
+    TtbRow(TtbTable* table);
+
+    void setRowPtr(unsigned char* rowptr) { m_rowptr = rowptr; }
+    void clearRow();
 
     bool putRawPtr(int column_ordinal,
                    const unsigned char* value,
@@ -182,6 +200,9 @@ public:
 
     bool putDateTime(int column_ordinal,
                      xd::datetime_t value);
+
+    bool putNull(int column_ordinal);
+
 private:
 
     TtbTable* m_table;
