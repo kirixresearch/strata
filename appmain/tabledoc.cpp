@@ -4776,7 +4776,7 @@ std::wstring TableDoc::getWhereExpressionForRow(int row)
     std::wstring db_driver = getDbDriver();
 
     // can't update -- table doesn't have a primary key or a rowid
-    if (primary_key.empty() && db_driver != L"xdnative" && db_driver != L"xdclient" && db_driver != L"xdcommon")
+    if (primary_key.empty() && db_driver != L"xdnative" && db_driver != L"xdclient" && db_driver != L"xdcommon" && info->getFormat() != xd::formatTTB)
         return L"";
 
     xd::rowid_t rowid = xd_grid_model->getRowId(row);
@@ -4926,7 +4926,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     std::wstring db_driver = getDbDriver();
 
     // can't update -- table doesn't have a primary key or a rowid
-    if (primary_key.empty() && db_driver != L"xdnative" && db_driver != L"xdclient")
+    if (primary_key.empty() && db_driver != L"xdnative" && db_driver != L"xdclient" && info->getFormat() != xd::formatTTB)
     {
         deferredAppMessageBox(_("The database table does not have a primary key specified, which is required for editing data values."),
                                    APPLICATION_NAME,

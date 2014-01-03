@@ -455,35 +455,28 @@ bool TtbTable::open(const std::wstring& filename)
         return false;
     }
 
-    Structure* structure = new Structure;
-    std::wstring col_name;
-
     unsigned char* fld = flds;
+    std::wstring col_name;
+    TtbField fldinfo;
     for (i = 0; i < column_count; ++i)
     {
         ColumnInfo* col = new ColumnInfo;
 
-        kl::ucsle2wstring(col_name, fld+64, 80);
-        
-        col->setName(col_name);
-        col->setType(convertType_ttb2xd(fld[0]));
-        col->setWidth(buf2int(fld+5));
-        col->setScale(buf2int(fld+9));
-        col->setOffset(buf2int(fld+1));
-        col->setCalculated(false);
-        col->setColumnOrdinal(i);
-        col->setTableOrdinal(0);
-        col->setNullsAllowed((*(fld+13) & 0x01) ? true : false);
+        kl::ucsle2wstring(fldinfo.name, fld+64, 80);
+        fldinfo.ttb_type = fld[0];
+        fldinfo.width = buf2int(fld+5);
+        fldinfo.scale = buf2int(fld+9);
+        fldinfo.offset = buf2int(fld+1);
+        fldinfo.ordinal = i;
+        fldinfo.nulls_allowed = (*(fld+13) & 0x01) ? true : false;
 
-        structure->addColumn(static_cast<xd::IColumnInfo*>(col));
-
+        m_fields.push_back(fldinfo);
         fld += ttb_column_descriptor_len;
     }
+    
+
 
     delete[] flds;
-
-    m_structure = static_cast<xd::IStructure*>(structure);
-
     return true;
 }
 
@@ -976,6 +969,11 @@ bool TtbTable::writeColumnInfo(int col_idx,
 {
     XCM_AUTO_LOCK(m_object_mutex);
 
+    if (col_idx < 0 || col_idx >= (int)m_fields.size())
+        return false;
+    TtbField& field = m_fields[col_idx];
+
+
     // lock the header
     if (!xf_trylock(m_file, 0, ttb_header_len, 10000))
         return false;
@@ -989,29 +987,30 @@ bool TtbTable::writeColumnInfo(int col_idx,
 
     xd::IColumnInfoPtr col = m_structure->getColumnInfoByIdx(col_idx);
 
+
     if (col_name.length() > 0)
     {
         // field name (80 chars, 160 bytes)
+        field.name = col_name;
         kl::wstring2ucsle(col_desc+64, col_name, 80);
-        col->setName(col_name);
     }
 
     if (type != -1)
     {
-        col_desc[0] = convertType_xd2ttb(type);
-        col->setType(type);
+        field.ttb_type = convertType_xd2ttb(type);
+        col_desc[0] = field.ttb_type;
     }
 
     if (width != -1)
     {
+        field.width = width;
         int2buf(col_desc+5, width);
-        col->setWidth(width);
     }
 
     if (scale != -1)
     {
+        field.scale = scale;
         int2buf(col_desc+9, scale);
-        col->setScale(scale);
     }
 
     xf_seek(m_file,
@@ -1081,7 +1080,28 @@ int TtbTable::getRowWidth()
 
 xd::IStructurePtr TtbTable::getStructure()
 {
-    return m_structure->clone();
+    Structure* structure = new Structure;
+
+    std::vector<TtbField>::iterator it, it_end = m_fields.end();
+    int counter = 0;
+    for (it = m_fields.begin(); it != it_end; ++it)
+    {
+        ColumnInfo* col = new ColumnInfo;
+        
+        col->setName(it->name);
+        col->setType(convertType_ttb2xd(it->ttb_type));
+        col->setWidth(it->width);
+        col->setScale(it->scale);
+        col->setOffset(it->offset);
+        col->setCalculated(false);
+        col->setColumnOrdinal(counter++);
+        col->setTableOrdinal(0);
+        col->setNullsAllowed(it->nulls_allowed);
+
+        structure->addColumn(static_cast<xd::IColumnInfo*>(col));
+    }
+
+    return static_cast<xd::IStructure*>(structure);
 }
 
 
@@ -1222,6 +1242,75 @@ bool TtbTable::restoreDeleted()
 
     return true;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TtbRow::TtbRow(TtbTable* table, unsigned char* rowptr)
+{
+    m_table = table;
+    m_rowptr = rowptr;
+}
+
+
+bool TtbRow::putRawPtr(int column_ordinal,
+                       const unsigned char* value,
+                       int length)
+{
+    return true;
+}
+
+bool TtbRow::putString(int column_ordinal,
+                       const std::string& value)
+{
+    return true;
+}
+
+bool TtbRow::putWideString(int column_ordinal,
+                           const std::wstring& value)
+{
+    return true;
+}
+
+bool TtbRow::putDouble(int column_ordinal,
+                       double value)
+{
+    return true;
+}
+
+bool TtbRow::putInteger(int column_ordinal,
+                        int value)
+{
+    return true;
+}
+
+bool TtbRow::putBoolean(int column_ordinal,
+                        bool value)
+{
+    return true;
+}
+
+bool TtbRow::putDateTime(int column_ordinal,
+                         xd::datetime_t value)
+{
+    return true;
+}
+
+
+
 
 
 

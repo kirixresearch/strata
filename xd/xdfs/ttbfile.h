@@ -34,6 +34,19 @@ class BitmapFileScroller;
 
 
 
+class TtbField
+{
+public:
+
+    std::wstring name;
+    char ttb_type;
+    int width;
+    int scale;
+    int offset;
+    int ordinal;
+    bool nulls_allowed;
+};
+
 class TtbTable
 {
     friend class TtbRowDeleter;
@@ -99,6 +112,8 @@ private:
     xcm::mutex m_object_mutex;
 
     xd::IStructurePtr m_structure;
+    std::vector<TtbField> m_fields;
+
     xf_file_t m_file;
     BitmapFile* m_map_file;
 
@@ -140,6 +155,38 @@ public:
 
 
 
+class TtbRow
+{
+public:
+
+    TtbRow(TtbTable* table, unsigned char* rowptr);
+
+    bool putRawPtr(int column_ordinal,
+                   const unsigned char* value,
+                   int length);
+
+    bool putString(int column_ordinal,
+                   const std::string& value);
+
+    bool putWideString(int column_ordinal,
+                       const std::wstring& value);
+
+    bool putDouble(int column_ordinal,
+                   double value);
+
+    bool putInteger(int column_ordinal,
+                    int value);
+
+    bool putBoolean(int column_ordinal,
+                    bool value);
+
+    bool putDateTime(int column_ordinal,
+                     xd::datetime_t value);
+private:
+
+    TtbTable* m_table;
+    unsigned char* m_rowptr;
+};
 
 
 
