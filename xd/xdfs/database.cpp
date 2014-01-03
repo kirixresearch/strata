@@ -945,6 +945,27 @@ bool FsDatabase::renameFile(const std::wstring& path,
     if (path.empty() || new_name.empty())
         return false;
 
+    std::wstring phys_path = makeFullPath(path);
+
+    // if there is a trailing slash, strip it off
+    if (phys_path.length() > 0 && phys_path[phys_path.length()-1] == PATH_SEPARATOR_CHAR)
+        phys_path.erase(phys_path.length()-1, 1);
+    
+    std::wstring stub_path = kl::beforeLast(phys_path, PATH_SEPARATOR_CHAR);
+    
+    std::wstring new_path = stub_path;
+    new_path += PATH_SEPARATOR_CHAR;
+    new_path += new_name;
+
+
+    if (xf_get_file_exist(phys_path + L".xdfs0"))
+    {
+        // mount file itself being renamed
+        if (!xf_move(phys_path + L".xdfs0", new_path + L".xdfs0"))
+            return false;
+        return true;
+    }
+
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
     {
@@ -958,20 +979,25 @@ bool FsDatabase::renameFile(const std::wstring& path,
 
 
 
-    std::wstring phys_path = makeFullPath(path);
     
-    // if there is a trailing slash, strip it off
-    if (phys_path.length() > 0 && phys_path[phys_path.length()-1] == PATH_SEPARATOR_CHAR)
-        phys_path.erase(phys_path.length()-1, 1);
     
-    std::wstring stub_path = kl::beforeLast(phys_path, PATH_SEPARATOR_CHAR);
+
     
-    std::wstring new_path = stub_path;
-    new_path += PATH_SEPARATOR_CHAR;
-    new_path += new_name;
-    
-    if (!xf_move(phys_path, new_path))
-        return false;
+
+    if (xf_get_file_exist(phys_path + L".ttb"))
+    {
+        if (!xf_move(phys_path + L".ttb", new_path + L".ttb"))
+            return false;
+        xf_move(phys_path + L".map", new_path + L".map");
+    }
+     else
+    {
+        if (!xf_move(phys_path, new_path))
+            return false;
+    }
+
+
+
         
     // perhaps there is a definition file that needs renaming too
     std::wstring oldextf = ExtFileInfo::getConfigFilenameFromPath(getDefinitionDirectory(), phys_path);
@@ -1027,8 +1053,14 @@ bool FsDatabase::moveFile(const std::wstring& src_path,
         xf_move(src_phys_path + L".map", dest_phys_path + L".map");
         return xf_move(src_phys_path + L".ttb", dest_phys_path + L".ttb");
     }
-
-    return xf_move(src_phys_path, dest_phys_path);
+     else if (xf_get_file_exist(src_phys_path + L".xdfs0"))
+    {
+        return xf_move(src_phys_path + L".xdfs0", dest_phys_path + L".xdfs0");
+    }
+     else
+    {
+        return xf_move(src_phys_path, dest_phys_path);
+    }
 }
 
 
