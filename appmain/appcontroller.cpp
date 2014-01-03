@@ -5776,7 +5776,8 @@ bool AppController::createProject(const wxString& location,
         return false;
 
     // create the database
-    std::wstring cstr = L"Xdprovider=xdnative;Database=" + towstr(location);
+    //std::wstring cstr = L"Xdprovider=xdnative;Database=" + towstr(location);
+    std::wstring cstr = L"xdprovider=xdfs;database=" + towstr(location);
     if (!dbmgr->createDatabase(cstr))
         return false;
 
@@ -5787,7 +5788,7 @@ bool AppController::createProject(const wxString& location,
     // add an entry in the project manager
     ProjectMgr projmgr;
     projmgr.addProjectEntry(db_name,
-                            location,
+                            cstr,
                             wxT("admin"),
                             wxEmptyString,
                             true);

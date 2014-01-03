@@ -15,6 +15,7 @@
 
 
 #include <xd/xd.h>
+#include <kl/file.h>
 #include "xdfs.h"
 #include "database.h"
 #include "../xdcommon/connectionstr.h"
@@ -62,7 +63,26 @@ public:
     
     bool createDatabase(const std::wstring& connection_str)
     {
-        return false;
+        xd::ConnectionStringParser c(connection_str);
+        std::wstring provider = c.getLowerValue(L"xdprovider");
+        if (provider.empty())
+            return xcm::null;
+        
+        // check if the provider refers to us, or a different dll/shared lib
+
+        if (provider != L"xdfs")
+            return false;
+
+        //  parse the connection string
+        std::wstring location = c.getValue(L"database");
+        if (location.empty())
+            return false;
+
+        // if directory already exists, use it with its contents
+        if (xf_get_directory_exist(location))
+            return true;
+
+        return xf_mkdir(location);
     }
     
     xd::IDatabasePtr open(const std::wstring& connection_str)

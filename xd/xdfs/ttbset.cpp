@@ -183,7 +183,7 @@ bool TtbSet::updateRow(xd::rowid_t rowid,
 
         for (coli = 0; coli < info_size; ++coli)
         {
-            DataAccessInfo* dai = (DataAccessInfo*)(info[coli].handle);
+            TtbDataAccessInfo* dai = (TtbDataAccessInfo*)(info[coli].handle);
 
             if (idx_it->active_columns[dai->ordinal])
             {

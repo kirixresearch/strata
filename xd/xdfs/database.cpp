@@ -1200,10 +1200,17 @@ bool FsDatabase::getFileExist(const std::wstring& path)
 
     std::wstring phys_path = makeFullPath(path);
 
-    if (!xf_get_file_exist(phys_path))
-        return false;
 
-    return true;
+    if (xf_get_file_exist(phys_path + L".ttb"))
+        return true;
+
+    if (xf_get_file_exist(phys_path + L".xdfs0"))
+        return true;
+
+    if (xf_get_file_exist(phys_path))
+        return true;
+
+    return false;
 }
 
 bool FsDatabase::getLocalFileExist(const std::wstring& path)
