@@ -2638,15 +2638,6 @@ bool BaseIterator::isNull(xd::objhandle_t column_handle)
     return false;
 }
 
-bool BaseIterator::putRowBuffer(const unsigned char* value, int length)
-{
-    if (!m_rowptr)
-        return false;
-
-    memcpy(m_rowptr, value, length);
-    return true;
-}
-
 
 bool BaseIterator::putString(xd::objhandle_t column_handle,
                              const std::string& value)

@@ -432,11 +432,6 @@ bool XbaseRowInserter::putDateTime(xd::objhandle_t column_handle,
     return m_file->putDateTime(f->ordinal, xbase_date);
 }
 
-bool XbaseRowInserter::putRowBuffer(const unsigned char* value)
-{
-    return m_file->putRowBuffer(value);
-}
-
 bool XbaseRowInserter::putNull(xd::objhandle_t column_handle)
 {
     XbaseField* f = (XbaseField*)column_handle;

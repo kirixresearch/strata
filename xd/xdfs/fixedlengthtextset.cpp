@@ -985,11 +985,6 @@ bool FixedLengthTextRowInserter::putDateTime(xd::objhandle_t column_handle,
     return true;
 }
 
-bool FixedLengthTextRowInserter::putRowBuffer(const unsigned char* value)
-{
-    return true;
-}
-
 bool FixedLengthTextRowInserter::putNull(xd::objhandle_t column_handle)
 {
     return true;

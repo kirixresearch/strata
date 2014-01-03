@@ -164,7 +164,6 @@ public:
 
     // row buffer modifiers
 
-    bool putRowBuffer(const unsigned char* buf, int length);
     bool putString(xd::objhandle_t column_handle, const std::string& value);
     bool putWideString(xd::objhandle_t column_handle, const std::wstring& value);
     bool putDateTime(xd::objhandle_t column_handle, xd::datetime_t value);

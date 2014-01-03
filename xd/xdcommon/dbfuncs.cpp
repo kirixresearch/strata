@@ -156,7 +156,6 @@ int xdcmnInsert(xd::IDatabasePtr dest_db,
                 ijob->setMaxCount(sp_source_iter->getRowCount());
                 max_count_known = true;
             }
-
         } 
          else
         {

@@ -191,7 +191,6 @@ public:
     bool putInteger(xd::objhandle_t column_handle, int value);
     bool putBoolean(xd::objhandle_t column_handle, bool value);
     bool putDateTime(xd::objhandle_t column_handle, xd::datetime_t value);
-    bool putRowBuffer(const unsigned char* value);
     bool putNull(xd::objhandle_t column_handle);
 
     bool startInsert(const std::wstring& col_list);

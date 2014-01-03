@@ -461,11 +461,6 @@ bool TtbRowInserter::putDateTime(xd::objhandle_t column_handle,
     return m_row.putDateTime(dai->ordinal, value);
 }
 
-bool TtbRowInserter::putRowBuffer(const unsigned char* value)
-{
-    return false;
-}
-
 bool TtbRowInserter::putNull(xd::objhandle_t column_handle)
 {
     TtbInsertData* dai = (TtbInsertData*)column_handle;

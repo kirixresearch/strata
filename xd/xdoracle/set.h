@@ -116,7 +116,6 @@ public:
                     bool value);
     bool putDateTime(xd::objhandle_t column_handle,
                      xd::datetime_t datetime);
-    bool putRowBuffer(const unsigned char* value);
     bool putNull(xd::objhandle_t column_handle);
 
     bool startInsert(const std::wstring& col_list);

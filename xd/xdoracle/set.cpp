@@ -628,10 +628,6 @@ bool OracleRowInserter::putDateTime(xd::objhandle_t column_handle,
     return true;
 }
 
-bool OracleRowInserter::putRowBuffer(const unsigned char* value)
-{
-    return true;
-}
 
 bool OracleRowInserter::putNull(xd::objhandle_t column_handle)
 {

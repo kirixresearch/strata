@@ -1956,11 +1956,6 @@ bool DelimitedTextRowInserter::putDateTime(xd::objhandle_t column_handle,
     return m_row.putDateTime(f->ordinal, buf);
 }
 
-bool DelimitedTextRowInserter::putRowBuffer(const unsigned char* value)
-{
-    return false;
-}
-
 bool DelimitedTextRowInserter::putNull(xd::objhandle_t column_handle)
 {
     DelimitedTextDataAccessInfo* f = (DelimitedTextDataAccessInfo*)column_handle;
