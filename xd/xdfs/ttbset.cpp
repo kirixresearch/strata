@@ -45,6 +45,8 @@ TtbSet::~TtbSet()
     if (m_file.isOpen())
         m_file.close();
 
+    delete[] m_update_buf;
+
     m_database->unref();
 }
 
