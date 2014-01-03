@@ -152,7 +152,6 @@ private:
 
     xd::tableord_t m_table_ord;
     xd::rowid_t m_rowid;
-    xd::rowpos_t m_row_count;
     int m_buf_rowcount;
     int m_buf_pos;
     int m_read_ahead_rowcount;

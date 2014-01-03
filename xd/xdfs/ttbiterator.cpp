@@ -73,7 +73,6 @@ static double decstr2dbl(const char* c, int width, int scale)
 TtbIterator::TtbIterator()
 {
     m_row_num = 1;
-    m_row_count = 0;
     m_table_rowwidth = 0;
     m_read_ahead_rowcount = 0;
     m_rowpos_buf = NULL;
@@ -115,7 +114,6 @@ bool TtbIterator::init(xd::IDatabasePtr db,
 
     m_table_ord = 0;
     m_table_rowwidth = m_file.getRowWidth();
-    m_row_count = m_file.getRowCount();
 
     m_read_ahead_rowcount = tableiterator_read_ahead_buffer_size/m_table_rowwidth;
     if (m_read_ahead_rowcount == 0)
@@ -150,7 +148,7 @@ std::wstring TtbIterator::getTable()
 
 xd::rowpos_t TtbIterator::getRowCount()
 {
-    return m_row_count;
+    return m_file.getRowCount();
 }
 
 xd::IDatabasePtr TtbIterator::getDatabase()
@@ -177,7 +175,6 @@ xd::IIteratorPtr TtbIterator::clone()
     }
 
     new_iter->m_table_ord = m_table_ord;
-    new_iter->m_row_count = m_row_count;
     new_iter->m_eof = m_eof;
     new_iter->m_bof = m_bof;
     new_iter->m_read_ahead_rowcount = m_read_ahead_rowcount;
@@ -393,7 +390,7 @@ bool TtbIterator::setPos(double pct)
 double TtbIterator::getPos()
 {
     double d = (double)(long long)rowidGetRowPos(m_rowid);
-    double row_count = (double)(long long)m_row_count;
+    double row_count = (double)(long long)getRowCount();
     if (kl::dblcompare(row_count, 0.0) == 0)
         return 0.0;
 
