@@ -69,8 +69,6 @@ public:
                                        const std::wstring& expr,
                                        xd::IJob* job);
 
-    xd::rowpos_t getRowCount();
-
     bool restoreDeleted() { return false; }
 
     bool updateRow(xd::rowid_t rowid,

@@ -149,10 +149,6 @@ xd::IIteratorPtr TtbSet::createIterator(const std::wstring& columns,
                                    getObjectPath());
 }
 
-xd::rowpos_t TtbSet::getRowCount()
-{
-    return (xd::rowpos_t)m_file.getRowCount();
-}
 
 bool TtbSet::updateRow(xd::rowid_t rowid,
                        xd::ColumnUpdateInfo* info,
