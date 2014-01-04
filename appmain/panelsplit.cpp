@@ -500,9 +500,10 @@ bool SplitPanel::validate()
     // minimum row count value
     if (split_type == 0 && row_count_val < 1)
     {
-        m_rowcount_textctrl->SetValue(wxString::Format(wxT("%d"), 1));
-        m_rowcount_textctrl->SetInsertionPointEnd();
-        return true;
+        //m_rowcount_textctrl->SetValue(wxString::Format(wxT("%d"), 1));
+        //m_rowcount_textctrl->SetInsertionPointEnd();
+        //return true;
+        return false;
     }
     
     // maximum row count value
