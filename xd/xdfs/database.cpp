@@ -1326,6 +1326,9 @@ public:
 
     unsigned int getFlags()
     {
+        if (format == xd::formatTTB)
+            return xd::sfFastRowCount;
+
         return 0;
     }
 
@@ -1341,6 +1344,19 @@ public:
 
     xd::rowpos_t getRowCount()
     {
+        if (getFormat() == xd::formatTTB)
+        {
+            TtbTable ttb;
+            if (ttb.open(phys_path))
+            {
+                xd::rowpos_t res = ttb.getRowCount();
+                ttb.close();
+                return res;
+            }
+
+            return 0;
+        }
+
         return row_count;
     }
     
