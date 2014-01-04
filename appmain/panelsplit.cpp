@@ -722,7 +722,7 @@ void SplitPanel::onPrefixTextChanged(wxCommandEvent& evt)
 
 void SplitPanel::onSourceTableTextChanged(wxCommandEvent& evt)
 {
-    wxString m_path = m_sourcetable_textctrl->GetValue();
+    m_path = m_sourcetable_textctrl->GetValue();
     m_finfo = g_app->getDatabase()->getFileInfo(towstr(m_path));
     
     if (!m_prefix_edited)
