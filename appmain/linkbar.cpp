@@ -774,7 +774,7 @@ void LinkBar::onPopupTimer(wxTimerEvent& evt)
         return;
     
     // drag is finished
-    if (m_popup_during_drag && !::wxGetMouseState().LeftDown())
+    if (m_popup_during_drag && !::wxGetMouseState().LeftIsDown())
     {
         closePopupWindow();
         return;

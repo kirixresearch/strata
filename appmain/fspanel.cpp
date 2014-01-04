@@ -1213,7 +1213,7 @@ void FsPanel::onMouseMove(wxMouseEvent& evt)
     // middle button is not down
     if (m_treeview_middledown_action_id.IsOk())
     {
-        if (!::wxGetMouseState().MiddleDown())
+        if (!::wxGetMouseState().MiddleIsDown())
             m_treeview_middledown_action_id = wxTreeItemId();
     }
     

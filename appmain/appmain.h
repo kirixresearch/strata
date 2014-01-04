@@ -45,6 +45,7 @@
 #include <wx/cmdline.h>
 #include <wx/combo.h>
 #include <wx/config.h>
+#include <wx/filename.h>
 
 #ifdef WIN32
 #include <wx/msw/helpchm.h>
