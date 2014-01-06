@@ -126,7 +126,6 @@ private:
 
     xcm::mutex m_object_mutex;
 
-    xd::IStructurePtr m_structure;
     std::vector<TtbField> m_fields;
 
     xf_file_t m_file;

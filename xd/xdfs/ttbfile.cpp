@@ -986,8 +986,6 @@ bool TtbTable::writeColumnInfo(int col_idx,
     xf_seek(m_file, ttb_header_len+(ttb_column_descriptor_len*col_idx), xfSeekSet);
     xf_read(m_file, col_desc, ttb_column_descriptor_len, 1);
 
-    xd::IColumnInfoPtr col = m_structure->getColumnInfoByIdx(col_idx);
-
 
     if (col_name.length() > 0)
     {

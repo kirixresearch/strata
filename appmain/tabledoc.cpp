@@ -2201,7 +2201,7 @@ void TableDoc::updateStatusBar(bool row_count_update)
 
     if (row_count_update)
     {
-        if (m_iter->getIteratorFlags() & xd::ifFastRowCount)
+        if (m_iter.isOk() && (m_iter->getIteratorFlags() & xd::ifFastRowCount))
         {
             m_stat_row_count = m_iter->getRowCount();
         }
@@ -5717,6 +5717,9 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
     
     xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
+        return;
+
+    if (m_iter.isNull())
         return;
 
     xd::IStructurePtr structure = m_iter->getStructure();

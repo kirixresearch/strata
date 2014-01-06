@@ -2473,7 +2473,7 @@ xd::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
 }
 
 bool FsDatabase::modifyStructure(const std::wstring& path,
-                                 xd::IStructurePtr struct_config,
+                                 xd::IStructurePtr structure,
                                  xd::IJob* job)
 {
     std::wstring cstr, rpath;
@@ -2484,12 +2484,14 @@ bool FsDatabase::modifyStructure(const std::wstring& path,
         if (db.isNull())
             return xcm::null;
 
-        return db->modifyStructure(path, struct_config, job);
+        return db->modifyStructure(path, structure, job);
     }
 
+    IXdsqlTablePtr tbl = openTable(path);
+    if (tbl.isNull())
+        return false;
 
-
-    return false;
+    return tbl->modifyStructure(structure, job);
 }
 
 
