@@ -18,10 +18,13 @@
 
 
 #ifdef _MSC_VER
+const char xf_path_separator_char = '\\';
 const wchar_t xf_path_separator_wchar = L'\\';
 #else
-const wchar_t xf_path_separator_wchar = L'/';
+const char xf_path_separator_char = '/';
+const wchar_t xf_path_separator_wchar = L'\\';
 #endif
+
 
 // -- directory API --
 
@@ -117,6 +120,7 @@ void xf_filetime_to_systemtime(xf_filetime_t ft, xf_timestruct_t* out);
 //inline xf_off_t xf_get_file_size(xf_file_t fileh);
 bool xf_get_file_exist(const std::wstring& file_path);
 bool xf_get_directory_exist(const std::wstring& dir_path);
+std::wstring xf_get_file_directory(const std::wstring& filename);
 bool xf_mkdir(const std::wstring& dir);
 bool xf_rmdir(const std::wstring& dir);
 bool xf_rmtree(const std::wstring& dir);
@@ -131,6 +135,7 @@ std::wstring xf_get_temp_filename(const std::wstring& prefix, const std::wstring
 std::wstring xf_get_network_path(const std::wstring& filename);
 std::wstring xf_get_file_contents(const std::wstring& filename, bool* success = NULL);
 bool xf_put_file_contents(const std::wstring& filename, const std::wstring& contents);
+
 
 
 #endif      // __KL_FILE_H

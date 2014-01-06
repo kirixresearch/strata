@@ -10,6 +10,7 @@
 
 
 #include <windows.h>
+#include <shlwapi.h>
 #include <ctime>
 #include <vector>
 #include "kl/file.h"
@@ -454,6 +455,7 @@ bool xf_get_directory_exist(const std::wstring& dir_path)
     FindClose(h);
     return true;
 }
+
 
 bool xf_is_valid_file_path(const std::wstring& file_path)
 {

@@ -88,3 +88,18 @@ bool xf_put_file_contents(const std::wstring& path, const std::wstring& contents
     return true;
 }
 
+std::wstring xf_get_file_directory(const std::wstring& filename)
+{
+    if (filename.empty())
+    {
+        return filename;
+    }
+     else
+    {
+        std::wstring res = filename;
+        size_t len = res.length();
+        if (res[len] == xf_path_separator_wchar)
+            res = res.substr(0, len-1);
+        return kl::beforeLast(res, xf_path_separator_wchar);
+    }
+}

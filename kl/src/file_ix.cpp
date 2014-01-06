@@ -283,6 +283,7 @@ bool xf_get_directory_exist(const std::wstring& dir_path)
     return false;
 }
 
+
 bool xf_is_valid_file_path(const std::wstring& file_path)
 {
     return true;
