@@ -98,7 +98,7 @@ std::wstring xf_get_file_directory(const std::wstring& filename)
     {
         std::wstring res = filename;
         size_t len = res.length();
-        if (res[len] == xf_path_separator_wchar)
+        if (res[len-1] == xf_path_separator_wchar)
             res = res.substr(0, len-1);
         return kl::beforeLast(res, xf_path_separator_wchar);
     }
