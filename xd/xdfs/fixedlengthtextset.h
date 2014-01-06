@@ -135,6 +135,8 @@ public:
     void setLineDelimited(bool new_val);
     bool isLineDelimited();
 
+    bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job) { return false; }
+ 
 private:
 
     bool loadConfiguration();

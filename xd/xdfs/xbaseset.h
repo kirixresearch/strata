@@ -100,6 +100,8 @@ public:
                    xd::ColumnUpdateInfo* info,
                    size_t info_size);
 
+    bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job) { return false; }
+ 
 private:
 
     FsDatabase* m_database;

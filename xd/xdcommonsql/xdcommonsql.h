@@ -68,6 +68,8 @@ public:
     virtual bool updateRow(xd::rowid_t rowid,
                            xd::ColumnUpdateInfo* info,
                            size_t info_size) = 0;
+
+    virtual bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job) = 0;
 };
 
 

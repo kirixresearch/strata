@@ -82,6 +82,8 @@ public:
     bool updateRow(xd::rowid_t rowid,
                    xd::ColumnUpdateInfo* info,
                    size_t info_size);
+
+    bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job) { return false; }
     
 private:
 

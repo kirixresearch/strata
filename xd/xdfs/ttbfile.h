@@ -116,8 +116,8 @@ public:
 private:
 
     xd::rowpos_t _findNextRowPos(BitmapFileScroller* _bfs,
-                                    xd::rowpos_t offset,
-                                    int delta);
+                                 xd::rowpos_t offset,
+                                 int delta);
 
     static void generateGuid(unsigned char* guid);
     void updateHeaderWithGuid();

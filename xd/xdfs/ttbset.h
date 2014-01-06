@@ -59,8 +59,6 @@ public:
     bool init(const std::wstring& filename);
 
     xd::IStructurePtr getStructure();
-    bool modifyStructure(xd::IStructure* struct_config, 
-                         xd::IJob* job);
 
     xd::IRowInserterPtr getRowInserter();
     IXdsqlRowDeleterPtr getRowDeleter() { return xcm::null; }
@@ -75,6 +73,8 @@ public:
                    xd::ColumnUpdateInfo* info,
                    size_t info_size);
 
+    bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job);
+ 
 private:
 
     FsDatabase* m_database;

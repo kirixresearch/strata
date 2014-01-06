@@ -145,6 +145,8 @@ public:
     
     bool determineColumns(int check_rows, xd::IJob* job);
 
+    bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job) { return false; }
+ 
 private:
 
     bool loadConfigurationFromDataFile();

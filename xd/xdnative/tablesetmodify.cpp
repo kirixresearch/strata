@@ -513,7 +513,7 @@ public:
 
 
 
-bool TableSet::modifyStructure(xd::IStructure* struct_config,
+bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
                                xd::IJob* job)
 {
     IJobInternalPtr ijob = job;
@@ -577,7 +577,7 @@ bool TableSet::modifyStructure(xd::IStructure* struct_config,
 
     bool done = false;
 
-    if (!BaseSet::modifyStructure(struct_config, &done))
+    if (!BaseSet::baseSetModifyStructure(struct_config, &done))
         return false;
 
     if (done)

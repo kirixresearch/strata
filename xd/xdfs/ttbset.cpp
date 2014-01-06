@@ -80,14 +80,6 @@ xd::IStructurePtr TtbSet::getStructure()
     return s;
 }
 
-bool TtbSet::modifyStructure(xd::IStructure* struct_config,
-                               xd::IJob* job)
-{
-    bool done_flag = false;
-    CommonBaseSet::modifyStructure(struct_config, &done_flag);
-    return true;
-}
-
 xd::IRowInserterPtr TtbSet::getRowInserter()
 {
     TtbRowInserter* inserter = new TtbRowInserter(this);
@@ -291,6 +283,8 @@ bool TtbSet::updateRow(xd::rowid_t rowid,
 
     return true;
 }
+
+
 
 
 // TtbRowInserter class implementation

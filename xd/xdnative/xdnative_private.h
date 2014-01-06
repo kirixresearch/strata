@@ -227,7 +227,7 @@ public:
                                                const std::wstring& order,
                                                xd::IJob* job) = 0;
 
-    virtual bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job) = 0;
+    virtual bool modifyStructure(xd::IStructurePtr struct_config, xd::IJob* job) = 0;
     virtual xd::IRowInserterPtr getRowInserter() = 0;
 
     virtual xd::IIndexInfoEnumPtr getIndexEnum() = 0;

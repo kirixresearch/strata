@@ -343,8 +343,8 @@ void BaseSet::onRelationshipsUpdated()
 
 
 
-bool BaseSet::modifyStructure(xd::IStructure* struct_config,
-                              bool* done_flag)
+bool BaseSet::baseSetModifyStructure(xd::IStructurePtr struct_config,
+                                     bool* done_flag)
 {
     XCM_AUTO_LOCK(m_structure_mutex);
 
