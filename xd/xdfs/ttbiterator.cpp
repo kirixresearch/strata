@@ -697,24 +697,26 @@ int TtbIterator::getRawWidth(xd::objhandle_t data_handle)
         return dai->key_layout->getKeyLength();
     }
     
-    return 0;
+    if (dai->type == xd::typeWideCharacter)
+        return dai->width*2;
+         else
+        return dai->width;
 }
 
 const unsigned char* TtbIterator::getRawPtr(xd::objhandle_t data_handle)
 {
-/*
     TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
     if (dai == NULL)
-        return 0;
+        return NULL;
+    if (!m_rowptr)
+        return NULL;
 
     if (dai->key_layout)
     {
         return dai->key_layout->getKey();
     }
 
-    return m_file.getRaw(dai->ordinal);
-*/
-    return NULL;
+    return m_rowptr + dai->offset;
 }
 
 const std::string& TtbIterator::getString(xd::objhandle_t data_handle)
