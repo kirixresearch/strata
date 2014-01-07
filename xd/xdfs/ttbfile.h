@@ -77,7 +77,7 @@ public:
 
     bool open(const std::wstring& filename);
     bool isOpen() const { return m_file ? true : false; }
-    bool reopen(bool exclusive);
+    bool reopen(bool exclusive = false);
     void close();
 
     bool getGuid(unsigned char* guid /* 16 bytes */);

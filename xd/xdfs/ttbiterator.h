@@ -93,11 +93,14 @@ friend class TtbSet;
 
 public:
 
-    TtbIterator();
+    TtbIterator(FsDatabase* database);
     ~TtbIterator();
-    bool init(xd::IDatabasePtr db,
-              TtbSet* set,
+
+    bool init(TtbSet* set,
               const std::wstring& filename);
+
+    bool init(TtbSet* set,
+              TtbTable* table);
 
     // xd::IIterator
 
@@ -146,9 +149,10 @@ private:
 
 private:
 
-    xd::IDatabasePtr m_database;
+    FsDatabase* m_database;
     TtbSet* m_set;
     TtbTable m_file;
+    TtbTable* m_table; // usually a pointer to m_file
 
     xd::tableord_t m_table_ord;
     xd::rowid_t m_rowid;
@@ -166,7 +170,6 @@ private:
 
     std::vector<TtbDataAccessInfo*> m_fields;
     std::vector<TtbDataAccessInfo*> m_exprs;
-
 };
 
 

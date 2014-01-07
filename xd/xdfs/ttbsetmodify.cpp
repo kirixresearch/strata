@@ -17,6 +17,7 @@
 #include "ttbset.h"
 #include "ttbsetmodify.h"
 #include "ttbfile.h"
+#include "ttbiterator.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/jobinfo.h"
 
@@ -526,8 +527,6 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
     // start the job
     JobInfoManager jobinfo_mgr(job);
 
-
-
     // drop all indexes that are based on the columns
     // being modified or dropped
 
@@ -581,6 +580,7 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
     {
         ijob->setMaxCount(phys_row_count - deleted_row_count);
     }
+
 
 
     // attempt to reopen the set exclusively
@@ -840,6 +840,12 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
 
 
 
+    // clear update buffer, because row width might change
+    delete[] m_update_buf;
+    m_update_buf = NULL;
+
+
+
 
     // delete all calculated fields from the physical copy info
 
@@ -881,13 +887,13 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
 
 
     // generate a unique filename for the table
-    std::wstring table_filename = xf_get_file_directory(m_file.getFilename());
-    table_filename += xf_path_separator_wchar;
-    table_filename += kl::getUniqueString();
-    table_filename += L".tmp";
+    std::wstring temp_tbl_filename = xf_get_file_directory(m_file.getFilename());
+    temp_tbl_filename += xf_path_separator_wchar;
+    temp_tbl_filename += kl::getUniqueString();
+    temp_tbl_filename += L".tmp";
 
     // create the table
-    if (!TtbTable::create(table_filename, output_structure))
+    if (!TtbTable::create(temp_tbl_filename, output_structure))
     {
         if (ijob.isOk())
         {
@@ -902,7 +908,7 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
     TtbSet* tbl_set = new TtbSet(m_database);
     tbl_set->ref();
 
-    if (!tbl_set->init(table_filename))
+    if (!tbl_set->init(temp_tbl_filename))
     {
         if (ijob.isOk())
         {
@@ -910,7 +916,7 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
         }
 
         tbl_set->unref();
-        xf_remove(table_filename);
+        xf_remove(temp_tbl_filename);
         return false;
     }
 
@@ -928,7 +934,7 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
         }
 
         tbl_set->unref();
-        xf_remove(table_filename);
+        xf_remove(temp_tbl_filename);
         return false;
     }
 
@@ -937,8 +943,9 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
 
     // create an unordered iterator for the input set
 
-    xd::IIteratorPtr sp_iter = createIterator(L"", L"", NULL);
-    if (sp_iter.isNull())
+    TtbIterator* iter = new TtbIterator(m_database);
+    xd::IIteratorPtr sp_iter = static_cast<xd::IIterator*>(iter);
+    if (!iter->init(this, &m_file))
     {
         if (ijob.isOk())
         {
@@ -946,14 +953,16 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
         }
 
         tbl_set->unref();
-        xf_remove(table_filename);
+        xf_remove(temp_tbl_filename);
+        m_file.reopen();
         return false;
     }
-    xd::IIterator* iter = sp_iter.p;
+
 
 
     // get input and output handles
-    
+    output_inserter->startInsert(L"*");
+
     for (it_mf = modfields.begin(); it_mf != modfields.end(); ++it_mf)
     {
         it_mf->src_handle = 0;
@@ -970,7 +979,8 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
                 }
 
                 tbl_set->unref();
-                xf_remove(table_filename);
+                xf_remove(temp_tbl_filename);
+                m_file.reopen();
                 return false;
             }
         }
@@ -984,7 +994,8 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
             }
 
             tbl_set->unref();
-            xf_remove(table_filename);
+            xf_remove(temp_tbl_filename);
+            m_file.reopen();
             return false;
         }
     }
@@ -1001,8 +1012,6 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
     iter->goFirst();
 
     bool failed = false;
-
-    output_inserter->startInsert(L"*");
 
     while (!iter->eof())
     {
@@ -1060,13 +1069,14 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
 
     if (cancelled || failed)
     {
-        tbl_set->unref();
-        xf_remove(table_filename);
-
         if (ijob.isOk() && !cancelled)
         {
             ijob->setStatus(xd::jobFailed);
         }
+
+        tbl_set->unref();
+        xf_remove(temp_tbl_filename);
+        m_file.reopen();
 
         return false;
     }
@@ -1081,6 +1091,7 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
     }
 
 
+    iter = NULL;
     sp_iter = xcm::null;
     sp_output_inserter = xcm::null;
 
@@ -1090,28 +1101,25 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
 
 
     // attempt to get rid of the old table
-    std::wstring old_filename = m_file.getFilename();
-    std::wstring old_mapfilename = m_file.getMapFilename();
+    
+    std::wstring tbl_filename = m_file.getFilename();
+    std::wstring tbl_mapfilename = m_file.getMapFilename();
     m_file.close();
 
-
-    // rename map filename
-    std::wstring new_mapfilename = kl::beforeLast(table_filename, L'.');
-    new_mapfilename += L".map";
-    if (xf_get_file_exist(new_mapfilename))
+    if (!xf_remove(tbl_filename))
     {
-        xf_remove(new_mapfilename);
+        // couldn't remove original data file
+        m_file.reopen();
+        xf_remove(temp_tbl_filename);
+        return false;
     }
-    xf_move(old_mapfilename, new_mapfilename);
 
+    xf_remove(tbl_mapfilename);
+    xf_move(temp_tbl_filename, tbl_filename);
 
     // assign the new output table to this set
-    m_file.open(table_filename);
-    xf_remove(old_filename);
-
-    // for now, all indexes are deleted with modify structure
-    delete[] m_update_buf;
-    m_update_buf = NULL;
+    if (!m_file.open(tbl_filename))
+        return false;
 
     //deleteAllIndexes();
     //refreshIndexEntries();

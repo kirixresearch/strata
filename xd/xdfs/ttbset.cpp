@@ -73,7 +73,7 @@ xd::IStructurePtr TtbSet::getStructure()
     if (!m_file.isOpen())
         return xcm::null;
 
-    // get structure from xbase file
+    // get structure from ttb file
     xd::IStructurePtr s = m_file.getStructure();
 
     CommonBaseSet::appendCalcFields(s);
@@ -93,10 +93,8 @@ xd::IIteratorPtr TtbSet::createIterator(const std::wstring& columns,
 {
     if (order.empty())
     {
-        TtbIterator* iter = new TtbIterator;
-        if (!iter->init(m_database,
-                        this,
-                        m_file.getFilename()))
+        TtbIterator* iter = new TtbIterator(m_database);
+        if (!iter->init(this, m_file.getFilename()))
         {
             delete iter;
             return xcm::null;

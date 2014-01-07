@@ -70,8 +70,11 @@ static double decstr2dbl(const char* c, int width, int scale)
 }
 
 
-TtbIterator::TtbIterator()
+TtbIterator::TtbIterator(FsDatabase* database)
 {
+    m_database = database;
+    m_database->ref();
+
     m_row_num = 1;
     m_table_rowwidth = 0;
     m_read_ahead_rowcount = 0;
@@ -82,6 +85,7 @@ TtbIterator::TtbIterator()
     m_bof = false;
     m_eof = false;
     m_set = NULL;
+    m_table = &m_file;
 }
 
 TtbIterator::~TtbIterator()
@@ -99,21 +103,29 @@ TtbIterator::~TtbIterator()
 
     if (m_set)
         m_set->unref();
+
+    m_database->unref();
 }
 
-bool TtbIterator::init(xd::IDatabasePtr db,
-                       TtbSet* set,
-                       const std::wstring& filename)
+bool TtbIterator::init(TtbSet* set, const std::wstring& filename)
 {
-    if (!m_file.open(filename))
+    if (!m_table->open(filename))
         return false;
 
-    m_database = db;
+    return init(set, &m_file);
+}
+
+
+bool TtbIterator::init(TtbSet* set, TtbTable* table)
+{
+    m_table = table;
+
     m_set = set;
-    m_set->ref();
+    if (m_set)
+        m_set->ref();
 
     m_table_ord = 0;
-    m_table_rowwidth = m_file.getRowWidth();
+    m_table_rowwidth = m_table->getRowWidth();
 
     m_read_ahead_rowcount = tableiterator_read_ahead_buffer_size/m_table_rowwidth;
     if (m_read_ahead_rowcount == 0)
@@ -135,20 +147,21 @@ bool TtbIterator::init(xd::IDatabasePtr db,
     return true;
 }
 
+
 void TtbIterator::setTable(const std::wstring& tbl)
 {
 }
 
 std::wstring TtbIterator::getTable()
 {
-    if (m_set)
+    if (!m_set)
         return L"";
     return m_set->getObjectPath();
 }
 
 xd::rowpos_t TtbIterator::getRowCount()
 {
-    return m_file.getRowCount();
+    return m_table->getRowCount();
 }
 
 xd::IDatabasePtr TtbIterator::getDatabase()
@@ -158,10 +171,9 @@ xd::IDatabasePtr TtbIterator::getDatabase()
 
 xd::IIteratorPtr TtbIterator::clone()
 {
-    TtbIterator* new_iter = new TtbIterator;
+    TtbIterator* new_iter = new TtbIterator(m_database);
     
-
-    if (!new_iter->init(m_database, m_set, m_file.getFilename()))
+    if (!new_iter->init(m_set, m_table->getFilename()))
     {
         return xcm::null;
     }
@@ -188,8 +200,6 @@ xd::IIteratorPtr TtbIterator::clone()
 
     new_iter->updatePosition();
 
-
-    
     return static_cast<xd::IIterator*>(new_iter);
 }
 
@@ -212,7 +222,7 @@ void TtbIterator::goFirst()
     if (read_ahead_rowcount > 100)
         read_ahead_rowcount = 100;
         
-    m_buf_rowcount = m_file.getRows(m_buf,
+    m_buf_rowcount = m_table->getRows(m_buf,
                                     m_rowpos_buf,
                                     0,
                                     1,
@@ -259,7 +269,7 @@ void TtbIterator::skip(int delta)
         }
          else
         {
-            m_buf_rowcount = m_file.getRows(m_buf,
+            m_buf_rowcount = m_table->getRows(m_buf,
                                               m_rowpos_buf,
                                               delta,
                                               m_rowpos_buf[m_buf_pos],
@@ -299,7 +309,7 @@ void TtbIterator::skip(int delta)
          else
         {
             // ask table to find out the next start row for our buffer
-            m_buf_rowcount = m_file.getRows(m_buf,
+            m_buf_rowcount = m_table->getRows(m_buf,
                                               m_rowpos_buf,
                                               delta,
                                               m_rowpos_buf[m_buf_pos],
@@ -312,7 +322,7 @@ void TtbIterator::skip(int delta)
 
             if (m_eof)
             {
-                m_rowpos_buf[0] = m_file.getRowCount(NULL)+1;
+                m_rowpos_buf[0] = m_table->getRowCount(NULL)+1;
                 m_row_num = m_rowpos_buf[0];
                 return;
             }
@@ -353,7 +363,7 @@ bool TtbIterator::seek(const unsigned char* key, int length, bool soft)
 
     xd::rowpos_t row = rowidGetRowPos(*rowid);
 
-    m_buf_rowcount = m_file.getRows(m_buf,
+    m_buf_rowcount = m_table->getRows(m_buf,
                                     m_rowpos_buf,
                                     0,
                                     row,
@@ -402,7 +412,7 @@ void TtbIterator::goRow(const xd::rowid_t& rowid)
     xd::tableord_t table_ord = rowidGetTableOrd(rowid);
     xd::rowpos_t row_pos = rowidGetRowPos(rowid);
 
-    m_file.getRow(row_pos, m_buf);
+    m_table->getRow(row_pos, m_buf);
     m_rowptr = m_buf;
     m_buf_pos = 0;
     m_rowpos_buf[m_buf_pos] = row_pos;
@@ -412,7 +422,7 @@ void TtbIterator::goRow(const xd::rowid_t& rowid)
 
 xd::IStructurePtr TtbIterator::getStructure()
 {
-    xd::IStructurePtr s = m_file.getStructure();
+    xd::IStructurePtr s = m_table->getStructure();
     //appendCalcFields(s);
     return s;
 }
