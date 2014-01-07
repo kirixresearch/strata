@@ -921,9 +921,14 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
     }
 
 
+    // make sure the new table has the same guid as our present one
+    unsigned char guid[16];
+    m_file.getGuid(guid);
+    tbl_set->m_file.setGuid(guid);
+
+
     output_structure = tbl_set->getStructure();
     
-
     // create a row inserter for the output set
     xd::IRowInserterPtr sp_output_inserter = tbl_set->getRowInserter();
     if (sp_output_inserter.isNull())

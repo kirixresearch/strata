@@ -81,6 +81,8 @@ public:
     void close();
 
     bool getGuid(unsigned char* guid /* 16 bytes */);
+    bool setGuid(const unsigned char* guid /* 16 bytes */);
+
     std::wstring getFilename();
     std::wstring getMapFilename();
 

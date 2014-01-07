@@ -562,6 +562,26 @@ bool TtbTable::getGuid(unsigned char* guid /* 16 bytes */)
     return true;
 }
 
+bool TtbTable::setGuid(const unsigned char* guid /* 16 bytes */)
+{
+    memcpy(m_guid, guid, 16);
+
+    // lock the header
+    if (!xf_trylock(m_file, 0, ttb_header_len, 10000))
+        return false;
+
+    xf_seek(m_file, 36, xfSeekSet);
+
+    int res = xf_write(m_file, guid, 1, 16);
+
+    xf_unlock(m_file, 0, ttb_header_len);
+
+    if (res != 16)
+        return false;
+
+    return true;
+}
+
 void TtbTable::updateHeaderWithGuid()
 {
     unsigned char guid[16];
