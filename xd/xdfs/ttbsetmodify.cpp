@@ -904,13 +904,13 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
 
     if (!tbl_set->init(table_filename))
     {
-        tbl_set->unref();
-
         if (ijob.isOk())
         {
             ijob->setStatus(xd::jobFailed);
         }
 
+        tbl_set->unref();
+        xf_remove(table_filename);
         return false;
     }
 
@@ -927,6 +927,8 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
             ijob->setStatus(xd::jobFailed);
         }
 
+        tbl_set->unref();
+        xf_remove(table_filename);
         return false;
     }
 
@@ -943,6 +945,8 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
             ijob->setStatus(xd::jobFailed);
         }
 
+        tbl_set->unref();
+        xf_remove(table_filename);
         return false;
     }
     xd::IIterator* iter = sp_iter.p;
@@ -965,6 +969,8 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
                     ijob->setStatus(xd::jobFailed);
                 }
 
+                tbl_set->unref();
+                xf_remove(table_filename);
                 return false;
             }
         }
@@ -977,6 +983,8 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
                 ijob->setStatus(xd::jobFailed);
             }
 
+            tbl_set->unref();
+            xf_remove(table_filename);
             return false;
         }
     }
