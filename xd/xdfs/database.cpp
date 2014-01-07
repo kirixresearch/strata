@@ -1625,6 +1625,12 @@ xd::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
             std::wstring ext = kl::afterLast(info.m_name, '.');
             kl::makeLower(ext);
 
+            if (ext == L"tmp")
+            {
+                // don't show these extensions
+                continue;
+            }
+
             if (ext == L"xdfs0")
             {
                 std::wstring full_path = phys_path;
