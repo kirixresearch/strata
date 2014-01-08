@@ -13,7 +13,7 @@
 #define __XDFS_TTBSET_H
 
 
-#include "../xdcommon/cmnbaseset.h"
+#include "baseset.h"
 #include "../xdcommonsql/xdcommonsql.h"
 #include "ttbfile.h"
 
@@ -37,7 +37,7 @@ inline xd::tableord_t rowidGetTableOrd(xd::rowid_t rowid)
 }
 
 
-class TtbSet : public CommonBaseSet,
+class TtbSet : public XdfsBaseSet,
                public IXdfsSet,
                public IXdsqlTable
 {
@@ -46,7 +46,7 @@ friend class TtbRowInserter;
 
     XCM_CLASS_NAME("xdfs.TtbSet")
     XCM_BEGIN_INTERFACE_MAP(TtbSet)
-        XCM_INTERFACE_ENTRY(CommonBaseSet)
+        XCM_INTERFACE_ENTRY(XdfsBaseSet)
         XCM_INTERFACE_ENTRY(IXdfsSet)
         XCM_INTERFACE_ENTRY(IXdsqlTable)
     XCM_END_INTERFACE_MAP()

@@ -13,7 +13,7 @@
 #define __XDFS_DELIMITEDTEXTSET_H
 
 
-#include "../xdcommon/cmnbaseset.h"
+#include "baseset.h"
 #include "../xdcommon/util.h"
 #include "delimitedtext.h"
 
@@ -64,7 +64,7 @@ public:
 };
 
 
-class DelimitedTextSet : public CommonBaseSet,
+class DelimitedTextSet : public XdfsBaseSet,
                          public IXdfsSet,
                          public IXdsqlTable,
                          public xd::IDelimitedTextSet
@@ -75,7 +75,7 @@ friend class DelimitedTextRowInserter;
 
     XCM_CLASS_NAME("xdfs.DelimitedTextSet")
     XCM_BEGIN_INTERFACE_MAP(DelimitedTextSet)
-        XCM_INTERFACE_ENTRY(CommonBaseSet)
+        XCM_INTERFACE_ENTRY(XdfsBaseSet)
         XCM_INTERFACE_ENTRY(IXdfsSet)
         XCM_INTERFACE_ENTRY(IXdsqlTable)
         XCM_INTERFACE_ENTRY(xd::IDelimitedTextSet)

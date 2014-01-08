@@ -13,7 +13,7 @@
 #define __XDFS_XBASESET_H
 
 
-#include "../xdcommon/cmnbaseset.h"
+#include "baseset.h"
 #include "../xdcommonsql/xdcommonsql.h"
 #include "xbase.h"
 
@@ -58,7 +58,7 @@ inline int xbase2xdType(unsigned char xbase_type)
 
 
 
-class XbaseSet : public CommonBaseSet,
+class XbaseSet : public XdfsBaseSet,
                  public IXdfsSet,
                  public IXdsqlTable
 {
@@ -67,7 +67,7 @@ friend class XbaseRowInserter;
 
     XCM_CLASS_NAME("xdfs.XbaseSet")
     XCM_BEGIN_INTERFACE_MAP(XbaseSet)
-        XCM_INTERFACE_ENTRY(CommonBaseSet)
+        XCM_INTERFACE_ENTRY(XdfsBaseSet)
         XCM_INTERFACE_ENTRY(IXdfsSet)
         XCM_INTERFACE_ENTRY(IXdsqlTable)
     XCM_END_INTERFACE_MAP()

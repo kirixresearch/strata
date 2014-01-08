@@ -539,7 +539,7 @@ xd::IStructurePtr FixedLengthTextSet::getStructure()
         colinfo->setCalculated(false);
     }
 
-    CommonBaseSet::appendCalcFields(s);
+    XdfsBaseSet::appendCalcFields(s);
     return s;
 }
 
@@ -731,7 +731,7 @@ bool FixedLengthTextSet::modifyStructure(xd::IStructure* struct_config,
                                          xd::IJob* job)
 {
     bool done_flag = false;
-    CommonBaseSet::modifyStructure(struct_config, &done_flag);
+    XdfsBaseSet::modifyStructure(struct_config, &done_flag);
     return true;
 }
 

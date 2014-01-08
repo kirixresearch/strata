@@ -721,7 +721,7 @@ xd::IStructurePtr DelimitedTextSet::getStructure()
         colinfo->setExpression(L"");
     }
 
-    CommonBaseSet::appendCalcFields(s);
+    XdfsBaseSet::appendCalcFields(s);
     return s;
 }
 
@@ -960,7 +960,7 @@ bool DelimitedTextSet::modifyStructure(xd::IStructure* struct_config,
                                        xd::IJob* job)
 {
     bool done_flag = false;
-    CommonBaseSet::modifyStructure(struct_config, &done_flag);
+    XdfsBaseSet::modifyStructure(struct_config, &done_flag);
     return true;
 }
 

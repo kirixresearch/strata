@@ -14,7 +14,7 @@
 
 
 #include <kl/file.h>
-#include "../xdcommon/cmnbaseset.h"
+#include "baseset.h"
 
 
 class FixedLengthDefinition : public xd::IFixedLengthDefinition
@@ -72,7 +72,7 @@ public:
 };
 
 
-class FixedLengthTextSet : public CommonBaseSet,
+class FixedLengthTextSet : public XdfsBaseSet,
                            public IXdfsSet,
                            public IXdsqlTable,
                            public xd::IFixedLengthDefinition
@@ -83,7 +83,7 @@ friend class FixedLengthTextRowInserter;
 
     XCM_CLASS_NAME("xdfs.FixedLengthTextSet")
     XCM_BEGIN_INTERFACE_MAP(FixedLengthTextSet)
-        XCM_INTERFACE_ENTRY(CommonBaseSet)
+        XCM_INTERFACE_ENTRY(XdfsBaseSet)
         XCM_INTERFACE_ENTRY(IXdfsSet)
         XCM_INTERFACE_ENTRY(IXdsqlTable)
         XCM_INTERFACE_ENTRY(xd::IFixedLengthDefinition)

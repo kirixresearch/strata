@@ -76,7 +76,7 @@ xd::IStructurePtr TtbSet::getStructure()
     // get structure from ttb file
     xd::IStructurePtr s = m_file.getStructure();
 
-    CommonBaseSet::appendCalcFields(s);
+    XdfsBaseSet::appendCalcFields(s);
     return s;
 }
 
