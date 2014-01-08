@@ -23,7 +23,6 @@ XdfsBaseSet::XdfsBaseSet()
 
 XdfsBaseSet::~XdfsBaseSet()
 {
-
 }
 
 void XdfsBaseSet::setObjectPath(const std::wstring& path)
@@ -43,7 +42,7 @@ void XdfsBaseSet::setConfigFilePath(const std::wstring& path)
 
 
 bool XdfsBaseSet::modifyStructure(xd::IStructure* struct_config,
-                                    bool* done_flag)
+                                  bool* done_flag)
 {
     XCM_AUTO_LOCK(m_object_mutex);
 
@@ -190,7 +189,7 @@ bool XdfsBaseSet::deleteCalcField(const std::wstring& _name)
 }
 
 bool XdfsBaseSet::modifyCalcField(const std::wstring& name,
-                                    xd::IColumnInfoPtr colinfo)
+                                  xd::IColumnInfoPtr colinfo)
 {
     XCM_AUTO_LOCK(m_object_mutex);
     
@@ -293,8 +292,7 @@ void XdfsBaseSet::appendCalcFields(xd::IStructure* structure)
     std::wstring name, expression;
     int type, width, scale;
     
-    std::wstring set_id = getSetId();
-    if (set_id.empty())
+    if (m_config_file_path.empty())
     {
         std::vector<xd::IColumnInfoPtr>::iterator it;
         for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)

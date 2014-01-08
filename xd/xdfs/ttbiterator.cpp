@@ -422,9 +422,33 @@ void TtbIterator::goRow(const xd::rowid_t& rowid)
 
 xd::IStructurePtr TtbIterator::getStructure()
 {
-    xd::IStructurePtr s = m_table->getStructure();
+    Structure* s = new Structure;
+
+    std::vector<TtbDataAccessInfo*>::iterator it;
+    for (it = m_fields.begin(); it != m_fields.end(); ++it)
+    {
+        if (!(*it)->isColumn())
+            continue;
+
+        xd::IColumnInfoPtr col;
+        col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
+        col->setName((*it)->name);
+        col->setType((*it)->type);
+        col->setWidth((*it)->width);
+        col->setScale((*it)->scale);
+        col->setExpression((*it)->expr_text);
+        col->setCalculated((*it)->isCalculated());
+        col->setColumnOrdinal((*it)->ordinal);
+        s->addColumn(col);
+    }
+
+    return static_cast<xd::IStructure*>(s);
+
+    //return m_set->getStructure();
+
+    //xd::IStructurePtr s = m_table->getStructure();
     //appendCalcFields(s);
-    return s;
+    //return s;
 }
 
 void TtbIterator::refreshStructure()

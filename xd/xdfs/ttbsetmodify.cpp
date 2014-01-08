@@ -569,6 +569,19 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
 
 
 
+    // modify the base set, which will take care of dynamic
+    // field modification; after that, if we are done, then leave
+
+    bool done = false;
+
+    if (!XdfsBaseSet::modifyStructure(struct_config, &done))
+        return false;
+
+    if (done)
+    {
+        return true;
+    }
+
 
 
     // get row count information and set job info
