@@ -621,13 +621,13 @@ bool JsonNode::childExists(const std::wstring& str) const
 
 JsonNode JsonNode::getChild(const std::wstring& _str)
 {
-    // reset the node type
-    m_value->m_type = nodetypeObject;
-
     // try to find the child in the mapped container
     std::map<std::wstring,JsonNode>::iterator it = m_value->m_child_nodes.find(_str);
     if (it != m_value->m_child_nodes.end())
         return it->second;
+
+    // reset the node type to object, as we'll be adding an element
+    m_value->m_type = nodetypeObject;
 
     // if we can't find the child, create a new one and store it in both
     // containers for ready access
@@ -698,6 +698,36 @@ JsonNode JsonNode::appendElement()
     
     return child;    
 }
+
+bool JsonNode::deleteChild(size_t idx)
+{
+    wchar_t buf[30];
+    swprintf(buf, 30, L"%d", idx);
+
+    std::map<std::wstring,JsonNode>::iterator mit = m_value->m_child_nodes.find(buf);
+    if (mit == m_value->m_child_nodes.end())
+        return false;
+
+    m_value->m_child_nodes.erase(mit);
+
+
+
+    std::vector<std::pair<std::wstring,JsonNode> >::iterator it, it_end;
+    it_end = m_value->m_child_nodes_ordered.end();
+    
+    for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
+    {
+        if (it->first == buf)
+        {
+            m_value->m_child_nodes_ordered.erase(it);
+            break;
+        }
+    }
+
+
+    return true;
+}
+
 
 void JsonNode::setObject()
 {

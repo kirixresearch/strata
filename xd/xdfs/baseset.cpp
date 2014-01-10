@@ -10,11 +10,15 @@
 
 
 #include <xd/xd.h>
+#include <xd/util.h>
 #include "baseset.h"
 #include "../xdcommon/extfileinfo.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/columninfo.h"
-#include <kl/klib.h>
+#include <kl/json.h>
+#include <kl/file.h>
+
+
 
 
 XdfsBaseSet::XdfsBaseSet()
@@ -112,6 +116,26 @@ bool XdfsBaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
     }
      else
     {
+        kl::JsonNode root;
+
+        std::wstring json = xf_get_file_contents(m_config_file_path);
+        if (!json.empty())
+            root.fromString(json);
+
+        kl::JsonNode calculated_fields = root.getChild("calculated_fields");
+        if (!calculated_fields.isArray())
+            calculated_fields.setArray();
+
+        kl::JsonNode field = calculated_fields.appendElement();
+        field["name"] = colinfo->getName();
+        field["type"] = xd::dbtypeToString(colinfo->getType());
+        field["width"] = colinfo->getWidth();
+        field["scale"] = colinfo->getScale();
+        field["expression"] = colinfo->getExpression();
+
+        return xf_put_file_contents(m_config_file_path, root.toString());
+
+        /*
         // load the existing stored information, if it exists
         ExtFileInfo fileinfo;
         fileinfo.load(m_config_file_path);
@@ -129,6 +153,7 @@ bool XdfsBaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
         field.addChild(L"expression", colinfo->getExpression());
         
         return fileinfo.save(m_config_file_path);
+        */
     }
 
     return false;
@@ -152,6 +177,39 @@ bool XdfsBaseSet::deleteCalcField(const std::wstring& _name)
      }
       else
      {
+        kl::JsonNode root;
+
+        std::wstring json = xf_get_file_contents(m_config_file_path);
+        if (!json.empty())
+            root.fromString(json);
+
+        kl::JsonNode calculated_fields = root.getChild("calculated_fields");
+        if (!calculated_fields.isArray())
+            calculated_fields.setArray();
+
+        bool field_deleted = false;
+
+        size_t i, cnt = calculated_fields.getChildCount();
+        for (i = 0; i < cnt; ++i)
+        {
+            kl::JsonNode field = calculated_fields[i];
+            if (kl::iequals(field["name"], _name))
+            {
+                calculated_fields.deleteChild(i);
+                field_deleted = true;
+                break;
+            }
+        }
+
+        if (field_deleted)
+        {
+            xf_put_file_contents(m_config_file_path, root.toString());
+            return true;
+        }
+
+        return false;
+
+     /*
         // load the existing stored information, if it exists
         ExtFileInfo fileinfo;
         fileinfo.load(m_config_file_path);
@@ -182,6 +240,7 @@ bool XdfsBaseSet::deleteCalcField(const std::wstring& _name)
         // and return the result
         if (field_deleted)
             return fileinfo.save(m_config_file_path);
+        */
      }
 
     // we couldn't find the field
@@ -236,6 +295,63 @@ bool XdfsBaseSet::modifyCalcField(const std::wstring& name,
     }
      else
     {
+
+        kl::JsonNode root;
+
+        std::wstring json = xf_get_file_contents(m_config_file_path);
+        if (!json.empty())
+            root.fromString(json);
+
+        kl::JsonNode calculated_fields = root.getChild("calculated_fields");
+        if (!calculated_fields.isArray())
+            calculated_fields.setArray();
+
+        bool field_modified = false;
+
+        size_t i, cnt = calculated_fields.getChildCount();
+        for (i = 0; i < cnt; ++i)
+        {
+            kl::JsonNode field = calculated_fields[i];
+            if (kl::iequals(field["name"], name))
+            {
+                new_name  = colinfo->getName();
+                new_type  = colinfo->getType();
+                new_width = colinfo->getWidth();
+                new_scale = colinfo->getScale();
+                new_expr  = colinfo->getExpression();
+                
+                if (new_name.length() > 0)
+                {
+                    field["name"] = new_name;
+                }
+                    
+                if (new_type != -1)
+                    field["type"] = xd::dbtypeToString(new_type);
+
+                if (new_width != -1)
+                    field["width"] = new_width;
+
+                if (new_scale != -1)
+                    field["scale"] = new_scale;
+
+                if (new_expr.length() > 0)
+                    field["expression"] = new_expr;
+
+                field_modified = true;
+                break;
+            }
+        }
+
+        if (field_modified)
+        {
+            xf_put_file_contents(m_config_file_path, root.toString());
+            return true;
+        }
+
+        return true;
+
+
+/*
         // load the existing stored information, if it exists
         ExtFileInfo fileinfo;
         fileinfo.load(m_config_file_path);
@@ -278,6 +394,8 @@ bool XdfsBaseSet::modifyCalcField(const std::wstring& name,
         }
 
         return fileinfo.save(m_config_file_path);
+*/
+
     }
 
     return true;
@@ -288,9 +406,6 @@ void XdfsBaseSet::appendCalcFields(xd::IStructure* structure)
     XCM_AUTO_LOCK(m_object_mutex);
 
     IStructureInternalPtr intstruct = structure;
-        
-    std::wstring name, expression;
-    int type, width, scale;
     
     if (m_config_file_path.empty())
     {
@@ -302,6 +417,32 @@ void XdfsBaseSet::appendCalcFields(xd::IStructure* structure)
     }
      else
     {
+        kl::JsonNode root;
+
+        std::wstring json = xf_get_file_contents(m_config_file_path);
+        if (!json.empty())
+            root.fromString(json);
+
+        kl::JsonNode calculated_fields = root.getChild("calculated_fields");
+
+        size_t i, cnt = calculated_fields.getChildCount();
+
+        for (i = 0; i < cnt; ++i)
+        {
+            kl::JsonNode field = calculated_fields[i];
+
+            xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
+            col->setName(field["name"]);
+            col->setType(xd::stringToDbtype(field["type"]));
+            col->setWidth(field["width"].getInteger());
+            col->setScale(field["scale"].getInteger());
+            col->setExpression(field["expression"]);
+            col->setCalculated(!col->getExpression().empty());
+            intstruct->addColumn(col);
+        }
+
+
+    /*
         // load the existing stored information, if it exists
         ExtFileInfo fileinfo;
         fileinfo.load(m_config_file_path);
@@ -330,6 +471,7 @@ void XdfsBaseSet::appendCalcFields(xd::IStructure* structure)
             col->setCalculated(true);
             intstruct->addColumn(col);
         }
+    */
     }
 }
 

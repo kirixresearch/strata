@@ -59,7 +59,10 @@ bool TtbSet::init(const std::wstring& filename)
     xd::IAttributesPtr attr = m_database->getAttributes();
     std::wstring definition_path = attr->getStringAttribute(xd::dbattrDefinitionDirectory);
     
-    setConfigFilePath(ExtFileInfo::getConfigFilenameFromPath(definition_path, filename));
+    std::wstring config_file_path = kl::beforeLast(filename, '.');
+    config_file_path += L".xdi";
+
+    setConfigFilePath(config_file_path);
 
     return true;
 }

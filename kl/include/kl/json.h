@@ -109,7 +109,9 @@ public:
     std::vector<std::wstring> getChildKeys() const;
     std::vector<JsonNode> getChildren() const;
     size_t getChildCount() const;
+
     JsonNode appendElement();
+    bool deleteChild(size_t idx);
 
     void setObject();
     void setArray();
