@@ -62,26 +62,53 @@ std::wstring xf_get_file_contents(const std::wstring& path, bool* success)
 
 bool xf_put_file_contents(const std::wstring& path, const std::wstring& contents)
 {
-    kl::toUtf8 conv(contents);
-    const char* buf = conv;
-    size_t len = strlen(buf);
+    bool is_unicode = false;
+    std::wstring::const_iterator it, it_end = contents.cend();
+    for (it = contents.cbegin(); it != it_end; ++it)
+    {
+        if (*it > (wchar_t)127)
+        {
+            is_unicode = true;
+            break;
+        }
+    }
+
+
 
 
     xf_file_t f = xf_open(path, xfCreate, xfReadWrite, xfShareNone);
     if (!f)
         return false;
 
-    static const unsigned char bom[3] = { 0xef, 0xbb, 0xbf };
-    if (xf_write(f, bom, 1, 3) != 3)
+    if (is_unicode)
     {
-        xf_close(f);
-        return false;
-    }
+        static const unsigned char bom[3] = { 0xef, 0xbb, 0xbf };
+        if (xf_write(f, bom, 1, 3) != 3)
+        {
+            xf_close(f);
+            return false;
+        }
 
-    if (xf_write(f, buf, 1, len) != len)
+        kl::toUtf8 conv(contents);
+        const char* buf = conv;
+        size_t len = strlen(buf);
+
+        if (xf_write(f, buf, 1, len) != len)
+        {
+            xf_close(f);
+            return false;
+        }
+    }
+     else
     {
-        xf_close(f);
-        return false;
+        std::string asc = kl::tostring(contents);
+
+        size_t len = asc.length();
+        if (xf_write(f, (const char*)asc.c_str(), 1, len) != len)
+        {
+            xf_close(f);
+            return false;
+        }
     }
 
     xf_close(f);
