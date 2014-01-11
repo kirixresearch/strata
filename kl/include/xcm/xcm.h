@@ -12,16 +12,19 @@
 #ifndef __XCM_XCM_H
 #define __XCM_XCM_H
 
-
 #include <vector>
 #include <string>
+
+
+#define xcm_interface class
+
 
 #include <xcm/macro.h>
 #include <xcm/xcmvalue.h>
 #include <xcm/xcmthread.h>
 #include <xcm/typeinfo.h>
+#include <xcm/signal.h>
 
-#define xcm_interface class
 
 namespace xcm
 {
@@ -78,8 +81,6 @@ public:
 
 #include <xcm/smartptr.h>
 #include <xcm/xcmvector.h>
-#include <xcm/signal.h>
-
 
 #endif
 
