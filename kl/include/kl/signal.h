@@ -187,7 +187,7 @@ public:
 
 
 
-#define XCM_SIGNAL_IMPL(ARG_COUNT, TEMPLATE_ARGS, DEF_ARGS, DEFP_ARGS, CALL_ARGS)\
+#define KL_SIGNAL_IMPL(ARG_COUNT, TEMPLATE_ARGS, DEF_ARGS, DEFP_ARGS, CALL_ARGS)\
 template<TEMPLATE_ARGS>\
 class connection_base##ARG_COUNT : public connection_base\
 {\
@@ -295,10 +295,10 @@ public:\
 
 
 
-#define XCMCOMMA ,
+#define KLCOMMA ,
 
 
-XCM_SIGNAL_IMPL(1,
+KL_SIGNAL_IMPL(1,
     class p1t,
     p1t,
     p1t p1,
@@ -306,25 +306,25 @@ XCM_SIGNAL_IMPL(1,
 )
 
 
-XCM_SIGNAL_IMPL(2,
-    class p1t XCMCOMMA class p2t,
-    p1t XCMCOMMA p2t,
-    p1t p1 XCMCOMMA p2t p2,
-    p1 XCMCOMMA p2
+KL_SIGNAL_IMPL(2,
+    class p1t KLCOMMA class p2t,
+    p1t KLCOMMA p2t,
+    p1t p1 KLCOMMA p2t p2,
+    p1 KLCOMMA p2
 )
 
-XCM_SIGNAL_IMPL(3,
-    class p1t XCMCOMMA class p2t XCMCOMMA class p3t,
-    p1t XCMCOMMA p2t XCMCOMMA p3t,
-    p1t p1 XCMCOMMA p2t p2 XCMCOMMA p3t p3,
-    p1 XCMCOMMA p2 XCMCOMMA p3
+KL_SIGNAL_IMPL(3,
+    class p1t KLCOMMA class p2t KLCOMMA class p3t,
+    p1t KLCOMMA p2t KLCOMMA p3t,
+    p1t p1 KLCOMMA p2t p2 KLCOMMA p3t p3,
+    p1 KLCOMMA p2 KLCOMMA p3
 )
 
-XCM_SIGNAL_IMPL(4,
-    class p1t XCMCOMMA class p2t XCMCOMMA class p3t XCMCOMMA class p4t,
-    p1t XCMCOMMA p2t XCMCOMMA p3t XCMCOMMA p4t,
-    p1t p1 XCMCOMMA p2t p2 XCMCOMMA p3t p3 XCMCOMMA p4t p4,
-    p1 XCMCOMMA p2 XCMCOMMA p3 XCMCOMMA p4
+KL_SIGNAL_IMPL(4,
+    class p1t KLCOMMA class p2t KLCOMMA class p3t KLCOMMA class p4t,
+    p1t KLCOMMA p2t KLCOMMA p3t KLCOMMA p4t,
+    p1t p1 KLCOMMA p2t p2 KLCOMMA p3t p3 KLCOMMA p4t p4,
+    p1 KLCOMMA p2 KLCOMMA p3 KLCOMMA p4
 )
 
 
