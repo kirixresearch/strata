@@ -2,15 +2,15 @@
  *
  * Copyright (c) 2003-2013, Kirix Research, LLC.  All rights reserved.
  *
- * Project:  XCM (eXtensible Component Model)
+ * Project:  Standard Library
  * Author:   Benjamin I. Williams
  * Created:  2003-05-14
  *
  */
 
 
-#ifndef __XCM_SIGNAL_H
-#define __XCM_SIGNAL_H
+#ifndef __KL_SIGNAL_H
+#define __KL_SIGNAL_H
 
 
 #include <vector>

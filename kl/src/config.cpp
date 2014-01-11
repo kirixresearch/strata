@@ -24,12 +24,12 @@ namespace kl
 
 
 
-class ConfigImplBase
+class config_impl_base
 {
 public:
 
-    ConfigImplBase() { }
-    virtual ~ConfigImplBase() { }
+    config_impl_base() { }
+    virtual ~config_impl_base() { }
 
     virtual void setPath(const std::wstring& path) = 0;
     virtual bool exists(const std::wstring& path) = 0;
@@ -54,11 +54,11 @@ protected:
 #ifdef WIN32
 
 
-class ConfigWinRegImpl : public ConfigImplBase
+class config_winreg_impl : public config_impl_base
 {
 public:
 
-    ConfigWinRegImpl(const std::wstring& organization, const std::wstring& product)
+    config_winreg_impl(const std::wstring& organization, const std::wstring& product)
     {
         std::wstring key = L"Software\\" + organization;
 
@@ -395,61 +395,61 @@ private:
 
 
 
-Config::Config()
+config::config()
 {
     m_impl = NULL;
 }
 
-Config::~Config()
+config::~config()
 {
     delete m_impl;
 }
 
-bool Config::init(const std::wstring& organization, const std::wstring& product)
+bool config::init(const std::wstring& organization, const std::wstring& product)
 {
 #ifdef WIN32
-    m_impl = new ConfigWinRegImpl(organization, product);
+    m_impl = new config_winreg_impl(organization, product);
 #endif
 
     return true;
 }
 
-void Config::setPath(const std::wstring& path)
+void config::setPath(const std::wstring& path)
 {
     m_impl->setPath(path);
 }
 
-bool Config::exists(const std::wstring& path)
+bool config::exists(const std::wstring& path)
 {
     return m_impl->exists(path);
 }
 
-bool Config::write(const std::wstring& path, const std::wstring& value)
+bool config::write(const std::wstring& path, const std::wstring& value)
 {
     return m_impl->write(path, value);
 }
 
-bool Config::write(const std::wstring& path, long value)
+bool config::write(const std::wstring& path, long value)
 {
     return m_impl->write(path, value);
 }
 
-bool Config::read(const std::wstring& path, std::wstring* value, const std::wstring& def)
+bool config::read(const std::wstring& path, std::wstring* value, const std::wstring& def)
 {
     return m_impl->read(path, value, def);
 }
 
-bool Config::read(const std::wstring& path, long* value, long def)
+bool config::read(const std::wstring& path, long* value, long def)
 {
     return m_impl->read(path, value, def);
 }
 
-std::vector<std::wstring> Config::getGroups(const std::wstring& path)
+std::vector<std::wstring> config::getGroups(const std::wstring& path)
 {
     return m_impl->getGroups(path);
 }
 
-bool Config::deleteGroup(const std::wstring& path)
+bool config::deleteGroup(const std::wstring& path)
 {
     return m_impl->deleteGroup(path);
 }

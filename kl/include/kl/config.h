@@ -20,13 +20,13 @@ namespace kl
 {
 
 
-class ConfigImplBase;
-class Config
+class config_impl_base;
+class config
 {
 public:
 
-    Config();
-    ~Config();
+    config();
+    ~config();
 
     bool init(const std::wstring& organization, const std::wstring& product);
 
@@ -49,7 +49,7 @@ public:
 
 private:
 
-    ConfigImplBase* m_impl;
+    config_impl_base* m_impl;
 };
 
 
