@@ -170,7 +170,7 @@ void BaseIterator::clearDAI()
 
 void BaseIterator::refreshDAI()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     // make a copy, because m_dai_entries may be modified
     // by subsequent calls to colinfo2dai
@@ -229,7 +229,7 @@ void BaseIterator::refreshDAI()
 
 DataAccessInfo* BaseIterator::lookupDAI(const std::wstring& expr)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     std::map<std::wstring, DataAccessInfo*, kl::cmp_nocase>::iterator it;
     it = m_dai_lookup.find(expr);
@@ -255,7 +255,7 @@ bool BaseIterator::init(XdnativeDatabase* database,
                         IXdnativeSet* set,
                         const std::wstring& columns)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     // store the database pointer
     m_database = database;
@@ -481,7 +481,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
 
 xd::IIteratorPtr BaseIterator::getChildIterator(xd::IRelationPtr relation)
 {
-    XCM_AUTO_LOCK(m_rel_mutex);
+    KL_AUTO_LOCK(m_rel_mutex);
 
     BaseIteratorRelInfo* info = NULL;
 
@@ -540,7 +540,7 @@ xd::IIteratorPtr BaseIterator::getChildIterator(xd::IRelationPtr relation)
 
 xd::IIteratorPtr BaseIterator::getFilteredChildIterator(xd::IRelationPtr relation)
 {
-    XCM_AUTO_LOCK(m_rel_mutex);
+    KL_AUTO_LOCK(m_rel_mutex);
 
     BaseIteratorRelInfo* info = NULL;
 
@@ -613,7 +613,7 @@ xd::IIteratorPtr BaseIterator::getFilteredChildIterator(xd::IRelationPtr relatio
 
 xd::IStructurePtr BaseIterator::getStructure()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     xd::IStructurePtr s = m_iter_structure->clone();
     appendCalcFields(s);
@@ -624,7 +624,7 @@ xd::IStructurePtr BaseIterator::getStructure()
 
 void BaseIterator::appendCalcFields(xd::IStructure* structure)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     IStructureInternalPtr intstruct = structure;
 
@@ -640,7 +640,7 @@ void BaseIterator::appendCalcFields(xd::IStructure* structure)
 
 bool BaseIterator::initStructure()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     // refresh iterator structure from set
 
@@ -866,7 +866,7 @@ void BaseIterator::refreshStructure()
 bool BaseIterator::modifyStructure(xd::IStructure* struct_config,
                                    xd::IJob* job)
 { 
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
     
     bool done = false;
 
@@ -1211,7 +1211,7 @@ void BaseIterator::onSetRelationshipsUpdated()
 AggregateResult* BaseIterator::getAggResultObject(int agg_func,
                                                   const std::wstring& expr)
 {
-    XCM_AUTO_LOCK(m_agg_mutex);
+    KL_AUTO_LOCK(m_agg_mutex);
 
     // first, try to see if a suitable aggregate result object exists
     std::vector<AggregateResult*>::iterator it;
@@ -1240,7 +1240,7 @@ AggregateResult* BaseIterator::getAggResultObject(int agg_func,
 
 void BaseIterator::releaseAggResultObject(AggregateResult* agg_res)
 {
-    XCM_AUTO_LOCK(m_agg_mutex);
+    KL_AUTO_LOCK(m_agg_mutex);
 
     std::vector<AggregateResult*>::iterator it;
     it = std::find(m_aggregate_results.begin(),
@@ -1290,7 +1290,7 @@ void BaseIterator::recalcAggResults()
     if (rel_count == 0)
         return;
 
-    XCM_AUTO_LOCK(m_agg_mutex);
+    KL_AUTO_LOCK(m_agg_mutex);
 
     std::vector<AggregateResult*> results;
     results.resize(m_aggregate_results.size());
@@ -2017,7 +2017,7 @@ xd::IColumnInfoPtr BaseIterator::getInfo(xd::objhandle_t data_handle)
 
 xd::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     if (expr.length() == 0)
         return 0;

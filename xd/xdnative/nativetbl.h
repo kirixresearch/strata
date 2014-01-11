@@ -139,7 +139,7 @@ private:
     bool upgradeVersion1(unsigned char* header);
 
 private:
-    xcm::mutex m_object_mutex;
+    kl::mutex m_object_mutex;
 
     XdnativeDatabase* m_database;
 

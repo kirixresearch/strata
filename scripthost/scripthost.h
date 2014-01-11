@@ -152,7 +152,7 @@ private:
     int m_error_line;
     size_t m_error_offset;
 
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
 };
 
 

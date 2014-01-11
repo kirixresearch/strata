@@ -65,28 +65,28 @@ INodeValuePtr BaseSet::openSetDefinition(bool create_if_not_exist)
 
 unsigned int BaseSet::getSetFlags()
 {
-    XCM_AUTO_LOCK(m_setattributes_mutex);
+    KL_AUTO_LOCK(m_setattributes_mutex);
 
     return m_set_flags;
 }
 
 void BaseSet::setSetFlags(unsigned int new_val)
 {
-    XCM_AUTO_LOCK(m_setattributes_mutex);
+    KL_AUTO_LOCK(m_setattributes_mutex);
 
     m_set_flags = new_val;
 }
 
 void BaseSet::setSetId(const std::wstring& new_val)
 {
-    XCM_AUTO_LOCK(m_setattributes_mutex);
+    KL_AUTO_LOCK(m_setattributes_mutex);
     
     m_set_id = new_val;
 }
 
 std::wstring BaseSet::getSetId()
 {
-    XCM_AUTO_LOCK(m_setattributes_mutex);
+    KL_AUTO_LOCK(m_setattributes_mutex);
 
     if (m_set_id.length() == 0)
         m_set_id = getUniqueString();
@@ -106,7 +106,7 @@ xd::IRowInserterPtr BaseSet::getRowInserter()
 
 bool BaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
 {
-    XCM_AUTO_LOCK(m_structure_mutex);
+    KL_AUTO_LOCK(m_structure_mutex);
 
     INodeValuePtr file = openSetDefinition(true);
     if (file.isNull())
@@ -154,7 +154,7 @@ bool BaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
 bool BaseSet::modifyCalcField(const std::wstring& _name,
                               xd::IColumnInfoPtr colinfo)
 {
-    XCM_AUTO_LOCK(m_structure_mutex);
+    KL_AUTO_LOCK(m_structure_mutex);
 
     INodeValuePtr file = openSetDefinition(true);
     if (file.isNull())
@@ -226,7 +226,7 @@ bool BaseSet::modifyCalcField(const std::wstring& _name,
 
 bool BaseSet::deleteCalcField(const std::wstring& _name)
 {
-    XCM_AUTO_LOCK(m_structure_mutex);
+    KL_AUTO_LOCK(m_structure_mutex);
 
     INodeValuePtr file = openSetDefinition(true);
     if (file.isNull())
@@ -261,7 +261,7 @@ void BaseSet::appendCalcFields(xd::IStructure* structure)
     // make getStructureModifyTime in NativeTable take no mutex.
     unsigned long long t = getStructureModifyTime();
     
-    XCM_AUTO_LOCK(m_structure_mutex);
+    KL_AUTO_LOCK(m_structure_mutex);
 
     if (t == 0 || t != m_calcrefresh_time)
     {
@@ -346,7 +346,7 @@ void BaseSet::onRelationshipsUpdated()
 bool BaseSet::baseSetModifyStructure(xd::IStructurePtr struct_config,
                                      bool* done_flag)
 {
-    XCM_AUTO_LOCK(m_structure_mutex);
+    KL_AUTO_LOCK(m_structure_mutex);
 
     *done_flag = false;
 
@@ -429,14 +429,14 @@ xd::rowpos_t BaseSet::getRowCount()
 
 bool BaseSet::addEventHandler(IXdnativeSetEvents* handler)
 {
-    XCM_AUTO_LOCK(m_event_mutex);
+    KL_AUTO_LOCK(m_event_mutex);
     m_event_handlers.push_back(handler);
     return true;
 }
 
 bool BaseSet::removeEventHandler(IXdnativeSetEvents* handler)
 {
-    XCM_AUTO_LOCK(m_event_mutex);
+    KL_AUTO_LOCK(m_event_mutex);
     std::vector<IXdnativeSetEvents*>::iterator it;
     it = std::find(m_event_handlers.begin(),
                    m_event_handlers.end(),
@@ -463,7 +463,7 @@ unsigned long long BaseSet::getStructureModifyTime()
 
 void BaseSet::fire_onSetDomainUpdated()
 {
-    XCM_AUTO_LOCK(m_event_mutex);
+    KL_AUTO_LOCK(m_event_mutex);
 
     std::vector<IXdnativeSetEvents*>::iterator it;
     for (it = m_event_handlers.begin();
@@ -476,7 +476,7 @@ void BaseSet::fire_onSetDomainUpdated()
 
 void BaseSet::fire_onSetStructureUpdated()
 {
-    XCM_AUTO_LOCK(m_event_mutex);
+    KL_AUTO_LOCK(m_event_mutex);
 
     std::vector<IXdnativeSetEvents*>::iterator it;
     for (it = m_event_handlers.begin();
@@ -489,7 +489,7 @@ void BaseSet::fire_onSetStructureUpdated()
 
 void BaseSet::fire_onSetRelationshipsUpdated()
 {
-    XCM_AUTO_LOCK(m_event_mutex);
+    KL_AUTO_LOCK(m_event_mutex);
 
     std::vector<IXdnativeSetEvents*>::iterator it;
     for (it = m_event_handlers.begin();
@@ -502,7 +502,7 @@ void BaseSet::fire_onSetRelationshipsUpdated()
 
 void BaseSet::fire_onSetRowUpdated(xd::rowid_t rowid)
 {
-    XCM_AUTO_LOCK(m_event_mutex);
+    KL_AUTO_LOCK(m_event_mutex);
 
     std::vector<IXdnativeSetEvents*>::iterator it;
     for (it = m_event_handlers.begin();
@@ -515,7 +515,7 @@ void BaseSet::fire_onSetRowUpdated(xd::rowid_t rowid)
 
 void BaseSet::fire_onSetRowDeleted(xd::rowid_t rowid)
 {
-    XCM_AUTO_LOCK(m_event_mutex);
+    KL_AUTO_LOCK(m_event_mutex);
 
     std::vector<IXdnativeSetEvents*>::iterator it;
     for (it = m_event_handlers.begin();

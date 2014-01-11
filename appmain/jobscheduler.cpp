@@ -78,7 +78,7 @@ public:
 
     void onJobFinished(jobs::IJobPtr job)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         if (job->getJobInfo()->getState() == jobs::jobStateCancelled)
         {
@@ -90,7 +90,7 @@ public:
 
 private:
 
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
     JobSchedulerEntry m_entry;
     bool m_ready;               // thread is ready for the job's next command
     bool m_exit;                // error encountered during last command (thread should exit)
@@ -138,7 +138,7 @@ void JobScheduler::onTimer(wxTimerEvent& event)
 
 void JobScheduler::clearJobs()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_jobs.clear();
 }
@@ -174,7 +174,7 @@ inline void getMonthlyRepeatDayNumber(JobSchedulerEntry& e)
 
 void JobScheduler::addJob(const JobSchedulerEntry& _e)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     JobSchedulerEntry e = _e;
     calcNextRun(e);
@@ -376,13 +376,13 @@ void JobScheduler::checkForJobs()
 
 std::vector<JobSchedulerEntry> JobScheduler::getJobs()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
     return m_jobs;
 }
 
 bool JobScheduler::save()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     xd::IDatabasePtr db = g_app->getDatabase();
     if (!db)
@@ -445,7 +445,7 @@ bool JobScheduler::save()
 
 bool JobScheduler::load()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())

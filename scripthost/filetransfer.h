@@ -61,7 +61,7 @@ public:
     bool m_async;
     bool m_upload;
     
-    xcm::mutex m_state_mutex;
+    kl::mutex m_state_mutex;
     bool m_busy;
     double m_total_bytes;
     bool m_cancelled;

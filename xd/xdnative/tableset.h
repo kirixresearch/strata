@@ -223,7 +223,7 @@ private:
     NativeTable* m_table;
     xd::IStructurePtr m_structure;
 
-    xcm::mutex m_update_mutex;
+    kl::mutex m_update_mutex;
     std::vector<IndexEntry> m_indexes;
     unsigned char* m_update_buf;
     BufIterator* m_update_iter;

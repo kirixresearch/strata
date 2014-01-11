@@ -137,7 +137,7 @@ NativeTable::~NativeTable()
 
 bool NativeTable::addEventHandler(ITableEvents* handler)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     m_event_handlers.push_back(handler);
     return true;
@@ -145,7 +145,7 @@ bool NativeTable::addEventHandler(ITableEvents* handler)
 
 bool NativeTable::removeEventHandler(ITableEvents* handler)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     std::vector<ITableEvents*>::iterator it;
     it = std::find(m_event_handlers.begin(), m_event_handlers.end(), handler);
@@ -361,7 +361,7 @@ bool NativeTable::create(const std::wstring& filename, xd::IStructure* structure
 
 bool NativeTable::upgradeVersion1(unsigned char* header)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     int i, column_count;
     column_count = buf2int(header+16);
@@ -434,7 +434,7 @@ bool NativeTable::upgradeVersion1(unsigned char* header)
 bool NativeTable::open(const std::wstring& filename,
                        xd::tableord_t ordinal)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     m_ordinal = ordinal;
 
@@ -586,7 +586,7 @@ bool NativeTable::open(const std::wstring& filename,
 
 bool NativeTable::reopen(bool exclusive)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     if (m_file)
     {
@@ -614,7 +614,7 @@ bool NativeTable::reopen(bool exclusive)
 
 void NativeTable::close()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     if (m_map_file)
     {
@@ -649,7 +649,7 @@ int NativeTable::getRows(unsigned char* buf,
                          bool direction,
                          bool include_deleted)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     BitmapFileScroller* bfs = NULL;
 
@@ -819,7 +819,7 @@ int NativeTable::getRows(unsigned char* buf,
 
 bool NativeTable::getRow(xd::rowpos_t row, unsigned char* buf)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     xf_off_t pos;
     pos = row-1;
@@ -951,7 +951,7 @@ xd::rowpos_t NativeTable::_findNextRowPos(BitmapFileScroller* bfs,
 
 int NativeTable::appendRows(unsigned char* buf, int row_count)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     // lock the header
     if (!xf_trylock(m_file, 0, native_header_len, 10000))
@@ -972,7 +972,7 @@ int NativeTable::appendRows(unsigned char* buf, int row_count)
 
 bool NativeTable::writeRow(xd::rowpos_t row, unsigned char* buf)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     xf_off_t pos;
     pos = row-1;
@@ -1008,7 +1008,7 @@ bool NativeTable::writeColumnInfo(int col_idx,
                                   int width,
                                   int scale)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     // lock the header
     if (!xf_trylock(m_file, 0, native_header_len, 10000))
@@ -1069,7 +1069,7 @@ bool NativeTable::writeColumnInfo(int col_idx,
 
 unsigned long long NativeTable::getStructureModifyTime()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     unsigned char sig[8];
     unsigned long long i = 0;
@@ -1086,7 +1086,7 @@ unsigned long long NativeTable::getStructureModifyTime()
 
 bool NativeTable::setStructureModified()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     unsigned char sig[8];
     unsigned long long i = 0;
@@ -1154,7 +1154,7 @@ xd::rowpos_t NativeTable::getRowCount(xd::rowpos_t* deleted_row_count)
 
 void NativeTable::recalcPhysRowCount()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     // calculate the actual physical row count from the file size
     xf_seek(m_file, 0, xfSeekEnd);

@@ -122,7 +122,7 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
 
 ServerSessionObject* Controller::getServerSessionObject(const std::wstring& name, const char* type_check)
 {
-    XCM_AUTO_LOCK(m_session_object_mutex);
+    KL_AUTO_LOCK(m_session_object_mutex);
 
     if (name.length() == 0)
         return NULL;
@@ -145,14 +145,14 @@ ServerSessionObject* Controller::getServerSessionObject(const std::wstring& name
 
 void Controller::addServerSessionObject(const std::wstring& name, ServerSessionObject* obj)
 {
-    XCM_AUTO_LOCK(m_session_object_mutex);
+    KL_AUTO_LOCK(m_session_object_mutex);
 
     m_session_objects[name] = obj;
 }
 
 void Controller::removeServerSessionObject(const std::wstring& name)
 {
-    XCM_AUTO_LOCK(m_session_object_mutex);
+    KL_AUTO_LOCK(m_session_object_mutex);
 
     std::map< std::wstring, ServerSessionObject* >::iterator it, it_end;
     it_end = m_session_objects.end();
@@ -166,7 +166,7 @@ void Controller::removeServerSessionObject(const std::wstring& name)
 
 void Controller::removeAllServerSessionObjects()
 {
-    XCM_AUTO_LOCK(m_session_object_mutex);
+    KL_AUTO_LOCK(m_session_object_mutex);
 
     std::map< std::wstring, ServerSessionObject* >::iterator it, it_end;
     it_end = m_session_objects.end();
@@ -229,7 +229,7 @@ void Controller::returnApiError(RequestInfo& req, const char* msg, const char* c
 
 xd::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
 {
-    XCM_AUTO_LOCK(m_databases_object_mutex);
+    KL_AUTO_LOCK(m_databases_object_mutex);
     
     if (m_database.isOk())
         return m_database;
@@ -267,7 +267,7 @@ xd::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
     std::map< std::wstring , xd::IDatabasePtr >::iterator it;
     
     {
-        XCM_AUTO_LOCK(m_databases_object_mutex);
+        KL_AUTO_LOCK(m_databases_object_mutex);
         it = m_databases.find(base_path);
         if (it != m_databases.end())
             return it->second;
@@ -289,7 +289,7 @@ xd::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
         return xcm::null;
 
     {
-        XCM_AUTO_LOCK(m_databases_object_mutex);
+        KL_AUTO_LOCK(m_databases_object_mutex);
         m_databases[base_path] = db;
         return db;
     }
@@ -1509,7 +1509,7 @@ void Controller::apiClose(RequestInfo& req)
     SessionQueryResult* so = NULL;
 
     {
-        XCM_AUTO_LOCK(m_session_object_mutex);
+        KL_AUTO_LOCK(m_session_object_mutex);
 
         so = (SessionQueryResult*)getServerSessionObject(handle);
         if (!so)

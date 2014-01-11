@@ -11,6 +11,7 @@
 
 #include "grid.h"
 #include "griddnd.h"
+#include <algorithm>
 
 
 namespace kcl

@@ -44,7 +44,7 @@ void CommonBaseSet::setConfigFilePath(const std::wstring& path)
 bool CommonBaseSet::modifyStructure(xd::IStructure* struct_config,
                                     bool* done_flag)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     *done_flag = false;
 
@@ -101,7 +101,7 @@ bool CommonBaseSet::modifyStructure(xd::IStructure* struct_config,
 
 bool CommonBaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
     
     if (m_config_file_path.empty())
     {
@@ -136,7 +136,7 @@ bool CommonBaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
 
 bool CommonBaseSet::deleteCalcField(const std::wstring& _name)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     if (m_config_file_path.empty())
     {
@@ -191,7 +191,7 @@ bool CommonBaseSet::deleteCalcField(const std::wstring& _name)
 bool CommonBaseSet::modifyCalcField(const std::wstring& name,
                                     xd::IColumnInfoPtr colinfo)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
     
     if (!colinfo->getCalculated())
     {
@@ -285,7 +285,7 @@ bool CommonBaseSet::modifyCalcField(const std::wstring& name,
 
 void CommonBaseSet::appendCalcFields(xd::IStructure* structure)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     IStructureInternalPtr intstruct = structure;
         

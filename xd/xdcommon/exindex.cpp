@@ -700,7 +700,7 @@ bool ExIndexIterator::setFirstKey()
 
 void ExIndexIterator::goFirst()
 {
-    xcm::safe_mutex_locker tree_lock(m_index->m_tree_mutex);
+    kl::safe_mutex_locker tree_lock(m_index->m_tree_mutex);
 
     _clearLevels();
 
@@ -728,7 +728,7 @@ void ExIndexIterator::goFirst()
 
 void ExIndexIterator::goLast()
 {
-    xcm::safe_mutex_locker tree_lock(m_index->m_tree_mutex);
+    kl::safe_mutex_locker tree_lock(m_index->m_tree_mutex);
 
     _clearLevels();
 
@@ -739,7 +739,7 @@ void ExIndexIterator::goLast()
 
 void ExIndexIterator::skip(int delta)
 {
-    xcm::safe_mutex_locker tree_lock(m_index->m_tree_mutex);
+    kl::safe_mutex_locker tree_lock(m_index->m_tree_mutex);
 
     if (delta == 0)
         return;
@@ -877,7 +877,7 @@ void* ExIndexIterator::getValue()
 
 IIndexIterator* ExIndexIterator::clone()
 {
-    xcm::safe_mutex_locker tree_lock(m_index->m_tree_mutex);
+    kl::safe_mutex_locker tree_lock(m_index->m_tree_mutex);
 
     ExIndexIterator* new_iter = new ExIndexIterator(m_index);
 
@@ -963,14 +963,14 @@ ExIndex::~ExIndex()
 
 void ExIndex::registerIterator(ExIndexIterator* iter)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_iters.push_back(iter);
 }
 
 void ExIndex::unregisterIterator(ExIndexIterator* iter)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     std::vector<ExIndexIterator*>::iterator it;
     for (it = m_iters.begin(); it != m_iters.end(); ++it)
@@ -987,7 +987,7 @@ void ExIndex::unregisterIterator(ExIndexIterator* iter)
 
 void ExIndex::_adjustIteratorPositions(ModInfo& mod_info)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     std::vector<ExIndexIterator*>::iterator it;
     for (it = m_iters.begin(); it != m_iters.end(); ++it)
@@ -2244,7 +2244,7 @@ int ExIndex::insert(const void* key,
     }
      else
     {
-        XCM_AUTO_LOCK(m_tree_mutex);
+        KL_AUTO_LOCK(m_tree_mutex);
 
         unsigned int entry_idx;
         BlockEntry* blockptrs[30];
@@ -2299,7 +2299,7 @@ int ExIndex::insert(const void* key,
 
 bool ExIndex::remove(IIndexIterator* _iter)
 {
-    XCM_AUTO_LOCK(m_tree_mutex);
+    KL_AUTO_LOCK(m_tree_mutex);
 
     if (_iter == NULL)
         return false;

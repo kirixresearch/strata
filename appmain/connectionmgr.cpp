@@ -78,7 +78,7 @@ public:
         
 
         {
-            XCM_AUTO_LOCK(m_obj_mutex);
+            KL_AUTO_LOCK(m_obj_mutex);
 
             // if an error occurred, get an error string
             m_error_string.clear();
@@ -92,7 +92,7 @@ public:
 
     std::wstring getConnectionString()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         std::wstring cstr;
         std::wstring provider;
@@ -189,168 +189,168 @@ public:
 
     std::wstring getErrorString()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         return m_error_string;
     }
     
     void close()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         m_db.clear();
     }
 
     bool isOpen()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         return m_db.isOk();
     }
 
     void setType(int new_val)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         m_type = new_val;
     }
 
     int getType()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         return m_type;
     }
 
     std::wstring getDescription()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         return m_description;
     }
 
     void setDescription(const std::wstring& new_val)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         m_description = new_val;
     }
 
     std::wstring getHost()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         return m_host;
     }
 
     void setHost(const std::wstring& new_val)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         m_host = new_val;
     }
 
     int getPort()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         return m_port;
     }
 
     void setPort(int new_val)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         m_port = new_val;
     }
 
     std::wstring getDatabase()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         return m_database;
     }
 
     void setDatabase(const std::wstring& new_val)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         m_database = new_val;
     }
 
     std::wstring getUsername()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         return m_username;
     }
 
     void setUsername(const std::wstring& new_val)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         m_username = new_val;
     }
 
     std::wstring getPassword()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         return m_password;
     }
 
     void setPassword(const std::wstring& new_val)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         m_password = new_val;
     }
 
     std::wstring getPath()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         return m_path;
     }
 
     void setPath(const std::wstring& path)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         m_path = path;
     }
 
     std::wstring getFilter()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         return m_filter;
     }
 
     void setFilter(const std::wstring& filter)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         m_filter = filter;
     }
 
     xd::IDatabasePtr getDatabasePtr()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         return m_db;
     }
 
     void setDatabasePtr(xd::IDatabasePtr new_val)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         m_db = new_val;
     }
 
 private:
 
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
 
     int m_type;
     std::wstring m_description;

@@ -24,7 +24,7 @@ class InternalOfsValue
 {
 public:
 
-    xcm::mutex m_object_mutex;
+    kl::mutex m_object_mutex;
     std::wstring m_name;
     std::wstring m_value;
     int m_type;
@@ -181,7 +181,7 @@ private:
     InternalOfsValue* m_root_node;
     bool m_dirty;
     int m_type;
-    xcm::mutex m_object_mutex;
+    kl::mutex m_object_mutex;
     XdnativeDatabase* m_database;
 };
 

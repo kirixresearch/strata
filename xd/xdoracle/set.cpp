@@ -269,7 +269,7 @@ xd::IStructurePtr OracleSet::getStructure()
 bool OracleSet::modifyStructure(xd::IStructure* struct_config,
                                 xd::IJob* job)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     bool done_flag = false;
     if (!CommonBaseSet::modifyStructure(struct_config, &done_flag))

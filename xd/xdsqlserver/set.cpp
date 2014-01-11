@@ -151,7 +151,7 @@ xd::IStructurePtr SqlServerSet::getStructure()
 bool SqlServerSet::modifyStructure(xd::IStructure* struct_config,
                                    xd::IJob* job)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     unsigned int processed_action_count = 0;
 

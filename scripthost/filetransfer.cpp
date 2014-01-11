@@ -139,7 +139,7 @@ static int transfer_writer_func(void* buffer, size_t size, size_t nmemb, void* _
     FileTransferInfo* info = (FileTransferInfo*)_info;
     
     {
-        XCM_AUTO_LOCK(info->request->m_state_mutex);
+        KL_AUTO_LOCK(info->request->m_state_mutex);
         if (info->request->m_cancelled)
             return -1;
     }
@@ -166,7 +166,7 @@ size_t transfer_reader_func(void* buffer, size_t size, size_t nmemb, void* _info
     FileTransferInfo* info = (FileTransferInfo*)_info;
     
     {
-        XCM_AUTO_LOCK(info->request->m_state_mutex);
+        KL_AUTO_LOCK(info->request->m_state_mutex);
         if (info->request->m_cancelled)
             return -1;
     }
@@ -486,7 +486,7 @@ void FileTransfer::rename(kscript::ExprEnv* env, kscript::Value* retval)
 
 void FileTransfer::getBytesTransferred(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    XCM_AUTO_LOCK(m_state_mutex);
+    KL_AUTO_LOCK(m_state_mutex);
     retval->setDouble(m_total_bytes);
 }
 
@@ -500,7 +500,7 @@ void FileTransfer::getBytesTransferred(kscript::ExprEnv* env, kscript::Value* re
 
 void FileTransfer::cancel(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    XCM_AUTO_LOCK(m_state_mutex);
+    KL_AUTO_LOCK(m_state_mutex);
     m_cancelled = true;
 }
 

@@ -74,39 +74,39 @@ public:
 
     int getJobId()
     {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
+        KL_AUTO_LOCK(m_jobbase_mutex);
         return m_jobbase_jobid;
     }
 
     void setJobId(int job_id)
     {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
+        KL_AUTO_LOCK(m_jobbase_mutex);
         m_jobbase_jobid = job_id;
     }
 
     IJobInfoPtr getJobInfo()
     {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
+        KL_AUTO_LOCK(m_jobbase_mutex);
         return m_job_info;
     }
 
     void setJobInfo(IJobInfoPtr new_val)
     {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
+        KL_AUTO_LOCK(m_jobbase_mutex);
         m_sp_job_info = new_val;
         m_job_info = m_sp_job_info.p;
     }
 
     void setParameters(const std::wstring& json)
     {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
+        KL_AUTO_LOCK(m_jobbase_mutex);
 
         m_config["params"].fromString(json);
     }
 
     std::wstring getParameters()
     {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
+        KL_AUTO_LOCK(m_jobbase_mutex);
 
         std::wstring res = m_config["params"].toString();
         return res;
@@ -114,7 +114,7 @@ public:
 
     std::wstring toJson()
     {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
+        KL_AUTO_LOCK(m_jobbase_mutex);
 
         std::wstring res = m_config.toString();
         return res;
@@ -122,35 +122,35 @@ public:
 
     void setExtraValue(const std::wstring& key, const std::wstring& value)
     {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
+        KL_AUTO_LOCK(m_jobbase_mutex);
 
         m_extra[key] = value;
     }
 
     std::wstring getExtraValue(const std::wstring& key)
     {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
+        KL_AUTO_LOCK(m_jobbase_mutex);
 
         return m_extra[key];
     }
 
     void setResultObject(xcm::IObjectPtr result)
     {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
+        KL_AUTO_LOCK(m_jobbase_mutex);
 
         m_result = result;
     }
 
     xcm::IObjectPtr getResultObject()
     {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
+        KL_AUTO_LOCK(m_jobbase_mutex);
 
         return m_result;
     }
 
     virtual void setRefObject(xcm::IObjectPtr ref_object)
     {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
+        KL_AUTO_LOCK(m_jobbase_mutex);
 
         m_ref_object = ref_object;
     }
@@ -161,7 +161,7 @@ public:
 
     bool cancel()
     {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
+        KL_AUTO_LOCK(m_jobbase_mutex);
 
         if (!m_job_info->getCancelAllowed())
             return false;
@@ -183,7 +183,7 @@ public:
 
 protected:
 
-    xcm::mutex m_jobbase_mutex;
+    kl::mutex m_jobbase_mutex;
 
     IJobInfoPtr m_sp_job_info;
     IJobInfo* m_job_info;

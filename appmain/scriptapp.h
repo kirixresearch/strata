@@ -283,7 +283,7 @@ public:
 private:
 
     std::map<int, ScriptHostBase*> m_map;
-    xcm::mutex m_map_mutex;
+    kl::mutex m_map_mutex;
 };
 
 

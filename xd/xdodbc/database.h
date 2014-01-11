@@ -204,7 +204,7 @@ private:
     
 private:
 
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
 
     int m_last_job;
     std::vector<JobInfo*> m_jobs;

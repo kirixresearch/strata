@@ -477,7 +477,7 @@ void HttpRequest::getResponseText(kscript::ExprEnv* env, kscript::Value* retval)
 
 void HttpRequest::binaryRead(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    XCM_AUTO_LOCK(m_response_mutex);
+    KL_AUTO_LOCK(m_response_mutex);
     
     size_t requested_size = 0;
     
@@ -1661,7 +1661,7 @@ std::wstring HttpRequest::getResponseString()
     if (isLoadingInternal())
         return L"";
  
-    XCM_AUTO_LOCK(m_response_mutex);
+    KL_AUTO_LOCK(m_response_mutex);
     
     std::string response_a;
     
@@ -1682,7 +1682,7 @@ std::wstring HttpRequest::getResponseString()
 
 void HttpRequest::freeResponsePieces()
 {
-    XCM_AUTO_LOCK(m_response_mutex);
+    KL_AUTO_LOCK(m_response_mutex);
     
     std::list<HttpResponsePiece>::iterator it, it_end;
     it_end = m_response_pieces.end();

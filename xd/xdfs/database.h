@@ -189,7 +189,7 @@ private:
 
 private:
 
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
     std::map<std::wstring, xd::IDatabasePtr> m_mounted_dbs;
     xd::IDatabaseMgrPtr m_db_mgr;
 

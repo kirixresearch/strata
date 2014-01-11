@@ -91,7 +91,7 @@ bool ClientDatabase::open(const std::wstring& host,
                           const std::wstring& uid, 
                           const std::wstring& password)
 {
-    m_connection_thread_id = xcm::get_current_thread_id();
+    m_connection_thread_id = kl::thread_getcurrentid();
 
     m_host = host;
     m_port = kl::itowstring(port);
@@ -157,11 +157,11 @@ std::wstring ClientDatabase::getRequestPath(const std::wstring& path, const std:
 
 HttpRequest* ClientDatabase::getHttpObject()
 {
-    XCM_AUTO_LOCK(m_http_mutex);
+    KL_AUTO_LOCK(m_http_mutex);
 
-    xcm::threadid_t thread_id = xcm::get_current_thread_id();
+    kl::thread_t thread_id = kl::thread_getcurrentid();
 
-    std::map<xcm::threadid_t, HttpRequest*>::iterator it;
+    std::map<kl::thread_t, HttpRequest*>::iterator it;
     it = m_http_objects.find(thread_id);
     if (it != m_http_objects.end())
     {
@@ -274,7 +274,7 @@ std::wstring ClientDatabase::serverCall(const std::wstring& path,
 
     result = http->getResponseString();
 
-    if (xcm::get_current_thread_id() != m_connection_thread_id)
+    if (kl::thread_getcurrentid() != m_connection_thread_id)
     {
         // keep connection open only on main database connection
         http->close();
@@ -391,7 +391,7 @@ bool ClientDatabase::cleanup()
 
 xd::IJobPtr ClientDatabase::createJob()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_last_job++;
 

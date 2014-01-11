@@ -126,7 +126,7 @@ private:
 
 private:
 
-    xcm::mutex m_object_mutex;
+    kl::mutex m_object_mutex;
 
     std::vector<TtbField> m_fields;
 

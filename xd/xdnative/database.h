@@ -238,10 +238,10 @@ private:
 
 private:
 
-    xcm::mutex m_objregistry_mutex;
-    xcm::mutex m_mountdbs_mutex;
-    xcm::mutex m_jobs_mutex;
-    xcm::mutex m_lockedsets_mutex;
+    kl::mutex m_objregistry_mutex;
+    kl::mutex m_mountdbs_mutex;
+    kl::mutex m_jobs_mutex;
+    kl::mutex m_lockedsets_mutex;
 
     xd::IAttributesPtr m_attr;
     

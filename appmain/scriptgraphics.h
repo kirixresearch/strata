@@ -71,7 +71,7 @@ public:
     wxBitmap m_bmp;
     wxMemoryDC* m_memdc;
     
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
     int m_paint_count;
 };
 

@@ -121,7 +121,7 @@ private:
     
 private:
 
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
 
     xd::IAttributesPtr m_attr;
 
@@ -129,7 +129,7 @@ private:
     std::wstring m_path;
     PkgFile* m_kpg;
 
-    xcm::mutex m_jobs_mutex;
+    kl::mutex m_jobs_mutex;
     int m_last_job;
     std::vector<JobInfo*> m_jobs;
 

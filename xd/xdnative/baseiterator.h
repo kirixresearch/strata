@@ -212,9 +212,9 @@ protected:
 
 private:
     
-    xcm::mutex m_obj_mutex;
-    xcm::mutex m_agg_mutex;
-    xcm::mutex m_rel_mutex;
+    kl::mutex m_obj_mutex;
+    kl::mutex m_agg_mutex;
+    kl::mutex m_rel_mutex;
 
     std::vector<DataAccessInfo*> m_dai_entries;
     std::map<std::wstring, DataAccessInfo*, kl::cmp_nocase> m_dai_lookup;

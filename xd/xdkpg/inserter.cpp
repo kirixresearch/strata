@@ -238,7 +238,7 @@ bool KpgRowInserter::startInsert(const std::wstring& col_list)
 
     // remove table from the shadow m_create_tables map in KpgDatabase
     {
-        XCM_AUTO_LOCK(m_database->m_obj_mutex);
+        KL_AUTO_LOCK(m_database->m_obj_mutex);
         std::map<std::wstring, xd::IStructurePtr, kl::cmp_nocase>::iterator it;
         it = m_database->m_create_tables.find(m_table);
         if (it != m_database->m_create_tables.end())

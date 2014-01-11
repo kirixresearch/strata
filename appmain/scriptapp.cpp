@@ -937,7 +937,7 @@ void ScriptCommandEventRouter::registerCommandReceiver(int id, ScriptHostBase* c
 {
     // this may not be happening in the main thread
     // so lock the mutex
-    XCM_AUTO_LOCK(m_map_mutex);
+    KL_AUTO_LOCK(m_map_mutex);
     m_map[id] = comp;
 }
 
@@ -945,7 +945,7 @@ void ScriptCommandEventRouter::unregisterCommandReceiver(int id)
 {
     // this may not be happening in the main thread
     // so lock the mutex
-    XCM_AUTO_LOCK(m_map_mutex);
+    KL_AUTO_LOCK(m_map_mutex);
     m_map.erase(id);
 }
 
@@ -963,7 +963,7 @@ bool ScriptCommandEventRouter::ProcessEvent(wxEvent& evt)
             // this always happens in the main thread
             // but lock the mutex to prevent concurrent access
             // from the register/unregister methods
-            XCM_AUTO_LOCK(m_map_mutex);
+            KL_AUTO_LOCK(m_map_mutex);
             
             std::map<int, ScriptHostBase*>::iterator it;
             

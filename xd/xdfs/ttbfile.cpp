@@ -343,7 +343,7 @@ bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
 
 bool TtbTable::open(const std::wstring& filename)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     // generate map file name
     m_map_filename = kl::beforeLast(filename, L'.');
@@ -483,7 +483,7 @@ bool TtbTable::open(const std::wstring& filename)
 
 bool TtbTable::reopen(bool exclusive)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     if (m_file)
     {
@@ -511,7 +511,7 @@ bool TtbTable::reopen(bool exclusive)
 
 void TtbTable::close()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     if (m_map_file)
     {
@@ -627,7 +627,7 @@ int TtbTable::getRows(unsigned char* buf,
                          bool direction,
                          bool include_deleted)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     BitmapFileScroller* bfs = NULL;
 
@@ -797,7 +797,7 @@ int TtbTable::getRows(unsigned char* buf,
 
 bool TtbTable::getRow(xd::rowpos_t row, unsigned char* buf)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     xf_off_t pos;
     pos = row-1;
@@ -929,7 +929,7 @@ xd::rowpos_t TtbTable::_findNextRowPos(BitmapFileScroller* bfs,
 
 int TtbTable::appendRows(unsigned char* buf, int row_count)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     // lock the header
     if (!xf_trylock(m_file, 0, ttb_header_len, 10000))
@@ -950,7 +950,7 @@ int TtbTable::appendRows(unsigned char* buf, int row_count)
 
 bool TtbTable::writeRow(xd::rowpos_t row, unsigned char* buf)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     xf_off_t pos;
     pos = row-1;
@@ -988,7 +988,7 @@ bool TtbTable::writeColumnInfo(int col_idx,
                                int width,
                                int scale)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     if (col_idx < 0 || col_idx >= (int)m_fields.size())
         return false;
@@ -1053,7 +1053,7 @@ bool TtbTable::writeColumnInfo(int col_idx,
 
 unsigned long long TtbTable::getStructureModifyTime()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     unsigned char sig[8];
     unsigned long long i = 0;
@@ -1070,7 +1070,7 @@ unsigned long long TtbTable::getStructureModifyTime()
 
 bool TtbTable::setStructureModified()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     unsigned char sig[8];
     unsigned long long i = 0;
@@ -1163,7 +1163,7 @@ xd::rowpos_t TtbTable::getRowCount(xd::rowpos_t* deleted_row_count)
     if (8 != xf_read(m_file, buf, 1, 8))
     {
         xf_unlock(m_file, 0, ttb_header_len);
-        XCM_AUTO_LOCK(m_object_mutex);
+        KL_AUTO_LOCK(m_object_mutex);
         return m_phys_row_count;
     }
 
@@ -1172,7 +1172,7 @@ xd::rowpos_t TtbTable::getRowCount(xd::rowpos_t* deleted_row_count)
     xf_unlock(m_file, 0, ttb_header_len);
 
     {
-        XCM_AUTO_LOCK(m_object_mutex);
+        KL_AUTO_LOCK(m_object_mutex);
         m_phys_row_count = bufToInt64(buf);
         return m_phys_row_count;
     }
@@ -1182,7 +1182,7 @@ xd::rowpos_t TtbTable::getRowCount(xd::rowpos_t* deleted_row_count)
 
 xd::rowpos_t TtbTable::recalcPhysRowCount()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     // calculate the actual physical row count from the file size
     xf_seek(m_file, 0, xfSeekEnd);

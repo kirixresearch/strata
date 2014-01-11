@@ -351,7 +351,7 @@ static bool correctFilenameCase(std::wstring& fn)
 
 IJobInternalPtr XdnativeDatabase::createJobEntry()
 {
-    XCM_AUTO_LOCK(m_jobs_mutex);
+    KL_AUTO_LOCK(m_jobs_mutex);
 
     m_last_job++;
 
@@ -366,7 +366,7 @@ IJobInternalPtr XdnativeDatabase::createJobEntry()
 
 xd::IJobPtr XdnativeDatabase::createJob()
 {
-    XCM_AUTO_LOCK(m_jobs_mutex);
+    KL_AUTO_LOCK(m_jobs_mutex);
 
     m_last_job++;
 
@@ -1251,7 +1251,7 @@ INodeValuePtr XdnativeDatabase::createNodeFile(const std::wstring& path)
 INodeValuePtr XdnativeDatabase::openLocalNodeFile(const std::wstring& path)
 {
     {
-        XCM_AUTO_LOCK(m_objregistry_mutex);
+        KL_AUTO_LOCK(m_objregistry_mutex);
 
         // lookup in our list to see if the file is already open
         std::vector<OfsFile*>::iterator it;
@@ -1277,7 +1277,7 @@ INodeValuePtr XdnativeDatabase::openLocalNodeFile(const std::wstring& path)
 INodeValuePtr XdnativeDatabase::openNodeFile(const std::wstring& path)
 {
     {
-        XCM_AUTO_LOCK(m_objregistry_mutex);
+        KL_AUTO_LOCK(m_objregistry_mutex);
 
         // lookup in our list to see if the file is already open
         std::vector<OfsFile*>::iterator it;
@@ -2134,7 +2134,7 @@ public:
 
 bool XdnativeDatabase::setFileType(const std::wstring& path, int type)
 {
-    XCM_AUTO_LOCK(m_objregistry_mutex);
+    KL_AUTO_LOCK(m_objregistry_mutex);
 
     OfsFile* file = NULL;
 
@@ -2180,7 +2180,7 @@ bool XdnativeDatabase::getFileType(const std::wstring& path, int* type, bool* is
     }
 
     {
-        XCM_AUTO_LOCK(m_objregistry_mutex);
+        KL_AUTO_LOCK(m_objregistry_mutex);
 
         OfsFile* file = NULL;
 
@@ -2623,14 +2623,14 @@ xd::IFileInfoEnumPtr XdnativeDatabase::getFolderInfo(const std::wstring& _mask)
 
 void XdnativeDatabase::registerNodeFile(OfsFile* file)
 {
-    XCM_AUTO_LOCK(m_objregistry_mutex);
+    KL_AUTO_LOCK(m_objregistry_mutex);
 
     m_ofs_files.push_back(file);
 }
 
 void XdnativeDatabase::unregisterNodeFile(OfsFile* file)
 {
-    XCM_AUTO_LOCK(m_objregistry_mutex);
+    KL_AUTO_LOCK(m_objregistry_mutex);
 
     std::vector<OfsFile*>::iterator it;
     for (it = m_ofs_files.begin(); it != m_ofs_files.end(); ++it)
@@ -2645,14 +2645,14 @@ void XdnativeDatabase::unregisterNodeFile(OfsFile* file)
 
 void XdnativeDatabase::registerSet(IXdnativeSet* set)
 {
-    XCM_AUTO_LOCK(m_objregistry_mutex);
+    KL_AUTO_LOCK(m_objregistry_mutex);
 
     m_sets.push_back(set);
 }
 
 void XdnativeDatabase::unregisterSet(IXdnativeSet* set)
 {
-    XCM_AUTO_LOCK(m_objregistry_mutex);
+    KL_AUTO_LOCK(m_objregistry_mutex);
 
     std::vector<IXdnativeSet*>::iterator it;
     for (it = m_sets.begin(); it != m_sets.end(); ++it)
@@ -2667,14 +2667,14 @@ void XdnativeDatabase::unregisterSet(IXdnativeSet* set)
 
 void XdnativeDatabase::registerTable(ITable* table)
 {
-    XCM_AUTO_LOCK(m_objregistry_mutex);
+    KL_AUTO_LOCK(m_objregistry_mutex);
 
     m_tables.push_back(table);
 }
 
 void XdnativeDatabase::unregisterTable(ITable* table)
 {
-    XCM_AUTO_LOCK(m_objregistry_mutex);
+    KL_AUTO_LOCK(m_objregistry_mutex);
 
     std::vector<ITable*>::iterator it;
     for (it = m_tables.begin(); it != m_tables.end(); ++it)
@@ -2982,7 +2982,7 @@ bool XdnativeDatabase::createStream(const std::wstring& path, const std::wstring
 
 IXdnativeSet* XdnativeDatabase::lookupSet(const std::wstring& set_id)
 {
-    XCM_AUTO_LOCK(m_objregistry_mutex);
+    KL_AUTO_LOCK(m_objregistry_mutex);
 
     // search existing sets for a match
     std::vector<IXdnativeSet*>::iterator sit;
@@ -3106,7 +3106,7 @@ std::wstring XdnativeDatabase::getTableFilename(xd::tableord_t table_ordinal)
 ITablePtr XdnativeDatabase::openTableByOrdinal(xd::tableord_t table_ordinal)
 {
     {
-        XCM_AUTO_LOCK(m_objregistry_mutex);
+        KL_AUTO_LOCK(m_objregistry_mutex);
 
         // see if the table is already opened
 
@@ -3354,7 +3354,7 @@ bool XdnativeDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 
 bool XdnativeDatabase::lockSet(const std::wstring& set_id)
 {
-    XCM_AUTO_LOCK(m_lockedsets_mutex);
+    KL_AUTO_LOCK(m_lockedsets_mutex);
 
     std::vector<std::wstring>::iterator it;
     it = std::find(m_locked_sets.begin(), m_locked_sets.end(), set_id);
@@ -3367,7 +3367,7 @@ bool XdnativeDatabase::lockSet(const std::wstring& set_id)
 
 bool XdnativeDatabase::unlockSet(const std::wstring& set_id)
 {
-    XCM_AUTO_LOCK(m_lockedsets_mutex);
+    KL_AUTO_LOCK(m_lockedsets_mutex);
 
     std::vector<std::wstring>::iterator it;
     it = std::find(m_locked_sets.begin(), m_locked_sets.end(), set_id);
@@ -3381,7 +3381,7 @@ bool XdnativeDatabase::unlockSet(const std::wstring& set_id)
 
 bool XdnativeDatabase::getSetLocked(const std::wstring& set_id)
 {
-    XCM_AUTO_LOCK(m_lockedsets_mutex);
+    KL_AUTO_LOCK(m_lockedsets_mutex);
 
     std::vector<std::wstring>::iterator it;
     it = std::find(m_locked_sets.begin(), m_locked_sets.end(), set_id);

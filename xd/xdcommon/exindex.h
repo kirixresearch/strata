@@ -243,8 +243,8 @@ private:
 
     BlockFile m_bf;
 
-    xcm::mutex m_obj_mutex;
-    xcm::mutex m_tree_mutex;
+    kl::mutex m_obj_mutex;
+    kl::mutex m_tree_mutex;
 
     unsigned int m_keylen;
     unsigned int m_vallen;

@@ -421,7 +421,7 @@ TableSet::TableSet(XdnativeDatabase* database) : BaseSet(database)
 
 TableSet::~TableSet()
 {
-    XCM_AUTO_LOCK(m_update_mutex);
+    KL_AUTO_LOCK(m_update_mutex);
 
     // release table
 
@@ -622,7 +622,7 @@ bool TableSet::load(INodeValuePtr set_file)
 
 bool TableSet::save()
 {
-    XCM_AUTO_LOCK(m_update_mutex);
+    KL_AUTO_LOCK(m_update_mutex);
 
     INodeValuePtr set_file = openSetDefinition(true);
 
@@ -675,7 +675,7 @@ bool TableSet::restoreDeleted()
 
 void TableSet::refreshUpdateBuffer()
 {
-    XCM_AUTO_LOCK(m_update_mutex);
+    KL_AUTO_LOCK(m_update_mutex);
 
     if (m_update_buf)
     {
@@ -701,7 +701,7 @@ void TableSet::refreshUpdateBuffer()
 
 bool TableSet::prepareIndexEntry(IndexEntry& e)
 {
-    XCM_AUTO_LOCK(m_update_mutex);
+    KL_AUTO_LOCK(m_update_mutex);
 
     if (!e.index)
         return false;
@@ -791,7 +791,7 @@ bool TableSet::prepareIndexEntry(IndexEntry& e)
 
 void TableSet::refreshIndexEntries()
 {
-    XCM_AUTO_LOCK(m_update_mutex);
+    KL_AUTO_LOCK(m_update_mutex);
 
 
     INodeValuePtr set_file = openSetDefinition(true);
@@ -945,7 +945,7 @@ void TableSet::refreshIndexEntries()
 
 xd::IIndexInfoEnumPtr TableSet::getIndexEnum()
 {
-    XCM_AUTO_LOCK(m_update_mutex);
+    KL_AUTO_LOCK(m_update_mutex);
 
     xcm::IVectorImpl<xd::IIndexInfoPtr>* indexes;
     indexes = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
@@ -984,7 +984,7 @@ xd::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
                                            const std::wstring& expr,
                                            xd::IJob* job)
 {
-    XCM_AUTO_LOCK(m_update_mutex);
+    KL_AUTO_LOCK(m_update_mutex);
 
     if (tag.length() == 0)
         return xcm::null;
@@ -1145,7 +1145,7 @@ xd::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
 
 bool TableSet::deleteIndexInternal(IIndex* idx_to_delete)
 {
-    XCM_AUTO_LOCK(m_update_mutex);
+    KL_AUTO_LOCK(m_update_mutex);
 
     bool success = false;
 
@@ -1216,7 +1216,7 @@ bool TableSet::deleteIndexInternal(IIndex* idx_to_delete)
 
 bool TableSet::deleteIndex(const std::wstring& name)
 {
-    XCM_AUTO_LOCK(m_update_mutex);
+    KL_AUTO_LOCK(m_update_mutex);
 
     std::vector<IndexEntry>::iterator it;
     for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
@@ -1233,7 +1233,7 @@ bool TableSet::deleteIndex(const std::wstring& name)
 bool TableSet::renameIndex(const std::wstring& name,
                            const std::wstring& new_name)
 {
-    XCM_AUTO_LOCK(m_update_mutex);
+    KL_AUTO_LOCK(m_update_mutex);
 
 
     // delete the space we reserved for this tag
@@ -1259,7 +1259,7 @@ bool TableSet::renameIndex(const std::wstring& name,
 
 bool TableSet::deleteAllIndexes()
 {
-    XCM_AUTO_LOCK(m_update_mutex);
+    KL_AUTO_LOCK(m_update_mutex);
 
     std::vector<IndexEntry>::iterator it;
     for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
@@ -1341,7 +1341,7 @@ xd::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
     // attempt to find a suitable existing index
     IIndex* idx = NULL;
     {
-        XCM_AUTO_LOCK(m_update_mutex);
+        KL_AUTO_LOCK(m_update_mutex);
 
         std::vector<IndexEntry>::iterator it;
         for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
@@ -1441,7 +1441,7 @@ bool TableSet::updateRow(xd::rowid_t rowid,
                          xd::ColumnUpdateInfo* info,
                          size_t info_size)
 {
-    XCM_AUTO_LOCK(m_update_mutex);
+    KL_AUTO_LOCK(m_update_mutex);
 
     size_t coli;
     xd::ColumnUpdateInfo* col_it;
@@ -1795,7 +1795,7 @@ bool TableSetRowInserter::flush()
     if (m_buf_row == 0)
         return true;
 
-    XCM_AUTO_LOCK(m_set->m_update_mutex);
+    KL_AUTO_LOCK(m_set->m_update_mutex);
 
     xd::rowpos_t row = m_table->getRowCount(NULL) + 1;
     xd::tableord_t table_ord = m_table->getTableOrdinal();

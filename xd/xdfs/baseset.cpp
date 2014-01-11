@@ -48,7 +48,7 @@ void XdfsBaseSet::setConfigFilePath(const std::wstring& path)
 bool XdfsBaseSet::modifyStructure(xd::IStructure* struct_config,
                                   bool* done_flag)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     *done_flag = false;
 
@@ -105,7 +105,7 @@ bool XdfsBaseSet::modifyStructure(xd::IStructure* struct_config,
 
 bool XdfsBaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
     
     if (m_config_file_path.empty())
     {
@@ -161,7 +161,7 @@ bool XdfsBaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
 
 bool XdfsBaseSet::deleteCalcField(const std::wstring& _name)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     if (m_config_file_path.empty())
     {
@@ -250,7 +250,7 @@ bool XdfsBaseSet::deleteCalcField(const std::wstring& _name)
 bool XdfsBaseSet::modifyCalcField(const std::wstring& name,
                                   xd::IColumnInfoPtr colinfo)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
     
     if (!colinfo->getCalculated())
     {
@@ -403,7 +403,7 @@ bool XdfsBaseSet::modifyCalcField(const std::wstring& name,
 
 void XdfsBaseSet::appendCalcFields(xd::IStructure* structure)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     IStructureInternalPtr intstruct = structure;
     

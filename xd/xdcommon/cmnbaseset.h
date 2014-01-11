@@ -47,7 +47,7 @@ private:
     
 private:
 
-    xcm::mutex m_object_mutex;
+    kl::mutex m_object_mutex;
     std::vector<xd::IColumnInfoPtr> m_calc_fields;
     std::wstring m_obj_path;
     std::wstring m_config_file_path;

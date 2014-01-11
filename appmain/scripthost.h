@@ -214,7 +214,7 @@ private:
     std::vector<GuiMarshalSync*> m_gui_syncs;
     size_t m_gui_sync_pos;
 
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
 
     DECLARE_EVENT_TABLE()
 };

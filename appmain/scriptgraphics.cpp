@@ -54,19 +54,19 @@ void Graphics::init()
 
 void Graphics::incrementPaintCount()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
     m_paint_count++;
 }
 
 void Graphics::decrementPaintCount()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
     m_paint_count--;
 }
 
 int Graphics::getPaintCount()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
     return m_paint_count;
 }
 

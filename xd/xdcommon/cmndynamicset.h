@@ -87,10 +87,10 @@ public:
     
 private:
 
-    xcm::mutex m_object_mutex;
+    kl::mutex m_object_mutex;
     xd::IDatabasePtr m_database;
 
-    xcm::mutex m_iters_mutex;
+    kl::mutex m_iters_mutex;
     std::vector<CommonDynamicIterator*> m_iters;
 
     std::wstring m_path;

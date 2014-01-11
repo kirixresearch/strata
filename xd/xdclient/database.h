@@ -166,22 +166,22 @@ private:
     std::wstring m_cookie_file;
 
     std::vector<JobInfo*> m_jobs;
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
     int m_last_job;
 
     xd::IAttributesPtr m_attr;
     ThreadErrorInfo m_error;
 
-    xcm::mutex m_http_mutex;
-    std::map<xcm::threadid_t, HttpRequest*> m_http_objects;
+    kl::mutex m_http_mutex;
+    std::map<kl::thread_t, HttpRequest*> m_http_objects;
 
-    xcm::mutex m_describe_mutex;
+    kl::mutex m_describe_mutex;
     std::map<std::wstring, xd::IStructurePtr> m_describe;
 
-    xcm::mutex m_call_cache_mutex;
+    kl::mutex m_call_cache_mutex;
     std::map<std::wstring, std::pair<time_t /*age*/, std::wstring > > m_call_cache;
 
-    xcm::threadid_t m_connection_thread_id;
+    kl::thread_t m_connection_thread_id;
 };
 
 

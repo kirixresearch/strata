@@ -15,7 +15,7 @@
 
 struct ErrInfo
 {
-    xcm::threadid_t thread_id;
+    kl::thread_t thread_id;
     int error_code;
     std::wstring error_string;
 };
@@ -35,7 +35,7 @@ public:
 
 private:
 
-    xcm::mutex m_mutex;
+    kl::mutex m_mutex;
 
     std::vector<ErrInfo> m_info;
 };

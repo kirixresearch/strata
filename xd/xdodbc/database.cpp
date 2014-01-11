@@ -1455,7 +1455,7 @@ bool OdbcDatabase::cleanup()
 
 xd::IJobPtr OdbcDatabase::createJob()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_last_job++;
 

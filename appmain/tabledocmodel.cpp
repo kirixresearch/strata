@@ -60,7 +60,7 @@ public:
 
     ITableDocModelPtr lookupModel(const std::wstring& set_id)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         std::vector<ITableDocModelPtr>::iterator it;
         for (it = m_models.begin(); it != m_models.end(); ++it)
@@ -74,7 +74,7 @@ public:
 
     ITableDocModelPtr loadModel(const std::wstring& set_id)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         if (set_id.empty())
         {
@@ -101,7 +101,7 @@ public:
 
     bool releaseModel(const std::wstring& set_id)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         if (set_id.empty())
             return false;
@@ -122,7 +122,7 @@ public:
 
     void cleanup()  // table model garbage collection
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         std::vector<ITableDocModel*> vec;
         std::vector<ITableDocModel*>::iterator vit;
@@ -154,7 +154,7 @@ public:
 
     void clear()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
         m_models.clear();
     }
 
@@ -162,13 +162,13 @@ private:
 
     void onTableDocModelDeleted(TableDocModel* model)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
         m_deleted_flag = true;
     }
 
 private:
 
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
     std::vector<ITableDocModelPtr> m_models;
     bool m_deleted_flag;
 };
@@ -845,7 +845,7 @@ bool TableDocModel::writeObject(ITableDocObjectPtr obj, bool save_to_store)
 
 bool TableDocModel::writeMultipleObjects(ITableDocObjectEnumPtr objs)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     if (m_id.empty())
         return false;
@@ -939,7 +939,7 @@ ITableDocObjectPtr TableDocModel::lookupObject(const std::wstring& id)
 
 ITableDocMarkEnumPtr TableDocModel::getMarkEnum()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     xcm::IVectorImpl<ITableDocMarkPtr>* vec;
     vec = new xcm::IVectorImpl<ITableDocMarkPtr>;
@@ -955,7 +955,7 @@ ITableDocMarkEnumPtr TableDocModel::getMarkEnum()
 
 ITableDocViewEnumPtr TableDocModel::getViewEnum()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     xcm::IVectorImpl<ITableDocViewPtr>* vec;
     vec = new xcm::IVectorImpl<ITableDocViewPtr>;

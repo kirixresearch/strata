@@ -106,7 +106,7 @@ public:
 
 protected:
 
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
 
     xd::jobid_t m_jobid;
     bool m_can_cancel;

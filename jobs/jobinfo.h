@@ -95,7 +95,7 @@ public:
 
 protected:
 
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
     time_t m_start_time;
     int m_job_id;
     int m_job_state;

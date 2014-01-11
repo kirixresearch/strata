@@ -216,12 +216,12 @@ private:
     long m_proxy_port;
     int m_method;
     
-    xcm::mutex m_response_mutex;
+    kl::mutex m_response_mutex;
     std::string m_response_header;
     std::list<HttpResponsePiece> m_response_pieces;
     size_t m_response_bytes;
     
-    xcm::mutex m_state_mutex;
+    kl::mutex m_state_mutex;
     bool m_busy;
     
     curl_httppost* m_formfields;      // only used by multipart post

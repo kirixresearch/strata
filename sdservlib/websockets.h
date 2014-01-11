@@ -82,7 +82,7 @@ public:
     Sdserv* m_sdserv;
     struct libwebsocket_context* m_context;
     struct libwebsocket* m_wsi;
-    xcm::mutex m_write_bufs_mutex;
+    kl::mutex m_write_bufs_mutex;
     std::queue<std::string> m_write_bufs;
     int m_publish_flag;
     int m_write_flag;

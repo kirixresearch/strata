@@ -62,12 +62,12 @@ private:
 
 private:
 
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
     std::vector<IJobPtr> m_jobs;
     std::vector<IJobInfoPtr> m_job_info;
     int m_job_id_counter;
     
-    xcm::mutex m_active_jobs_mutex;
+    kl::mutex m_active_jobs_mutex;
     int m_active_jobs;
 
 };

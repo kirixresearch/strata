@@ -538,7 +538,7 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
             case StructureAction::actionModify:
             case StructureAction::actionDelete:
             {
-                XCM_AUTO_LOCK(m_update_mutex);
+                KL_AUTO_LOCK(m_update_mutex);
 
                 std::vector<IndexEntry>::iterator idx_it;
                 std::vector<IIndex*> to_delete;

@@ -1383,7 +1383,7 @@ kscript::Value* ScriptHost::getRetval()
 
 void ScriptHost::setCurrentJob(jobs::IJobPtr job)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
     m_curjob = job;
 
     sigJobChanged();
@@ -1392,7 +1392,7 @@ void ScriptHost::setCurrentJob(jobs::IJobPtr job)
 
 jobs::IJobPtr ScriptHost::getCurrentJob()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
     return m_curjob;
 }
 

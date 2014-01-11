@@ -40,7 +40,7 @@ public:
 
     void setXdJob(xd::IJobPtr _xdjob)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         if (xdjob.isOk())
         {
@@ -63,7 +63,7 @@ public:
 
     double getCurrentCount()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
         if (xdjob.isOk())
             m_current_count = (double)xdjob->getCurrentCount();
         return m_current_count;
@@ -71,7 +71,7 @@ public:
 
     double getMaxCount()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
         if (xdjob.isOk())
             m_max_count = (double)xdjob->getMaxCount();
         return m_max_count;
@@ -79,7 +79,7 @@ public:
 
     double getPercentage()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
         if (xdjob.isOk())
             pct = xdjob->getPercentage();
         return pct;

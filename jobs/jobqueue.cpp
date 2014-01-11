@@ -107,7 +107,7 @@ int JobQueue::addJob(IJobPtr job, int initial_state)
     IJobInfoPtr job_info;
 
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
         
         job_info = job->getJobInfo();
         
@@ -151,7 +151,7 @@ int JobQueue::addJobInfo(IJobInfoPtr job_info, int initial_state)
     int new_job_id;
     
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
         
         m_job_id_counter++;
         new_job_id = m_job_id_counter;
@@ -170,7 +170,7 @@ int JobQueue::addJobInfo(IJobInfoPtr job_info, int initial_state)
 
 IJobPtr JobQueue::lookupJob(int job_id)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     for (std::vector<IJobPtr>::iterator it = m_jobs.begin();
             it != m_jobs.end(); ++it)
@@ -193,7 +193,7 @@ bool JobQueue::startJob(int job_id)
 
 IJobInfoPtr JobQueue::getJobInfo(int job_id)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     std::vector<IJobInfoPtr>::iterator it;
     for (it = m_job_info.begin(); it != m_job_info.end(); ++it)
@@ -207,7 +207,7 @@ IJobInfoPtr JobQueue::getJobInfo(int job_id)
 
 IJobInfoEnumPtr JobQueue::getJobInfoEnum(int job_state_mask)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     xcm::IVectorImpl<IJobInfoPtr>* vec = new xcm::IVectorImpl<IJobInfoPtr>;
 

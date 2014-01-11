@@ -30,48 +30,48 @@ public:
 
     void setCurrentJobInfo(IJobInfoPtr j)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
         curjob = j;
     }
 
     std::wstring getProgressString()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
         if (curjob.isNull()) return L"";
         return curjob->getProgressString();
     }
 
     int getErrorCode()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
         if (curjob.isNull()) return xd::errorNone;
         return curjob->getErrorCode();
     }
 
     std::wstring getErrorString()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
         if (curjob.isNull()) return L"";
         return curjob->getErrorString();
     }
 
     double getCurrentCount()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
         if (curjob.isNull()) return 0.0;
         return curjob->getCurrentCount();
     }
 
     double getMaxCount()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
         if (curjob.isNull()) return 0.0;
         return curjob->getMaxCount();
     }
 
     double getPercentage()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
         if (curjob.isNull()) return 0.0;
         return curjob->getPercentage();
     }
@@ -100,13 +100,13 @@ public:
 
     void setCurrentJob(IJobPtr job)
     {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
+        KL_AUTO_LOCK(m_jobbase_mutex);
         m_current_job = job;
     }
 
     bool cancel()
     {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
+        KL_AUTO_LOCK(m_jobbase_mutex);
 
         if (!m_job_info->getCancelAllowed())
             return false;

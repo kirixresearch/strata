@@ -15,7 +15,7 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <xcm/xcmthread.h>
+#include <xcm/xcm.h>
 #include <kl/string.h>
 #include <xd/xd.h>
 
@@ -61,11 +61,11 @@ private:
     Controller* m_controller;
 
     int m_idle_quit;
-    xcm::mutex m_last_access_mutex;
+    kl::mutex m_last_access_mutex;
     time_t m_last_access;
 
     std::map<std::wstring, std::wstring> m_options;
-    xcm::mutex m_options_mutex;
+    kl::mutex m_options_mutex;
 
     xd::IDatabasePtr m_database;
 };

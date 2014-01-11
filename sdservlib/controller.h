@@ -136,14 +136,14 @@ private:
 
     Sdserv* m_sdserv;
     std::map< std::wstring , ServerSessionObject* > m_session_objects;
-    xcm::mutex m_session_object_mutex;
+    kl::mutex m_session_object_mutex;
 
     std::map< std::wstring , xd::IDatabasePtr > m_databases;
-    xcm::mutex m_databases_object_mutex;
+    kl::mutex m_databases_object_mutex;
     xd::IDatabasePtr m_database;
     std::wstring m_connection_string;
 
-    xcm::mutex m_job_info_mutex;
+    kl::mutex m_job_info_mutex;
     std::vector<jobs::IJobInfoPtr> m_job_info_vec;
 };
 

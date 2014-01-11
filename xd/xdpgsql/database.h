@@ -146,7 +146,7 @@ private:
     std::wstring m_password;
     std::wstring m_path;
     
-    xcm::mutex m_jobs_mutex;
+    kl::mutex m_jobs_mutex;
     int m_last_job;
     std::vector<PgsqlJobInfo*> m_jobs;
 

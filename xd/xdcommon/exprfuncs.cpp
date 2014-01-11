@@ -3095,7 +3095,7 @@ public:
                 const wchar_t* str,
                 klregex::wmatch& matchres)
     {
-        XCM_AUTO_LOCK(m_map_mutex);
+        KL_AUTO_LOCK(m_map_mutex);
 
         klregex::wregex& regex = m_map[expr];
 
@@ -3112,7 +3112,7 @@ public:
                 std::wstring& str,
                 const std::wstring& fmt)
     {
-        XCM_AUTO_LOCK(m_map_mutex);
+        KL_AUTO_LOCK(m_map_mutex);
 
         klregex::wregex& regex = m_map[expr];
 
@@ -3128,7 +3128,7 @@ public:
     bool match(const wchar_t* expr,
                const wchar_t* str)
     {
-        XCM_AUTO_LOCK(m_map_mutex);
+        KL_AUTO_LOCK(m_map_mutex);
 
         klregex::wregex& regex = m_map[expr];
 
@@ -3144,7 +3144,7 @@ public:
 private:
 
     std::map<std::wstring, klregex::wregex> m_map;
-    xcm::mutex m_map_mutex;
+    kl::mutex m_map_mutex;
 };
 
 RegexMap g_regex_map;
@@ -3230,7 +3230,7 @@ public:
 
     std::wstring getCachedHostName(const std::wstring& ip)
     {
-        XCM_AUTO_LOCK(m_map_mutex);
+        KL_AUTO_LOCK(m_map_mutex);
 
         #ifdef WIN32
             static bool first_time = true;
@@ -3268,7 +3268,7 @@ public:
     }
 
 private:
-    xcm::mutex m_map_mutex;
+    kl::mutex m_map_mutex;
     std::map<unsigned long, std::wstring> m_map;
 };
 

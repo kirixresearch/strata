@@ -64,7 +64,7 @@ private:
 
 private:
 
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
     std::wstring m_id;
 
     std::vector<ITableDocObjectPtr> m_marks;

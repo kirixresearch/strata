@@ -52,35 +52,35 @@ OfsValue::~OfsValue()
 
 void OfsValue::setDirty()
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     m_file->setDirty(true);
 }
 
 int OfsValue::getType()
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     return m_iv->m_type;
 }
 
 const std::wstring& OfsValue::getName()
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     return m_iv->m_name;
 }
 
 const std::wstring& OfsValue::getString()
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     return m_iv->m_value;
 }
 
 void OfsValue::setString(const std::wstring& value)
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     if (m_iv->m_value != value)
     {
@@ -92,7 +92,7 @@ void OfsValue::setString(const std::wstring& value)
 
 double OfsValue::getDouble()
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     return kl::nolocale_wtof(m_iv->m_value);
 }
@@ -144,7 +144,7 @@ inline void nolocale_dbltostr(double d, wchar_t* str, int max_buffer)
 
 void OfsValue::setDouble(double value)
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     wchar_t buf[80];
     nolocale_dbltostr(value, buf, 80);
@@ -159,14 +159,14 @@ void OfsValue::setDouble(double value)
 
 int OfsValue::getInteger()
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     return kl::wtoi(m_iv->m_value);
 }
 
 void OfsValue::setInteger(int value)
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     wchar_t buf[64];
     swprintf(buf, 64, L"%d", value);
@@ -180,7 +180,7 @@ void OfsValue::setInteger(int value)
 
 bool OfsValue::getBoolean()
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     if (m_iv->m_value.empty())
         return true;
@@ -190,7 +190,7 @@ bool OfsValue::getBoolean()
 
 void OfsValue::setBoolean(bool value)
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     wchar_t buf[2];
     buf[1] = 0;
@@ -206,7 +206,7 @@ void OfsValue::setBoolean(bool value)
 
 unsigned int OfsValue::getChildCount()
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     return m_iv->m_children.size();
 }
@@ -215,7 +215,7 @@ const std::wstring empty_value = L"";
 
 const std::wstring& OfsValue::getChildName(unsigned int idx)
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     if (idx >= m_iv->m_children.size())
         return empty_value;
@@ -225,7 +225,7 @@ const std::wstring& OfsValue::getChildName(unsigned int idx)
 
 INodeValuePtr OfsValue::getChildByIdx(unsigned int idx)
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     if (idx >= m_iv->m_children.size())
         return xcm::null;
@@ -237,7 +237,7 @@ INodeValuePtr OfsValue::getChildByIdx(unsigned int idx)
 INodeValuePtr OfsValue::getChild(const std::wstring& name,
                                        bool create_if_not_exist)
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     int idx = getChildIdx(name);
     if (idx != -1)
@@ -254,7 +254,7 @@ INodeValuePtr OfsValue::getChild(const std::wstring& name,
 
 INodeValuePtr OfsValue::createChild(const std::wstring& name)
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     if (getChildIdx(name) != -1)
         return xcm::null;
@@ -275,7 +275,7 @@ INodeValuePtr OfsValue::createChild(const std::wstring& name)
 
 bool OfsValue::getChildExist(const std::wstring& name)
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     return (getChildIdx(name) != -1) ? true : false;
 }
@@ -283,7 +283,7 @@ bool OfsValue::getChildExist(const std::wstring& name)
 bool OfsValue::renameChild(const std::wstring& name,
                            const std::wstring& new_name)
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     int idx = getChildIdx(name);
     if (idx == -1)
@@ -300,7 +300,7 @@ bool OfsValue::renameChild(const std::wstring& name,
 
 bool OfsValue::deleteChild(const std::wstring& name)
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
 
     int idx = getChildIdx(name);
@@ -318,7 +318,7 @@ bool OfsValue::deleteChild(const std::wstring& name)
 
 bool OfsValue::deleteAllChildren()
 {
-    XCM_AUTO_LOCK(m_iv->m_object_mutex);
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
 
     m_iv->m_lookup_map.clear();
     if (m_iv->m_children.size() == 0)
@@ -557,7 +557,7 @@ OfsFile::~OfsFile()
 
 bool OfsFile::readFile()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     kl::xmlnode doc;
 
@@ -605,7 +605,7 @@ bool OfsFile::readFile()
 
 bool OfsFile::writeFile()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     if (!m_dirty)
         return true;
@@ -647,7 +647,7 @@ bool OfsFile::writeFile()
 
 void OfsFile::setDirty(bool new_value)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     m_dirty = new_value;
 }
@@ -664,14 +664,14 @@ const std::wstring& OfsFile::getPath()
 
 int OfsFile::getType()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     return m_type;
 }
 
 void OfsFile::setType(int new_type)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     m_type = new_type;
 

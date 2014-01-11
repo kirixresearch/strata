@@ -2436,7 +2436,7 @@ public:
 private:
 
     std::map<std::wstring, kscript::Value*> m_map;
-    xcm::mutex m_mutex;
+    kl::mutex m_mutex;
 };
 
 

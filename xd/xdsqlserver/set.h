@@ -49,7 +49,7 @@ private:
     std::wstring m_path;
     std::wstring m_tablename;
 
-    xcm::mutex m_object_mutex;
+    kl::mutex m_object_mutex;
 };
 
 

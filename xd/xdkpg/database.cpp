@@ -284,7 +284,7 @@ bool KpgDatabase::cleanup()
 
 xd::IJobPtr KpgDatabase::createJob()
 {
-    XCM_AUTO_LOCK(m_jobs_mutex);
+    KL_AUTO_LOCK(m_jobs_mutex);
 
     JobInfo* job = new JobInfo;
     job->setJobId(++m_last_job);
@@ -467,7 +467,7 @@ xd::IFileInfoPtr KpgDatabase::getFileInfo(const std::wstring& path)
 
 xd::IFileInfoEnumPtr KpgDatabase::getFolderInfo(const std::wstring& path)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     std::wstring lower_path = m_path;
     kl::makeLower(lower_path);
@@ -528,7 +528,7 @@ bool KpgDatabase::createTable(const std::wstring& _path,
                               xd::IStructurePtr struct_config,
                               xd::FormatDefinition* format_info)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     if (getFileExist(_path))
     {
@@ -577,7 +577,7 @@ xd::IStreamPtr KpgDatabase::openStream(const std::wstring& _path)
 
 bool KpgDatabase::createStream(const std::wstring& _path, const std::wstring& mime_type)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     if (getFileExist(_path))
     {
@@ -600,7 +600,7 @@ bool KpgDatabase::createStream(const std::wstring& _path, const std::wstring& mi
 
 bool KpgDatabase::getStreamInfoBlock(const std::wstring& _path, std::wstring& output)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     std::wstring path = _path;
     if (path.substr(0,1) == L"/")
@@ -635,7 +635,7 @@ bool KpgDatabase::getStreamInfoBlock(const std::wstring& _path, std::wstring& ou
 
 xd::IIteratorPtr KpgDatabase::query(const xd::QueryParams& qp)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     std::wstring path = qp.from;
     if (path.substr(0,1) == L"/")
@@ -691,7 +691,7 @@ xd::IIndexInfoEnumPtr KpgDatabase::getIndexEnum(const std::wstring& path)
 
 xd::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     std::wstring path = _path;
     if (path.substr(0,1) == L"/")
@@ -720,7 +720,7 @@ xd::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)
 
 xd::IStructurePtr KpgDatabase::describeTable(const std::wstring& _path)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     std::wstring path = _path;
     if (path.substr(0,1) == L"/")

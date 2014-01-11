@@ -454,7 +454,7 @@ static bool isEncryptedZipFile(wxInputStream* file)
 
 bool ExtensionPkg::open(const wxString& filename)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
     
     if (!xf_get_file_exist(towstr(filename)))
         return false;
@@ -527,7 +527,7 @@ bool ExtensionPkg::open(const wxString& filename)
 
 wxInputStream* ExtensionPkg::getStream(const wxString& stream_name)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
     
     // check if we already have an open stream
     std::vector<ExtensionStream*>::iterator it;

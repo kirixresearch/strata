@@ -135,7 +135,7 @@ long XCM_STDCALL interlocked_decrement(long*);
     #define XCM_REFCOUNT_IMPL() \
         private: \
             xcm::refcount_holder m_refcount_holder;    \
-            xcm::mutex m_refcount_mutex; \
+            kl::mutex m_refcount_mutex; \
         public:    \
             virtual void ref() { \
                 m_refcount_mutex.lock(); \
@@ -198,7 +198,7 @@ long XCM_STDCALL interlocked_decrement(long*);
 #define XCM_CLASS_NAME_CUSTOMREFCOUNT(class_name) \
     private: \
         xcm::refcount_holder m_refcount_holder;    \
-        xcm::mutex m_refcount_mutex; \
+        kl::mutex m_refcount_mutex; \
     public: \
         static const char* xcm_get_class_name() { return class_name; } \
 
@@ -304,8 +304,7 @@ long XCM_STDCALL interlocked_decrement(long*);
 
 #include <vector>
 #include <string>
-
-#include <xcm/xcmthread.h>
+#include <kl/thread.h>
 #include <xcm/signal.h>
 
 

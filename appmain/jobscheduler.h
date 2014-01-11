@@ -115,7 +115,7 @@ private:
     wxTimer m_fast_timer;
     wxTimer m_timer;
 
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
 
     DECLARE_EVENT_TABLE()
 };

@@ -42,7 +42,7 @@ public:
     
 public:
 
-    xcm::mutex m_obj_mutex;
+    kl::mutex m_obj_mutex;
     std::vector<ExtensionStream*> m_streams;
     std::vector<wxMemoryInputStream*> m_to_delete;
     

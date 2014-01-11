@@ -410,13 +410,13 @@ public:
 
     void setConnection(PGconn* conn)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
         m_conn = conn;
     }
 
     bool cancel()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        KL_AUTO_LOCK(m_obj_mutex);
 
         if (!m_conn)
             return JobInfo::cancel();
@@ -628,7 +628,7 @@ bool PgsqlDatabase::cleanup()
 
 xd::IJobPtr PgsqlDatabase::createJob()
 {
-    XCM_AUTO_LOCK(m_jobs_mutex);
+    KL_AUTO_LOCK(m_jobs_mutex);
 
     PgsqlJobInfo* job = new PgsqlJobInfo;
     job->setJobId(++m_last_job);

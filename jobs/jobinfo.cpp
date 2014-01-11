@@ -43,56 +43,56 @@ JobInfo::~JobInfo()
 
 void JobInfo::setJobId(int job_id)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_job_id = job_id;
 }
 
 int JobInfo::getJobId()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     return m_job_id;
 }
 
 void JobInfo::setInfoMask(int mask)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_info_mask = mask;
 }
 
 int JobInfo::getInfoMask()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     return m_info_mask;
 }
 
 void JobInfo::setCancelAllowed(bool new_val)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_cancel_allowed = new_val;
 }
 
 bool JobInfo::getCancelAllowed()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     return m_cancel_allowed;
 }
 
 int JobInfo::getState()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     return m_job_state;
 }
 
 void JobInfo::setState(int new_state)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     if (m_job_state != new_state)
     {
@@ -103,35 +103,35 @@ void JobInfo::setState(int new_state)
 
 void JobInfo::setVisible(bool visible)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_visible = visible;
 }
 
 bool JobInfo::getVisible()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     return m_visible;
 }
 
 void JobInfo::setTitle(const std::wstring& title)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_title = title;
 }
 
 std::wstring JobInfo::getTitle()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     return m_title;
 }
 
 void JobInfo::setProgressString(const std::wstring& new_val)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_progress_string = new_val;
 }
@@ -140,7 +140,7 @@ void JobInfo::setProgressString(const std::wstring& new_val)
 //       both the progress string and the format string must be empty
 std::wstring JobInfo::getProgressString()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
     
     // if a progress string has explicitly been specified, show it
     if (m_progress_string.size() > 0)
@@ -232,7 +232,7 @@ std::wstring JobInfo::getProgressString()
 void JobInfo::getProgressStringFormat(std::wstring* no_max_count_format,
                                       std::wstring* max_count_format)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     if (no_max_count_format) *no_max_count_format = m_progress_string_format_nomax;
     if (max_count_format)    *max_count_format = m_progress_string_format_max;
@@ -241,7 +241,7 @@ void JobInfo::getProgressStringFormat(std::wstring* no_max_count_format,
 void JobInfo::setProgressStringFormat(const std::wstring& no_max_count_format,
                                       const std::wstring& max_count_format)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_progress_string_format_nomax = no_max_count_format;
     m_progress_string_format_max = max_count_format;
@@ -249,7 +249,7 @@ void JobInfo::setProgressStringFormat(const std::wstring& no_max_count_format,
 
 void JobInfo::setError(int error_code, const std::wstring& error_string)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_error_code = error_code;
     m_error_string = error_string;
@@ -257,49 +257,49 @@ void JobInfo::setError(int error_code, const std::wstring& error_string)
 
 int JobInfo::getErrorCode()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     return m_error_code;
 }
 
 std::wstring JobInfo::getErrorString()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
     
     return m_error_string;
 }
 
 void JobInfo::setStartTime(time_t new_val)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_start_time = new_val;
 }
 
 time_t JobInfo::getStartTime()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     return m_start_time;
 }
 
 void JobInfo::setFinishTime(time_t new_val)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_finish_time = new_val;
 }
 
 time_t JobInfo::getFinishTime()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     return m_finish_time;
 }
 
 void JobInfo::incrementCurrentCount(double amount)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_current_count += amount;
 }
@@ -307,28 +307,28 @@ void JobInfo::incrementCurrentCount(double amount)
 
 void JobInfo::setCurrentCount(double new_val)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_current_count = new_val;
 }
 
 double JobInfo::getCurrentCount()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     return m_current_count;
 }
 
 void JobInfo::setMaxCount(double new_val)
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     m_max_count = new_val;
 }
 
 double JobInfo::getMaxCount()
 {
-    XCM_AUTO_LOCK(m_obj_mutex);
+    KL_AUTO_LOCK(m_obj_mutex);
 
     return m_max_count;
 }

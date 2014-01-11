@@ -153,7 +153,7 @@ std::wstring CommonDynamicSet::getObjectPath()
 
 std::wstring CommonDynamicSet::getSetId()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    KL_AUTO_LOCK(m_object_mutex);
 
     if (m_set_id.length() == 0)
     {

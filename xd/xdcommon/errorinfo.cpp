@@ -17,9 +17,9 @@ static std::wstring empty_wstring = L"";
 
 void ThreadErrorInfo::clearError()
 {
-    XCM_AUTO_LOCK(m_mutex);
+    KL_AUTO_LOCK(m_mutex);
 
-    xcm::threadid_t thread_id = xcm::get_current_thread_id();
+    kl::thread_t thread_id = kl::thread_getcurrentid();
     std::vector<ErrInfo>::iterator it;
 
     for (it = m_info.begin(); it != m_info.end(); ++it)
@@ -42,9 +42,9 @@ void ThreadErrorInfo::setError(int error_code)
 
 void ThreadErrorInfo::setError(int error_code, const std::wstring& error_string)
 {
-    XCM_AUTO_LOCK(m_mutex);
+    KL_AUTO_LOCK(m_mutex);
 
-    xcm::threadid_t thread_id = xcm::get_current_thread_id();
+    kl::thread_t thread_id = kl::thread_getcurrentid();
     std::vector<ErrInfo>::iterator it;
 
     for (it = m_info.begin(); it != m_info.end(); ++it)
@@ -66,9 +66,9 @@ void ThreadErrorInfo::setError(int error_code, const std::wstring& error_string)
 
 int ThreadErrorInfo::getErrorCode()
 {
-    XCM_AUTO_LOCK(m_mutex);
+    KL_AUTO_LOCK(m_mutex);
 
-    xcm::threadid_t thread_id = xcm::get_current_thread_id();
+    kl::thread_t thread_id = kl::thread_getcurrentid();
     std::vector<ErrInfo>::iterator it;
     for (it = m_info.begin(); it != m_info.end(); ++it)
     {
@@ -89,9 +89,9 @@ bool ThreadErrorInfo::isError()
 
 const std::wstring& ThreadErrorInfo::getErrorString()
 {
-    XCM_AUTO_LOCK(m_mutex);
+    KL_AUTO_LOCK(m_mutex);
 
-    xcm::threadid_t thread_id = xcm::get_current_thread_id();
+    kl::thread_t thread_id = kl::thread_getcurrentid();
     std::vector<ErrInfo>::iterator it;
     for (it = m_info.begin(); it != m_info.end(); ++it)
     {
