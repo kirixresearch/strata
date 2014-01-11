@@ -141,7 +141,7 @@ void Process::startAndWait(kscript::ExprEnv* env, void*, kscript::Value* retval)
     ::wxPostEvent(p, evt);
 
     while (!done)
-        kl::Thread::sleep(50);
+        kl::thread::sleep(50);
         
     pThis->waitForExit(env, retval);
     
@@ -197,7 +197,7 @@ void Process::waitForExit(kscript::ExprEnv* env, kscript::Value* retval)
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 19000);
         ::wxPostEvent(f, evt);
         
-        kl::Thread::sleep(1000);
+        kl::thread::sleep(1000);
     }
     
     this->baseUnref();

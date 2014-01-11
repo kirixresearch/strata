@@ -13,7 +13,7 @@
 #define __XDMYSQL_ITERATOR_H
 
 
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 #include "../../kscript/kscript.h"
 #include "../xdcommon/cmnbaseiterator.h"
 #include "../xdcommon/keylayout.h"

@@ -521,7 +521,7 @@ void JobListCtrl::onDoJobQueueRefresh(wxCommandEvent&)
     // queue gui component gets refreshed, and this needs to happen
     // in the gui/main thread.
     
-    wxASSERT(kl::Thread::isMain());
+    wxASSERT(kl::thread::isMain());
     
     refreshItems();
     checkOverlayText();
@@ -530,7 +530,7 @@ void JobListCtrl::onDoJobQueueRefresh(wxCommandEvent&)
 
 void JobListCtrl::onJobQueueChanged()
 {
-    if (kl::Thread::isMain())
+    if (kl::thread::isMain())
     {
         refreshItems();
         checkOverlayText();

@@ -25,14 +25,14 @@ namespace scripthost
 
 
 
-class HttpRequestThread : public kl::Thread
+class HttpRequestThread : public kl::thread
 {
 public:
 
     HttpRequest* m_request;
     int m_method;
 
-    HttpRequestThread(HttpRequest* request) : kl::Thread()
+    HttpRequestThread(HttpRequest* request) : kl::thread()
     {
         m_request = request;
         m_request->baseRef();

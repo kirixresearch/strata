@@ -137,7 +137,7 @@ void GuiMarshal::func_guiMarshal(kscript::ExprEnv* env,
 {
     GuiMarshalFunc* p = (GuiMarshalFunc*)param;
 
-    if (kl::Thread::isMain())
+    if (kl::thread::isMain())
     {
         // if we are in the main thread, no marshaling is necessary
         p->func(env, p->param, retval);

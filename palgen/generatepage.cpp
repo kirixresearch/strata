@@ -13,7 +13,7 @@
 #include <wx/calctrl.h>
 #include <wx/notebook.h>
 #include <kl/klib.h>
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 #include "../paladin/paladin.h"
 #include "../paladin/crypt.h"
 #include "../paladin/crc.h"

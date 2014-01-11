@@ -1749,11 +1749,11 @@ void Controller::apiImportUpload(RequestInfo& req)
 
 
 
-class ImportJobThread : public kl::Thread
+class ImportJobThread : public kl::thread
 {
 public:
 
-    ImportJobThread() : kl::Thread()
+    ImportJobThread() : kl::thread()
     {
         m_job = jobs::createJob(L"application/vnd.kx.load-job");
     }

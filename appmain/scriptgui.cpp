@@ -2028,7 +2028,7 @@ void Form::showDialog(kscript::ExprEnv* env, kscript::Value* retval)
     
     // wait until it's running
     while (!loop->IsRunning())
-        kl::Thread::sleep(50);
+        kl::thread::sleep(50);
     
     // ...meanwhile, start a new Application event pump in
     // the script's thread
@@ -2043,7 +2043,7 @@ void Form::showDialog(kscript::ExprEnv* env, kscript::Value* retval)
     
     // wait until it's not running
     while (loop->IsRunning())
-        kl::Thread::sleep(50);
+        kl::thread::sleep(50);
     
     if (!wxPendingDelete.Member(loop))
         wxPendingDelete.Append(loop);

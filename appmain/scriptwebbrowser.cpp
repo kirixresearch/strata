@@ -241,7 +241,7 @@ void WebBrowser::waitUntilReady(kscript::ExprEnv* env, kscript::Value* retval)
     
     while (!m_ctrl->IsContentLoaded())
     {
-        kl::Thread::sleep(20);
+        kl::thread::sleep(20);
         ::wxSafeYield();
         
         if (max_ms > 0)

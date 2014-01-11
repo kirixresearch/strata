@@ -23,14 +23,14 @@ namespace scripthost
 
 // -- FileTransferThread class --
 
-class FileTransferThread : public kl::Thread
+class FileTransferThread : public kl::thread
 {
 public:
 
     FileTransfer* m_request;
     int m_method;
 
-    FileTransferThread(FileTransfer* request) : kl::Thread()
+    FileTransferThread(FileTransfer* request) : kl::thread()
     {
         m_request = request;
         m_request->baseRef();

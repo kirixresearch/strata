@@ -12,7 +12,7 @@
 #ifndef __SDSVC_SDSVC_H
 #define __SDSVC_SDSVC_H
 
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 
 
 #endif

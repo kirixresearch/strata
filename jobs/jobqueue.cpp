@@ -10,7 +10,7 @@
 
 
 #include "jobspch.h"
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 #include <kl/thread.h>
 #include "jobqueue.h"
 
@@ -19,7 +19,7 @@ namespace jobs
 {
 
 
-class JobThread : public kl::Thread
+class JobThread : public kl::thread
 {
 
 public:
@@ -30,7 +30,7 @@ public:
     int m_job_id;
     bool* m_started_flag;
 
-    JobThread(JobQueue* queue, IJobPtr job, bool* started_flag) : kl::Thread()
+    JobThread(JobQueue* queue, IJobPtr job, bool* started_flag) : kl::thread()
     {
         m_job = job;
         m_job_info = job->getJobInfo();
@@ -285,7 +285,7 @@ bool JobQueue::startJob(IJobPtr& job)
         return false;
 
     while (!started_flag)
-        kl::Thread::sleep(10);
+        kl::thread::sleep(10);
         
     return true;
 }

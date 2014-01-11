@@ -14,7 +14,7 @@
 
 
 #include <wx/wx.h>
-#include <xcm/signal.h>
+#include <kl/signal.h>
 
 
 class wxFont;

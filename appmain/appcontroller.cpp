@@ -3674,7 +3674,7 @@ void AppController::updateURLToolbar()
 
 void AppController::updateQuickFilterToolBarItem()
 {
-    wxASSERT(kl::Thread::isMain());
+    wxASSERT(kl::thread::isMain());
 
     if (!m_frame)
     {
@@ -6020,7 +6020,7 @@ void AppController::printConsoleText(const wxString& text)
     printf("%s", (const char*)text.mbc_str());
     #else
     
-    if (kl::Thread::isMain())
+    if (kl::thread::isMain())
     {
         wxCommandEvent e;
         e.SetString(text);
@@ -7333,7 +7333,7 @@ void AppController::refreshDbDoc()
     // we will check to make sure that we are running in the
     // main thread
     
-    if (kl::Thread::isMain())
+    if (kl::thread::isMain())
     {
         // running in the main thread, simply invoke the refresh
         wxCommandEvent e;
@@ -7357,7 +7357,7 @@ void AppController::refreshLinkBar()
     // we will check to make sure that we are running in the
     // main thread
     
-    if (kl::Thread::isMain())
+    if (kl::thread::isMain())
     {
         // running in the main thread, simply invoke the refresh
         wxCommandEvent e;

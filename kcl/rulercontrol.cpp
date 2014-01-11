@@ -11,7 +11,7 @@
 
 #include <wx/wx.h>
 #include <vector>
-#include <xcm/signal.h>
+#include <kl/signal.h>
 #include <cmath>
 
 

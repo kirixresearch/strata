@@ -148,17 +148,14 @@
     <ClInclude Include="include\kl\memory.h" />
     <ClInclude Include="include\kl\portable.h" />
     <ClInclude Include="include\kl\regex.h" />
+    <ClInclude Include="include\kl\signal.h" />
     <ClInclude Include="include\kl\string.h" />
     <ClInclude Include="include\kl\system.h" />
     <ClInclude Include="include\kl\thread.h" />
     <ClInclude Include="include\kl\url.h" />
     <ClInclude Include="include\kl\utf8.h" />
+    <ClInclude Include="include\kl\xcm.h" />
     <ClInclude Include="include\kl\xml.h" />
-    <ClInclude Include="include\xcm\macro.h" />
-    <ClInclude Include="include\xcm\signal.h" />
-    <ClInclude Include="include\xcm\smartptr.h" />
-    <ClInclude Include="include\xcm\typeinfo.h" />
-    <ClInclude Include="include\xcm\xcm.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base64.cpp" />

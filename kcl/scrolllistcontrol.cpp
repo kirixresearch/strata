@@ -477,7 +477,7 @@ void ScrollListControl::removeItem(ScrollListItem* item)
 
 void ScrollListControl::refresh()
 {
-    wxASSERT_MSG(kl::Thread::isMain(), wxT("Can't call this function from a thread, only from the gui/main thread!"));
+    wxASSERT_MSG(kl::thread::isMain(), wxT("Can't call this function from a thread, only from the gui/main thread!"));
 
     calcVirtualHeight();
     render();

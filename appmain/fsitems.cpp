@@ -16,7 +16,7 @@
 
 #include "appmain.h"
 #include <wx/tokenzr.h>
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 #include <kl/klib.h>
 #include "fspanel.h"
 #include "fsitems_private.h"

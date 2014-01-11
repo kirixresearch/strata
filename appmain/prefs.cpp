@@ -16,7 +16,7 @@
 
 #include "appmain.h"
 #include <wx/msw/registry.h>
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 #include "prefs.h"
 #include "prefs_private.h"
 

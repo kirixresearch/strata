@@ -159,12 +159,12 @@ void System::sleep(kscript::ExprEnv* env, void* param, kscript::Value* retval)
                 
             if (amt < 1000)
             {
-                kl::Thread::sleep(amt);
+                kl::thread::sleep(amt);
                 amt = 0;
             }
              else
             {
-                kl::Thread::sleep(1000);
+                kl::thread::sleep(1000);
                 amt -= 1000;
             }
             

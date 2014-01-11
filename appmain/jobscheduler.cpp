@@ -22,12 +22,12 @@ const int SECONDS_IN_DAY = 86400;
 
 // -- JobSchedulerThread class --
 
-class JobSchedulerThread : public kl::Thread,
+class JobSchedulerThread : public kl::thread,
                            public xcm::signal_sink
 {
 public:
 
-    JobSchedulerThread(const JobSchedulerEntry& entry) : kl::Thread()
+    JobSchedulerThread(const JobSchedulerEntry& entry) : kl::thread()
     {
         m_entry = entry;
 
@@ -48,7 +48,7 @@ public:
         {
             while (1)
             {
-                kl::Thread::sleep(1000);
+                kl::thread::sleep(1000);
                 
                 m_obj_mutex.lock();
                 if (m_exit)

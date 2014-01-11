@@ -42,7 +42,7 @@
 #include <wx/mstream.h>
 #include <wx/sstream.h>
 
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 #include <kl/klib.h>
 #include <kl/base64.h>
 #include <kl/utf8.h>

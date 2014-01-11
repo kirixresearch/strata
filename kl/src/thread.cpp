@@ -9,7 +9,7 @@
  */
 
 
-#include "kl/thread.h"
+#include <kl/thread.h>
 
 #ifdef WIN32
 #include <windows.h>
@@ -36,9 +36,9 @@ unsigned int g_mainthread_id = 0;   // TODO: implement
 #endif
 
 
-static unsigned int __stdcall thread_entry_proxy(void *thread)
+static unsigned int __stdcall thread_entry_proxy(void* t)
 {
-    Thread* lthread = static_cast<Thread*>(thread);
+    thread* lthread = static_cast<thread*>(t);
     lthread->entry();
     lthread->exit();
     delete lthread;
@@ -48,36 +48,36 @@ static unsigned int __stdcall thread_entry_proxy(void *thread)
 }
 
 
-Thread::Thread()
+thread::thread()
 {
 }
 
-Thread::~Thread()
+thread::~thread()
 {
 }
 
-int Thread::create()
+int thread::create()
 {
     thread_t handle;
     return thread_create(&handle, NULL, thread_entry_proxy, this);
 }
 
-void Thread::sleep(unsigned int milliseconds)
+void thread::sleep(unsigned int milliseconds)
 {
     thread_sleep(milliseconds);
 }
 
-bool Thread::isMain()
+bool thread::isMain()
 {
     return thread_ismain();
 }
 
-unsigned int Thread::entry()
+unsigned int thread::entry()
 {
     return 0;
 }
 
-void Thread::exit()
+void thread::exit()
 {
 }
 

@@ -377,7 +377,7 @@ public:
     {
 #if APP_GUI==1
         m_bc = NULL;
-        if (kl::Thread::isMain())
+        if (kl::thread::isMain())
             m_bc = new wxBusyCursor;
 #endif
     }

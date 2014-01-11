@@ -498,7 +498,7 @@ bool ExtensionMgr::stopAllExtensions()
     
     while (1)
     {
-        kl::Thread::sleep(100);
+        kl::thread::sleep(100);
         ::wxSafeYield();
         
         

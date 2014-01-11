@@ -98,11 +98,11 @@ wxString SdconnApp::getAppDataPath()
 
 
 
-class ServerThread : public kl::Thread
+class ServerThread : public kl::thread
 {
 public:
 
-    ServerThread() : kl::Thread()
+    ServerThread() : kl::thread()
     {
 
     }

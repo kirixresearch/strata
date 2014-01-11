@@ -2692,7 +2692,7 @@ void WebDoc::openURI(const wxString& uri, wxWebPostData* post_data)
         // wait for the page to load
         while (!m_webcontrol->IsContentLoaded())
         {
-            kl::Thread::sleep(100);
+            kl::thread::sleep(100);
             ::wxSafeYield();
             
             // 5-second timeout (these are local files...)

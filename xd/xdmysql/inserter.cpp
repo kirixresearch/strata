@@ -14,7 +14,7 @@
 #include <windows.h>
 #endif
 
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 #include <kl/string.h>
 #include <kl/portable.h>
 #include <kl/md5.h>

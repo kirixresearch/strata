@@ -17,7 +17,7 @@
 
 #include "appmain.h"
 #include <wx/imaglist.h>
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 #include <set>
 #include "framework.h"
 #include "fspanel.h"

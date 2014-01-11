@@ -37,11 +37,11 @@ enum ThreadCreateReturn
 };
 
 
-class Thread
+class thread
 {
 public:
-    Thread();
-    virtual ~Thread();
+    thread();
+    virtual ~thread();
 
     int create();
    

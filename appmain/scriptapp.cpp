@@ -742,7 +742,7 @@ void Application::exitModal()
 {
     m_exit_modal = true;
     
-    if (kl::Thread::isMain())
+    if (kl::thread::isMain())
     {
         wakeUpQueue();
     }

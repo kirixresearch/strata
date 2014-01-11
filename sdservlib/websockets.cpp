@@ -120,7 +120,7 @@ void WebSocketsRequestInfo::sendNotFoundError()
 
 
 
-class WebSocketsRequestThread : public kl::Thread
+class WebSocketsRequestThread : public kl::thread
 {
 public:
 

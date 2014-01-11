@@ -14,7 +14,7 @@
 
 
 #include <wx/wx.h>
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 #include "util.h"
 
 

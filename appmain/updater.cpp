@@ -155,7 +155,7 @@ public:
         // that check actually worked
         
         while (sw.Time() < 2000)
-            kl::Thread::sleep(100);
+            kl::thread::sleep(100);
         
         return 0;
     }
@@ -647,7 +647,7 @@ static void onUpdateDownloadFinished(jobs::IJobPtr job)
             
             ::wxYield();
             AppBusyCursor bc;
-            kl::Thread::sleep(2000);
+            kl::thread::sleep(2000);
             
             // close the application so the install works well
             g_app->getMainFrame()->closeAll(true);

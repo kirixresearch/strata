@@ -16,7 +16,7 @@
 #include <wx/wx.h>
 #include <wx/hashmap.h>
 #include <vector>
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 
 
 namespace kcl

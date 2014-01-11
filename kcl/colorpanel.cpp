@@ -17,7 +17,7 @@
 #include <wx/wx.h>
 #include <wx/statline.h>
 #include <wx/colordlg.h>
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 #include "button.h"
 #include "colorpanel.h"
 #include "popupcontainer.h"

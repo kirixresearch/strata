@@ -12,7 +12,7 @@
 #include "appmain.h"
 #include <wx/image.h>
 #include <wx/imaglist.h>
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 #include "framework.h"
 #include "fspanel.h"
 #include "fspanellistview.h"

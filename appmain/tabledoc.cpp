@@ -1751,7 +1751,7 @@ void TableDoc::onReloadDownloadFinished(jobs::IJobInfoPtr job_info)
 
 void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
 { 
-    wxASSERT_MSG(kl::Thread::isMain(), wxT("Callback must happen in the main thread"));
+    wxASSERT_MSG(kl::thread::isMain(), wxT("Callback must happen in the main thread"));
     
     m_doing_reload = false;
     
@@ -1869,7 +1869,7 @@ void TableDoc::onDoRefresh(wxCommandEvent& evt)
 void TableDoc::onReload(wxCommandEvent& evt)
 {
     AppBusyCursor bc;
-    kl::Thread::sleep(100);
+    kl::thread::sleep(100);
     
     // make sure a reload isn't already in progress
     if (m_doing_reload)

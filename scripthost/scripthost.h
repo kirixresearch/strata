@@ -15,7 +15,7 @@
 
 #include <queue>
 #include <kl/thread.h>
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 
 #include "../kscript/kscript.h"
 #include "../kscript/jsobject.h"

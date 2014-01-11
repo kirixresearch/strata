@@ -1404,7 +1404,7 @@ void HostApp::hang(kscript::ExprEnv* env, kscript::Value* retval)
 {
     while (1)
     {
-        kl::Thread::sleep(10000);
+        kl::thread::sleep(10000);
     }
 }
 
@@ -1756,7 +1756,7 @@ void HostApp::execute(kscript::ExprEnv* env, kscript::Value* retval)
     {
         if (wait < 50)
             wait++;
-        kl::Thread::sleep(wait);
+        kl::thread::sleep(wait);
     }
     
     jobs::IJobInfoPtr job_info = r->m_job_info;
@@ -1776,7 +1776,7 @@ void HostApp::execute(kscript::ExprEnv* env, kscript::Value* retval)
         {
             if (wait < 1000)
                 wait++;
-            kl::Thread::sleep(wait);
+            kl::thread::sleep(wait);
         } while (job_info->getState() == jobs::jobStateRunning);
     }
      else
@@ -4092,7 +4092,7 @@ void HostAutomation::waitForRunningJobs(kscript::ExprEnv* env, kscript::Value* r
     jobs::IJobQueuePtr job_queue = g_app->getJobQueue();
     while (job_queue->getJobsActive())
     {
-        kl::Thread::sleep(wait_ms);
+        kl::thread::sleep(wait_ms);
         if (wait_ms < 1000)
             wait_ms++;
     }

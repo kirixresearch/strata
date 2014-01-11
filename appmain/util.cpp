@@ -14,7 +14,7 @@
 #include <wx/tokenzr.h>
 #include <wx/config.h>
 #include <wx/stdpaths.h>
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 #include <kl/url.h>
 #include <kl/utf8.h>
 #include <kl/regex.h>

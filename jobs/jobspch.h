@@ -12,7 +12,7 @@
 #ifndef __JOBS_JOBSPCH_H
 #define __JOBS_JOBSPCH_H
 
-#include <xcm/xcm.h>
+#include <kl/xcm.h>
 #include <kl/string.h>
 #include <kl/math.h>
 #include <kl/json.h>
