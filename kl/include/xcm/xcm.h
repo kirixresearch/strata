@@ -13,10 +13,16 @@
 #define __XCM_XCM_H
 
 
+// remove VC9 warnings - eventually commenting this out and implementing
+// specific fixes for these warnings is a good idea
+
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#endif
+
 
 
 #define xcm_interface class
-
 
 
 // export macros 
@@ -30,13 +36,6 @@
     #define XCM_STDCALL
 #endif
 
-
-// remove VC9 warnings - eventually commenting this
-// out and implementing specific fixes for these warnings
-// is a good idea.
-#ifdef _MSC_VER
-#pragma warning(disable : 4996)
-#endif
 
 
 // smart ptr macros
@@ -94,8 +93,7 @@ namespace xcm
     enum ClassRuntimeFuncs
     {
         crfQueryInterface = 0,
-        crfGetClassInfo = 1,
-        crfInvokeMethod = 2
+        crfGetClassInfo = 1
     };
 
 #ifdef _MSC_VER
@@ -217,8 +215,6 @@ long XCM_STDCALL interlocked_decrement(long*);
         }
 
 #define XCM_INTERFACE_ENTRY(interface_type)    \
-        if (func == xcm::crfGetClassInfo) \
-            clsinfo.add_interface_info(interface_type::xcm_get_type_info()); \
         if (interface_name && !strcmp(xcm::IObject::xcm_get_interface_name(), interface_name)) { \
             if (func == xcm::crfQueryInterface) { \
                 obj->ref(); \
@@ -230,14 +226,6 @@ long XCM_STDCALL interlocked_decrement(long*);
                 obj->ref();    \
                 return static_cast<interface_type*>(obj); \
             } \
-            if (func == xcm::crfInvokeMethod) { \
-                interface_type::xcm_interface_runtime( \
-                    static_cast<interface_type*>(obj), \
-                    method, \
-                    params, \
-                    retval); \
-                return NULL; \
-            } \
         }
 
 #define XCM_INTERFACE_CHAIN(base_class) \
@@ -245,7 +233,6 @@ long XCM_STDCALL interlocked_decrement(long*);
             void* res = base_class::xcm_class_runtime(func, obj, interface_name, method, params, retval); \
             if (func == xcm::crfGetClassInfo) \
             { \
-                clsinfo.add_chain_info((xcm::class_info*)res); \
             } \
              else \
             { \
@@ -266,19 +253,7 @@ long XCM_STDCALL interlocked_decrement(long*);
     } \
     void* query_interface(const char* interface_name) { \
         return xcm_class_runtime(xcm::crfQueryInterface, this, interface_name, NULL, NULL, NULL); \
-    } \
-    void invoke(const char* method, xcm::value* params, int param_count, xcm::value* retval) { \
-        char intr_part[255]; \
-        char method_part[255]; \
-        const char* cc = strstr(method, "::"); \
-        if (!cc) \
-            return; \
-        strncpy(intr_part, method, cc-method); \
-        intr_part[cc-method] = 0; \
-        strcpy(method_part, cc+2); \
-        xcm_class_runtime(xcm::crfInvokeMethod, this, intr_part, method_part, params, retval); \
     }
-
 
 // anonymous class support
 
@@ -344,12 +319,6 @@ long XCM_STDCALL interlocked_decrement(long*);
 
 // type info macros
 
-#define XCM_NO_TYPE_INFO()    \
-    public: \
-    static void* xcm_interface_runtime(void* pI, const char* call_method, xcm::value* params, xcm::value* retval) { return NULL; } \
-    static xcm::interface_info* xcm_get_type_info() { return NULL; }
-
-
 
 #include <vector>
 #include <string>
@@ -366,7 +335,6 @@ namespace xcm
 xcm_interface IObject
 {
     XCM_INTERFACE_NAME("xcm.IObject")
-    XCM_NO_TYPE_INFO()
 
 public:
 
@@ -448,7 +416,6 @@ XCM_END_INTERFACE_MAP()
 
 private:
 
-    xcm::mutex m_obj_mutex;
     std::vector<T> m_vec;
 
 public:
@@ -462,23 +429,17 @@ public:
     }
 
     size_t size()
-    {
-        XCM_AUTO_LOCK(m_obj_mutex);
-        
+    {        
         return m_vec.size();
     }
 
     T getItem(size_t idx)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
-        
         return m_vec[idx];
     }
 
     bool setItem(size_t idx, const T& item)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
-
         if (idx >= m_vec.size())
             return false;
 
@@ -489,8 +450,6 @@ public:
 
     bool deleteAt(size_t idx)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
-
         if (idx >= m_vec.size())
             return false;
             
@@ -500,8 +459,6 @@ public:
 
     bool deleteItem(const T& item)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
-        
         typename std::vector<T>::iterator it;
         it = std::find(m_vec.begin(), m_vec.end(), item);
         if (it == m_vec.end())
@@ -512,29 +469,21 @@ public:
 
     void append(const T& item)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
-
         m_vec.push_back(item);
     }
 
     void insert(size_t idx, const T& item)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
-
         m_vec.insert(m_vec.begin() + idx, item);
     }
 
     void clear()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
-
         m_vec.clear();
     }
 
     void setVector(std::vector<T>& vec)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
-        
         m_vec.clear();
         m_vec.reserve(vec.size());
         for (typename std::vector<T>::iterator it = vec.begin();
