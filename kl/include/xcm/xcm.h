@@ -79,10 +79,6 @@ public:
 
 
 
-#include <xcm/smartptr.h>
-
-
-
 
 
 
@@ -104,9 +100,6 @@ public:
     virtual void append(const T& item) = 0;
     virtual void insert(size_t idx, const T& item) = 0;
     virtual void clear() = 0;
-    virtual xcm::ptr<IVector<T> > clone() = 0;
-    virtual void lock() = 0;
-    virtual void unlock() = 0;
 };
 
 
@@ -204,20 +197,6 @@ public:
         m_vec.clear();
     }
 
-    xcm::ptr<IVector<T> > clone()
-    {
-        XCM_AUTO_LOCK(m_obj_mutex);
-
-        IVectorImpl<T>* new_vec = new IVectorImpl<T>;
-        for (typename std::vector<T>::iterator it = m_vec.begin();
-             it != m_vec.end(); ++it)
-        {
-            new_vec->m_vec.push_back(*it);
-        }
-        
-        return new_vec;
-    }
-
     void setVector(std::vector<T>& vec)
     {
         XCM_AUTO_LOCK(m_obj_mutex);
@@ -230,21 +209,15 @@ public:
             m_vec.push_back(*it);
         }
     }
-
-    void lock()
-    {
-        m_obj_mutex.lock();
-    }
-
-    void unlock()
-    {
-        m_obj_mutex.unlock();
-    }
-
 };
 
 
 }; // namespace xcm
+
+
+
+
+#include <xcm/smartptr.h>
 
 
 
