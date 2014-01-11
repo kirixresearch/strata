@@ -13,6 +13,9 @@
 #pragma warning(disable : 4786)
 #endif
 
+#ifdef WIN32
+#include <windows.h>
+#endif
 
 #include <kl/portable.h>
 #include <kl/string.h>
@@ -24,9 +27,6 @@
 #include "inserter.h"
 #include <set>
 
-#ifdef WIN32
-#include <xcm/xcmwin32.h>
-#endif
 
 const wchar_t* sql92_keywords =
                 L"ABSOLUTE,ACTION,ADA,ADD,ALL,ALLOCATE,ALTER,AND,"

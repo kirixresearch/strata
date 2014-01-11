@@ -13,10 +13,6 @@
 #define __XDODBC_DATABASE_H
 
 
-#ifdef WIN32
-#include <xcm/xcmwin32.h>
-#endif
-
 #include <kl/string.h>
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/errorinfo.h"

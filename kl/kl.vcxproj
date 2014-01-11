@@ -165,7 +165,6 @@
     <ClInclude Include="include\xcm\xcm.h" />
     <ClInclude Include="include\xcm\xcmerror.h" />
     <ClInclude Include="include\xcm\xcmthread.h" />
-    <ClInclude Include="include\xcm\xcmvalue.h" />
     <ClInclude Include="include\xcm\xcmvector.h" />
     <ClInclude Include="include\xcm\xcmwin32.h" />
   </ItemGroup>
