@@ -204,7 +204,7 @@ long XCM_STDCALL interlocked_decrement(long*);
 
 #define XCM_BEGIN_INTERFACE_MAP(class_name)    \
     public: \
-    static void* xcm_class_runtime(int func, class_name* obj, const char* interface_name, const char* method, xcm::value* params, xcm::value* retval) { \
+    static void* xcm_class_runtime(int func, class_name* obj, const char* interface_name) { \
         static xcm::class_info clsinfo; \
         if (func == xcm::crfQueryInterface && interface_name == NULL) \
             func = xcm::crfGetClassInfo; \
@@ -215,13 +215,13 @@ long XCM_STDCALL interlocked_decrement(long*);
         }
 
 #define XCM_INTERFACE_ENTRY(interface_type)    \
-        if (interface_name && !strcmp(xcm::IObject::xcm_get_interface_name(), interface_name)) { \
+        if (interface_name && 0 == strcmp(xcm::IObject::xcm_get_interface_name(), interface_name)) { \
             if (func == xcm::crfQueryInterface) { \
                 obj->ref(); \
                 return static_cast<xcm::IObject*>(static_cast<interface_type*>(obj)); \
             } \
         } \
-        if (interface_name && !strcmp(interface_type::xcm_get_interface_name(), interface_name)) { \
+        if (interface_name && 0 == strcmp(interface_type::xcm_get_interface_name(), interface_name)) { \
             if (func == xcm::crfQueryInterface) { \
                 obj->ref();    \
                 return static_cast<interface_type*>(obj); \
@@ -230,7 +230,7 @@ long XCM_STDCALL interlocked_decrement(long*);
 
 #define XCM_INTERFACE_CHAIN(base_class) \
         { \
-            void* res = base_class::xcm_class_runtime(func, obj, interface_name, method, params, retval); \
+            void* res = base_class::xcm_class_runtime(func, obj, interface_name); \
             if (func == xcm::crfGetClassInfo) \
             { \
             } \
@@ -249,28 +249,10 @@ long XCM_STDCALL interlocked_decrement(long*);
         return NULL; \
     } \
     static xcm::class_info* xcm_get_class_info() { \
-        return (xcm::class_info*)xcm_class_runtime(xcm::crfGetClassInfo, NULL, NULL, NULL, NULL, NULL); \
+        return (xcm::class_info*)xcm_class_runtime(xcm::crfGetClassInfo, NULL, NULL); \
     } \
     void* query_interface(const char* interface_name) { \
-        return xcm_class_runtime(xcm::crfQueryInterface, this, interface_name, NULL, NULL, NULL); \
-    }
-
-// anonymous class support
-
-#define XCM_ANONYMOUS_CLASS(class_name) \
-    public: \
-    class_name* xcm_class_runtime(int func, class_name* obj, const char* interface_name, const char* method, xcm::value* params, xcm::value* retval) { \
-        if (func == xcm::crfQueryInterface) { \
-            obj->ref(); \
-            return obj; \
-        } \
-        return NULL; \
-    } \
-    static const char* xcm_get_interface_name() { \
-        return ""; \
-    } \
-    void* query_interface(const char* interface_name) { \
-        return xcm_class_runtime(xcm::crfQueryInterface, this, interface_name, NULL, NULL, NULL); \
+        return xcm_class_runtime(xcm::crfQueryInterface, this, interface_name); \
     }
 
 
@@ -323,9 +305,7 @@ long XCM_STDCALL interlocked_decrement(long*);
 #include <vector>
 #include <string>
 
-#include <xcm/xcmvalue.h>
 #include <xcm/xcmthread.h>
-#include <xcm/typeinfo.h>
 #include <xcm/signal.h>
 
 
@@ -345,7 +325,6 @@ public:
 };
 
 
-
 class refcount_holder
 {
 public:
@@ -363,12 +342,25 @@ public:
 };
 
 
+class class_info
+{
+public:
 
+    const char* get_name()
+    {
+        return m_name.c_str();
+    }
 
-xcm::IObject* create_instance(const std::string& class_name);
-xcm::class_info* get_class_info(const std::string& class_name);
-xcm::class_info* get_class_info(IObject* instance);
-const char* get_last_error();
+    void set_name(const char* name)
+    {
+        m_name = name;
+    }
+
+private:
+
+    std::string m_name;
+};
+
 
 class path_list
 {
@@ -376,6 +368,13 @@ public:
     static std::vector<std::wstring>& get();
     static void add(const std::wstring& path);
 };
+
+
+xcm::IObject* create_instance(const std::string& class_name);
+xcm::class_info* get_class_info(const std::string& class_name);
+xcm::class_info* get_class_info(IObject* instance);
+const char* get_last_error();
+
 
 }; // namespace xcm
 
