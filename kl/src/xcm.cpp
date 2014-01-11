@@ -26,8 +26,11 @@ namespace xcm
 {
 
 
-typedef    xcm::IObject* (*xcm_ci_func_type)(const char* class_name);
-typedef    xcm::class_info* (*xcm_gci_func_type)(const char* class_name);
+typedef xcm::IObject* (*xcm_ci_func_type)(const char* class_name);
+typedef xcm::class_info* (*xcm_gci_func_type)(const char* class_name);
+typedef void* XCM_MODULE;
+
+std::wstring get_program_path();
 
 
 struct libhandle
@@ -88,7 +91,7 @@ std::vector<std::wstring>& path_list::get()
     {
         // add default paths
         #ifdef WIN32
-            std::wstring path = getProgramPath();
+            std::wstring path = get_program_path();
             if (path.empty() || path[path.length()-1] != L'\\')
                 path += L"\\";
 
@@ -97,7 +100,7 @@ std::vector<std::wstring>& path_list::get()
             //path_list.push_back(L"C:\\WINDOWS\\SYSTEM32\\");
             //path_list.push_back(L"C:\\WINDOWS\\SYSTEM\\");
         #else
-            std::wstring path = getProgramPath();
+            std::wstring path = get_program_path();
             if (path.empty() || path[path.length()-1] != L'/')
                 path += L"/";
                 
@@ -130,20 +133,6 @@ void path_list::add(const std::wstring& path)
 
 
 
-std::vector<static_module_base*>& static_module_list::get()
-{
-    static std::vector<static_module_base*> path_list;
-    return path_list;
-}
-
-void static_module_list::add(static_module_base* mod)
-{
-    static_module_list::get().push_back(mod);
-}
-
-
-
-
 
 
 
@@ -166,26 +155,30 @@ long XCM_STDCALL interlocked_decrement(long* p) { return InterlockedDecrement(p)
 inline std::string tostring(const std::wstring& w)
 {
     std::string result;
-    int len = w.length();
+    size_t i, len = w.length();
     result.resize(len);
-    for (int i = 0; i < len; ++i)
-        result[i] = (char)w[i];
+    for (i = 0; i < len; ++i)
+        result[i] = (char)(unsigned char)w[i];
     return result;
 }
 
-std::wstring getProgramPath()
+std::wstring get_program_path()
 {
+#if defined(WIN32)
+
+    wchar_t buf[MAX_PATH];
+    wchar_t* slash;
+    GetModuleFileNameW(NULL, buf, MAX_PATH);
+    slash = wcsrchr(buf, '\\');
+    if (slash)
+        *slash = 0;
+    return buf;
+
+#elif defined(__linux__)
+
     char buf[512];
     char* slash;
 
-#if defined(WIN32)
-    GetModuleFileNameA(NULL, buf, 511);
-    slash = strrchr(buf, '\\');
-    if (slash)
-    {
-        *slash = 0;
-    }
-#elif defined(__linux__)
     int res;
     res = readlink("/proc/self/exe", buf, 512);
     if (res == -1)
@@ -193,29 +186,38 @@ std::wstring getProgramPath()
     buf[res] = 0;
     slash = strrchr(buf, '/');
     if (slash)
-    {
         *slash = 0;
-    }
+
+    std::wstring result;
+    size_t i, len = strlen(buf);
+    result.resize(len);
+    for (i = 0; i < len; ++i)
+        result[i] = buf[i];
+    return result;
+
 #elif defined(__APPLE__)
+
+    char buf[512];
+    char* slash;
+
     unsigned int len = 512;
     if (_NSGetExecutablePath(buf, &len) == -1)
         return wxT("");
     buf[len] = 0;
     slash = strrchr(buf, '/');
     if (slash)
-    {
         *slash = 0;
-    }
+
+    std::wstring result;
+    size_t i, len = strlen(buf);
+    result.resize(len);
+    for (i = 0; i < len; ++i)
+        result[i] = buf[i];
+    return result;
+
 #else
     return L"";
 #endif
-
-    std::wstring result;
-    int len = strlen(buf);
-    result.resize(len);
-    for (int i = 0; i < len; ++i)
-        result[i] = buf[i];
-    return result;
 }
 
 
@@ -248,7 +250,7 @@ XCM_MODULE get_module_handle(const std::string& lib_name)
     // dynamic loader to work
     
     #ifndef WIN32
-    std::wstring wprog_path = getProgramPath();
+    std::wstring wprog_path = get_program_path();
     std::string prog_path = tostring(wprog_path);
 
     char curdir[512];
@@ -376,21 +378,7 @@ void* lookup_func(const std::string& class_name,
 
 xcm::IObject* create_instance(const std::string& class_name)
 {
-    // first, try to find the class in our static library list
-    std::vector<static_module_base*>::iterator it;
-    std::vector<static_module_base*>& modules = static_module_list::get();
-    void* obj;
-    for (it = modules.begin(); it != modules.end(); ++it)
-    {
-        obj = (*it)->xcm_module_runtime(true, class_name.c_str());
-        if (obj)
-        {
-            return static_cast<xcm::IObject*>(obj);
-        }
-    }
-
-
-    // now lookup the appropriate dll
+    // lookup the appropriate dll
     xcm_ci_func_type create_instance_ptr;
 
     create_instance_ptr = (xcm_ci_func_type)xcm::lookup_func(class_name, "xcm_create_instance");
@@ -403,20 +391,7 @@ xcm::IObject* create_instance(const std::string& class_name)
 
 xcm::class_info* get_class_info(const std::string& class_name)
 {
-    // first, try to find the class in our static library list
-    std::vector<static_module_base*>::iterator it;
-    std::vector<static_module_base*>& modules = static_module_list::get();
-    void* obj;
-    for (it = modules.begin(); it != modules.end(); ++it)
-    {
-        obj = (*it)->xcm_module_runtime(false, class_name.c_str());
-        if (obj)
-        {
-            return static_cast<xcm::class_info*>(obj);
-        }
-    }
-
-    // now lookup the appropriate dll
+    // lookup the appropriate dll
     xcm_gci_func_type get_class_info_ptr;
 
     get_class_info_ptr = (xcm_gci_func_type)xcm::lookup_func(class_name, "xcm_get_class_info");

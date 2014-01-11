@@ -46,30 +46,6 @@
 
 // module macros
 
-#define XCM_BEGIN_STATIC_MODULE(module_name) \
-    class xcm_static_module_##module_name : public xcm::static_module_base { \
-        public:
-
-#define XCM_END_STATIC_MODULE(module_name) \
-    }; \
-    xcm_static_module_##module_name g_xcm_static_module_obj_##module_name; \
-    xcm::static_module_base* xcm_get_static_module_obj_##module_name() { \
-        return &g_xcm_static_module_obj_##module_name; \
-    }
-
-
-#define XCM_USING_STATIC_MODULE(module_name) \
-    xcm::static_module_base* xcm_get_static_module_obj_##module_name(); \
-    class xcm_static_module_obj_##module_name { \
-        public: \
-            xcm_static_module_obj_##module_name() { \
-                xcm::static_module_list::add(xcm_get_static_module_obj_##module_name()); \
-            } \
-    }; \
-    xcm_static_module_obj_##module_name gs_static_module_obj_##module_name;
-                
-
-
 #define XCM_BEGIN_DYNAMIC_MODULE(module_name) \
     extern "C" { \
 

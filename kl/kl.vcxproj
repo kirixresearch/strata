@@ -161,7 +161,6 @@
     <ClInclude Include="include\xcm\signal.h" />
     <ClInclude Include="include\xcm\smartptr.h" />
     <ClInclude Include="include\xcm\typeinfo.h" />
-    <ClInclude Include="include\xcm\types.h" />
     <ClInclude Include="include\xcm\xcm.h" />
     <ClInclude Include="include\xcm\xcmerror.h" />
     <ClInclude Include="include\xcm\xcmthread.h" />

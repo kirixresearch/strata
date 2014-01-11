@@ -2176,10 +2176,10 @@ void ExIndex::finishBulkInsert(IIndexProgress* progress)
 }
 
 
-xcm::result ExIndex::insert(const void* key,
-                            int keylen,
-                            const void* value,
-                            int vallen)
+int ExIndex::insert(const void* key,
+                    int keylen,
+                    const void* value,
+                    int vallen)
 {
 
     if (keylen < 0 || (unsigned int)keylen > m_keylen)

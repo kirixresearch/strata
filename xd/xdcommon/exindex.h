@@ -82,7 +82,7 @@ public:
     virtual unsigned int getValueLength() = 0;
     virtual bool remove(IIndexIterator* iter) = 0;
     virtual void startBulkInsert(xd::rowpos_t total_keys) = 0;
-    virtual xcm::result insert(const void* key, int keylen, const void* value, int vallen) = 0;
+    virtual int insert(const void* key, int keylen, const void* value, int vallen) = 0;
     virtual void cancelBulkInsert() = 0;
     virtual void finishBulkInsert(IIndexProgress* progress) = 0;
     virtual void flush() = 0;
@@ -178,7 +178,7 @@ public:
     unsigned int getKeyLength();
     unsigned int getValueLength();
     void startBulkInsert(xd::rowpos_t total_keys);
-    xcm::result insert(const void* key, int keylen, const void* value, int vallen);
+    int insert(const void* key, int keylen, const void* value, int vallen);
     void cancelBulkInsert();
     void finishBulkInsert(IIndexProgress* progress);
     void flush();

@@ -14,8 +14,6 @@
 
 
 #include <xcm/macro.h>
-#include <xcm/types.h>
-#include <xcm/xcmerror.h>
 #include <xcm/xcmvalue.h>
 #include <xcm/xcmthread.h>
 #include <xcm/typeinfo.h>
