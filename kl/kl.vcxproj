@@ -155,7 +155,6 @@
     <ClInclude Include="include\kl\utf8.h" />
     <ClInclude Include="include\kl\win32.h" />
     <ClInclude Include="include\kl\xml.h" />
-    <ClInclude Include="include\xcm\iobject.h" />
     <ClInclude Include="include\xcm\macro.h" />
     <ClInclude Include="include\xcm\signal.h" />
     <ClInclude Include="include\xcm\smartptr.h" />

@@ -29,12 +29,7 @@ namespace xcm
 xcm_interface IObject
 {
     XCM_INTERFACE_NAME("xcm.IObject")
-
-    XCM_BEGIN_TYPE_INFO(IObject)
-        XCM_METHOD_V0(ref, "void ref()")
-        XCM_METHOD_V0(unref, "void unref()")
-        XCM_METHOD_R1(query_interface, "void* query_interface(ccstring interface_name)")
-    XCM_END_TYPE_INFO()
+    XCM_NO_TYPE_INFO()
 
 public:
 
@@ -44,17 +39,6 @@ public:
     virtual void* query_interface(const char* interface_name) = 0;
 };
 
-
-
-xcm_interface IRuntime
-{
-    XCM_INTERFACE_NAME("xcm.IRuntime");
-    XCM_NO_TYPE_INFO()
-
-public:
-
-    virtual void invoke(const char* method, xcm::value* params, int param_count, xcm::value* retval) = 0;
-};
 
 
 class refcount_holder
