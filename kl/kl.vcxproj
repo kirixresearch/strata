@@ -155,14 +155,12 @@
     <ClInclude Include="include\kl\utf8.h" />
     <ClInclude Include="include\kl\win32.h" />
     <ClInclude Include="include\kl\xml.h" />
-    <ClInclude Include="include\xcm\create.h" />
     <ClInclude Include="include\xcm\iobject.h" />
     <ClInclude Include="include\xcm\macro.h" />
     <ClInclude Include="include\xcm\signal.h" />
     <ClInclude Include="include\xcm\smartptr.h" />
     <ClInclude Include="include\xcm\typeinfo.h" />
     <ClInclude Include="include\xcm\xcm.h" />
-    <ClInclude Include="include\xcm\xcmerror.h" />
     <ClInclude Include="include\xcm\xcmthread.h" />
     <ClInclude Include="include\xcm\xcmvector.h" />
     <ClInclude Include="include\xcm\xcmwin32.h" />

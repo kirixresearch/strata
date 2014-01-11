@@ -13,8 +13,6 @@
 #define __XCM_MACRO_H
 
 
-#include <cstring>
-
 // export macros 
 
 #ifdef WIN32
