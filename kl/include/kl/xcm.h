@@ -13,6 +13,11 @@
 #define __XCM_XCM_H
 
 
+#include <vector>
+#include <string>
+#include <kl/thread.h>
+#include <xcm/signal.h>
+
 // remove VC9 warnings - eventually commenting this out and implementing
 // specific fixes for these warnings is a good idea
 
@@ -299,13 +304,8 @@ long XCM_STDCALL interlocked_decrement(long*);
             xcm::signal4<p1,p2,p3,p4> sig_##sig_name; \
             xcm::signal4<p1,p2,p3,p4>& sig_name() { return sig_##sig_name; }
 
-// type info macros
 
 
-#include <vector>
-#include <string>
-#include <kl/thread.h>
-#include <xcm/signal.h>
 
 
 namespace xcm

@@ -159,7 +159,6 @@
     <ClInclude Include="include\xcm\smartptr.h" />
     <ClInclude Include="include\xcm\typeinfo.h" />
     <ClInclude Include="include\xcm\xcm.h" />
-    <ClInclude Include="include\xcm\xcmthread.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base64.cpp" />
