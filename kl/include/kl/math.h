@@ -12,10 +12,8 @@
 #ifndef __KL_MATH_H
 #define __KL_MATH_H
 
-
-#include <cmath>
-#include <cctype>
 #include <string>
+#include <cmath>
 
 
 namespace kl
@@ -75,14 +73,15 @@ inline int dblcompare(double x1, double x2)
 std::wstring dbltostr(double d);
 
 
-// Statistics class for calculating mean, variance, and 
+// statistics class for calculating mean, variance, and 
 // standard deviation
-class Statistics
+
+class statistics
 {
 public:
 
-    Statistics();
-    virtual ~Statistics();
+    statistics();
+    virtual ~statistics();
 
     unsigned int count();
     double mean();

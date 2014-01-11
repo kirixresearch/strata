@@ -8,7 +8,7 @@
  *
  */
 
-
+#include <string>
 #include "kl/math.h"
 #include "kl/string.h"
 
@@ -86,21 +86,21 @@ std::wstring dbltostr(double d)
 
 // Statistics class for calculating mean, variance, and 
 // standard deviation
-Statistics::Statistics()
+statistics::statistics()
 {
     init();
 }
 
-Statistics::~Statistics()
+statistics::~statistics()
 {
 }
 
-unsigned int Statistics::count()
+unsigned int statistics::count()
 {
     return m_count;
 }
 
-double Statistics::mean()
+double statistics::mean()
 {
     if (m_count < 1)
         return 0.0;
@@ -108,7 +108,7 @@ double Statistics::mean()
     return m_new_m;
 }
 
-double Statistics::variance()
+double statistics::variance()
 {
     if (m_count < 2)
         return 0.0;
@@ -116,12 +116,12 @@ double Statistics::variance()
     return m_new_s/(m_count - 1);
 }
 
-double Statistics::stddev()
+double statistics::stddev()
 {
     return sqrt(variance());
 }
 
-void Statistics::push(double x)
+void statistics::push(double x)
 {
     // note: statistics are calculated using Welford's method;
     // more information in Donald Knuth's Art of Computer Programming,
@@ -144,7 +144,7 @@ void Statistics::push(double x)
     m_old_s = m_new_s;
 }
 
-void Statistics::init()
+void statistics::init()
 {
     m_count = 0;
     m_new_m = 0.0;

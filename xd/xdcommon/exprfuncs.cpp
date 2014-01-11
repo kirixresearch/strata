@@ -863,7 +863,7 @@ void func_sum(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_stddev(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
-    kl::Statistics stats;
+    kl::statistics stats;
 
     if (env->m_eval_params[0]->isNumber())
     {

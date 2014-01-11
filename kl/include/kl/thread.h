@@ -15,11 +15,6 @@
 
 #define KL_AUTO_LOCK(mutex) kl::safe_mutex_locker kl_safe_mutex_locker(mutex)
 
-namespace kl
-{
-
-
-typedef unsigned long thread_t;
 
 #ifdef _MSC_VER
 #define KLTHREAD_CALLING_CONVENTION __stdcall
@@ -28,7 +23,13 @@ typedef unsigned long thread_t;
 #endif
 
 
-enum ThreadCreateReturn
+namespace kl
+{
+
+typedef unsigned long thread_t;
+
+
+enum thread_creation_return_codes
 {
     tcrOK = 0,
     tcrEAGAIN = 1,

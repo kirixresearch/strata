@@ -1380,7 +1380,7 @@ void BaseIterator::recalcAggResults()
         {
             bool first_row = true;
             double group_row_count = 0.0;
-            kl::Statistics stats;
+            kl::statistics stats;
 
             iter->goFirst();
             while (!iter->eof())

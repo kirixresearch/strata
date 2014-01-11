@@ -1359,7 +1359,7 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
     cancelled = false;
     bool eof;
 
-    kl::Statistics stats;
+    kl::statistics stats;
 
     unsigned char* valptr = NULL;
 
