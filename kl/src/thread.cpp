@@ -82,8 +82,73 @@ void Thread::exit()
 }
 
 
+
+
+
+
+
+// thread class implemetation
+
+
 #ifdef WIN32
 
+mutex::mutex()
+{
+    ::InitializeCriticalSection((PCRITICAL_SECTION)m_data);
+}
+
+mutex::~mutex()
+{
+    ::DeleteCriticalSection((PCRITICAL_SECTION)m_data);
+}
+
+void mutex::lock()
+{
+    ::EnterCriticalSection((PCRITICAL_SECTION)m_data);
+}
+
+void mutex::unlock()
+{
+    ::LeaveCriticalSection((PCRITICAL_SECTION)m_data);
+}
+
+#else
+
+mutex::mutex()
+{
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+
+    pthread_mutex_init((pthread_mutex_t*)m_data, &attr);
+}
+
+mutex::~mutex()
+{
+    pthread_mutex_destroy((pthread_mutex_t*)m_data);
+}
+
+void mutex::lock()
+{
+    pthread_mutex_lock((pthread_mutex_t*)m_data);
+}
+
+void mutex::unlock()
+{
+    pthread_mutex_unlock((pthread_mutex_t*)m_data);
+}
+
+
+
+#endif
+
+
+
+
+
+
+
+#ifdef WIN32
 
 int thread_create(thread_t* thread, const thread_t* attr,
                   unsigned (KLTHREAD_CALLING_CONVENTION *start_routine) (void *), void* arg)

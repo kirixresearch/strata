@@ -19,6 +19,12 @@ namespace kl
 
 typedef unsigned long thread_t;
 
+#ifdef _MSC_VER
+#define KLTHREAD_CALLING_CONVENTION __stdcall
+#else
+#define KLTHREAD_CALLING_CONVENTION
+#endif
+
 
 enum ThreadCreateReturn
 {
@@ -45,24 +51,65 @@ public:
 };
 
 
-#ifdef _MSC_VER
-#define KLTHREAD_CALLING_CONVENTION __stdcall
-#else
-#define KLTHREAD_CALLING_CONVENTION
-#endif
+class mutex
+{
+public:
 
-int thread_create(thread_t* thread, const thread_t* attr,
-                  unsigned (KLTHREAD_CALLING_CONVENTION *start_routine) (void *), void* arg);
+    mutex();
+    ~mutex();
+
+    void lock();
+    void unlock();
+
+private:
+
+    // this is big enough for CRITICAL_SECTION and
+    // pthread_mutex_t on all supported platforms;
+    // additional platforms will have to be checked
+
+    unsigned char m_data[40];
+};
+
+
+
+class safe_mutex_locker
+{
+public:
+
+    safe_mutex_locker(mutex& m) : m_mutex(m)
+    {
+        m_mutex.lock();
+    }
+
+    ~safe_mutex_locker()
+    {
+        m_mutex.unlock();
+    }
+
+private:
+
+    mutex& m_mutex;
+};
+
+
+
+
+int thread_create(thread_t* thread,
+                  const thread_t* attr,
+                  unsigned (KLTHREAD_CALLING_CONVENTION *start_routine) (void *),
+                  void* arg);
 
 void thread_sleep(unsigned int milliseconds);
 
 unsigned int thread_getcurrentid();
+
 unsigned int thread_getid(thread_t *thread);
 
 bool thread_ismain();
+
+
 
 };
 
 
 #endif
-
