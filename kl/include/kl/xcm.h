@@ -312,7 +312,7 @@ public:
 
     virtual void ref() = 0;
     virtual void unref() = 0;
-    virtual int get_ref_count() = 0;
+    //virtual int get_ref_count() = 0;
     virtual void* query_interface(const char* interface_name) = 0;
 };
 
@@ -466,12 +466,12 @@ public:
         m_vec.clear();
     }
 
-    void setVector(std::vector<T>& vec)
+    void setVector(const std::vector<T>& vec)
     {
         m_vec.clear();
         m_vec.reserve(vec.size());
-        for (typename std::vector<T>::iterator it = vec.begin();
-             it != vec.end(); ++it)
+        typename std::vector<T>::const_iterator it, it_end = vec.cend();
+        for (it = vec.cbegin(); it != it_end; ++it)
         {
             m_vec.push_back(*it);
         }
