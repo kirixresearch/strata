@@ -677,7 +677,7 @@ bool FsDatabase::detectMountPoint(const std::wstring& path,
 
 
         phys_path = makeFullPath(fpath);
-        phys_path += L".xdfs0";
+        phys_path += L".xddef";
         
         if (xf_get_file_exist(phys_path))
         {
@@ -832,7 +832,7 @@ bool FsDatabase::setMountPoint(const std::wstring& path,
 {
     // convert path to real file name
     std::wstring phys_path = makeFullPath(path);
-    phys_path += L".xdfs0";
+    phys_path += L".xddef";
     
     // process connection string
     std::wstring final_connection_string = connection_str;
@@ -877,7 +877,7 @@ bool FsDatabase::getMountPoint(const std::wstring& path,
 {
     // convert path to real file name
     std::wstring phys_path = makeFullPath(path);
-    phys_path += L".xdfs0";
+    phys_path += L".xddef";
 
     xd::FormatDefinition fd;
 
@@ -958,10 +958,10 @@ bool FsDatabase::renameFile(const std::wstring& path,
     new_path += new_name;
 
 
-    if (xf_get_file_exist(phys_path + L".xdfs0"))
+    if (xf_get_file_exist(phys_path + L".xddef"))
     {
         // mount file itself being renamed
-        if (!xf_move(phys_path + L".xdfs0", new_path + L".xdfs0"))
+        if (!xf_move(phys_path + L".xddef", new_path + L".xddef"))
             return false;
         return true;
     }
@@ -1053,9 +1053,9 @@ bool FsDatabase::moveFile(const std::wstring& src_path,
         xf_move(src_phys_path + L".map", dest_phys_path + L".map");
         return xf_move(src_phys_path + L".ttb", dest_phys_path + L".ttb");
     }
-     else if (xf_get_file_exist(src_phys_path + L".xdfs0"))
+     else if (xf_get_file_exist(src_phys_path + L".xddef"))
     {
-        return xf_move(src_phys_path + L".xdfs0", dest_phys_path + L".xdfs0");
+        return xf_move(src_phys_path + L".xddef", dest_phys_path + L".xddef");
     }
      else
     {
@@ -1170,9 +1170,9 @@ bool FsDatabase::deleteFile(const std::wstring& _path)
     if (path.empty() || path == L"/")
         return false;
 
-    if (xf_get_file_exist(path + L".xdfs0"))
+    if (xf_get_file_exist(path + L".xddef"))
     {
-        xf_remove(path + L".xdfs0");
+        xf_remove(path + L".xddef");
         return true;
     }
     
@@ -1236,7 +1236,7 @@ bool FsDatabase::getFileExist(const std::wstring& path)
     if (xf_get_file_exist(phys_path + L".ttb"))
         return true;
 
-    if (xf_get_file_exist(phys_path + L".xdfs0"))
+    if (xf_get_file_exist(phys_path + L".xddef"))
         return true;
 
     if (xf_get_file_exist(phys_path))
@@ -1470,10 +1470,10 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
 
     std::wstring phys_path = makeFullPath(path);
 
-    if (xf_get_file_exist(phys_path + L".xdfs0"))
+    if (xf_get_file_exist(phys_path + L".xddef"))
     {
         xd::FormatDefinition def;
-        if (!loadDefinitionFromFile(phys_path + L".xdfs0", &def))
+        if (!loadDefinitionFromFile(phys_path + L".xddef", &def))
             return xcm::null;
 
         xdcommon::FileInfo* f = new xdcommon::FileInfo;
@@ -1625,13 +1625,13 @@ xd::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
             std::wstring ext = kl::afterLast(info.m_name, '.');
             kl::makeLower(ext);
 
-            if (ext == L"tmp")
+            if (ext == L"tmp" || ext == L"xdi")
             {
                 // don't show these extensions
                 continue;
             }
 
-            if (ext == L"xdfs0")
+            if (ext == L"xddef")
             {
                 std::wstring full_path = phys_path;
                 full_path += PATH_SEPARATOR_CHAR;
@@ -1765,7 +1765,7 @@ IXdsqlTablePtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatD
     // if the file doesn't exist, bail out
     std::wstring phys_path = makeFullPath(path);
 
-    if (xf_get_file_exist(phys_path + L".xdfs0"))
+    if (xf_get_file_exist(phys_path + L".xddef"))
     {
         if (!loadDataView(path, &deffi))
             return xcm::null;
@@ -1990,14 +1990,14 @@ xd::IIteratorPtr FsDatabase::query(const xd::QueryParams& qp)
 
 bool FsDatabase::loadDataView(const std::wstring& path, xd::FormatDefinition* info)
 {
-    std::wstring phys_path = makeFullPath(path) + L".xdfs0";
+    std::wstring phys_path = makeFullPath(path) + L".xddef";
 
     return loadDefinitionFromFile(phys_path, info);
 }
 
 bool FsDatabase::saveDataView(const std::wstring& path, const xd::FormatDefinition* info)
 {
-    std::wstring phys_path = makeFullPath(path) + L".xdfs0";
+    std::wstring phys_path = makeFullPath(path) + L".xddef";
     
     return saveDefinitionToFile(phys_path, info);
 }
