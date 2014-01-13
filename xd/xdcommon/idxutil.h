@@ -23,13 +23,14 @@ IIndex* createExternalIndex(xd::IDatabasePtr db,
                             const std::wstring& tempfile_path,
                             const std::wstring& expr,
                             bool allow_dups,
+                            bool delete_on_close,
                             xd::IJob* job);
                             
 xd::IIteratorPtr createIteratorFromIndex(xd::IIteratorPtr data_iter,
-                                            IIndex* idx,
-                                            const std::wstring& columns,
-                                            const std::wstring& order,
-                                            const std::wstring& table = L"");
+                                         IIndex* idx,
+                                         const std::wstring& columns,
+                                         const std::wstring& order,
+                                         const std::wstring& table = L"");
 
 
 

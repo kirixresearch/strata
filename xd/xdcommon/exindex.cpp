@@ -910,6 +910,7 @@ ExIndex::ExIndex()
     m_root_node = NULL;
     m_allow_dups = false;
     m_bulk_insert = false;
+    m_delete_on_close = false;
     m_pool = NULL;
 
 
@@ -958,6 +959,11 @@ ExIndex::~ExIndex()
         }
 
         m_bf.close();
+    }
+
+    if (m_delete_on_close && m_filename.length() > 0)
+    {
+        xf_remove(m_filename);
     }
 }
 
@@ -1832,7 +1838,10 @@ bool ExIndex::create(const std::wstring& filename,
     int block_size = (m_entrylen*(XDB_MAX_KEYS_PER_NODE-1))+5;
 
     if (!m_bf.create(filename, block_size))
+    {
+        xf_remove(filename);
         return false;
+    }
 
     m_filename = filename;
 

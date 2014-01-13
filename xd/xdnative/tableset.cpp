@@ -981,8 +981,8 @@ xd::IIndexInfoEnumPtr TableSet::getIndexEnum()
 
 
 xd::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
-                                           const std::wstring& expr,
-                                           xd::IJob* job)
+                                        const std::wstring& expr,
+                                        xd::IJob* job)
 {
     KL_AUTO_LOCK(m_update_mutex);
 
@@ -1071,6 +1071,7 @@ xd::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
                                       m_database->getTempPath(),
                                       expr,
                                       true,
+                                      false, // delete_on_close is false because this is a 'permanant index'
                                       job);
 
 
@@ -1395,6 +1396,7 @@ xd::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
                                   m_database->getTempPath(),
                                   order,
                                   true,
+                                  false, // delete_on_close = false because we handle it ourselves in this class
                                   job);
         if (!idx)
         {

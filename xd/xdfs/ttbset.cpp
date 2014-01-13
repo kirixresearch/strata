@@ -128,6 +128,7 @@ xd::IIteratorPtr TtbSet::createIterator(const std::wstring& columns,
                               temp_directory,
                               order,
                               true,
+                              true,
                               job);
     if (!idx)
     {
@@ -142,10 +143,10 @@ xd::IIteratorPtr TtbSet::createIterator(const std::wstring& columns,
     }
 
     xd::IIteratorPtr result_iter = createIteratorFromIndex(data_iter,
-                                   idx,
-                                   columns,
-                                   order,
-                                   getObjectPath());
+                                                           idx,
+                                                           columns,
+                                                           order,
+                                                           getObjectPath());
 
     idx->unref();
     return result_iter;

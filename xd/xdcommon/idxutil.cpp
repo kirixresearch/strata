@@ -77,6 +77,7 @@ IIndex* createExternalIndex(xd::IDatabasePtr db,
                             const std::wstring& tempfile_path,
                             const std::wstring& expr,
                             bool allow_dups,
+                            bool delete_on_close,
                             xd::IJob* job)
 {
     if (table_path.empty())
@@ -143,6 +144,9 @@ IIndex* createExternalIndex(xd::IDatabasePtr db,
     // create the index
     ExIndex* index = new ExIndex;
     index->setTempFilePath(tempfile_path);
+    
+    if (delete_on_close)
+        index->setDeleteOnClose(true);
 
     if (!index->create(index_filename,
                        key_length,

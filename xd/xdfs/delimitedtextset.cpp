@@ -235,18 +235,26 @@ xd::IIteratorPtr DelimitedTextSet::createIterator(const std::wstring& columns,
                               temp_directory,
                               order,
                               true,
+                              true,
                               job);
     if (!idx)
+        return xcm::null;
+
+    xd::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
+    if (data_iter.isNull())
     {
+        idx->unref();
         return xcm::null;
     }
 
-    xd::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
-    return createIteratorFromIndex(data_iter,
-                                   idx,
-                                   columns,
-                                   order,
-                                   getObjectPath());
+    xd::IIteratorPtr result_iter = createIteratorFromIndex(data_iter,
+                                                           idx,
+                                                           columns,
+                                                           order,
+                                                           getObjectPath());
+
+    idx->unref();
+    return result_iter;
 }
 
 xd::rowpos_t DelimitedTextSet::getRowCount()

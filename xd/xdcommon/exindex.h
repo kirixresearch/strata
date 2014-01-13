@@ -170,6 +170,7 @@ public:
 
     bool open(const std::wstring& filename);
     bool close();
+    void setDeleteOnClose(bool value) { m_delete_on_close = value; }
 
     // -- IIndex implementation --
     std::wstring getFilename();
@@ -242,6 +243,7 @@ public:
 private:
 
     BlockFile m_bf;
+    bool m_delete_on_close;
 
     kl::mutex m_obj_mutex;
     kl::mutex m_tree_mutex;

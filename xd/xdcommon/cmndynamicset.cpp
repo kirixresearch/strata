@@ -460,6 +460,7 @@ xd::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns,
                                       m_temp_path,
                                       expr,
                                       true,
+                                      false, // delete_on_close = false because we handle it ourselves in this class
                                       job);
     if (!idx)
     {

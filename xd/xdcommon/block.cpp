@@ -174,7 +174,7 @@ bool BlockFile::open(const std::wstring& filename)
     }
 
     unsigned int version;
-    version =        (((unsigned int)buf[0])) |
+    version =       (((unsigned int)buf[0])) |
                     (((unsigned int)buf[1]) << 8) |
                     (((unsigned int)buf[2]) << 16) |
                     (((unsigned int)buf[3]) << 24);
@@ -261,6 +261,8 @@ void BlockFile::freePool()
 
     while (!m_free_bufs.empty())
         m_free_bufs.pop();
+
+    xf_flush(m_f);
 }
 
 
