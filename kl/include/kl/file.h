@@ -106,6 +106,7 @@ xf_file_t xf_open(const std::wstring& filename,
                   unsigned int disposition,
                   unsigned int access_flags,
                   unsigned int share_flags);
+bool xf_flush(xf_file_t fileh);
 bool xf_close(xf_file_t fileh);
 bool xf_seek(xf_file_t fileh, xf_off_t seek_pos, unsigned int method);
 int xf_read(xf_file_t fileh, void* buffer, unsigned int read_size, unsigned int read_count);

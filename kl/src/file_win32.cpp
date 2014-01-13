@@ -194,6 +194,12 @@ xf_file_t xf_open(const std::wstring& filename,
     return (h != INVALID_HANDLE_VALUE ? h : NULL);
 }
 
+
+bool xf_flush(xf_file_t fileh)
+{
+    return (FlushFileBuffers(fileh) ? true : false);
+}
+
 bool xf_close(xf_file_t fileh)
 {
     return (CloseHandle(fileh) ? true : false);

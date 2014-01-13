@@ -194,6 +194,12 @@ xf_file_t xf_open(const std::wstring& filename,
     return 0;
 }
 
+bool xf_flush(xf_file_t fileh)
+{
+    return (fflush((FILE*)fileh) == 0 ? true : false);
+}
+
+
 bool xf_close(xf_file_t fileh)
 {
     return (fclose((FILE*)fileh) == 0 ? true : false);
