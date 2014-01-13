@@ -132,38 +132,31 @@ bool FsDatabase::open(const std::wstring& path)
         if (!xf_get_directory_exist(path))
             return false;
 
-        std::wstring temp_dir = path;
+        std::wstring control_dir = path;
         
         #ifdef WIN32
-        kl::replaceStr(temp_dir, L"/", L"\\");
+        kl::replaceStr(control_dir, L"/", L"\\");
         #endif
 
-        if (temp_dir[temp_dir.length()-1] != xf_path_separator_wchar)
-            temp_dir += xf_path_separator_wchar;
-        temp_dir += L".xdtmp";
+        if (control_dir[control_dir.length()-1] != xf_path_separator_wchar)
+            control_dir += xf_path_separator_wchar;
+        control_dir += L"xdfs";
 
-        if (temp_dir == L"/.xdtmp")
+        if (control_dir == L"/xdfs")
         {
-            temp_dir = xf_get_temp_path();
+            control_dir = xf_get_temp_path();
+            control_dir = L"/xdfs";
         }
-         else
-        {
-            // make directory
-            if (!xf_get_directory_exist(temp_dir))
-            {
-                xf_mkdir(temp_dir);
 
-                // on windows, set it as hidden
-                #ifdef WIN32
-                DWORD dwattr = GetFileAttributes(temp_dir.c_str());
-                if (dwattr == INVALID_FILE_ATTRIBUTES)
-                    dwattr = FILE_ATTRIBUTE_HIDDEN;
-                     else
-                    dwattr |= FILE_ATTRIBUTE_HIDDEN;
-                SetFileAttributes(temp_dir.c_str(), dwattr);
-                #endif
-            }
-        }
+
+        // make control directory
+        if (!xf_get_directory_exist(control_dir))
+            xf_mkdir(control_dir);
+
+        // make temp directory
+        std::wstring temp_dir = (control_dir + xf_path_separator_wchar) + L"temp";
+        if (!xf_get_directory_exist(temp_dir))
+            xf_mkdir(temp_dir);
 
         m_attr->setStringAttribute(xd::dbattrTempDirectory, temp_dir);
         m_attr->setStringAttribute(xd::dbattrDefinitionDirectory, temp_dir);
@@ -1636,6 +1629,8 @@ xd::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
         if (info.m_type == xfFileTypeDirectory)
         {
             if (!info.m_name.empty() && info.m_name[0] == L'.')
+                continue;
+            if (kl::iequals(info.m_name, L"xdfs"))
                 continue;
 
             xdcommon::FileInfo* f = new xdcommon::FileInfo;
