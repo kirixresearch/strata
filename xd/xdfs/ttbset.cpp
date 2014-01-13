@@ -135,11 +135,20 @@ xd::IIteratorPtr TtbSet::createIterator(const std::wstring& columns,
     }
 
     xd::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
-    return createIteratorFromIndex(data_iter,
+    if (data_iter.isNull())
+    {
+        idx->unref();
+        return xcm::null;
+    }
+
+    xd::IIteratorPtr result_iter = createIteratorFromIndex(data_iter,
                                    idx,
                                    columns,
                                    order,
                                    getObjectPath());
+
+    idx->unref();
+    return result_iter;
 }
 
 
