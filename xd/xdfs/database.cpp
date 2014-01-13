@@ -43,6 +43,7 @@
 #include <kl/json.h>
 #include <kl/md5.h>
 #include <kl/string.h>
+#include <kl/file.h>
 
 
 #ifdef WIN32
@@ -158,11 +159,19 @@ bool FsDatabase::open(const std::wstring& path)
         if (!xf_get_directory_exist(temp_dir))
             xf_mkdir(temp_dir);
 
+        // make appdata directory
+        std::wstring appdata_dir = (control_dir + xf_path_separator_wchar) + L"appdata";
+        if (!xf_get_directory_exist(appdata_dir))
+            xf_mkdir(appdata_dir);
+
         m_attr->setStringAttribute(xd::dbattrTempDirectory, temp_dir);
         m_attr->setStringAttribute(xd::dbattrDefinitionDirectory, temp_dir);
+
+        m_ctrl_path = control_dir;
     }
 
     m_base_path = path;
+    m_ctrl_path = xf_get_temp_path();
     return true;
 }
 
@@ -482,7 +491,7 @@ int FsDatabase::getDatabaseType()
 
 std::wstring FsDatabase::getActiveUid()
 {
-    return L"";
+    return L"admin";
 }
 
 xd::IAttributesPtr FsDatabase::getAttributes()
@@ -559,7 +568,10 @@ std::wstring FsDatabase::makeFullPath(const std::wstring& _path)
     }
     
     
-    
+    // convert /.appdata to /xdfs/appdata
+    kl::replaceStr(file_path, L".appdata", L"xdfs/appdata");
+
+        
     std::wstring path = convertSlashes(file_path);
     
     if (path.length() >= 2)
@@ -569,7 +581,8 @@ std::wstring FsDatabase::makeFullPath(const std::wstring& _path)
             return path;
     }
     
-    
+
+
     std::wstring base_path = m_base_path;
     
 #ifdef WIN32
@@ -1177,6 +1190,36 @@ static bool _deleteTree(const std::wstring& path)
     }
 
     xf_rmdir(path);
+
+    return true;
+}
+
+static bool _mkdirTree(const std::wstring& _path)
+{
+    std::vector<std::wstring> to_add;
+
+    std::wstring path = _path;
+    to_add.push_back(path);
+
+    while (true)
+    {
+        path = xf_get_file_directory(path);
+
+        if (path.length() == 0)
+            break;
+
+        if (xf_get_directory_exist(path))
+            break;
+
+        to_add.push_back(path);
+    }
+
+    std::vector<std::wstring>::reverse_iterator rit;
+    for (rit = to_add.rbegin(); rit != to_add.rend(); ++rit)
+    {
+        if (!xf_mkdir(*rit))
+            break;
+    }
 
     return true;
 }
@@ -2398,6 +2441,8 @@ bool FsDatabase::createTable(const std::wstring& path,
 }
 
 
+
+
 bool FsDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
 {
     std::wstring cstr, rpath;
@@ -2419,6 +2464,11 @@ bool FsDatabase::createStream(const std::wstring& path, const std::wstring& mime
 
     std::wstring phys_path = makeFullPath(path);
     
+    // make sure containing directory exists
+    std::wstring containing_directory = xf_get_file_directory(phys_path);
+    if (!xf_get_directory_exist(containing_directory))
+        _mkdirTree(containing_directory);
+
     if (!stream->create(phys_path))
     {
         stream->unref();
@@ -2541,9 +2591,9 @@ bool FsDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 
 
 xd::IIndexInfoPtr FsDatabase::createIndex(const std::wstring& path,
-                                             const std::wstring& name,
-                                             const std::wstring& expr,
-                                             xd::IJob* job)
+                                          const std::wstring& name,
+                                          const std::wstring& expr,
+                                          xd::IJob* job)
 {
     return xcm::null;
 }
@@ -2573,3 +2623,35 @@ xd::IIndexInfoEnumPtr FsDatabase::getIndexEnum(const std::wstring& path)
 }
 
 
+
+
+
+
+
+xd::IRelationPtr FsDatabase::createRelation(const std::wstring& tag,
+                                            const std::wstring& left_set_path,
+                                            const std::wstring& right_set_path,
+                                            const std::wstring& left_expr,
+                                            const std::wstring& right_expr)
+{
+    return xcm::null;
+}
+
+bool FsDatabase::deleteRelation(const std::wstring& relation_id)
+{
+    return false;
+}
+
+xd::IRelationPtr FsDatabase::getRelation(const std::wstring& relation_id)
+{
+    return xcm::null;
+}
+
+xd::IRelationEnumPtr FsDatabase::getRelationEnum(const std::wstring& path)
+{
+    xcm::IVectorImpl<xd::IRelationPtr>* vec;
+    vec = new xcm::IVectorImpl<xd::IRelationPtr>;
+
+
+    return vec;
+}

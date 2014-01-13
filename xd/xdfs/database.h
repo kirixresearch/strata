@@ -67,7 +67,8 @@ XCM_DECLARE_SMARTPTR(IFsDatabase)
 
 class FsDatabase : public xd::IDatabase,
                    public IFsDatabase,
-                   public IXdsqlDatabase
+                   public IXdsqlDatabase,
+                   public xd::IRelationSchema
 {
     friend class XdfsFileInfo;
 
@@ -76,6 +77,7 @@ class FsDatabase : public xd::IDatabase,
         XCM_INTERFACE_ENTRY(xd::IDatabase)
         XCM_INTERFACE_ENTRY(IFsDatabase)
         XCM_INTERFACE_ENTRY(IXdsqlDatabase)
+        XCM_INTERFACE_ENTRY(xd::IRelationSchema)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -170,6 +172,18 @@ public:
 
     bool groupQuery(xd::GroupQueryParams* info, xd::IJob* job);
 
+
+    // xd::IRelationSchema
+
+    xd::IRelationPtr createRelation(const std::wstring& tag,
+                                    const std::wstring& left_set_path,
+                                    const std::wstring& right_set_path,
+                                    const std::wstring& left_expr,
+                                    const std::wstring& right_expr);
+    bool deleteRelation(const std::wstring& relation_id);
+    xd::IRelationPtr getRelation(const std::wstring& relation_id);
+    xd::IRelationEnumPtr getRelationEnum(const std::wstring& path);
+
 private:
 
     std::wstring makeFullPath(const std::wstring& _path);
@@ -194,6 +208,7 @@ private:
     xd::IDatabaseMgrPtr m_db_mgr;
 
     std::wstring m_base_path;
+    std::wstring m_ctrl_path;
     int m_last_job;
     std::vector<JobInfo*> m_jobs;
     xd::IAttributesPtr m_attr;
