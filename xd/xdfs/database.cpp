@@ -42,6 +42,7 @@
 #include <kl/hex.h>
 #include <kl/json.h>
 #include <kl/md5.h>
+#include <kl/string.h>
 
 
 #ifdef WIN32
@@ -107,10 +108,10 @@ FsDatabase::FsDatabase()
     m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"]");
     m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");    
 
-    m_attr->setStringAttribute(xd::dbattrTempDirectory, xf_get_temp_path());
-    m_attr->setStringAttribute(xd::dbattrDefinitionDirectory, xf_get_temp_path());
+    std::wstring temp_path = xf_get_temp_path();
+    m_attr->setStringAttribute(xd::dbattrTempDirectory, temp_path);
+    m_attr->setStringAttribute(xd::dbattrDefinitionDirectory, temp_path);
 
-    
     m_db_mgr = xd::getDatabaseMgr();
 }
 
@@ -130,6 +131,42 @@ bool FsDatabase::open(const std::wstring& path)
     {
         if (!xf_get_directory_exist(path))
             return false;
+
+        std::wstring temp_dir = path;
+        
+        #ifdef WIN32
+        kl::replaceStr(temp_dir, L"/", L"\\");
+        #endif
+
+        if (temp_dir[temp_dir.length()-1] != xf_path_separator_wchar)
+            temp_dir += xf_path_separator_wchar;
+        temp_dir += L".xdtmp";
+
+        if (temp_dir == L"/.xdtmp")
+        {
+            temp_dir = xf_get_temp_path();
+        }
+         else
+        {
+            // make directory
+            if (!xf_get_directory_exist(temp_dir))
+            {
+                xf_mkdir(temp_dir);
+
+                // on windows, set it as hidden
+                #ifdef WIN32
+                DWORD dwattr = GetFileAttributes(temp_dir.c_str());
+                if (dwattr == INVALID_FILE_ATTRIBUTES)
+                    dwattr = FILE_ATTRIBUTE_HIDDEN;
+                     else
+                    dwattr |= FILE_ATTRIBUTE_HIDDEN;
+                SetFileAttributes(temp_dir.c_str(), dwattr);
+                #endif
+            }
+        }
+
+        m_attr->setStringAttribute(xd::dbattrTempDirectory, temp_dir);
+        m_attr->setStringAttribute(xd::dbattrDefinitionDirectory, temp_dir);
     }
 
     m_base_path = path;
@@ -138,24 +175,12 @@ bool FsDatabase::open(const std::wstring& path)
 
 std::wstring FsDatabase::getTempFileDirectory()
 {
-    std::wstring result = m_attr->getStringAttribute(xd::dbattrTempDirectory);
-    if (result.empty())
-    {
-        result = xf_get_temp_path();
-    }
-    
-    return result;
+    return m_attr->getStringAttribute(xd::dbattrTempDirectory);
 }
 
 std::wstring FsDatabase::getDefinitionDirectory()
 {
-    std::wstring result = m_attr->getStringAttribute(xd::dbattrDefinitionDirectory);
-    if (result.empty())
-    {
-        result = xf_get_temp_path();
-    }
-    
-    return result;
+    return m_attr->getStringAttribute(xd::dbattrDefinitionDirectory);
 }
 
 

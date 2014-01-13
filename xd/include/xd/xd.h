@@ -786,6 +786,17 @@ public:
 };
 
 
+xcm_interface IIteratorRelation : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("xd.IteratorRelation")
+
+public:
+    
+    virtual IIteratorPtr getChildIterator(IRelationPtr relation) = 0;
+    virtual IIteratorPtr getFilteredChildIterator(IRelationPtr relation) = 0;
+};
+
+
 xcm_interface IRelationSchema : public xcm::IObject
 {
     XCM_INTERFACE_NAME("xd.IIRelationSchema")
@@ -801,6 +812,8 @@ public:
     virtual IRelationPtr getRelation(const std::wstring& relation_id) = 0;
     virtual IRelationEnumPtr getRelationEnum(const std::wstring& path) = 0;
 };
+
+
 
 
 
@@ -873,18 +886,6 @@ public:
     
     virtual void setLineDelimited(bool new_val) = 0;
     virtual bool isLineDelimited() = 0;
-};
-
-
-
-xcm_interface IIteratorRelation : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("xd.IteratorRelation")
-
-public:
-    
-    virtual IIteratorPtr getChildIterator(IRelationPtr relation) = 0;
-    virtual IIteratorPtr getFilteredChildIterator(IRelationPtr relation) = 0;
 };
 
 
