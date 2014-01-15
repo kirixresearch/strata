@@ -16,13 +16,7 @@
 #include "../xdcommon/util.h"
 
 
-// determine whether two key expressions match
-bool getKeyExpressionMatch(const std::wstring& expr1,
-                           const std::wstring& expr2);
-
 // determine whether two order expressions match
-bool getOrderExpressionMatch(const std::wstring& expr1,
-                             const std::wstring& expr2);
 
 std::wstring combineOfsPath(const std::wstring& base_folder,
                             const std::wstring& file_name);
@@ -45,7 +39,6 @@ void dbl2decstr(char* dest, double d, int width, int scale);
 // conversion between set id's and table ord's
 
 std::wstring getTableSetId(xd::tableord_t table_ordinal);
-xd::tableord_t getSetTableOrd(const std::wstring& set_id);
 
 #endif
 

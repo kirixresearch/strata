@@ -92,6 +92,8 @@ xd::IIndexInfoPtr xdLookupIndex(xd::IIndexInfoEnumPtr enums,
                                    const std::wstring& expr,
                                    bool exact_column_order);
 
+bool getIndexExpressionMatch(const std::wstring& expr1, const std::wstring& expr2);
+
 bool parseDateTime(const std::wstring& input,
                    int* year,
                    int* month,

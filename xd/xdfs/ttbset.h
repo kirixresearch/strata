@@ -77,7 +77,6 @@ public:
  
 private:
 
-    FsDatabase* m_database;
     TtbTable m_file;
     unsigned char* m_update_buf;
     TtbRow m_update_row;

@@ -54,6 +54,7 @@ class FsDatabase : public xd::IDatabase,
                    public xd::IRelationSchema
 {
     friend class XdfsFileInfo;
+    friend class XdfsBaseSet;
 
     XCM_CLASS_NAME("xdfs.Database")
     XCM_BEGIN_INTERFACE_MAP(FsDatabase)

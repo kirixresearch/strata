@@ -26,16 +26,14 @@
 #include "../xdcommon/idxutil.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/extfileinfo.h"
+#include "../xdcommon/jobinfo.h"
 #include <kl/md5.h>
 #include <kl/math.h>
 
 // TtbSet class implementation
 
-TtbSet::TtbSet(FsDatabase* db)
+TtbSet::TtbSet(FsDatabase* database) : XdfsBaseSet(database)
 {
-    m_database = db;
-    m_database->ref();
-
     m_update_buf = NULL;
     m_update_row.setTable(&m_file);
 }
@@ -46,8 +44,6 @@ TtbSet::~TtbSet()
         m_file.close();
 
     delete[] m_update_buf;
-
-    m_database->unref();
 }
 
 bool TtbSet::init(const std::wstring& filename)
@@ -91,8 +87,8 @@ xd::IRowInserterPtr TtbSet::getRowInserter()
 
 
 xd::IIteratorPtr TtbSet::createIterator(const std::wstring& columns,
-                                             const std::wstring& order,
-                                             xd::IJob* job)
+                                        const std::wstring& order,
+                                        xd::IJob* job)
 {
     if (order.empty())
     {
@@ -107,20 +103,43 @@ xd::IIteratorPtr TtbSet::createIterator(const std::wstring& columns,
         return static_cast<xd::IIterator*>(iter);
     }
     
+    IIndex* idx;
+
+    idx = lookupIndexForOrder(order);
+    if (idx)
+    {
+        if (job)
+        {
+            time_t t = time(NULL);
+            IJobInternalPtr ijob = job;
+            ijob->setStartTime(t);
+            ijob->setFinishTime(t);
+            ijob->setCurrentCount(0);
+            ijob->setMaxCount(0);
+            ijob->setStatus(xd::jobFinished);
+        }
+
+        xd::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
+
+        xd::IIteratorPtr res = createIteratorFromIndex(data_iter,
+                                      idx,
+                                      columns,
+                                      order,
+                                      getObjectPath());
+        idx->unref();
+        return res;
+    }
+
     // find out where the database should put temporary files
     std::wstring temp_directory = m_database->getTempFileDirectory();
  
     // create a unique index file name with .idx extension
-    std::wstring index_filename = getUniqueString();
-    index_filename += L".idx";
+    std::wstring index_filename = getUniqueString() + L".idx";
 
     // generate a full path name from the temp path and unique idx filename
-    std::wstring full_index_filename;
-    full_index_filename = makePathName(temp_directory,
-                                       L"",
-                                       index_filename);
+    std::wstring full_index_filename = makePathName(temp_directory, L"", index_filename);
 
-    IIndex* idx;
+
     idx = createExternalIndex(m_database,
                               getObjectPath(),
                               full_index_filename,

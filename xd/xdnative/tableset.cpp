@@ -643,7 +643,7 @@ bool TableSet::save()
     ofspath_node->setString(m_ofspath);
 
     INodeValuePtr ordinal_node = set_file->getChild(L"ordinal", true);
-    ordinal_node->setInteger(m_ordinal);
+    ordinal_node->setInteger((int)m_ordinal);
 
     return true;
 }
@@ -1330,8 +1330,8 @@ TableIterator* TableSet::createPhysicalIterator(const std::wstring& columns,
 
 
 xd::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
-                                             const std::wstring& order,
-                                             xd::IJob* job)
+                                          const std::wstring& order,
+                                          xd::IJob* job)
 {
     if (order.empty())
     {
@@ -1347,7 +1347,7 @@ xd::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
         std::vector<IndexEntry>::iterator it;
         for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
         {
-            if (getOrderExpressionMatch(it->expr, order))
+            if (getIndexExpressionMatch(it->expr, order))
             {
                 idx = it->index;
                 idx->ref();

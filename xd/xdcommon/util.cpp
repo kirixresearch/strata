@@ -802,6 +802,36 @@ void crc64(const unsigned char* s, int length, unsigned long long* result)
 
 
 
+
+bool getIndexExpressionMatch(const std::wstring& expr1, const std::wstring& expr2)
+{
+    std::vector<std::wstring> elements1;
+    std::vector<std::wstring> elements2;
+
+    kl::parseDelimitedList(expr1, elements1, L',');
+    kl::parseDelimitedList(expr2, elements2, L',');
+
+    int e1s = elements1.size();
+    
+    if (e1s != elements2.size())
+        return false;
+
+    int i;
+    for (i = 0; i < e1s; ++i)
+    {
+        kl::trim(elements1[i]);
+        kl::trim(elements2[i]);
+
+        dequote(elements1[i], '[', ']');
+        dequote(elements2[i], '[', ']');
+
+        if (!kl::iequals(elements1[i], elements2[i]))
+            return false;
+    }
+
+    return true;
+}
+
 xd::IIndexInfoPtr xdLookupIndex(xd::IIndexInfoEnumPtr idx_enum,
                                  const std::wstring& expr,
                                  bool exact_column_order)

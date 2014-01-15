@@ -57,11 +57,8 @@ FixedLengthDefinition::FixedLengthDefinition()
 
 // -- FixedLengthTextSet class implementation --
 
-FixedLengthTextSet::FixedLengthTextSet(FsDatabase* db)
+FixedLengthTextSet::FixedLengthTextSet(FsDatabase* database)  : XdfsBaseSet(database)
 {
-    m_database = db;
-    m_database->ref();
-
     m_definition = new FixedLengthDefinition;
     m_definition->ref();
     
@@ -76,8 +73,6 @@ FixedLengthTextSet::~FixedLengthTextSet()
 {
     // release definition object
     m_definition->unref();
-
-    m_database->unref();
 }
 
 bool FixedLengthTextSet::init(const std::wstring& filename)

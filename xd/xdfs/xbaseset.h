@@ -104,7 +104,6 @@ public:
  
 private:
 
-    FsDatabase* m_database;
     XbaseFile m_file;
 };
 

@@ -144,7 +144,6 @@ private:
 
 private:
 
-    FsDatabase* m_database;
     std::wstring m_path;
     std::wstring m_configfile_path;
 

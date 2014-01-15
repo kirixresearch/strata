@@ -47,39 +47,6 @@ std::wstring combineOfsPath(const std::wstring& base_folder,
 }
 
 
-bool getOrderExpressionMatch(const std::wstring& expr1,
-                             const std::wstring& expr2)
-{
-    std::vector<std::wstring> elements1;
-    std::vector<std::wstring> elements2;
-
-    kl::parseDelimitedList(expr1, elements1, L',');
-    kl::parseDelimitedList(expr2, elements2, L',');
-
-    int e1s = elements1.size();
-    
-    if (e1s != elements2.size())
-        return false;
-
-    int i;
-    for (i = 0; i < e1s; ++i)
-    {
-        kl::trim(elements1[i]);
-        kl::trim(elements2[i]);
-
-        if (0 != wcscasecmp(elements1[i].c_str(), elements2[i].c_str()))
-            return false;
-    }
-
-    return true;
-}
-
-
-
-
-
-
-
 
 struct FindFieldInfo
 {
@@ -426,15 +393,4 @@ std::wstring getTableSetId(xd::tableord_t table_ordinal)
     swprintf(buf, 64, L"tbl%08u", table_ordinal);
     return buf;
 }
-
-xd::tableord_t getSetTableOrd(const std::wstring& set_id)
-{
-    // check to make sure that set id indeed refers to an ordinal
-    const wchar_t* s = set_id.c_str();
-    if (0 != wcsncasecmp(s, L"tbl", 3))
-        return 0;
-
-    return kl::wtoi(s+3);
-}
-
 

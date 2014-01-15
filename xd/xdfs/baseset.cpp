@@ -11,32 +11,54 @@
 
 #include <xd/xd.h>
 #include <xd/util.h>
-#include "baseset.h"
+#include <kl/json.h>
+#include <kl/file.h>
+#include "../xdcommonsql/xdcommonsql.h"
 #include "../xdcommon/extfileinfo.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/columninfo.h"
-#include <kl/json.h>
-#include <kl/file.h>
+#include "../xdcommon/exindex.h"
+#include "../xdcommon/keylayout.h"
+#include "database.h"
+#include "baseset.h"
 
 
 
 
-XdfsBaseSet::XdfsBaseSet()
+
+XdfsBaseSet::XdfsBaseSet(FsDatabase* database)
 {
+    m_database = database;
+    m_database->ref();
 }
 
 XdfsBaseSet::~XdfsBaseSet()
 {
+    std::vector<XdfsIndexEntry>::iterator it;
+    for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
+    {
+        if (it->index)
+            it->index->unref();
+
+        if (it->orig_key)
+            delete[] it->orig_key;
+
+        if (it->key_expr)
+            delete it->key_expr;
+    }
+
+
+    m_database->unref();
 }
 
 void XdfsBaseSet::setObjectPath(const std::wstring& path)
 {
-    m_obj_path = path;
+    m_object_path = path;
 }
 
 std::wstring XdfsBaseSet::getObjectPath()
 {
-    return m_obj_path;
+    return m_object_path;
 }
 
 void XdfsBaseSet::setConfigFilePath(const std::wstring& path)
@@ -101,7 +123,217 @@ bool XdfsBaseSet::modifyStructure(xd::IStructure* struct_config,
 }
 
 
-// Calculated Field routines
+
+
+void XdfsBaseSet::refreshIndexEntries()
+{
+    // get object id from path
+    if (m_object_id.empty())
+    {
+        xd::IFileInfoPtr info = m_database->getFileInfo(m_object_path);
+        if (info.isNull())
+            return;
+
+        m_object_id = info->getObjectId();
+    }
+
+    std::wstring index_registry_file = ((m_database->m_ctrl_path + xf_path_separator_wchar) + L"indexes" + xf_path_separator_wchar) + m_object_id + L".info";
+    std::wstring json = xf_get_file_contents(index_registry_file);
+
+
+    // check to see if index registry file is newer than last time we checked
+    xf_filetime_t ft = xf_get_file_modify_time(index_registry_file);
+    if (ft <= m_indexes_filetime)
+        return;
+    m_indexes_filetime = ft;
+
+    
+    std::vector<XdfsIndexEntry> entries;
+    std::vector<XdfsIndexEntry>::iterator it, it_end, it2;
+
+
+    kl::JsonNode root;
+    if (json.empty() || !root.fromString(json))
+        return;
+
+    kl::JsonNode indexes = root["indexes"];
+    std::vector<kl::JsonNode> index_nodes = indexes.getChildren();
+
+    std::wstring name, expr, filename;
+
+    std::vector<kl::JsonNode>::iterator jit, jit_end = index_nodes.end();
+    for (jit = index_nodes.begin(); jit != jit_end; ++jit)
+    {
+        XdfsIndexEntry e;
+        e.name = (*jit)["name"];
+        e.expr = (*jit)["expression"];
+        e.filename = ((m_database->m_ctrl_path + xf_path_separator_wchar) + L"indexes" + xf_path_separator_wchar) + (*jit)["filename"].getString();
+        e.index = NULL;
+        e.update = false;
+        e.key_length = 0;
+        e.orig_key = NULL;
+        e.key_expr = NULL;
+
+        entries.push_back(e);
+    }
+
+
+
+    // merge index entries we just read with m_indexes
+
+    it_end = entries.end();
+    for (it = entries.begin(); it != it_end; ++it)
+    {
+        bool found = false;
+        for (it2 = m_indexes.begin(); it2 != m_indexes.end(); ++it2)
+        {
+            if (kl::iequals(it->name, it2->name))
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (found)
+            continue;
+
+        XdfsIndexEntry& entry = *it;
+
+
+        ExIndex* idx = new ExIndex;
+        idx->ref();
+        if (!idx->open(entry.filename))
+        {
+            idx->unref();
+            continue;
+        }
+
+        entry.index = idx;
+                
+        if (prepareIndexEntry(entry))
+        {
+            m_indexes.push_back(entry);
+        }
+         else
+        {
+            entry.index->unref();
+            entry.index = NULL;
+        }
+    }
+
+}
+
+
+
+
+
+bool XdfsBaseSet::prepareIndexEntry(XdfsIndexEntry& e)
+{
+    if (!e.index)
+        return false;
+
+    delete e.key_expr;  
+    delete[] e.orig_key;
+
+    e.key_length = e.index->getKeyLength();
+    e.update = false;
+    e.orig_key = new unsigned char[e.key_length];
+    //e.key_expr = new KeyLayout;
+    //e.key_expr->setKeyExpr(static_cast<xd::IIterator*>(m_update_iter), e.expr);
+
+/*
+    xd::IStructurePtr structure = m_database->describeTable(m_object_path);
+    if (structure.isNull())
+        return false;
+        
+    e.active_columns.resize(structure->getColumnCount(), false);
+    std::vector<std::wstring> cols;
+    kl::parseDelimitedList(e.expr, cols, L',', true);
+
+
+
+    std::vector<std::wstring>::iterator it;
+    for (it = cols.begin(); it != cols.end(); ++it)
+    {
+        // get column name (remove possible 'ASC' or 'DESC'
+        // from the end of the index piece
+
+        std::wstring piece = *it;
+        std::wstring colname;
+
+        kl::trim(piece);
+
+        if (piece.find_last_of(L' ') != -1)
+        {
+            colname = kl::beforeLast(piece, L' ');
+        }
+         else
+        {
+            colname = piece;
+        }
+
+        xd::IColumnInfoPtr info = structure->getColumnInfo(colname);
+
+        if (info.isOk())
+        {
+            if (info->getCalculated())
+            {
+                // in the case of a calculated field, the index may be
+                // dependant on those fields which make up the formula
+                
+                std::vector<std::wstring> fields_used;
+                std::vector<std::wstring>::iterator it;
+
+                fields_used = getFieldsInExpr(info->getExpression(), structure, true);
+
+                for (it = fields_used.begin();
+                     it != fields_used.end();
+                     ++it)
+                {
+                    info = structure->getColumnInfo(*it);
+                    if (!info->getCalculated())
+                    {
+                        e.active_columns[info->getColumnOrdinal()] = true;
+                    }
+                }
+            }
+             else
+            {
+                e.active_columns[info->getColumnOrdinal()] = true;
+            }
+        }
+    }
+*/
+
+    return true;
+}
+
+
+IIndex* XdfsBaseSet::lookupIndexForOrder(const std::wstring& order)
+{
+    refreshIndexEntries();
+
+    IIndex* idx = NULL;
+
+    std::vector<XdfsIndexEntry>::iterator it, it_end = m_indexes.end();
+    for (it = m_indexes.begin(); it != it_end; ++it)
+    {
+        if (getIndexExpressionMatch(it->expr, order))
+        {
+            idx = it->index;
+            idx->ref();
+            break;
+        }
+    }
+
+    return idx;
+}
+
+
+
+
+
+// calculated Field routines
 
 bool XdfsBaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
 {

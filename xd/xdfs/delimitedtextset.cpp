@@ -37,11 +37,8 @@ const int ROWS_TO_DETERMINE_STRUCTURE = 10000;
 
 // DelimitedTextSet class implementation
 
-DelimitedTextSet::DelimitedTextSet(FsDatabase* database)
+DelimitedTextSet::DelimitedTextSet(FsDatabase* database) : XdfsBaseSet(database)
 {
-    m_database = database;
-    m_database->ref();
-    
     m_source_structure = static_cast<xd::IStructure*>(new Structure);
     m_dest_structure = static_cast<xd::IStructure*>(new Structure);
 
@@ -57,8 +54,6 @@ DelimitedTextSet::~DelimitedTextSet()
 {
     if (m_file.isOpen())
         m_file.closeFile();
-
-    m_database->unref();
 }
 
 bool DelimitedTextSet::init(const std::wstring& filename)

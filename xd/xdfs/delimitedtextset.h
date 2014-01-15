@@ -157,7 +157,6 @@ private:
 
 private:
 
-    FsDatabase* m_database;
     DelimitedTextFile m_file;
     std::wstring m_configfile_path;
 

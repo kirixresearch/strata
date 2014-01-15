@@ -31,18 +31,14 @@
 
 // XbaseSet class implementation
 
-XbaseSet::XbaseSet(FsDatabase* db)
+XbaseSet::XbaseSet(FsDatabase* database) : XdfsBaseSet(database)
 {
-    m_database = db;
-    m_database->ref();
 }
 
 XbaseSet::~XbaseSet()
 {
     if (m_file.isOpen())
         m_file.closeFile();
-
-    m_database->unref();
 }
 
 bool XbaseSet::init(const std::wstring& filename)

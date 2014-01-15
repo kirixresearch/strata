@@ -13,11 +13,35 @@
 #define __XDFS_BASESET_H
 
 
+#include <kl/file.h>
+
+class IIndex;
+class KeyLayout;
+
+class XdfsIndexEntry
+{
+public:
+
+    std::wstring filename;
+    std::wstring name;
+    std::wstring expr;
+
+    std::vector<bool> active_columns;
+    IIndex* index;
+    int key_length;
+    KeyLayout* key_expr;
+    unsigned char* orig_key;
+    bool update;
+};
+
+
+
+
 class XdfsBaseSet : public xcm::IObject
 {
 public:
 
-    XdfsBaseSet();
+    XdfsBaseSet(FsDatabase* database);
     virtual ~XdfsBaseSet();
 
     // sets the set's config file path (ext file info)
@@ -31,8 +55,10 @@ public:
 
 protected:
 
-    bool modifyStructure(xd::IStructure* struct_config,
-                                        bool* done_flag);
+    bool modifyStructure(xd::IStructure* struct_config, bool* done_flag);
+    void refreshIndexEntries();
+    bool prepareIndexEntry(XdfsIndexEntry& e);
+    IIndex* lookupIndexForOrder(const std::wstring& order);
 
     // calculated field routines
     bool createCalcField(xd::IColumnInfoPtr colinfo);
@@ -41,16 +67,20 @@ protected:
                          xd::IColumnInfoPtr colinfo);
     void appendCalcFields(xd::IStructure* structure);
 
-private:
+protected:
 
-    bool saveCalcFields();
-    
+    FsDatabase* m_database;
+
 private:
 
     kl::mutex m_object_mutex;
     std::vector<xd::IColumnInfoPtr> m_calc_fields;
-    std::wstring m_obj_path;
+    std::wstring m_object_path;
+    std::wstring m_object_id;
     std::wstring m_config_file_path;
+
+    std::vector<XdfsIndexEntry> m_indexes;
+    xf_filetime_t m_indexes_filetime;
 };
 
 
