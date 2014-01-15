@@ -140,10 +140,8 @@ xd::IIteratorPtr XbaseSet::createIterator(const std::wstring& columns,
 {
     if (order.empty())
     {
-        XbaseIterator* iter = new XbaseIterator;
-        if (!iter->init(m_database,
-                        this,
-                        m_file.getFilename()))
+        XbaseIterator* iter = new XbaseIterator(m_database);
+        if (!iter->init(this, m_file.getFilename()))
         {
             delete iter;
             return xcm::null;

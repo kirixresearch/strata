@@ -83,13 +83,14 @@ friend class XbaseSet;
         XCM_INTERFACE_ENTRY(xd::IIterator)
     XCM_END_INTERFACE_MAP()
 
+    xd::IDatabase* cmniterGetDatabase() { return static_cast<xd::IDatabase*>(m_database); }
+
 public:
 
-    XbaseIterator();
+    XbaseIterator(FsDatabase* database);
     ~XbaseIterator();
-    bool init(xd::IDatabasePtr db,
-              XbaseSet* set,
-              const std::wstring& filename);
+
+    bool init(XbaseSet* set, const std::wstring& filename);
 
     // xd::IIterator
 
@@ -134,7 +135,7 @@ public:
 
 private:
 
-    xd::IDatabasePtr m_database;
+    FsDatabase* m_database;
     XbaseSet* m_set;
 
     XbaseFile m_file;

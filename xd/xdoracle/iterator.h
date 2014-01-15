@@ -88,6 +88,8 @@ friend class OracleSet;
         XCM_INTERFACE_ENTRY(xd::ICacheRowUpdate)
     XCM_END_INTERFACE_MAP()
 
+    xd::IDatabase* cmniterGetDatabase() { return static_cast<xd::IDatabase*>(m_database); }
+
 public:
 
     OracleIterator(OracleDatabase* database, OracleSet* set = NULL);

@@ -47,13 +47,13 @@ class KeyLayout;
 
 class CommonIndexIterator : public xd::IIterator,
                             public xd::IIteratorRelation,
-                            public IIteratorKeyAccess
+                            public xd::IIteratorKeyAccess
 {
     XCM_CLASS_NAME("xdcommon.CommonIndexIterator")
     XCM_BEGIN_INTERFACE_MAP(CommonIndexIterator)
         XCM_INTERFACE_ENTRY(xd::IIterator)
         XCM_INTERFACE_ENTRY(xd::IIteratorRelation)
-        XCM_INTERFACE_ENTRY(IIteratorKeyAccess)
+        XCM_INTERFACE_ENTRY(xd::IIteratorKeyAccess)
     XCM_END_INTERFACE_MAP()
 
 public:

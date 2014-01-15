@@ -90,6 +90,8 @@ friend class FixedLengthTextSet;
         XCM_INTERFACE_ENTRY(xd::IIterator)
     XCM_END_INTERFACE_MAP()
 
+    xd::IDatabase* cmniterGetDatabase() { return m_database.p; }
+
 public:
 
     FixedLengthTextIterator();

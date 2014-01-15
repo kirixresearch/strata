@@ -91,6 +91,8 @@ friend class TtbSet;
         XCM_INTERFACE_ENTRY(xd::IIterator)
     XCM_END_INTERFACE_MAP()
 
+    xd::IDatabase* cmniterGetDatabase() { return static_cast<xd::IDatabase*>(m_database); }
+
 public:
 
     TtbIterator(FsDatabase* database);

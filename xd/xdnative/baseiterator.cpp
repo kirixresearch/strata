@@ -414,7 +414,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
         return false;
 
     // lookup the index on the right set
-    xd::IIndexInfoEnumPtr idx_enum = m_database->getIndexEnum(getTable());
+    xd::IIndexInfoEnumPtr idx_enum = m_database->getIndexEnum(rel->getRightTable());
     xd::IIndexInfoPtr idx = xdLookupIndex(idx_enum, rel->getRightExpression(), false);
     if (!idx)
         return false;
@@ -540,8 +540,6 @@ xd::IIteratorPtr BaseIterator::getChildIterator(xd::IRelationPtr relation)
 
 xd::IIteratorPtr BaseIterator::getFilteredChildIterator(xd::IRelationPtr relation)
 {
-    KL_AUTO_LOCK(m_rel_mutex);
-
     BaseIteratorRelInfo* info = NULL;
 
     // lookup the relationship info

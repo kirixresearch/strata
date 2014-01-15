@@ -85,21 +85,21 @@ struct BaseIteratorRelInfo
     std::wstring relation_id;
     std::wstring tag;
     xd::IIteratorPtr right_iter;
-    IIteratorKeyAccessPtr right_iter_int;
+    xd::IIteratorKeyAccessPtr right_iter_int;
     KeyLayout* kl;
 };
 
 class AggregateResult;
 class XdnativeDatabase;
 class BaseIterator :  public xd::IIterator,
-                      public IIteratorKeyAccess,
+                      public xd::IIteratorKeyAccess,
                       public xd::IIteratorRelation,
                       public IXdnativeSetEvents
 {
     XCM_CLASS_NAME("xdnative.BaseIterator")
     XCM_BEGIN_INTERFACE_MAP(BaseIterator)
         XCM_INTERFACE_ENTRY(xd::IIterator)
-        XCM_INTERFACE_ENTRY(IIteratorKeyAccess)
+        XCM_INTERFACE_ENTRY(xd::IIteratorKeyAccess)
         XCM_INTERFACE_ENTRY(xd::IIteratorRelation)
         XCM_INTERFACE_ENTRY(IXdnativeSetEvents)
     XCM_END_INTERFACE_MAP()

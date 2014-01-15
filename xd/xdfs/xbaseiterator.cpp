@@ -29,8 +29,11 @@ const std::wstring empty_wstring = L"";
 
 
 
-XbaseIterator::XbaseIterator()
+XbaseIterator::XbaseIterator(FsDatabase* database)
 {
+    m_database = database;
+    m_database->ref();
+
     m_current_row = 1;
     m_bof = false;
     m_eof = false;
@@ -52,16 +55,16 @@ XbaseIterator::~XbaseIterator()
 
     if (m_set)
         m_set->unref();
+
+    m_database->unref();
 }
 
-bool XbaseIterator::init(xd::IDatabasePtr db,
-                         XbaseSet* set,
+bool XbaseIterator::init(XbaseSet* set,
                          const std::wstring& filename)
 {
     if (!m_file.openFile(filename))
         return false;
 
-    m_database = db;
     m_set = set;
     m_set->ref();
 
@@ -95,9 +98,9 @@ xd::IDatabasePtr XbaseIterator::getDatabase()
 
 xd::IIteratorPtr XbaseIterator::clone()
 {
-    XbaseIterator* iter = new XbaseIterator;
+    XbaseIterator* iter = new XbaseIterator(m_database);
     
-    if (!iter->init(m_database, m_set, m_file.getFilename()))
+    if (!iter->init(m_set, m_file.getFilename()))
     {
         return xcm::null;
     }

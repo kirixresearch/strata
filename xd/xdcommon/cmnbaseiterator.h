@@ -12,14 +12,24 @@
 #ifndef __XDCOMMON_CMNBASEITERATOR_H
 #define __XDCOMMON_CMNBASEITERATOR_H
 
+#include "xd_private.h"
 
 // forwards
-class CmnBaseIteratorBindInfo;
-namespace kscript
+class KeyLayout;
+class CommonBaseIteratorBindInfo;
+namespace kscript { class ExprParser; }
+namespace kscript { struct ExprParseHookInfo; }
+
+class CommonAggregateResult;
+
+struct CommonBaseIteratorRelInfo
 {
-    class ExprParser;
-    struct ExprParseHookInfo;
-}
+    std::wstring relation_id;
+    std::wstring tag;
+    xd::IIteratorPtr right_iter;
+    xd::IIteratorKeyAccessPtr right_iter_int;
+    KeyLayout* kl;
+};
 
 
 class CommonBaseIterator : public xd::IIterator
@@ -29,6 +39,8 @@ public:
     CommonBaseIterator();
     ~CommonBaseIterator();
 
+    virtual xd::IDatabase* cmniterGetDatabase() = 0; // derivers must implement
+
     virtual xd::IStructurePtr getParserStructure();
     kscript::ExprParser* parse(const std::wstring& expr);
     
@@ -36,10 +48,22 @@ public:
     {
     }
 
+    bool refreshRelInfo(CommonBaseIteratorRelInfo& info);
+    xd::IIteratorPtr getFilteredChildIterator(xd::IRelationPtr relation);
+    CommonAggregateResult* getAggResultObject(int aggregate_func, const std::wstring& expr);
+    void releaseAggResultObject(CommonAggregateResult* agg_res);
+    void recalcAggResults();
+
 private:
 
-    std::vector<CmnBaseIteratorBindInfo*> m_bindings;
     static bool script_parse_hook(kscript::ExprParseHookInfo& hook_info);
+
+    std::vector<CommonBaseIteratorBindInfo*> m_bindings;
+
+    std::vector<CommonBaseIteratorRelInfo> m_relations;
+    xd::IRelationSchemaPtr m_relschema;
+    xd::IRelationEnumPtr m_relenum;
+    std::vector<CommonAggregateResult*> m_aggregate_results;
 };
 
 

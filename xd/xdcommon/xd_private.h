@@ -13,6 +13,9 @@
 #define __XDCOMMON_XD_PRIVATE_H
 
 
+namespace xd
+{
+
 xcm_interface IIteratorKeyAccess;
 XCM_DECLARE_SMARTPTR(IIteratorKeyAccess)
 
@@ -28,6 +31,10 @@ public:
     virtual void getKeyFilter(const void** key, int* len) = 0;
     virtual bool setFirstKey() = 0;
 };
+
+
+
+}; // namespace xd
 
 
 

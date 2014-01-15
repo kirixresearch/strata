@@ -81,10 +81,13 @@ friend class DelimitedTextSet;
         XCM_INTERFACE_ENTRY(xd::IIterator)
     XCM_END_INTERFACE_MAP()
 
+    xd::IDatabase* cmniterGetDatabase() { return m_database.p; }
+
 public:
 
     DelimitedTextIterator();
     ~DelimitedTextIterator();
+
     bool init(xd::IDatabasePtr db,
               DelimitedTextSet* set,
               const std::wstring& filename);

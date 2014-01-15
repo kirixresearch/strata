@@ -100,6 +100,8 @@ friend class ClientSet;
         XCM_INTERFACE_ENTRY(IClientIterator)
     XCM_END_INTERFACE_MAP()
 
+    xd::IDatabase* cmniterGetDatabase() { return static_cast<xd::IDatabase*>(m_database); }
+
 public:
 
     ClientIterator(ClientDatabase* database);

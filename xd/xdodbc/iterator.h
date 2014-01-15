@@ -133,6 +133,8 @@ class OdbcIterator : public CommonBaseIterator,
         XCM_INTERFACE_ENTRY(xd::IIteratorRelation)
     XCM_END_INTERFACE_MAP()
 
+    xd::IDatabase* cmniterGetDatabase() { return static_cast<xd::IDatabase*>(m_database); }
+
 public:
 
     OdbcIterator(OdbcDatabase* database);

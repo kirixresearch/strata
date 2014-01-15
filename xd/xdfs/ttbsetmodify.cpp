@@ -14,6 +14,7 @@
 #include <kl/portable.h>
 #include <kl/math.h>
 #include "xdfs.h"
+#include "database.h"
 #include "ttbset.h"
 #include "ttbsetmodify.h"
 #include "ttbfile.h"
