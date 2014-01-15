@@ -449,7 +449,7 @@ xcm_interface IIndexInfo : public xcm::IObject
 
 public:
 
-    virtual const std::wstring& getTag() = 0;
+    virtual const std::wstring& getName() = 0;
     virtual const std::wstring& getExpression() = 0;
 };
 

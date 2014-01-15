@@ -30,6 +30,7 @@
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommonsql/xdcommonsql.h"
 #include "../xdcommon/extfileinfo.h"
+#include "../xdcommon/exindex.h"
 #include "../xdcommon/filestream.h"
 #include "../xdcommon/connectionstr.h"
 #include "../xdcommon/dbfuncs.h"
@@ -37,6 +38,8 @@
 #include "../xdcommon/cmndynamicset.h"
 #include "../xdcommon/groupquery.h"
 #include "../xdcommon/util.h"
+#include "../xdcommon/idxutil.h"
+#include "../xdcommon/indexinfo.h"
 #include "ttbfile.h"
 #include <kl/url.h>
 #include <kl/hex.h>
@@ -159,6 +162,11 @@ bool FsDatabase::open(const std::wstring& path)
         if (!xf_get_directory_exist(temp_dir))
             xf_mkdir(temp_dir);
 
+        // make indexes directory
+        std::wstring indexes_dir = (control_dir + xf_path_separator_wchar) + L"indexes";
+        if (!xf_get_directory_exist(indexes_dir))
+            xf_mkdir(indexes_dir);
+
         // make appdata directory
         std::wstring appdata_dir = (control_dir + xf_path_separator_wchar) + L"appdata";
         if (!xf_get_directory_exist(appdata_dir))
@@ -168,10 +176,14 @@ bool FsDatabase::open(const std::wstring& path)
         m_attr->setStringAttribute(xd::dbattrDefinitionDirectory, temp_dir);
 
         m_ctrl_path = control_dir;
+        m_base_path = path;
+    }
+     else
+    {
+        m_base_path = path;
+        m_ctrl_path = xf_get_temp_path();
     }
 
-    m_base_path = path;
-    m_ctrl_path = xf_get_temp_path();
     return true;
 }
 
@@ -2595,7 +2607,61 @@ xd::IIndexInfoPtr FsDatabase::createIndex(const std::wstring& path,
                                           const std::wstring& expr,
                                           xd::IJob* job)
 {
-    return xcm::null;
+    // get object id from path
+    xd::IFileInfoPtr info = getFileInfo(path);
+    if (info.isNull())
+        return xcm::null;
+
+    std::wstring object_id = info->getObjectId();
+    std::wstring idx_filename = kl::getUniqueString() + L".idx";
+
+    std::wstring idx_path = m_ctrl_path;
+    idx_path += xf_path_separator_wchar;
+    idx_path += L"indexes";
+    idx_path += xf_path_separator_wchar;
+    idx_path += idx_filename;
+
+
+    IIndex* idx = createExternalIndex(static_cast<xd::IDatabase*>(this),
+                                      path,
+                                      idx_path,
+                                      getTempFileDirectory(),
+                                      expr,
+                                      true,
+                                      false, // delete_on_close is false because this is a 'permanant index'
+                                      job);
+
+    if (!idx)
+        return xcm::null;
+    
+    idx->unref();
+
+    // add an index entry to the .json file for this object id
+    std::wstring index_registry_file = ((m_ctrl_path + xf_path_separator_wchar) + L"indexes" + xf_path_separator_wchar) + object_id + L".info";
+    std::wstring json = xf_get_file_contents(index_registry_file);
+
+    kl::JsonNode root;
+    root.fromString(json);
+
+    kl::JsonNode indexes = root["indexes"];
+    if (!indexes.isArray())
+        indexes.setArray();
+
+    kl::JsonNode index_node = indexes.appendElement();
+    index_node["name"] = name;
+    index_node["expression"] = expr;
+    index_node["filename"] = idx_filename;
+
+    xf_put_file_contents(index_registry_file, root.toString());
+
+
+    // return info about the new index
+
+    IndexInfo* ii = new IndexInfo;
+    ii->setName(name);
+    ii->setExpression(expr);
+
+    return static_cast<xd::IIndexInfo*>(ii);
 }
 
 
@@ -2603,26 +2669,122 @@ bool FsDatabase::renameIndex(const std::wstring& path,
                              const std::wstring& name,
                              const std::wstring& new_name)
 {
-    return false;
+    // get object id from path
+    xd::IFileInfoPtr info = getFileInfo(path);
+    if (info.isNull())
+        return xcm::null;
+
+    std::wstring object_id = info->getObjectId();
+
+    // update index registry
+
+    std::wstring index_registry_file = ((m_ctrl_path + xf_path_separator_wchar) + L"indexes" + xf_path_separator_wchar) + object_id + L".info";
+    std::wstring json = xf_get_file_contents(index_registry_file);
+
+    kl::JsonNode root;
+    root.fromString(json);
+
+    kl::JsonNode indexes = root["indexes"];
+    std::vector<kl::JsonNode> index_nodes = indexes.getChildren();
+    std::vector<kl::JsonNode>::iterator it, it_end = index_nodes.end();
+    for (it = index_nodes.begin(); it != it_end; ++it)
+    {
+        if (kl::iequals((*it)["name"], name))
+        {
+            (*it)["name"] = new_name;
+            break;
+        }
+    }
+
+    xf_put_file_contents(index_registry_file, root.toString());
+
+    return true;
 }
 
 
 bool FsDatabase::deleteIndex(const std::wstring& path,
                              const std::wstring& name)
 {
+    // get object id from path
+    xd::IFileInfoPtr info = getFileInfo(path);
+    if (info.isNull())
+        return xcm::null;
+
+    std::wstring object_id = info->getObjectId();
+
+    // update index registry
+
+    std::wstring index_registry_file = ((m_ctrl_path + xf_path_separator_wchar) + L"indexes" + xf_path_separator_wchar) + object_id + L".info";
+    std::wstring json = xf_get_file_contents(index_registry_file);
+
+    kl::JsonNode root;
+    root.fromString(json);
+
+    kl::JsonNode indexes = root["indexes"];
+    std::vector<kl::JsonNode> index_nodes = indexes.getChildren();
+    std::vector<kl::JsonNode>::iterator it, it_end = index_nodes.end();
+    size_t counter = 0;
+    for (it = index_nodes.begin(); it != it_end; ++it)
+    {
+        if (kl::iequals((*it)["name"], name))
+        {
+            std::wstring idx_path = ((m_ctrl_path + xf_path_separator_wchar) + L"indexes" + xf_path_separator_wchar) + (*it)["filename"].getString();
+            if (!xf_remove(idx_path))
+                return false;
+
+            indexes.deleteChild(counter);
+            xf_put_file_contents(index_registry_file, root.toString());
+            return true;
+        }
+        ++counter;
+    }
+
     return false;
 }
 
 
 xd::IIndexInfoEnumPtr FsDatabase::getIndexEnum(const std::wstring& path)
 {
+    // get object id from path
+    xd::IFileInfoPtr info = getFileInfo(path);
+    if (info.isNull())
+        return xcm::null;
+
+    std::wstring object_id = info->getObjectId();
+
+
     xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
     vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
 
+
+
+    std::wstring index_registry_file = ((m_ctrl_path + xf_path_separator_wchar) + L"indexes" + xf_path_separator_wchar) + object_id + L".info";
+    std::wstring json = xf_get_file_contents(index_registry_file);
+
+    kl::JsonNode root;
+    if (json.empty() || !root.fromString(json))
+        return vec;
+
+    kl::JsonNode indexes = root["indexes"];
+    std::vector<kl::JsonNode> index_nodes = indexes.getChildren();
+
+    std::wstring name, expr, filename;
+
+    std::vector<kl::JsonNode>::iterator it, it_end = index_nodes.end();
+    for (it = index_nodes.begin(); it != it_end; ++it)
+    {
+        name = (*it)["name"];
+        expr = (*it)["expression"];
+
+        IndexInfo* e = new IndexInfo;
+        e->setName(name);
+        e->setExpression(expr);
+
+        vec->append(static_cast<xd::IIndexInfo*>(e));
+    }
+
     return vec;
 }
-
-
 
 
 

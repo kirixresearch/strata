@@ -20,7 +20,7 @@ class IndexInfo : public xd::IIndexInfo
         XCM_INTERFACE_ENTRY(xd::IIndexInfo)
     XCM_END_INTERFACE_MAP()
 
-    std::wstring m_tag;
+    std::wstring m_name;
     std::wstring m_expression;
 
 public:
@@ -28,8 +28,8 @@ public:
     IndexInfo();
     virtual ~IndexInfo();
 
-    void setTag(const std::wstring& new_val);
-    const std::wstring& getTag();
+    void setName(const std::wstring& new_val);
+    const std::wstring& getName();
 
     void setExpression(const std::wstring& new_val);
     const std::wstring& getExpression();

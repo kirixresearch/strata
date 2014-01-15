@@ -16,6 +16,7 @@
 #include "xd_private.h"
 #include "cmnbaseiterator.h"
 
+class IIndexIterator;
 
 IIndex* createExternalIndex(xd::IDatabasePtr db,
                             const std::wstring& table_path,

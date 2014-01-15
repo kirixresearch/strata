@@ -22,15 +22,15 @@ IndexInfo::~IndexInfo()
 }
 
 
-void IndexInfo::setTag(const std::wstring& new_val)
+void IndexInfo::setName(const std::wstring& new_val)
 {
-    m_tag = new_val;
+    m_name = new_val;
 }
 
 
-const std::wstring& IndexInfo::getTag()
+const std::wstring& IndexInfo::getName()
 {
-    return m_tag;
+    return m_name;
 }
 
 

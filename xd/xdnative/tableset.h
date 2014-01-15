@@ -29,7 +29,7 @@ class IndexEntry
 public:
 
     std::wstring filename;
-    std::wstring tag;
+    std::wstring name;
     std::wstring expr;
 
     std::vector<bool> active_columns;

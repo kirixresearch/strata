@@ -460,7 +460,7 @@ TableSet::~TableSet()
 
         // if the index was temporary, try to delete the
         // index file itself
-        if (it->tag.length() == 0)
+        if (it->name.length() == 0)
         {
             std::wstring full_index_filename;
             full_index_filename = makePathName(m_database->getBasePath(),
@@ -813,7 +813,7 @@ void TableSet::refreshIndexEntries()
          idx_it != m_indexes.end();
          ++idx_it)
     {
-        if (idx_it->tag.length() == 0)
+        if (idx_it->name.length() == 0)
         {
             to_delete.push_back(idx_it->index);
         }
@@ -847,19 +847,19 @@ void TableSet::refreshIndexEntries()
         {
             INodeValuePtr index = indexes_node->getChildByIdx(i);
 
-            std::wstring tag = index->getName();
+            std::wstring name = index->getName();
 
             INodeValuePtr idx_expr_node = index->getChild(L"expression", false);
             if (idx_expr_node.isNull())
             {
-                bad_index_tags.push_back(tag);
+                bad_index_tags.push_back(name);
                 continue;
             }
 
             INodeValuePtr idx_filename_node = index->getChild(L"filename", false);
             if (idx_filename_node.isNull())
             {
-                bad_index_tags.push_back(tag);
+                bad_index_tags.push_back(name);
                 continue;
             }
 
@@ -876,7 +876,7 @@ void TableSet::refreshIndexEntries()
                  idx_it != old_entries.end();
                  ++idx_it)
             {
-                if (0 == wcscasecmp(tag.c_str(), idx_it->tag.c_str()))
+                if (kl::iequals(name.c_str(), idx_it->name))
                 {
                     m_indexes.push_back(*idx_it);
                     old_entries.erase(idx_it);
@@ -889,7 +889,7 @@ void TableSet::refreshIndexEntries()
             if (!found)
             {
                 IndexEntry i;
-                i.tag = tag;
+                i.name = name;
                 i.expr = idx_expr_node->getString();
                 i.filename = idx_filename_node->getString();
                 i.index = NULL;
@@ -909,7 +909,7 @@ void TableSet::refreshIndexEntries()
                 {
                     // slate the tag for removal and
                     // delete the bad index file if it exists
-                    bad_index_tags.push_back(tag);
+                    bad_index_tags.push_back(name);
                     xf_remove(full_idx_filename);
 
                     delete idx;
@@ -966,10 +966,10 @@ xd::IIndexInfoEnumPtr TableSet::getIndexEnum()
     std::vector<IndexEntry>::iterator it;
     for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
     {
-        if (it->tag.length() > 0 && it->index)
+        if (it->name.length() > 0 && it->index)
         {
             IndexInfo* ii = new IndexInfo;
-            ii->setTag(it->tag);
+            ii->setName(it->name);
             ii->setExpression(it->expr);
 
             indexes->append(static_cast<xd::IIndexInfo*>(ii));
@@ -1100,8 +1100,8 @@ xd::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
 
 
     IndexEntry e;
-    e.tag = tag;
-    kl::makeLower(e.tag);
+    e.name = tag;
+    kl::makeLower(e.name);
     e.expr = expr;
     e.filename = index_filename;
     e.index = idx;    // (already ref'ed)
@@ -1122,7 +1122,7 @@ xd::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
         indexes_node = set_file->getChild(L"indexes", true);
         if (indexes_node)
         {
-            INodeValuePtr index_node = indexes_node->getChild(e.tag, true);
+            INodeValuePtr index_node = indexes_node->getChild(e.name, true);
 
             INodeValuePtr expr_node = index_node->getChild(L"expression", true);
             expr_node->setString(e.expr);
@@ -1136,7 +1136,7 @@ xd::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
 
 
     IndexInfo* ii = new IndexInfo;
-    ii->setTag(tag);
+    ii->setName(tag);
     ii->setExpression(expr);
 
     return static_cast<xd::IIndexInfo*>(ii);
@@ -1150,7 +1150,7 @@ bool TableSet::deleteIndexInternal(IIndex* idx_to_delete)
 
     bool success = false;
 
-    std::wstring tag_to_delete;
+    std::wstring index_to_delete;
 
     std::vector<IndexEntry>::iterator it;
     for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
@@ -1181,7 +1181,7 @@ bool TableSet::deleteIndexInternal(IIndex* idx_to_delete)
                 }
             }
 
-            tag_to_delete = it->tag;
+            index_to_delete = it->name;
             
             success = true;
 
@@ -1191,9 +1191,9 @@ bool TableSet::deleteIndexInternal(IIndex* idx_to_delete)
     }
 
 
-    if (tag_to_delete.length() > 0)
+    if (index_to_delete.length() > 0)
     {
-        kl::makeLower(tag_to_delete);
+        kl::makeLower(index_to_delete);
 
         INodeValuePtr set_file = openSetDefinition(true);
         if (set_file.isOk())
@@ -1202,7 +1202,7 @@ bool TableSet::deleteIndexInternal(IIndex* idx_to_delete)
             indexes_node = set_file->getChild(L"indexes", true);
             if (indexes_node.isOk())
             {
-                bool result = indexes_node->deleteChild(tag_to_delete);
+                bool result = indexes_node->deleteChild(index_to_delete);
                 indexes_node.clear();
                 set_file.clear();
                 m_table->setStructureModified();
@@ -1222,7 +1222,7 @@ bool TableSet::deleteIndex(const std::wstring& name)
     std::vector<IndexEntry>::iterator it;
     for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
     {
-        if (0 == wcscasecmp(it->tag.c_str(), name.c_str()))
+        if (kl::iequals(it->name, name))
         {
             return deleteIndexInternal(it->index);
         }
@@ -1406,7 +1406,7 @@ xd::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
         IndexEntry entry;
         entry.expr = order;
         entry.filename = index_filename;
-        entry.tag = L"";
+        entry.name = L"";
         entry.update = false;
         entry.key_length = 0;
         entry.orig_key = NULL;

@@ -1470,7 +1470,7 @@ xd::IIndexInfoPtr PgsqlDatabase::createIndex(const std::wstring& path,
         return xcm::null;
 
     IndexInfo* ii = new IndexInfo;
-    ii->setTag(name);
+    ii->setName(name);
     ii->setExpression(expr);
 
     return static_cast<xd::IIndexInfo*>(ii);
@@ -1563,7 +1563,7 @@ xd::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
     for (it = indexes.begin(); it != indexes.end(); ++it)
     {
         IndexInfo* ii = new IndexInfo;
-        ii->setTag(it->first);
+        ii->setName(it->first);
         ii->setExpression(it->second);
 
         vec->append(static_cast<xd::IIndexInfo*>(ii));
