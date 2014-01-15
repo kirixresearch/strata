@@ -48,25 +48,8 @@ public:
 
 
 
-xcm_interface IFsDatabase : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("xd.IFsDatabase")
-
-public:
-
-    virtual bool getFileFormat(const std::wstring& phys_path,
-                               FsSetFormatInfo* info,
-                               int info_mask) = 0;
-    virtual std::wstring getDefinitionDirectory() = 0;
-    virtual std::wstring getTempFileDirectory() = 0;
-};
-XCM_DECLARE_SMARTPTR(IFsDatabase)
-
-
-
 
 class FsDatabase : public xd::IDatabase,
-                   public IFsDatabase,
                    public IXdsqlDatabase,
                    public xd::IRelationSchema
 {
@@ -75,7 +58,6 @@ class FsDatabase : public xd::IDatabase,
     XCM_CLASS_NAME("xdfs.Database")
     XCM_BEGIN_INTERFACE_MAP(FsDatabase)
         XCM_INTERFACE_ENTRY(xd::IDatabase)
-        XCM_INTERFACE_ENTRY(IFsDatabase)
         XCM_INTERFACE_ENTRY(IXdsqlDatabase)
         XCM_INTERFACE_ENTRY(xd::IRelationSchema)
     XCM_END_INTERFACE_MAP()

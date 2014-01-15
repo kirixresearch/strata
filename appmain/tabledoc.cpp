@@ -3571,7 +3571,7 @@ static wxMenu* createIndexesMenu(xd::IIndexInfoEnumPtr indexes,
     for (i = 0; i < count; ++i)
     {
         xd::IIndexInfoPtr index = indexes->getItem(i);
-        wxString index_tag = index->getTag();
+        wxString index_tag = index->getName();
         wxString index_expr = index->getExpression();
         
         menu->AppendCheckItem(base_id, index_tag);
@@ -8102,7 +8102,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     for (i = count-1; i >= 0; --i)
     {
         xd::IIndexInfoPtr index = orig_indexes->getItem(i);
-        wxString index_tag = index->getTag();
+        wxString index_tag = index->getName();
         found = false;
         
         // try to find the original index
@@ -8120,7 +8120,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         // delete the index if it's not found
         if (!found)
         {
-            db->deleteIndex(m_path, index->getTag());
+            db->deleteIndex(m_path, index->getName());
         }
     }
     
@@ -8134,7 +8134,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     for (i = count-1; i >= 0; --i)
     {
         xd::IIndexInfoPtr index = orig_indexes->getItem(i);
-        wxString index_tag = index->getTag();
+        wxString index_tag = index->getName();
         
         // find the original index and rename if
         // its name was changed in the IndexPanel
@@ -8217,7 +8217,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         for (i = 0; i < count; ++i)
         {
             index = orig_indexes->getItem(i);
-            index_tag = index->getTag();
+            index_tag = index->getName();
             
             if (info->orig_name.CmpNoCase(index_tag) == 0)
             {
@@ -8252,7 +8252,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         
         if (index.isOk())
         {
-            db->deleteIndex(m_path, index->getTag());
+            db->deleteIndex(m_path, index->getName());
             index_deleted = true;
         }
     }

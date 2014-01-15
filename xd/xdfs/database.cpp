@@ -2757,7 +2757,6 @@ xd::IIndexInfoEnumPtr FsDatabase::getIndexEnum(const std::wstring& path)
     vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
 
 
-
     std::wstring index_registry_file = ((m_ctrl_path + xf_path_separator_wchar) + L"indexes" + xf_path_separator_wchar) + object_id + L".info";
     std::wstring json = xf_get_file_contents(index_registry_file);
 

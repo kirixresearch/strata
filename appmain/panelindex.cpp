@@ -466,8 +466,8 @@ void IndexPanel::populateIndexesList()
         
         // create the index info to be stored as row data
         IndexInfo* info = new IndexInfo;
-        info->orig_name = index->getTag();
-        info->name = index->getTag();
+        info->orig_name = index->getName();
+        info->name = index->getName();
         info->expr = index->getExpression();
         
         // parse the index expression into a vector of IndexColumnInfo

@@ -1076,8 +1076,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         {
             xd::IIndexInfoPtr newidx = new_indexes->getItem(j);
 
-            if (0 == wcscasecmp(oldidx->getTag().c_str(),
-                                newidx->getTag().c_str()))
+            if (kl::iequals(oldidx->getName(), newidx->getName()))
             {
                 found = true;
                 break;
@@ -1124,7 +1123,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
                 kl::JsonNode index_item = indexes.appendElement();
 
                 index_item["input"].setString(m_path);
-                index_item["name"].setString((*it)->getTag());
+                index_item["name"].setString((*it)->getName());
                 index_item["expression"].setString((*it)->getExpression());
             }
 

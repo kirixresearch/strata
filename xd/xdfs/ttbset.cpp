@@ -108,8 +108,7 @@ xd::IIteratorPtr TtbSet::createIterator(const std::wstring& columns,
     }
     
     // find out where the database should put temporary files
-    IFsDatabasePtr fsdb = m_database;
-    std::wstring temp_directory = fsdb->getTempFileDirectory();
+    std::wstring temp_directory = m_database->getTempFileDirectory();
  
     // create a unique index file name with .idx extension
     std::wstring index_filename = getUniqueString();
