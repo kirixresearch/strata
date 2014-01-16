@@ -354,6 +354,7 @@
     <ClInclude Include="jobinfo.h" />
     <ClInclude Include="keylayout.h" />
     <ClInclude Include="localrowcache.h" />
+    <ClInclude Include="relationinfo.h" />
     <ClInclude Include="rowidarray.h" />
     <ClInclude Include="setconfigfile.h" />
     <ClInclude Include="structure.h" />
