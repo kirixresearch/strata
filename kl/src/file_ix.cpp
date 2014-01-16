@@ -149,7 +149,8 @@ bool xf_closedir(xf_dirhandle_t d)
 }
 
 
-    
+// TODO: implement exclusive flags for linux
+
 xf_file_t xf_open(const std::wstring& filename,
                   unsigned int disposition,
                   unsigned int access_flags,
@@ -243,6 +244,8 @@ int xf_write(xf_file_t fileh,
     return fwrite(buffer, write_size, write_count, (FILE*)fileh);
 }
 
+// TODO: implement locking functions on linux
+
 bool xf_lock(xf_file_t fileh, xf_off_t offset, xf_off_t len)
 {
     return true;
@@ -256,6 +259,12 @@ bool xf_unlock(xf_file_t fileh, xf_off_t offset, xf_off_t len)
 bool xf_trylock(xf_file_t fileh, xf_off_t offset, xf_off_t len, int milliseconds)
 {
     return true;
+}
+
+bool xf_truncate(xf_file_t fileh)
+{
+    fseek((FILE*)fileh, 0, SEEK_SET);
+    return (ftruncate(fileno((FILE*)fp), 0) == 0 ? true : false);
 }
 
 xf_off_t xf_get_file_pos(xf_file_t fileh)

@@ -114,6 +114,7 @@ int xf_write(xf_file_t fileh, const void* buffer, unsigned int write_size, unsig
 bool xf_lock(xf_file_t fileh, xf_off_t offset, xf_off_t len);
 bool xf_unlock(xf_file_t fileh, xf_off_t offset, xf_off_t len);
 bool xf_trylock(xf_file_t fileh, xf_off_t offset, xf_off_t len, int milliseconds);
+bool xf_truncate(xf_file_t fileh);
 xf_off_t xf_get_file_pos(xf_file_t fileh);
 xf_filetime_t xf_get_file_modify_time(const std::wstring& filename);
 //xf_filetime_t xf_get_directory_create_time(const std::wstring& dir);
@@ -138,6 +139,30 @@ std::wstring xf_get_file_contents(const std::wstring& filename, bool* success = 
 bool xf_put_file_contents(const std::wstring& filename, const std::wstring& contents);
 
 
+
+namespace kl
+{
+
+class exclusive_file
+{
+public:
+
+    exclusive_file(const std::wstring& path, int timeout = 10 /* 10 seconds */);
+    ~exclusive_file();
+    bool isOk() const { return m_f ? true : false; }
+    std::wstring getContents(bool* success = NULL);
+    bool putContents(const std::wstring& contents);
+
+private:
+
+    std::wstring m_path;
+    int m_timeout;
+    xf_file_t m_f;
+    time_t m_time;
+    bool m_existed;
+};
+
+};
 
 #endif      // __KL_FILE_H
 

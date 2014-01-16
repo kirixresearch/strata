@@ -311,6 +311,14 @@ bool xf_trylock(xf_file_t fileh, xf_off_t offset, xf_off_t len, int milliseconds
     return false;
 }
 
+
+bool xf_truncate(xf_file_t fileh)
+{
+    SetFilePointer(fileh, 0, NULL, FILE_BEGIN);
+    return (SetEndOfFile(fileh) != 0 ? true : false);
+}
+
+
 xf_off_t xf_get_file_pos(xf_file_t fileh)
 {
     DWORD fsl = 0;
