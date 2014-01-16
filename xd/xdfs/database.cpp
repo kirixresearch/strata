@@ -40,6 +40,7 @@
 #include "../xdcommon/util.h"
 #include "../xdcommon/idxutil.h"
 #include "../xdcommon/indexinfo.h"
+#include "../xdcommon/relationinfo.h"
 #include "ttbfile.h"
 #include <kl/url.h>
 #include <kl/hex.h>
@@ -171,6 +172,11 @@ bool FsDatabase::open(const std::wstring& path)
         std::wstring appdata_dir = (control_dir + xf_path_separator_wchar) + L"appdata";
         if (!xf_get_directory_exist(appdata_dir))
             xf_mkdir(appdata_dir);
+
+        // make system directory
+        std::wstring system_dir = (control_dir + xf_path_separator_wchar) + L"system";
+        if (!xf_get_directory_exist(system_dir))
+            xf_mkdir(system_dir);
 
         m_attr->setStringAttribute(xd::dbattrTempDirectory, temp_dir);
         m_attr->setStringAttribute(xd::dbattrDefinitionDirectory, temp_dir);
@@ -2790,21 +2796,107 @@ xd::IIndexInfoEnumPtr FsDatabase::getIndexEnum(const std::wstring& path)
 
 
 xd::IRelationPtr FsDatabase::createRelation(const std::wstring& tag,
-                                            const std::wstring& left_set_path,
-                                            const std::wstring& right_set_path,
+                                            const std::wstring& left_table,
+                                            const std::wstring& right_table,
                                             const std::wstring& left_expr,
                                             const std::wstring& right_expr)
 {
+    kl::exclusive_file file(m_ctrl_path + xf_path_separator_wchar + L"system" + xf_path_separator_wchar + L"rel_table.info");
+    if (!file.isOk())
+        return xcm::null;
+
+    std::wstring relation_id = kl::getUniqueString();
+    std::wstring json = file.getContents();
+
+    kl::JsonNode root;
+    if (json.length() > 0 && !root.fromString(json))
+        return xcm::null;
+
+
+    kl::JsonNode relations = root["relations"];
+    if (!relations.isArray())
+        relations.setArray();
+
+    kl::JsonNode relation_node = relations.appendElement();
+    relation_node["id"] = relation_id;
+    relation_node["tag"] = tag;
+    relation_node["left_table"] = left_table;
+    relation_node["right_table"] = right_table;
+    relation_node["left_expression"] = left_expr;
+    relation_node["right_expression"] = right_expr;
+
+    file.putContents(root.toString());
+
     return xcm::null;
 }
 
 bool FsDatabase::deleteRelation(const std::wstring& relation_id)
 {
+    // update index registry
+
+    kl::exclusive_file file(m_ctrl_path + xf_path_separator_wchar + L"system" + xf_path_separator_wchar + L"rel_table.info");
+    if (!file.isOk())
+        return false;
+
+    std::wstring json = file.getContents();
+
+    kl::JsonNode root;
+    if (json.length() > 0 && !root.fromString(json))
+        return false;
+
+
+    kl::JsonNode relations = root["relations"];
+    std::vector<kl::JsonNode> index_nodes = relations.getChildren();
+    std::vector<kl::JsonNode>::iterator it, it_end = index_nodes.end();
+    size_t counter = 0;
+    for (it = index_nodes.begin(); it != it_end; ++it)
+    {
+        if ((*it)["id"].getString() == relation_id)
+        {
+            relations.deleteChild(counter);
+            file.putContents(root.toString());
+            return true;
+        }
+        ++counter;
+    }
+
     return false;
 }
 
 xd::IRelationPtr FsDatabase::getRelation(const std::wstring& relation_id)
 {
+    // update index registry
+
+    kl::exclusive_file file(m_ctrl_path + xf_path_separator_wchar + L"system" + xf_path_separator_wchar + L"rel_table.info");
+    if (!file.isOk())
+        return xcm::null;
+
+    std::wstring json = file.getContents();
+
+    kl::JsonNode root;
+    if (json.length() > 0 && !root.fromString(json))
+        return xcm::null;
+
+    kl::JsonNode relations = root["relations"];
+    std::vector<kl::JsonNode> index_nodes = relations.getChildren();
+    std::vector<kl::JsonNode>::iterator it, it_end = index_nodes.end();
+    for (it = index_nodes.begin(); it != it_end; ++it)
+    {
+        if ((*it)["id"].getString() == relation_id)
+        {
+            RelationInfo* r = new RelationInfo;
+
+            r->setRelationId((*it)["id"]);
+            r->setTag((*it)["tag"]);
+            r->setLeftTable((*it)["left_table"]);
+            r->setRightTable((*it)["right_table"]);
+            r->setLeftExpression((*it)["left_expression"]);
+            r->setRightExpression((*it)["right_expression"]);
+
+            return static_cast<xd::IRelation*>(r);
+        }
+    }
+
     return xcm::null;
 }
 
@@ -2812,6 +2904,34 @@ xd::IRelationEnumPtr FsDatabase::getRelationEnum(const std::wstring& path)
 {
     xcm::IVectorImpl<xd::IRelationPtr>* vec;
     vec = new xcm::IVectorImpl<xd::IRelationPtr>;
+
+
+    kl::exclusive_file file(m_ctrl_path + xf_path_separator_wchar + L"system" + xf_path_separator_wchar + L"rel_table.info");
+    if (!file.isOk())
+        return xcm::null;
+
+    std::wstring json = file.getContents();
+
+    kl::JsonNode root;
+    if (json.length() > 0 && !root.fromString(json))
+        return xcm::null;
+
+    kl::JsonNode relations = root["relations"];
+    std::vector<kl::JsonNode> index_nodes = relations.getChildren();
+    std::vector<kl::JsonNode>::iterator it, it_end = index_nodes.end();
+    for (it = index_nodes.begin(); it != it_end; ++it)
+    {
+        RelationInfo* r = new RelationInfo;
+
+        r->setRelationId((*it)["id"]);
+        r->setTag((*it)["tag"]);
+        r->setLeftTable((*it)["left_table"]);
+        r->setRightTable((*it)["right_table"]);
+        r->setLeftExpression((*it)["left_expression"]);
+        r->setRightExpression((*it)["right_expression"]);
+
+        vec->append(static_cast<xd::IRelation*>(r));
+    }
 
 
     return vec;

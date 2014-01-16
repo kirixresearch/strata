@@ -159,8 +159,8 @@ public:
     // xd::IRelationSchema
 
     xd::IRelationPtr createRelation(const std::wstring& tag,
-                                    const std::wstring& left_set_path,
-                                    const std::wstring& right_set_path,
+                                    const std::wstring& left_path,
+                                    const std::wstring& right_path,
                                     const std::wstring& left_expr,
                                     const std::wstring& right_expr);
     bool deleteRelation(const std::wstring& relation_id);
