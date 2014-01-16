@@ -3392,20 +3392,20 @@ bool XdnativeDatabase::getSetLocked(const std::wstring& set_id)
 }
 
 
-class RelationInfo : public xd::IRelation,
-                     public IRelationInternal
+class XdnativeRelationInfo : public xd::IRelation,
+                             public IRelationInternal
 {
-    XCM_CLASS_NAME("xdnative.RelationInfo")
-    XCM_BEGIN_INTERFACE_MAP(RelationInfo)
+    XCM_CLASS_NAME("xdnative.XdnativeRelationInfo")
+    XCM_BEGIN_INTERFACE_MAP(XdnativeRelationInfo)
         XCM_INTERFACE_ENTRY(xd::IRelation)
         XCM_INTERFACE_ENTRY(IRelationInternal)
     XCM_END_INTERFACE_MAP()
 
 public:
 
-    RelationInfo(XdnativeDatabase* db)
+    XdnativeRelationInfo(XdnativeDatabase* db)
     {
-        // RelationInfo does not need to call ref() on the database object
+        // XdnativeRelationInfo does not need to call ref() on the database object
         // since references themselves are held by the db
         m_db = db;
     }
@@ -3615,8 +3615,8 @@ xd::IRelationEnumPtr XdnativeDatabase::getRelationEnum(const std::wstring& path)
             continue;
         }
 
-        RelationInfo* relation;
-        relation = new RelationInfo(this);
+        XdnativeRelationInfo* relation;
+        relation = new XdnativeRelationInfo(this);
         relation->setRelationId(rel_node->getName());
         relation->setTag(tag);
         if (left_set_id.length() > 0)
@@ -3657,10 +3657,10 @@ xd::IRelationPtr XdnativeDatabase::getRelation(const std::wstring& relation_id)
 }
 
 xd::IRelationPtr XdnativeDatabase::createRelation(const std::wstring& tag,
-                                             const std::wstring& left_set_path,
-                                             const std::wstring& right_set_path,
-                                             const std::wstring& left_expr,
-                                             const std::wstring& right_expr)
+                                                  const std::wstring& left_set_path,
+                                                  const std::wstring& right_set_path,
+                                                  const std::wstring& left_expr,
+                                                  const std::wstring& right_expr)
 {    
     INodeValuePtr root;
 
@@ -3708,7 +3708,7 @@ xd::IRelationPtr XdnativeDatabase::createRelation(const std::wstring& tag,
 
 
     // create a new relationship object to return to the caller
-    RelationInfo* relation = new RelationInfo(this);
+    XdnativeRelationInfo* relation = new XdnativeRelationInfo(this);
     relation->setRelationId(rel_id);
     relation->setTag(tag);
     relation->setLeftExpression(left_expr);
