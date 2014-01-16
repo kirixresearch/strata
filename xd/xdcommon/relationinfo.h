@@ -46,10 +46,9 @@ public:
         return m_tag;
     }
 
-    void setLeftSet(const std::wstring& new_value)
+    void setLeftTable(const std::wstring& new_value)
     {
         m_left_path = new_value;
-        m_left_setid = L"";
     }
     
     std::wstring getLeftTable()
@@ -67,14 +66,10 @@ public:
         return m_left_expression;
     }
 
-
-    
-    void setRightSet(const std::wstring& new_value)
+    void setRightTable(const std::wstring& new_value)
     {
         m_right_path = new_value;
-        m_right_setid = L"";
     }
-
 
     std::wstring getRightTable()
     {
