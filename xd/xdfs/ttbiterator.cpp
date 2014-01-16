@@ -768,7 +768,8 @@ const std::string& TtbIterator::getString(xd::objhandle_t data_handle)
         if (!dai->expr)
             return empty_string;
 
-        if (!dai->expr->eval(&dai->expr_result) ||
+        if (!dai->expr ||
+            !dai->expr->eval(&dai->expr_result) ||
              (dai->expr->getType() != kscript::Value::typeString &&
               dai->expr->getType() != kscript::Value::typeUndefined)
            )
@@ -846,7 +847,8 @@ const std::wstring& TtbIterator::getWideString(xd::objhandle_t data_handle)
 
     if (dai->isCalculated())
     {
-        if (!dai->expr->eval(&dai->expr_result) ||
+        if (!dai->expr ||
+            !dai->expr->eval(&dai->expr_result) ||
              (dai->expr->getType() != kscript::Value::typeString &&
               dai->expr->getType() != kscript::Value::typeUndefined)
            )
@@ -915,7 +917,8 @@ xd::datetime_t TtbIterator::getDateTime(xd::objhandle_t data_handle)
 
     if (dai->isCalculated())
     {
-        if (!dai->expr->eval(&dai->expr_result) ||
+        if (!dai->expr ||
+            !dai->expr->eval(&dai->expr_result) ||
              dai->expr->getType() != kscript::Value::typeDateTime)
         {
             // upon failure, return an empty date
@@ -979,7 +982,8 @@ double TtbIterator::getDouble(xd::objhandle_t data_handle)
 
     if (dai->isCalculated())
     {
-        if (!dai->expr->eval(&dai->expr_result) ||
+        if (!dai->expr ||
+            !dai->expr->eval(&dai->expr_result) ||
              (dai->expr->getType() != kscript::Value::typeDouble &&
               dai->expr->getType() != kscript::Value::typeInteger &&
               dai->expr->getType() != kscript::Value::typeUndefined)
@@ -1044,9 +1048,9 @@ int TtbIterator::getInteger(xd::objhandle_t data_handle)
 
     if (dai->isCalculated())
     {
-        if (!dai->expr->eval(&dai->expr_result) ||
-             (dai->expr->getType() != kscript::Value::typeDouble &&
-              dai->expr->getType() != kscript::Value::typeInteger))
+        if (!dai->expr ||
+            !dai->expr->eval(&dai->expr_result) ||
+            (dai->expr->getType() != kscript::Value::typeDouble &&  dai->expr->getType() != kscript::Value::typeInteger))
         {
             return 0;
         }
@@ -1104,6 +1108,8 @@ bool TtbIterator::isNull(xd::objhandle_t data_handle)
 
     if (dai->isCalculated())
     {
+        if (!dai->expr)
+            return true;
         if (!dai->expr->eval(&dai->expr_result))
             return true;
 

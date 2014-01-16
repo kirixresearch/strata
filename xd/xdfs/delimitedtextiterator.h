@@ -79,6 +79,7 @@ friend class DelimitedTextSet;
     XCM_CLASS_NAME("xdfs.DelimitedTextIterator")
     XCM_BEGIN_INTERFACE_MAP(DelimitedTextIterator)
         XCM_INTERFACE_ENTRY(xd::IIterator)
+        XCM_INTERFACE_ENTRY(xd::IIteratorRelation)
     XCM_END_INTERFACE_MAP()
 
     xd::IDatabase* cmniterGetDatabase() { return m_database.p; }

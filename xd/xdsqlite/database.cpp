@@ -603,7 +603,7 @@ xd::IIteratorPtr SlDatabase::query(const xd::QueryParams& qp)
         return xcm::null;
     }
 
-    xd::IIteratorPtr result = static_cast<xcm::IObject*>(iter);
+    xd::IIteratorPtr result = static_cast<xd::IIterator*>(iter);
     iter->unref();
 
     return result;
@@ -725,7 +725,7 @@ bool SlDatabase::execute(const std::wstring& command,
             return false;
         }
 
-        result = static_cast<xcm::IObject*>(iter);
+        result = static_cast<xd::IIterator*>(iter);
         iter->unref();
 
         return true;

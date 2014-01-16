@@ -561,8 +561,7 @@ std::wstring getTablenameFromFilesystemPath(const std::wstring& _path)
         return path;
     }
 
-    int i;
-    int length = path.length();
+    int i, length = (int)path.length();
     
     for (i = (length-1); i >= 0; --i)
     {
@@ -588,6 +587,19 @@ std::wstring getTablenameFromFilesystemPath(const std::wstring& _path)
     return path;
 }
 
+
+bool isSamePath(const std::wstring& path1, const std::wstring& path2)
+{
+    std::wstring s1 = path1, s2 = path2;
+    kl::makeLower(s1);
+    kl::makeLower(s2);
+    if (s1.length() > 0 && s1[0] == '/')
+        s1.erase(0,1);
+    if (s2.length() > 0 && s2[0] == '/')
+        s2.erase(0,1);
+
+    return (s1 == s2) ? true : false;
+}
 
 
 

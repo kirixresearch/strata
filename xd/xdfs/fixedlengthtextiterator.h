@@ -88,6 +88,7 @@ friend class FixedLengthTextSet;
     XCM_CLASS_NAME("xdfs.FixedLengthTextIterator")
     XCM_BEGIN_INTERFACE_MAP(FixedLengthTextIterator)
         XCM_INTERFACE_ENTRY(xd::IIterator)
+        XCM_INTERFACE_ENTRY(xd::IIteratorRelation)
     XCM_END_INTERFACE_MAP()
 
     xd::IDatabase* cmniterGetDatabase() { return m_database.p; }

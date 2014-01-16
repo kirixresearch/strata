@@ -2921,6 +2921,12 @@ xd::IRelationEnumPtr FsDatabase::getRelationEnum(const std::wstring& path)
     std::vector<kl::JsonNode>::iterator it, it_end = index_nodes.end();
     for (it = index_nodes.begin(); it != it_end; ++it)
     {
+        if (path.length() > 0)
+        {
+            if (!isSamePath((*it)["left_table"], path))
+                continue;
+        }
+
         RelationInfo* r = new RelationInfo;
 
         r->setRelationId((*it)["id"]);

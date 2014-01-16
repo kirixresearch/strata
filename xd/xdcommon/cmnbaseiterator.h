@@ -32,7 +32,7 @@ struct CommonBaseIteratorRelInfo
 };
 
 
-class CommonBaseIterator : public xd::IIterator
+class CommonBaseIterator : public xd::IIterator, public xd::IIteratorRelation
 {
 public:
 
@@ -50,6 +50,7 @@ public:
 
     bool refreshRelInfo(CommonBaseIteratorRelInfo& info);
     xd::IIteratorPtr getFilteredChildIterator(xd::IRelationPtr relation);
+    xd::IIteratorPtr getChildIterator(xd::IRelationPtr relation);
     CommonAggregateResult* getAggResultObject(int aggregate_func, const std::wstring& expr);
     void releaseAggResultObject(CommonAggregateResult* agg_res);
     void recalcAggResults();

@@ -77,6 +77,8 @@ std::wstring makePathName(const std::wstring& base_dir,
 
 std::wstring getTablenameFromOfsPath(const std::wstring& path);
 std::wstring getTablenameFromFilesystemPath(const std::wstring& path);
+bool isSamePath(const std::wstring& path1, const std::wstring& path2);
+
 
 void crc64(const unsigned char* s,
            int length,

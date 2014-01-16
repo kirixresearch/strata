@@ -89,6 +89,7 @@ friend class TtbSet;
     XCM_CLASS_NAME("xdfs.TtbIterator")
     XCM_BEGIN_INTERFACE_MAP(TtbIterator)
         XCM_INTERFACE_ENTRY(xd::IIterator)
+        XCM_INTERFACE_ENTRY(xd::IIteratorRelation)
     XCM_END_INTERFACE_MAP()
 
     xd::IDatabase* cmniterGetDatabase() { return static_cast<xd::IDatabase*>(m_database); }

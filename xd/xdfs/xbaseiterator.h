@@ -81,6 +81,7 @@ friend class XbaseSet;
     XCM_CLASS_NAME("xdfs.XbaseIterator")
     XCM_BEGIN_INTERFACE_MAP(XbaseIterator)
         XCM_INTERFACE_ENTRY(xd::IIterator)
+        XCM_INTERFACE_ENTRY(xd::IIteratorRelation)
     XCM_END_INTERFACE_MAP()
 
     xd::IDatabase* cmniterGetDatabase() { return static_cast<xd::IDatabase*>(m_database); }

@@ -677,6 +677,63 @@ void CommonBaseIterator::releaseAggResultObject(CommonAggregateResult* agg_res)
 }
 
 
+xd::IIteratorPtr CommonBaseIterator::getChildIterator(xd::IRelationPtr relation)
+{
+    CommonBaseIteratorRelInfo* info = NULL;
+
+    // lookup the relationship info
+    std::vector<CommonBaseIteratorRelInfo>::iterator it;
+    for (it = m_relations.begin(); it != m_relations.end(); ++it)
+    {
+        if (it->relation_id == relation->getRelationId())
+        {
+            info = &(*it);
+            break;
+        }
+    }
+
+    // if the relationship info was not found, attempt
+    // to initialize a new structure and add it to our
+    // m_relations array
+
+    if (!info || !info->kl)
+    {
+        CommonBaseIteratorRelInfo i;
+        i.relation_id = relation->getRelationId();
+        i.kl = NULL;
+
+        if (!refreshRelInfo(i))
+        {
+            return xcm::null;
+        }
+
+        m_relations.push_back(i);
+        info = &m_relations.back();
+    }
+
+    // sanity check
+    if (!info->kl)
+        return xcm::null;
+
+    // get the left key
+    const unsigned char* left_key = info->kl->getKey();
+    int left_keylen = info->kl->getKeyLength();
+
+    // if the left key was truncated at all, that means that no record
+    // can be found on the right side which satisfies the left expression
+
+    if (info->kl->getTruncation())
+        return xcm::null;
+
+    info->right_iter_int->setKeyFilter(NULL, 0);
+
+    if (!info->right_iter->seek(left_key, left_keylen, false))
+        return xcm::null;
+    
+    return info->right_iter;
+}
+
+
 xd::IIteratorPtr CommonBaseIterator::getFilteredChildIterator(xd::IRelationPtr relation)
 {
     CommonBaseIteratorRelInfo* info = NULL;

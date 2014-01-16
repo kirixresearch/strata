@@ -95,8 +95,7 @@ public:
 };
 
 class PgsqlIterator : public CommonBaseIterator,
-                      public xd::ICacheRowUpdate,
-                      public xd::IIteratorRelation
+                      public xd::ICacheRowUpdate
 {
     friend class PgsqlDatabase;
 
