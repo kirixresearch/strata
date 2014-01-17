@@ -2724,8 +2724,7 @@ bool FsDatabase::renameIndex(const std::wstring& path,
 }
 
 
-bool FsDatabase::deleteIndex(const std::wstring& path,
-                             const std::wstring& name)
+bool FsDatabase::deleteIndex(const std::wstring& path, const std::wstring& name)
 {
     // get object id from path
     xd::IFileInfoPtr info = getFileInfo(path);

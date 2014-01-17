@@ -114,12 +114,10 @@ xd::IStructurePtr XbaseSet::getStructure()
     return s;
 }
 
-bool XbaseSet::modifyStructure(xd::IStructure* struct_config,
-                               xd::IJob* job)
+bool XbaseSet::modifyStructure(xd::IStructurePtr structure, xd::IJob* job)
 {
     bool done_flag = false;
-    XdfsBaseSet::modifyStructure(struct_config, &done_flag);
-    return true;
+    return XdfsBaseSet::modifyStructure(structure, &done_flag);
 }
 
 xd::IRowInserterPtr XbaseSet::getRowInserter()
