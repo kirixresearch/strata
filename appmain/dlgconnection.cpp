@@ -703,6 +703,14 @@ void DlgConnection::onOK(wxCommandEvent& evt)
     {
         m_ci.tables.clear();
 
+        wxString base_path = m_tablelist_basepath->GetValue();
+        if (base_path == "/")
+            base_path = "";
+        if (base_path.Length() > 0 && base_path[0] != '/')
+            base_path.Prepend("/");
+        if (base_path.Length() > 0 && base_path.Last() != '/')
+            base_path += "/";
+
         int row, row_count = m_tablelist_grid->getRowCount();
         for (row = 0; row < row_count; ++row)
         {
@@ -710,7 +718,7 @@ void DlgConnection::onOK(wxCommandEvent& evt)
             {
                 ConnectionTable t;
                 t.input_tablename = m_tablelist_grid->getCellString(row, SOURCE_TABLENAME_IDX);
-                t.output_tablename = m_tablelist_grid->getCellString(row, DEST_TABLENAME_IDX);
+                t.output_tablename = base_path + m_tablelist_grid->getCellString(row, DEST_TABLENAME_IDX);
                 t.append = m_tablelist_grid->getCellBoolean(row, APPEND_IDX);
                 m_ci.tables.push_back(t);
             }
