@@ -553,6 +553,67 @@ xd::IJobPtr FsDatabase::createJob()
 }
 
 
+// from xdnative/database.cpp
+static bool _deleteTree(const std::wstring& path)
+{
+    std::vector<std::wstring> to_remove;
+
+    xf_dirhandle_t h = xf_opendir(path);
+    xf_direntry_t info;
+    while (xf_readdir(h, &info))
+    {
+        if (info.m_type == xfFileTypeNormal)
+        {
+            xf_remove(makePathName(path, L"", info.m_name));
+        }
+        if (info.m_type == xfFileTypeDirectory && info.m_name[0] != '.')
+        {
+            to_remove.push_back(makePathName(path, info.m_name));
+        }
+    }
+    xf_closedir(h);
+
+    std::vector<std::wstring>::iterator it;
+    for (it = to_remove.begin(); it != to_remove.end(); ++it)
+    {
+        _deleteTree(*it);
+    }
+
+    xf_rmdir(path);
+
+    return true;
+}
+
+static bool _mkdirTree(const std::wstring& _path)
+{
+    std::vector<std::wstring> to_add;
+
+    std::wstring path = _path;
+    to_add.push_back(path);
+
+    while (true)
+    {
+        path = xf_get_file_directory(path);
+
+        if (path.length() == 0)
+            break;
+
+        if (xf_get_directory_exist(path))
+            break;
+
+        to_add.push_back(path);
+    }
+
+    std::vector<std::wstring>::reverse_iterator rit;
+    for (rit = to_add.rbegin(); rit != to_add.rend(); ++rit)
+    {
+        if (!xf_mkdir(*rit))
+            break;
+    }
+
+    return true;
+}
+
 
 static std::wstring convertSlashes(const std::wstring& path)
 {
@@ -883,6 +944,11 @@ bool FsDatabase::setMountPoint(const std::wstring& path,
     std::wstring phys_path = makeFullPath(path);
     phys_path += L".xddef";
     
+    // make sure containing directory exists
+    std::wstring dir = xf_get_file_directory(phys_path);
+    if (!xf_get_directory_exist(dir))
+        _mkdirTree(dir);
+
     // process connection string
     std::wstring final_connection_string = connection_str;
     if (final_connection_string.find(L"://") != -1)
@@ -1181,66 +1247,6 @@ bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
     return true;
 }
 
-// from xdnative/database.cpp
-static bool _deleteTree(const std::wstring& path)
-{
-    std::vector<std::wstring> to_remove;
-
-    xf_dirhandle_t h = xf_opendir(path);
-    xf_direntry_t info;
-    while (xf_readdir(h, &info))
-    {
-        if (info.m_type == xfFileTypeNormal)
-        {
-            xf_remove(makePathName(path, L"", info.m_name));
-        }
-        if (info.m_type == xfFileTypeDirectory && info.m_name[0] != '.')
-        {
-            to_remove.push_back(makePathName(path, info.m_name));
-        }
-    }
-    xf_closedir(h);
-
-    std::vector<std::wstring>::iterator it;
-    for (it = to_remove.begin(); it != to_remove.end(); ++it)
-    {
-        _deleteTree(*it);
-    }
-
-    xf_rmdir(path);
-
-    return true;
-}
-
-static bool _mkdirTree(const std::wstring& _path)
-{
-    std::vector<std::wstring> to_add;
-
-    std::wstring path = _path;
-    to_add.push_back(path);
-
-    while (true)
-    {
-        path = xf_get_file_directory(path);
-
-        if (path.length() == 0)
-            break;
-
-        if (xf_get_directory_exist(path))
-            break;
-
-        to_add.push_back(path);
-    }
-
-    std::vector<std::wstring>::reverse_iterator rit;
-    for (rit = to_add.rbegin(); rit != to_add.rend(); ++rit)
-    {
-        if (!xf_mkdir(*rit))
-            break;
-    }
-
-    return true;
-}
 
 bool FsDatabase::deleteFile(const std::wstring& _path)
 {
@@ -2080,6 +2086,11 @@ bool FsDatabase::saveDataView(const std::wstring& path, const xd::FormatDefiniti
 {
     std::wstring phys_path = makeFullPath(path) + L".xddef";
     
+    // make sure containing directory exists
+    std::wstring dir = xf_get_file_directory(phys_path);
+    if (!xf_get_directory_exist(dir))
+        _mkdirTree(dir);
+
     return saveDefinitionToFile(phys_path, info);
 }
 
@@ -2905,16 +2916,15 @@ xd::IRelationEnumPtr FsDatabase::getRelationEnum(const std::wstring& path)
     xcm::IVectorImpl<xd::IRelationPtr>* vec;
     vec = new xcm::IVectorImpl<xd::IRelationPtr>;
 
-
     kl::exclusive_file file(m_ctrl_path + xf_path_separator_wchar + L"system" + xf_path_separator_wchar + L"rel_table.info");
     if (!file.isOk())
-        return xcm::null;
+        return vec;
 
     std::wstring json = file.getContents();
 
     kl::JsonNode root;
     if (json.length() > 0 && !root.fromString(json))
-        return xcm::null;
+        return vec;
 
     kl::JsonNode relations = root["relations"];
     std::vector<kl::JsonNode> index_nodes = relations.getChildren();
