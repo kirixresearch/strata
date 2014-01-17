@@ -15,7 +15,6 @@
 
 
 #include <ctime>
-#include <xd/xd.h>
 #include "xdfs.h"
 #include "database.h"
 #include "delimitedtext.h"

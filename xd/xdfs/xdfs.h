@@ -12,7 +12,13 @@
 #ifndef __XDFS_XDFS_H
 #define __XDFS_XDFS_H
 
+#include <map>
+#include <kl/string.h>
+#include <kl/file.h>
+#include <xd/xd.h>
 #include "../xdcommonsql/xdcommonsql.h"
+#include "../xdcommon/errorinfo.h"
+
 
 xcm_interface IXdfsSet;
 XCM_DECLARE_SMARTPTR(IXdfsSet)

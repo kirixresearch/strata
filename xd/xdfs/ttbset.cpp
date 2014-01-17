@@ -14,7 +14,6 @@
 #endif
 
 
-#include <xd/xd.h>
 #include "xdfs.h"
 #include "database.h"
 #include "ttbset.h"

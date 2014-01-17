@@ -13,13 +13,12 @@
 #define __XDFS_DATABASE_H
 
 
-#include <map>
-#include <kl/string.h>
-#include "../xdcommon/errorinfo.h"
+
 
 
 // forward declarations
 class JobInfo;
+class RelationInfo;
 
 
 // small container class for the set's format info
@@ -166,6 +165,7 @@ public:
     bool deleteRelation(const std::wstring& relation_id);
     xd::IRelationPtr getRelation(const std::wstring& relation_id);
     xd::IRelationEnumPtr getRelationEnum(const std::wstring& path);
+    void refreshRelationInfo();
 
 private:
 
@@ -197,12 +197,13 @@ private:
     xd::IAttributesPtr m_attr;
     
     ThreadErrorInfo m_error;
+
+    kl::mutex m_relations_mutex;
+    xf_filetime_t m_relations_filetime;
+    std::vector<RelationInfo*> m_relations;
 };
 
 
 
 #endif
-
-
-
 

@@ -8,8 +8,7 @@
  *
  */
 
-
-#include <kl/klib.h>
+#include "xdfs.h"
 #include "delimitedtext.h"
 #include "rawtext.h"
 

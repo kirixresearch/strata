@@ -15,7 +15,6 @@
 
 
 #include <cmath>
-#include <xd/xd.h>
 #include <kl/math.h>
 #include <kl/portable.h>
 #include "xdfs.h"

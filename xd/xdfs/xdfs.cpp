@@ -14,8 +14,6 @@
 #endif
 
 
-#include <xd/xd.h>
-#include <kl/file.h>
 #include "xdfs.h"
 #include "database.h"
 #include "../xdcommon/connectionstr.h"

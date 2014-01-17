@@ -15,7 +15,6 @@
 
 
 #include <cmath>
-#include <xd/xd.h>
 #include "xdfs.h"
 #include "database.h"
 #include "rawtext.h"

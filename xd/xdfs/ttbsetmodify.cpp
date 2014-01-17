@@ -10,7 +10,6 @@
 
 
 #include <ctime>
-#include <xd/xd.h>
 #include <kl/portable.h>
 #include <kl/math.h>
 #include "xdfs.h"

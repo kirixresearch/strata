@@ -15,7 +15,6 @@
 
 
 #include <ctime>
-#include <xd/xd.h>
 #include "xdfs.h"
 #include "database.h"
 #include "xbaseset.h"
@@ -87,7 +86,8 @@ const wchar_t* xdfs_invalid_column_chars =
 FsDatabase::FsDatabase()
 {
     m_last_job = 0;
-    
+    m_relations_filetime = 0;
+
     std::wstring kws;
     kws += xdfs_keywords;
     kws += L",";
@@ -122,11 +122,16 @@ FsDatabase::FsDatabase()
 
 FsDatabase::~FsDatabase()
 {
-    std::vector<JobInfo*>::iterator it;
-    for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
-    {
-        (*it)->unref();
-    }
+    m_relations_mutex.lock();
+    std::vector<RelationInfo*>::iterator rit;
+    for (rit = m_relations.begin(); rit != m_relations.end(); ++rit)
+        (*rit)->unref();
+    m_relations.clear();
+    m_relations_mutex.unlock();
+
+    std::vector<JobInfo*>::iterator jit;
+    for (jit = m_jobs.begin(); jit != m_jobs.end(); ++jit)
+        (*jit)->unref();
 }
 
 
@@ -2838,6 +2843,11 @@ xd::IRelationPtr FsDatabase::createRelation(const std::wstring& tag,
 
     file.putContents(root.toString());
 
+    // make sure file is re-read on next call to getRelationEnum(), etc
+    m_relations_mutex.lock();
+    m_relations_filetime = 0;
+    m_relations_mutex.unlock();
+
     return xcm::null;
 }
 
@@ -2871,31 +2881,107 @@ bool FsDatabase::deleteRelation(const std::wstring& relation_id)
         ++counter;
     }
 
+
+    // make sure file is re-read on next call to getRelationEnum(), etc
+    m_relations_mutex.lock();
+    m_relations_filetime = 0;
+    m_relations_mutex.unlock();
+
     return false;
 }
 
 xd::IRelationPtr FsDatabase::getRelation(const std::wstring& relation_id)
 {
-    // update index registry
+    refreshRelationInfo();
 
-    kl::exclusive_file file(m_ctrl_path + xf_path_separator_wchar + L"system" + xf_path_separator_wchar + L"rel_table.info");
-    if (!file.isOk())
-        return xcm::null;
-
-    std::wstring json = file.getContents();
-
-    kl::JsonNode root;
-    if (json.length() > 0 && !root.fromString(json))
-        return xcm::null;
-
-    kl::JsonNode relations = root["relations"];
-    std::vector<kl::JsonNode> index_nodes = relations.getChildren();
-    std::vector<kl::JsonNode>::iterator it, it_end = index_nodes.end();
-    for (it = index_nodes.begin(); it != it_end; ++it)
+    m_relations_mutex.lock();
+    std::vector<RelationInfo*>::iterator it, it_end = m_relations.end();
+    for (it = m_relations.begin(); it != it_end; ++it)
     {
-        if ((*it)["id"].getString() == relation_id)
+        if ((*it)->getRelationId() == relation_id)
         {
-            RelationInfo* r = new RelationInfo;
+            xd::IRelationPtr ret = static_cast<xd::IRelation*>(*it);
+            m_relations_mutex.unlock();
+            return ret;
+        }
+    }
+    m_relations_mutex.unlock();
+
+    return xcm::null;
+}
+
+xd::IRelationEnumPtr FsDatabase::getRelationEnum(const std::wstring& path)
+{
+    refreshRelationInfo();
+
+    xcm::IVectorImpl<xd::IRelationPtr>* vec;
+    vec = new xcm::IVectorImpl<xd::IRelationPtr>;
+
+    m_relations_mutex.lock();
+    std::vector<RelationInfo*>::iterator it, it_end = m_relations.end();
+    for (it = m_relations.begin(); it != it_end; ++it)
+    {
+        if (path.length() > 0)
+        {
+            if (!isSamePath((*it)->getLeftTable(), path))
+                continue;
+        }
+
+        vec->append(static_cast<xd::IRelation*>(*it));
+    }
+    m_relations_mutex.unlock();
+
+    return vec;
+}
+
+
+
+void FsDatabase::refreshRelationInfo()
+{
+    std::wstring rel_table_file = m_ctrl_path + xf_path_separator_wchar + L"system" + xf_path_separator_wchar + L"rel_table.info";
+
+    if (!xf_get_file_exist(rel_table_file))
+    {
+        // relationship table file doesn't exist, clear out vector
+        m_relations_mutex.lock();
+        std::vector<RelationInfo*>::iterator rit;
+        for (rit = m_relations.begin(); rit != m_relations.end(); ++rit)
+            (*rit)->unref();
+        m_relations.clear();
+        m_relations_mutex.unlock();
+    }
+
+
+    xf_filetime_t ft = xf_get_file_modify_time(rel_table_file);
+    {
+        KL_AUTO_LOCK(m_relations_mutex);
+        if (ft <= m_relations_filetime)
+            return; // no update necessary
+        m_relations_filetime = ft;
+    }
+
+
+    std::vector<RelationInfo*> vec;
+
+    {
+        kl::exclusive_file file(rel_table_file);
+        if (!file.isOk())
+            return;
+
+        std::wstring json = file.getContents();
+
+        kl::JsonNode root;
+        if (json.length() > 0 && !root.fromString(json))
+            return;
+
+        kl::JsonNode relations = root["relations"];
+        std::vector<kl::JsonNode> index_nodes = relations.getChildren();
+        std::vector<kl::JsonNode>::iterator it, it_end = index_nodes.end();
+        RelationInfo* r;
+        for (it = index_nodes.begin(); it != it_end; ++it)
+        {
+            r = new RelationInfo;
+            r->ref();
 
             r->setRelationId((*it)["id"]);
             r->setTag((*it)["tag"]);
@@ -2904,51 +2990,16 @@ xd::IRelationPtr FsDatabase::getRelation(const std::wstring& relation_id)
             r->setLeftExpression((*it)["left_expression"]);
             r->setRightExpression((*it)["right_expression"]);
 
-            return static_cast<xd::IRelation*>(r);
+            vec.push_back(r);
         }
     }
 
-    return xcm::null;
+    // set m_relations vector to the vector we just read in
+    m_relations_mutex.lock();
+    std::vector<RelationInfo*>::iterator rit;
+    for (rit = m_relations.begin(); rit != m_relations.end(); ++rit)
+        (*rit)->unref();
+    m_relations = vec;
+    m_relations_mutex.unlock();
 }
 
-xd::IRelationEnumPtr FsDatabase::getRelationEnum(const std::wstring& path)
-{
-    xcm::IVectorImpl<xd::IRelationPtr>* vec;
-    vec = new xcm::IVectorImpl<xd::IRelationPtr>;
-
-    kl::exclusive_file file(m_ctrl_path + xf_path_separator_wchar + L"system" + xf_path_separator_wchar + L"rel_table.info");
-    if (!file.isOk())
-        return vec;
-
-    std::wstring json = file.getContents();
-
-    kl::JsonNode root;
-    if (json.length() > 0 && !root.fromString(json))
-        return vec;
-
-    kl::JsonNode relations = root["relations"];
-    std::vector<kl::JsonNode> index_nodes = relations.getChildren();
-    std::vector<kl::JsonNode>::iterator it, it_end = index_nodes.end();
-    for (it = index_nodes.begin(); it != it_end; ++it)
-    {
-        if (path.length() > 0)
-        {
-            if (!isSamePath((*it)["left_table"], path))
-                continue;
-        }
-
-        RelationInfo* r = new RelationInfo;
-
-        r->setRelationId((*it)["id"]);
-        r->setTag((*it)["tag"]);
-        r->setLeftTable((*it)["left_table"]);
-        r->setRightTable((*it)["right_table"]);
-        r->setLeftExpression((*it)["left_expression"]);
-        r->setRightExpression((*it)["right_expression"]);
-
-        vec->append(static_cast<xd::IRelation*>(r));
-    }
-
-
-    return vec;
-}

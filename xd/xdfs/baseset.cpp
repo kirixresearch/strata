@@ -9,10 +9,9 @@
  */
 
 
-#include <xd/xd.h>
+#include "xdfs.h"
 #include <xd/util.h>
 #include <kl/json.h>
-#include <kl/file.h>
 #include "../xdcommonsql/xdcommonsql.h"
 #include "../xdcommon/extfileinfo.h"
 #include "../xdcommon/structure.h"
