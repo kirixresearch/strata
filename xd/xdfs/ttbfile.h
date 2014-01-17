@@ -156,7 +156,7 @@ public:
     virtual ~TtbRowDeleter();
 
     void startDelete();
-    bool deleteRow(const xd::rowid_t& rowid);
+    bool deleteRow(xd::rowid_t rowid);
     void finishDelete();
     void cancelDelete() { }
 

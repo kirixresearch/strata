@@ -18,7 +18,7 @@
 #include "ttbfile.h"
 
 inline xd::rowid_t rowidCreate(xd::tableord_t table_ordinal,
-                                  xd::rowpos_t row_num)
+                               xd::rowpos_t row_num)
 {
     xd::rowid_t r;
     r = ((xd::rowid_t)table_ordinal) << 36;
@@ -43,6 +43,7 @@ class TtbSet : public XdfsBaseSet,
 {
 friend class FsDatabase;
 friend class TtbRowInserter;
+friend class TtbSetRowDeleter;
 
     XCM_CLASS_NAME("xdfs.TtbSet")
     XCM_BEGIN_INTERFACE_MAP(TtbSet)
@@ -61,7 +62,7 @@ public:
     xd::IStructurePtr getStructure();
 
     xd::IRowInserterPtr getRowInserter();
-    IXdsqlRowDeleterPtr getRowDeleter() { return xcm::null; }
+    IXdsqlRowDeleterPtr getRowDeleter();
 
     xd::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
@@ -161,6 +162,38 @@ private:
     bool m_inserting;
 
     std::vector<TtbInsertData*> m_fields;
+};
+
+
+
+class RowIdArray;
+class NativeRowDeleter;
+class TtbSetRowDeleter : public IXdsqlRowDeleter
+{
+    XCM_CLASS_NAME("xdnative.TableSetRowDeleter")
+    XCM_BEGIN_INTERFACE_MAP(TtbSetRowDeleter)
+        XCM_INTERFACE_ENTRY(IXdsqlRowDeleter)
+    XCM_END_INTERFACE_MAP()
+
+public:
+
+    TtbSetRowDeleter(FsDatabase* db, TtbSet* set);
+    ~TtbSetRowDeleter();
+
+    void addIndex(IIndex* index, const std::wstring& expr);
+
+    void startDelete();
+    bool deleteRow(const xd::rowid_t& rowid);
+    void finishDelete();
+    void cancelDelete();
+
+private:
+
+    bool doRowDelete(xd::rowid_t rowid);
+
+    TtbRowDeleter* m_table_row_deleter;
+    TtbSet* m_set;
+    RowIdArray* m_rowid_array;
 };
 
 

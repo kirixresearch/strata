@@ -38,7 +38,7 @@
 // offset   08:   (uint32)  data begin offset
 // offset   12:   (uint32)  row width
 // offset   16:   (uint32)  column count
-// offset   20:   (uint64)  row count
+// offset   20:   (uint64)  physical row count
 // offset   28:   (uint64)  last structure modify time
 // offset   36:   (uint128) GUID for this file; 0 in older file versions
 // (null padding)
@@ -620,12 +620,12 @@ void TtbTable::updateHeaderWithGuid()
 
 
 int TtbTable::getRows(unsigned char* buf,
-                         xd::rowpos_t* rowpos_arr,
-                         int skip,
-                         xd::rowpos_t start_row,
-                         int row_count,
-                         bool direction,
-                         bool include_deleted)
+                      xd::rowpos_t* rowpos_arr,
+                      int skip,
+                      xd::rowpos_t start_row,
+                      int row_count,
+                      bool direction,
+                      bool include_deleted)
 {
     KL_AUTO_LOCK(m_object_mutex);
 
@@ -810,8 +810,8 @@ bool TtbTable::getRow(xd::rowpos_t row, unsigned char* buf)
 
 
 xd::rowpos_t TtbTable::_findNextRowPos(BitmapFileScroller* bfs,
-                                             xd::rowpos_t offset,
-                                             int delta)
+                                       xd::rowpos_t offset,
+                                       int delta)
 {
     if (delta == 0)
         return offset;
@@ -1574,25 +1574,18 @@ bool TtbRow::putNull(int column_ordinal)
 
 TtbRowDeleter::TtbRowDeleter(TtbTable* table)
 {
-/*
     m_table = table;
-    m_table->ref();
-
     m_map_scroller = NULL;
-    */
 }
 
 TtbRowDeleter::~TtbRowDeleter()
 {
-    //m_table->unref();
 }
 
 void TtbRowDeleter::startDelete()
 {
-    // FIXME: need a mutex here for mutual exclusive access
-    // to m_table's m_map_file member
-
     // make sure that the map file exists
+    m_table->m_object_mutex.lock();
     if (!m_table->m_map_file)
     {
         m_table->m_map_file = new BitmapFile;
@@ -1602,26 +1595,25 @@ void TtbRowDeleter::startDelete()
             m_table->m_map_file = NULL;
         }
     }
-    
+    m_table->m_object_mutex.unlock();
+
+
     m_map_scroller = m_table->m_map_file->createScroller();
     m_map_scroller->startModify();
 
     // force map file to include full length of table
-    m_map_scroller->setState(m_table->m_phys_row_count+100, false);
+    m_map_scroller->setState(m_table->getRowCount() + 100, false);
 }
 
-bool TtbRowDeleter::deleteRow(const xd::rowid_t& rowid)
+bool TtbRowDeleter::deleteRow(xd::rowid_t rowid)
 {
     if (!m_map_scroller)
         return false;
 
-    /*
-    if (rowidGetTableOrd(rowid) != m_table->m_ordinal)
-        return false;
-    */
+    rowid = (rowid & 0xfffffffffLL);
 
     // add row to delete map
-    //m_map_scroller->setState(rowidGetRowPos(rowid)-1, true);
+    m_map_scroller->setState(rowid - 1, true);
 
     /*
     // fire an event
