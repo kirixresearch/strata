@@ -1439,9 +1439,10 @@ public:
             TtbTable ttb;
             if (ttb.open(phys_path))
             {
-                xd::rowpos_t res = ttb.getRowCount();
+                xd::rowpos_t deleted_row_count = 0;
+                xd::rowpos_t res = ttb.getRowCount(&deleted_row_count);
                 ttb.close();
-                return res;
+                return (res - deleted_row_count);
             }
 
             return 0;

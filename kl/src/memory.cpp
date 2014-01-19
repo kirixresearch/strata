@@ -81,6 +81,9 @@ membuf::~membuf()
     
 bool membuf::alloc(size_t size)
 {
+    if (size <= m_alloc_size)
+        return true;
+
     m_buf = (unsigned char*)realloc(m_buf, size);
     if (!m_buf)
     {
@@ -92,10 +95,6 @@ bool membuf::alloc(size_t size)
     return true;
 }
 
-size_t membuf::getAllocSize() const
-{
-    return m_alloc_size;
-}
 
 unsigned char* membuf::append(const unsigned char* buf, size_t len)
 {
@@ -125,15 +124,6 @@ unsigned char* membuf::append(const unsigned char* buf, size_t len)
     return ptr;
 }
 
-unsigned char* membuf::getData()
-{
-    return m_buf;
-}
-
-size_t membuf::getDataSize() const
-{
-    return m_size;
-}
 
 void membuf::popData(size_t len)
 {

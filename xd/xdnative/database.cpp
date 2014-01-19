@@ -2218,9 +2218,6 @@ bool XdnativeDatabase::getFileType(const std::wstring& path, int* type, bool* is
 
 xd::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
 {
-    if (path.empty())
-        return xcm::null;
-    
     if (path.substr(0, 11) == L"/.temp/.ptr")
     {
         xdcommon::FileInfo* f = new xdcommon::FileInfo;

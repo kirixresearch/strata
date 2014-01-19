@@ -32,12 +32,12 @@ public:
     ~membuf();
     
     bool alloc(size_t size);
-    size_t getAllocSize() const;
+    size_t getAllocSize() const { return m_alloc_size; }
 
     unsigned char* append(const unsigned char* buf, size_t len);
 
-    unsigned char* getData();
-    size_t getDataSize() const;
+    unsigned char* getData() { return m_buf; }
+    size_t getDataSize() const { return m_size; }
     
     void popData(size_t len); // remove len bytes from beginning, shift remaining data
 

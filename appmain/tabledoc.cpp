@@ -7597,7 +7597,7 @@ void TableDoc::onCopyRecords(wxCommandEvent& evt)
                 return;
 
             ExprBuilderDocPanel* panel = new ExprBuilderDocPanel;
-            panel->setValidationEnabled(m_db_type == xd::dbtypeXdnative ? true : false);
+            panel->setValidationEnabled((m_db_type == xd::dbtypeXdnative || m_db_type == xd::dbtypeFilesystem) ? true : false);
             panel->setOKText(_("Run"));
             site = m_frame->createSite(panel,
                                        sitetypeModeless |
@@ -7756,7 +7756,7 @@ void TableDoc::onFilter(wxCommandEvent& evt)
 
             ExprBuilderDocPanel* panel = new ExprBuilderDocPanel;
             panel->setOKText(_("Run"));
-            panel->setValidationEnabled(m_db_type == xd::dbtypeXdnative ? true : false);
+            panel->setValidationEnabled((m_db_type == xd::dbtypeXdnative || m_db_type == xd::dbtypeFilesystem) ? true : false);
             site = m_frame->createSite(panel,
                                        sitetypeModeless |
                                        siteHidden,
@@ -7909,7 +7909,7 @@ void TableDoc::onDeleteRecords(wxCommandEvent& evt)
 
             ExprBuilderDocPanel* panel = new ExprBuilderDocPanel;
             panel->setOKText(_("Run"));
-            panel->setValidationEnabled(m_db_type == xd::dbtypeXdnative ? true : false);
+            panel->setValidationEnabled((m_db_type == xd::dbtypeXdnative || m_db_type == xd::dbtypeFilesystem) ? true : false);
             site = m_frame->createSite(panel,
                                        sitetypeModeless |
                                        siteHidden,

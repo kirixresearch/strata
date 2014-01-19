@@ -1121,7 +1121,6 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
     // attempt to get rid of the old table
     
     std::wstring tbl_filename = m_file.getFilename();
-    std::wstring tbl_mapfilename = m_file.getMapFilename();
     m_file.close();
 
     if (!xf_remove(tbl_filename))
@@ -1132,7 +1131,6 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
         return false;
     }
 
-    xf_remove(tbl_mapfilename);
     xf_move(temp_tbl_filename, tbl_filename);
 
     // assign the new output table to this set

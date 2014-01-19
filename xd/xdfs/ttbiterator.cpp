@@ -85,6 +85,7 @@ TtbIterator::TtbIterator(FsDatabase* database)
     m_eof = false;
     m_set = NULL;
     m_table = &m_file;
+    m_include_deleted = false;
 }
 
 TtbIterator::~TtbIterator()
@@ -160,7 +161,10 @@ std::wstring TtbIterator::getTable()
 
 xd::rowpos_t TtbIterator::getRowCount()
 {
-    return m_table->getRowCount();
+    xd::rowpos_t deleted_row_count = 0;
+    xd::rowpos_t res = m_table->getRowCount(&deleted_row_count);
+
+    return (res - deleted_row_count);
 }
 
 xd::IDatabasePtr TtbIterator::getDatabase()
@@ -222,12 +226,11 @@ void TtbIterator::goFirst()
         read_ahead_rowcount = 100;
         
     m_buf_rowcount = m_table->getRows(m_buf,
-                                    m_rowpos_buf,
-                                    0,
-                                    1,
-                                    read_ahead_rowcount,
-                                    true,
-                                    m_include_deleted);
+                                      m_rowpos_buf,
+                                      0,
+                                      1,
+                                      read_ahead_rowcount,
+                                      m_include_deleted);
 
     m_buf_pos = 0;
     m_row_num = 1;
@@ -273,7 +276,6 @@ void TtbIterator::skip(int delta)
                                               delta,
                                               m_rowpos_buf[m_buf_pos],
                                               1,
-                                              true,
                                               m_include_deleted);
 
             m_bof = (m_buf_rowcount == 0);
@@ -313,7 +315,6 @@ void TtbIterator::skip(int delta)
                                               delta,
                                               m_rowpos_buf[m_buf_pos],
                                               m_read_ahead_rowcount,
-                                              true,
                                               m_include_deleted);
 
             m_buf_pos = 0;
@@ -367,7 +368,6 @@ bool TtbIterator::seek(const unsigned char* key, int length, bool soft)
                                     0,
                                     row,
                                     1,
-                                    true,
                                     m_include_deleted);
     m_buf_pos = 0;
     m_eof = (m_buf_rowcount == 0 ? true : false);

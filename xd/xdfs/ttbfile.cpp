@@ -41,6 +41,7 @@
 // offset   20:   (uint64)  physical row count
 // offset   28:   (uint64)  last structure modify time
 // offset   36:   (uint128) GUID for this file; 0 in older file versions
+// offset   52:   (uint64)  deleted row count
 // (null padding)
 // offset 1024:   column descriptor list
 
@@ -70,10 +71,13 @@
 //  --- Versioning Notes ----------------------------------
 //
 //      Table version 1 has only ASCII (8-bit) field names.
-//      Version 2, however, stores field names in UNICODE,
-//      using the UCS-2 (16-bit) encoding
+//      Version 2 and greater, however, store field names in
+//      UNICODE, using the UCS-2 (16-bit) encoding
 
-
+//      Version 3 adds a single byte to the beginning of each
+//      row data buffer.  0xff indicates a deleted record
+//
+//      The deleted record count is stored in the header
 
 
 
@@ -126,7 +130,6 @@ static bool isGuidZero(const unsigned char* guid)
 TtbTable::TtbTable()
 {
     m_file = NULL;
-    m_map_file = NULL;
     memset(m_guid, 0, 16);
 }
 
@@ -214,7 +217,7 @@ bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
     unsigned char* entry_ptr;
     unsigned int offset;
 
-    offset = 0;
+    offset = 1;       // leave byte for row status flag (delete flag etc)
     entry_ptr = flds;
 
 
@@ -294,8 +297,7 @@ bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
     header[3] = 0xdd;
 
     // version
-    int2buf(header+4, 2);   // we now write files with
-                            // version 2 (UNICODE) field names
+    int2buf(header+4, 3);   // we now write files with version 3
 
     // data begin offset
     int2buf(header+8, ttb_header_len+field_arr_len);
@@ -345,26 +347,11 @@ bool TtbTable::open(const std::wstring& filename)
 {
     KL_AUTO_LOCK(m_object_mutex);
 
-    // generate map file name
-    m_map_filename = kl::beforeLast(filename, L'.');
-    m_map_filename += L".map";
-
     // open table file
     m_filename = filename;
     m_file = xf_open(m_filename, xfOpen, xfReadWrite, xfShareReadWrite);
     if (m_file == NULL)
         return false;
-
-    // open up the map file, if it exists
-    if (xf_get_file_exist(m_map_filename))
-    {
-        m_map_file = new BitmapFile;
-        if (!m_map_file->open(m_map_filename))
-        {
-            delete m_map_file;
-            m_map_file = NULL;
-        }
-    }
 
 
     // read native-format file header
@@ -384,7 +371,7 @@ bool TtbTable::open(const std::wstring& filename)
     unsigned int signature, version;
     signature = buf2int(header);
     version = buf2int(header+4);
-    if (signature != 0xddaa2299 || version > 2)
+    if (signature != 0xddaa2299 || version > 3)
     {
         xf_close(m_file);
         m_file = NULL;
@@ -513,13 +500,6 @@ void TtbTable::close()
 {
     KL_AUTO_LOCK(m_object_mutex);
 
-    if (m_map_file)
-    {
-        m_map_file->close();
-        delete m_map_file;
-        m_map_file = NULL;
-    }
-
     // close table, if it is open
     if (m_file)
     {
@@ -624,175 +604,221 @@ int TtbTable::getRows(unsigned char* buf,
                       int skip,
                       xd::rowpos_t start_row,
                       int row_count,
-                      bool direction,
                       bool include_deleted)
 {
-    KL_AUTO_LOCK(m_object_mutex);
+    int i;
+    bool deleted_found = false;
+    unsigned long long byte_offset;
+    xd::rowpos_t row_offset;
+    int rows_read;
+    bool reuse_buffer = false;
 
-    BitmapFileScroller* bfs = NULL;
-
-    if (m_map_file && !include_deleted)
+    if (include_deleted)
     {
-        bfs = m_map_file->createScroller();
+        // we want all rows, including ones flagged with delete marks
+        row_offset = start_row;
+        row_offset += skip;
+
+        byte_offset = row_offset;
+        byte_offset *= m_row_width;
+        byte_offset += m_data_offset;
+        xf_seek(m_file, byte_offset, xfSeekSet);
+        rows_read = xf_read(m_file, buf, m_row_width, row_count);
+
+        for (i = 0; i < rows_read; ++i)
+            rowpos_arr[i] = row_offset+i;
+
+        return rows_read;
     }
 
-    if (bfs)
+
+    if (skip == 0 || skip == 1)
     {
-        // if we are starting on the first row, we need to
-        // find it, as it might be deleted
-        if (start_row == 1)
+        // specific optimization for skip 0 or 1 (if there are no deleted rows in the block)
+
+        row_offset = start_row+skip;
+
+        byte_offset = row_offset-1;
+        byte_offset *= m_row_width;
+        byte_offset += m_data_offset;
+        xf_seek(m_file, byte_offset, xfSeekSet);
+        rows_read = xf_read(m_file, buf, m_row_width, row_count);
+
+        // check for deleted records
+        for (i = 0; i < rows_read; ++i)
         {
-            start_row = 0;
-            bfs->findNext(&start_row, false);
-            start_row++;
+            rowpos_arr[i] = row_offset+i;
+            if (buf[m_row_width*i] == 0xff)
+            {
+                deleted_found = true;
+                break;
+            }
         }
+        if (!deleted_found)
+            return rows_read;
+        reuse_buffer = true;
+        if (skip == 1)
+            skip--;
     }
 
-    if (skip != 0)
+
+    int rows_per_buffer = row_count;
+    if (rows_per_buffer < 100)
+        rows_per_buffer *= 2;
+    if (rows_per_buffer < 10)
+        rows_per_buffer = 10;
+
+    m_workbuf_mutex.lock();
+
+    m_workbuf.alloc(rows_per_buffer * m_row_width);
+    unsigned char* workbuf = m_workbuf.getData();
+    unsigned char* p;
+
+
+    int filled = 0;
+    int fill_iteration_count = 0;
+
+    if (skip >= 0)
     {
-        start_row = _findNextRowPos(bfs, start_row, skip);
-        if (start_row == 0)
+        row_offset = start_row;
+
+        while (true)
         {
-            // eof or bof condition
-            delete bfs;
-            return 0;
-        }
-    }
-
-    int rowposarr_idx;
-    int read_count = 0;
-
-    if (direction)
-    {
-        rowposarr_idx = 0;
-
-        xd::rowpos_t rowpos = start_row;
-
-        while (1)
-        {
-            if (rowpos > m_phys_row_count)
+            if (reuse_buffer)
             {
-                // at the end of the file
-                break;
+                // we already had read a chunk in, but it needs further
+                // examination for delete flags; copy it via memcpy here so
+                // we don't need to read it from the disk again
+                memcpy(workbuf, buf, rows_read * m_row_width);
+                reuse_buffer = false;
+            }
+             else
+            {
+                byte_offset = row_offset-1;
+                byte_offset *= m_row_width;
+                byte_offset += m_data_offset;
+                xf_seek(m_file, byte_offset, xfSeekSet);
+                rows_read = xf_read(m_file, workbuf, m_row_width, rows_per_buffer);
+                if (rows_read == 0)
+                {
+                    m_workbuf_mutex.unlock();
+                    return filled; // can't read any more rows, we're done
+                }
             }
 
-            rowpos_arr[rowposarr_idx] = rowpos;
-            read_count++;
-            rowposarr_idx++;
-
-            if (rowposarr_idx >= row_count)
+            // copy undeleted rows into output buffer
+            p = workbuf;
+            for (i = 0; i < rows_read; ++i, p += m_row_width)
             {
-                // filled the buffer; done.
-                break;
+                if (*p != 0xff)
+                {
+                    if (skip > 0)
+                    {
+                        skip--;
+                        continue;
+                    }
+
+                    memcpy(buf + (filled * m_row_width), p, m_row_width);
+                    rowpos_arr[filled] = row_offset + i;
+                    filled++;
+                    if (filled == row_count) // is request compete?
+                        break;
+                }
             }
 
-            rowpos = _findNextRowPos(bfs, rowpos, 1);
-            if (rowpos == 0)
+            if (filled == row_count)
             {
-                // hit eof
-                break;
+                m_workbuf_mutex.unlock();
+                return filled; // all done
             }
+
+            row_offset += rows_read;
+
+            if (fill_iteration_count++ == 10)
+            {
+                // make row buffer bigger after ten iterations
+                int new_rows_per_buffer = (1000000 / m_row_width);
+                if (new_rows_per_buffer < 1)
+                    new_rows_per_buffer = 1;
+                if (new_rows_per_buffer > rows_per_buffer)
+                {
+                    rows_per_buffer = new_rows_per_buffer;
+                    m_workbuf.alloc(rows_per_buffer * m_row_width);
+                }
+            }
+
         }
     }
      else
     {
-        rowposarr_idx = row_count-1;
+        // backwards scroll
 
-        xd::rowpos_t rowpos = start_row;
+        row_offset = start_row;
+        int rows_to_read;
 
-        while (1)
+
+        // the initial read will leave off the row we are skipping from,
+        // so subtract one from the skip (which is a negative value, so add one)
+        skip++;
+
+        while (row_offset > 1)
         {
-            if (rowpos == 0)
+            rows_to_read = rows_per_buffer;
+            if (row_offset-1 < rows_to_read)
+                rows_to_read = (int)row_offset-1;
+            row_offset -= rows_to_read;
+
+            byte_offset = row_offset-1;
+            byte_offset *= m_row_width;
+            byte_offset += m_data_offset;
+            xf_seek(m_file, byte_offset, xfSeekSet);
+            rows_read = xf_read(m_file, workbuf, m_row_width, rows_to_read);
+            if (rows_read == 0)
             {
-                // hit bof
-                break;
+                m_workbuf_mutex.unlock();
+                return 0;
             }
 
-            rowpos_arr[rowposarr_idx] = rowpos;
-            read_count++;
-            rowposarr_idx--;
 
-            if (rowposarr_idx < 0)
+            // copy undeleted rows into output buffer
+            p = workbuf + ((rows_read-1)*m_row_width);
+
+            for (i = rows_read-1; i >= 0; --i, p -= m_row_width)
             {
-                // filled the buffer; done.
-                break;
+                if (*p != 0xff)
+                {
+                    if (-skip < row_count)
+                    {
+                        memcpy(buf + ((row_count-filled-1) * m_row_width), p, m_row_width);
+                        rowpos_arr[row_count-filled-1] = row_offset + i;
+                        filled++;
+                        if (filled == row_count) // is request compete?
+                            break;
+                    }
+                    skip++;
+                }
             }
 
-            rowpos = _findNextRowPos(bfs, rowpos, -1);
-        }
-
-        if (rowposarr_idx >= 0)
-        {
-            // shift rows up
-            rowposarr_idx++;
-
-            for (int i = 0; i < read_count; ++i)
+            if (filled == row_count)
             {
-                rowpos_arr[i] = rowpos_arr[i + rowposarr_idx];
+                m_workbuf_mutex.unlock();
+                return filled; // all done
             }
         }
+
+
+        // ran into bof; shift data up
+        memmove(buf, buf + ((row_count-filled) * m_row_width), filled * m_row_width);
+        for (i = 0; i < filled; ++i)
+            rowpos_arr[i] = rowpos_arr[i+row_count-filled];
+
+        m_workbuf_mutex.unlock();
+        return filled; // all done
     }
 
-    // if we haven't read anything, return 0
-    if (read_count == 0)
-    {
-        if (bfs)
-        {
-            delete bfs;
-        }
 
-        return 0;
-    }
 
-    // now read in the buffers, in contiguous chunks (if possible)
 
-    int chunk_offset = 0;
-    int chunk_len = 1;
-
-    int arr_offset = 1;
-    unsigned char* buf_offset = buf;
-
-    while (1)
-    {
-        if (arr_offset == read_count)
-        {
-            break;
-        }
-
-        if (rowpos_arr[arr_offset] == rowpos_arr[arr_offset-1]+1)
-        {
-            ++chunk_len;
-        }
-         else
-        {
-            // read chunk
-            unsigned long long offset = rowpos_arr[chunk_offset]-1;
-            offset *= m_row_width;
-            offset += m_data_offset;
-            xf_seek(m_file, offset, xfSeekSet);
-            xf_read(m_file, buf_offset, m_row_width, chunk_len);
-
-            buf_offset += (chunk_len*m_row_width);
-            chunk_offset = arr_offset;
-            chunk_len = 1;
-        }
-
-        ++arr_offset;
-    }
-    
-    // read in last chunk
-    if (chunk_len)
-    {
-        unsigned long long offset = rowpos_arr[chunk_offset]-1;
-        offset *= m_row_width;
-        offset += m_data_offset;
-        xf_seek(m_file, offset, xfSeekSet);
-        xf_read(m_file, buf_offset, m_row_width, chunk_len);
-    }
-
-    delete bfs;
-
-    return read_count;
 }
 
 bool TtbTable::getRow(xd::rowpos_t row, unsigned char* buf)
@@ -809,122 +835,22 @@ bool TtbTable::getRow(xd::rowpos_t row, unsigned char* buf)
 }
 
 
-xd::rowpos_t TtbTable::_findNextRowPos(BitmapFileScroller* bfs,
-                                       xd::rowpos_t offset,
-                                       int delta)
+xd::rowpos_t TtbTable::_findNextRowPos(xd::rowpos_t offset, int delta)
 {
     if (delta == 0)
         return offset;
 
-    if (!bfs)
+    if (delta < 0)
     {
-        // if there are no deleted rows, thus no map file, we
-        // can determine the next rows by arithmatic
-        if (delta < 0)
-        {
-            if ((-delta) > offset)
-                return 0;
-        }
-
-        if (offset + delta > m_phys_row_count)
+        if ((-delta) > offset)
             return 0;
-
-        return offset + delta;
-    }
-     else
-    {
-        if (delta > 0)
-        {
-            xd::rowpos_t row = offset;
-
-            // map files have 0-based offsets
-            row--;
-
-            while (delta > 0)
-            {
-                --delta;
-
-                row++;
-                if (!bfs->findNext(&row, false))
-                {
-                    // the end of the bitmap has been reached, but this does
-                    // not necessarily mean that the end of the data file has
-                    // been reached. There may be more records in the data
-                    // file than there are in the bitmap file
-
-                    // restore 1-based offset
-                    row++;
-
-                    // add remaining rows
-                    row += delta;
-
-                    // if we are beyond the number of records in
-                    // the data file, return eof
-                    if (row > m_phys_row_count)
-                    {
-                        return 0;
-                    }
-                     else
-                    {
-                        return row;
-                    }
-                }
-            }
-
-            row++;
-
-            if (row > m_phys_row_count)
-                return 0;
-
-            return row;
-        }
-         else
-        {
-            delta = -delta;
-
-            xd::rowpos_t row = offset;
-
-            // map files have 0-based offsets
-            row--;
-
-            while (delta > 0)
-            {
-                --delta;
-
-                row--;
-                if (!bfs->findPrev(&row, false))
-                {
-                    // we are in a part of the map file that doesn't exist.
-                    // This does not necessarily mean that the end/beginning
-                    // of the data file has been reached.
-
-                    // restore 1-based offset
-                    row++;
-
-                    // subtract remaining rows
-                    row -= delta;
-
-                    // if we are beyond the number of records in
-                    // the data file, return eof
-                    if (row <= 0)
-                    {
-                        return 0;
-                    }
-                     else
-                    {
-                        return row;
-                    }
-                }
-            }
-            
-            row++;
-
-            return row;
-        }
-
     }
 
-    return 0;
+    if (offset + delta > m_phys_row_count)
+        return 0;
+
+    return offset + delta;
+
 }
 
 int TtbTable::appendRows(unsigned char* buf, int row_count)
@@ -1126,41 +1052,24 @@ xd::IStructurePtr TtbTable::getStructure()
 
 bool TtbTable::isRowDeleted(xd::rowpos_t row)
 {
-    if (m_map_file == NULL)
-        return false;
-    BitmapFileScroller* scroller = m_map_file->createScroller();
-    bool deleted = scroller->getState(row-1);
-    delete scroller;
-    return deleted;
+    return false;
 }
 
 
 xd::rowpos_t TtbTable::getRowCount(xd::rowpos_t* deleted_row_count)
 {
-    if (deleted_row_count)
-    {
-        if (m_map_file)
-        {
-            *deleted_row_count = m_map_file->getSetBitCount();
-        }
-         else
-        {
-            *deleted_row_count = 0;
-        }
-    }
-
     // lock the header
     if (!xf_trylock(m_file, 0, ttb_header_len, 10000))
         return m_phys_row_count;
 
-    unsigned char buf[8];
+    unsigned char buf[40];
     if (!xf_seek(m_file, 20, xfSeekSet))
     {
         xf_unlock(m_file, 0, ttb_header_len);
         return false;
     }
 
-    if (8 != xf_read(m_file, buf, 1, 8))
+    if (40 != xf_read(m_file, buf, 1, 40))
     {
         xf_unlock(m_file, 0, ttb_header_len);
         KL_AUTO_LOCK(m_object_mutex);
@@ -1168,12 +1077,17 @@ xd::rowpos_t TtbTable::getRowCount(xd::rowpos_t* deleted_row_count)
     }
 
     // unlock header
-
     xf_unlock(m_file, 0, ttb_header_len);
 
     {
         KL_AUTO_LOCK(m_object_mutex);
         m_phys_row_count = bufToInt64(buf);
+
+        if (deleted_row_count)
+        {
+            *deleted_row_count = bufToInt64(buf+32);
+        }
+
         return m_phys_row_count;
     }
 }
@@ -1228,37 +1142,8 @@ std::wstring TtbTable::getFilename()
     return m_filename;
 }
 
-
-std::wstring TtbTable::getMapFilename()
-{
-    return m_map_filename;
-}
-
 bool TtbTable::restoreDeleted()
 {
-    if (!m_map_file)
-        return true;
-    
-    // close the map file
-    m_map_file->close();
-    delete m_map_file;
-    m_map_file = NULL;
-
-    if (!xf_get_file_exist(m_map_filename))
-        return true;
-       
-    if (!xf_remove(m_map_filename))
-        return false;
-
-/*
-    // fire an event
-    std::vector<ITableEvents*>::iterator it;
-    for (it = m_event_handlers.begin(); it != m_event_handlers.end(); ++it)
-    {
-        (*it)->onTableRowCountUpdated();
-    }
-*/
-
     return true;
 }
 
@@ -1575,7 +1460,6 @@ bool TtbRow::putNull(int column_ordinal)
 TtbRowDeleter::TtbRowDeleter(TtbTable* table)
 {
     m_table = table;
-    m_map_scroller = NULL;
 }
 
 TtbRowDeleter::~TtbRowDeleter()
@@ -1584,63 +1468,71 @@ TtbRowDeleter::~TtbRowDeleter()
 
 void TtbRowDeleter::startDelete()
 {
-    // make sure that the map file exists
-    m_table->m_object_mutex.lock();
-    if (!m_table->m_map_file)
-    {
-        m_table->m_map_file = new BitmapFile;
-        if (!m_table->m_map_file->open(m_table->m_map_filename))
-        {
-            delete m_table->m_map_file;
-            m_table->m_map_file = NULL;
-        }
-    }
-    m_table->m_object_mutex.unlock();
-
-
-    m_map_scroller = m_table->m_map_file->createScroller();
-    m_map_scroller->startModify();
-
-    // force map file to include full length of table
-    m_map_scroller->setState(m_table->getRowCount() + 100, false);
 }
 
 bool TtbRowDeleter::deleteRow(xd::rowid_t rowid)
 {
-    if (!m_map_scroller)
+    xf_file_t f = m_table->m_file;
+
+    // lock the header
+    if (!xf_trylock(f, 0, ttb_header_len, 10000))
         return false;
 
-    rowid = (rowid & 0xfffffffffLL);
-
-    // add row to delete map
-    m_map_scroller->setState(rowid - 1, true);
-
-    /*
-    // fire an event
-    std::vector<ITableEvents*>::iterator it;
-    for (it = m_table->m_event_handlers.begin(); it != m_table->m_event_handlers.end(); ++it)
+    xf_off_t byte_offset = rowid-1;
+    byte_offset *= m_table->m_row_width;
+    byte_offset += m_table->m_data_offset;
+    if (!xf_seek(f, byte_offset, xfSeekSet))
     {
-        (*it)->onTableRowDeleted(rowid);
+        // seek error -- unlock the header
+        xf_unlock(f, 0, ttb_header_len);
+        return false;
     }
-    */
+
+    unsigned char current_delete_flag = 0;
+    if (xf_read(f, &current_delete_flag, 1, 1) != 1)
+    {
+        // read error -- unlock header, return false
+        xf_unlock(f, 0, ttb_header_len);
+        return false;
+    }
+
+    if (current_delete_flag == 0xff)
+    {
+        // delete flag already set, we are done
+        xf_unlock(f, 0, ttb_header_len);
+        return true;
+    }
+
+    // set delete flag
+    unsigned char deleted = 0xff;
+    xf_seek(f, byte_offset, xfSeekSet);
+    if (xf_write(m_table->m_file, &deleted, 1, 1) != 1)
+    {
+        // write error -- unlock header, return false
+        xf_unlock(f, 0, ttb_header_len);
+        return false;
+    }
+
+    // increment deleted record count in header
+    unsigned char buf[8];
+
+    xf_seek(f, 52, xfSeekSet);
+    xf_read(f, buf, 8, 1);
+
+    long long delete_count = bufToInt64(buf);
+    int64ToBuf(buf, delete_count+1);
+    
+    xf_seek(f, 52, xfSeekSet);
+    xf_write(f, buf, 8, 1);
+
+    // unlock the header
+    xf_unlock(f, 0, ttb_header_len);
 
     return true;
 }
 
 void TtbRowDeleter::finishDelete()
 {
-    m_map_scroller->endModify();
-    delete m_map_scroller;
-    m_map_scroller = NULL;
-
-    /*
-    // fire an event
-    std::vector<ITableEvents*>::iterator it;
-    for (it = m_table->m_event_handlers.begin(); it != m_table->m_event_handlers.end(); ++it)
-    {
-        (*it)->onTableRowCountUpdated();
-    }
-*/
 }
 
 
@@ -1651,467 +1543,6 @@ void TtbRowDeleter::finishDelete()
 
 
 
-
-
-// ------------------ FILE FORMAT: xdnative Native Table --------------------
-//
-// -- file header --
-// offset   00:   (uint32) signature 0xa2d022e4;
-// offset   04:   (uint32) version (== 01)
-// offset   08:   (uint32) data begin offset
-// offset   12:   (uint64) set-bit count
-// (data begin offset): bitmap
-
-
-
-const int bitmap_file_page_size = 512;
-const unsigned char bit_values[] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
-
-
-
-BitmapFileScroller::BitmapFileScroller()
-{
-    m_buf = new unsigned char[bitmap_file_page_size];
-    m_data_offset = 0;
-    m_buf_offset = (unsigned long long)-1;
-    m_file = NULL;
-    m_bmp_file = NULL;
-    m_buf_valid = false;
-
-    m_locked = false;
-    m_dirty = false;
-    m_modify_set_bit_count = 0;
-}
-
-
-BitmapFileScroller::~BitmapFileScroller()
-{
-    if (m_buf)
-    {
-        delete[] m_buf;
-    }
-}
-
-bool BitmapFileScroller::_flush()
-{
-    if (m_dirty)
-    {
-        xf_seek(m_file, m_buf_offset+m_data_offset, xfSeekSet);
-        xf_write(m_file, m_buf, bitmap_file_page_size, 1);
-        m_dirty = false;
-    }
-
-    if (m_locked)
-    {
-        xf_unlock(m_file,
-                  m_buf_offset + m_data_offset,
-                  bitmap_file_page_size);
-        m_locked = false;
-    }
-
-    if (m_modify_set_bit_count != 0)
-    {
-        unsigned char buf[20];
-
-        if (xf_trylock(m_file, 0, bitmap_file_page_size, 10000))
-        {
-            xf_seek(m_file, 0, xfSeekSet);
-            xf_read(m_file, buf, 20, 1);
-
-            long long count = bufToInt64(buf+12);
-            count += m_modify_set_bit_count;
-            int64ToBuf(buf+12, count);
-
-            xf_seek(m_file, 0, xfSeekSet);
-            xf_write(m_file, buf, 20, 1);
-
-            m_modify_set_bit_count = 0;
-
-            xf_unlock(m_file, 0, bitmap_file_page_size);
-        }
-    }
-
-    return true;
-}
-
-bool BitmapFileScroller::_goBlock(unsigned long long block_number,
-                                  bool lock,
-                                  bool pad)
-{
-    // flush last block
-    _flush();
-
-    xf_off_t new_offset = block_number * bitmap_file_page_size;
-
-    if (!xf_seek(m_file, new_offset+m_data_offset, xfSeekSet))
-        return false;
-
-    if (lock)
-    {
-        if (!xf_trylock(m_file,
-                        new_offset+m_data_offset,
-                        bitmap_file_page_size,
-                        10000))
-        {
-            // could not get lock
-            return false;
-        }
-    }
-
-    if (xf_read(m_file, m_buf, bitmap_file_page_size, 1) != 1)
-    {
-        memset(m_buf, 0, bitmap_file_page_size);
-
-        if (!pad)
-        {
-            m_buf_valid = false;
-            if (lock)
-            {
-                xf_unlock(m_file, new_offset+m_data_offset, bitmap_file_page_size);
-            }
-            return false;
-        }
-
-        // we are beyond the end, so we must set
-        // the intervening bytes to zero
-
-        if (!xf_seek(m_file, 0, xfSeekEnd))
-            return false;
-
-        long long cur_block = (xf_get_file_pos(m_file)-m_data_offset) / bitmap_file_page_size;
-        cur_block = block_number - cur_block + 1;
-        while (cur_block)
-        {
-            xf_write(m_file, m_buf, bitmap_file_page_size, 1);
-            --cur_block;
-        }
-
-        // now reseek to position the caller wanted, and try
-        // to read the buffer in again
-        if (!xf_seek(m_file, new_offset+m_data_offset, xfSeekSet))
-            return false;
-
-        if (xf_read(m_file, m_buf, bitmap_file_page_size, 1) != 1)
-            return false;
-
-    }
-
-    m_buf_offset = new_offset;
-    m_buf_valid = true;
-
-    if (lock)
-    {
-        m_locked = true;
-    }
-
-    return true;
-}
-
-
-bool BitmapFileScroller::getState(unsigned long long offset)
-{
-    unsigned int byte_offset = (unsigned int)(offset/8);
-    unsigned int bit_offset = (unsigned int)(offset % 8);
-
-    if (m_buf_offset == (unsigned long long)-1 ||
-        byte_offset < m_buf_offset ||
-        byte_offset >= m_buf_offset+bitmap_file_page_size)
-    {
-        if (!_goBlock(byte_offset/bitmap_file_page_size, false, false))
-            return false;
-        _flush();
-    }
-
-    return (m_buf[byte_offset-m_buf_offset] & bit_values[bit_offset]) ? true : false;
-}
-
-bool BitmapFileScroller::findPrev(unsigned long long* offset,
-                                  bool state)
-{
-    unsigned int byte_offset = (unsigned int)((*offset)/8);
-    unsigned int bit_offset = (unsigned int)((*offset) % 8);
-    unsigned int byte_check = state ?  0x00000000 : 0xffffffff;
-
-    while (1)
-    {
-        if (m_buf_offset == (unsigned long long)-1 ||
-            byte_offset < m_buf_offset ||
-            byte_offset >= m_buf_offset+bitmap_file_page_size)
-        {
-            if (!_goBlock(byte_offset/bitmap_file_page_size, false, false))
-                return false;
-            _flush();
-        }
-        
-        // looking for a bit that is set (backward direction)
-        while (m_buf[byte_offset-m_buf_offset] == byte_check)
-        {
-            if (byte_offset == m_buf_offset)
-            {
-                // go to the previous block
-                break;
-            }
-
-            byte_offset--;
-            bit_offset = 7;
-        }
-
-        while (1)
-        {
-            if ((m_buf[byte_offset-m_buf_offset] & bit_values[bit_offset] ? true : false) == state)
-            {
-                *offset = (byte_offset*8) + bit_offset;
-                return true;
-            }
-
-            if (bit_offset == 0)
-            {
-                if (byte_offset == 0)
-                {
-                    *offset = 0;
-                    // bof condition
-                    return false;
-                }
-
-                byte_offset--;
-                bit_offset = 7;
-                if (byte_offset < m_buf_offset)
-                {
-                    // go to the previous block
-                    break;
-                }
-            }
-             else
-            {
-                bit_offset--;
-            }
-        }
-    }
-
-    return false;
-}
-
-bool BitmapFileScroller::findNext(unsigned long long* offset,
-                                  bool state)
-{
-    unsigned int byte_offset = (unsigned int)((*offset)/8);
-    unsigned int bit_offset = (unsigned int)((*offset) % 8);
-    unsigned int byte_check = state ?  0x00000000 : 0xffffffff;
-
-    while (1)
-    {
-        if (m_buf_offset == (unsigned long long)-1 ||
-            byte_offset < m_buf_offset ||
-            byte_offset >= m_buf_offset+bitmap_file_page_size)
-        {
-            if (!_goBlock(byte_offset/bitmap_file_page_size, false, false))
-                return false;
-            _flush();
-        }
-        
-        // looking for a bit that is set (forward direction)
-        while (m_buf[byte_offset-m_buf_offset] == byte_check)
-        {
-            byte_offset++;
-            bit_offset = 0;
-            if (byte_offset >= m_buf_offset+bitmap_file_page_size)
-            {
-                break;
-            }
-        }
-
-        while (1)
-        {
-            if (byte_offset >= m_buf_offset+bitmap_file_page_size)
-            {
-                // go to the next block
-                break;
-            }
-
-            if ((m_buf[byte_offset-m_buf_offset] & bit_values[bit_offset] ? true : false) == state)
-            {
-                *offset = (byte_offset*8) + bit_offset;
-                return true;
-            }
-
-            bit_offset++;
-            if (bit_offset == 8)
-            {
-                byte_offset++;
-                bit_offset = 0;
-            }
-        }
-    }
-
-    return false;
-}
-
-
-void BitmapFileScroller::startModify()
-{
-    m_modify_set_bit_count = 0;
-}
-
-void BitmapFileScroller::endModify()
-{
-    _flush();
-}
-
-
-void BitmapFileScroller::setState(unsigned long long offset,
-                                  bool state)
-{
-    unsigned byte_offset = (unsigned int)(offset/8);
-    unsigned bit_offset = (unsigned int)(offset % 8);
-
-    if (m_buf_offset == (unsigned long long)-1 ||
-        byte_offset < m_buf_offset ||
-        byte_offset >= m_buf_offset+bitmap_file_page_size)
-    {
-        _goBlock(byte_offset/bitmap_file_page_size, true, true);
-    }
-
-    bool cur_state = (m_buf[byte_offset-m_buf_offset] & bit_values[bit_offset]) ? true : false;
-    if (cur_state == state)
-        return;
-
-    if (state)
-    {
-        m_modify_set_bit_count++;
-        m_buf[byte_offset-m_buf_offset] |= bit_values[bit_offset];
-    }
-     else
-    {
-        m_modify_set_bit_count--;
-        m_buf[byte_offset-m_buf_offset] &= (~bit_values[bit_offset]);
-    }
-    m_dirty = true;
-}
-
-
-
-
-
-BitmapFile::BitmapFile()
-{
-    m_file = NULL;
-    m_data_offset = 0;
-}
-
-
-BitmapFile::~BitmapFile()
-{
-    if (m_file)
-    {
-        xf_close(m_file);
-    }
-}
-
-
-bool BitmapFile::open(const std::wstring& filename)
-{
-    bool create = false;
-    
-    if (!xf_get_file_exist(filename))
-        create = true;
-    
-    m_file = xf_open(filename,
-                     xfOpenCreateIfNotExist,
-                     xfReadWrite,
-                     xfShareReadWrite);
-    
-    if (m_file == NULL)
-    {
-        return false;
-    }
-
-    if (!create)
-    {                 
-        unsigned char buf[20];
-        if (xf_read(m_file, buf, 20, 1) != 1)
-        {
-            return false;
-        }
-
-        unsigned int signature, version;
-        signature = buf2int(buf);
-        version = buf2int(buf+4);
-        m_data_offset = buf2int(buf+8);
-    
-        if (signature != 0xa2d022e4 || version != 1)
-        {
-            return false;
-        }
-    }
-     else
-    {
-        unsigned char buf[bitmap_file_page_size];
-
-        m_data_offset = bitmap_file_page_size;
-
-        memset(buf, 0, bitmap_file_page_size);
-        int2buf(buf, 0xa2d022e4);     // signature
-        int2buf(buf+4, 1);            // version
-        int2buf(buf+8, (unsigned int)m_data_offset); // data begin
-        int2buf(buf+12, 0);            // set-bit count (lower 32 bits)
-        int2buf(buf+16, 0);            // set-bit count (upper 32 bits)
-
-        if (xf_write(m_file, buf, bitmap_file_page_size, 1) != 1)
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-bool BitmapFile::close()
-{
-    if (m_file == NULL)
-    {
-        return false;
-    }
-
-    xf_close(m_file);
-    m_file = NULL;
-
-    return true;
-}
-
-bool BitmapFile::isOpen()
-{
-    return (m_file != NULL) ? true : false;
-}
-
-
-unsigned long long BitmapFile::getSetBitCount()
-{
-    if (!xf_trylock(m_file, 0, bitmap_file_page_size, 10000))
-        return 0;
-
-    unsigned char buf[8];
-    unsigned long long result;
-
-    memset(buf, 0, 8);
-    xf_seek(m_file, 12, xfSeekSet);
-    xf_read(m_file, buf, 8, 1);
-
-    result = bufToInt64(buf);
-
-    xf_unlock(m_file, 0, bitmap_file_page_size);
-
-    return result;
-}
-
-
-BitmapFileScroller* BitmapFile::createScroller()
-{
-    BitmapFileScroller* bfs = new BitmapFileScroller;
-    bfs->m_bmp_file = this;
-    bfs->m_file = m_file;
-    bfs->m_data_offset = m_data_offset;
-    return bfs;
-}
 
 
 

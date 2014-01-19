@@ -13,6 +13,8 @@
 #define __XDFS_TTBTBL_H
 
 #include <kl/file.h>
+#include <kl/memory.h>
+
 
 const int ttb_header_len = 1024;
 const int ttb_column_descriptor_len = 256;
@@ -84,7 +86,6 @@ public:
     bool setGuid(const unsigned char* guid /* 16 bytes */);
 
     std::wstring getFilename();
-    std::wstring getMapFilename();
 
     int getRowWidth();
     xd::rowpos_t getRowCount(xd::rowpos_t* deleted_row_count = NULL);
@@ -97,7 +98,6 @@ public:
                 int skip,
                 xd::rowpos_t start_row,
                 int row_count,
-                bool direction,
                 bool include_deleted);
     int appendRows(unsigned char* buf, int row_count);
 
@@ -117,8 +117,7 @@ public:
 
 private:
 
-    xd::rowpos_t _findNextRowPos(BitmapFileScroller* _bfs,
-                                 xd::rowpos_t offset,
+    xd::rowpos_t _findNextRowPos(xd::rowpos_t offset,
                                  int delta);
 
     static void generateGuid(unsigned char* guid);
@@ -131,10 +130,7 @@ private:
     std::vector<TtbField> m_fields;
 
     xf_file_t m_file;
-    BitmapFile* m_map_file;
-
     std::wstring m_filename;
-    std::wstring m_map_filename;
 
     xd::rowpos_t m_phys_row_count;     // number of rows in this table
     unsigned int m_row_width;          // row width
@@ -142,6 +138,9 @@ private:
     long long m_modified_time;         // time that an update has occurred
 
     unsigned char m_guid[16];
+
+    kl::mutex m_workbuf_mutex;
+    kl::membuf m_workbuf;
 };
 
 
@@ -209,74 +208,6 @@ private:
 
     TtbTable* m_table;
     unsigned char* m_rowptr;
-};
-
-
-
-
-
-
-
-class BitmapFileScroller
-{
-    friend class BitmapFile;
-
-public:
-
-    BitmapFileScroller();
-    BitmapFileScroller(const BitmapFileScroller& c);
-    ~BitmapFileScroller();
-
-    bool getState(unsigned long long offset);
-    bool findPrev(unsigned long long* offset, bool state);
-    bool findNext(unsigned long long* offset, bool state);
-
-    void startModify();
-    void endModify();
-    void setState(unsigned long long offset, bool state);
-
-private:
-
-    BitmapFile* m_bmp_file;
-    xf_file_t m_file;
-    unsigned char* m_buf;
-    unsigned long long m_data_offset;
-    unsigned long long m_buf_offset;
-
-    bool m_locked;
-    bool m_dirty;
-    bool m_buf_valid;
-
-    long long m_modify_set_bit_count;
-
-    bool _flush();
-    bool _goBlock(unsigned long long block_number,
-                  bool lock,
-                  bool pad);
-};
-
-
-
-
-class BitmapFile
-{
-public:
-
-    BitmapFile();
-    ~BitmapFile();
-
-    bool open(const std::wstring& filename);
-    bool close();
-    bool isOpen();
-
-    unsigned long long getSetBitCount();
-
-    BitmapFileScroller* createScroller();
-
-private:
-
-    xf_file_t m_file;
-    unsigned long long m_data_offset;
 };
 
 
