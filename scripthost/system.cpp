@@ -200,11 +200,38 @@ void System::execute(kscript::ExprEnv* env, void* param, kscript::Value* retval)
         retval->setInteger(0);
         return;
     }
-    
-    /*
-    retval->setInteger(::wxExecute(env->getParam(0)->getString()));
-    */
-    // TODO: reimplement
+
+#ifdef WIN32
+    STARTUPINFO startupInfo = {0};
+    startupInfo.cb = sizeof(startupInfo);
+
+    PROCESS_INFORMATION processInformation;
+
+    // Try to start the process
+    BOOL result = ::CreateProcess(NULL,
+            env->getParam(0)->getString(),
+            NULL,
+            NULL,
+            FALSE,
+            NORMAL_PRIORITY_CLASS,
+            NULL,
+            NULL,
+            &startupInfo,
+            &processInformation);
+
+    if (result)
+    {
+        CloseHandle(processInformation.hProcess);
+        CloseHandle(processInformation.hThread);
+        retval->setInteger(processInformation.dwProcessId);
+    }
+
+    retval->setInteger(0);
+
+#else
+    // TODO: implement on Linux
+#endif
+
 }
 
 
