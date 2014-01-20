@@ -207,7 +207,6 @@ void XdfsBaseSet::refreshIndexEntries()
 
 
         ExIndex* idx = new ExIndex;
-        idx->ref();
         if (!idx->open(entry.filename))
         {
             idx->unref();
