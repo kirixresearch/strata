@@ -136,9 +136,11 @@ void XdfsBaseSet::refreshIndexEntries()
         m_object_id = info->getObjectId();
     }
 
-    std::wstring index_registry_file = ((m_database->m_ctrl_path + xf_path_separator_wchar) + L"indexes" + xf_path_separator_wchar) + m_object_id + L".info";
-    std::wstring json = xf_get_file_contents(index_registry_file);
 
+    std::wstring index_registry_file = m_database->m_ctrl_path + xf_path_separator_wchar + L"indexes" + xf_path_separator_wchar + m_object_id + L".info";
+
+    if (xf_get_file_exist(index_registry_file))
+        return;
 
     // check to see if index registry file is newer than last time we checked
     xf_filetime_t ft = xf_get_file_modify_time(index_registry_file);
@@ -146,10 +148,17 @@ void XdfsBaseSet::refreshIndexEntries()
         return;
     m_indexes_filetime = ft;
 
-    
+
+
+
     std::vector<XdfsIndexEntry> entries;
     std::vector<XdfsIndexEntry>::iterator it, it_end, it2;
 
+    kl::exclusive_file file(index_registry_file);
+    if (!file.isOk())
+        return;
+
+    std::wstring json = file.getContents();
 
     kl::JsonNode root;
     if (json.empty() || !root.fromString(json))

@@ -2615,27 +2615,31 @@ xd::IIndexInfoPtr FsDatabase::createIndex(const std::wstring& path,
     
     idx->unref();
 
-    // add an index entry to the .json file for this object id
-    std::wstring index_registry_file = ((m_ctrl_path + xf_path_separator_wchar) + L"indexes" + xf_path_separator_wchar) + object_id + L".info";
-    std::wstring json = xf_get_file_contents(index_registry_file);
+    kl::exclusive_file file(m_ctrl_path + xf_path_separator_wchar + L"indexes" + xf_path_separator_wchar + object_id + L".info");
+    if (!file.isOk())
+        return xcm::null;
+
+    std::wstring json = file.getContents();
 
     kl::JsonNode root;
-    root.fromString(json);
+    if (json.empty() || !root.fromString(json))
+        return xcm::null;
 
     kl::JsonNode indexes = root["indexes"];
     if (!indexes.isArray())
         indexes.setArray();
 
+    // add index entry
     kl::JsonNode index_node = indexes.appendElement();
     index_node["name"] = name;
     index_node["expression"] = expr;
     index_node["filename"] = idx_filename;
 
-    xf_put_file_contents(index_registry_file, root.toString());
+    
+    file.putContents(root.toString());
 
 
     // return info about the new index
-
     IndexInfo* ii = new IndexInfo;
     ii->setName(name);
     ii->setExpression(expr);
@@ -2656,12 +2660,15 @@ bool FsDatabase::renameIndex(const std::wstring& path,
     std::wstring object_id = info->getObjectId();
 
     // update index registry
+    kl::exclusive_file file(m_ctrl_path + xf_path_separator_wchar + L"indexes" + xf_path_separator_wchar + object_id + L".info");
+    if (!file.isOk())
+        return false;
 
-    std::wstring index_registry_file = ((m_ctrl_path + xf_path_separator_wchar) + L"indexes" + xf_path_separator_wchar) + object_id + L".info";
-    std::wstring json = xf_get_file_contents(index_registry_file);
+    std::wstring json = file.getContents();
 
     kl::JsonNode root;
-    root.fromString(json);
+    if (json.empty() || !root.fromString(json))
+        return false;
 
     kl::JsonNode indexes = root["indexes"];
     std::vector<kl::JsonNode> index_nodes = indexes.getChildren();
@@ -2675,7 +2682,7 @@ bool FsDatabase::renameIndex(const std::wstring& path,
         }
     }
 
-    xf_put_file_contents(index_registry_file, root.toString());
+    file.putContents(root.toString());
 
     return true;
 }
@@ -2692,11 +2699,15 @@ bool FsDatabase::deleteIndex(const std::wstring& path, const std::wstring& name)
 
     // update index registry
 
-    std::wstring index_registry_file = ((m_ctrl_path + xf_path_separator_wchar) + L"indexes" + xf_path_separator_wchar) + object_id + L".info";
-    std::wstring json = xf_get_file_contents(index_registry_file);
+    kl::exclusive_file file(m_ctrl_path + xf_path_separator_wchar + L"indexes" + xf_path_separator_wchar + object_id + L".info");
+    if (!file.isOk())
+        return false;
+
+    std::wstring json = file.getContents();
 
     kl::JsonNode root;
-    root.fromString(json);
+    if (json.empty() || !root.fromString(json))
+        return false;
 
     kl::JsonNode indexes = root["indexes"];
     std::vector<kl::JsonNode> index_nodes = indexes.getChildren();
@@ -2706,12 +2717,12 @@ bool FsDatabase::deleteIndex(const std::wstring& path, const std::wstring& name)
     {
         if (kl::iequals((*it)["name"], name))
         {
-            std::wstring idx_path = ((m_ctrl_path + xf_path_separator_wchar) + L"indexes" + xf_path_separator_wchar) + (*it)["filename"].getString();
+            std::wstring idx_path = m_ctrl_path + xf_path_separator_wchar + L"indexes" + xf_path_separator_wchar + (*it)["filename"].getString();
             if (!xf_remove(idx_path))
                 return false;
 
             indexes.deleteChild(counter);
-            xf_put_file_contents(index_registry_file, root.toString());
+            file.putContents(root.toString());
             return true;
         }
         ++counter;
@@ -2735,8 +2746,11 @@ xd::IIndexInfoEnumPtr FsDatabase::getIndexEnum(const std::wstring& path)
     vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
 
 
-    std::wstring index_registry_file = ((m_ctrl_path + xf_path_separator_wchar) + L"indexes" + xf_path_separator_wchar) + object_id + L".info";
-    std::wstring json = xf_get_file_contents(index_registry_file);
+    kl::exclusive_file file(m_ctrl_path + xf_path_separator_wchar + L"indexes" + xf_path_separator_wchar + object_id + L".info");
+    if (!file.isOk())
+        return vec;
+
+    std::wstring json = file.getContents();
 
     kl::JsonNode root;
     if (json.empty() || !root.fromString(json))

@@ -1051,10 +1051,66 @@ xd::IStructurePtr TtbTable::getStructure()
 }
 
 
-bool TtbTable::isRowDeleted(xd::rowpos_t row)
+
+bool TtbTable::deleteRow(xd::rowid_t rowid)
 {
-    return false;
+    // lock the header
+    if (!xf_trylock(m_file, 0, ttb_header_len, 10000))
+        return false;
+
+    xf_off_t byte_offset = rowid-1;
+    byte_offset *= m_row_width;
+    byte_offset += m_data_offset;
+    if (!xf_seek(m_file, byte_offset, xfSeekSet))
+    {
+        // seek error -- unlock the header
+        xf_unlock(m_file, 0, ttb_header_len);
+        return false;
+    }
+
+    unsigned char current_delete_flag = 0;
+    if (xf_read(m_file, &current_delete_flag, 1, 1) != 1)
+    {
+        // read error -- unlock header, return false
+        xf_unlock(m_file, 0, ttb_header_len);
+        return false;
+    }
+
+    if (current_delete_flag == 0xff)
+    {
+        // delete flag already set, we are done
+        xf_unlock(m_file, 0, ttb_header_len);
+        return true;
+    }
+
+    // set delete flag
+    unsigned char deleted = 0xff;
+    xf_seek(m_file, byte_offset, xfSeekSet);
+    if (xf_write(m_file, &deleted, 1, 1) != 1)
+    {
+        // write error -- unlock header, return false
+        xf_unlock(m_file, 0, ttb_header_len);
+        return false;
+    }
+
+    // increment deleted record count in header
+    unsigned char buf[8];
+
+    xf_seek(m_file, 52, xfSeekSet);
+    xf_read(m_file, buf, 8, 1);
+
+    long long delete_count = bufToInt64(buf);
+    int64ToBuf(buf, delete_count+1);
+    
+    xf_seek(m_file, 52, xfSeekSet);
+    xf_write(m_file, buf, 8, 1);
+
+    // unlock the header
+    xf_unlock(m_file, 0, ttb_header_len);
+
+    return true;
 }
+
 
 
 xd::rowpos_t TtbTable::getRowCount(xd::rowpos_t* deleted_row_count)
@@ -1451,101 +1507,5 @@ bool TtbRow::putNull(int column_ordinal)
 
     return true;
 }
-
-
-
-
-
-// TtbRowDeleter class implementation
-
-TtbRowDeleter::TtbRowDeleter(TtbTable* table)
-{
-    m_table = table;
-}
-
-TtbRowDeleter::~TtbRowDeleter()
-{
-}
-
-void TtbRowDeleter::startDelete()
-{
-}
-
-bool TtbRowDeleter::deleteRow(xd::rowid_t rowid)
-{
-    xf_file_t f = m_table->m_file;
-
-    // lock the header
-    if (!xf_trylock(f, 0, ttb_header_len, 10000))
-        return false;
-
-    xf_off_t byte_offset = rowid-1;
-    byte_offset *= m_table->m_row_width;
-    byte_offset += m_table->m_data_offset;
-    if (!xf_seek(f, byte_offset, xfSeekSet))
-    {
-        // seek error -- unlock the header
-        xf_unlock(f, 0, ttb_header_len);
-        return false;
-    }
-
-    unsigned char current_delete_flag = 0;
-    if (xf_read(f, &current_delete_flag, 1, 1) != 1)
-    {
-        // read error -- unlock header, return false
-        xf_unlock(f, 0, ttb_header_len);
-        return false;
-    }
-
-    if (current_delete_flag == 0xff)
-    {
-        // delete flag already set, we are done
-        xf_unlock(f, 0, ttb_header_len);
-        return true;
-    }
-
-    // set delete flag
-    unsigned char deleted = 0xff;
-    xf_seek(f, byte_offset, xfSeekSet);
-    if (xf_write(m_table->m_file, &deleted, 1, 1) != 1)
-    {
-        // write error -- unlock header, return false
-        xf_unlock(f, 0, ttb_header_len);
-        return false;
-    }
-
-    // increment deleted record count in header
-    unsigned char buf[8];
-
-    xf_seek(f, 52, xfSeekSet);
-    xf_read(f, buf, 8, 1);
-
-    long long delete_count = bufToInt64(buf);
-    int64ToBuf(buf, delete_count+1);
-    
-    xf_seek(f, 52, xfSeekSet);
-    xf_write(f, buf, 8, 1);
-
-    // unlock the header
-    xf_unlock(f, 0, ttb_header_len);
-
-    return true;
-}
-
-void TtbRowDeleter::finishDelete()
-{
-}
-
-
-
-
-
-
-
-
-
-
-
-
 
 

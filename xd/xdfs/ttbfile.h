@@ -51,7 +51,6 @@ public:
 
 class TtbTable
 {
-    friend class TtbRowDeleter;
     friend class TtbRowInserter;
     friend class TtbRow;
 
@@ -101,7 +100,8 @@ public:
                 bool include_deleted);
     int appendRows(unsigned char* buf, int row_count);
 
-    bool isRowDeleted(xd::rowpos_t row);
+    bool deleteRow(xd::rowid_t rowid);
+
     bool writeRow(xd::rowpos_t row, unsigned char* buf);
     bool writeColumnInfo(int col,
                          const std::wstring& col_name,
@@ -143,29 +143,6 @@ private:
     kl::membuf m_workbuf;
 };
 
-
-
-
-class TtbRowDeleter
-{
-
-public:
-
-    TtbRowDeleter(TtbTable* table);
-    virtual ~TtbRowDeleter();
-
-    void startDelete();
-    bool deleteRow(xd::rowid_t rowid);
-    void finishDelete();
-    void cancelDelete() { }
-
-public:
-
-    TtbTable* m_table;
-    BitmapFileScroller* m_map_scroller;
-    bool m_started;
-    int m_deleted_count;
-};
 
 
 

@@ -74,6 +74,8 @@ public:
                    xd::ColumnUpdateInfo* info,
                    size_t info_size);
 
+    bool deleteRow(xd::rowid_t rowid);
+
     bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job);
  
 private:
@@ -191,7 +193,6 @@ private:
 
     bool doRowDelete(xd::rowid_t rowid);
 
-    TtbRowDeleter* m_table_row_deleter;
     TtbSet* m_set;
     RowIdArray* m_rowid_array;
 };

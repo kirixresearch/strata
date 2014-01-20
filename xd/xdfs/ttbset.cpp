@@ -322,6 +322,42 @@ bool TtbSet::updateRow(xd::rowid_t rowid,
 
 
 
+bool TtbSet::deleteRow(xd::rowid_t rowid)
+{
+    if (!m_file.deleteRow(rowid))
+        return false;
+
+    /*
+    // delete the index keys associated with this row
+    xd::rowpos_t row = rowidGetRowPos(rowid);
+
+    // read the row
+    m_set->m_table->getRow(row, m_set->m_update_buf);
+
+    std::vector<IndexEntry>::iterator it;
+    IIndexIterator* iter;
+
+    for (it = m_set->m_indexes.begin();
+         it != m_set->m_indexes.end(); ++it)
+    {
+        iter = seekRow(it->index,
+                       it->key_expr->getKey(),
+                       it->key_length,
+                       rowid);
+
+        if (iter)
+        {
+            it->index->remove(iter);
+            iter->unref();
+        }
+    }
+    */
+
+    return true;
+}
+
+
+
 // TtbRowInserter class implementation
 
 
@@ -543,14 +579,12 @@ TtbSetRowDeleter::TtbSetRowDeleter(FsDatabase* db, TtbSet* set)
     m_set = set;
     m_set->ref();
 
-    m_table_row_deleter = new TtbRowDeleter(&m_set->m_file);
     m_rowid_array = new RowIdArray(db->getTempFileDirectory());
 }
 
 TtbSetRowDeleter::~TtbSetRowDeleter()
 {
     delete m_rowid_array;
-    delete m_table_row_deleter;
 
     m_set->unref();
 }
@@ -570,16 +604,12 @@ void TtbSetRowDeleter::finishDelete()
 {
     if (m_rowid_array)
     {
-        m_table_row_deleter->startDelete();
-
         m_rowid_array->goFirst();
         while (!m_rowid_array->isEof())
         {
-            doRowDelete(m_rowid_array->getItem());
+            m_set->deleteRow(m_rowid_array->getItem());
             m_rowid_array->goNext();
         }
-
-        m_table_row_deleter->finishDelete();
     }
 }
 
@@ -589,37 +619,3 @@ void TtbSetRowDeleter::cancelDelete()
     m_rowid_array = NULL;
 }
 
-
-bool TtbSetRowDeleter::doRowDelete(xd::rowid_t rowid)
-{
-    if (!m_table_row_deleter->deleteRow(rowid))
-        return false;
-
-    /*
-    // delete the index keys associated with this row
-    xd::rowpos_t row = rowidGetRowPos(rowid);
-
-    // read the row
-    m_set->m_table->getRow(row, m_set->m_update_buf);
-
-    std::vector<IndexEntry>::iterator it;
-    IIndexIterator* iter;
-
-    for (it = m_set->m_indexes.begin();
-         it != m_set->m_indexes.end(); ++it)
-    {
-        iter = seekRow(it->index,
-                       it->key_expr->getKey(),
-                       it->key_length,
-                       rowid);
-
-        if (iter)
-        {
-            it->index->remove(iter);
-            iter->unref();
-        }
-    }
-    */
-
-    return true;
-}
