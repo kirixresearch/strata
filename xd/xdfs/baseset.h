@@ -79,6 +79,7 @@ private:
     std::wstring m_object_id;
     std::wstring m_config_file_path;
 
+    kl::mutex m_indexes_mutex;
     std::vector<XdfsIndexEntry> m_indexes;
     xf_filetime_t m_indexes_filetime;
 };

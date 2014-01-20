@@ -33,6 +33,7 @@ XdfsBaseSet::XdfsBaseSet(FsDatabase* database)
 
 XdfsBaseSet::~XdfsBaseSet()
 {
+    m_indexes_mutex.lock();
     std::vector<XdfsIndexEntry>::iterator it;
     for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
     {
@@ -45,7 +46,7 @@ XdfsBaseSet::~XdfsBaseSet()
         if (it->key_expr)
             delete it->key_expr;
     }
-
+    m_indexes_mutex.unlock();
 
     m_database->unref();
 }
@@ -192,6 +193,7 @@ void XdfsBaseSet::refreshIndexEntries()
     it_end = entries.end();
     for (it = entries.begin(); it != it_end; ++it)
     {
+        m_indexes_mutex.lock();
         bool found = false;
         for (it2 = m_indexes.begin(); it2 != m_indexes.end(); ++it2)
         {
@@ -201,6 +203,7 @@ void XdfsBaseSet::refreshIndexEntries()
                 break;
             }
         }
+        m_indexes_mutex.unlock();
 
         if (found)
             continue;
@@ -220,7 +223,9 @@ void XdfsBaseSet::refreshIndexEntries()
                 
         if (prepareIndexEntry(entry))
         {
+            m_indexes_mutex.lock();
             m_indexes.push_back(entry);
+            m_indexes_mutex.unlock();
         }
          else
         {
@@ -323,6 +328,7 @@ IIndex* XdfsBaseSet::lookupIndexForOrder(const std::wstring& order)
 
     IIndex* idx = NULL;
 
+    m_indexes_mutex.lock();
     std::vector<XdfsIndexEntry>::iterator it, it_end = m_indexes.end();
     for (it = m_indexes.begin(); it != it_end; ++it)
     {
@@ -333,6 +339,7 @@ IIndex* XdfsBaseSet::lookupIndexForOrder(const std::wstring& order)
             break;
         }
     }
+    m_indexes_mutex.unlock();
 
     return idx;
 }
@@ -374,26 +381,6 @@ bool XdfsBaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
         field["expression"] = colinfo->getExpression();
 
         return xf_put_file_contents(m_config_file_path, root.toString());
-
-        /*
-        // load the existing stored information, if it exists
-        ExtFileInfo fileinfo;
-        fileinfo.load(m_config_file_path);
-
-        // find the "calc_fields" area of the file
-        ExtFileEntry entry = fileinfo.getGroup(L"calculated_fields");
-        entry = entry.getAddChildIfNotExist(L"fields");
-
-        // save the calculated field info
-        ExtFileEntry field = entry.addChild(L"field");
-        field.addChild(L"name", colinfo->getName());
-        field.addChild(L"type", colinfo->getType());
-        field.addChild(L"width", colinfo->getWidth());
-        field.addChild(L"scale", colinfo->getScale());
-        field.addChild(L"expression", colinfo->getExpression());
-        
-        return fileinfo.save(m_config_file_path);
-        */
     }
 
     return false;
@@ -448,39 +435,6 @@ bool XdfsBaseSet::deleteCalcField(const std::wstring& _name)
         }
 
         return false;
-
-     /*
-        // load the existing stored information, if it exists
-        ExtFileInfo fileinfo;
-        fileinfo.load(m_config_file_path);
-
-        // find the "calc_fields" area of the file
-        ExtFileEntry entry = fileinfo.getGroup(L"calculated_fields");
-        entry = entry.getAddChildIfNotExist(L"fields");
-
-        bool field_deleted = false;
-        size_t i, count = entry.getChildCount();
-        for (i = 0; i < count; ++i)
-        {
-            ExtFileEntry field = entry.getChild(i);
-            std::wstring store_name = field.getChildContents(L"name");
-            
-            if (!wcscasecmp(store_name.c_str(), _name.c_str()))
-            {
-                // this is a kludge -- since all of the "calc_fields" childrens'
-                // tags are "field", we need to rename the one with a matching
-                // field name to something unique so that we can delete it
-                field.setTagName(store_name);
-                field_deleted = entry.deleteChild(store_name);
-                break;
-            }
-        }
-
-        // if the field was deleted, try to save the changes
-        // and return the result
-        if (field_deleted)
-            return fileinfo.save(m_config_file_path);
-        */
      }
 
     // we couldn't find the field
@@ -589,53 +543,6 @@ bool XdfsBaseSet::modifyCalcField(const std::wstring& name,
         }
 
         return true;
-
-
-/*
-        // load the existing stored information, if it exists
-        ExtFileInfo fileinfo;
-        fileinfo.load(m_config_file_path);
-
-        // find the "calc_fields" area of the file
-        ExtFileEntry entry = fileinfo.getGroup(L"calculated_fields");
-        entry = entry.getAddChildIfNotExist(L"fields");
-
-        size_t i, count = entry.getChildCount();
-        for (i = 0; i < count; ++i)
-        {
-            ExtFileEntry field = entry.getChild(i);
-            std::wstring store_name = field.getChildContents(L"name");
-            
-            if (!wcscasecmp(store_name.c_str(), name.c_str()))
-            {
-                new_name  = colinfo->getName();
-                new_type  = colinfo->getType();
-                new_width = colinfo->getWidth();
-                new_scale = colinfo->getScale();
-                new_expr  = colinfo->getExpression();
-                
-                if (new_name.length() > 0)
-                {
-                    field.setChildContents(L"name", new_name);
-                }
-                    
-                if (new_type != -1)
-                    field.setChildContents(L"type", new_type);
-
-                if (new_width != -1)
-                    field.setChildContents(L"width", new_width);
-
-                if (new_scale != -1)
-                    field.setChildContents(L"scale", new_scale);
-
-                if (new_expr.length() > 0)
-                    field.setChildContents(L"expression", new_expr);
-            }
-        }
-
-        return fileinfo.save(m_config_file_path);
-*/
-
     }
 
     return true;
@@ -680,38 +587,6 @@ void XdfsBaseSet::appendCalcFields(xd::IStructure* structure)
             col->setCalculated(!col->getExpression().empty());
             intstruct->addColumn(col);
         }
-
-
-    /*
-        // load the existing stored information, if it exists
-        ExtFileInfo fileinfo;
-        fileinfo.load(m_config_file_path);
-
-        // find the "calc_fields" area of the file
-        ExtFileEntry entry = fileinfo.getGroup(L"calculated_fields");
-        entry = entry.getAddChildIfNotExist(L"fields");
-        
-        size_t i, count = entry.getChildCount();
-        for (i = 0; i < count; ++i)
-        {
-            ExtFileEntry field = entry.getChild(i);
-            
-            name = field.getChildContents(L"name");
-            type = kl::wtoi(field.getChildContents(L"type"));
-            width = kl::wtoi(field.getChildContents(L"width"));
-            scale = kl::wtoi(field.getChildContents(L"scale"));
-            expression = field.getChildContents(L"expression");
-
-            xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-            col->setName(name);
-            col->setType(type);
-            col->setWidth(width);
-            col->setScale(scale);
-            col->setExpression(expression);
-            col->setCalculated(true);
-            intstruct->addColumn(col);
-        }
-    */
     }
 }
 
