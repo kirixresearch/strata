@@ -406,7 +406,7 @@ bool TableDoc::isExternalTable()
     if (m_external_table == -1)
     {
         std::wstring db_driver = getDbDriver();
-        m_external_table = (db_driver != L"xdnative" && db_driver != L"xdclient" && db_driver != L"xdcommon") ? 1 : 0;
+        m_external_table = (db_driver != L"xdnative" && db_driver != L"xdclient" && db_driver != L"xdcommon" && db_driver != L"xdfs") ? 1 : 0;
     }
     
     return (m_external_table == 1) ? true : false;

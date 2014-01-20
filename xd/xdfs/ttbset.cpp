@@ -345,31 +345,52 @@ bool TtbSet::deleteRow(xd::rowid_t rowid)
     if (!m_file.deleteRow(rowid))
         return false;
 
-    /*
+
+    KL_AUTO_LOCK(m_indexes_mutex);
+    
+    if (m_indexes.size() == 0)
+        return true;
+
     // delete the index keys associated with this row
     xd::rowpos_t row = rowidGetRowPos(rowid);
 
     // read the row
-    m_set->m_table->getRow(row, m_set->m_update_buf);
+    m_file.getRow(row, m_update_buf);
 
-    std::vector<IndexEntry>::iterator it;
+    std::vector<XdfsIndexEntry>::iterator idx_it;
     IIndexIterator* iter;
 
-    for (it = m_set->m_indexes.begin();
-         it != m_set->m_indexes.end(); ++it)
+    for (idx_it = m_indexes.begin(); idx_it != m_indexes.end(); ++idx_it)
     {
-        iter = seekRow(it->index,
-                       it->key_expr->getKey(),
-                       it->key_length,
+        if (!idx_it->key_expr)
+        {
+            idx_it->key_expr = new KeyLayout;
+            if (idx_it->key_expr->setKeyExpr(static_cast<xd::IIterator*>(m_update_iter), idx_it->expr))
+            {
+                idx_it->orig_key.setDataSize(idx_it->key_length);
+                memcpy(idx_it->orig_key.getData(), idx_it->key_expr->getKey(), idx_it->key_length);
+            }
+             else
+            {
+                // key expression could not be parsed
+                delete idx_it->key_expr;
+                idx_it->key_expr = NULL;
+                continue;
+            }
+        }
+
+        iter = seekRow(idx_it->index,
+                       idx_it->key_expr->getKey(),
+                       idx_it->key_length,
                        rowid);
 
         if (iter)
         {
-            it->index->remove(iter);
+            idx_it->index->remove(iter);
             iter->unref();
         }
     }
-    */
+
 
     return true;
 }
