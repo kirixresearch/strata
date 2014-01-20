@@ -180,9 +180,12 @@ void Directory::getAll(kscript::ExprEnv* env, void*, kscript::Value* retval)
 
     while (xf_readdir(dir, &entry))
     {
-        kscript::Value val;
-        val.setString(entry.m_name);
-        retval->appendMember(&val);
+        if (entry.m_name != L"." && entry.m_name != L"..")
+        {
+            kscript::Value val;
+            val.setString(entry.m_name);
+            retval->appendMember(&val);
+        }
     }
 
     xf_closedir(dir);
