@@ -107,7 +107,7 @@ std::wstring Connection::getConnectionString()
     }
      else
     {
-        if (type == xd::dbtypeKpg || type == xd::dbtypeAccess || type == xd::dbtypeSqlite || type == xd::dbtypeExcel)
+        if (type == xd::dbtypeKpg || type == xd::dbtypeAccess || type == xd::dbtypeSqlite || type == xd::dbtypeExcel || type == xd::dbtypeFilesystem)
         {
             cstr += L"database=";
             cstr += path;
@@ -696,6 +696,7 @@ void DlgConnection::onOK(wxCommandEvent& evt)
     if (m_current_page == pageFile)
     {
         m_ci.type = xd::dbtypeFilesystem;
+        m_ci.port = 0;
         m_ci.path = m_file_panel->getPath().ToStdWstring();
     }
 
@@ -801,17 +802,20 @@ void DlgConnection::onForward(wxCommandEvent& evt)
         {
             connect_to_database = true;
             m_ci.type = xd::dbtypeAccess;
+            m_ci.port = 0;
             m_ci.path = files[0];
         }
          else if (files.size() == 1 && kl::icontains(files[0].ToStdWstring(), L".kpg"))
         {
             connect_to_database = true;
             m_ci.type = xd::dbtypeKpg;
+            m_ci.port = 0;
             m_ci.path = files[0];
         }
          else
         {
             m_ci.tables.clear();
+            m_ci.port = 0;
             m_ci.type = xd::dbtypeFilesystem;
             populateTableListGrid(files);
             setActivePage(pageTableList);
