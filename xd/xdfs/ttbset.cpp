@@ -27,6 +27,7 @@
 #include "../xdcommon/extfileinfo.h"
 #include "../xdcommon/jobinfo.h"
 #include "../xdcommon/rowidarray.h"
+#include "../xdcommon/keylayout.h"
 #include <kl/md5.h>
 #include <kl/math.h>
 
@@ -181,6 +182,8 @@ bool TtbSet::updateRow(xd::rowid_t rowid,
                        xd::ColumnUpdateInfo* info,
                        size_t info_size)
 {
+    KL_AUTO_LOCK(m_indexes_mutex);
+    
     size_t coli;
     xd::ColumnUpdateInfo* col_it;
 
@@ -189,20 +192,26 @@ bool TtbSet::updateRow(xd::rowid_t rowid,
 
     if (!m_update_buf)
     {
+        refreshIndexEntries();
+
         m_update_buf = new unsigned char[m_file.getRowWidth()];
         m_update_row.setRowPtr(m_update_buf);
+        TtbIterator* iter = new TtbIterator(m_database);
+        iter->initFromBuffer(this, &m_file, m_update_buf);
+        m_update_iter = static_cast<xd::IIterator*>(iter);
     }
 
 
     // read the row
     m_file.getRow(row, m_update_buf);
 
-    /*
+
+
+
     // determine which indexes need updating
     
-    std::vector<IndexEntry>::iterator idx_it;
-    for (idx_it = m_indexes.begin();
-         idx_it != m_indexes.end(); ++idx_it)
+    std::vector<XdfsIndexEntry>::iterator idx_it, idx_it_end = m_indexes.end();
+    for (idx_it = m_indexes.begin(); idx_it != idx_it_end; ++idx_it)
     {
         idx_it->update = false;
 
@@ -217,14 +226,24 @@ bool TtbSet::updateRow(xd::rowid_t rowid,
             }
         }
 
-        if (idx_it->update)
+        if (idx_it->update && !idx_it->key_expr)
         {
-            memcpy(idx_it->orig_key,
-                   idx_it->key_expr->getKey(),
-                   idx_it->key_length);
+            idx_it->key_expr = new KeyLayout;
+            if (idx_it->key_expr->setKeyExpr(static_cast<xd::IIterator*>(m_update_iter), idx_it->expr))
+            {
+                idx_it->orig_key.setDataSize(idx_it->key_length);
+                memcpy(idx_it->orig_key.getData(), idx_it->key_expr->getKey(), idx_it->key_length);
+            }
+             else
+            {
+                // key expression could not be parsed
+                delete idx_it->key_expr;
+                idx_it->key_expr = NULL;
+                idx_it->update = false;
+            }
         }
     }
-    */
+
 
 
     // modify the buffer
@@ -278,25 +297,24 @@ bool TtbSet::updateRow(xd::rowid_t rowid,
     // write the resulting row
     m_file.writeRow(row, m_update_buf);
 
-/*
+
     // update the indexes
-    for (idx_it = m_indexes.begin();
-         idx_it != m_indexes.end(); ++idx_it)
+    for (idx_it = m_indexes.begin(); idx_it != idx_it_end; ++idx_it)
     {
-        if (!idx_it->update)
+        if (!idx_it->update || !idx_it->key_expr)
             continue;
 
         // if present key is the same as the last key, don't do anything
         const unsigned char* new_key = idx_it->key_expr->getKey();
         
-        if (0 == memcmp(idx_it->orig_key, new_key, idx_it->key_length))
+        if (0 == memcmp(idx_it->orig_key.getData(), new_key, idx_it->key_length))
             continue;
 
         
         IIndexIterator* index_iter;
 
         index_iter = seekRow(idx_it->index,
-                             idx_it->orig_key,
+                             idx_it->orig_key.getData(),
                              idx_it->key_length,
                              rowid);
 
@@ -314,7 +332,7 @@ bool TtbSet::updateRow(xd::rowid_t rowid,
                               sizeof(xd::rowid_t));
     }
 
-*/
+
 
     return true;
 }

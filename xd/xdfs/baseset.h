@@ -3,7 +3,7 @@
  * Copyright (c) 2006-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  XD Database Library
- * Author:   David Z. Williams
+ * Author:   Benjamin I. Williams
  * Created:  2006-03-20
  *
  */
@@ -14,6 +14,8 @@
 
 
 #include <kl/file.h>
+#include <kl/memory.h>
+
 
 class IIndex;
 class KeyLayout;
@@ -30,7 +32,7 @@ public:
     IIndex* index;
     int key_length;
     KeyLayout* key_expr;
-    unsigned char* orig_key;
+    kl::membuf orig_key;
     bool update;
 };
 
@@ -71,6 +73,10 @@ protected:
 
     FsDatabase* m_database;
 
+    kl::mutex m_indexes_mutex;
+    std::vector<XdfsIndexEntry> m_indexes;
+    xf_filetime_t m_indexes_filetime;
+
 private:
 
     kl::mutex m_object_mutex;
@@ -78,10 +84,6 @@ private:
     std::wstring m_object_path;
     std::wstring m_object_id;
     std::wstring m_config_file_path;
-
-    kl::mutex m_indexes_mutex;
-    std::vector<XdfsIndexEntry> m_indexes;
-    xf_filetime_t m_indexes_filetime;
 };
 
 

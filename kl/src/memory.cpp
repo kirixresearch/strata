@@ -78,6 +78,25 @@ membuf::~membuf()
         m_buf = NULL;
     }
 }
+  
+membuf::membuf(const membuf& c)
+{
+    if (c.m_buf)
+    {
+        m_size = c.m_size;
+        m_alloc_size = 0;
+        m_buf = NULL;
+        alloc(c.m_alloc_size);
+        memcpy(m_buf, c.m_buf, c.m_alloc_size);
+    }
+     else
+    {
+        m_size = 0;
+        m_alloc_size = 0;
+        m_buf = NULL;
+    }
+}
+
     
 bool membuf::alloc(size_t size)
 {
@@ -95,6 +114,12 @@ bool membuf::alloc(size_t size)
     return true;
 }
 
+
+void membuf::setDataSize(size_t s)
+{
+    alloc(s);
+    m_size = s;
+}
 
 unsigned char* membuf::append(const unsigned char* buf, size_t len)
 {

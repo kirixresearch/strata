@@ -216,6 +216,9 @@ static int doUpdate(xd::IDatabasePtr db,
             }
         }
 
+        delete[] col_update;
+        delete s_iter;
+
         return -1;
     }
 

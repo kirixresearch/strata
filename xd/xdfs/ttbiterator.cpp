@@ -86,6 +86,7 @@ TtbIterator::TtbIterator(FsDatabase* database)
     m_set = NULL;
     m_table = &m_file;
     m_include_deleted = false;
+    m_buffer_wrapper_mode = false;
 }
 
 TtbIterator::~TtbIterator()
@@ -96,13 +97,19 @@ TtbIterator::~TtbIterator()
         delete (*it);
     }
 
-    if (m_file.isOpen())
+    if (!m_buffer_wrapper_mode)
     {
-        m_file.close();
-    }
+        if (m_file.isOpen())
+        {
+            m_file.close();
+        }
 
-    if (m_set)
-        m_set->unref();
+        if (m_set)
+            m_set->unref();
+
+        delete[] m_buf;
+        delete[] m_rowpos_buf;
+    }
 
     m_database->unref();
 }
@@ -147,6 +154,21 @@ bool TtbIterator::init(TtbSet* set, TtbTable* table)
     return true;
 }
 
+bool TtbIterator::initFromBuffer(TtbSet* set, TtbTable* table, unsigned char* buffer)
+{
+    m_buffer_wrapper_mode = true;
+    m_set = set; // don't hold a reference in this mode
+    m_table = table;
+    m_buf = buffer;
+    m_rowptr = buffer;
+    m_table_rowwidth = m_table->getRowWidth();
+
+    refreshStructure();
+
+    return true;
+}
+
+
 
 void TtbIterator::setTable(const std::wstring& tbl)
 {
@@ -174,6 +196,9 @@ xd::IDatabasePtr TtbIterator::getDatabase()
 
 xd::IIteratorPtr TtbIterator::clone()
 {
+    if (m_buffer_wrapper_mode)
+        return xcm::null;
+
     TtbIterator* new_iter = new TtbIterator(m_database);
     
     if (!new_iter->init(m_set, m_table->getFilename()))
@@ -221,6 +246,9 @@ unsigned int TtbIterator::getIteratorFlags()
 
 void TtbIterator::goFirst()
 {
+    if (m_buffer_wrapper_mode)
+        return;
+
     int read_ahead_rowcount = m_read_ahead_rowcount;
     if (read_ahead_rowcount > 100)
         read_ahead_rowcount = 100;
@@ -253,6 +281,9 @@ void TtbIterator::goLast()
 
 void TtbIterator::skip(int delta)
 {
+    if (m_buffer_wrapper_mode)
+        return;
+
     if (delta == 0)
         return;
 
@@ -352,6 +383,9 @@ bool TtbIterator::eof()
 
 bool TtbIterator::seek(const unsigned char* key, int length, bool soft)
 {
+    if (m_buffer_wrapper_mode)
+        return false;
+
     // keys on table iterators indicate rowid
     if (length != sizeof(xd::rowid_t))
         return false;
@@ -408,6 +442,9 @@ double TtbIterator::getPos()
 
 void TtbIterator::goRow(const xd::rowid_t& rowid)
 {
+    if (m_buffer_wrapper_mode)
+        return;
+
     xd::tableord_t table_ord = rowidGetTableOrd(rowid);
     xd::rowpos_t row_pos = rowidGetRowPos(rowid);
 
@@ -606,7 +643,7 @@ xd::objhandle_t TtbIterator::getHandle(const std::wstring& expr)
     std::vector<TtbDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if (!wcscasecmp((*it)->name.c_str(), expr.c_str()))
+        if (0 == wcscasecmp((*it)->name.c_str(), expr.c_str()))
             return (xd::objhandle_t)(*it);
     }
 
@@ -620,8 +657,8 @@ xd::objhandle_t TtbIterator::getHandle(const std::wstring& expr)
         dai->key_layout = new KeyLayout;
 
         if (!dai->key_layout->setKeyExpr(static_cast<xd::IIterator*>(this),
-                                    expr.substr(4),
-                                    false))
+                                         expr.substr(4),
+                                         false))
         {
             delete dai;
             return 0;

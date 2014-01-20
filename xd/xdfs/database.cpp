@@ -2617,13 +2617,19 @@ xd::IIndexInfoPtr FsDatabase::createIndex(const std::wstring& path,
 
     kl::exclusive_file file(m_ctrl_path + xf_path_separator_wchar + L"indexes" + xf_path_separator_wchar + object_id + L".info");
     if (!file.isOk())
+    {
+        xf_remove(idx_filename);
         return xcm::null;
+    }
 
     std::wstring json = file.getContents();
 
     kl::JsonNode root;
-    if (json.empty() || !root.fromString(json))
+    if (!json.empty() && !root.fromString(json))
+    {
+        xf_remove(idx_filename);
         return xcm::null;
+    }
 
     kl::JsonNode indexes = root["indexes"];
     if (!indexes.isArray())
@@ -2745,8 +2751,12 @@ xd::IIndexInfoEnumPtr FsDatabase::getIndexEnum(const std::wstring& path)
     xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
     vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
 
+    std::wstring idx_info_filename = m_ctrl_path + xf_path_separator_wchar + L"indexes" + xf_path_separator_wchar + object_id + L".info";
 
-    kl::exclusive_file file(m_ctrl_path + xf_path_separator_wchar + L"indexes" + xf_path_separator_wchar + object_id + L".info");
+    if (!xf_get_file_exist(idx_info_filename))
+        return vec;
+
+    kl::exclusive_file file(idx_info_filename);
     if (!file.isOk())
         return vec;
 

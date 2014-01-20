@@ -29,6 +29,8 @@ class membuf
 public:
 
     membuf();
+    membuf(const membuf& c);
+
     ~membuf();
     
     bool alloc(size_t size);
@@ -38,6 +40,7 @@ public:
 
     unsigned char* getData() { return m_buf; }
     size_t getDataSize() const { return m_size; }
+    void setDataSize(size_t s);
     
     void popData(size_t len); // remove len bytes from beginning, shift remaining data
 

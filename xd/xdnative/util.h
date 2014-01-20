@@ -21,17 +21,6 @@
 std::wstring combineOfsPath(const std::wstring& base_folder,
                             const std::wstring& file_name);
 
-std::vector<std::wstring> getFieldsInExpr(const std::wstring& expr,
-                                          xd::IStructurePtr s,
-                                          bool recurse_calcfields);
-
-bool findFieldInExpr(const std::wstring& field,
-                     const std::wstring& expr,
-                     xd::IStructurePtr s,
-                     bool recurse_calcfields);
-
-
-
 double decstr2dbl(const char* c, int width, int scale);
 void dbl2decstr(char* dest, double d, int width, int scale);
 

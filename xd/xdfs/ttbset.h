@@ -83,6 +83,7 @@ private:
     TtbTable m_file;
     unsigned char* m_update_buf;
     TtbRow m_update_row;
+    xd::IIteratorPtr m_update_iter;
 };
 
 

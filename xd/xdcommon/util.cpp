@@ -1240,6 +1240,291 @@ kscript::ExprParser* createExprParser()
 
 
 
+
+
+
+struct FindFieldInfo
+{
+    std::set<std::wstring> found_fields;
+    xd::IStructurePtr structure;
+};
+
+static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
+{
+    FindFieldInfo* info = (FindFieldInfo*)hook_info.hook_param;
+
+    hook_info.res_element = NULL;
+
+    if (hook_info.element_type == kscript::ExprParseHookInfo::typeOperator)
+    {
+        // not handled
+        return false;
+    }
+
+    std::wstring expr_text = hook_info.expr_text;
+    kl::makeUpper(expr_text);
+
+    if (hook_info.element_type == kscript::ExprParseHookInfo::typeFunction)
+    {
+        std::wstring func_name = expr_text;
+
+        std::wstring param;
+        param = kl::afterFirst(expr_text, L'(');
+        param = kl::beforeLast(param, L')');
+        kl::trim(param);
+
+        // check for aggregate functions
+        if (func_name == L"SUM" ||
+            func_name == L"AVG" ||
+            func_name == L"STDDEV" ||
+            func_name == L"VARIANCE")
+        {
+            xd::IColumnInfoPtr colinfo = info->structure->getColumnInfo(param);
+            if (colinfo.isNull())
+                return true;
+        
+            int type = colinfo->getType();
+
+            if (type != xd::typeNumeric &&
+                type != xd::typeInteger &&
+                type != xd::typeDouble)
+            {
+                // fail
+                return true;
+            }
+
+            kscript::Value* v = new kscript::Value;
+            v->setDouble(0.0);
+            hook_info.res_element = v;
+            return true;
+        }
+         else if (func_name == L"MERGE")
+        {
+            xd::IColumnInfoPtr colinfo = info->structure->getColumnInfo(param);
+            if (colinfo.isNull())
+                return true;
+        
+            int type = colinfo->getType();
+
+            if (type != xd::typeCharacter &&
+                type != xd::typeWideCharacter)
+            {
+                // fail
+                return true;
+            }
+
+            kscript::Value* v = new kscript::Value;
+            v->setString(L"");
+            hook_info.res_element = v;
+            return true;
+        }
+         else if (func_name == L"COUNT")
+        {
+            kscript::Value* v = new kscript::Value;
+            v->setDouble(0.0);
+            hook_info.res_element = v;
+            return true;
+        }
+         else if (func_name == L"GROUPID")
+        {
+            kscript::Value* v = new kscript::Value;
+            v->setDouble(0.0);
+            hook_info.res_element = v;
+            return true;
+        }
+         else if (func_name == L"MAXDISTANCE")
+        {
+            kscript::Value* v = new kscript::Value;
+            v->setDouble(0.0);
+            hook_info.res_element = v;
+            return true;
+        }
+         else if (func_name == L"FIRST" ||
+                  func_name == L"LAST" ||
+                  func_name == L"MIN" ||
+                  func_name == L"MAX")
+        {
+            // continue below
+            expr_text = param;
+        }
+         else
+        {
+            // not handled
+            return false;
+        }
+    }
+
+
+    xd::IColumnInfoPtr colinfo;
+    colinfo = info->structure->getColumnInfo(expr_text);
+
+    if (colinfo.isNull())
+    {
+        // not handled
+        return false;
+    }
+
+    kscript::Value* v = new kscript::Value;
+
+    switch (colinfo->getType())
+    {
+        case xd::typeCharacter:
+        case xd::typeWideCharacter:
+            v->setString(L"");
+            break;
+        case xd::typeNumeric:
+        case xd::typeDouble:
+            v->setDouble(0.0);
+            break;
+        case xd::typeInteger:
+            v->setInteger(0);
+            break;
+        case xd::typeBoolean:
+            v->setBoolean(true);
+            break;
+        case xd::typeDateTime:
+        case xd::typeDate:
+            v->setDateTime(0,0);
+            break;
+        case xd::typeBinary:
+            v->setType(kscript::Value::typeBinary);
+            break;
+        default:
+            return true;
+    }
+
+    hook_info.res_element = v;
+
+    info->found_fields.insert(expr_text);
+
+    return true;
+}
+
+
+
+
+static void _findFieldsInExpr(const std::wstring& expr,
+                              xd::IStructurePtr s,
+                              bool recurse_calc_fields,
+                              std::set<std::wstring>& fields)
+{
+    FindFieldInfo info;
+    info.structure = s;
+
+    std::vector<std::wstring> parts;
+    std::vector<std::wstring>::iterator pit;
+
+    kl::parseDelimitedList(expr, parts, L',', true);
+
+    for (pit = parts.begin(); pit != parts.end(); ++pit)
+    {
+        kscript::ExprParser* parser = createExprParser();
+        parser->setParseHook(kscript::ExprParseHookInfo::typeFunction |
+                             kscript::ExprParseHookInfo::typeIdentifier,
+                             findfield_parse_hook,
+                             &info);
+                             
+        if (!parser->parse(*pit))
+        {
+            delete parser;
+            return;
+        }
+        delete parser;
+    }
+
+
+    std::set<std::wstring>::iterator it;
+
+    // remove fields that we already found
+    // (this will prevent infinite recursion problems)
+
+    for (it = fields.begin();
+         it != fields.end();
+         ++it)
+    {
+        info.found_fields.erase(*it);
+    }
+
+
+    // add the fields we found to the result set
+    for (it = info.found_fields.begin();
+         it != info.found_fields.end();
+         ++it)
+    {
+        fields.insert(*it);
+    }
+
+
+    if (recurse_calc_fields)
+    {
+        for (it = info.found_fields.begin();
+             it != info.found_fields.end();
+             ++it)
+        {
+            xd::IColumnInfoPtr colinfo;
+            colinfo = s->getColumnInfo(*it);
+            if (colinfo.isNull())
+                continue;
+            if (!colinfo->getCalculated())
+                continue;
+            
+            _findFieldsInExpr(colinfo->getExpression(),
+                              s,
+                              recurse_calc_fields,
+                              fields);
+        }
+
+    }
+}
+
+std::vector<std::wstring> getFieldsInExpr(const std::wstring& expr,
+                                          xd::IStructurePtr s,
+                                          bool recurse_calcfields)
+{
+    std::set<std::wstring> flds;
+    _findFieldsInExpr(expr, s, recurse_calcfields, flds);
+
+    std::vector<std::wstring> result;
+
+    std::set<std::wstring>::iterator it;
+    for (it = flds.begin();
+         it != flds.end();
+         ++it)
+    {
+        result.push_back(*it);
+    }
+
+    return result;
+}
+
+bool findFieldInExpr(const std::wstring& _field,
+                     const std::wstring& expr,
+                     xd::IStructurePtr s,
+                     bool recurse_calcfields)
+{
+    std::wstring field = _field;
+    kl::makeUpper(field);
+
+
+    std::set<std::wstring> flds;
+    _findFieldsInExpr(expr, s, recurse_calcfields, flds);
+
+    if (flds.find(field) != flds.end())
+        return true;
+
+    return false;
+}
+
+
+
+
+
+
+
+
+
+
+
 xd::rowid_t bufToRowid(unsigned char* buf)
 {
     long long result, tempv;

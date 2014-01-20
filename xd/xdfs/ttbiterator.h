@@ -99,11 +99,11 @@ public:
     TtbIterator(FsDatabase* database);
     ~TtbIterator();
 
-    bool init(TtbSet* set,
-              const std::wstring& filename);
+    bool init(TtbSet* set,  const std::wstring& filename);
+    bool init(TtbSet* set,  TtbTable* table);
+    bool initFromBuffer(TtbSet* set, TtbTable* table, unsigned char* buffer);
 
-    bool init(TtbSet* set,
-              TtbTable* table);
+    void changeToWeakReferences();
 
     // xd::IIterator
 
@@ -170,6 +170,7 @@ private:
     bool m_include_deleted;
     bool m_bof;
     bool m_eof;
+    bool m_buffer_wrapper_mode;
 
     std::vector<TtbDataAccessInfo*> m_fields;
     std::vector<TtbDataAccessInfo*> m_exprs;

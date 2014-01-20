@@ -40,9 +40,6 @@ XdfsBaseSet::~XdfsBaseSet()
         if (it->index)
             it->index->unref();
 
-        if (it->orig_key)
-            delete[] it->orig_key;
-
         if (it->key_expr)
             delete it->key_expr;
     }
@@ -139,7 +136,6 @@ void XdfsBaseSet::refreshIndexEntries()
 
 
     std::wstring index_registry_file = m_database->m_ctrl_path + xf_path_separator_wchar + L"indexes" + xf_path_separator_wchar + m_object_id + L".info";
-
     if (!xf_get_file_exist(index_registry_file))
         return;
 
@@ -180,7 +176,6 @@ void XdfsBaseSet::refreshIndexEntries()
         e.index = NULL;
         e.update = false;
         e.key_length = 0;
-        e.orig_key = NULL;
         e.key_expr = NULL;
 
         entries.push_back(e);
@@ -246,15 +241,10 @@ bool XdfsBaseSet::prepareIndexEntry(XdfsIndexEntry& e)
         return false;
 
     delete e.key_expr;  
-    delete[] e.orig_key;
-
+    e.key_expr = NULL;
     e.key_length = e.index->getKeyLength();
     e.update = false;
-    e.orig_key = new unsigned char[e.key_length];
-    //e.key_expr = new KeyLayout;
-    //e.key_expr->setKeyExpr(static_cast<xd::IIterator*>(m_update_iter), e.expr);
 
-/*
     xd::IStructurePtr structure = m_database->describeTable(m_object_path);
     if (structure.isNull())
         return false;
@@ -269,7 +259,7 @@ bool XdfsBaseSet::prepareIndexEntry(XdfsIndexEntry& e)
     for (it = cols.begin(); it != cols.end(); ++it)
     {
         // get column name (remove possible 'ASC' or 'DESC'
-        // from the end of the index piece
+        // from the end of the index piece)
 
         std::wstring piece = *it;
         std::wstring colname;
@@ -277,16 +267,13 @@ bool XdfsBaseSet::prepareIndexEntry(XdfsIndexEntry& e)
         kl::trim(piece);
 
         if (piece.find_last_of(L' ') != -1)
-        {
             colname = kl::beforeLast(piece, L' ');
-        }
-         else
-        {
+             else
             colname = piece;
-        }
+
+        dequote(colname, '[', ']');
 
         xd::IColumnInfoPtr info = structure->getColumnInfo(colname);
-
         if (info.isOk())
         {
             if (info->getCalculated())
@@ -316,7 +303,7 @@ bool XdfsBaseSet::prepareIndexEntry(XdfsIndexEntry& e)
             }
         }
     }
-*/
+
 
     return true;
 }

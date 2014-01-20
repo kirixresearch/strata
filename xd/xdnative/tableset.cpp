@@ -741,13 +741,11 @@ bool TableSet::prepareIndexEntry(IndexEntry& e)
         kl::trim(piece);
 
         if (piece.find_last_of(L' ') != -1)
-        {
             colname = kl::beforeLast(piece, L' ');
-        }
-         else
-        {
+             else
             colname = piece;
-        }
+
+        dequote(colname, '[', ']');
 
         xd::IColumnInfoPtr info = structure->getColumnInfo(colname);
 
