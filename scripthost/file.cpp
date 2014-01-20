@@ -225,9 +225,12 @@ void Directory::getFiles(kscript::ExprEnv* env, void*, kscript::Value* retval)
     xf_direntry_t entry;
     while (xf_readdir(dir, &entry))
     {
-        kscript::Value val;
-        val.setString(entry.m_name);
-        retval->appendMember(&val);
+        if (entry.m_type == xfFileTypeNormal)
+        {
+            kscript::Value val;
+            val.setString(entry.m_name);
+            retval->appendMember(&val);
+        }
     }
 
     xf_close(dir);
@@ -270,9 +273,15 @@ void Directory::getDirectories(kscript::ExprEnv* env, void*, kscript::Value* ret
     xf_direntry_t entry;
     while (xf_readdir(dir, &entry))
     {
-        kscript::Value val;
-        val.setString(entry.m_name);
-        retval->appendMember(&val);
+        if (entry.m_type == xfFileTypeDirectory)
+        {
+            if (entry.m_name != L"." && entry.m_name != L"..")
+            {
+                kscript::Value val;
+                val.setString(entry.m_name);
+                retval->appendMember(&val);
+            }
+        }
     }
 
     xf_closedir(dir);
