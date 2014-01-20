@@ -77,7 +77,11 @@ public:
     bool deleteRow(xd::rowid_t rowid);
 
     bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job);
- 
+
+private:
+
+    void refreshUpdateBuffer();
+
 private:
 
     TtbTable m_file;

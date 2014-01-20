@@ -178,21 +178,15 @@ xd::IIteratorPtr TtbSet::createIterator(const std::wstring& columns,
 }
 
 
-bool TtbSet::updateRow(xd::rowid_t rowid,
-                       xd::ColumnUpdateInfo* info,
-                       size_t info_size)
+
+void TtbSet::refreshUpdateBuffer()
 {
     KL_AUTO_LOCK(m_indexes_mutex);
-    
-    size_t coli;
-    xd::ColumnUpdateInfo* col_it;
 
-    xd::rowpos_t row = rowidGetRowPos(rowid);
-
+    refreshIndexEntries();
 
     if (!m_update_buf)
     {
-        refreshIndexEntries();
 
         m_update_buf = new unsigned char[m_file.getRowWidth()];
         m_update_row.setRowPtr(m_update_buf);
@@ -202,11 +196,42 @@ bool TtbSet::updateRow(xd::rowid_t rowid,
     }
 
 
+    std::vector<XdfsIndexEntry>::iterator idx_it, idx_it_end = m_indexes.end();
+    for (idx_it = m_indexes.begin(); idx_it != idx_it_end; ++idx_it)
+    {
+        if (!idx_it->key_expr)
+        {
+            idx_it->key_expr = new KeyLayout;
+            if (idx_it->key_expr->setKeyExpr(static_cast<xd::IIterator*>(m_update_iter), idx_it->expr))
+            {
+                idx_it->orig_key.setDataSize(idx_it->key_length);
+                memcpy(idx_it->orig_key.getData(), idx_it->key_expr->getKey(), idx_it->key_length);
+            }
+             else
+            {
+                // key expression could not be parsed
+                delete idx_it->key_expr;
+                idx_it->key_expr = NULL;
+                idx_it->update = false;
+            }
+        }
+    }
+}
+
+
+bool TtbSet::updateRow(xd::rowid_t rowid,
+                       xd::ColumnUpdateInfo* info,
+                       size_t info_size)
+{
+    KL_AUTO_LOCK(m_indexes_mutex);
+    
+    size_t coli;
+    xd::ColumnUpdateInfo* col_it;
+
     // read the row
+    refreshUpdateBuffer();
+    xd::rowpos_t row = rowidGetRowPos(rowid);
     m_file.getRow(row, m_update_buf);
-
-
-
 
     // determine which indexes need updating
     
@@ -223,23 +248,6 @@ bool TtbSet::updateRow(xd::rowid_t rowid,
             {
                 idx_it->update = true;
                 break;
-            }
-        }
-
-        if (idx_it->update && !idx_it->key_expr)
-        {
-            idx_it->key_expr = new KeyLayout;
-            if (idx_it->key_expr->setKeyExpr(static_cast<xd::IIterator*>(m_update_iter), idx_it->expr))
-            {
-                idx_it->orig_key.setDataSize(idx_it->key_length);
-                memcpy(idx_it->orig_key.getData(), idx_it->key_expr->getKey(), idx_it->key_length);
-            }
-             else
-            {
-                // key expression could not be parsed
-                delete idx_it->key_expr;
-                idx_it->key_expr = NULL;
-                idx_it->update = false;
             }
         }
     }
@@ -345,17 +353,18 @@ bool TtbSet::deleteRow(xd::rowid_t rowid)
     if (!m_file.deleteRow(rowid))
         return false;
 
-
     KL_AUTO_LOCK(m_indexes_mutex);
     
+    refreshIndexEntries();
+
     if (m_indexes.size() == 0)
         return true;
 
-    // delete the index keys associated with this row
+    // refresh update buffer if necessary and read the row
+    refreshUpdateBuffer();
     xd::rowpos_t row = rowidGetRowPos(rowid);
-
-    // read the row
     m_file.getRow(row, m_update_buf);
+
 
     std::vector<XdfsIndexEntry>::iterator idx_it;
     IIndexIterator* iter;
@@ -363,21 +372,7 @@ bool TtbSet::deleteRow(xd::rowid_t rowid)
     for (idx_it = m_indexes.begin(); idx_it != m_indexes.end(); ++idx_it)
     {
         if (!idx_it->key_expr)
-        {
-            idx_it->key_expr = new KeyLayout;
-            if (idx_it->key_expr->setKeyExpr(static_cast<xd::IIterator*>(m_update_iter), idx_it->expr))
-            {
-                idx_it->orig_key.setDataSize(idx_it->key_length);
-                memcpy(idx_it->orig_key.getData(), idx_it->key_expr->getKey(), idx_it->key_length);
-            }
-             else
-            {
-                // key expression could not be parsed
-                delete idx_it->key_expr;
-                idx_it->key_expr = NULL;
-                continue;
-            }
-        }
+            continue;
 
         iter = seekRow(idx_it->index,
                        idx_it->key_expr->getKey(),
