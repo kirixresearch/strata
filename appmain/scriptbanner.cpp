@@ -125,7 +125,6 @@ void BannerBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 void BannerBox::realize()
 {
     m_ctrl->Reparent(m_form_wnd);
-
     if (!m_enabled)
         m_ctrl->Enable(false);
 }

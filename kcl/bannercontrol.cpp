@@ -121,7 +121,7 @@ void BannerControl::setBorderColor(const wxColour& new_value)
     Refresh(false);
 }
 
-void BannerControl::onPaint(wxPaintEvent& event)
+void BannerControl::onPaint(wxPaintEvent& evt)
 {
     wxPaintDC dc(this);
 
@@ -196,7 +196,7 @@ void BannerControl::onPaint(wxPaintEvent& event)
 }
 
 
-void BannerControl::onSize(wxSizeEvent& event)
+void BannerControl::onSize(wxSizeEvent& evt)
 {
     Refresh(false);
 }

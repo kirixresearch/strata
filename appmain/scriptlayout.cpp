@@ -215,7 +215,8 @@ void Layout::realizeChildren()
             //                    to 0, the sizer will set its size according
             //                    to the minimum size
             wxWindow* w = component->getWindow();
-            w->Fit();
+            if (component->isKindOf(L"Form"))
+                w->Fit();
             w->SetMinSize(w->GetSize());
             
             m_sizer->Insert(idx-1,

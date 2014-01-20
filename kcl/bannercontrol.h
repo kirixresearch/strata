@@ -65,8 +65,8 @@ public:
     void setBorderColor(const wxColour& new_value);
 
     // event handlers
-    void onPaint(wxPaintEvent& event);
-    void onSize(wxSizeEvent& event);
+    void onPaint(wxPaintEvent& evt);
+    void onSize(wxSizeEvent& evt);
 
 private:
 
