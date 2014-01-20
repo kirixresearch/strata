@@ -139,7 +139,7 @@ void XdfsBaseSet::refreshIndexEntries()
 
     std::wstring index_registry_file = m_database->m_ctrl_path + xf_path_separator_wchar + L"indexes" + xf_path_separator_wchar + m_object_id + L".info";
 
-    if (xf_get_file_exist(index_registry_file))
+    if (!xf_get_file_exist(index_registry_file))
         return;
 
     // check to see if index registry file is newer than last time we checked
