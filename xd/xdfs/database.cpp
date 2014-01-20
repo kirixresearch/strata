@@ -973,22 +973,6 @@ bool FsDatabase::setMountPoint(const std::wstring& path,
 
 
     return saveDefinitionToFile(phys_path, &fd);
-
-
-    /*
-    kl::xmlnode root;
-    
-    root.setNodeName(L"xdmnt");
-
-    kl::xmlnode& cstr = root.addChild(L"connection_str");
-    cstr.setNodeValue(final_connection_string);
-    
-    kl::xmlnode& rpath = root.addChild(L"remote_path");
-    rpath.setNodeValue(remote_path);
-
-    
-    return root.save(path);
-    */
 }
                               
 bool FsDatabase::getMountPoint(const std::wstring& path,
@@ -1008,32 +992,6 @@ bool FsDatabase::getMountPoint(const std::wstring& path,
     remote_path = fd.data_path;
 
     return true;
-
-    /*
-    // convert path to real file name
-    std::wstring path = makeFullPath(_path);
-    path += L".xdmnt";
-
-    kl::xmlnode root;
-    if (!root.load(path))
-        return false;
-    
-    if (root.getNodeName() != L"xdmnt")
-        return false;
-    
-    kl::xmlnode& cs = root.getChild(L"connection_str");
-    if (cs.isEmpty())
-        return false;
-        
-    kl::xmlnode& rp = root.getChild(L"remote_path");
-    if (rp.isEmpty())
-        return false;
-    
-    connection_str = xdcommon::decryptConnectionStringPassword(cs.getNodeValue());
-    remote_path = rp.getNodeValue();
-
-    return true;
-    */
 }
 
 
@@ -1804,8 +1762,7 @@ xd::IStreamPtr FsDatabase::openStream(const std::wstring& path)
 }
 
 
-static IXdfsSetPtr openFixedLengthTextSet(FsDatabase* db,
-                                          const std::wstring& path)
+static IXdfsSetPtr openFixedLengthTextSet(FsDatabase* db, const std::wstring& path)
 {
     // we need to manually protect the ref count because
     // smart pointer operations happen in init()
@@ -1823,8 +1780,7 @@ static IXdfsSetPtr openFixedLengthTextSet(FsDatabase* db,
     return retval;
 }
 
-static IXdfsSetPtr openDelimitedTextSet(FsDatabase* db,
-                                        const std::wstring& path)
+static IXdfsSetPtr openDelimitedTextSet(FsDatabase* db, const std::wstring& path)
 {
     // we need to manually protect the ref count because
     // smart pointer operations happen in init()
@@ -2636,7 +2592,7 @@ xd::IIndexInfoPtr FsDatabase::createIndex(const std::wstring& path,
         return xcm::null;
 
     std::wstring object_id = info->getObjectId();
-    std::wstring idx_filename = kl::getUniqueString() + L".idx";
+    std::wstring idx_filename = kl::getUniqueString() + L".idx1";
 
     std::wstring idx_path = m_ctrl_path;
     idx_path += xf_path_separator_wchar;

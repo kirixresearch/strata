@@ -744,6 +744,7 @@ int TtbTable::getRows(unsigned char* buf,
                 {
                     rows_per_buffer = new_rows_per_buffer;
                     m_workbuf.alloc(rows_per_buffer * m_row_width);
+                    workbuf = m_workbuf.getData();
                 }
             }
 
