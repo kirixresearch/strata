@@ -817,9 +817,6 @@ int TtbTable::getRows(unsigned char* buf,
         return filled; // all done
     }
 
-
-
-
 }
 
 bool TtbTable::getRow(xd::rowpos_t row, unsigned char* buf)
@@ -894,16 +891,6 @@ bool TtbTable::writeRow(xd::rowpos_t row, unsigned char* buf)
 
     // unlock the record
     xf_unlock(m_file, pos, m_row_width);
-
-    /*
-    // send notification
-    std::vector<ITableEvents*>::iterator it;
-    xd::rowid_t rowid = rowidCreate(m_ordinal, row);
-    for (it = m_event_handlers.begin(); it != m_event_handlers.end(); ++it)
-    {
-        (*it)->onTableRowUpdated(rowid);
-    }
-    */
 
     return true;
 }
@@ -1115,6 +1102,8 @@ bool TtbTable::deleteRow(xd::rowid_t rowid)
 
 xd::rowpos_t TtbTable::getRowCount(xd::rowpos_t* deleted_row_count)
 {
+    KL_AUTO_LOCK(m_object_mutex);
+
     // lock the header
     if (!xf_trylock(m_file, 0, ttb_header_len, 10000))
         return m_phys_row_count;
@@ -1129,7 +1118,6 @@ xd::rowpos_t TtbTable::getRowCount(xd::rowpos_t* deleted_row_count)
     if (40 != xf_read(m_file, buf, 1, 40))
     {
         xf_unlock(m_file, 0, ttb_header_len);
-        KL_AUTO_LOCK(m_object_mutex);
         return m_phys_row_count;
     }
 
@@ -1137,7 +1125,6 @@ xd::rowpos_t TtbTable::getRowCount(xd::rowpos_t* deleted_row_count)
     xf_unlock(m_file, 0, ttb_header_len);
 
     {
-        KL_AUTO_LOCK(m_object_mutex);
         m_phys_row_count = bufToInt64(buf);
 
         if (deleted_row_count)
@@ -1178,15 +1165,6 @@ xd::rowpos_t TtbTable::recalcPhysRowCount()
 
         // unlock the header
         xf_unlock(m_file, 0, ttb_header_len);
-
-        /*
-        // fire an event
-        std::vector<ITableEvents*>::iterator it;
-        for (it = m_event_handlers.begin(); it != m_event_handlers.end(); ++it)
-        {
-            (*it)->onTableRowCountUpdated();
-        }
-        */
     }
 
     return real_phys_row_count;
