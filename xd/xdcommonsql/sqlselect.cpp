@@ -1922,6 +1922,9 @@ static bool doJoin(xd::IDatabasePtr db,
     }
 
 
+
+    std::set<std::wstring, kl::cmp_nocase> join_fields_duplicate_check;
+
     // populate join fields vector
 
     std::vector<SelectField>::iterator sf_it;
@@ -1946,7 +1949,11 @@ static bool doJoin(xd::IDatabasePtr db,
 
             dequoteField(jf.name);
 
-            jfields.push_back(jf);
+            if (join_fields_duplicate_check.find(jf.name) == join_fields_duplicate_check.end())
+            {
+                join_fields_duplicate_check.insert(jf.name);
+                jfields.push_back(jf);
+            }
         }
 
     }
@@ -1966,7 +1973,12 @@ static bool doJoin(xd::IDatabasePtr db,
         jf.dest_handle = 0;
 
         dequoteField(jf.name);
-        jfields.push_back(jf);
+
+        if (join_fields_duplicate_check.find(jf.name) == join_fields_duplicate_check.end())
+        {
+            join_fields_duplicate_check.insert(jf.name);
+            jfields.push_back(jf);
+        }
     }
 
     // make sure having fields are in output -- we will need this
@@ -1988,7 +2000,11 @@ static bool doJoin(xd::IDatabasePtr db,
 
             dequoteField(jf.name);
 
-            jfields.push_back(jf);
+            if (join_fields_duplicate_check.find(jf.name) == join_fields_duplicate_check.end())
+            {
+                join_fields_duplicate_check.insert(jf.name);
+                jfields.push_back(jf);
+            }
         }
     }
 
