@@ -95,7 +95,7 @@ public:
     void setIteratorFlags(unsigned int mask, unsigned int value);
     unsigned int getIteratorFlags();
 
-    void refreshStructure();
+    bool refreshStructure();
     xd::IStructurePtr getStructure();
     bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
 

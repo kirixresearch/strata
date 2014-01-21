@@ -140,7 +140,7 @@ public:
     void goRow(const xd::rowid_t& rowid);
     
     xd::IStructurePtr getStructure();
-    void refreshStructure();
+    bool refreshStructure();
     bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
 
     xd::objhandle_t getHandle(const std::wstring& expr);

@@ -890,9 +890,9 @@ xd::IStructurePtr OdbcIterator::getStructure()
     return m_structure->clone();
 }
 
-void OdbcIterator::refreshStructure()
+bool OdbcIterator::refreshStructure()
 {
-
+    return true;
 }
 
 bool OdbcIterator::modifyStructure(xd::IStructure* struct_config,

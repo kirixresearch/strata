@@ -769,14 +769,14 @@ xd::IStructurePtr OracleIterator::getStructure()
     return static_cast<xd::IStructure*>(s);
 }
 
-void OracleIterator::refreshStructure()
+bool OracleIterator::refreshStructure()
 {
     if (!m_set)
-        return;
+        return false;
 
     xd::IStructurePtr set_structure = m_set->getStructure();
     if (set_structure.isNull())
-        return;
+        return false;
         
     // find changed/deleted calc fields
     int i, col_count;
@@ -852,6 +852,8 @@ void OracleIterator::refreshStructure()
     {
         (*it)->expr = parse((*it)->expr_text);
     }
+
+    return true;
 }
 
 bool OracleIterator::modifyStructure(xd::IStructure* struct_config,

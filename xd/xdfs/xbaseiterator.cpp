@@ -226,7 +226,7 @@ xd::IStructurePtr XbaseIterator::getStructure()
     return s;
 }
 
-void XbaseIterator::refreshStructure()
+bool XbaseIterator::refreshStructure()
 {
     // clear out any existing structure
     std::vector<XbaseDataAccessInfo*>::iterator field_it;
@@ -271,12 +271,12 @@ void XbaseIterator::refreshStructure()
             }
         }
         
-        // -- parse any expression, if necessary --
+        //  parse any expression, if necessary
         if (dai->expr_text.length() > 0)
-        {
             dai->expr = parse(dai->expr_text);
-        }
     }
+
+    return true;
 }
 
 bool XbaseIterator::modifyStructure(xd::IStructure* struct_config,

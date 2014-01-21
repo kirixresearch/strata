@@ -114,25 +114,26 @@ TtbIterator::~TtbIterator()
     m_database->unref();
 }
 
-bool TtbIterator::init(TtbSet* set, const std::wstring& filename)
+bool TtbIterator::init(TtbSet* set, const std::wstring& filename, const std::wstring& columns)
 {
     if (!m_table->open(filename))
         return false;
 
-    return init(set, &m_file);
+    return init(set, &m_file, columns);
 }
 
 
-bool TtbIterator::init(TtbSet* set, TtbTable* table)
+bool TtbIterator::init(TtbSet* set, TtbTable* table, const std::wstring& columns)
 {
     m_table = table;
-
     m_set = set;
     if (m_set)
         m_set->ref();
 
+    m_columns = columns;
     m_table_ord = 0;
     m_table_rowwidth = m_table->getRowWidth();
+
 
     m_read_ahead_rowcount = tableiterator_read_ahead_buffer_size/m_table_rowwidth;
     if (m_read_ahead_rowcount == 0)
@@ -149,12 +150,10 @@ bool TtbIterator::init(TtbSet* set, TtbTable* table)
     m_rowpos_buf = new xd::rowpos_t[m_read_ahead_rowcount];
 
 
-    refreshStructure();
-
-    return true;
+    return refreshStructure();
 }
 
-bool TtbIterator::initFromBuffer(TtbSet* set, TtbTable* table, unsigned char* buffer)
+bool TtbIterator::initFromBuffer(TtbSet* set, TtbTable* table, unsigned char* buffer, const std::wstring& columns)
 {
     m_buffer_wrapper_mode = true;
     m_set = set; // don't hold a reference in this mode
@@ -201,7 +200,7 @@ xd::IIteratorPtr TtbIterator::clone()
 
     TtbIterator* new_iter = new TtbIterator(m_database);
     
-    if (!new_iter->init(m_set, m_table->getFilename()))
+    if (!new_iter->init(m_set, m_table->getFilename(), m_columns))
     {
         return xcm::null;
     }
@@ -227,6 +226,7 @@ xd::IIteratorPtr TtbIterator::clone()
     memcpy(new_iter->m_rowpos_buf, m_rowpos_buf, sizeof(xd::rowpos_t) * m_buf_rowcount);
 
     new_iter->updatePosition();
+    new_iter->refreshStructure();
 
     return static_cast<xd::IIterator*>(new_iter);
 }
@@ -465,6 +465,8 @@ xd::IStructurePtr TtbIterator::getStructure()
     {
         if (!(*it)->isColumn())
             continue;
+        if (!(*it)->visible)
+            continue;
 
         xd::IColumnInfoPtr col;
         col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
@@ -479,25 +481,52 @@ xd::IStructurePtr TtbIterator::getStructure()
     }
 
     return static_cast<xd::IStructure*>(s);
-
-    //return m_set->getStructure();
-
-    //xd::IStructurePtr s = m_table->getStructure();
-    //appendCalcFields(s);
-    //return s;
 }
 
-void TtbIterator::refreshStructure()
+xd::IStructurePtr TtbIterator::getParserStructure()
+{
+    Structure* s = new Structure;
+
+    std::vector<TtbDataAccessInfo*>::iterator it;
+    for (it = m_fields.begin(); it != m_fields.end(); ++it)
+    {
+        if (!(*it)->isColumn())
+            continue;
+
+        xd::IColumnInfoPtr col;
+        col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
+        col->setName((*it)->name);
+        col->setType((*it)->type);
+        col->setWidth((*it)->width);
+        col->setScale((*it)->scale);
+        col->setExpression((*it)->expr_text);
+        col->setCalculated((*it)->isCalculated());
+        col->setColumnOrdinal((*it)->ordinal);
+        s->addColumn(col);
+    }
+
+    return static_cast<xd::IStructure*>(s);
+}
+
+bool TtbIterator::refreshStructure()
 {
     m_fields.clear();
 
-    xd::IStructurePtr s = m_set->getStructure();
-    int col_count = s->getColumnCount();
-    int i;
+    xd::IStructurePtr set_structure = m_set->getStructure();
+    xd::IColumnInfoPtr colinfo;
+
+
+    // add fields from structure
+    bool default_structure_visible = false;
+    if (m_columns.empty() || m_columns == L"*")
+        default_structure_visible = true;
+
+
+    int i, col_count = set_structure->getColumnCount();
 
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+        colinfo = set_structure->getColumnInfoByIdx(i);
         
         TtbDataAccessInfo* dai = new TtbDataAccessInfo;
         dai->name = colinfo->getName();
@@ -507,12 +536,172 @@ void TtbIterator::refreshStructure()
         dai->scale = colinfo->getScale();
         dai->ordinal = colinfo->getColumnOrdinal();
         dai->expr_text = colinfo->getExpression();
+        dai->visible = default_structure_visible;
         m_fields.push_back(dai);
         
         // parse any expression, if necessary
         if (dai->expr_text.length() > 0)
             dai->expr = parse(dai->expr_text);
     }
+
+
+    if (m_columns.length() > 0 && m_columns != L"*")
+    {
+        std::vector<std::wstring> colvec;
+        std::vector<std::wstring>::iterator it;
+
+        kl::parseDelimitedList(m_columns, colvec, L',', true);
+
+        for (it = colvec.begin(); it != colvec.end(); ++it)
+        {
+            std::wstring& part = *it;
+            kl::trim(part);
+
+            colinfo = set_structure->getColumnInfo(part);
+
+            if (colinfo.isNull() && part[0] == '[')
+            {
+                // maybe the above just needs to be dequoted
+                std::wstring dequote_part = part;
+                dequote(dequote_part, '[', ']');
+                colinfo = set_structure->getColumnInfo(dequote_part);
+            }
+
+            if (colinfo)
+            {
+                TtbDataAccessInfo* dai = new TtbDataAccessInfo;
+                dai->name = colinfo->getName();
+                dai->type = colinfo->getType();
+                dai->offset = colinfo->getOffset();
+                dai->width = colinfo->getWidth();
+                dai->scale = colinfo->getScale();
+                dai->ordinal = colinfo->getColumnOrdinal();
+                dai->expr_text = colinfo->getExpression();
+                dai->visible = true;
+                m_fields.push_back(dai);
+        
+                // parse any expression, if necessary
+                if (dai->expr_text.length() > 0)
+                    dai->expr = parse(dai->expr_text);
+                continue;
+            }
+             else
+            {
+                // string is not a column name, so look for 'AS' keyword
+                wchar_t* as_ptr = zl_stristr((wchar_t*)it->c_str(),
+                                            L"AS",
+                                            true,
+                                            false);
+                std::wstring colname;
+                std::wstring expr;
+
+                if (as_ptr)
+                {
+                    int as_pos = as_ptr ? (as_ptr - it->c_str()) : -1;
+                    colname = it->substr(as_pos+2);
+                    expr = it->substr(0, as_pos);
+                    
+                    kl::trim(colname);
+                    kl::trim(expr);
+
+                    dequote(colname, '[', ']');
+                }
+                 else
+                {
+                    expr = *it;
+                    
+                    wchar_t buf[32];
+                    int colname_counter = 0;
+                    do
+                    {
+                        swprintf(buf, 32, L"EXPR%03d", ++colname_counter);
+                    } while (set_structure->getColumnExist(buf));
+
+                    colname = buf;
+                }
+
+
+                std::wstring dequote_expr = expr;
+                dequote(dequote_expr, '[', ']');
+
+
+                // see if the expression is just a column and use its precise type info if it is
+                colinfo = set_structure->getColumnInfo(dequote_expr);
+                if (colinfo)
+                {
+                    TtbDataAccessInfo* dai = new TtbDataAccessInfo;
+                    dai->name = colname;
+                    dai->type = colinfo->getType();
+                    dai->offset = colinfo->getOffset();
+                    dai->width = colinfo->getWidth();
+                    dai->scale = colinfo->getScale();
+                    dai->ordinal = colinfo->getColumnOrdinal();
+                    dai->expr_text = colinfo->getExpression();
+                    dai->visible = true;
+                    m_fields.push_back(dai);
+        
+                    // parse any expression, if necessary
+                    if (dai->expr_text.length() > 0)
+                        dai->expr = parse(dai->expr_text);
+                    continue;
+                }
+
+
+
+
+
+                kscript::ExprParser* p = parse(expr);
+                if (!p)
+                    return false;
+
+                int xd_type = kscript2xdType(p->getType());
+                if (xd_type == xd::typeInvalid || xd_type == xd::typeUndefined)
+                {
+                    delete p;
+                    return false;
+                }
+
+                int width;
+                int scale = 0;
+
+                switch (xd_type)
+                {
+                    case xd::typeNumeric:
+                        width = 18;
+                        scale = 2;
+                        break;
+                    case xd::typeDouble:
+                        width = 8;
+                        scale = 2;
+                        break;
+                    case xd::typeDate:
+                    case xd::typeInteger:
+                        width = 4;
+                        break;
+                    case xd::typeDateTime:
+                        width = 8;
+                        break;
+                    default:
+                        width = 254;
+                        break;
+                }
+
+                TtbDataAccessInfo* dai = new TtbDataAccessInfo;
+                dai->name = colname;
+                dai->type = xd_type;
+                dai->offset = 0;
+                dai->width = width;
+                dai->scale = scale;
+                dai->ordinal = 0;
+                dai->expr_text = expr;
+                dai->expr = p;
+                dai->visible = true;
+                m_fields.push_back(dai);
+            }
+        }
+    }
+
+    return true;
 }
 
 bool TtbIterator::modifyStructure(xd::IStructure* struct_config,
@@ -643,7 +832,7 @@ xd::objhandle_t TtbIterator::getHandle(const std::wstring& expr)
     std::vector<TtbDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if (0 == wcscasecmp((*it)->name.c_str(), expr.c_str()))
+        if (kl::iequals((*it)->name, expr))
             return (xd::objhandle_t)(*it);
     }
 
@@ -690,9 +879,7 @@ bool TtbIterator::releaseHandle(xd::objhandle_t data_handle)
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if ((xd::objhandle_t)(*it) == data_handle)
-        {
             return true;
-        }
     }
 
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
@@ -752,9 +939,7 @@ int TtbIterator::getType(xd::objhandle_t data_handle)
 {
     TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
     if (dai == NULL)
-    {
         return 0;
-    }
 
     return dai->type;
 }
@@ -763,9 +948,7 @@ int TtbIterator::getRawWidth(xd::objhandle_t data_handle)
 {
     TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
     if (dai && dai->key_layout)
-    {
         return dai->key_layout->getKeyLength();
-    }
     
     if (dai->type == xd::typeWideCharacter)
         return dai->width*2;
@@ -782,9 +965,7 @@ const unsigned char* TtbIterator::getRawPtr(xd::objhandle_t data_handle)
         return NULL;
 
     if (dai->key_layout)
-    {
         return dai->key_layout->getKey();
-    }
 
     return m_rowptr + dai->offset;
 }

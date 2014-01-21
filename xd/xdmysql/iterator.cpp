@@ -467,7 +467,7 @@ xd::IStructurePtr MysqlIterator::getStructure()
     return static_cast<xd::IStructure*>(s);
 }
 
-void MysqlIterator::refreshStructure()
+bool MysqlIterator::refreshStructure()
 {
 /*
     xd::IStructurePtr set_structure = m_set->getStructure();
@@ -547,6 +547,8 @@ void MysqlIterator::refreshStructure()
         (*it)->expr = parse((*it)->expr_text);
     }
     */
+
+    return true;
 }
 
 bool MysqlIterator::modifyStructure(xd::IStructure* struct_config, xd::IJob* job)

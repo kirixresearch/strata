@@ -481,7 +481,7 @@ public:
     virtual double getPos() = 0;
     virtual void goRow(const xd::rowid_t& rowid) = 0;
 
-    virtual void refreshStructure() = 0;
+    virtual bool refreshStructure() = 0;
     virtual IStructurePtr getStructure() = 0;
     virtual bool modifyStructure(IStructure* struct_config, IJob* job) = 0;
 

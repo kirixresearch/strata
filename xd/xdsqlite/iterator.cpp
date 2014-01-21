@@ -308,8 +308,9 @@ xd::IStructurePtr SlIterator::getStructure()
 
 }
 
-void SlIterator::refreshStructure()
+bool SlIterator::refreshStructure()
 {
+    return true;
 }
 
 bool SlIterator::modifyStructure(xd::IStructure* struct_config,

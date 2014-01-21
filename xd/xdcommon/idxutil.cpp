@@ -672,9 +672,9 @@ unsigned int CommonIndexIterator::getIteratorFlags()
     return flags;
 }
 
-void CommonIndexIterator::refreshStructure()
+bool CommonIndexIterator::refreshStructure()
 {
-    m_data_iter->refreshStructure();
+    return m_data_iter->refreshStructure();
 }
 
 xd::IStructurePtr CommonIndexIterator::getStructure()

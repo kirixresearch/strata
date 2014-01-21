@@ -134,7 +134,7 @@ public:
     void setSet(IXdnativeSetPtr set);
 
     xd::IStructurePtr getStructure();
-    void refreshStructure();
+    bool refreshStructure();
     bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
 
     unsigned int getIteratorFlags();

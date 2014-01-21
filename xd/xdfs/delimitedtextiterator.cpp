@@ -236,7 +236,7 @@ xd::IStructurePtr DelimitedTextIterator::getStructure()
     return s;
 }
 
-void DelimitedTextIterator::refreshStructure()
+bool DelimitedTextIterator::refreshStructure()
 {
     // clear out any existing structure
     std::vector<DelimitedTextDataAccessInfo*>::iterator field_it;
@@ -316,6 +316,8 @@ void DelimitedTextIterator::refreshStructure()
             m_fields.push_back(dai);
         }
     }
+
+    return true;
 }
 
 bool DelimitedTextIterator::modifyStructure(xd::IStructure* struct_config,

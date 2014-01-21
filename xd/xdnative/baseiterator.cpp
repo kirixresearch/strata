@@ -825,7 +825,7 @@ bool BaseIterator::initStructure()
 }
 
 
-void BaseIterator::refreshStructure()
+bool BaseIterator::refreshStructure()
 {
     std::vector<BaseIteratorRelInfo>::iterator r_it;
     for (r_it = m_relations.begin(); r_it != m_relations.end(); ++r_it)
@@ -853,6 +853,8 @@ void BaseIterator::refreshStructure()
 
     initStructure();
     refreshDAI();
+
+    return true;
 }
 
 

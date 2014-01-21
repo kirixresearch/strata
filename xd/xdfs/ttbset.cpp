@@ -100,7 +100,7 @@ xd::IIteratorPtr TtbSet::createIterator(const std::wstring& columns,
     if (order.empty())
     {
         TtbIterator* iter = new TtbIterator(m_database);
-        if (!iter->init(this, m_file.getFilename()))
+        if (!iter->init(this, m_file.getFilename(), columns))
         {
             delete iter;
             return xcm::null;
@@ -191,7 +191,7 @@ void TtbSet::refreshUpdateBuffer()
         m_update_buf = new unsigned char[m_file.getRowWidth()];
         m_update_row.setRowPtr(m_update_buf);
         TtbIterator* iter = new TtbIterator(m_database);
-        iter->initFromBuffer(this, &m_file, m_update_buf);
+        iter->initFromBuffer(this, &m_file, m_update_buf, L"");
         m_update_iter = static_cast<xd::IIterator*>(iter);
     }
 

@@ -411,9 +411,9 @@ xd::IStructurePtr SqlServerIterator::getStructure()
     return static_cast<xd::IStructure*>(s);
 }
 
-void SqlServerIterator::refreshStructure()
+bool SqlServerIterator::refreshStructure()
 {
-
+    return true;
 }
 
 bool SqlServerIterator::modifyStructure(xd::IStructure* struct_config, xd::IJob* job)

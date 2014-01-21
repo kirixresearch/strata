@@ -473,11 +473,11 @@ xd::IStructurePtr PgsqlIterator::getStructure()
     return m_structure->clone();
 }
 
-void PgsqlIterator::refreshStructure()
+bool PgsqlIterator::refreshStructure()
 {
     xd::IStructurePtr set_structure = m_database->describeTable(getTable());
     if (set_structure.isNull())
-        return;
+        return false;
 
     // find changed/deleted calc fields
     size_t i, col_count;
@@ -555,6 +555,8 @@ void PgsqlIterator::refreshStructure()
     
     // let our m_structure cache regenerate from m_fields
     m_structure.clear();
+
+    return true;
 }
 
 bool PgsqlIterator::modifyStructure(xd::IStructure* struct_config,

@@ -505,7 +505,7 @@ xd::IStructurePtr ClientIterator::getStructure()
     return m_structure->clone();
 }
 
-void ClientIterator::refreshStructure()
+bool ClientIterator::refreshStructure()
 {
     clearCache();
 
@@ -518,6 +518,8 @@ void ClientIterator::refreshStructure()
     refreshDataAccessInfo();
 
     skip(0);  // reload data into cache
+
+    return true;
 }
 
 bool ClientIterator::modifyStructure(xd::IStructure* struct_config, xd::IJob* job)

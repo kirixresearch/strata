@@ -303,8 +303,9 @@ xd::IStructurePtr KpgIterator::getStructure()
     return m_structure->clone();
 }
 
-void KpgIterator::refreshStructure()
+bool KpgIterator::refreshStructure()
 {
+    return true;
 }
 
 bool KpgIterator::modifyStructure(xd::IStructure* struct_config,

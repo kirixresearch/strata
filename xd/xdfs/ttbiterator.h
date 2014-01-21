@@ -34,6 +34,7 @@ struct TtbDataAccessInfo
     int ordinal;
     bool nulls_allowed;
     std::wstring expr_text;
+    bool visible;           // is part of visible structure (via getStructure())
 
     // expression stuff
     kscript::ExprParser* expr;
@@ -53,6 +54,7 @@ struct TtbDataAccessInfo
         scale = 0;
         ordinal = 0;
         nulls_allowed = false;
+        visible = false;
         expr_text = L"";
 
         expr = NULL;
@@ -99,11 +101,9 @@ public:
     TtbIterator(FsDatabase* database);
     ~TtbIterator();
 
-    bool init(TtbSet* set,  const std::wstring& filename);
-    bool init(TtbSet* set,  TtbTable* table);
-    bool initFromBuffer(TtbSet* set, TtbTable* table, unsigned char* buffer);
-
-    void changeToWeakReferences();
+    bool init(TtbSet* set,  const std::wstring& filename, const std::wstring& columns);
+    bool init(TtbSet* set,  TtbTable* table, const std::wstring& columns);
+    bool initFromBuffer(TtbSet* set, TtbTable* table, unsigned char* buffer, const std::wstring& columns);
 
     // xd::IIterator
 
@@ -128,7 +128,8 @@ public:
     void goRow(const xd::rowid_t& rowid);
 
     xd::IStructurePtr getStructure();
-    void refreshStructure();
+    xd::IStructurePtr getParserStructure();
+    bool refreshStructure();
     bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
 
     xd::objhandle_t getHandle(const std::wstring& expr);
@@ -156,6 +157,7 @@ private:
     TtbSet* m_set;
     TtbTable m_file;
     TtbTable* m_table; // usually a pointer to m_file
+    std::wstring m_columns;
 
     xd::tableord_t m_table_ord;
     xd::rowid_t m_rowid;

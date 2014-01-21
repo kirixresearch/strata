@@ -963,7 +963,7 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
 
     TtbIterator* iter = new TtbIterator(m_database);
     xd::IIteratorPtr sp_iter = static_cast<xd::IIterator*>(iter);
-    if (!iter->init(this, &m_file))
+    if (!iter->init(this, &m_file, L""))
     {
         if (ijob.isOk())
         {

@@ -923,9 +923,9 @@ xd::IStructurePtr FixedLengthTextIterator::getStructure()
     return s;
 }
 
-void FixedLengthTextIterator::refreshStructure()
+bool FixedLengthTextIterator::refreshStructure()
 {
-
+    return true;
 }
 
 bool FixedLengthTextIterator::modifyStructure(xd::IStructure* struct_config,
