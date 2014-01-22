@@ -187,7 +187,6 @@ void TtbSet::refreshUpdateBuffer()
 
     if (!m_update_buf)
     {
-
         m_update_buf = new unsigned char[m_file.getRowWidth()];
         m_update_row.setRowPtr(m_update_buf);
         TtbIterator* iter = new TtbIterator(m_database);

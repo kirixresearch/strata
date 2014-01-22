@@ -398,6 +398,39 @@ bool FsDatabase::getFileFormat(const std::wstring& phys_path,
         return false;
     }
 
+    // format the file extenstion
+
+    std::wstring ext;
+    size_t ext_pos = phys_path.find_last_of('.');
+    if (ext_pos != phys_path.npos)
+    {
+        ext = phys_path.substr(ext_pos+1);
+        kl::makeLower(ext);
+    }
+
+    // certain extensions indicate a file format unambiguously
+    if (ext == L"ttb")
+    {
+        info->format = xd::formatTTB;
+        return true;
+    }
+     else if (ext == L"dbf")
+    {
+        info->format = xd::formatXbase;
+        return true;
+    }
+     else if (ext == L"icsv")
+    {
+        info->format = xd::formatTypedDelimitedText;
+        return true;
+    }
+     else if (isTextFileExtension(ext))
+    {
+        info->format = xd::formatText;
+        return true;
+    }
+    
+
     // figure out the config file name
     xd::IAttributesPtr attr = getAttributes();
     std::wstring definition_path = 
@@ -439,29 +472,17 @@ bool FsDatabase::getFileFormat(const std::wstring& phys_path,
         }
     }
 
-    // chop off and format the file extenstion
-    std::wstring ext = kl::afterLast(phys_path, L'.');
-    if (ext.length() == phys_path.length())
-        ext = L"";
 
     // if a format is not specified in the ExtFileInfo,
     // use the file extension to determine the format
-    if (0 == wcscasecmp(ext.c_str(), L"ttb"))
+
+    if (ext == L"tsv")
     {
-        info->format = xd::formatTTB;
+        info->format = xd::formatDelimitedText;
+        info->delimiters = L"\t";
         return true;
     }
-     else if (0 == wcscasecmp(ext.c_str(), L"dbf"))
-    {
-        info->format = xd::formatXbase;
-        return true;
-    }
-     else if (0 == wcscasecmp(ext.c_str(), L"icsv"))
-    {
-        info->format = xd::formatTypedDelimitedText;
-        return true;
-    }
-     else if (0 == wcscasecmp(ext.c_str(), L"csv"))
+     else if (ext == L"csv")
     {
         info->format = xd::formatDelimitedText;
         info->delimiters = L",";
@@ -486,18 +507,8 @@ bool FsDatabase::getFileFormat(const std::wstring& phys_path,
         info->format = xd::formatDelimitedText;
         return res;
     }
-     else if (0 == wcscasecmp(ext.c_str(), L"tsv"))
-    {
-        info->format = xd::formatDelimitedText;
-        info->delimiters = L"\t";
-        return true;
-    }
-     else if (isTextFileExtension(ext))
-    {
-        info->format = xd::formatText;
-        return true;
-    }
-    
+
+
     // read some of the file to see if we can determine the format
     return determineSetFormatInfo(phys_path, info);
 }

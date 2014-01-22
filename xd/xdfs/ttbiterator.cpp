@@ -135,9 +135,11 @@ bool TtbIterator::init(TtbSet* set, TtbTable* table, const std::wstring& columns
     m_table_rowwidth = m_table->getRowWidth();
 
 
-    m_read_ahead_rowcount = tableiterator_read_ahead_buffer_size/m_table_rowwidth;
-    if (m_read_ahead_rowcount == 0)
-        m_read_ahead_rowcount = 1;
+    int max_read_ahead = tableiterator_read_ahead_buffer_size/m_table_rowwidth;
+    if (max_read_ahead == 0)
+        max_read_ahead = 1;
+
+    m_read_ahead_rowcount = max_read_ahead;
     if (m_read_ahead_rowcount > 10000)
     {
         // some tables with a very skinny row width could have millions of
@@ -146,9 +148,18 @@ bool TtbIterator::init(TtbSet* set, TtbTable* table, const std::wstring& columns
         m_read_ahead_rowcount = 10000;
     }
 
+    // don't choose a large read-ahead buffer size if there are only a few records
+    xd::rowpos_t res = m_table->getRowCount(NULL);
+    if (res < (xd::rowpos_t)m_read_ahead_rowcount)
+        m_read_ahead_rowcount = (int)res;
+    if (m_read_ahead_rowcount < 200) // but not too small either, in case the table grows
+        m_read_ahead_rowcount = 200;
+    if (m_read_ahead_rowcount > max_read_ahead)
+        m_read_ahead_rowcount = max_read_ahead;
+
+
     m_buf = new unsigned char[m_read_ahead_rowcount * m_table_rowwidth];
     m_rowpos_buf = new xd::rowpos_t[m_read_ahead_rowcount];
-
 
     return refreshStructure();
 }

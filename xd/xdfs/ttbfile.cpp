@@ -194,20 +194,11 @@ bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
         return false;
 
 
-    // make sure a map file does NOT exist
-    std::wstring map_filename = kl::beforeLast(filename, L'.');
-    map_filename += L".map";
-    if (xf_get_file_exist(map_filename))
-    {
-        xf_remove(map_filename);
-    }
-
-
     int field_arr_len = column_count * ttb_column_descriptor_len;
     unsigned char* header = new unsigned char[ttb_header_len];
     unsigned char* flds = new unsigned char[field_arr_len];
 
-    // create native format file
+    // create ttb format file
 
     memset(header, 0, ttb_header_len);
     memset(flds, 0, field_arr_len);
@@ -345,24 +336,21 @@ bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
 
 bool TtbTable::open(const std::wstring& filename)
 {
-    KL_AUTO_LOCK(m_object_mutex);
-
     // open table file
     m_filename = filename;
     m_file = xf_open(m_filename, xfOpen, xfReadWrite, xfShareReadWrite);
     if (m_file == NULL)
-        return false;
-
-
-    // read native-format file header
-    if (!xf_seek(m_file, 0, xfSeekSet))
-        return false;
+    {
+        m_file = xf_open(m_filename, xfOpen, xfRead, xfShareReadWrite);
+        if (m_file == NULL)
+            return false;
+    }
 
     unsigned char header[ttb_header_len];
-    unsigned char* flds;
 
     if (xf_read(m_file, header, ttb_header_len, 1) == 0)
     {
+        xf_unlock(m_file, 0, ttb_header_len);
         xf_close(m_file);
         m_file = NULL;
         return false;
@@ -371,11 +359,19 @@ bool TtbTable::open(const std::wstring& filename)
     unsigned int signature, version;
     signature = buf2int(header);
     version = buf2int(header+4);
-    if (signature != 0xddaa2299 || version > 3)
+    if (signature != 0xddaa2299)
     {
         xf_close(m_file);
         m_file = NULL;
         return false;
+    }
+
+    // check file version
+    if (version <= 1 || version > 3)
+    {
+        xf_close(m_file);
+        m_file = NULL;
+        return false; // no longer supported
     }
 
     m_data_offset = buf2int(header+8);
@@ -396,75 +392,6 @@ bool TtbTable::open(const std::wstring& filename)
         updateHeaderWithGuid();
     }
 
-
-    // check file version
-    if (version == 1)
-        return false; // no longer supported
-
-    // calculate the actual physical row count from the file size
-    xf_seek(m_file, 0, xfSeekEnd);
-    xd::rowpos_t file_size = xf_get_file_pos(m_file);
-    xd::rowpos_t row_width = m_row_width;
-    file_size -= m_data_offset;
-    xd::rowpos_t real_phys_row_count = (file_size/m_row_width);
-
-    // compare that to the stats
-    if (real_phys_row_count != m_phys_row_count)
-    {
-        m_phys_row_count = real_phys_row_count;
-    }
-
-    if (file_size % m_row_width != 0)
-    {
-        // the file's size is not a multiple of the row width.
-        // This means that somewhere the table is corrupt
-    }
-
-    if (!xf_seek(m_file, ttb_header_len, xfSeekSet))
-    {
-        xf_close(m_file);
-        m_file = NULL;
-        return false;
-    }
-
-    int i, column_count;
-    column_count = buf2int(header+16);
-
-    flds = new unsigned char[column_count * ttb_column_descriptor_len];
-    
-    if (xf_read(m_file,
-                flds,
-                column_count * ttb_column_descriptor_len,
-                1) != 1)
-    {
-        delete[] flds;
-        xf_close(m_file);
-        m_file = NULL;
-        return false;
-    }
-
-    unsigned char* fld = flds;
-    std::wstring col_name;
-    TtbField fldinfo;
-    for (i = 0; i < column_count; ++i)
-    {
-        ColumnInfo* col = new ColumnInfo;
-
-        kl::ucsle2wstring(fldinfo.name, fld+64, 80);
-        fldinfo.ttb_type = fld[0];
-        fldinfo.width = buf2int(fld+5);
-        fldinfo.scale = buf2int(fld+9);
-        fldinfo.offset = buf2int(fld+1);
-        fldinfo.ordinal = i;
-        fldinfo.nulls_allowed = (*(fld+13) & 0x01) ? true : false;
-
-        m_fields.push_back(fldinfo);
-        fld += ttb_column_descriptor_len;
-    }
-    
-
-
-    delete[] flds;
     return true;
 }
 
@@ -1013,6 +940,71 @@ int TtbTable::getRowWidth()
 
 xd::IStructurePtr TtbTable::getStructure()
 {
+    if (m_fields.size() == 0)
+    {
+        unsigned char* flds;
+
+        // lock the header
+        if (!xf_trylock(m_file, 0, ttb_header_len, 10000))
+            return xcm::null;
+
+        // get column count
+        unsigned char buf[4];
+        memset(buf, 0, sizeof(buf));
+        if (xf_seek(m_file, 16, xfSeekSet))
+            xf_read(m_file, buf, 1, 4);
+
+        int i, column_count;
+        column_count = buf2int(buf);
+        if (column_count == 0)
+        {
+            xf_unlock(m_file, 0, ttb_header_len);
+            return xcm::null;
+        }
+
+        if (!xf_seek(m_file, ttb_header_len, xfSeekSet))
+        {
+            xf_unlock(m_file, 0, ttb_header_len);
+            return xcm::null;
+        }
+
+        // read in columns data
+
+        flds = new unsigned char[column_count * ttb_column_descriptor_len];
+    
+        if (xf_read(m_file, flds, column_count * ttb_column_descriptor_len, 1) != 1)
+        {
+            delete[] flds;
+            xf_unlock(m_file, 0, ttb_header_len);
+            return xcm::null;
+        }
+
+        xf_unlock(m_file, 0, ttb_header_len);
+
+        unsigned char* fld = flds;
+        std::wstring col_name;
+        TtbField fldinfo;
+        for (i = 0; i < column_count; ++i)
+        {
+            ColumnInfo* col = new ColumnInfo;
+
+            kl::ucsle2wstring(fldinfo.name, fld+64, 80);
+            fldinfo.ttb_type = fld[0];
+            fldinfo.width = buf2int(fld+5);
+            fldinfo.scale = buf2int(fld+9);
+            fldinfo.offset = buf2int(fld+1);
+            fldinfo.ordinal = i;
+            fldinfo.nulls_allowed = (*(fld+13) & 0x01) ? true : false;
+
+            m_fields.push_back(fldinfo);
+            fld += ttb_column_descriptor_len;
+        }
+    
+        delete[] flds;
+    }
+
+
+
     Structure* structure = new Structure;
 
     std::vector<TtbField>::iterator it, it_end = m_fields.end();
