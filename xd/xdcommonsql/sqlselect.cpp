@@ -2077,7 +2077,10 @@ static bool doJoin(xd::IDatabasePtr db,
 
     xd::IRowInserterPtr sp_output = db->bulkInsert(output_path);
     if (sp_output.isNull())
+    {
+        db->deleteFile(output_path);
         return false;
+    }
 
     xd::IRowInserter* output = sp_output.p;
 
@@ -2089,7 +2092,10 @@ static bool doJoin(xd::IDatabasePtr db,
     {
         jf_it->dest_handle = output->getHandle(jf_it->name);
         if (jf_it->dest_handle == 0)
+        {
+            db->deleteFile(output_path);
             return false;
+        }
     }
 
     
@@ -2102,8 +2108,7 @@ static bool doJoin(xd::IDatabasePtr db,
          st_it != source_tables.end();
          ++st_it)
     {
-        int col_count = st_it->structure->getColumnCount();
-        int i;
+        int i, col_count = st_it->structure->getColumnCount();
 
         for (i = 0; i < col_count; ++i)
         {
@@ -2172,6 +2177,7 @@ static bool doJoin(xd::IDatabasePtr db,
         if (!parser->parse(where_expr))
         {
             delete parser;
+            db->deleteFile(output_path);
             return false;
         }
     }
@@ -2312,10 +2318,10 @@ static wchar_t* findJoin(wchar_t* s)
 
 
 xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
-                              const std::wstring& _command,
-                              unsigned int flags,
-                              ThreadErrorInfo& error,
-                              xd::IJob* job)
+                           const std::wstring& _command,
+                           unsigned int flags,
+                           ThreadErrorInfo& error,
+                           xd::IJob* job)
 {
     if (_command.length() == 0)
     {
@@ -3228,6 +3234,10 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
             if (group_by_str.length() == 0)
             {
+                // delete old intermediate table, if any
+                if (join_operation)
+                    db->deleteFile(set);
+
                 error.setError(xd::errorSyntax, L"Invalid syntax; missing column or expression in GROUP BY clause");
                 return xcm::null;
             }
@@ -3266,6 +3276,10 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
         bool res = db->groupQuery(&info, job);
 
+        // delete old intermediate table, if any
+        if (join_operation)
+            db->deleteFile(set);
+
         if (job && job->getCancelled())
         {
             error.setError(xd::errorCancelled, L"Job cancelled");
@@ -3278,6 +3292,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
             return xcm::null;
         }
 
+        // set new table
         set = info.output;
 
         for (f_it = fields.begin(); f_it != fields.end(); ++f_it)
@@ -3375,10 +3390,10 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
     xd::IIteratorPtr iter;
     iter = db->query(set, 
-                    field_str,
-                    L"",
-                    order_by_str,
-                    create_iter_job);
+                     field_str,
+                     L"",
+                     order_by_str,
+                     create_iter_job);
     
     if (create_iter_job->getCancelled())
     {
@@ -3387,12 +3402,18 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
             job->cancel();
         }
 
+        if (join_operation || group_operation)
+            db->deleteFile(set);
+
         error.setError(xd::errorCancelled, L"Job cancelled");
         return xcm::null;
     }
 
     if (iter.isNull())
     {
+        if (join_operation || group_operation)
+            db->deleteFile(set);
+
         error.setError(xd::errorGeneral, L"Unable to process SELECT statement");     
         return xcm::null;
     }
@@ -3403,12 +3424,19 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
         return iter;
     }
 
+    // if there is was a join operation with no distinct and no sort order
+    // we already have an ouput set, since it is already a copied output table,
+    // fulfilling any xd::sqlAlwaysCopy requirement
+    if (join_operation && !p_distinct && order_by_str.empty())
+    {
+        return iter;
+    }
+
+
     // create output set
     
     xd::IStructurePtr output_structure = db->createStructure();
     xd::IStructurePtr iter_structure = iter->getStructure();
-
-    int iter_column_count = iter_structure->getColumnCount();
 
     for (f_it = fields.begin(); f_it != fields.end(); ++f_it)
     {
@@ -3477,6 +3505,11 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
             return xcm::null;
         }
     }
+
+    // remove any intermediate tables if necessary
+    iter.clear();
+    if (join_operation || group_operation)
+        db->deleteFile(set);
 
     return db->query(output_path, L"", L"", L"", NULL);
 }
