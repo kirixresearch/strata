@@ -213,6 +213,8 @@ public:
     virtual std::wstring getSetId() = 0;
     virtual IXdnativeSet* getRawXdnativeSetPtr() = 0;
 
+    virtual void setTemporary(bool value) = 0;
+
     virtual xd::rowpos_t getRowCount() = 0;
     virtual xd::IStructurePtr getStructure() = 0;
 

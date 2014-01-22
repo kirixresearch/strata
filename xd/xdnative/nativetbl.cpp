@@ -569,7 +569,7 @@ bool NativeTable::open(const std::wstring& filename,
         col->setOffset(buf2int(fld+1));
         col->setCalculated(false);
         col->setColumnOrdinal(i);
-        col->setTableOrdinal(m_ordinal);
+        col->setTableOrdinal((int)m_ordinal);
         col->setNullsAllowed((*(fld+13) & 0x01) ? true : false);
 
         structure->addColumn(static_cast<xd::IColumnInfo*>(col));

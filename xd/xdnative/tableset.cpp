@@ -444,6 +444,12 @@ TableSet::~TableSet()
         m_update_buf = NULL;
     }
 
+
+    if (m_temporary)
+    {
+        m_database->deleteFile(m_ofspath);
+    }
+
     // release all indexes
     
     std::vector<IndexEntry>::iterator it;

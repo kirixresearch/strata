@@ -34,11 +34,18 @@ BaseSet::BaseSet(XdnativeDatabase* database)
     m_set_flags = 0;
     m_calcrefresh_time = 0;
     m_rel_init = false;
+
+    m_temporary = false;
 }
 
 BaseSet::~BaseSet()
 {
     m_database->unref();
+}
+
+void BaseSet::setTemporary(bool value)
+{
+    m_temporary = value;
 }
 
 INodeValuePtr BaseSet::openSetDefinition(bool create_if_not_exist)

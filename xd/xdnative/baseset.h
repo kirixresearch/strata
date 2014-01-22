@@ -33,6 +33,8 @@ public:
     BaseSet(XdnativeDatabase* database);
     virtual ~BaseSet();
 
+    void setTemporary(bool value);
+
     IXdnativeSet* getRawXdnativeSetPtr() { return this; }
 
     bool modifyStructure(xd::IStructurePtr struct_config, xd::IJob* job) { return false; }
@@ -123,6 +125,8 @@ private:
     std::vector<xd::IColumnInfoPtr> m_calc_fields;
     unsigned long long m_calcrefresh_time;
     bool m_rel_init;
+
+    bool m_temporary;
 };
 
 
