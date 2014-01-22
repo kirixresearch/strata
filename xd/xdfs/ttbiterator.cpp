@@ -249,6 +249,16 @@ void TtbIterator::updatePosition()
 }
 
 
+void TtbIterator::setIteratorFlags(unsigned int mask, unsigned int value)
+{
+    if (mask & xd::ifTemporary)
+    {
+        bool v = (value & xd::ifTemporary) ? true : false;
+        m_set->setTemporary(v);
+    }
+}
+
+
 unsigned int TtbIterator::getIteratorFlags()
 {
     return (xd::ifFastRowCount | xd::ifFastSkip);

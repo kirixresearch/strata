@@ -277,8 +277,10 @@ enum
                               //  only supports forward-only skips,
     ifReverseRowCache = 0x04, // (read-write) set iterators which are
                               //  forward-only, but require skip(-value),
-    ifFastRowCount = 0x01,    // (read-only) set if IIterator::getRowCount()
+    ifFastRowCount = 0x08,    // (read-only) set if IIterator::getRowCount()
                               //  can be executed in O(1) time (fast)
+    ifTemporary = 0x10        // (read-write) object should be cleaned up
+                              //  after object destruction
 };
 
 

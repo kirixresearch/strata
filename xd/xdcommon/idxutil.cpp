@@ -660,6 +660,10 @@ xd::rowpos_t CommonIndexIterator::getRowCount()
 
 void CommonIndexIterator::setIteratorFlags(unsigned int mask, unsigned int value)
 {
+    if (mask & xd::ifTemporary)
+    {
+        m_data_iter->setIteratorFlags(xd::ifTemporary, value);
+    }
 }
 
 unsigned int CommonIndexIterator::getIteratorFlags()

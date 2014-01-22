@@ -2665,9 +2665,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
     std::vector<std::wstring>::iterator fstr_it;
     int colname_counter = 0;
-    for (fstr_it = field_strs.begin();
-         fstr_it != field_strs.end();
-         ++fstr_it)
+    for (fstr_it = field_strs.begin(); fstr_it != field_strs.end(); ++fstr_it)
     {
         kl::trim(*fstr_it);
 
@@ -2682,18 +2680,18 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
             SelectField f;
             
             std::vector<SourceTable>::iterator st_it;
-            
+            xd::IColumnInfoPtr colinfo;
+
             for (st_it = source_tables.begin();
                  st_it != source_tables.end();
                  ++st_it)
             {
-                int col_count = st_it->structure->getColumnCount();
-                int i;
+                int i, col_count = st_it->structure->getColumnCount();
         
                 for (i = 0; i < col_count; ++i)
                 {
                     std::wstring colname = st_it->structure->getColumnName(i);
-                    xd::IColumnInfoPtr colinfo;
+                    
 
                     f.name = colname;
 
@@ -3050,10 +3048,11 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
     delete[] phase_pcts;
 
     // create the cross-product table (if necessary)
+    std::wstring join_output_path;
 
     if (join_operation)
     {
-        std::wstring join_output_path = xd::getTemporaryPath();
+        join_output_path = xd::getTemporaryPath();
 
         bool res = doJoin(static_cast<xd::IDatabase*>(db),
                           source_tables,
@@ -3066,6 +3065,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
         if (!res)
         {
+            db->deleteFile(join_output_path);
             error.setError(xd::errorGeneral, L"Unable to process JOIN statement");
             return xcm::null;
         }
@@ -3234,6 +3234,9 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
             if (group_by_str.length() == 0)
             {
+                if (join_output_path.length() > 0)
+                    db->deleteFile(join_output_path);
+
                 error.setError(xd::errorSyntax, L"Invalid syntax; missing column or expression in GROUP BY clause");
                 return xcm::null;
             }
@@ -3271,6 +3274,9 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
         info.group = group_by_str;
 
         bool res = db->groupQuery(&info, job);
+
+        if (join_output_path.length() > 0)
+            db->deleteFile(join_output_path);
 
         if (job && job->getCancelled())
         {
@@ -3347,9 +3353,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
     std::wstring order_by_str;
     std::vector<OrderByField>::iterator order_by_it;
-    for (order_by_it = order_by_fields.begin();
-         order_by_it != order_by_fields.end();
-         ++order_by_it)
+    for (order_by_it = order_by_fields.begin(); order_by_it != order_by_fields.end(); ++order_by_it)
     {
         if (!order_by_str.empty())
             order_by_str += L",";
@@ -3387,6 +3391,12 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
                      order_by_str,
                      create_iter_job);
     
+    if (group_operation || join_operation)
+    {
+        // set this iterator to clean up after destruction
+        iter->setIteratorFlags(xd::ifTemporary, xd::ifTemporary);
+    }
+
     if (create_iter_job->getCancelled())
     {
         if (job)
@@ -3410,13 +3420,6 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
         return iter;
     }
 
-    // if there is was a join operation with no distinct and no sort order
-    // we already have an ouput set, since it is already a copied output table,
-    // fulfilling any xd::sqlAlwaysCopy requirement
-    if (join_operation && !p_distinct && order_by_str.empty())
-    {
-        return iter;
-    }
 
 
     // create output set
@@ -3444,6 +3447,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
 
     bool create_result;
+    bool temporary = false;
 
     // check if the output file will be in a mount
     if (output_path.length() > 0 && db->getMountDatabase(output_path).isOk())
@@ -3454,6 +3458,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
     {
         output_path = xd::getTemporaryPath();
         create_result = db->createTable(output_path, output_structure, NULL);
+        temporary = true;
     }
 
     if (!create_result)
@@ -3493,7 +3498,18 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
     }
 
 
-    return db->query(output_path, L"", L"", L"", NULL);
+    iter.clear();
+
+
+    iter = db->query(output_path, L"", L"", L"", NULL);
+
+    if (iter.isOk() && temporary)
+    {
+        // set this iterator to clean up after destruction
+        iter->setIteratorFlags(xd::ifTemporary, xd::ifTemporary);
+    }
+
+    return iter;
 }
 
 

@@ -113,6 +113,7 @@ public:
     xd::IDatabasePtr getDatabase();
     xd::IIteratorPtr clone();
 
+    void setIteratorFlags(unsigned int mask, unsigned int value);
     unsigned int getIteratorFlags();
 
     void skip(int delta);

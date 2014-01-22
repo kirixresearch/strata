@@ -78,6 +78,8 @@ public:
 
     bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job);
 
+    void setTemporary(bool value) { m_temporary = value; }
+
 private:
 
     void refreshUpdateBuffer();
@@ -88,6 +90,7 @@ private:
     unsigned char* m_update_buf;
     TtbRow m_update_row;
     xd::IIteratorPtr m_update_iter;
+    bool m_temporary;
 };
 
 

@@ -2580,9 +2580,7 @@ bool FsDatabase::execute(const std::wstring& command,
     m_error.clearError();
     result.clear();
 
-    bool res= doSQL(static_cast<xd::IDatabase*>(this), command, flags, result, m_error, job);
-
-    return res;
+    return doSQL(static_cast<xd::IDatabase*>(this), command, flags, result, m_error, job);
 }
 
 bool FsDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)

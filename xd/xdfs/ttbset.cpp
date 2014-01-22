@@ -37,14 +37,24 @@ TtbSet::TtbSet(FsDatabase* database) : XdfsBaseSet(database)
 {
     m_update_buf = NULL;
     m_update_row.setTable(&m_file);
+    m_temporary = false;
 }
 
 TtbSet::~TtbSet()
 {
+    std::wstring filename = m_file.getFilename();
+
     if (m_file.isOpen())
         m_file.close();
 
     delete[] m_update_buf;
+    m_update_iter.clear();
+
+
+    if (m_temporary && filename.length() > 0 && xf_get_file_exist(filename))
+    {
+        xf_remove(filename);
+    }
 }
 
 bool TtbSet::init(const std::wstring& filename)
