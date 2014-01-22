@@ -1238,7 +1238,6 @@ bool FsDatabase::deleteFile(const std::wstring& _path)
     if (xf_get_file_exist(path + L".ttb"))
     {
         xf_remove(path + L".ttb");
-        xf_remove(path + L".map");
         return true;
     }
 
@@ -2581,8 +2580,9 @@ bool FsDatabase::execute(const std::wstring& command,
     m_error.clearError();
     result.clear();
 
-    return doSQL(static_cast<xd::IDatabase*>(this),
-                 command, flags, result, m_error, job);
+    bool res= doSQL(static_cast<xd::IDatabase*>(this), command, flags, result, m_error, job);
+
+    return res;
 }
 
 bool FsDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)

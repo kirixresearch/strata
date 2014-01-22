@@ -152,8 +152,8 @@ bool TtbIterator::init(TtbSet* set, TtbTable* table, const std::wstring& columns
     xd::rowpos_t res = m_table->getRowCount(NULL);
     if (res < (xd::rowpos_t)m_read_ahead_rowcount)
         m_read_ahead_rowcount = (int)res;
-    if (m_read_ahead_rowcount < 200) // but not too small either, in case the table grows
-        m_read_ahead_rowcount = 200;
+    if (m_read_ahead_rowcount < 100) // but not too small either, in case the table grows
+        m_read_ahead_rowcount = 100;
     if (m_read_ahead_rowcount > max_read_ahead)
         m_read_ahead_rowcount = max_read_ahead;
 
@@ -251,7 +251,7 @@ void TtbIterator::updatePosition()
 
 unsigned int TtbIterator::getIteratorFlags()
 {
-    return xd::ifFastRowCount;
+    return (xd::ifFastRowCount | xd::ifFastSkip);
 }
 
 

@@ -87,7 +87,7 @@ std::wstring XbaseIterator::getTable()
 
 xd::rowpos_t XbaseIterator::getRowCount()
 {
-    return 0;
+    return m_file.getRowCount();
 }
 
 xd::IDatabasePtr XbaseIterator::getDatabase()
@@ -111,7 +111,7 @@ xd::IIteratorPtr XbaseIterator::clone()
 
 unsigned int XbaseIterator::getIteratorFlags()
 {
-    return 0;
+    return (xd::ifFastRowCount | xd::ifFastSkip);
 }
 
 void XbaseIterator::skip(int delta)

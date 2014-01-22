@@ -3234,10 +3234,6 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
             if (group_by_str.length() == 0)
             {
-                // delete old intermediate table, if any
-                if (join_operation)
-                    db->deleteFile(set);
-
                 error.setError(xd::errorSyntax, L"Invalid syntax; missing column or expression in GROUP BY clause");
                 return xcm::null;
             }
@@ -3275,10 +3271,6 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
         info.group = group_by_str;
 
         bool res = db->groupQuery(&info, job);
-
-        // delete old intermediate table, if any
-        if (join_operation)
-            db->deleteFile(set);
 
         if (job && job->getCancelled())
         {
@@ -3402,18 +3394,12 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
             job->cancel();
         }
 
-        if (join_operation || group_operation)
-            db->deleteFile(set);
-
         error.setError(xd::errorCancelled, L"Job cancelled");
         return xcm::null;
     }
 
     if (iter.isNull())
     {
-        if (join_operation || group_operation)
-            db->deleteFile(set);
-
         error.setError(xd::errorGeneral, L"Unable to process SELECT statement");     
         return xcm::null;
     }
@@ -3506,10 +3492,6 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
         }
     }
 
-    // remove any intermediate tables if necessary
-    iter.clear();
-    if (join_operation || group_operation)
-        db->deleteFile(set);
 
     return db->query(output_path, L"", L"", L"", NULL);
 }
