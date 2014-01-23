@@ -424,6 +424,10 @@ bool FsDatabase::getFileFormat(const std::wstring& phys_path,
         info->format = xd::formatTypedDelimitedText;
         return true;
     }
+     else if (ext == L"ebc")
+    {
+        info->format = xd::formatFixedLengthText;
+    }
      else if (isTextFileExtension(ext))
     {
         info->format = xd::formatText;
@@ -1771,34 +1775,6 @@ xd::IStreamPtr FsDatabase::openStream(const std::wstring& path)
     return static_cast<xd::IStream*>(stream);
 }
 
-
-static IXdfsSetPtr openFixedLengthTextSet(FsDatabase* db, const std::wstring& path)
-{
-    // we need to manually protect the ref count because
-    // smart pointer operations happen in init()
-    
-    FixedLengthTextSet* set = new FixedLengthTextSet(db);
-    set->ref();
-    if (!set->init(path))
-    {
-        set->unref();
-        return xcm::null;
-    }
-    
-    IXdfsSetPtr retval = static_cast<IXdfsSet*>(set);
-    set->unref();
-    return retval;
-}
-
-static IXdfsSetPtr openDelimitedTextSet(FsDatabase* db, const std::wstring& path)
-{
-    // we need to manually protect the ref count because
-    // smart pointer operations happen in init()
-    
-
-}
-
-
 IXdsqlTablePtr FsDatabase::openTable(const std::wstring& path)
 {
     xd::FormatDefinition fi;
@@ -1967,9 +1943,16 @@ IXdsqlTablePtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatD
     }       
      else if (format == xd::formatFixedLengthText) // fixed length
     {
-        set = openFixedLengthTextSet(this, phys_path);
-        if (set.isNull())
+        FixedLengthTextSet* rawset = new FixedLengthTextSet(this);
+        rawset->ref();
+        if (!rawset->init(phys_path))
+        {
+            set->unref();
             return xcm::null;
+        }
+
+        set = static_cast<IXdfsSet*>(rawset);
+        rawset->unref();
     }
 
     return set;
