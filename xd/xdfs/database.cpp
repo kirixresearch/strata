@@ -195,6 +195,9 @@ bool FsDatabase::open(const std::wstring& path)
         m_ctrl_path = xf_get_temp_path();
     }
 
+
+    getAttributes()->setStringAttribute(xd::dbattrFilesystemPath, m_base_path);
+
     return true;
 }
 

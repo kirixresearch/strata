@@ -34,7 +34,7 @@ public:
         output_scale = 0;
         output_expression = wxEmptyString;
 
-        dynamic = false;
+        calculated = false;
         original = true;
     }
 
@@ -52,7 +52,7 @@ public:
         output_scale = c.output_scale;
         output_expression = c.output_expression;
 
-        dynamic = c.dynamic;
+        calculated = c.calculated;
         original = c.original;
     }
 
@@ -70,7 +70,7 @@ public:
         output_scale = c.output_scale;
         output_expression = c.output_expression;
 
-        dynamic = c.dynamic;
+        calculated = c.calculated;
         original = c.original;
 
         return *this;
@@ -90,7 +90,7 @@ public:
     int output_scale;
     wxString output_expression;
 
-    bool dynamic;
+    bool calculated;
     bool original;  // flag to determine if field is in original structure
 };
 
@@ -103,7 +103,7 @@ xcm_interface ITransformationDoc : public xcm::IObject
 
 public:
 
-    virtual void initFromSet(const wxString& path) = 0;
+    virtual void initFromDefinition(const xd::FormatDefinition& def) = 0;
     virtual void close() = 0;
     
     virtual void getTransformation(std::vector<TransformField>& result) = 0;
@@ -149,7 +149,7 @@ public:
     bool open(const wxString& filename);
 
     // ITransformationDoc
-    void initFromSet(const wxString& path);
+    void initFromDefinition(const xd::FormatDefinition& def);
     void close();
 
     void getTransformation(std::vector<TransformField>& result);
@@ -179,9 +179,7 @@ private:
     
     void insertRow(int row, bool dynamic = false);
     void insertSelectedRows(bool dynamic = false);
-    void insertRowFromColumnInfo(int row,
-                                 xd::IColumnInfoPtr colinfo,
-                                 xd::IStructurePtr validate_against = xcm::null);
+    void insertRowFromColumnInfo(int row, const xd::ColumnInfo& colinfo);
 
     void updateNumberColumn();
     void updateExpressionIcon(int row, int validation_res);

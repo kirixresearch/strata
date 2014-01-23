@@ -464,8 +464,7 @@ static bool isValid(const wxString& str,
     return true;
 }
 
-bool isKeyword(const wxString& str,
-               xd::IDatabasePtr db)
+bool isKeyword(const wxString& str, xd::IDatabasePtr db)
 {
     if (db.isNull())
         db = g_app->getDatabase();
@@ -773,12 +772,35 @@ wxString getObjectPathFromMountPath(const wxString& database_path)
     return path;
 }
 
-wxString getPhysPathFromMountPath(const wxString& database_path)
+wxString getPhysPathFromDatabasePath(const wxString& database_path)
 {
+    if (database_path.empty())
+        return database_path;
+
     xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return wxEmptyString;
     
+    if (0 == strcmp(xcm::get_class_info(db.p)->get_name(), "xdfs.Database"))
+    {
+        // handle xdfs case
+
+        std::wstring fspath = db->getAttributes()->getStringAttribute(xd::dbattrFilesystemPath);
+        if (fspath.length() > 0 && fspath.substr(fspath.length()-1, 1) != xf_path_separator_wchar)
+            fspath += xf_path_separator_wchar;
+
+        if (database_path[0] == '/')
+            fspath += database_path.substr(1).ToStdWstring();
+             else
+            fspath += database_path;
+
+        if (xf_path_separator_wchar == '\\')
+            kl::replaceStr(fspath, L"/", L"\\");
+
+        return fspath;
+    }
+
+
     wxString path = database_path;
     wxString conn_str;
     wxString to_append;
@@ -795,7 +817,7 @@ wxString getPhysPathFromMountPath(const wxString& database_path)
             // mount path -- the physical path may be a few layers deep
             if (cstr.empty())
             {
-                std::wstring res = towstr(getPhysPathFromMountPath(rpath));
+                std::wstring res = towstr(getPhysPathFromDatabasePath(rpath));
                 res += to_append;
                 return res;
             }

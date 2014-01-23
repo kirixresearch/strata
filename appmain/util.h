@@ -213,7 +213,7 @@ bool isSamePath(const std::wstring& path1, const std::wstring& path2);
 // for mounted folders or singleton mounts, these functions get
 // the actual object path or actual filename, respectively
 wxString getObjectPathFromMountPath(const wxString& database_path);
-wxString getPhysPathFromMountPath(const wxString& database_path);
+wxString getPhysPathFromDatabasePath(const wxString& database_path);
 std::wstring getMountRoot(xd::IDatabasePtr db, const std::wstring path);
 bool getMountPointHelper(xd::IDatabasePtr& db, const std::wstring& path, std::wstring& cstr, std::wstring& rpath);
 bool xd::isTemporaryPath(const std::wstring& path);

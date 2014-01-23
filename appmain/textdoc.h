@@ -13,7 +13,7 @@
 #define __APP_TEXTDOC_H
 
 
-#include "textview.h"
+
 #include "xdgridmodel.h"
 #include "panelcolumnlist.h"
 
@@ -29,12 +29,15 @@ public:
     virtual wxString getPath() = 0;
     virtual xd::IStructurePtr getStructure() = 0;
     virtual void setSourceUrl(const wxString& source_url) = 0; // allows override of displayed url
+    virtual xd::FormatDefinition& getDefinition() = 0;
 };
 
 XCM_DECLARE_SMARTPTR(ITextDoc)
 
 
 
+class TextView;
+class TextViewColumn;
 
 class TextDoc : public wxWindow,
                 public IDocument,
@@ -81,6 +84,8 @@ public:
     bool onSiteClosing(bool force);
     void onSiteDeactivated();
     void onSiteActivated();
+
+    xd::FormatDefinition& getDefinition() { return m_def; }
 
     // ITextDoc
     void setSourceUrl(const wxString& source_url);
@@ -148,10 +153,9 @@ private:
     void onToggleView(wxCommandEvent& evt);
 
     // signal handlers
-    void onTextViewColumnAdded(TextViewColumn col);
-    void onTextViewColumnDeleted(TextViewColumn col);
-    void onTextViewColumnModified(TextViewColumn col,
-                                  TextViewColumn new_settings);
+    void onTextViewColumnAdded(TextViewColumn& col);
+    void onTextViewColumnDeleted(TextViewColumn& col);
+    void onTextViewColumnModified(TextViewColumn& col, TextViewColumn& new_settings);
     void onTextViewCursorPositionChanged(
                                   int new_cursor_offset,
                                   int new_cursor_row);
@@ -208,6 +212,8 @@ private:
     std::vector<wxString> m_encoding_labels;        // labels for encoding choice
     std::vector<wxString> m_delimiters_labels;      // labels for delimiters combobox
     std::vector<wxString> m_textqualifier_labels;   // labels for text qualifier combobox
+
+    xd::FormatDefinition m_def;
 
     DECLARE_EVENT_TABLE()
 };

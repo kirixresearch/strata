@@ -4492,7 +4492,7 @@ bool AppController::openScript(const wxString& _location, int* site_id)
     {
         // get the physical location of the script file
         // or the path of the script in the project
-        wxString phys_location = getPhysPathFromMountPath(location);
+        wxString phys_location = getPhysPathFromDatabasePath(location);
         if (phys_location.Length() > 0)
         {
             location = filenameToUrl(phys_location);
@@ -4581,12 +4581,12 @@ bool AppController::openTable(const wxString& _location, int* site_id)
 
     int format = fileinfo->getFormat();
 
-   // if (format == xd::formatDelimitedText || format == xd::formatFixedLengthText)
-   // {
-   //     // open text set
-   //     createTextDoc(location, NULL, site_id);
-   // }
-   //  else
+    if (format == xd::formatDelimitedText || format == xd::formatFixedLengthText)
+    {
+        // open text set
+        createTextDoc(location, NULL, site_id);
+    }
+     else
     {
         // open all normal table docs
         ITableDocPtr doc = TableDocMgr::createTableDoc();
@@ -4894,7 +4894,7 @@ bool AppController::openExcel(const wxString& location, int* site_id)
     if (location.Left(5).CmpNoCase(wxT("file:")) == 0)
         fn = urlToFilename(location);
      else
-        fn = getPhysPathFromMountPath(location);
+        fn = getPhysPathFromDatabasePath(location);
 
     IConnectionPtr conn = createUnmanagedConnection();
     conn->setType(dbtypeExcel);
@@ -5001,7 +5001,7 @@ bool AppController::openAccess(const wxString& location)
     if (location.Left(5).CmpNoCase(wxT("file:")) == 0)
         fn = urlToFilename(location);
      else
-        fn = getPhysPathFromMountPath(location);
+        fn = getPhysPathFromDatabasePath(location);
 
     // scoping so the smart pointer destroys itself
     {
@@ -5050,7 +5050,7 @@ bool AppController::openPackage(const wxString& location)
     if (location.Left(5).CmpNoCase(wxT("file:")) == 0)
         fn = urlToFilename(location);
      else
-        fn = getPhysPathFromMountPath(location);
+        fn = getPhysPathFromDatabasePath(location);
 
 
     {
@@ -5221,7 +5221,7 @@ jobs::IJobPtr AppController::executeScript(const wxString& _location,
     }
      else
     {
-        wxString phys_path = getPhysPathFromMountPath(location);
+        wxString phys_path = getPhysPathFromDatabasePath(location);
         if (phys_path.Length() > 0)
         {
             include_path.type = ScriptHostInclude::includeFile;

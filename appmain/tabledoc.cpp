@@ -1794,7 +1794,7 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
         
         // open new file
         textdoc->open(filename);
-        transdoc->initFromSet(textdoc->getPath());
+       // transdoc->initFromDefinition(textdoc->getPath());
         
        
         // reload grid

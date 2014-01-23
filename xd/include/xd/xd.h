@@ -238,6 +238,7 @@ enum
     dbattrDefinitionDirectory = 1002,
     dbattrDatabaseUrl = 1003,
     dbattrDatabaseName = 1004,
+    dbattrFilesystemPath = 1005,
 
     dbattrIdentifierQuoteOpenChar = 1900,
     dbattrIdentifierQuoteCloseChar = 1901,
@@ -307,37 +308,6 @@ enum
 };
 
 
-
-
-
-struct ColumnInfo
-{
-    ColumnInfo()
-    {
-        type = typeInvalid;
-        width = 0;
-        scale = 0;
-        nulls_allowed = true;
-        calculated = false;
-        offset = 0;
-        encoding = encodingUndefined;
-        column_ordinal = 0;
-        table_ordinal = 0;
-    }
-
-
-    std::wstring name;
-    int type;
-    int width;
-    int scale;
-    bool nulls_allowed;
-    bool calculated;
-    std::wstring expression;
-    int offset;
-    int encoding;
-    int column_ordinal;
-    int table_ordinal;
-};
 
 
 
@@ -581,6 +551,42 @@ public:
 
 
 
+
+
+struct ColumnInfo
+{
+    ColumnInfo()
+    {
+        type = typeInvalid;
+        width = 0;
+        scale = 0;
+        nulls_allowed = true;
+        calculated = false;
+        column_ordinal = 0;
+        table_ordinal = 0;
+
+        source_offset = 0;
+        source_width = 0;
+        source_encoding = encodingUndefined;
+    }
+
+
+    std::wstring name;
+    int type;
+    int width;
+    int scale;
+    bool nulls_allowed;
+    bool calculated;
+    std::wstring expression;
+    int column_ordinal;
+    int table_ordinal;
+
+    int source_offset;
+    int source_width;
+    int source_encoding;
+};
+
+
 struct FormatDefinition
 {
     FormatDefinition()
@@ -590,6 +596,9 @@ struct FormatDefinition
         encoding = encodingUndefined;
         first_row_column_names = true;
         determine_structure = false;
+        fixed_start_offset = 0;
+        fixed_row_width = 0;
+        fixed_line_delimited = false;
     };
     
     std::wstring object_id;
@@ -616,7 +625,6 @@ struct FormatDefinition
     // structure
     std::vector<ColumnInfo> columns;
 };
-
 
 
 struct CopyParams

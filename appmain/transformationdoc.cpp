@@ -214,13 +214,13 @@ static const std::wstring expr2regex(const std::wstring& expr)
     return towstr(e);
 }
     
-static bool isFieldDynamic(kcl::Grid* grid, int row)
+static bool isFieldCalculated(kcl::Grid* grid, int row)
 {
     TransformField* f = (TransformField*)grid->getRowData(row);
     if (!f)
         return false;
 
-    return f->dynamic;
+    return f->calculated;
 }
 
 static std::vector<RowErrorChecker> getRowErrorCheckerVector(
@@ -571,47 +571,23 @@ void TransformationDoc::onSiteActivated()
         updateStatusBar();
 }
 
-void TransformationDoc::initFromSet(const wxString& path)
+void TransformationDoc::initFromDefinition(const xd::FormatDefinition& def)
 {
-/*
-    xd::IStructurePtr source_structure;
-    xd::IStructurePtr structure;
-    xd::IColumnInfoPtr colinfo;
-
-    xd::IFixedLengthDefinitionPtr fset = set;
-    if (fset)
-    {
-        source_structure = fset->getSourceStructure();
-        structure = fset->getDestinationStructure();
-    }
-    
-    xd::IDelimitedTextSetPtr tset = set;
-    if (tset)
-    {
-        source_structure = tset->getSourceStructure();
-        structure = tset->getDestinationStructure();
-    }
-
-    // store the set we used to initialize the grid
-    m_init_set = set;
-    
     // clear the grid
     m_grid->deleteAllRows();
     
-    // set the input structure from the set's source structure
-    // (this will also populate the source field dropdown)
-    setInputStructure(source_structure);
 
     // populate the grid from the set's destination structure
     int row = 0;
-    int i, col_count = structure->getColumnCount();
-    for (i = 0; i < col_count; ++i)
+
+    std::vector<xd::ColumnInfo>::const_iterator cit;
+    for (cit = def.columns.cbegin(); cit != def.columns.cend(); ++cit)
     {
-        colinfo = structure->getColumnInfoByIdx(i);
-        insertRowFromColumnInfo(row, colinfo, source_structure);
+        insertRowFromColumnInfo(row, *cit);
         row++;
     }
     
+
     updateNumberColumn();
     resizeAllGridColumnsToFitDoc(m_grid);
 
@@ -625,7 +601,6 @@ void TransformationDoc::initFromSet(const wxString& path)
 
     // update the status bar
     updateStatusBar();
-*/
 }
 
 void TransformationDoc::close()
@@ -640,7 +615,7 @@ void TransformationDoc::getTransformation(std::vector<TransformField>& result)
     int width;
     int scale;
     wxString expression;
-    bool dynamic;
+    bool calculated;
 
     int row, row_count = m_grid->getRowCount();
     
@@ -655,7 +630,7 @@ void TransformationDoc::getTransformation(std::vector<TransformField>& result)
         width = m_grid->getCellInteger(row, colFieldWidth);
         scale = m_grid->getCellInteger(row, colFieldScale);
         expression = m_grid->getCellString(row, colFieldFormula);
-        dynamic = isFieldDynamic(m_grid, row);
+        calculated = isFieldCalculated(m_grid, row);
         
         TransformField field = getInputFieldByName(input_name);
         field.output_name = name;
@@ -663,7 +638,7 @@ void TransformationDoc::getTransformation(std::vector<TransformField>& result)
         field.output_width = width;
         field.output_scale = scale;
         field.output_expression = expression;
-        field.dynamic = dynamic;
+        field.calculated = calculated;
         
         result.push_back(field);
     }
@@ -715,6 +690,7 @@ void TransformationDoc::getColumnListItems(std::vector<ColumnListItem>& items)
 
 void TransformationDoc::onColumnListDblClicked(const std::vector<wxString>& items)
 {
+/*
     xd::IStructurePtr s = getTextSourceStructure(m_doc_site);
     if (s.isNull())
         return;
@@ -748,6 +724,7 @@ void TransformationDoc::onColumnListDblClicked(const std::vector<wxString>& item
     m_grid->Thaw();
     
     updateStatusBar();
+*/
 }
 
 TransformField TransformationDoc::getInputFieldByName(const wxString& input_name)
@@ -771,7 +748,7 @@ void TransformationDoc::checkOverlayText()
         m_grid->setOverlayText(wxEmptyString);
 }
 
-void TransformationDoc::insertRow(int row, bool dynamic)
+void TransformationDoc::insertRow(int row, bool calculated)
 {
     if (row == -1)
         row = m_grid->getRowCount();
@@ -787,13 +764,12 @@ void TransformationDoc::insertRow(int row, bool dynamic)
     f->output_width = 20;
     f->output_scale = 0;
     f->output_expression = wxT("\"\"");
-    f->dynamic = dynamic;
+    f->calculated = calculated;
     f->original = false;
     
     m_grid->insertRow(row);
     m_grid->setRowData(row, (long)f);
-    m_grid->setCellBitmap(row, colRowNumber, dynamic ? GETBMP(gf_lightning_16)
-                                                     : GETBMP(xpm_blank_16));
+    m_grid->setCellBitmap(row, colRowNumber, calculated ? GETBMP(gf_lightning_16) : GETBMP(xpm_blank_16));
     m_grid->setCellComboSel(row, colFieldType, xd2choice(f->output_type));
     m_grid->setCellString(row, colFieldName, f->output_name);
     m_grid->setCellInteger(row, colFieldWidth, f->output_width);
@@ -810,7 +786,7 @@ void TransformationDoc::insertRow(int row, bool dynamic)
     checkOverlayText();
 }
 
-void TransformationDoc::insertSelectedRows(bool dynamic)
+void TransformationDoc::insertSelectedRows(bool calculated)
 {
     kcl::SelectionRect rect;
     int sel_count = m_grid->getSelectionCount();
@@ -824,14 +800,14 @@ void TransformationDoc::insertSelectedRows(bool dynamic)
         
         while (row-- >= start_row)
         {
-            insertRow(start_row, dynamic);
+            insertRow(start_row, calculated);
         }
     }
     
     // the grid is empty, insert a starter row
     if (sel_count == 0 && m_grid->getRowCount() == 0)
     {
-        insertRow(0, dynamic);
+        insertRow(0, calculated);
         m_grid->setRowSelected(0, true);
     }
 
@@ -840,25 +816,23 @@ void TransformationDoc::insertSelectedRows(bool dynamic)
     updateStatusBar();
 }
 
-void TransformationDoc::insertRowFromColumnInfo(int row,
-                                                xd::IColumnInfoPtr colinfo,
-                                                xd::IStructurePtr validate_against)
+void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& colinfo)
 {
     if (row == -1)
         row = m_grid->getRowCount();
         
     TransformField* f = new TransformField;
-    f->input_name = colinfo->getName();
+    f->input_name = colinfo.name;
     f->input_type = xd::typeCharacter;
-    f->input_width = colinfo->getWidth();
-    f->input_scale = colinfo->getScale();
-    f->input_offset = colinfo->getOffset();
-    f->output_name = makeProper(colinfo->getName());
-    f->output_type = colinfo->getType();
-    f->output_width = colinfo->getWidth();
-    f->output_scale = colinfo->getScale();
-    f->output_expression = colinfo->getExpression();
-    f->dynamic = colinfo->getCalculated() ? true : false;
+    f->input_width = colinfo.source_width;
+    f->input_scale = 0;
+    f->input_offset = colinfo.source_offset;
+    f->output_name = colinfo.name;
+    f->output_type = xd::typeCharacter;
+    f->output_width = colinfo.width;
+    f->output_scale = colinfo.scale;
+    f->output_expression = L"";
+    f->calculated = false;
     f->original = true;
     
     m_grid->insertRow(row);
@@ -867,7 +841,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row,
     m_grid->setCellComboSel(row, colFieldType, xd2choice(f->output_type));
     m_grid->setCellInteger(row, colFieldWidth, f->output_width);
     m_grid->setCellInteger(row, colFieldScale, f->output_scale);
-    if (f->dynamic)
+    if (f->calculated)
         m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_lightning_16));
      else
         m_grid->setCellBitmap(row, colRowNumber, GETBMP(xpm_blank_16));
@@ -878,8 +852,8 @@ void TransformationDoc::insertRowFromColumnInfo(int row,
     
     wxString source_name;
     int format_comboidx;
-    bool res = getInfoFromDestinationExpression(colinfo->getExpression(),
-                                                colinfo->getType(),
+    bool res = getInfoFromDestinationExpression(colinfo.expression,
+                                                colinfo.type,
                                                 &source_name,
                                                 &format_comboidx);
     if (!res)
@@ -897,7 +871,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row,
         
         // only set the expression cell's text if the column info's
         // expression was not a source name
-        wxString wx_expr = colinfo->getExpression();
+        wxString wx_expr = colinfo.expression;
         if (wx_expr.CmpNoCase(m_grid->getCellString(row, colSourceName)) != 0)
             m_grid->setCellString(row, colFieldFormula, wx_expr);
     }
@@ -912,9 +886,11 @@ void TransformationDoc::insertRowFromColumnInfo(int row,
     // get (or create) the field's expression
     wxString field_expr = getFieldExpression(row);
     
+    /*
     // make sure either a source field or an expression is specified
     int valid_res = validateExpression(validate_against, field_expr, f->output_type);
     updateExpressionIcon(row, valid_res);
+    */
 
     checkOverlayText();
 }
@@ -1266,7 +1242,7 @@ void TransformationDoc::clearProblemRows()
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        if (isFieldDynamic(m_grid, row))
+        if (isFieldCalculated(m_grid, row))
             m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_lightning_16));
          else
             m_grid->setCellBitmap(row, colRowNumber, GETBMP(xpm_blank_16));
@@ -1445,7 +1421,7 @@ xd::IStructurePtr TransformationDoc::createStructureFromGrid()
         col->setType(choice2xd(m_grid->getCellComboSel(row, colFieldType)));
         col->setWidth(m_grid->getCellInteger(row, colFieldWidth));
         col->setScale(m_grid->getCellInteger(row, colFieldScale));
-        col->setCalculated(isFieldDynamic(m_grid, row));
+        col->setCalculated(isFieldCalculated(m_grid, row));
     }
     
     return s;
@@ -1488,7 +1464,7 @@ void TransformationDoc::onInsertingRows(std::vector<int> rows)
     }
     
     // insert the selected rows
-    insertSelectedRows(false /* dynamic */);
+    insertSelectedRows(false /* calculated */);
 }
 
 void TransformationDoc::onDeletedRows(std::vector<int> rows)
@@ -1876,7 +1852,7 @@ void TransformationDoc::onInsertField(wxCommandEvent& evt)
     m_dirty = true;
 
     // insert the selected rows
-    insertSelectedRows(false /* dynamic */);
+    insertSelectedRows(false /* calculated */);
 }
 
 void TransformationDoc::onDeleteField(wxCommandEvent& evt)
@@ -2335,6 +2311,7 @@ void TransformationDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
         }
          else if (fmt.GetId() == kcl::getGridDataFormat(wxT("fieldspanel")))
         {
+        /*
             xd::IStructurePtr s = getTextSourceStructure(m_doc_site);
             if (s.isNull())
                 return;
@@ -2378,6 +2355,7 @@ void TransformationDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
             checkInvalidFieldnames(CheckMarkRows);
             m_grid->refresh(kcl::Grid::refreshAll);
             updateStatusBar();
+        */
         }
 
         m_dirty = true;

@@ -185,9 +185,9 @@ public:
 
 public: // signals
 
-    xcm::signal1<TextViewColumn /*column*/> sigColumnAdded;
-    xcm::signal1<TextViewColumn /*column*/> sigColumnDeleted;
-    xcm::signal2<TextViewColumn /*column*/, TextViewColumn /*new_settings*/> sigColumnModified;
+    xcm::signal1<TextViewColumn& /*column*/> sigColumnAdded;
+    xcm::signal1<TextViewColumn& /*column*/> sigColumnDeleted;
+    xcm::signal2<TextViewColumn& /*column*/, TextViewColumn& /*new_settings*/> sigColumnModified;
     xcm::signal2<int /*new_cursor_offset*/, int /*new_cursor_row*/> sigCursorPositionChanged;
         
 private:
