@@ -92,6 +92,10 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def
     if (!root.fromString(str))
         return false;
 
+    // clear out the object
+    *def = xd::FormatDefinition();
+
+    // load properties
     def->object_id = root["object_id"];
 
     std::wstring object_type = root["object_type"];
@@ -135,7 +139,7 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def
         def->text_qualifiers = delimitedtext["text_qualifiers"];
         def->delimiters = delimitedtext["delimiters"];
         def->line_delimiters = delimitedtext["line_delimiters"];
-        def->first_row_column_names = delimitedtext["header_row"].getBoolean();;
+        def->first_row_column_names = delimitedtext["header_row"].getBoolean();
     }
 
     if (root.childExists("fixedlengthtext"))
@@ -144,6 +148,29 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def
         def->fixed_start_offset = fixedlengthtext["start_offset"].getInteger();
         def->fixed_row_width = fixedlengthtext["row_width"].getInteger();
         def->fixed_line_delimited = fixedlengthtext["line_delimited"].getBoolean();
+    }
+
+    
+    def->columns.clear();
+    if (root.childExists("columns"))
+    {
+        std::vector<kl::JsonNode> children = root["columns"].getChildren();
+        std::vector<kl::JsonNode>::iterator it, it_end = children.end();
+        
+        for (it = children.begin(); it != it_end; ++it)
+        {
+            xd::ColumnInfo col;
+
+            col.name = (*it)["name"];
+            col.type = xd::stringToDbtype((*it)["type"]);
+            col.width = (*it)["width"].getInteger();
+            col.scale = (*it)["scale"].getInteger();
+            col.source_offset = (*it)["source_offset"].getInteger();
+            col.source_width = (*it)["source_width"].getInteger();
+            col.source_encoding = xd::stringToDbencoding((*it)["source_encoding"]);
+
+            def->columns.push_back(col);
+        }
     }
 
     return true;
@@ -160,7 +187,7 @@ bool saveDefinitionToFile(const std::wstring& path, const xd::FormatDefinition* 
 
 bool loadDefinitionFromFile(const std::wstring& path, xd::FormatDefinition* def)
 {
-    std::wstring str = xf_get_file_contents(path);;
+    std::wstring str = xf_get_file_contents(path);
     return loadDefinitionFromString(str, def);
 }
 

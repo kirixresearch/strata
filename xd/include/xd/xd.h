@@ -60,8 +60,6 @@ xcm_interface IStructure;
 
 xcm_interface IIteratorRelation;
 xcm_interface IRelationSchema;
-xcm_interface IDelimitedTextSet;
-xcm_interface IFixedLengthDefinition;
 
 // smart pointer declarations
 
@@ -71,7 +69,6 @@ XCM_DECLARE_SMARTPTR(IColumnInfo)
 XCM_DECLARE_SMARTPTR(IDatabase)
 XCM_DECLARE_SMARTPTR(IDatabaseEntry)
 XCM_DECLARE_SMARTPTR(IDatabaseMgr)
-XCM_DECLARE_SMARTPTR(IDelimitedTextSet)
 XCM_DECLARE_SMARTPTR(IIndexInfo)
 XCM_DECLARE_SMARTPTR(IJob)
 XCM_DECLARE_SMARTPTR(IIterator)
@@ -80,7 +77,6 @@ XCM_DECLARE_SMARTPTR(IRelation)
 XCM_DECLARE_SMARTPTR(IRowInserter)
 XCM_DECLARE_SMARTPTR(ICacheRowUpdate)
 XCM_DECLARE_SMARTPTR(IStream)
-XCM_DECLARE_SMARTPTR(IFixedLengthDefinition)
 XCM_DECLARE_SMARTPTR(IIteratorRelation)
 XCM_DECLARE_SMARTPTR(IRelationSchema)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IIndexInfoPtr>, IIndexInfoEnumPtr)
@@ -821,81 +817,6 @@ public:
     virtual bool deleteRelation(const std::wstring& relation_id) = 0;
     virtual IRelationPtr getRelation(const std::wstring& relation_id) = 0;
     virtual IRelationEnumPtr getRelationEnum(const std::wstring& path) = 0;
-};
-
-
-
-
-
-xcm_interface IDelimitedTextSet : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("xd.IDelimitedTextSet")
-
-public:
-
-    virtual bool saveConfiguration() = 0;
-    virtual bool deleteConfiguration() = 0;
-    
-    virtual IStructurePtr getSourceStructure() = 0;
-    virtual IStructurePtr getDestinationStructure() = 0;
-    virtual IStructurePtr getStructure() = 0;
-    
-    virtual bool modifySourceStructure(IStructure* struct_config, IJob* job) = 0;
-    virtual bool modifyDestinationStructure(IStructure* struct_config, IJob* job) = 0;
-    virtual bool modifyStructure(IStructure* struct_config, IJob* job) = 0;
-    
-    virtual bool renameSourceColumn(const std::wstring& source_col,
-                                    const std::wstring& new_val) = 0;
-    
-    virtual void setDelimiters(const std::wstring& new_val,
-                               bool refresh_structure) = 0;
-    virtual std::wstring getDelimiters() = 0;
-    
-    virtual void setLineDelimiters(const std::wstring& new_val,
-                                   bool refresh_structure) = 0;
-    virtual std::wstring getLineDelimiters() = 0;
-    
-    virtual void setTextQualifier(const std::wstring& new_val,
-                                  bool refresh_structure) = 0;
-    virtual std::wstring getTextQualifier() = 0;
-    
-    virtual void setDiscoverFirstRowColumnNames(bool new_val) = 0;
-    virtual void setFirstRowColumnNames(bool new_val) = 0;
-    virtual bool isFirstRowColumnNames() = 0;
-    
-    virtual IIteratorPtr createSourceIterator(IJob* job) = 0;
-    
-    // check rows specifies the number of rows to check; -1 instructs
-    // the function to check all rows
-    virtual bool determineColumns(int check_rows, IJob* job) = 0;
-};
-
-
-xcm_interface IFixedLengthDefinition : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("xd.IFixedLengthDefinition")
-
-public:
-
-    virtual bool saveConfiguration() = 0;
-    virtual bool deleteConfiguration() = 0;
-
-    virtual IStructurePtr getSourceStructure() = 0;
-    virtual IStructurePtr getDestinationStructure() = 0;
-    virtual IStructurePtr getStructure() = 0;
-    
-    virtual bool modifySourceStructure(IStructure* struct_config, IJob* job) = 0;
-    virtual bool modifyDestinationStructure(IStructure* struct_config, IJob* job) = 0;
-    virtual bool modifyStructure(IStructure* struct_config, IJob* job) = 0;
-        
-    virtual void setBeginningSkipCharacterCount(size_t new_val) = 0;
-    virtual size_t getBeginningSkipCharacterCount() = 0;
-    
-    virtual void setRowWidth(size_t new_val) = 0;
-    virtual size_t getRowWidth() = 0;
-    
-    virtual void setLineDelimited(bool new_val) = 0;
-    virtual bool isLineDelimited() = 0;
 };
 
 

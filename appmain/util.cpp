@@ -1311,7 +1311,7 @@ xd::IIndexInfoPtr lookupIndex(xd::IIndexInfoEnumPtr idx_enum, const std::wstring
         return xcm::null;
 
     std::vector<std::wstring> expr_cols;
-    size_t i, idx_count = idx_enum->size();;
+    size_t i, idx_count = idx_enum->size();
     xd::IIndexInfoPtr result;
 
     kl::parseDelimitedList(expr, expr_cols, L',', true);

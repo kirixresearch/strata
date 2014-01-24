@@ -1956,7 +1956,7 @@ void TextView::beginEdit(int col_idx)
                                                 m_cols[col_idx].name,
                                                 wxPoint(x,0),
                                                 wxSize(w+1,CAPTION_HEIGHT),
-                                                0);
+                                                wxTE_PROCESS_ENTER);
     text->SetMaxLength(80);
     text->SetFocus();
     text->SetSelection(-1,-1);

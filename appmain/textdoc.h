@@ -92,6 +92,7 @@ public:
     xd::IStructurePtr getStructure();
     bool open(const wxString& filename);
     void close();
+    bool save();
     wxString getPath();
     
     

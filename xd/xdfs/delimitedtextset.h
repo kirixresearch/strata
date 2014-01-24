@@ -66,8 +66,7 @@ public:
 
 class DelimitedTextSet : public XdfsBaseSet,
                          public IXdfsSet,
-                         public IXdsqlTable,
-                         public xd::IDelimitedTextSet
+                         public IXdsqlTable
 {
 friend class FsDatabase;
 friend class DelimitedTextIterator;
@@ -78,7 +77,6 @@ friend class DelimitedTextRowInserter;
         XCM_INTERFACE_ENTRY(XdfsBaseSet)
         XCM_INTERFACE_ENTRY(IXdfsSet)
         XCM_INTERFACE_ENTRY(IXdsqlTable)
-        XCM_INTERFACE_ENTRY(xd::IDelimitedTextSet)
     XCM_END_INTERFACE_MAP()
 
 public:

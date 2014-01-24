@@ -3716,7 +3716,7 @@ void HostData::importBinaryFile(kscript::ExprEnv* env, kscript::Value* retval)
     }
     
     
-    std::wstring mime_type;;
+    std::wstring mime_type;
     if (env->getParamCount() >= 3)
     {
         mime_type = env->getParam(2)->getString();

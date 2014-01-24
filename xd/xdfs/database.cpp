@@ -1899,48 +1899,45 @@ IXdsqlTablePtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatD
 
         if (fi->format == xd::formatDefault)
         {
-            xd::IDelimitedTextSetPtr tset = set;
-            
             // default format specified
-            if (delimiters != tset->getDelimiters())
-                tset->setDelimiters(fi->delimiters, true);
+            if (delimiters != rawset->getDelimiters())
+                rawset->setDelimiters(fi->delimiters, true);
 
             if (fi->determine_structure)
-                tset->determineColumns(-1, NULL);
+                rawset->determineColumns(-1, NULL);
         }
          else if (fi->format == xd::formatDelimitedText)
         {
-            xd::IDelimitedTextSetPtr tset = set;
             bool need_refresh = false;
 
-            if (fi->delimiters != tset->getDelimiters())
+            if (fi->delimiters != rawset->getDelimiters())
             {
-                tset->setDelimiters(fi->delimiters, false);
+                rawset->setDelimiters(fi->delimiters, false);
                 need_refresh = true;
             }
             
-            if (fi->text_qualifiers != tset->getTextQualifier())
+            if (fi->text_qualifiers != rawset->getTextQualifier())
             {
-                tset->setTextQualifier(fi->text_qualifiers, false);
+                rawset->setTextQualifier(fi->text_qualifiers, false);
                 need_refresh = true;
             }
 
-            if (fi->line_delimiters != tset->getLineDelimiters())
+            if (fi->line_delimiters != rawset->getLineDelimiters())
             {
-                tset->setLineDelimiters(fi->line_delimiters, false);
+                rawset->setLineDelimiters(fi->line_delimiters, false);
                 need_refresh = true;
             }
 
-            if (fi->first_row_column_names != tset->isFirstRowColumnNames())
+            if (fi->first_row_column_names != rawset->isFirstRowColumnNames())
             {
-                tset->setDiscoverFirstRowColumnNames(false);
-                tset->setFirstRowColumnNames(fi->first_row_column_names);
+                rawset->setDiscoverFirstRowColumnNames(false);
+                rawset->setFirstRowColumnNames(fi->first_row_column_names);
 
                 need_refresh = true;
             }
 
             if (need_refresh || fi->determine_structure)
-                tset->determineColumns(-1, NULL);
+                rawset->determineColumns(-1, NULL);
         }
 
     }       

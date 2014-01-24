@@ -17,11 +17,10 @@
 #include "baseset.h"
 
 
-class FixedLengthDefinition : public xd::IFixedLengthDefinition
+class FixedLengthDefinition : public xcm::IObject
 {
     XCM_CLASS_NAME("xdfs.FixedLengthDefinition")
     XCM_BEGIN_INTERFACE_MAP(FixedLengthDefinition)
-        XCM_INTERFACE_ENTRY(xd::IFixedLengthDefinition)
     XCM_END_INTERFACE_MAP()
     
 public:
@@ -74,8 +73,7 @@ public:
 
 class FixedLengthTextSet : public XdfsBaseSet,
                            public IXdfsSet,
-                           public IXdsqlTable,
-                           public xd::IFixedLengthDefinition
+                           public IXdsqlTable
 {
 friend class FsDatabase;
 friend class FixedLengthTextIterator;
@@ -86,7 +84,6 @@ friend class FixedLengthTextRowInserter;
         XCM_INTERFACE_ENTRY(XdfsBaseSet)
         XCM_INTERFACE_ENTRY(IXdfsSet)
         XCM_INTERFACE_ENTRY(IXdsqlTable)
-        XCM_INTERFACE_ENTRY(xd::IFixedLengthDefinition)
     XCM_END_INTERFACE_MAP()
 
 public:

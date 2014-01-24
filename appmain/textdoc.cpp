@@ -716,8 +716,7 @@ bool TextDoc::open(const wxString& filename)
         col.width = 80;
 
         m_def.columns.push_back(col);
-        if (!db->saveDataView(towstr(m_path), &m_def))
-            return false;
+        save();
     }
      else
     {
@@ -759,6 +758,14 @@ void TextDoc::close()
     m_grid->setModel(xcm::null);
 }
 
+bool TextDoc::save()
+{
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return false;
+
+    return db->saveDataView(towstr(m_path), &m_def);
+}
 
 bool TextDoc::initTextDelimitedView()
 {
@@ -1204,6 +1211,7 @@ void TextDoc::onTextViewColumnAdded(TextViewColumn& col)
         newcol.source_width = col.width;
 
         m_def.columns.insert(m_def.columns.begin() + idx, newcol);
+        save();
     }
 
 
@@ -1313,7 +1321,6 @@ void TextDoc::onTextViewColumnDeleted(TextViewColumn& col)
 
 void TextDoc::onTextViewColumnModified(TextViewColumn& col, TextViewColumn& new_settings)
 {
-/*
     // if we're loading a text definition, we don't want to process
     // the signals that the TextView is firing to us
     if (m_loading_definition)
@@ -1322,57 +1329,40 @@ void TextDoc::onTextViewColumnModified(TextViewColumn& col, TextViewColumn& new_
     // get the index of the column from the offset
     size_t idx = m_textview->getColumnIdxFromOffset(col.offset);
     
-    // modify the column in the fixed-length text set
-    xd::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
-    if (fset.isOk())
+    std::wstring orig_col;
+
+    if (idx <= m_def.columns.size())
     {
-        xd::IStructurePtr s = fset->getSourceStructure();
-        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(idx);
-        xd::IColumnInfoPtr modinfo = s->modifyColumn(colinfo->getName());
-        modinfo->setOffset(new_settings.offset);
-        modinfo->setWidth(new_settings.width);
-        modinfo->setEncoding(new_settings.encoding);
-        modinfo->setName(towstr(new_settings.name));
-        fset->modifySourceStructure(s, NULL);
-        
-        std::wstring src_colname = colinfo->getName();
-        int src_width = colinfo->getWidth();
-        
-        // now, lookup and modify any columns in the destination
-        // structure that have a corresponding expression
-        s = fset->getDestinationStructure();
-        int i, col_count = s->getColumnCount();
-        for (i = 0; i < col_count; ++i)
+        xd::ColumnInfo& col = m_def.columns[idx];
+
+        if (new_settings.name.length() > 0)
+            col.name = towstr(new_settings.name);
+
+        col.type = xd::typeCharacter;
+
+        col.scale = 0;
+
+        if (new_settings.encoding != -1)
+            col.source_encoding = new_settings.encoding;
+
+        if (new_settings.offset != -1)
+            col.source_offset = new_settings.offset;
+
+        if (new_settings.width != -1)
         {
-            colinfo = s->getColumnInfoByIdx(i);
-            
-            if (colinfo->getExpression() == src_colname)
-            {
-                modinfo = s->modifyColumn(colinfo->getName());
-                
-                if (!new_settings.name.IsEmpty())
-                {
-                    modinfo->setExpression(towstr(new_settings.name));
-                    
-                    if (colinfo->getName() == src_colname)
-                        modinfo->setName(towstr(new_settings.name));
-                }
-                
-                if (new_settings.width != -1)
-                {
-                    if (colinfo->getWidth() == src_width)
-                        modinfo->setWidth(new_settings.width);
-                }
-            }
+            col.width = new_settings.width;
+            col.source_width = new_settings.width;
         }
-        fset->modifyDestinationStructure(s, NULL);
+
+        save();
     }
+
 
     // repopulate the TransformationDoc from the destination structure
     ITransformationDocPtr transdoc;
     transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
     if (transdoc)
-        transdoc->initFromSet(m_fixedlength_set);
+        transdoc->initFromDefinition(m_def);
 
     // update the TableDoc
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
@@ -1382,9 +1372,9 @@ void TextDoc::onTextViewColumnModified(TextViewColumn& col, TextViewColumn& new_
         if (!new_settings.name.IsEmpty())
         {
             ITableDocViewPtr tabledocview = tabledoc->getActiveView();
-            if (tabledocview)
+            if (tabledocview && orig_col.length() > 0 && !kl::iequals(orig_col, new_settings.name.ToStdWstring()))
             {
-                int viewidx = tabledocview->getColumnIdx(towstr(col.name));
+                int viewidx = tabledocview->getColumnIdx(orig_col);
                 
                 // only modify the column from our view if it exists in the view
                 if (viewidx != -1)
@@ -1396,14 +1386,13 @@ void TextDoc::onTextViewColumnModified(TextViewColumn& col, TextViewColumn& new_
         }
 
         // update the TableDoc's base set and refresh its view
-        tabledoc->open(m_path);
+        tabledoc->open(towstr(m_path));
         tabledoc->refreshActiveView();
     }
     
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
-*/
 }
 
 void TextDoc::onTextViewCursorPositionChanged(int new_cursor_offset,
@@ -1438,11 +1427,7 @@ void TextDoc::onSize(wxSizeEvent& evt)
 
 void TextDoc::onSave(wxCommandEvent& evt)
 {
-    xd::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return;
-
-    db->saveDataView(towstr(m_path), &m_def);
+    save();
 }
 
 void TextDoc::onToggleView(wxCommandEvent& evt)
@@ -1540,6 +1525,7 @@ void TextDoc::onFixedLengthSkipCharSpun(wxSpinEvent& evt)
     m_textview->refresh();
 
     m_def.fixed_start_offset = val;
+    save();
 
     // update the TableDoc's base set
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
@@ -1575,7 +1561,8 @@ void TextDoc::onFixedLengthSkipCharTextEnter(wxCommandEvent& evt)
     m_textview->refresh();
 
     m_def.fixed_start_offset = val;
-    
+    save();
+
     // update the TableDoc's base set
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
@@ -1609,6 +1596,8 @@ void TextDoc::onFixedLengthRowWidthTextEnter(wxCommandEvent& evt)
         val = (int)(filesize);
     
     m_def.fixed_row_width = val;   
+    save();
+
     m_textview->setRowWidth(val);
     m_textview->refresh();
     
@@ -1630,6 +1619,7 @@ void TextDoc::onFixedLengthRowWidthSpun(wxSpinEvent& evt)
         return;
         
     m_def.fixed_row_width = m_rowwidth_spinctrl->GetValue();
+    save();
     m_textview->setRowWidth(m_def.fixed_row_width);
     m_textview->refresh();
 
@@ -1648,6 +1638,8 @@ void TextDoc::onFixedLengthRowWidthSpun(wxSpinEvent& evt)
 void TextDoc::onFixedLengthLineDelimitedChecked(wxCommandEvent& evt)
 {
     m_def.fixed_line_delimited = evt.IsChecked();
+    save();
+
     if (m_def.fixed_line_delimited)
     {
         m_textview->setFileType(TextViewModel::lineDelimited);

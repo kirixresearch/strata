@@ -1003,7 +1003,7 @@ void OdbcDatabase::setAttributes(HDBC connection)
             std::wstring dbms_quote_str;
             short out_length = 0;
         
-            retval = SQLGetInfo(connection, SQL_IDENTIFIER_QUOTE_CHAR, dbms_quote, 16, &out_length);;
+            retval = SQLGetInfo(connection, SQL_IDENTIFIER_QUOTE_CHAR, dbms_quote, 16, &out_length);
             dbms_quote_str = sql2wstring(dbms_quote);
 
             m_attr->setStringAttribute(xd::dbattrColumnInvalidChars, 

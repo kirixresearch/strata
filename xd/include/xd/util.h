@@ -95,6 +95,48 @@ inline int stringToDbtype(const std::wstring& type)
     else return xd::typeUndefined;
 }
 
+
+
+// general utility functions
+
+inline std::wstring dbencodingToString(int type)
+{
+    switch (type)
+    {
+        default:
+        case xd::encodingInvalid:   return L"invalid";    
+        case xd::encodingUndefined: return L"undefined";      
+        case xd::encodingASCII:     return L"ascii";    
+        case xd::encodingUTF8:      return L"utf8";
+        case xd::encodingUTF16:     return L"utf16";      
+        case xd::encodingUTF32:     return L"utf32";       
+        case xd::encodingUCS2:      return L"ucs2";      
+        case xd::encodingUTF16BE:   return L"utf16be";         
+        case xd::encodingISO8859_1: return L"iso8859-1";     
+        case xd::encodingEBCDIC:    return L"ebcdic";      
+        case xd::encodingCOMP:      return L"comp";       
+        case xd::encodingCOMP3:     return L"comp3"; 
+    }
+}
+
+
+inline int stringToDbencoding(const std::wstring& type)
+{
+         if (type == L"invalid")   return xd::encodingInvalid;
+    else if (type == L"undefined") return xd::encodingUndefined;
+    else if (type == L"ascii")     return xd::encodingASCII;
+    else if (type == L"utf8")      return xd::encodingUTF8;
+    else if (type == L"utf16")     return xd::encodingUTF16;
+    else if (type == L"utf32")     return xd::encodingUTF32;
+    else if (type == L"ucs2")      return xd::encodingUCS2;
+    else if (type == L"utf16be")   return xd::encodingUTF16BE;
+    else if (type == L"iso8859-1") return xd::encodingISO8859_1;
+    else if (type == L"ebcdic")    return xd::encodingEBCDIC;
+    else if (type == L"comp")      return xd::encodingCOMP;
+    else if (type == L"comp3")     return xd::encodingCOMP3;
+    else return xd::encodingInvalid;
+}
+
 inline bool isTypeCompatible(int type1, int type2)
 {
     // determines if two tango types are compatible
