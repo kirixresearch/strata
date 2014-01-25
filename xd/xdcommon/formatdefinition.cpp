@@ -83,6 +83,36 @@ std::wstring saveDefinitionToString(const xd::FormatDefinition* def)
         fixedlengthtext["line_delimited"].setBoolean(def->fixed_line_delimited);
     }
 
+
+    if (def->columns.size() > 0)
+    {
+        kl::JsonNode columns_node = root["columns"];
+        columns_node.setArray();
+
+        std::vector<xd::ColumnInfo>::const_iterator it, it_end = def->columns.cend();
+        for (it = def->columns.cbegin(); it != it_end; ++it)
+        {
+            kl::JsonNode col = columns_node.appendElement();
+            col.setObject();
+
+            col["name"] = it->name;
+            col["type"] = xd::dbtypeToString(it->type);
+            col["width"] = it->width;
+            col["scale"] = it->scale;
+
+            if (it->expression.length() > 0)
+                col["expression"] = it->expression;
+
+            if (def->format == xd::formatFixedLengthText)
+            {
+                col["source_offset"].setInteger(it->source_offset);
+                col["source_width"].setInteger(it->source_width);
+                col["source_encoding"] = xd::dbencodingToString(it->source_encoding);
+            }
+        }
+    }
+
+
     return root.toString();
 }
 
@@ -167,7 +197,21 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def
             col.scale = (*it)["scale"].getInteger();
             col.source_offset = (*it)["source_offset"].getInteger();
             col.source_width = (*it)["source_width"].getInteger();
-            col.source_encoding = xd::stringToDbencoding((*it)["source_encoding"]);
+
+            if (it->childExists("source_encoding"))
+                col.source_encoding = xd::stringToDbencoding((*it)["source_encoding"]);
+                 else
+                col.source_encoding = xd::encodingUndefined;
+
+            if (it->childExists("expression"))
+                col.expression = (*it)["expression"];
+
+            col.calculated = !col.expression.empty();
+
+            if (it->childExists("nulls_allowed"))
+                col.nulls_allowed = (*it)["expression"].getBoolean();
+                 else
+                col.nulls_allowed = false;
 
             def->columns.push_back(col);
         }
