@@ -107,7 +107,8 @@ std::wstring saveDefinitionToString(const xd::FormatDefinition* def)
             {
                 col["source_offset"].setInteger(it->source_offset);
                 col["source_width"].setInteger(it->source_width);
-                col["source_encoding"] = xd::dbencodingToString(it->source_encoding);
+                if (it->source_encoding != xd::encodingUndefined)
+                    col["source_encoding"] = xd::dbencodingToString(it->source_encoding);
             }
         }
     }

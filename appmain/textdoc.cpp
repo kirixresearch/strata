@@ -1254,7 +1254,6 @@ void TextDoc::onTextViewColumnAdded(TextViewColumn& col)
 
 void TextDoc::onTextViewColumnDeleted(TextViewColumn& col)
 {
-/*
     // if we're loading a text definition, we don't want to process
     // the signals that the TextView is firing to us
     if (m_loading_definition)
@@ -1263,34 +1262,21 @@ void TextDoc::onTextViewColumnDeleted(TextViewColumn& col)
     // get the index of the column from the offset
     size_t idx = m_textview->getColumnIdxFromOffset(col.offset);
     
-    // delete the column into the fixed-length text set
-    xd::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
-    if (fset.isOk())
+    std::wstring deleted_colname;
+
+    if (idx < m_def.columns.size())
     {
-        xd::IStructurePtr s = fset->getSourceStructure();
-        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(idx);
-        s->deleteColumn(colinfo->getName());
-        fset->modifySourceStructure(s, NULL);
-        
-        // now, lookup and delete any columns in the destination
-        // structure that have a corresponding expression
-        s = fset->getDestinationStructure();
-        int i, col_count = s->getColumnCount();
-        for (i = 0; i < col_count; ++i)
-        {
-            colinfo = s->getColumnInfoByIdx(i);
-            
-            if (col.name == colinfo->getExpression())
-                s->deleteColumn(colinfo->getName());
-        }
-        fset->modifyDestinationStructure(s, NULL);
+        deleted_colname = m_def.columns[idx].name;
+        m_def.columns.erase(m_def.columns.begin() + idx);
+        save();
     }
+
 
     // repopulate the TransformationDoc from the destination structure
     ITransformationDocPtr transdoc;
     transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
     if (transdoc)
-        transdoc->initFromSet(m_fixedlength_set);
+        transdoc->initFromDefinition(m_def);
 
     // delete the column from the TableDoc's view
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
@@ -1309,14 +1295,13 @@ void TextDoc::onTextViewColumnDeleted(TextViewColumn& col)
         }
         
         // update the TableDoc's base set and refresh its view
-        tabledoc->open(m_path);
+        tabledoc->open(towstr(m_path));
         tabledoc->refreshActiveView();
     }
 
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
-*/
 }
 
 void TextDoc::onTextViewColumnModified(TextViewColumn& col, TextViewColumn& new_settings)
