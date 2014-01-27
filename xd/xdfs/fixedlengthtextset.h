@@ -15,61 +15,7 @@
 
 #include <kl/file.h>
 #include "baseset.h"
-
-
-class FixedLengthDefinition : public xcm::IObject
-{
-    XCM_CLASS_NAME("xdfs.FixedLengthDefinition")
-    XCM_BEGIN_INTERFACE_MAP(FixedLengthDefinition)
-    XCM_END_INTERFACE_MAP()
-    
-public:
-
-    enum FileType
-    {
-        FixedWidth = 100,
-        LineDelimited = 101
-    };
-
-    enum CharacterEncoding
-    {
-        AsciiEncoding = 500,
-        EbcdicEncoding = 501
-    };
-    
-public:
-
-    FixedLengthDefinition();
-    
-    virtual bool saveConfiguration() { return false; }
-    virtual bool deleteConfiguration() { return false; }
-
-    virtual xd::IStructurePtr getSourceStructure() { return m_source_structure; }
-    virtual xd::IStructurePtr getDestinationStructure() { return m_dest_structure; }
-    virtual xd::IStructurePtr getStructure() { return xcm::null; }
-    
-    virtual bool modifySourceStructure(xd::IStructure* struct_config, xd::IJob* job) { return false; }
-    virtual bool modifyDestinationStructure(xd::IStructure* struct_config, xd::IJob* job) { return false; }
-    virtual bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job) { return false; }
-        
-    virtual void setBeginningSkipCharacterCount(size_t new_val) { m_skip_chars = new_val; }
-    virtual size_t getBeginningSkipCharacterCount() { return m_skip_chars; }
-    
-    virtual void setRowWidth(size_t new_val) { m_row_width = new_val; }
-    virtual size_t getRowWidth() { return m_row_width; }
-    
-    virtual void setLineDelimited(bool new_val) { m_file_type = new_val ? LineDelimited : FixedWidth; }
-    virtual bool isLineDelimited() { return (m_file_type == LineDelimited) ? true : false; }
-    
-public:
-    xd::IStructurePtr m_source_structure;
-    xd::IStructurePtr m_dest_structure;
-    std::wstring m_line_delimiters; // character array containing one or more line delimiters
-    size_t m_row_width;             // user-specified width of each row
-    int m_file_type;                // fixed or line-delimited (see fixedlengthtextset.h)
-    size_t m_skip_chars;            // number of chars to skip at the beginning of the file
-};
-
+#include "fixedlength.h"
 
 class FixedLengthTextSet : public XdfsBaseSet,
                            public IXdfsSet,
@@ -91,9 +37,7 @@ public:
     FixedLengthTextSet(FsDatabase* db);
     ~FixedLengthTextSet();
 
-    bool init(const std::wstring& filename);
-
-    void setCreateStructure(xd::IStructurePtr structure);
+    bool init(const std::wstring& filename, const xd::FormatDefinition& def);
 
     xd::IRowInserterPtr getRowInserter();
     IXdsqlRowDeleterPtr getRowDeleter() { return xcm::null; }
@@ -110,44 +54,21 @@ public:
                    xd::ColumnUpdateInfo* info,
                    size_t info_size) { return false; }
 
-    // xd::IFixedLengthDefinition
-
-    bool saveConfiguration();
-    bool deleteConfiguration();
-    
-    xd::IStructurePtr getSourceStructure();
-    xd::IStructurePtr getDestinationStructure();
     xd::IStructurePtr getStructure();
-    
-    bool modifySourceStructure(xd::IStructure* struct_config, xd::IJob* job);
-    bool modifyDestinationStructure(xd::IStructure* struct_config, xd::IJob* job);
-    bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
-        
-    void setBeginningSkipCharacterCount(size_t new_val);
-    size_t getBeginningSkipCharacterCount();
-    
-    void setRowWidth(size_t new_val);
-    size_t getRowWidth();
-    
-    void setLineDelimited(bool new_val);
-    bool isLineDelimited();
-
+   
     bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job) { return false; }
- 
-private:
 
-    bool loadConfiguration();
-    int guessFileType();
+    void setTemporary(bool value) { m_temporary = value; }
 
 private:
 
     std::wstring m_path;
-    std::wstring m_configfile_path;
-
-    FixedLengthDefinition* m_definition;
+    xd::FormatDefinition m_def;
+    FixedLengthTable m_file;
     
     xd::rowpos_t m_row_count;    // number of rows in the file
-    xf_off_t m_file_size;           // size of the file
+    xf_off_t m_file_size;        // size of the file
+    bool m_temporary;
 };
 
 

@@ -31,10 +31,6 @@ int convertType_ttb2xd(int native_type);
 
 
 
-class BitmapFile;
-class BitmapFileScroller;
-
-
 
 class TtbField
 {
@@ -116,9 +112,6 @@ public:
     bool setStructureModified();
 
 private:
-
-    xd::rowpos_t _findNextRowPos(xd::rowpos_t offset,
-                                 int delta);
 
     static void generateGuid(unsigned char* guid);
     void updateHeaderWithGuid();

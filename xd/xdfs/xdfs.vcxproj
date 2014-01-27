@@ -281,6 +281,7 @@
     </ClCompile>
     <ClCompile Include="delimitedtextiterator.cpp" />
     <ClCompile Include="delimitedtextset.cpp" />
+    <ClCompile Include="fixedlength.cpp" />
     <ClCompile Include="fixedlengthtextiterator.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -353,6 +354,7 @@
     <ClInclude Include="delimitedtext.h" />
     <ClInclude Include="delimitedtextiterator.h" />
     <ClInclude Include="delimitedtextset.h" />
+    <ClInclude Include="fixedlength.h" />
     <ClInclude Include="fixedlengthtextiterator.h" />
     <ClInclude Include="fixedlengthtextset.h" />
     <ClInclude Include="rawtext.h" />

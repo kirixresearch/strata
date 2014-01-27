@@ -760,23 +760,7 @@ bool TtbTable::getRow(xd::rowpos_t row, unsigned char* buf)
 }
 
 
-xd::rowpos_t TtbTable::_findNextRowPos(xd::rowpos_t offset, int delta)
-{
-    if (delta == 0)
-        return offset;
 
-    if (delta < 0)
-    {
-        if ((-delta) > offset)
-            return 0;
-    }
-
-    if (offset + delta > m_phys_row_count)
-        return 0;
-
-    return offset + delta;
-
-}
 
 int TtbTable::appendRows(unsigned char* buf, int row_count)
 {

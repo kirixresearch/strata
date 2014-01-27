@@ -1809,7 +1809,7 @@ IXdsqlTablePtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatD
             return xcm::null;
         if (deffi.format != xd::formatDefault)
             fi = &deffi;
-        phys_path = deffi.data_path;
+        phys_path = makeFullPath(deffi.data_path);
     }
 
     if (xf_get_file_exist(phys_path + L".ttb"))
@@ -1945,7 +1945,7 @@ IXdsqlTablePtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatD
     {
         FixedLengthTextSet* rawset = new FixedLengthTextSet(this);
         rawset->ref();
-        if (!rawset->init(phys_path))
+        if (!rawset->init(phys_path, *fi))
         {
             set->unref();
             return xcm::null;

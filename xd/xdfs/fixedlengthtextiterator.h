@@ -16,48 +16,45 @@
 #include "../xdcommon/cmnbaseiterator.h"
 #include "../xdcommon/keylayout.h"
 #include "../../kscript/kscript.h"
-#include "fixedlengthtextset.h"
 
 
-class FixedLengthTextIterator;
 
-struct FixedLengthTextDataAccessInfo
+// -- TtbDataAccessInfo struct declaration --
+
+struct TtbDataAccessInfo
 {
-    FixedLengthTextIterator* iter;
+    // metadata
+    char ttb_type;
 
-    int src_offset;
-    int src_width;
-    int src_encoding;
-    
     std::wstring name;
     int type;
+    int offset;
     int width;
     int scale;
     int ordinal;
     bool nulls_allowed;
-    bool calculated;
     std::wstring expr_text;
+    bool visible;           // is part of visible structure (via getStructure())
 
-    // -- expression stuff --
+    // expression stuff
     kscript::ExprParser* expr;
     KeyLayout* key_layout;
     kscript::Value expr_result;
     std::wstring wstr_result;
     std::string str_result;
 
-    FixedLengthTextDataAccessInfo()
+    TtbDataAccessInfo()
     {
-        src_offset = 0;
-        src_width = 0;
-        src_encoding = 0;
-        
+        ttb_type = 0;
+
         name = L"";
         type = xd::typeUndefined;
+        offset = 0;
         width = 0;
         scale = 0;
         ordinal = 0;
         nulls_allowed = false;
-        calculated = false;
+        visible = false;
         expr_text = L"";
 
         expr = NULL;
@@ -66,7 +63,7 @@ struct FixedLengthTextDataAccessInfo
         str_result = "";
     }
     
-    ~FixedLengthTextDataAccessInfo()
+    ~TtbDataAccessInfo()
     {
         delete expr;
         delete key_layout;
@@ -74,12 +71,18 @@ struct FixedLengthTextDataAccessInfo
     
     bool isCalculated() const
     {
-        return calculated;
+        return (expr_text.length() > 0) ? true : false;
+    }
+
+    bool isColumn() const
+    {
+        return (name.length() > 0) ? true : false;
     }
 };
 
 
-
+// FixedLengthTextIterator class declaration
+class FixedLengthTextSet;
 
 class FixedLengthTextIterator : public CommonBaseIterator
 {
@@ -91,18 +94,18 @@ friend class FixedLengthTextSet;
         XCM_INTERFACE_ENTRY(xd::IIteratorRelation)
     XCM_END_INTERFACE_MAP()
 
-    xd::IDatabase* cmniterGetDatabase() { return m_database.p; }
+    xd::IDatabase* cmniterGetDatabase() { return static_cast<xd::IDatabase*>(m_database); }
 
 public:
 
-    FixedLengthTextIterator();
+    FixedLengthTextIterator(FsDatabase* database);
     ~FixedLengthTextIterator();
 
-    bool init(xd::IDatabasePtr db,
-              FixedLengthTextSet* set,
-              const std::wstring& columns);
+    bool init(FixedLengthTextSet* set,  const std::wstring& filename, const std::wstring& columns);
+    bool init(FixedLengthTextSet* set,  FixedLengthTable* table, const std::wstring& columns);
+    bool initFromBuffer(FixedLengthTextSet* set, FixedLengthTable* table, unsigned char* buffer, const std::wstring& columns);
 
-    // IIterator interface
+    // xd::IIterator
 
     void setTable(const std::wstring& tbl);
     std::wstring getTable();
@@ -110,6 +113,7 @@ public:
     xd::IDatabasePtr getDatabase();
     xd::IIteratorPtr clone();
 
+    void setIteratorFlags(unsigned int mask, unsigned int value);
     unsigned int getIteratorFlags();
 
     void skip(int delta);
@@ -125,6 +129,7 @@ public:
     void goRow(const xd::rowid_t& rowid);
 
     xd::IStructurePtr getStructure();
+    xd::IStructurePtr getParserStructure();
     bool refreshStructure();
     bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
 
@@ -142,63 +147,44 @@ public:
     int getInteger(xd::objhandle_t data_handle);
     bool getBoolean(xd::objhandle_t data_handle);
     bool isNull(xd::objhandle_t data_handle);
-    
-    void updateDaiEntry(FixedLengthTextDataAccessInfo* dai);
 
 private:
 
-    bool internalEof(xf_off_t offset);
-    
-    size_t getCurrentRowLength();
-
-    wchar_t getChar(xf_off_t row, xf_off_t col);
-    wchar_t getCharAtOffset(xf_off_t offset);
-    wchar_t getDelimitedChar(xf_off_t row, xf_off_t col);
-    wchar_t getFixedChar(xf_off_t row, xf_off_t col);
-
-    kscript::ExprParser* createCastingExprParser();
-
-    static bool script_host_parse_hook(kscript::ExprParseHookInfo& info);
+    void updatePosition();
 
 private:
 
-    // override from the CommonBaseIterator.  This function
-    // gets the field names used in the expression parser
-    virtual xd::IStructurePtr getParserStructure();
-
-private:
-
-    xd::IDatabasePtr m_database;
+    FsDatabase* m_database;
     FixedLengthTextSet* m_set;
+    FixedLengthTable m_file;
+    FixedLengthTable* m_table; // usually a pointer to m_file
+    FixedLengthRow m_row;
+    std::wstring m_columns;
 
-    std::wstring m_columns_string;
-    std::vector<std::wstring> m_columns;
-    
-    std::vector<FixedLengthTextDataAccessInfo*> m_source_fields; // source fields in the fixed length
-    std::vector<FixedLengthTextDataAccessInfo*> m_fields;        // dest fields (real)
-    std::vector<FixedLengthTextDataAccessInfo*> m_exprs;         // expressions parsed with getHandle()
-
-    std::wstring m_path;
-    xf_file_t m_file;
-    xf_off_t m_file_size;
-
-    int m_file_type;                // fixed or line-delimited (see fixedlengthtextset.h)
-    std::wstring m_line_delimiters; // character array containing one or more delimiters
-    
-    xd::rowpos_t m_cur_row;      // the current row that we're on
-    xf_off_t m_cur_row_offset;      // offset where the current row begins
-    size_t m_cur_row_length;        // length of the current row
-    size_t m_row_width;             // user-specified width of each row
-    size_t m_skip_chars;            // number of chars to skip at the beginning of the file
-
-    size_t m_chunk_size;            // size of data inside m_buf
-    xf_off_t m_chunk_offset;        // offset of m_buf in the file
-
+    xd::tableord_t m_table_ord;
+    xd::rowid_t m_rowid;
+    int m_buf_rowcount;
+    int m_buf_pos;
+    int m_read_ahead_rowcount;
+    int m_table_rowwidth;
+    xd::rowpos_t m_row_num;    // sequential row number for ROWNUM()
+    xd::rowpos_t* m_rowpos_buf;
     unsigned char* m_buf;
+    unsigned char* m_rowptr;
+    bool m_include_deleted;
+    bool m_bof;
+    bool m_eof;
+    bool m_buffer_wrapper_mode;
+
+    std::vector<TtbDataAccessInfo*> m_fields;
+    std::vector<TtbDataAccessInfo*> m_exprs;
 };
 
 
+
+
 #endif
+
 
 
 
