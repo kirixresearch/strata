@@ -128,11 +128,11 @@ ITextDocPtr createTextDoc(const std::wstring& filename,
     
     // create a new TableDoc
     ITableDocPtr tabledoc = TableDocMgr::createTableDoc();
-    tabledoc->open(filename);
+    tabledoc->open(towstr(textdoc->getPath()));
 
     // create a new TransformationDoc
     TransformationDoc* transdoc = new TransformationDoc();
-    if (!transdoc->open(filename))
+    if (!transdoc->open(towstr(textdoc->getPath())))
         return xcm::null;
 
     if (container_wnd)
@@ -1580,12 +1580,31 @@ void TextDoc::onFixedLengthRowWidthTextEnter(wxCommandEvent& evt)
     if ((xf_off_t)val > filesize)
         val = (int)(filesize);
     
-    m_def.fixed_row_width = val;   
+    int old_val = m_def.fixed_row_width;
+    bool def_changed = false;
+    m_def.fixed_row_width = val;
+    if (m_def.columns.size() == 1 && m_def.columns[0].source_width == old_val)
+    {
+        m_def.columns[0].source_width = m_def.fixed_row_width;
+        m_def.columns[0].width = m_def.fixed_row_width;
+        def_changed = true;
+    }
+
     save();
 
     m_textview->setRowWidth(val);
     m_textview->refresh();
-    
+
+
+    // repopulate the TransformationDoc from the destination structure
+    if (def_changed)
+    {
+        ITransformationDocPtr transdoc;
+        transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
+        if (transdoc)
+            transdoc->initFromDefinition(m_def);
+    }
+
     // update the TableDoc's base set
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
@@ -1602,11 +1621,29 @@ void TextDoc::onFixedLengthRowWidthSpun(wxSpinEvent& evt)
 {
     if (!m_rowwidth_spinctrl)
         return;
-        
+    
+    int old_val = m_def.fixed_row_width;  
+    bool def_changed = false;
     m_def.fixed_row_width = m_rowwidth_spinctrl->GetValue();
+    if (m_def.columns.size() == 1 && m_def.columns[0].source_width == old_val)
+    {
+        m_def.columns[0].source_width = m_def.fixed_row_width;
+        m_def.columns[0].width = m_def.fixed_row_width;
+        def_changed = true;
+    }
     save();
+
     m_textview->setRowWidth(m_def.fixed_row_width);
     m_textview->refresh();
+
+    // repopulate the TransformationDoc from the destination structure
+    if (def_changed)
+    {
+        ITransformationDocPtr transdoc;
+        transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
+        if (transdoc)
+            transdoc->initFromDefinition(m_def);
+    }
 
     // update the TableDoc's base set
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
