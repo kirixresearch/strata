@@ -1945,6 +1945,7 @@ IXdsqlTablePtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatD
     {
         FixedLengthTextSet* rawset = new FixedLengthTextSet(this);
         rawset->ref();
+        rawset->setObjectPath(path);
         if (!rawset->init(phys_path, *fi))
         {
             rawset->unref();

@@ -260,6 +260,9 @@ void FixedLengthTextIterator::setIteratorFlags(unsigned int mask, unsigned int v
 
 unsigned int FixedLengthTextIterator::getIteratorFlags()
 {
+    if (m_set->m_def.fixed_line_delimited)
+        return 0;
+
     return (xd::ifFastRowCount | xd::ifFastSkip);
 }
 
@@ -966,10 +969,7 @@ int FixedLengthTextIterator::getRawWidth(xd::objhandle_t data_handle)
     if (dai && dai->key_layout)
         return dai->key_layout->getKeyLength();
     
-    if (dai->type == xd::typeWideCharacter)
-        return dai->width*2;
-         else
-        return dai->width;
+    return m_row.getRawWidth(dai->ordinal);
 }
 
 const unsigned char* FixedLengthTextIterator::getRawPtr(xd::objhandle_t data_handle)
@@ -983,7 +983,7 @@ const unsigned char* FixedLengthTextIterator::getRawPtr(xd::objhandle_t data_han
     if (dai->key_layout)
         return dai->key_layout->getKey();
 
-    return m_rowptr + dai->offset;
+    return m_row.getRawPtr(dai->ordinal);
 }
 
 const std::string& FixedLengthTextIterator::getString(xd::objhandle_t data_handle)
@@ -1112,32 +1112,7 @@ const std::wstring& FixedLengthTextIterator::getWideString(xd::objhandle_t data_
 
 
     // return field data
-    if (dai->type == xd::typeWideCharacter)
-    {
-        kl::ucsle2wstring(dai->wstr_result,
-                            m_rowptr + dai->offset,
-                            dai->width);
-        return dai->wstr_result;
-    }
-        else if (dai->type == xd::typeCharacter)
-    {
-        const char* ptr = (char*)(m_rowptr + dai->offset);
-        int width = dai->width;
-        while (width && *(ptr+width-1) == ' ')
-            width--;
-                
-        // look for a zero terminator
-        const char* zero = (const char*)memchr(ptr, 0, width);
-        if (zero)
-            width = zero-ptr;
-
-        kl::towstring(dai->wstr_result, ptr, width);
-        return dai->wstr_result;
-    } 
-        else
-    {
-        return empty_wstring;
-    }
+    return m_row.getWideString(dai->ordinal);
 }
 
 xd::datetime_t FixedLengthTextIterator::getDateTime(xd::objhandle_t data_handle)

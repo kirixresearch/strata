@@ -546,7 +546,7 @@ int TtbTable::getRows(unsigned char* buf,
         row_offset = start_row;
         row_offset += skip;
 
-        byte_offset = row_offset;
+        byte_offset = row_offset-1;
         byte_offset *= m_row_width;
         byte_offset += m_data_offset;
         xf_seek(m_file, byte_offset, xfSeekSet);

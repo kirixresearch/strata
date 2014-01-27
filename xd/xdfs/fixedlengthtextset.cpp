@@ -141,22 +141,7 @@ xd::IIteratorPtr FixedLengthTextSet::createIterator(
 
 xd::rowpos_t FixedLengthTextSet::getRowCount()
 {
-/*
-    if (m_definition->m_file_type == FixedLengthDefinition::FixedWidth)
-    {
-        if (m_row_count == 0)
-        {
-            if (m_file_size == 0)
-                m_file_size = xf_get_file_size(m_path);
-
-            m_row_count = calcRowCount(m_file_size, m_definition->m_skip_chars, m_row_width);
-        }
-
-        return m_row_count;
-    }
-*/
-
-    return 0;
+    return m_file.getRowCount();
 }
 
 
