@@ -1947,7 +1947,7 @@ IXdsqlTablePtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatD
         rawset->ref();
         if (!rawset->init(phys_path, *fi))
         {
-            set->unref();
+            rawset->unref();
             return xcm::null;
         }
 

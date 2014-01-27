@@ -59,6 +59,12 @@ bool FixedLengthTextSet::init(const std::wstring& filename, const xd::FormatDefi
     if (!xf_get_file_exist(filename))
         return false;
 
+    if (def.columns.size() == 0)
+        return false;  // zero columns is not allowed
+
+    if (!def.fixed_line_delimited && def.fixed_row_width == 0)
+        return false;  // not allowed
+
     // set our member variables
     m_path = filename;
     m_def = def;
