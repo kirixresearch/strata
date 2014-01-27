@@ -85,6 +85,8 @@ public:
     void onSiteDeactivated();
     void onSiteActivated();
 
+    void updateCaption();
+
     xd::FormatDefinition& getDefinition() { return m_def; }
 
     // ITextDoc

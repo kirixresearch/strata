@@ -321,17 +321,7 @@ bool TextDoc::initDoc(IFramePtr frame,
     m_doc_site = doc_site;
 
     // set the document's caption and icon
-    wxString caption;
-    if (!m_path.IsEmpty())
-    {
-        caption = m_path.AfterLast(wxT('/'));
-    }
-     else
-    {
-        caption = _("(Untitled)");
-    }
-
-    m_doc_site->setCaption(caption);
+    updateCaption();
     m_doc_site->setBitmap(GETBMP(gf_table_16));
 
     // create document's window
@@ -471,17 +461,22 @@ bool TextDoc::onSiteClosing(bool force)
         onSave(e);
     }
     
+    if (m_path.StartsWith("xtmp_"))
+    {
+        xd::IDatabasePtr db = g_app->getDatabase();
+        if (db.isOk())
+        {
+            // temporary layout file, delete it
+            db->deleteFile(towstr(m_path));
+        }
+    }
+
+
     return true;
 }
 
 void TextDoc::onSiteDeactivated()
 {
-    if (m_dirty)
-    {
-        // save the set's metadata
-        wxCommandEvent e;
-        onSave(e);
-    }
 }
 
 void TextDoc::onSiteActivated()
@@ -1410,9 +1405,57 @@ void TextDoc::onSize(wxSizeEvent& evt)
     Layout();
 }
 
+
+
+void TextDoc::updateCaption()
+{
+    wxString caption;
+    if (m_path.IsEmpty() || m_path.StartsWith("xtmp_"))
+        caption = _("(Untitled)");
+         else
+        caption = m_path.AfterLast(wxT('/'));
+
+    m_doc_site->setCaption(caption);
+}
+
 void TextDoc::onSave(wxCommandEvent& evt)
 {
-    save();
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
+    if (m_path.StartsWith("xtmp_"))
+    {
+        DlgDatabaseFile dlg(g_app->getMainWindow(), DlgDatabaseFile::modeSave);
+        dlg.setAffirmativeButtonLabel(_("OK"));
+        dlg.setCaption(_("Save Layout Definition"));
+    
+        if (dlg.ShowModal() == wxID_OK)
+        {
+            db->deleteFile(towstr(m_path));
+            m_path = dlg.getPath();
+            
+            save();
+            updateCaption();
+            g_app->getAppController()->refreshDbDoc();
+
+
+            // repopulate the TransformationDoc from the destination structure
+            ITransformationDocPtr transdoc;
+            transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
+            if (transdoc)
+                transdoc->initFromDefinition(m_def);
+
+            // update the TableDoc's base set
+            ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
+            if (tabledoc)
+                tabledoc->open(towstr(m_path));
+        }
+    }
+     else
+    {
+        save();
+    }
 }
 
 void TextDoc::onToggleView(wxCommandEvent& evt)
