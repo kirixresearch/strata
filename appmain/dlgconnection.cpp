@@ -13,6 +13,7 @@
 #include <wx/artprov.h>
 #include <wx/tglbtn.h>
 #include <wx/statline.h>
+#include <wx/listctrl.h>
 #include <kl/string.h>
 #include <xd/xd.h>
 #include "../kcl/grid.h"

@@ -46,7 +46,7 @@ public:
     
     wxBitmap getBitmap(const wxString& image_name);
 
-    kl::Config& getConfig() { return m_config; }
+    kl::config& getConfig() { return m_config; }
     xd::IDatabasePtr& getDatabase() { return m_database; }
     Sdserv& getSdserv() { return m_sdserv; }
     wxString getAppDataPath();
@@ -58,7 +58,7 @@ public:
 
 private:
 
-    kl::Config m_config;
+    kl::config m_config;
     xd::IDatabasePtr m_database;
     std::wstring m_database_connection_str;
     Sdserv m_sdserv;

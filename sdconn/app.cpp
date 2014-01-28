@@ -139,7 +139,7 @@ public:
 bool SdconnApp::startServer()
 {
 
-    kl::Config& config = g_app->getConfig();
+    kl::config& config = g_app->getConfig();
     std::wstring user = config.read(L"Settings/User");
     std::wstring password = config.read(L"Settings/Password");
     std::wstring server = config.read(L"Settings/Server", kl::towstring(DEFAULT_SERVER));

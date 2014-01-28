@@ -14,6 +14,7 @@
 
 #include <vector>
 class wxTreeCtrl;
+class wxTreeEvent;
 
 namespace kcl
 {

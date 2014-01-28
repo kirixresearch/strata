@@ -60,13 +60,23 @@ class wxAuiToolBar;
 class wxToggleButton;
 class wxFileListCtrl;
 namespace kcl { class Grid; }
+namespace kcl { class GridEvent; }
 namespace kcl { class RowSelectionGrid; }
-
-
+namespace kcl { class FilePanel; }
+namespace kcl { class FilePanelEvent; }
 
 
 class DlgConnection : public wxDialog
 {
+
+public:
+
+    enum
+    {
+        optionFolder = 0x01,
+    };
+
+private:
 
     enum
     {
@@ -80,7 +90,7 @@ class DlgConnection : public wxDialog
 
 public:
 
-    DlgConnection(wxWindow* parent);
+    DlgConnection(wxWindow* parent, wxWindowID id, const wxString& title, int options = 0);
     ~DlgConnection();
 
     void setActivePage(int page);
@@ -94,6 +104,7 @@ private:
 
     void populateDataSourceGrid();
     void populateTableListGrid(xd::IDatabasePtr);
+    void populateTableListGrid(std::vector<wxString>& paths);
     void showButtons(int mask);
 
     // event handlers
@@ -109,16 +120,19 @@ private:
     void onBackward(wxCommandEvent& evt);
     void onForward(wxCommandEvent& evt);
     void onToggleButton(wxCommandEvent& evt);
+    void onFilePanelItemActivated(kcl::FilePanelEvent& evt);
+    void onDataSourceLeftDClick(kcl::GridEvent& evt);
 
 private:
     
     wxAuiToolBar* m_toolbar;
-    wxToggleButton* m_togglebutton_folder;
+    wxToggleButton* m_togglebutton_file;
     wxToggleButton* m_togglebutton_server;
     wxToggleButton* m_togglebutton_datasources;
 
     int m_last_page;
     int m_current_page;
+    int m_options;
 
     wxSizer* m_container_sizer;
     wxSizer* m_filepage_sizer;
@@ -134,7 +148,7 @@ private:
     wxButton* m_backward_button;
 
     // file page controls
-    wxFileListCtrl* m_file_ctrl;
+    kcl::FilePanel* m_file_panel;
     
     // server page controls
     wxChoice* m_server_type;

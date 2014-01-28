@@ -60,6 +60,7 @@ class wxAuiToolBar;
 class wxToggleButton;
 class wxFileListCtrl;
 namespace kcl { class Grid; }
+namespace kcl { class GridEvent; }
 namespace kcl { class RowSelectionGrid; }
 namespace kcl { class FilePanel; }
 namespace kcl { class FilePanelEvent; }

@@ -68,7 +68,7 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
     xd::IDatabasePtr db = g_app->getDatabase();
 
 
-    DlgConnection dlg(this);
+    DlgConnection dlg(this, wxID_ANY, _("Connect Data"));
 
     if (dlg.ShowModal() != wxID_OK)
         return;
@@ -138,7 +138,7 @@ void MainFrame::onSettings(wxCommandEvent& evt)
 {
     DlgSettings dlg(this);
 
-    kl::Config& config = g_app->getConfig();
+    kl::config& config = g_app->getConfig();
 
 
     std::wstring user = config.read(L"Settings/User");

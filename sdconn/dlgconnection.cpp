@@ -11,13 +11,15 @@
 #include "app.h"
 #include <wx/wx.h>
 #include <wx/artprov.h>
+#include <wx/listctrl.h>
 #include <wx/tglbtn.h>
-#include <wx/filectrl.h>
 #include <wx/statline.h>
 #include <kl/string.h>
 #include <xd/xd.h>
 #include "../kcl/grid.h"
 #include "../kcl/rowselectiongrid.h"
+#include "../kcl/filepanel.h"
+#include "../kcl/buttonbar.h"
 #include "dlgconnection.h"
 #include "util.h"
 
@@ -106,7 +108,7 @@ std::wstring Connection::getConnectionString()
     }
      else
     {
-        if (type == xd::dbtypeKpg || type == xd::dbtypeAccess || type == xd::dbtypeSqlite || type == xd::dbtypeExcel)
+        if (type == xd::dbtypeKpg || type == xd::dbtypeAccess || type == xd::dbtypeSqlite || type == xd::dbtypeExcel || type == xd::dbtypeFilesystem)
         {
             cstr += L"database=";
             cstr += path;
@@ -137,6 +139,7 @@ enum
 {
     ID_First = wxID_HIGHEST + 1,
     ID_ToggleButton_Folder,
+    ID_ToggleButton_File,
     ID_ToggleButton_Server,
     ID_ToggleButton_DataSource,
 
@@ -153,7 +156,9 @@ enum
     ID_TableList_BasePathTextCtrl,
     ID_TableList_BasePathBrowseButton,
     ID_TableList_SelectAllButton,
-    ID_TableList_SelectNoneButton
+    ID_TableList_SelectNoneButton,
+
+    ID_File_Panel
 
 };
 
@@ -172,9 +177,9 @@ enum
 
 
 BEGIN_EVENT_TABLE(DlgConnection, wxDialog)
-    EVT_TOGGLEBUTTON(ID_ToggleButton_Folder, DlgConnection::onToggleButton)
-    EVT_TOGGLEBUTTON(ID_ToggleButton_Server, DlgConnection::onToggleButton)
-    EVT_TOGGLEBUTTON(ID_ToggleButton_DataSource, DlgConnection::onToggleButton)
+    EVT_BUTTON(ID_ToggleButton_File, DlgConnection::onToggleButton)
+    EVT_BUTTON(ID_ToggleButton_Server, DlgConnection::onToggleButton)
+    EVT_BUTTON(ID_ToggleButton_DataSource, DlgConnection::onToggleButton)
 
     EVT_CHOICE(ID_Server_Type,   DlgConnection::onServerParameterChanged)
     EVT_TEXT(ID_Server_Server,   DlgConnection::onServerParameterChanged)
@@ -192,6 +197,10 @@ BEGIN_EVENT_TABLE(DlgConnection, wxDialog)
 
     EVT_BUTTON(wxID_OK, DlgConnection::onOK)
     EVT_BUTTON(wxID_CANCEL, DlgConnection::onCancel)
+
+    EVT_FILEPANEL_ITEM_ACTIVATED(ID_File_Panel, DlgConnection::onFilePanelItemActivated)
+
+    EVT_KCLGRID_CELL_LEFT_DCLICK(DlgConnection::onDataSourceLeftDClick)
 END_EVENT_TABLE()
 
 
@@ -204,46 +213,59 @@ static wxBitmap addMarginToBitmap(const wxBitmap& bmp, int left, int top, int ri
     return wxBitmap(newimg);
 }
 
-DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
-                                                          -1,
-                                                          _("Create Connection"),
+DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& title, int options)
+                                               : wxDialog(parent,
+                                                          id,
+                                                          title.empty() ? _("Create Connection") : title,
                                                           wxDefaultPosition,
-                                                          wxSize(540, 480),
+                                                          wxSize(680, 520),
                                                           wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
     m_last_page = 0;
     m_current_page = 0;
+    m_options = options;
 
     // toggle button sizer
 
+
+    kcl::ButtonBar* button_bar = new kcl::ButtonBar(this, wxID_ANY);
+    button_bar->addItem(ID_ToggleButton_File, GETBMP(gf_folder_open_32), (m_options & optionFolder) ? _("Folder") : _("File"));
+    button_bar->addItem(ID_ToggleButton_Server, GETBMP(gf_db_db_32), _("Database"));
+    button_bar->addItem(ID_ToggleButton_DataSource, GETBMP(gf_db_od_32), _("Data Sources"));
+
     wxBoxSizer* togglebutton_sizer = new wxBoxSizer(wxHORIZONTAL);
-    wxBitmap bmp;
-
-    m_togglebutton_folder = new wxToggleButton(this, ID_ToggleButton_Folder, _("Folder"));
-    bmp = addMarginToBitmap(GETBMP(gf_folder_open_32), 0,8,0,0);
-    m_togglebutton_folder->SetBitmap(bmp, wxTOP);
-
-    m_togglebutton_server = new wxToggleButton(this, ID_ToggleButton_Server, _("Database"));
-    bmp = addMarginToBitmap(GETBMP(gf_db_db_32), 0,8,0,0);
-    m_togglebutton_server->SetBitmap(bmp, wxTOP);
-
-    m_togglebutton_datasources = new wxToggleButton(this, ID_ToggleButton_DataSource, _("Data Sources"));
-    bmp = addMarginToBitmap(GETBMP(gf_db_od_32), 0,8,0,0);
-    m_togglebutton_datasources->SetBitmap(bmp, wxTOP);
-
-    togglebutton_sizer->Add(m_togglebutton_folder, 0, wxEXPAND);
-    togglebutton_sizer->Add(m_togglebutton_server, 0, wxEXPAND);
-    togglebutton_sizer->Add(m_togglebutton_datasources, 0, wxEXPAND);
-
-
-
+    togglebutton_sizer->Add(button_bar, 1, wxEXPAND);
 
     // -- file page ----------------------------------------------------------
 
     m_filepage_sizer = new wxBoxSizer(wxVERTICAL);
-    m_file_ctrl = new wxFileListCtrl(this, -1, "", false);
-    m_file_ctrl->GoToHomeDir();
-    m_filepage_sizer->Add(m_file_ctrl, 1, wxEXPAND);
+    m_file_panel = new kcl::FilePanel(this, ID_File_Panel);
+
+    if (m_options & optionFolder)
+        m_file_panel->setFolderOnly(true);
+
+
+    // populate the file dialog filter
+    wxString filter;
+    filter += _("All Files");
+    filter += wxT(" (*.*)|*.*|");
+    filter += _("Package Files");
+    filter += wxT(" (*.kpg)|*.kpg|");
+    filter += _("Microsoft Access Files");
+    filter += wxT(" (*.mdb, *.accdb)|*.mdb;*.accdb|");
+    filter += _("Microsoft Excel Files");
+    filter += wxT(" (*.xls, *.xlsx)|*.xls;*.xlsx|");
+    filter += _("Microsoft FoxPro/Xbase Files");
+    filter += wxT(" (*.dbf)|*.dbf|");
+    filter += _("Comma-Delimited Files");
+    filter += wxT(" (*.csv)|*.csv|");
+    filter += _("Tab-Delimited Files");
+    filter += wxT(" (*.tsv)|*.tsv|");
+    filter += _("Text Files");
+    filter += wxT(" (*.txt)|*.txt|");
+
+    m_file_panel->setFilterString(filter);
+    m_filepage_sizer->Add(m_file_panel, 1, wxEXPAND);
 
 
 
@@ -284,10 +306,10 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
     
     wxSizer* servertype_sizer = new wxBoxSizer(wxHORIZONTAL);
-    servertype_sizer->Add(50,23);
+    servertype_sizer->Add(80,23);
     servertype_sizer->Add(servertype_label, 0, wxALIGN_CENTER);
     servertype_sizer->Add(m_server_type, 1, wxALIGN_CENTER);
-    servertype_sizer->Add(50,23);
+    servertype_sizer->Add(80,23);
     
     // create the server sizer
     wxStaticText* server_label = new wxStaticText(this, -1, _("Server:"));
@@ -298,10 +320,10 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
                                        wxSize(200,21));
     
     wxSizer* server_sizer = new wxBoxSizer(wxHORIZONTAL);
-    server_sizer->Add(50,23);
+    server_sizer->Add(80,23);
     server_sizer->Add(server_label, 0, wxALIGN_CENTER);
     server_sizer->Add(m_server_server, 1, wxALIGN_CENTER);
-    server_sizer->Add(50,23);
+    server_sizer->Add(80,23);
     
     // create the database sizer
     wxStaticText* database_label = new wxStaticText(this,  -1,  _("Database:"));
@@ -312,10 +334,10 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
                                          wxSize(200,21));
     
     wxSizer* database_sizer = new wxBoxSizer(wxHORIZONTAL);
-    database_sizer->Add(50,23);
+    database_sizer->Add(80,23);
     database_sizer->Add(database_label, 0, wxALIGN_CENTER);
     database_sizer->Add(database_textctrl, 1, wxALIGN_CENTER);
-    database_sizer->Add(50,23);
+    database_sizer->Add(80,23);
 
     // create the port number sizer
     wxStaticText* port_label = new wxStaticText(this, -1,  _("Port Number:"));
@@ -326,10 +348,10 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
                                    wxSize(200,21));
     
     wxSizer* port_sizer = new wxBoxSizer(wxHORIZONTAL);
-    port_sizer->Add(50,23);
+    port_sizer->Add(80,23);
     port_sizer->Add(port_label, 0, wxALIGN_CENTER);
     port_sizer->Add(m_server_port, 1, wxALIGN_CENTER);
-    port_sizer->Add(50,23);
+    port_sizer->Add(80,23);
 
     // create the username sizer
     wxStaticText* username_label = new wxStaticText(this, -1, _("User Name:"));
@@ -340,10 +362,10 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
                                          wxSize(200,21));
     
     wxSizer* username_sizer = new wxBoxSizer(wxHORIZONTAL);
-    username_sizer->Add(50,23);
+    username_sizer->Add(80,23);
     username_sizer->Add(username_label, 0, wxALIGN_CENTER);
     username_sizer->Add(username_textctrl, 1, wxALIGN_CENTER);
-    username_sizer->Add(50,23);
+    username_sizer->Add(80,23);
 
     // create the password sizer
     wxStaticText* password_label = new wxStaticText(this,
@@ -355,13 +377,13 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
                                          m_ci.password,
                                          wxDefaultPosition,
                                          wxSize(200,21),
-                                         wxTE_PASSWORD);
+                                         wxTE_PASSWORD | wxTE_PROCESS_ENTER);
     
     wxSizer* password_sizer = new wxBoxSizer(wxHORIZONTAL);
-    password_sizer->Add(50,23);
+    password_sizer->Add(80,23);
     password_sizer->Add(password_label, 0, wxALIGN_CENTER);
     password_sizer->Add(password_textctrl, 1, wxALIGN_CENTER);
-    password_sizer->Add(50,23);
+    password_sizer->Add(80,23);
 
     // measure the label widths
     wxSize label_size = getMaxTextSize(servertype_label,
@@ -386,7 +408,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     m_serverpage_sizer->AddSpacer(4);
     m_serverpage_sizer->Add(new wxStaticLine(this, -1, wxDefaultPosition, wxSize(1,1)),
                             0, wxEXPAND | wxLEFT | wxRIGHT, 20);
-    m_serverpage_sizer->AddSpacer(2);
+    m_serverpage_sizer->AddSpacer(8);
     m_serverpage_sizer->Add(servertype_sizer, 0, wxEXPAND | wxTOP, 10);
     m_serverpage_sizer->Add(server_sizer, 0, wxEXPAND | wxTOP, 10);
     m_serverpage_sizer->Add(database_sizer, 0, wxEXPAND | wxTOP, 10);
@@ -556,7 +578,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
 
     m_container_sizer = new wxBoxSizer(wxVERTICAL);
-    m_container_sizer->Add(m_filepage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
+    m_container_sizer->Add(m_filepage_sizer, 1, wxEXPAND);
     m_container_sizer->Add(m_serverpage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
     m_container_sizer->Add(m_datasourcepage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
     m_container_sizer->Add(m_tablelistpage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
@@ -581,8 +603,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
 
     wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
-    sizer->AddSpacer(5);
-    sizer->Add(togglebutton_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 5);
+    sizer->Add(togglebutton_sizer, 0, wxEXPAND, 5);
     sizer->AddSpacer(10);
     sizer->Add(m_container_sizer, 1, wxEXPAND);
     sizer->AddSpacer(10);
@@ -591,7 +612,8 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     SetSizer(sizer);
 
 
-    setActivePage(pageFolder);
+    button_bar->selectItem(ID_ToggleButton_File);
+    setActivePage(pageFile);
 
 
     Center();
@@ -672,9 +694,24 @@ void DlgConnection::onTableListSelectNone(wxCommandEvent& evt)
 
 void DlgConnection::onOK(wxCommandEvent& evt)
 {
+    if (m_current_page == pageFile)
+    {
+        m_ci.type = xd::dbtypeFilesystem;
+        m_ci.port = 0;
+        m_ci.path = m_file_panel->getPath().ToStdWstring();
+    }
+
     if (m_current_page == pageTableList)
     {
         m_ci.tables.clear();
+
+        wxString base_path = m_tablelist_basepath->GetValue();
+        if (base_path == "/")
+            base_path = "";
+        if (base_path.Length() > 0 && base_path[0] != '/')
+            base_path.Prepend("/");
+        if (base_path.Length() > 0 && base_path.Last() != '/')
+            base_path += "/";
 
         int row, row_count = m_tablelist_grid->getRowCount();
         for (row = 0; row < row_count; ++row)
@@ -683,13 +720,28 @@ void DlgConnection::onOK(wxCommandEvent& evt)
             {
                 ConnectionTable t;
                 t.input_tablename = m_tablelist_grid->getCellString(row, SOURCE_TABLENAME_IDX);
-                t.output_tablename = m_tablelist_grid->getCellString(row, DEST_TABLENAME_IDX);
+                t.output_tablename = base_path + m_tablelist_grid->getCellString(row, DEST_TABLENAME_IDX);
                 t.append = m_tablelist_grid->getCellBoolean(row, APPEND_IDX);
                 m_ci.tables.push_back(t);
             }
         }
-
     }
+
+
+    if (m_current_page == pageDataSource)
+    {
+        int row = m_datasource_grid->getCursorRow();
+        if (row >= 0 && row < m_datasource_grid->getRowCount())
+        {
+            m_ci.type = xd::dbtypeOdbc;
+            m_ci.database = m_datasource_grid->getCellString(row, 0);
+        }
+         else
+        {
+            return;
+        }
+    }
+
 
 
     sigFinished(this);
@@ -721,10 +773,10 @@ void DlgConnection::onToggleButton(wxCommandEvent& evt)
     switch (evt.GetId())
     {
         case ID_ToggleButton_Folder:     setActivePage(pageFolder); break;
+        case ID_ToggleButton_File:       setActivePage(pageFile); break;
         case ID_ToggleButton_Server:     setActivePage(pageServer); break;
         case ID_ToggleButton_DataSource: setActivePage(pageDataSource); break;
     }
-
 }
 
 void DlgConnection::onBackward(wxCommandEvent& evt)
@@ -735,7 +787,61 @@ void DlgConnection::onBackward(wxCommandEvent& evt)
 
 void DlgConnection::onForward(wxCommandEvent& evt)
 {
+    bool connect_to_database = false;
+
     if (m_current_page == pageServer)
+    {
+        connect_to_database = true;
+    }
+
+    if (m_current_page == pageFile)
+    {
+        std::vector<wxString> files;
+        m_file_panel->getPaths(files);
+
+        if (files.size() == 1 && kl::icontains(files[0].ToStdWstring(), L".mdb"))
+        {
+            connect_to_database = true;
+            m_ci.type = xd::dbtypeAccess;
+            m_ci.port = 0;
+            m_ci.path = files[0];
+        }
+         else if (files.size() == 1 && kl::icontains(files[0].ToStdWstring(), L".kpg"))
+        {
+            connect_to_database = true;
+            m_ci.type = xd::dbtypeKpg;
+            m_ci.port = 0;
+            m_ci.path = files[0];
+        }
+         else
+        {
+            m_ci.tables.clear();
+            m_ci.port = 0;
+            m_ci.type = xd::dbtypeFilesystem;
+            populateTableListGrid(files);
+            setActivePage(pageTableList);
+            return;
+        }
+    }
+
+
+    if (m_current_page == pageDataSource)
+    {
+        int row = m_datasource_grid->getCursorRow();
+        if (row >= 0 && row < m_datasource_grid->getRowCount())
+        {
+            m_ci.type = xd::dbtypeOdbc;
+            m_ci.database = m_datasource_grid->getCellString(row, 0);
+            connect_to_database = true;
+        }
+         else
+        {
+            return;
+        }
+    }
+
+
+    if (connect_to_database)
     {
         xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
         if (dbmgr.isNull())
@@ -766,21 +872,17 @@ void DlgConnection::setActivePage(int page)
     m_last_page = m_current_page;
     m_current_page = page;
 
-
-    if (page == pageFolder || page == pageServer || page == pageDataSource)
-    {
-        m_togglebutton_folder->SetValue(page == pageFolder ? true : false);
-        m_togglebutton_server->SetValue(page == pageServer ? true : false);
-        m_togglebutton_datasources->SetValue(page == pageDataSource ? true : false);
-    }
-
-    if (page == pageFolder)
+    if (page == pageFile)
     {
         m_container_sizer->Show(m_filepage_sizer);
         m_container_sizer->Hide(m_serverpage_sizer);
         m_container_sizer->Hide(m_datasourcepage_sizer);
         m_container_sizer->Hide(m_tablelistpage_sizer);
-        showButtons(wxFORWARD | wxCANCEL);
+
+        if (m_options & optionFolder)
+            showButtons(wxOK | wxCANCEL);
+             else
+            showButtons(wxFORWARD | wxCANCEL);
     }
      else if (page == pageServer)
     {
@@ -788,7 +890,11 @@ void DlgConnection::setActivePage(int page)
         m_container_sizer->Show(m_serverpage_sizer);
         m_container_sizer->Hide(m_datasourcepage_sizer);
         m_container_sizer->Hide(m_tablelistpage_sizer);
-        showButtons(wxFORWARD | wxCANCEL);
+
+        if (m_options & optionFolder)
+            showButtons(wxOK | wxCANCEL);
+             else
+            showButtons(wxFORWARD | wxCANCEL);
 
         m_server_server->SetFocus();
     }
@@ -798,7 +904,11 @@ void DlgConnection::setActivePage(int page)
         m_container_sizer->Hide(m_serverpage_sizer);
         m_container_sizer->Show(m_datasourcepage_sizer);
         m_container_sizer->Hide(m_tablelistpage_sizer);
-        showButtons(wxFORWARD | wxCANCEL);
+
+        if (m_options & optionFolder)
+            showButtons(wxOK | wxCANCEL);
+             else
+            showButtons(wxFORWARD | wxCANCEL);
     }
      else if (page == pageTableList)
     {
@@ -821,6 +931,27 @@ void DlgConnection::showButtons(int mask)
     m_button_sizer->Show(m_forward_button, (mask & wxFORWARD) ? true:false);
 }
 
+
+void DlgConnection::onFilePanelItemActivated(kcl::FilePanelEvent& evt)
+{
+    wxCommandEvent e;
+    if (m_options & optionFolder)
+        onOK(evt);
+         else
+        onForward(e);
+}
+
+void DlgConnection::onDataSourceLeftDClick(kcl::GridEvent& evt)
+{
+    if (evt.GetId() == ID_DataSource_Grid)
+    {
+        wxCommandEvent e;
+        if (m_options & optionFolder)
+            onOK(evt);
+             else
+            onForward(e);
+    }
+}
 
 void DlgConnection::populateDataSourceGrid()
 {
@@ -939,6 +1070,58 @@ static ConnectionTable* lookupTable(Connection& c, const std::wstring& tbl)
 
 
 
+
+void DlgConnection::populateTableListGrid(std::vector<wxString>& tables)
+{
+    std::vector<wxString>::iterator it;
+
+    // delete all existing rows from grid
+    m_tablelist_grid->deleteAllRows();
+
+    // sort the table names vector
+    std::sort(tables.begin(), tables.end());
+
+
+    // populate the grid from the info vector
+    int row = 0;
+    for (it = tables.begin(); it != tables.end(); ++it)
+    {
+        bool selected = true;
+        std::wstring src_tablename = *it;
+        std::wstring out_tablename = kl::afterLast(src_tablename, PATH_SEPARATOR_CHAR);
+        bool append = false;
+
+        //out_tablename = makeValidObjectName(out_tablename, db).ToStdWstring();
+
+        // correlate with the template
+        if (m_ci.tables.size() > 0)
+        {
+            // tables already exist in the template.  "selected" is
+            // by default off.  If the line exists in the template, use
+            // the info stored there.
+            selected = false;
+
+            ConnectionTable* tbl = lookupTable(m_ci, src_tablename);
+            if (tbl)
+            {
+                out_tablename = tbl->output_tablename;
+                append = tbl->append;
+                selected = true;
+            }
+        }
+        
+        m_tablelist_grid->insertRow(-1);
+        m_tablelist_grid->setCellBoolean(row, ONOFF_IDX, selected);
+        m_tablelist_grid->setCellString(row, SOURCE_TABLENAME_IDX, src_tablename);
+        m_tablelist_grid->setCellString(row, DEST_TABLENAME_IDX, out_tablename);
+        m_tablelist_grid->setCellBitmap(row, DEST_TABLENAME_IDX, GETBMP(xpm_blank_16));
+        m_tablelist_grid->setCellBoolean(row, APPEND_IDX, append);
+        row++;
+    }
+
+    m_tablelist_grid->refresh(kcl::Grid::refreshAll);
+}
+
 void DlgConnection::populateTableListGrid(xd::IDatabasePtr db)
 {
     // delete all existing rows from grid
@@ -1014,5 +1197,7 @@ void DlgConnection::populateTableListGrid(xd::IDatabasePtr db)
         m_tablelist_grid->setCellBoolean(row, APPEND_IDX, append);
         row++;
     }
+
+    m_tablelist_grid->refresh(kcl::Grid::refreshAll);
 }
 
