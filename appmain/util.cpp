@@ -780,26 +780,6 @@ wxString getPhysPathFromDatabasePath(const wxString& database_path)
     xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return wxEmptyString;
-    
-    if (0 == strcmp(xcm::get_class_info(db.p)->get_name(), "xdfs.Database"))
-    {
-        // handle xdfs case
-
-        std::wstring fspath = db->getAttributes()->getStringAttribute(xd::dbattrFilesystemPath);
-        if (fspath.length() > 0 && fspath.substr(fspath.length()-1, 1) != xf_path_separator_wchar)
-            fspath += xf_path_separator_wchar;
-
-        if (database_path[0] == '/')
-            fspath += database_path.substr(1).ToStdWstring();
-             else
-            fspath += database_path;
-
-        if (xf_path_separator_wchar == '\\')
-            kl::replaceStr(fspath, L"/", L"\\");
-
-        return fspath;
-    }
-
 
     wxString path = database_path;
     wxString conn_str;
@@ -808,7 +788,7 @@ wxString getPhysPathFromDatabasePath(const wxString& database_path)
     while (1)
     {
         if (path.Length() <= 1)
-            return wxEmptyString;
+            break;
             
         std::wstring cstr, rpath;
         if (db->getMountPoint(towstr(path), cstr, rpath))
@@ -831,9 +811,40 @@ wxString getPhysPathFromDatabasePath(const wxString& database_path)
         to_append.Prepend(PATH_SEPARATOR_CHAR);
         path = path.BeforeLast(wxT('/'));
         if (path.Length() == old_len)
-            return wxEmptyString;
+            break;
     }
     
+
+    if (conn_str.IsEmpty())
+    {
+        // no mount, first try to see if we are using an xdfs database
+
+        if (0 == strcmp(xcm::get_class_info(db.p)->get_name(), "xdfs.Database"))
+        {
+            // handle xdfs case
+
+            std::wstring fspath = db->getAttributes()->getStringAttribute(xd::dbattrFilesystemPath);
+            if (fspath.length() > 0 && fspath.substr(fspath.length()-1, 1) != xf_path_separator_wchar)
+                fspath += xf_path_separator_wchar;
+
+            if (database_path[0] == '/')
+                fspath += database_path.substr(1).ToStdWstring();
+                 else
+                fspath += database_path;
+
+            if (xf_path_separator_wchar == '\\')
+                kl::replaceStr(fspath, L"/", L"\\");
+
+            return fspath;
+        }
+         else
+        {
+            return "";
+        }
+    }
+
+
+
     // find 'Database=' portion of the connection str
     wxString temps = conn_str;
     temps.MakeUpper();

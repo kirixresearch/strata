@@ -65,6 +65,7 @@
 #include <wx/print.h>
 #include <kl/utf8.h>
 #include <kl/thread.h>
+#include <kl/url.h>
 #include "dbdoc.h"
 #include "linkbar.h"
 #include "dlglinkprops.h"
@@ -4488,7 +4489,7 @@ bool AppController::openScript(const wxString& _location, int* site_id)
     wxString location = _location;
     
     
-    if (location.Length() > 0)
+    if (location.Length() > 0 && !kl::isFileUrl(towstr(location)))
     {
         // get the physical location of the script file
         // or the path of the script in the project
