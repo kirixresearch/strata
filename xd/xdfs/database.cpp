@@ -1549,6 +1549,7 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
         kl::trim(f->name);
         f->type = def.object_type;
         f->format = def.format;
+        f->object_id = def.object_id;
         f->is_mount = true;
         
         return static_cast<xd::IFileInfo*>(f);
@@ -2049,7 +2050,17 @@ bool FsDatabase::saveDataView(const std::wstring& path, const xd::FormatDefiniti
     if (!xf_get_directory_exist(dir))
         _mkdirTree(dir);
 
-    return saveDefinitionToFile(phys_path, info);
+    if (info->object_id.empty())
+    {
+        // add an object id
+        xd::FormatDefinition def = *info;
+        def.object_id = kl::getUniqueString();
+        return saveDefinitionToFile(phys_path, &def);
+    }
+     else
+    {
+        return saveDefinitionToFile(phys_path, info);
+    }
 }
 
 
