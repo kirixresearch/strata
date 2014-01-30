@@ -44,7 +44,6 @@ public:
 
 DelimitedTextIterator::DelimitedTextIterator()
 {
-    m_use_source_iterator = false;
     m_set = NULL;
 }
 
@@ -88,11 +87,11 @@ bool DelimitedTextIterator::init(xd::IDatabasePtr db,
     m_set = set;
     m_set->ref();
         
-    m_file.setDelimiters(m_set->m_file.getDelimiters());
-    m_file.setLineDelimiters(m_set->m_file.getLineDelimiters());
-    m_file.setTextQualifiers(m_set->m_file.getTextQualifiers());
+    m_file.setDelimiters(m_set->m_def.delimiters);
+    m_file.setLineDelimiters(m_set->m_def.line_delimiters);
+    m_file.setTextQualifiers(m_set->m_def.text_qualifiers);
 
-    if (m_set->isFirstRowColumnNames())
+    if (m_set->m_def.first_row_column_names)
     {
         // read past the first row
         m_file.skip(1);
@@ -102,10 +101,6 @@ bool DelimitedTextIterator::init(xd::IDatabasePtr db,
     return true;
 }
 
-void DelimitedTextIterator::setUseSourceIterator(bool use_source_iterator)
-{
-    m_use_source_iterator = use_source_iterator;
-}
 
 
 void DelimitedTextIterator::setTable(const std::wstring& tbl)
@@ -159,7 +154,7 @@ void DelimitedTextIterator::goFirst()
 {
     m_file.rewind();
 
-    if (m_set->m_first_row_column_names)
+    if (m_set->m_def.first_row_column_names)
     {
         // read past the first row
         m_file.skip(1);
@@ -238,6 +233,7 @@ xd::IStructurePtr DelimitedTextIterator::getStructure()
 
 bool DelimitedTextIterator::refreshStructure()
 {
+/*
     // clear out any existing structure
     std::vector<DelimitedTextDataAccessInfo*>::iterator field_it;
     for (field_it = m_fields.begin();
@@ -316,6 +312,7 @@ bool DelimitedTextIterator::refreshStructure()
             m_fields.push_back(dai);
         }
     }
+    */
 
     return true;
 }
@@ -443,64 +440,6 @@ bool DelimitedTextIterator::modifyStructure(xd::IStructure* struct_config,
 }
 
 
-
-static void _bindSourceFieldString(kscript::ExprEnv*,
-                                   void* param,
-                                   kscript::Value* retval)
-{
-    DelimitedSourceBindInfo* info = (DelimitedSourceBindInfo*)param;
-    const std::wstring& s = info->file->getString(info->column_idx);
-    retval->setString(s);
-}
-
-kscript::ExprParser* DelimitedTextIterator::parseSourceExpression(const std::wstring& expr)
-{
-    // parseSourceExpr() is used for parsing expressions which
-    // use the source structure as input fields (raw input file);
-    // for example, transformation expressions would use
-    // this function for parsing
-    
-    kscript::ExprParser* parser = createExprParser();
-
-    xd::IStructurePtr structure = m_set->getSourceStructure();
-    if (!structure)
-        return NULL;
-        
-    int i, col_count = structure->getColumnCount();
-    for (i = 0; i < col_count; ++i)
-    {
-        xd::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
-       
-        DelimitedSourceBindInfo* info = new DelimitedSourceBindInfo;
-        info->file = &m_file;
-        info->column_idx = (size_t)colinfo->getColumnOrdinal();
-        m_src_bindings.push_back(info);
-
-        parser->addVarBinding(colinfo->getName(),
-                              false,
-                              kscript::Value::typeString,
-                              (void*)_bindSourceFieldString,
-                              info);
-    }
-
-    if (!parser->parse(expr))
-    {
-        delete parser;
-        return NULL;
-    }
-
-    return parser;
-}
-
-kscript::ExprParser* DelimitedTextIterator::parseDestinationExpression(const std::wstring& expr)
-{
-    // parseDestinationExpr() is used for parsing expressions which
-    // use the destination (transformed) structure as input fields;
-    // for example, calculated fields would use this function for parsing
-    
-    // use CommonBaseIterator::parse()
-    return parse(expr);
-}
 
 
 

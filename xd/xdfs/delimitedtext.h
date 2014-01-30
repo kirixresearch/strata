@@ -140,7 +140,6 @@ private:
 
     void skipOne(DelimitedTextRow* row, int direction = 1);
     
-    bool safeIsSpace(wchar_t c) const;
     bool isDelimiter(wchar_t c) const;
     bool isLineDelimiter(wchar_t c) const;
     bool isTextQualifier(wchar_t c) const;

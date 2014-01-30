@@ -1873,10 +1873,13 @@ IXdsqlTablePtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatD
     }
      else if (format == xd::formatTypedDelimitedText) // icsv
     {
+        xd::FormatDefinition default_format;
+        default_format.format = xd::formatDefault;
+
         DelimitedTextSet* rawset = new DelimitedTextSet(this);
         rawset->setObjectPath(path);
         rawset->ref();
-        if (!rawset->init(phys_path))
+        if (!rawset->init(phys_path, default_format))
         {
             rawset->unref();
             return xcm::null;
@@ -1890,7 +1893,7 @@ IXdsqlTablePtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatD
         DelimitedTextSet* rawset = new DelimitedTextSet(this);
         rawset->setObjectPath(path);
         rawset->ref();
-        if (!rawset->init(phys_path))
+        if (!rawset->init(phys_path, *fi))
         {
             rawset->unref();
             return xcm::null;
@@ -1898,51 +1901,6 @@ IXdsqlTablePtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatD
     
         set = static_cast<IXdfsSet*>(rawset);
         rawset->unref();
-
-
-        if (fi->format == xd::formatDefault)
-        {
-            // default format specified
-            if (delimiters != rawset->getDelimiters())
-                rawset->setDelimiters(fi->delimiters, true);
-
-            if (fi->determine_structure)
-                rawset->determineColumns(-1, NULL);
-        }
-         else if (fi->format == xd::formatDelimitedText)
-        {
-            bool need_refresh = false;
-
-            if (fi->delimiters != rawset->getDelimiters())
-            {
-                rawset->setDelimiters(fi->delimiters, false);
-                need_refresh = true;
-            }
-            
-            if (fi->text_qualifiers != rawset->getTextQualifier())
-            {
-                rawset->setTextQualifier(fi->text_qualifiers, false);
-                need_refresh = true;
-            }
-
-            if (fi->line_delimiters != rawset->getLineDelimiters())
-            {
-                rawset->setLineDelimiters(fi->line_delimiters, false);
-                need_refresh = true;
-            }
-
-            if (fi->first_row_column_names != rawset->isFirstRowColumnNames())
-            {
-                rawset->setDiscoverFirstRowColumnNames(false);
-                rawset->setFirstRowColumnNames(fi->first_row_column_names);
-
-                need_refresh = true;
-            }
-
-            if (need_refresh || fi->determine_structure)
-                rawset->determineColumns(-1, NULL);
-        }
-
     }       
      else if (format == xd::formatFixedLengthText) // fixed length
     {
@@ -2384,7 +2342,7 @@ bool FsDatabase::createTable(const std::wstring& path,
         file.createFile(phys_path, fields, csv_encoding);
         file.closeFile();
         
-
+/*
         // save structure to edf
         DelimitedTextSet* tset = new DelimitedTextSet(this);
         if (!tset->init(phys_path))
@@ -2418,6 +2376,7 @@ bool FsDatabase::createTable(const std::wstring& path,
         delete tset;
 
         return true;
+*/
     }
      else if (format == xd::formatFixedLengthText)
     {
@@ -2437,6 +2396,7 @@ bool FsDatabase::createTable(const std::wstring& path,
 
     return false;
 }
+
 
 
 

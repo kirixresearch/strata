@@ -13,6 +13,7 @@
 #include <wx/aui/auibar.h>
 #include <kl/string.h>
 #include <kl/crypt.h>
+#include <kl/file.h>
 #include "app.h"
 #include "mainframe.h"
 #include "dlgsettings.h"
@@ -34,6 +35,11 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_Settings, MainFrame::onSettings)
     EVT_MENU(ID_Delete, MainFrame::onDelete)
 END_EVENT_TABLE()
+
+
+
+wxString getPhysPathFromDatabasePath(const wxString& database_path);
+std::wstring getLocationString(xd::FormatDefinition def);
 
 
 MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
@@ -184,42 +190,6 @@ void MainFrame::onDelete(wxCommandEvent& evt)
 }
 
 
-std::wstring getLocationString(xd::FormatDefinition def)
-{
-    if (def.data_connection_string.length() == 0)
-    {
-        // no connection, just return path
-        return def.data_path;
-    }
-    
-    xd::ConnectionStringParser parser(def.data_connection_string);
-
-    std::wstring provider = parser.getLowerValue(L"xdprovider");
-    std::wstring dbtype = parser.getLowerValue(L"xddbtype");
-    std::wstring host = parser.getValue(L"host");
-
-    if (provider == L"xdmysql")
-    {
-        return def.data_path + L" on " + host + L" (MySQL)";
-    }
-    else if (provider == L"xdpgsql")
-    {
-        return def.data_path + L" on " + host + L" (PostgreSQL)";
-    }
-    else if (provider == L"xdoracle")
-    {
-        return def.data_path + L" on " + host + L" (Oracle)";
-    }
-    else if (provider == L"xdodbc" && dbtype == L"mssql")
-    {
-        return def.data_path + L" on " + host + L" (SQL Server)";
-    }
-
-    if (host.length() > 0)
-        return def.data_path + L" on " + host;
-         else
-        return def.data_path;
-}
 
 void MainFrame::refreshList()
 {
@@ -238,20 +208,39 @@ void MainFrame::refreshList()
         if (kl::iequals(finfo->getName(), L"cloud"))
             continue;
 
-        std::wstring cstr, fullpath;
+        std::wstring cstr, fullpath, fname;
 
         xd::FormatDefinition def;
-        if (db->loadDataView(finfo->getName(), &def))
+        fname = finfo->getName();
+        if (db->loadDataView(fname, &def))
         {
-            std::wstring name = kl::afterLast(def.data_path, PATH_SEPARATOR_CHAR);
+            std::wstring data_path_name;
+            
+            if (def.data_path.length() > 0)
+            {
+                data_path_name = kl::afterLast(def.data_path, PATH_SEPARATOR_CHAR);
+                if (kl::stringFrequency(data_path_name, '/') > 0 && data_path_name[0] == '/')
+                    data_path_name = data_path_name.substr(1);
+            }
+             else if (kl::icontains(def.data_connection_string, L"xdprovider=xdfs"))
+            {
+                xd::ConnectionStringParser parser(def.data_connection_string);
+                data_path_name = parser.getValue(L"database");
+            }
+             else
+            {
+                data_path_name = fname;
+            }
 
-            addItem(finfo->getName(), name, getLocationString(def));
+
+            addItem(fname, data_path_name, getLocationString(def));
         }
     }
 
     m_list->refresh();
     m_list->SetFocus();
 }
+
 
 
 
@@ -304,3 +293,136 @@ void MainFrame::addItem(const std::wstring& id, const std::wstring& name, const 
 }
 
 
+
+
+wxString getPhysPathFromDatabasePath(const wxString& database_path)
+{
+    if (database_path.empty())
+        return database_path;
+
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return wxEmptyString;
+
+    wxString path = database_path;
+    wxString conn_str;
+    wxString to_append;
+    
+    while (1)
+    {
+        if (path.Length() <= 1)
+            break;
+            
+        std::wstring cstr, rpath;
+        if (db->getMountPoint(towstr(path), cstr, rpath))
+        {
+            // if the connection string is empty, we're referring to another
+            // mount path -- the physical path may be a few layers deep
+            if (cstr.empty())
+            {
+                std::wstring res = towstr(getPhysPathFromDatabasePath(rpath));
+                res += to_append;
+                return res;
+            }
+            
+            conn_str = cstr;
+            break;
+        }
+    
+        int old_len = path.Length();
+        to_append.Prepend(path.AfterLast(wxT('/')));
+        to_append.Prepend(PATH_SEPARATOR_CHAR);
+        path = path.BeforeLast(wxT('/'));
+        if (path.Length() == old_len)
+            break;
+    }
+    
+
+    if (conn_str.IsEmpty())
+    {
+        // no mount, first try to see if we are using an xdfs database
+
+        if (0 == strcmp(xcm::get_class_info(db.p)->get_name(), "xdfs.Database"))
+        {
+            // handle xdfs case
+
+            std::wstring fspath = db->getAttributes()->getStringAttribute(xd::dbattrFilesystemPath);
+            if (fspath.length() > 0 && fspath.substr(fspath.length()-1, 1) != xf_path_separator_wchar)
+                fspath += xf_path_separator_wchar;
+
+            if (database_path[0] == '/')
+                fspath += database_path.substr(1).ToStdWstring();
+                 else
+                fspath += database_path;
+
+            if (xf_path_separator_wchar == '\\')
+                kl::replaceStr(fspath, L"/", L"\\");
+
+            return fspath;
+        }
+         else
+        {
+            return "";
+        }
+    }
+
+
+
+    // find 'Database=' portion of the connection str
+    wxString temps = conn_str;
+    temps.MakeUpper();
+    if (temps.Find("XDPROVIDER=XDFS") == -1)
+        return wxEmptyString;
+    int loc = temps.Find(wxT("DATABASE="));
+    if (loc == wxNOT_FOUND)
+        return wxEmptyString;
+    loc += 9;
+    temps = conn_str.Mid(loc);
+    
+    wxString res = temps.BeforeFirst(wxT(';'));
+    if (res.Length() > 0 && res.Last() == PATH_SEPARATOR_CHAR)
+        res.RemoveLast();
+    res += to_append;
+    return res;
+}
+
+
+
+std::wstring getLocationString(xd::FormatDefinition def)
+{
+    if (def.data_connection_string.length() == 0)
+    {
+        // no connection, just return path
+        return getPhysPathFromDatabasePath(def.data_path).ToStdWstring();
+    }
+    
+    xd::ConnectionStringParser parser(def.data_connection_string);
+
+    std::wstring provider = parser.getLowerValue(L"xdprovider");
+    std::wstring dbtype = parser.getLowerValue(L"xddbtype");
+    std::wstring host = parser.getValue(L"host");
+    std::wstring database = parser.getValue(L"database");
+
+
+    if (provider == L"xdmysql")
+    {
+        return database + L" on " + host + L" (MySQL)";
+    }
+    else if (provider == L"xdpgsql")
+    {
+        return database + L" on " + host + L" (PostgreSQL)";
+    }
+    else if (provider == L"xdoracle")
+    {
+        return database + L" on " + host + L" (Oracle)";
+    }
+    else if (provider == L"xdodbc" && dbtype == L"mssql")
+    {
+        return database + L" on " + host + L" (SQL Server)";
+    }
+
+    if (host.length() > 0)
+        return database + L" on " + host;
+         else
+        return def.data_path;
+}

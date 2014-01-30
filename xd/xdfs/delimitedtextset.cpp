@@ -38,15 +38,6 @@ const int ROWS_TO_DETERMINE_STRUCTURE = 10000;
 
 DelimitedTextSet::DelimitedTextSet(FsDatabase* database) : XdfsBaseSet(database)
 {
-    m_source_structure = static_cast<xd::IStructure*>(new Structure);
-    m_dest_structure = static_cast<xd::IStructure*>(new Structure);
-
-    m_delimiters = L",";
-    m_line_delimiters = L"\x0d\x0a";  // CR/LF
-    m_text_qualifier = L"\"";
-    m_first_row_column_names = false;
-    m_discover_first_row_column_names = true;
-
 }
 
 DelimitedTextSet::~DelimitedTextSet()
@@ -55,80 +46,78 @@ DelimitedTextSet::~DelimitedTextSet()
         m_file.closeFile();
 }
 
-bool DelimitedTextSet::init(const std::wstring& filename)
+bool DelimitedTextSet::init(const std::wstring& filename, const xd::FormatDefinition& def)
 {
     if (!m_file.openFile(filename))
         return false;
 
-    // figure out the config file name
-    xd::IAttributesPtr attr = m_database->getAttributes();
-    std::wstring definition_path = attr->getStringAttribute(xd::dbattrDefinitionDirectory);
-    m_configfile_path = ExtFileInfo::getConfigFilenameFromPath(definition_path, filename);
-    
-    // set the set info filename
-    setConfigFilePath(m_configfile_path);
-
-    // try to load the config file for this set
-    
+    // try to load field information from the file header (for example, icsv)
     if (loadConfigurationFromDataFile())
     {
-        // structure config from data file succeeded
+        return true;
     }
-     else if (loadConfigurationFromConfigFile())
+    
+    m_def = def;
+
+    if (m_def.format == xd::formatDefault)
     {
-        // structure config from config file succeeded
-    }
-     else
-    {
-        // there is no saved configuration about this file, so
-        // we have to run logic that tries to determine the best
-        // way to open this file
+        // there is no specified configuration about this file, so we have to
+        // run logic that tries to determine the best way to open this file
         
         // look for an extension -- if no extension, assume csv
         std::wstring ext;
         int ext_pos = filename.find_last_of(L'.');
         if (ext_pos >= 0)
-            ext = filename.substr(ext_pos);
+            ext = filename.substr(ext_pos+1);
              else
-            ext = L".csv";
+            ext = L"csv";
         kl::makeLower(ext);
         
         
-        if (ext == L".tsv")
+        if (ext == L"tsv")
         {
             // these settings follows the "tsv" standard.  Note, if the file
             // has a .tsv extension, we simply assume without any further investigation
-            // that the file is tab delimited.
-            m_delimiters = L"\t";
-            m_text_qualifier = L"";
-            m_first_row_column_names = false;
+            // that the file is tab delimited
+            m_def.format = xd::formatDelimitedText;
+            m_def.delimiters = L"\t";
+            m_def.text_qualifiers = L"";
+            m_def.first_row_column_names = false;
         }
          else
         {
             // these settings follows the "csv" standard
-            m_delimiters = L",";
-            m_text_qualifier = L"\"";
-            m_first_row_column_names = false;
+            m_def.format = xd::formatDelimitedText;
+            m_def.delimiters = L",";
+            m_def.text_qualifiers = L"\"";
+            m_def.first_row_column_names = false;
             
             // however, many csv files also use other delimiters, like semicolons
-
             FsSetFormatInfo info;
             if (m_database->getFileFormat(filename,
                                           &info,
                                           FsSetFormatInfo::maskFormat |
                                           FsSetFormatInfo::maskDelimiters))
             {
-                m_delimiters = info.delimiters;
+                m_def.delimiters = info.delimiters;
             }
         }
 
+        // clear out columns because format is set to default
+        m_def.columns.clear();
+    }
+
+
+
         
-        // make sure the text-delimited file class is updated
-        m_file.setDelimiters(m_delimiters);
-        m_file.setLineDelimiters(m_line_delimiters);
-        m_file.setTextQualifiers(m_text_qualifier);
+    // make sure the text-delimited file class is updated
+    m_file.setDelimiters(m_def.delimiters);
+    m_file.setLineDelimiters(m_def.line_delimiters);
+    m_file.setTextQualifiers(m_def.text_qualifiers);
 
 
+    if (m_def.columns.size() == 0)
+    {
         int rows_to_check = ROWS_TO_DETERMINE_STRUCTURE;
         
         // if the file is small (<= 2MB), just read in the whole
@@ -147,7 +136,7 @@ bool DelimitedTextSet::init(const std::wstring& filename)
         // row written out
         determineColumns(rows_to_check, NULL);
     }
-    
+
     return true;
 }
 
@@ -175,31 +164,15 @@ xd::IRowInserterPtr DelimitedTextSet::getRowInserter()
     return static_cast<xd::IRowInserter*>(inserter);
 }
 
-xd::IIteratorPtr DelimitedTextSet::createSourceIterator(xd::IJob* job)
-{
-    DelimitedTextIterator* iter = new DelimitedTextIterator;
-    iter->setUseSourceIterator(true);
-    if (!iter->init(m_database,
-                    this,
-                    m_file.getFilename()))
-    {
-        delete iter;
-        return xcm::null;
-    }
-        
-    return static_cast<xd::IIterator*>(iter);
-}
 
 xd::IIteratorPtr DelimitedTextSet::createIterator(const std::wstring& columns,
-                                                     const std::wstring& order,
-                                                     xd::IJob* job)
+                                                  const std::wstring& order,
+                                                  xd::IJob* job)
 {
     if (order.empty())
     {
         DelimitedTextIterator* iter = new DelimitedTextIterator;
-        if (!iter->init(m_database,
-                        this,
-                        m_file.getFilename()))
+        if (!iter->init(m_database, this, m_file.getFilename()))
         {
             delete iter;
             return xcm::null;
@@ -258,34 +231,11 @@ xd::rowpos_t DelimitedTextSet::getRowCount()
 
 
 
-static xd::IStructurePtr createDefaultDestinationStructure(xd::IStructurePtr source)
-{
-    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
-    IStructureInternalPtr struct_int = s;
-    
-    int i, col_count = source->getColumnCount();
-    for (i = 0; i < col_count; ++i)
-    {
-        xd::IColumnInfoPtr sourcecol = source->getColumnInfoByIdx(i);
-        
-        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        col->setName(sourcecol->getName());
-        col->setType(sourcecol->getType());
-        col->setWidth(sourcecol->getWidth());
-        col->setScale(sourcecol->getScale());
-        col->setExpression(sourcecol->getName());
-        col->setColumnOrdinal(i);
-        struct_int->addColumn(col);
-    }
-    
-    return s;
-}
-
-
-// -- xd::IDelimitedTextSet interface --
 
 bool DelimitedTextSet::loadConfigurationFromDataFile()
 {
+    // if this file is an "icsv", we can get the format from the header row
+
     m_file.rewind();
     if (m_file.eof())
         return false;
@@ -381,6 +331,7 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
     }
     
 
+    /*
     // update the types and widths in the source structure
     m_source_structure.clear();
     m_source_structure = static_cast<xd::IStructure*>(new Structure);
@@ -427,630 +378,51 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
         col->setWidth(fields[i]->getWidth());
         col->setScale(fields[i]->getScale());
     }
-    
-    m_delimiters = L",";
-    m_text_qualifier = L"\"";
-    m_first_row_column_names = true;
+    */
+
+
+    m_def.format = xd::formatTypedDelimitedText;
+    m_def.delimiters = L",";
+    m_def.text_qualifiers = L"\"";
+    m_def.first_row_column_names = true;
 
     return true;
 }
 
-
-
-bool DelimitedTextSet::loadConfigurationFromConfigFile()
-{
-    // try to load the external text definition
-    ExtFileInfo fileinfo;
-    if (!fileinfo.load(m_configfile_path))
-        return false;
-
-    // find out if the we're dealing with the right type of text definition
-    ExtFileEntry base = fileinfo.getGroup(L"file_info");
-    std::wstring file_type = base.getChildContents(L"type");
-    if (file_type != L"text/delimited" &&
-        file_type != L"text/csv" &&
-        file_type != L"text_delimited")
-    {
-        return false;
-    }
-    
-    // -- the load succeeded, get the external file structure info --
-    
-    // get the main file settings
-    ExtFileEntry entry = base.getChild(L"settings");
-    m_delimiters = entry.getChildContents(L"field_delimiters");
-    m_text_qualifier = entry.getChildContents(L"text_qualifier");
-    int frfn = kl::wtoi(entry.getChildContents(L"first_row_field_names"));
-    m_first_row_column_names = (frfn != 0) ? true : false;
-
-    // make sure the text-delimited file class is updated
-    m_file.setDelimiters(m_delimiters);
-    m_file.setLineDelimiters(m_line_delimiters);
-    m_file.setTextQualifiers(m_text_qualifier);
-
-    // clear out any existing source structure in the set 
-    m_colname_matches.clear();
-    m_source_structure.clear();
-    m_source_structure = static_cast<xd::IStructure*>(new Structure);
-    IStructureInternalPtr src_struct_int = m_source_structure;
-    
-    std::wstring name, expression, type_string;
-    int type, width, scale;
-    
-    // now, get the source structure from the file
-    entry = base.getChild(L"fields");
-    int i, count = entry.getChildCount();
-    for (i = 0; i < count; ++i)
-    {
-        ExtFileEntry field = entry.getChild(i);
-        
-        name = field.getChildContents(L"name");
-        type_string = field.getChildContents(L"type");
-        width = kl::wtoi(field.getChildContents(L"width"));
-
-        int ftype = xd::typeCharacter;
-        if (type_string.length() > 0)
-        {
-            if (type_string == L"wide_character")
-                ftype = xd::typeWideCharacter;
-        }
-
-        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        col->setName(name);
-        col->setType(ftype);
-        col->setWidth(width);
-        col->setScale(0);
-        col->setColumnOrdinal(i);
-        src_struct_int->addColumn(col);
-        
-        // if the first row field names is not specified, that means the
-        // definition's column names were the user-specified column names
-        if (!m_first_row_column_names)
-        {
-            ColumnNameMatch col_match;
-            col_match.user_name = name;
-            m_colname_matches.push_back(col_match);
-        }
-    }
-
-    // populate the column names matching vector
-    // for first row column name switching
-    populateColumnNameMatchVector();
-
-    // clear out any existing destination structure in the set
-    m_dest_structure.clear();
-    m_dest_structure = static_cast<xd::IStructure*>(new Structure);
-    IStructureInternalPtr dest_struct_int = m_dest_structure;
-
-    // now, get the destination structure from the file
-    base = fileinfo.getGroup(L"set_info");
-    entry = base.getChild(L"fields");
-    count = entry.getChildCount();
-    for (i = 0; i < count; ++i)
-    {
-        ExtFileEntry field = entry.getChild(i);
-        
-        name = field.getChildContents(L"name");
-        type = kl::wtoi(field.getChildContents(L"type"));
-        width = kl::wtoi(field.getChildContents(L"width"));
-        scale = kl::wtoi(field.getChildContents(L"scale"));
-        expression = field.getChildContents(L"expression");
-
-        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        col->setName(name);
-        col->setType(type);
-        col->setWidth(width);
-        col->setScale(scale);
-        col->setExpression(expression);
-        col->setColumnOrdinal(i);
-        dest_struct_int->addColumn(col);
-    }
-
-    return true;
-}
-
-bool DelimitedTextSet::saveConfiguration()
-{
-    std::wstring filename = m_file.getFilename();
-
-    // if an external text definition exists, start from there
-    ExtFileInfo fileinfo;
-    fileinfo.load(m_configfile_path);
-    
-    // delete the existing "file_info" group and create a new one
-    fileinfo.deleteGroup(L"file_info");
-    ExtFileEntry base = fileinfo.getGroup(L"file_info");
-    
-    ExtFileEntry entry = base.addChild(L"type", L"text/delimited");
-    entry = base.addChild(L"settings");
-    entry.addChild(L"field_delimiters", m_delimiters);
-    entry.addChild(L"text_qualifier", m_text_qualifier);
-    entry.addChild(L"first_row_field_names", m_first_row_column_names ? 1 : 0);
-
-    entry = base.addChild(L"fields");
-
-    // save the source structure to the file
-    xd::IStructurePtr s = getSourceStructure();
-    int i,col_count = s->getColumnCount();
-    
-    for (i = 0; i < col_count; ++i)
-    {
-        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
-        
-        std::wstring type_string = L"character";
-        if (colinfo->getType() == xd::typeWideCharacter)
-            type_string = L"wide_character";
-        
-        ExtFileEntry field = entry.addChild(L"field");
-        field.addChild(L"name", colinfo->getName());
-        field.addChild(L"type", type_string);
-        field.addChild(L"width", colinfo->getWidth());
-    }
-    
-    // delete the existing "set_info" group and create a new one
-    fileinfo.deleteGroup(L"set_info");
-    base = fileinfo.getGroup(L"set_info");
-    
-    entry = base.addChild(L"fields");
-
-    // now, save the destination structure to the file
-    s = getDestinationStructure();
-    col_count = s->getColumnCount();
-    
-    for (i = 0; i < col_count; ++i)
-    {
-        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
-        
-        ExtFileEntry field = entry.addChild(L"field");
-        field.addChild(L"name", colinfo->getName());
-        field.addChild(L"type", colinfo->getType());
-        field.addChild(L"width", colinfo->getWidth());
-        field.addChild(L"scale", colinfo->getScale());
-        field.addChild(L"expression", colinfo->getExpression());
-    }
-    
-    return fileinfo.save(m_configfile_path);
-}
-
-bool DelimitedTextSet::deleteConfiguration()
-{
-    return xf_remove(m_configfile_path);
-}
-
-
-
-void DelimitedTextSet::setCreateStructure(xd::IStructurePtr structure)
-{
-    // this function is used when creating a set.  When a set is created,
-    // only the field headers are present in the file.  The newly created
-    // file is closed and then reopened by FsDatabase::createTable().  Because
-    // there is no data in the file, the file's structure cannot be reliably
-    // determined.  This function allows FsDatabase::createTable() explicity
-    // set up the structure of set.
-    
-    m_source_structure = static_cast<xd::IStructure*>(new Structure);
-    IStructureInternalPtr src_struct_int = m_source_structure;
-    
-    m_dest_structure = static_cast<xd::IStructure*>(new Structure);
-    IStructureInternalPtr dest_struct_int = m_dest_structure;
-
-    int i, col_count = structure->getColumnCount();
-    
-    for (i = 0; i < col_count; ++i)
-    {
-        xd::IColumnInfoPtr orig_col = structure->getColumnInfoByIdx(i);
-        if (orig_col->getCalculated())
-            continue;
-    
-        int new_width = orig_col->getWidth();
-        
-        switch (orig_col->getType())
-        {
-            case xd::typeDate:
-                new_width = 10;
-                break;
-            case xd::typeDateTime:
-                new_width = 20;
-                break;
-            case xd::typeInteger:
-                new_width = 12; // size of 2^32 + sign + 1 to round to 12
-                break;
-            case xd::typeDouble:
-                new_width = 20;
-                break;
-            case xd::typeNumeric:
-                new_width += 2; // dec place and sign
-                break;
-        }
-    
-    
-        xd::IColumnInfoPtr src_col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        src_col->setName(orig_col->getName());
-        src_col->setType(xd::typeCharacter);
-        src_col->setWidth(new_width);
-        src_col->setScale(0);
-        src_col->setColumnOrdinal(i);
-        src_struct_int->addColumn(src_col);
-        
-        
-        
-        xd::IColumnInfoPtr dest_col = orig_col->clone();
-        dest_col->setExpression(src_col->getName());
-        dest_col->setColumnOrdinal(i);
-        dest_struct_int->addColumn(dest_col);
-    }
-    
-    // add the calculated fields
-    for (i = 0; i < col_count; ++i)
-    {
-        xd::IColumnInfoPtr orig_col = structure->getColumnInfoByIdx(i);
-        if (!orig_col->getCalculated())
-            continue;
-
-        createCalcField(orig_col->clone());
-    }
-}
-
-
-
-
-
-xd::IStructurePtr DelimitedTextSet::getSourceStructure()
-{
-    xd::IStructurePtr s = m_source_structure->clone();
-    return s;
-}
-
-xd::IStructurePtr DelimitedTextSet::getDestinationStructure()
-{
-    if (m_dest_structure->getColumnCount() == 0)
-    {
-        m_dest_structure = createDefaultDestinationStructure(m_source_structure);
-    }
-    
-    xd::IStructurePtr s = m_dest_structure->clone();
-    return s;
-}
 
 xd::IStructurePtr DelimitedTextSet::getStructure()
 {
-    xd::IStructurePtr s = getDestinationStructure();
-    int i, col_count = s->getColumnCount();
-    for (i = 0; i < col_count; ++i)
+    Structure* structure = new Structure;
+    xd::IStructurePtr sp = static_cast<xd::IStructure*>(structure);
+
+    std::vector<xd::ColumnInfo>::iterator it, it_end = m_def.columns.end();
+    int counter = 0;
+    for (it = m_def.columns.begin(); it != it_end; ++it)
     {
-        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
-        colinfo->setExpression(L"");
+        ColumnInfo* col = new ColumnInfo;
+        
+        col->setName(it->name);
+        col->setType(it->type);
+        col->setWidth(it->width);
+        col->setScale(it->scale);
+        col->setOffset(0);
+        col->setCalculated(false);
+        col->setColumnOrdinal(counter++);
+        col->setTableOrdinal(0);
+        col->setNullsAllowed(it->nulls_allowed);
+
+        structure->addColumn(static_cast<xd::IColumnInfo*>(col));
     }
 
-    XdfsBaseSet::appendCalcFields(s);
-    return s;
+    XdfsBaseSet::appendCalcFields(structure);
+    return sp;
 }
 
-inline void resetColumnOrdinals(xd::IStructurePtr s)
-{
-    int i, col_count = s->getColumnCount();
-    for (i = 0; i < col_count; ++i)
-    {
-        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
-        
-        if (colinfo->getColumnOrdinal() != i)
-            colinfo->setColumnOrdinal(i);
-    }
-}
-
-bool DelimitedTextSet::renameSourceColumn(const std::wstring& source_col,
-                                          const std::wstring& new_val)
-{
-    xd::IStructurePtr dest_struct = getDestinationStructure();
-    xd::IStructurePtr src_struct = getSourceStructure();
-
-    xd::IColumnInfoPtr colinfo;
-    xd::IColumnInfoPtr modinfo;
-
-    bool source_retval, dest_retval;
-    
-    // rename the source field
-    modinfo = src_struct->modifyColumn(source_col);
-    modinfo->setName(new_val);
-    source_retval = modifySourceStructure(src_struct, xcm::null);
-    
-    // update the column name matching vector
-    std::vector<ColumnNameMatch>::iterator it;
-    for (it = m_colname_matches.begin(); it != m_colname_matches.end(); ++it)
-    {
-        if (m_first_row_column_names && it->file_name == source_col)
-            it->file_name = new_val;
-            
-        if (!m_first_row_column_names && it->user_name == source_col)
-            it->user_name = new_val;
-    }
-    
-    // now, lookup and modify any columns in the destination
-    // structure that have a corresponding expression
-    int i, dest_colcount = m_dest_structure->getColumnCount();
-    for (i = 0; i < dest_colcount; ++i)
-    {
-        colinfo = dest_struct->getColumnInfoByIdx(i);
-        
-        if (colinfo->getExpression() == source_col)
-        {
-            modinfo = dest_struct->modifyColumn(colinfo->getName());
-            modinfo->setExpression(new_val);
-            
-            if (colinfo->getName() == source_col)
-                modinfo->setName(new_val);
-        }
-    }
-    
-    dest_retval = modifyDestinationStructure(dest_struct, xcm::null);
-    
-    return (source_retval && dest_retval);
-}
-
-bool DelimitedTextSet::modifySourceStructure(xd::IStructure* struct_config,
-                                             xd::IJob* job)
-{
-    // get the structure actions from the
-    // structure configuration that was passed
-    IStructureInternalPtr struct_int = struct_config;
-    std::vector<StructureAction>& actions = struct_int->getStructureActions();
-    std::vector<StructureAction>::iterator it;
-    int processed_action_count = 0;
-
-    // make sure we actually modify the stored source structure
-    struct_int = m_source_structure;
-
-    // handle delete
-    for (it = actions.begin(); it != actions.end(); ++it)
-    {
-        if (it->m_action != StructureAction::actionDelete)
-            continue;
-
-        struct_int->removeColumn(it->m_colname);
-    }
-
-    // handle modify
-    for (it = actions.begin(); it != actions.end(); ++it)
-    {
-        if (it->m_action != StructureAction::actionModify)
-            continue;
-
-        struct_int->modifyColumn(it->m_colname,
-                                 it->m_params->getName(),
-                                 it->m_params->getType(),
-                                 it->m_params->getWidth(),
-                                 it->m_params->getScale(),
-                                 it->m_params->getExpression(),
-                                 it->m_params->getOffset(),
-                                 it->m_params->getEncoding(),
-                                 -1 /* no column moving */);
-    }
-
-    // handle create
-    for (it = actions.begin(); it != actions.end(); ++it)
-    {
-        if (it->m_action != StructureAction::actionCreate)
-            continue;
-
-        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        col->setName(it->m_params->getName());
-        col->setType(it->m_params->getType());
-        col->setWidth(it->m_params->getWidth());
-        col->setScale(it->m_params->getScale());
-        col->setExpression(it->m_params->getExpression());
-        col->setOffset(it->m_params->getOffset());
-        struct_int->addColumn(col);
-    }
-
-    // handle insert
-    for (it = actions.begin(); it != actions.end(); ++it)
-    {
-        if (it->m_action != StructureAction::actionInsert)
-            continue;
-
-        int insert_idx = it->m_pos;
-        
-        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        col->setName(it->m_params->getName());
-        col->setType(it->m_params->getType());
-        col->setWidth(it->m_params->getWidth());
-        col->setScale(it->m_params->getScale());
-        col->setExpression(it->m_params->getExpression());
-        col->setOffset(it->m_params->getOffset());
-        struct_int->internalInsertColumn(col, insert_idx);
-    }
-    
-    // ensure that the each column has the proper column ordinal
-    resetColumnOrdinals(m_source_structure);
-    return true;
-}
-
-bool DelimitedTextSet::modifyDestinationStructure(xd::IStructure* struct_config,
-                                                  xd::IJob* job)
-{
-    // get the structure actions from the
-    // structure configuration that was passed
-    IStructureInternalPtr struct_int = struct_config;
-    std::vector<StructureAction>& actions = struct_int->getStructureActions();
-    std::vector<StructureAction>::iterator it;
-    int processed_action_count = 0;
-
-    // make sure we actually modify the stored structure
-    struct_int = m_dest_structure;
-
-    // handle delete
-    for (it = actions.begin(); it != actions.end(); ++it)
-    {
-        if (it->m_action != StructureAction::actionDelete)
-            continue;
-
-        struct_int->removeColumn(it->m_colname);
-    }
-
-    // handle modify
-    for (it = actions.begin(); it != actions.end(); ++it)
-    {
-        if (it->m_action != StructureAction::actionModify)
-            continue;
-
-        xd::IColumnInfoPtr colinfo;
-        colinfo = m_dest_structure->getColumnInfo(it->m_colname);
-        
-        struct_int->modifyColumn(it->m_colname,
-                                 it->m_params->getName(),
-                                 it->m_params->getType(),
-                                 it->m_params->getWidth(),
-                                 it->m_params->getScale(),
-                                 it->m_params->getExpression(),
-                                 it->m_params->getOffset(),
-                                 it->m_params->getEncoding(),
-                                 -1 /* no column moving */);
-        
-        // NOTE: it'd be nice to change this at some point,
-        //       but not this close to release (02/01/2007)
-        //       and on such a base-level function
-        
-        // we have to do this because the modColumn() function which is
-        // buried in the internal structure class assigns the column to be
-        // calculated if there is any expression present (and since we use
-        // the expression to reference the source structure, this includes us)
-        if (colinfo)
-            colinfo->setCalculated(false);
-    }
-
-    // handle create
-    for (it = actions.begin(); it != actions.end(); ++it)
-    {
-        if (it->m_action != StructureAction::actionCreate)
-            continue;
-
-        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        col->setName(it->m_params->getName());
-        col->setType(it->m_params->getType());
-        col->setWidth(it->m_params->getWidth());
-        col->setScale(it->m_params->getScale());
-        col->setExpression(it->m_params->getExpression());
-        col->setOffset(it->m_params->getOffset());
-        struct_int->addColumn(col);
-    }
-
-    // handle insert
-    for (it = actions.begin(); it != actions.end(); ++it)
-    {
-        if (it->m_action != StructureAction::actionInsert)
-            continue;
-
-        int insert_idx = it->m_pos;
-        
-        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        col->setName(it->m_params->getName());
-        col->setType(it->m_params->getType());
-        col->setWidth(it->m_params->getWidth());
-        col->setScale(it->m_params->getScale());
-        col->setExpression(it->m_params->getExpression());
-        col->setOffset(it->m_params->getOffset());
-        struct_int->internalInsertColumn(col, insert_idx);
-    }
-    
-    // ensure that the each column has the proper column ordinal
-    resetColumnOrdinals(m_dest_structure);
-    return true;
-}
-
-bool DelimitedTextSet::modifyStructure(xd::IStructure* struct_config,
-                                       xd::IJob* job)
+bool DelimitedTextSet::modifyStructure(xd::IStructure* struct_config, xd::IJob* job)
 {
     bool done_flag = false;
     XdfsBaseSet::modifyStructure(struct_config, &done_flag);
     return true;
-}
-
-void DelimitedTextSet::setDelimiters(const std::wstring& new_val,
-                                     bool refresh_structure)
-{
-    if (new_val != m_delimiters)
-    {
-        m_delimiters = new_val;
-
-        // pass through file metadata to the DelimitedTextFile class;
-        // this sets the delimiter on a file in cases, such as data
-        // export to a delimited file, when the refresh structure
-        // shouldn't be called because the exported file isn't yet
-        // created
-        m_file.setDelimiters(m_delimiters);
-        
-        if (refresh_structure)
-            determineColumns(ROWS_TO_DETERMINE_STRUCTURE, NULL);
-    }
-}
-
-std::wstring DelimitedTextSet::getDelimiters()
-{
-    return m_delimiters;
-}
-
-void DelimitedTextSet::setLineDelimiters(const std::wstring& new_val,
-                                         bool refresh_structure)
-{
-    if (new_val != m_line_delimiters)
-    {
-        m_line_delimiters = new_val;
-
-        // pass through file metadata to the DelimitedTextFile class;
-        // this sets the delimiter on a file in cases, such as data
-        // export to a delimited file, when the refresh structure
-        // shouldn't be called because the exported file isn't yet
-        // created
-        m_file.setLineDelimiters(m_line_delimiters);
-        
-        if (refresh_structure)
-            determineColumns(ROWS_TO_DETERMINE_STRUCTURE, NULL);
-    }
-}
-
-std::wstring DelimitedTextSet::getLineDelimiters()
-{
-    return m_line_delimiters;
-}
-
-void DelimitedTextSet::setTextQualifier(const std::wstring& new_val,
-                                        bool refresh_structure)
-{
-    if (new_val != m_text_qualifier)
-    {
-        m_text_qualifier = new_val;
-
-        // pass through file metadata to the DelimitedTextFile class;
-        // this sets the qualifier on a file in cases, such as data
-        // export to a delimited file, when the refresh structure
-        // shouldn't be called because the exported file isn't yet
-        // created
-        m_file.setTextQualifiers(m_text_qualifier);
-
-        if (refresh_structure)
-            determineColumns(ROWS_TO_DETERMINE_STRUCTURE, NULL);
-    }
-}
-
-std::wstring DelimitedTextSet::getTextQualifier()
-{
-    return m_text_qualifier;
-}
-
-void DelimitedTextSet::setDiscoverFirstRowColumnNames(bool new_val)
-{
-    m_discover_first_row_column_names = new_val;
-}
-
-void DelimitedTextSet::setFirstRowColumnNames(bool new_val)
-{
-    m_first_row_column_names = new_val;
-    updateColumnNames();
-}
-
-bool DelimitedTextSet::isFirstRowColumnNames()
-{
-    return m_first_row_column_names;
 }
 
 static std::wstring makeValidFieldName(const std::wstring& name,
@@ -1387,22 +759,12 @@ bool DelimitedTextSet::determineColumns(int check_rows, xd::IJob* job)
         ijob->setMaxCount((check_rows != -1) ? check_rows : 0);
     }
     
-    // clear out any existing structure
-    m_source_structure.clear();
-    m_dest_structure.clear();
-    m_source_structure = static_cast<xd::IStructure*>(new Structure);
-    m_dest_structure = static_cast<xd::IStructure*>(new Structure);
 
     // pass through file metadata to the DelimitedTextFile class
-    m_file.setDelimiters(m_delimiters);
-    m_file.setLineDelimiters(m_line_delimiters);
-    m_file.setTextQualifiers(m_text_qualifier);
+    m_file.setDelimiters(m_def.delimiters);
+    m_file.setLineDelimiters(m_def.line_delimiters);
+    m_file.setTextQualifiers(m_def.text_qualifiers);
 
-
-    // determine if the first row is a header, set m_first_row_column_names
-    if (m_discover_first_row_column_names)
-        m_first_row_column_names = determineFirstRowHeader();
-    
     // get the database keywords and invalid column characters
     // for use in the makeValidFieldName() function below
     
@@ -1421,8 +783,7 @@ bool DelimitedTextSet::determineColumns(int check_rows, xd::IJob* job)
     int row_cell_count, rows_read = 0;
     std::vector<DetermineColumnInfo> col_stats;
     std::wstring colname;
-    IStructureInternalPtr src_struct_int = m_source_structure;
-    
+
     // go to the beginning of the file
     m_file.rewind();
 
@@ -1452,18 +813,10 @@ bool DelimitedTextSet::determineColumns(int check_rows, xd::IJob* job)
                 colname = temps;
             
             // set the column's name based on the m_first_row_column_names flag
-            if (m_first_row_column_names)
+            if (m_def.first_row_column_names)
                 colname = makeValidFieldName(colname, keyword_list, invalid_col_chars);
                  else
                 colname = temps;
-            
-            xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-            col->setName(colname);
-            col->setType(m_file.isUnicode() ? xd::typeWideCharacter : xd::typeCharacter);
-            col->setWidth(1);
-            col->setScale(0);
-            col->setColumnOrdinal(col_count);
-            src_struct_int->addColumn(col);
             
             col_stats.push_back(DetermineColumnInfo());
             col_count++;
@@ -1489,7 +842,7 @@ bool DelimitedTextSet::determineColumns(int check_rows, xd::IJob* job)
             
             // if the first row contains column names, don't use it during
             // statistical gathering of column widths and types
-            if (m_first_row_column_names == false || rows_read > 0)
+            if (m_def.first_row_column_names == false || rows_read > 0)
             {
                 int scale = 0;
                 
@@ -1596,219 +949,11 @@ bool DelimitedTextSet::determineColumns(int check_rows, xd::IJob* job)
         ijob->setFinishTime(time(NULL));
         ijob->setStatus(xd::jobFinished);
     }
-
-    // update the types and widths in the source structure
-    col_count = m_source_structure->getColumnCount();
-    for (i = 0; i < col_count; ++i)
-    {
-        xd::IColumnInfoPtr col = m_source_structure->getColumnInfoByIdx(i);
-        col->setWidth(col_stats[i].max_width);
-    }
-    modifySourceStructure(m_source_structure, NULL);
-    
-    // populate the column names vector for first row column name switching
-    populateColumnNameMatchVector();
-    
-    // make sure m_dest_structure is filled out
-    m_dest_structure = createDefaultDestinationStructure(m_source_structure);
-    
-    // update the destination structure with the proper types we detected
-    for (i = 0; i < col_count; ++i)
-    {
-        xd::IColumnInfoPtr col = m_dest_structure->getColumnInfoByIdx(i);
-        col->setType(col_stats[i].type);
-        if (col_stats[i].type == xd::typeNumeric)
-        {
-            col->setScale(col_stats[i].max_scale);
-        }
-    }
     
     // once again, go back to the beginning of the file
     m_file.rewind();
     return true;
 }
-
-void DelimitedTextSet::populateColumnNameMatchVector()
-{
-    size_t i, col_count = (size_t)m_source_structure->getColumnCount();
-    
-    // populate the user-specified column names vector
-    while (m_colname_matches.size() < col_count)
-    {
-        wchar_t temps[81];
-        swprintf(temps, 81, L"Field%d", m_colname_matches.size()+1);
-        
-        ColumnNameMatch col_match;
-        col_match.user_name = temps;
-        m_colname_matches.push_back(col_match);
-    }
-    
-    // get the database keywords and invalid column characters
-    // for use in the makeValidFieldName() function below
-    
-    xd::IAttributesPtr attr = m_database->getAttributes();
-    if (attr.isNull())
-        return;
-    
-    std::wstring keyword_list;
-    keyword_list = attr->getStringAttribute(xd::dbattrKeywords);
-    
-    std::wstring invalid_col_chars;
-    invalid_col_chars = attr->getStringAttribute(xd::dbattrColumnInvalidChars);
-    
-    // populate the first row column names vector
-    m_file.rewind();
-    int cell_count = m_file.getRowCellCount();
-    std::wstring colname;
-    
-    for (i = 0; i < col_count; ++i)
-    {
-        wchar_t temps[81];
-        swprintf(temps, 81, L"Field%d", i+1);
-
-        // use the first row's cells unless the index is past the cell count,
-        // then use default column names instead of empty strings
-        if (i < (size_t)cell_count)
-        {
-            colname = m_file.getString(i);
-            if (colname.length() > 80)
-                colname = colname.substr(0, 80);
-        }
-         else
-        {
-            colname = temps;
-        }
-        
-        // we can't allow empty column names
-        if (colname.empty())
-            colname = temps;
-        
-        colname = makeValidFieldName(colname, keyword_list, invalid_col_chars);
-        
-        if (i < m_colname_matches.size())
-        {
-            m_colname_matches[i].file_name = colname;
-        }
-         else
-        {
-            ColumnNameMatch col_match;
-            col_match.file_name = colname;
-            m_colname_matches.push_back(col_match);
-        }
-    }
-    
-    // go to the beginning of the file
-    m_file.rewind();
-    
-    // make sure the user_name value is filled out for every item
-    i = 0;
-    std::vector<ColumnNameMatch>::iterator it;
-    for (it = m_colname_matches.begin(); it != m_colname_matches.end(); ++it)
-    {
-        wchar_t temps[81];
-        swprintf(temps, 81, L"Field%d", i+1);
-
-        if (it->user_name.length() == 0)
-            it->user_name = temps;
-        
-        i++;
-    }
-    
-    // get rid of any extraneous column name information
-    m_colname_matches.resize(col_count);
-}
-
-void DelimitedTextSet::updateColumnNames()
-{
-    xd::IStructurePtr dest_struct = getDestinationStructure();
-    xd::IStructurePtr src_struct = getSourceStructure();
-    
-    int dest_colcount = dest_struct->getColumnCount();
-    int src_colcount = src_struct->getColumnCount();
-    
-    xd::IColumnInfoPtr dest_colinfo, src_colinfo;
-    std::wstring name, new_name;
-    
-    std::vector<std::wstring> old_names;
-    int i;
-
-    // if we don't have a column match vector filled out (such
-    // as when we create a csv without a header row, this function
-    // shouldn't be run (as far as I can tell)
-
-    if (m_colname_matches.size() != src_colcount)
-        return;
-
-    // switch all of the column names to their unique match name
-    for (i = 0; i < src_colcount; ++i)
-    {
-        if (m_first_row_column_names)
-            name = m_colname_matches[i].user_name;
-             else
-            name = m_colname_matches[i].file_name;
-
-        new_name = m_colname_matches[i].match_name;
-
-        // modify the source column name
-        src_colinfo = src_struct->modifyColumn(name);
-        if (src_colinfo.isOk())
-            src_colinfo->setName(new_name);
-        
-        // save the old fieldnames for later (for reference
-        // when changing the destination structure later on)
-        old_names.push_back(name);
-    }
-    
-    modifySourceStructure(src_struct, xcm::null);
-    
-    // we have to "re-get" the source structure here
-    // to make sure we have the "updated" structure
-    src_struct = getSourceStructure();
-
-    // switch all of the column names to their new name
-    for (i = 0; i < src_colcount; ++i)
-    {
-        name = m_colname_matches[i].match_name;
-        
-        if (m_first_row_column_names)
-            new_name = m_colname_matches[i].file_name;
-             else
-            new_name = m_colname_matches[i].user_name;
-
-        // modify the source column name
-        src_colinfo = src_struct->modifyColumn(name);
-        if (src_colinfo.isOk())
-            src_colinfo->setName(new_name);
-        
-        // the fieldname we're changing from
-        std::wstring old_name = old_names[i];
-        
-        // lookup any corresponding columns in the destination
-        // structure and modify them as well
-        for (int j = 0; j < dest_colcount; ++j)
-        {
-            dest_colinfo = dest_struct->getColumnInfoByIdx(i);
-            if (dest_colinfo.isNull())
-                continue;
-            
-            // the destination expression is the same as the
-            // source column name we're modifying, so continue
-            if (dest_colinfo->getExpression() == old_name)
-            {
-                // modify the destination expression and name (if applicable)
-                std::wstring dest_colname = dest_colinfo->getName();
-                dest_colinfo = dest_struct->modifyColumn(dest_colname);
-                dest_colinfo->setExpression(new_name);
-                if (dest_colname == old_name)
-                    dest_colinfo->setName(new_name);
-            }
-        }
-    }
-    
-    modifySourceStructure(src_struct, xcm::null);
-    modifyDestinationStructure(dest_struct, xcm::null);
-}
-
 
 
 
@@ -1841,7 +986,7 @@ xd::objhandle_t DelimitedTextRowInserter::getHandle(const std::wstring& column_n
     std::vector<DelimitedTextDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if (!wcscasecmp((*it)->name.c_str(), column_name.c_str()))
+        if (0 == wcscasecmp((*it)->name.c_str(), column_name.c_str()))
             return (xd::objhandle_t)(*it);
     }
 

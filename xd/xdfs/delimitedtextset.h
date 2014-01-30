@@ -24,46 +24,6 @@ bool parseDelimitedStringDate(const std::wstring& str,
                               int* day = NULL);
 
 
-// This class is used to handle renames.  The following scenario caused problems:
-// fields DAVE,BEN,FIELD1 - DAVE would get renamed to Field1, and Field1 would
-// get renamed to Field3, but so would the first column too, due to naming conflict.
-// This class allows for an intermediary -- a third match string which will become
-// the temporary column name to ensure there are no naming conflicts.
-
-class ColumnNameMatch
-{
-public:
-
-    ColumnNameMatch()
-    {
-        user_name = L"";
-        file_name = L"";
-        match_name = getUniqueString();
-    }
-    
-    ColumnNameMatch(const ColumnNameMatch& c)
-    {
-        user_name = c.user_name;
-        file_name = c.file_name;
-        match_name = c.match_name;
-    }
-
-    ColumnNameMatch& operator=(const ColumnNameMatch& c)
-    {
-        user_name = c.user_name;
-        file_name = c.file_name;
-        match_name = c.match_name;
-        return *this;
-    }
-    
-public:
-
-    std::wstring user_name;
-    std::wstring file_name;
-    std::wstring match_name;
-};
-
-
 class DelimitedTextSet : public XdfsBaseSet,
                          public IXdfsSet,
                          public IXdsqlTable
@@ -84,9 +44,7 @@ public:
     DelimitedTextSet(FsDatabase* database);
     ~DelimitedTextSet();
 
-    bool init(const std::wstring& filename);
-
-    void setCreateStructure(xd::IStructurePtr structure);
+    bool init(const std::wstring& filename, const xd::FormatDefinition& def);
     
     std::wstring getSetId();
 
@@ -105,70 +63,24 @@ public:
                    xd::ColumnUpdateInfo* info,
                    size_t info_size) { return false; }
 
-    // xd::IDelimitedTextSet
-
-    bool saveConfiguration();
-    bool deleteConfiguration();
-    
-    xd::IStructurePtr getSourceStructure();
-    xd::IStructurePtr getDestinationStructure();
     xd::IStructurePtr getStructure();
 
-    bool modifySourceStructure(xd::IStructure* struct_config, xd::IJob* job);
-    bool modifyDestinationStructure(xd::IStructure* struct_config, xd::IJob* job);
     bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
-    
-    // this function should only be used by outside callers as it
-    // also modifies values in the m_colname_matches vector
-    bool renameSourceColumn(const std::wstring& source_col,
-                            const std::wstring& new_val);
-    
-    void setDelimiters(const std::wstring& new_val,
-                       bool refresh_structure);
-    std::wstring getDelimiters();
-    
-    void setLineDelimiters(const std::wstring& new_val,
-                           bool refresh_structure);
-    std::wstring getLineDelimiters();
-    
-    void setTextQualifier(const std::wstring& new_val,
-                          bool refresh_structure);
-    std::wstring getTextQualifier();
-    
-    void setDiscoverFirstRowColumnNames(bool new_val);
-    void setFirstRowColumnNames(bool new_val);
-    bool isFirstRowColumnNames();
-    
-    xd::IIteratorPtr createSourceIterator(xd::IJob* job);
-    
     bool determineColumns(int check_rows, xd::IJob* job);
-
     bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job) { return false; }
  
 private:
 
     bool loadConfigurationFromDataFile();
-    bool loadConfigurationFromConfigFile();
     bool determineFirstRowHeader();
     void populateColumnNameMatchVector();
-    void updateColumnNames();
 
 private:
 
     DelimitedTextFile m_file;
-    std::wstring m_configfile_path;
-
-    xd::IStructurePtr m_source_structure;
-    xd::IStructurePtr m_dest_structure;
+    std::wstring m_path;
+    xd::FormatDefinition m_def;
     
-    // variables to describe the file structure
-    std::wstring m_delimiters;
-    std::wstring m_line_delimiters;
-    std::wstring m_text_qualifier;
-    bool m_first_row_column_names;
-    bool m_discover_first_row_column_names;
-    
-    std::vector<ColumnNameMatch> m_colname_matches;
 };
 
 
@@ -215,10 +127,4 @@ private:
     DelimitedTextRow m_row;
 };
 
-
-
-
 #endif
-
-
-

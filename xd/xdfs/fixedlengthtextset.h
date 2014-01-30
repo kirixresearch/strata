@@ -62,9 +62,9 @@ public:
 
 private:
 
+    FixedLengthTable m_file;
     std::wstring m_path;
     xd::FormatDefinition m_def;
-    FixedLengthTable m_file;
     
     xd::rowpos_t m_row_count;    // number of rows in the file
     xf_off_t m_file_size;        // size of the file

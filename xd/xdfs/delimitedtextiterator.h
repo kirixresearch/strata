@@ -89,12 +89,7 @@ public:
     DelimitedTextIterator();
     ~DelimitedTextIterator();
 
-    bool init(xd::IDatabasePtr db,
-              DelimitedTextSet* set,
-              const std::wstring& filename);
-    void setUseSourceIterator(bool source_iterator);
-
-    // xd::IIterator
+    bool init(xd::IDatabasePtr db, DelimitedTextSet* set, const std::wstring& filename);
 
     void setTable(const std::wstring& tbl);
     std::wstring getTable();
@@ -137,18 +132,10 @@ public:
 
 private:
 
-    kscript::ExprParser* parseSourceExpression(const std::wstring& expr);
-    kscript::ExprParser* parseDestinationExpression(const std::wstring& expr);
-
-private:
-
     xd::IDatabasePtr m_database;
     DelimitedTextSet* m_set;
     
     DelimitedTextFile m_file;
-    bool m_use_source_iterator;     // true if we're an iterator
-                                    // on m_set's source structure
-    
     std::vector<DelimitedTextDataAccessInfo*> m_fields;
     std::vector<DelimitedTextDataAccessInfo*> m_exprs;
     std::vector<DelimitedSourceBindInfo*> m_src_bindings;
