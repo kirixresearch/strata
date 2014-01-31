@@ -716,7 +716,7 @@ bool TextDoc::open(const wxString& filename)
      else
     {
         m_def = xd::FormatDefinition();
-        if (!db->loadDataView(towstr(filename), &m_def))
+        if (!db->loadDefinition(towstr(filename), &m_def))
             return false;
         m_path = filename;
     }
@@ -759,7 +759,7 @@ bool TextDoc::save()
     if (db.isNull())
         return false;
 
-    return db->saveDataView(towstr(m_path), &m_def);
+    return db->saveDefinition(towstr(m_path), &m_def);
 }
 
 bool TextDoc::initTextDelimitedView()

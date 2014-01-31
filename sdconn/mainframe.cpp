@@ -89,7 +89,7 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
         xd::FormatDefinition fi;
         fi.data_connection_string = cstr;
         fi.data_path = it->input_tablename;
-        db->saveDataView(it->output_tablename, &fi);
+        db->saveDefinition(it->output_tablename, &fi);
     }
     
     refreshList();
@@ -128,7 +128,7 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
 
         xd::FormatDefinition fi;
         fi.data_path = fullpath;
-        db->saveDataView(key, &fi);
+        db->saveDefinition(key, &fi);
     }
 
 
@@ -212,7 +212,7 @@ void MainFrame::refreshList()
 
         xd::FormatDefinition def;
         fname = finfo->getName();
-        if (db->loadDataView(fname, &def))
+        if (db->loadDefinition(fname, &def))
         {
             std::wstring data_path_name;
             

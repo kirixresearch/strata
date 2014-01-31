@@ -6363,7 +6363,7 @@ static void onConnectExternalTablesWizardFinished(DlgConnection* dlg)
         xd::FormatDefinition fi;
         fi.data_connection_string = cstr;
         fi.data_path = it->input_tablename;
-        db->saveDataView(it->output_tablename, &fi);
+        db->saveDefinition(it->output_tablename, &fi);
     }
     
     g_app->getAppController()->refreshDbDoc();

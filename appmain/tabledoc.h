@@ -82,7 +82,7 @@ enum
 
 xcm_interface ITableDocObject : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("appmain.ITableDocStorable")
+    XCM_INTERFACE_NAME("appmain.ITableDocObject")
 
 public:
 
