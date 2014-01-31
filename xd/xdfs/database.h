@@ -99,8 +99,8 @@ public:
     IXdsqlTablePtr openSetEx(const std::wstring& path, const xd::FormatDefinition& fi);
 
 
-    bool loadDataView(const std::wstring& path, xd::FormatDefinition* format_info);
-    bool saveDataView(const std::wstring& path, const xd::FormatDefinition* format_info);
+    bool loadDefinition(const std::wstring& path, xd::FormatDefinition* format_info);
+    bool saveDefinition(const std::wstring& path, const xd::FormatDefinition* format_info);
 
     bool createFolder(const std::wstring& path);
     bool renameFile(const std::wstring& path, const std::wstring& new_name);

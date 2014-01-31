@@ -63,6 +63,7 @@ public:
 
     xd::IRowInserterPtr getRowInserter();
     IXdsqlRowDeleterPtr getRowDeleter();
+    bool getFormatDefinition(xd::FormatDefinition* def);
 
     xd::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,

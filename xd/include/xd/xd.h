@@ -61,6 +61,8 @@ xcm_interface IStructure;
 xcm_interface IIteratorRelation;
 xcm_interface IRelationSchema;
 
+struct FormatDefinition;
+
 // smart pointer declarations
 
 XCM_DECLARE_SMARTPTR(IAttributes)
@@ -121,6 +123,18 @@ enum
     dbtypeFilesystem = 80
 };
 
+
+
+
+// file type flags
+
+enum
+{
+    filetypeNode =   0x00,
+    filetypeFolder = 0x01,
+    filetypeTable =  0x02,
+    filetypeStream = 0x04
+};
 
 
 // format types
@@ -282,19 +296,6 @@ enum
 
 
 
-
-// file type flags
-
-enum
-{
-    filetypeNode =   0x00,
-    filetypeFolder = 0x01,
-    filetypeTable =  0x02,
-    filetypeStream = 0x04
-};
-
-
-
 // flags for execute()
 
 enum
@@ -329,17 +330,17 @@ xcm_interface IFileInfo : public xcm::IObject
 
 public:
 
-    virtual const std::wstring& getName() = 0;       // filename
-    virtual int getType() = 0;                       // filetype enums
-    virtual int getFormat() = 0;                     // format enums
-    virtual unsigned int getFlags() = 0;             // object information enums
-    virtual const std::wstring& getMimeType() = 0;   // mime type, empty if none
-    virtual long long getSize() = 0;                 // size, in bytes
-    virtual rowpos_t getRowCount() = 0;              // size, in rows (if applicable)
-    virtual bool isMount() = 0;                      // true if file/folder is a mount
-    virtual const std::wstring& getPrimaryKey() = 0; // primary key of a table
-    virtual const std::wstring& getObjectId() = 0;   // object id (i.e. set id, oid, etc)
-    virtual const std::wstring& getUrl() = 0;        // url associated with object
+    virtual const std::wstring& getName() = 0;                       // file/object name
+    virtual int getType() = 0;                                       // file type enums (table, stream, etc)
+    virtual int getFormat() = 0;                                     // file format enums (ttb, dbf, delimited, fixed length, etc.)
+    virtual unsigned int getFlags() = 0;                             // object information enums
+    virtual const std::wstring& getMimeType() = 0;                   // mime type, empty if none
+    virtual long long getSize() = 0;                                 // size, in bytes (if applicable)
+    virtual rowpos_t getRowCount() = 0;                              // size, in rows (if applicable)
+    virtual bool isMount() = 0;                                      // true if object is a mount
+    virtual const std::wstring& getPrimaryKey() = 0;                 // primary key of a table
+    virtual const std::wstring& getObjectId() = 0;                   // object id (i.e. set id, oid, etc)
+    virtual const std::wstring& getUrl() = 0;                        // url associated with object
 };
 
 
@@ -688,8 +689,8 @@ public:
     virtual bool createStream(const std::wstring& path, const std::wstring& mime_type) = 0;
     virtual bool createTable(const std::wstring& path, IStructurePtr struct_config, FormatDefinition* format_info) = 0;
 
-    virtual bool loadDataView(const std::wstring& path, FormatDefinition* format_info) { return false; }
-    virtual bool saveDataView(const std::wstring& path, const FormatDefinition* format_info) { return false; }
+    virtual bool loadDefinition(const std::wstring& path, FormatDefinition* format_info) { return false; }
+    virtual bool saveDefinition(const std::wstring& path, const FormatDefinition* format_info) { return false; }
 
     virtual IDatabasePtr getMountDatabase(const std::wstring& path) = 0;
     virtual bool setMountPoint(const std::wstring& path, const std::wstring& connection_str,  const std::wstring& remote_path) = 0;
@@ -794,7 +795,7 @@ public:
 
 xcm_interface IIteratorRelation : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("xd.IteratorRelation")
+    XCM_INTERFACE_NAME("xd.IIteratorRelation")
 
 public:
     
@@ -805,7 +806,7 @@ public:
 
 xcm_interface IRelationSchema : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("xd.IIRelationSchema")
+    XCM_INTERFACE_NAME("xd.IRelationSchema")
 
 public:
 

@@ -49,7 +49,7 @@ xcm_interface IIndex;
 
 xcm_interface IIndexIterator : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("xdnative.IIndexIterator")
+    XCM_INTERFACE_NAME("xd.IIndexIterator")
 
 public:
 
@@ -70,7 +70,7 @@ public:
 
 xcm_interface IIndex : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("xdnative.IIndex")
+    XCM_INTERFACE_NAME("xd.IIndex")
 
 public:
     

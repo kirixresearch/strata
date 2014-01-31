@@ -37,7 +37,7 @@ inline IDatabaseMgrPtr getDatabaseMgr()
 
 xcm_interface IDatabaseParserBinder : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IDatabaseParserBinder")
+    XCM_INTERFACE_NAME("xd.IDatabaseParserBinder")
     
 public:
 

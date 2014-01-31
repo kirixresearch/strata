@@ -236,3 +236,39 @@ bool loadDefinitionFromFile(const std::wstring& path, xd::FormatDefinition* def)
     return loadDefinitionFromString(str, def);
 }
 
+
+
+
+
+
+
+
+
+void copyStructureToDefinition(xd::IStructurePtr structure,  xd::FormatDefinition* def)
+{
+    xd::IColumnInfoPtr colinfo;
+    xd::ColumnInfo col;
+    def->columns.clear();
+
+    int i, count = structure->getColumnCount();
+    for (i = 0; i < count; ++i)
+    {
+        colinfo = structure->getColumnInfoByIdx(i);
+        
+        col.name = colinfo->getName();
+        col.type = colinfo->getType();
+        col.width = colinfo->getWidth();
+        col.scale = colinfo->getScale();
+        col.calculated = colinfo->getCalculated();
+        col.expression = colinfo->getExpression();
+        col.column_ordinal = colinfo->getColumnOrdinal();
+        col.source_offset = colinfo->getOffset();
+        col.source_width = col.width;
+        col.nulls_allowed = colinfo->getNullsAllowed();
+        col.source_encoding = colinfo->getEncoding();
+
+        def->columns.push_back(col);
+    }
+}
+
+

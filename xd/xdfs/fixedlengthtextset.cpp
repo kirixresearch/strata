@@ -79,6 +79,12 @@ xd::IRowInserterPtr FixedLengthTextSet::getRowInserter()
     return static_cast<xd::IRowInserter*>(inserter);
 }
 
+bool FixedLengthTextSet::getFormatDefinition(xd::FormatDefinition* def)
+{
+    *def = m_def;
+    return true;
+}
+
 xd::IIteratorPtr FixedLengthTextSet::createIterator(
                                         const std::wstring& columns,
                                         const std::wstring& order,

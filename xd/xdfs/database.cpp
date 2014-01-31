@@ -1808,7 +1808,7 @@ IXdsqlTablePtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatD
 
     if (xf_get_file_exist(phys_path + L".xddef"))
     {
-        if (!loadDataView(path, &deffi))
+        if (!loadDefinition(path, &deffi))
             return xcm::null;
         if (deffi.format != xd::formatDefault)
             fi = &deffi;
@@ -1992,14 +1992,21 @@ xd::IIteratorPtr FsDatabase::query(const xd::QueryParams& qp)
 }
 
 
-bool FsDatabase::loadDataView(const std::wstring& path, xd::FormatDefinition* info)
+bool FsDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* info)
 {
-    std::wstring phys_path = makeFullPath(path) + L".xddef";
+    std::wstring phys_path = makeFullPath(path);
 
-    return loadDefinitionFromFile(phys_path, info);
+    if (xf_get_file_exist(phys_path + L".xddef"))
+        return loadDefinitionFromFile(phys_path, info);
+
+    if (xf_get_file_exist(phys_path))
+    {
+        IXdsqlTablePtr tbl = openTable(path);
+
+    }
 }
 
-bool FsDatabase::saveDataView(const std::wstring& path, const xd::FormatDefinition* info)
+bool FsDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefinition* info)
 {
     std::wstring phys_path = makeFullPath(path) + L".xddef";
     

@@ -164,6 +164,11 @@ xd::IRowInserterPtr DelimitedTextSet::getRowInserter()
     return static_cast<xd::IRowInserter*>(inserter);
 }
 
+bool DelimitedTextSet::getFormatDefinition(xd::FormatDefinition* def)
+{
+    *def = m_def;
+    return true;
+}
 
 xd::IIteratorPtr DelimitedTextSet::createIterator(const std::wstring& columns,
                                                   const std::wstring& order,

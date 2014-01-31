@@ -19,6 +19,7 @@
 #include "xbaseset.h"
 #include "xbaseiterator.h"
 #include "../xdcommon/dbfuncs.h"
+#include "../xdcommon/formatdefinition.h"
 #include "../xdcommon/columninfo.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/exindex.h"
@@ -125,6 +126,14 @@ xd::IRowInserterPtr XbaseSet::getRowInserter()
     XbaseRowInserter* inserter = new XbaseRowInserter(this);
     return static_cast<xd::IRowInserter*>(inserter);
 }
+
+bool XbaseSet::getFormatDefinition(xd::FormatDefinition* def)
+{
+    *def = xd::FormatDefinition();
+    copyStructureToDefinition(getStructure(), def);
+    return true;
+}
+
 
 
 xd::IIteratorPtr XbaseSet::createIterator(const std::wstring& columns,

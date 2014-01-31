@@ -20,6 +20,7 @@
 #include "ttbiterator.h"
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/columninfo.h"
+#include "../xdcommon/formatdefinition.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/exindex.h"
 #include "../xdcommon/idxutil.h"
@@ -88,6 +89,13 @@ xd::IStructurePtr TtbSet::getStructure()
 
     XdfsBaseSet::appendCalcFields(s);
     return s;
+}
+
+bool TtbSet::getFormatDefinition(xd::FormatDefinition* def)
+{
+    *def = xd::FormatDefinition();
+    copyStructureToDefinition(getStructure(), def);
+    return true;
 }
 
 xd::IRowInserterPtr TtbSet::getRowInserter()

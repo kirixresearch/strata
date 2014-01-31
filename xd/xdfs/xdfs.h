@@ -31,7 +31,7 @@ xcm_interface IXdfsSet : public xcm::IObject
 public:
 
     virtual xd::IRowInserterPtr getRowInserter() = 0;
-
+    virtual bool getFormatDefinition(xd::FormatDefinition* def) = 0;
 };
 
 

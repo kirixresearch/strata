@@ -20,6 +20,8 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def
 bool saveDefinitionToFile(const std::wstring& path, const xd::FormatDefinition* def);
 bool loadDefinitionFromFile(const std::wstring& path, xd::FormatDefinition* def);
 
+void copyStructureToDefinition(xd::IStructurePtr structure,  xd::FormatDefinition* def);
+
 
 #endif
 

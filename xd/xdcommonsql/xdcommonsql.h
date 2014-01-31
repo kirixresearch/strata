@@ -41,7 +41,7 @@ public:
 
 xcm_interface IXdsqlRowDeleter : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("xd.IRowDeleter")
+    XCM_INTERFACE_NAME("xd.IXdsqlRowDeleter")
 
 public:
 
