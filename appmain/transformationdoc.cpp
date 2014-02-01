@@ -367,13 +367,6 @@ TransformationDoc::~TransformationDoc()
 }
 
 
-bool TransformationDoc::open(const wxString& path)
-{
-    m_path = path;
-    return true;
-}
-
-
 inline void resizeAllGridColumnsToFitDoc(kcl::Grid* grid)
 {
     // this code changes the two proportional columns to be non-proportionally
@@ -404,12 +397,7 @@ bool TransformationDoc::initDoc(IFramePtr frame,
     m_doc_site = doc_site;
     
     // set the document's caption and icon
-    wxString caption;
-    if (m_path.Length() > 0)
-        caption = m_path.AfterLast(wxT('/'));
-         else
-        caption = _("(Untitled)");
-    
+    wxString caption = _("Structure");
     m_doc_site->setCaption(caption);
     m_doc_site->setBitmap(GETBMP(gf_table_16));
 
@@ -526,7 +514,7 @@ wxString TransformationDoc::getDocumentLocation()
     if (textdoc)
         return textdoc->getDocumentLocation();
 
-    return urlToFilename(m_path);
+    return "";
 }
 
 void TransformationDoc::setDocumentFocus()

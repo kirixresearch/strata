@@ -54,6 +54,7 @@ bool DelimitedTextSet::init(const std::wstring& filename, const xd::FormatDefini
     // try to load field information from the file header (for example, icsv)
     if (loadConfigurationFromDataFile())
     {
+        m_def.format = xd::formatTypedDelimitedText;
         return true;
     }
     
@@ -134,6 +135,7 @@ bool DelimitedTextSet::init(const std::wstring& filename, const xd::FormatDefini
         // will cause the export to fail since the file we're exporting to
         // doesn't have rows until after the structure is set and the
         // row written out
+
         determineColumns(rows_to_check, NULL);
     }
 

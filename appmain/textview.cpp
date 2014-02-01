@@ -772,6 +772,9 @@ TextView::~TextView()
 
 bool TextView::openFile(const wxString& filename)
 {
+    if (filename.IsEmpty())
+        return false;
+
     bool retval = m_text_model->openFile(filename);
 
     if (retval)

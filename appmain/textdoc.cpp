@@ -128,33 +128,23 @@ ITextDocPtr createTextDoc(const std::wstring& filename,
     
     // create a new TableDoc
     ITableDocPtr tabledoc = TableDocMgr::createTableDoc();
-    tabledoc->open(towstr(textdoc->getPath()));
 
     // create a new TransformationDoc
     TransformationDoc* transdoc = new TransformationDoc();
-    if (!transdoc->open(towstr(textdoc->getPath())))
-        return xcm::null;
 
     if (container_wnd)
     {
-        tabledoc_site = frame->createSite(container_wnd,
-                                          tabledoc,
-                                          false);
+        tabledoc_site = frame->createSite(container_wnd, tabledoc,  false);
     }
      else
     {
-        tabledoc_site = frame->createSite(tabledoc,
-                                          sitetypeNormal,
-                                         -1, -1, -1, -1);
+        tabledoc_site = frame->createSite(tabledoc, sitetypeNormal, -1, -1, -1, -1);
         container_wnd = tabledoc_site->getContainerWindow();
     }
 
-
-                          
+                    
     if (tabledoc_site.isOk() && site_id)
         *site_id = tabledoc_site->getId();
-
-
 
     textdoc_site = frame->createSite(container_wnd,
                                      static_cast<IDocument*>(textdoc),
@@ -192,6 +182,7 @@ ITextDocPtr createTextDoc(const std::wstring& filename,
             frame->setActiveChild(textdoc_site);        
     }
     
+    textdoc->refresh();
 
     return static_cast<ITextDoc*>(textdoc);
 }
@@ -260,8 +251,7 @@ TextDoc::TextDoc()
     
     m_dirty = false;
     m_loading_definition = false;
-    m_fixedlength_inited = false;
-    m_textdelimited_inited = false;
+    m_path_is_datafile = false;
     m_last_textqualifier = wxEmptyString;
     m_last_delimiters = wxEmptyString;
     
@@ -376,7 +366,7 @@ bool TextDoc::initDoc(IFramePtr frame,
     // initialize the active view
     if (m_view == TextDoc::FixedLengthView)
         initFixedLengthView();
-     else if (m_view == TextDoc::TextDelimitedView)    
+    else if (m_view == TextDoc::TextDelimitedView)    
         initTextDelimitedView();
     
     // create the main sizer
@@ -461,6 +451,17 @@ bool TextDoc::onSiteClosing(bool force)
         onSave(e);
     }
     
+
+    // right now, cfw doesn't fire onSiteClosing() to all documents in a container,
+    // just the one that is active.  This is probably wrong.   This code works around
+    // that problem by calling onSiteClosing on the TableDoc so that view information
+    // can be properly saved
+    // update the TableDoc's base set
+    IDocumentPtr doc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
+    if (doc)
+        doc->onSiteClosing(true /*force*/);
+
+
     if (m_path.StartsWith("xtmp_"))
     {
         xd::IDatabasePtr db = g_app->getDatabase();
@@ -574,11 +575,17 @@ bool TextDoc::initFixedLengthView()
     m_loading_definition = true;
 
     // open the file in the TextView control
-    wxString fn;
-    if (kl::iequals(m_def.data_path.substr(0,5), L"file:"))
-        fn = urlToFilename(m_def.data_path);
+    std::wstring fn;
+
+    if (m_path_is_datafile)
+        fn = m_path.ToStdWstring();
          else
-        fn = getPhysPathFromDatabasePath(m_def.data_path);
+        fn = m_def.data_path;
+
+    if (kl::iequals(fn.substr(0,5), L"file:"))
+        fn = urlToFilename(fn);
+         else
+        fn = getPhysPathFromDatabasePath(fn);
         
     if (!m_textview->openFile(fn))
         return false;
@@ -634,8 +641,6 @@ bool TextDoc::initFixedLengthView()
 
     // refresh the view
     m_textview->refresh();
-    
-    m_fixedlength_inited = true;
 
     return true;
 }
@@ -686,61 +691,33 @@ bool TextDoc::open(const wxString& filename)
     if (db.isNull())
         return false;
 
-
     // get the format of the file from the database
     xd::IFileInfoPtr file_info = db->getFileInfo(towstr(filename));
     if (file_info.isNull())
         return false;
 
-
-    if (!file_info->isMount())
-    {
-        m_def = xd::FormatDefinition();
-        m_def.data_path = filename;
-        m_def.format = file_info->getFormat();
-        m_def.fixed_line_delimited = false;
-        m_def.fixed_start_offset = 0;
-        m_def.fixed_row_width = 80;
-        m_path = xd::getTemporaryPath();
-        
-        xd::ColumnInfo col;
-        col.name = L"Field1";
-        col.type = xd::typeCharacter;
-        col.source_offset = 0;
-        col.source_width = 80;
-        col.width = 80;
-
-        m_def.columns.push_back(col);
-        save();
-    }
-     else
-    {
-        m_def = xd::FormatDefinition();
-        if (!db->loadDefinition(towstr(filename), &m_def))
-            return false;
-        m_path = filename;
-    }
-
-
+    m_def = xd::FormatDefinition();
+    if (!db->loadDefinition(towstr(filename), &m_def))
+        return false;
+    m_path = filename;
+    m_path_is_datafile = file_info->isMount() ? false : true;
 
     if (m_def.format == xd::formatDelimitedText)
         m_view = TextDoc::TextDelimitedView;
-            else
+         else
         m_view = TextDoc::FixedLengthView;
 
-    
     if (m_frame.isOk())
     {
         bool res;
         
         if (m_view == TextDoc::FixedLengthView)
             res = initFixedLengthView();
-         else if (m_view == TextDoc::TextDelimitedView)    
+        else if (m_view == TextDoc::TextDelimitedView)    
             res = initTextDelimitedView();
             
         return res;
     }
-
 
     return true;
 }
@@ -759,7 +736,54 @@ bool TextDoc::save()
     if (db.isNull())
         return false;
 
-    return db->saveDefinition(towstr(m_path), &m_def);
+    bool do_refresh = false;
+
+    if (m_path_is_datafile)
+    {
+        // m_path is currently set to the source data file;
+        // save to a new path, initially a temporary one
+        std::wstring new_path = xd::getTemporaryPath();
+        
+        xd::FormatDefinition def = m_def;
+        def.data_path = m_path;
+        if (!db->saveDefinition(new_path, &def))
+            return false;
+
+        // reload to get any changes database made
+        db->loadDefinition(new_path, &m_def);
+        
+        m_path = new_path;
+        do_refresh = true;
+        m_path_is_datafile = false;
+    } 
+     else
+    {
+        if (!db->saveDefinition(towstr(m_path), &m_def))
+            return false;
+    }
+
+
+    if (do_refresh)
+    {
+        refresh();
+    }
+
+    m_dirty = false;
+    return true;
+}
+
+void TextDoc::refresh()
+{
+    // repopulate the TransformationDoc from the destination structure
+    ITransformationDocPtr transdoc;
+    transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
+    if (transdoc)
+        transdoc->initFromDefinition(m_def);
+
+    // update the TableDoc's base set
+    ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
+    if (tabledoc)
+        tabledoc->open(towstr(m_path));
 }
 
 bool TextDoc::initTextDelimitedView()
@@ -807,8 +831,6 @@ bool TextDoc::initTextDelimitedView()
     m_grid->refresh(kcl::Grid::refreshAll);
     m_grid->autoColumnResize(-1);
     
-    m_textdelimited_inited = true;
-
     return true;
 }
 
@@ -817,7 +839,6 @@ wxBoxSizer* TextDoc::createMainSettingsSizer()
     wxStaticText* static_filetype = new wxStaticText(this,
                                                      -1,
                                                      _("File Type:"));
-    
     size_t i;
                                                
     m_filetype_choice = new wxChoice(this,
@@ -1237,7 +1258,7 @@ void TextDoc::onTextViewColumnAdded(TextViewColumn& col)
                 viewcol->setSize(80);
                 
                 // refresh the TableDoc's view
-                tabledoc->refreshActiveView();
+                tabledoc->refreshActiveView();                
             }
         }
     }
@@ -1494,17 +1515,14 @@ void TextDoc::onFileTypeChanged(wxCommandEvent& evt)
     if (sel == FileType_TextDelimited)
     {
         m_view = TextDoc::TextDelimitedView;
-        
-        if (!m_textdelimited_inited)
-            initTextDelimitedView();
+        initTextDelimitedView();
     }
     
     if (sel == FileType_FixedLength)
     {
         m_view = TextDoc::FixedLengthView;
         
-       if (!m_fixedlength_inited)
-            initFixedLengthView();
+        initFixedLengthView();
     }
 
     m_dirty = true;

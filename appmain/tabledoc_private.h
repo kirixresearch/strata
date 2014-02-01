@@ -374,8 +374,9 @@ private:
 
     IFramePtr m_frame;                                  // ptr to the application frame
     IDocumentSitePtr m_doc_site;                        // ptr to our document site
-    IXdGridModelPtr m_grid_model;                    // grid's model
+    IXdGridModelPtr m_grid_model;                       // grid's model
     ITableDocModelPtr m_model;                          // our model (stores marks, views, etc)
+    std::wstring m_last_model_id;
     kcl::Grid* m_grid;                                  // grid control
 
     std::map<wxString, xd::objhandle_t> m_handle_map; // handle map for marks

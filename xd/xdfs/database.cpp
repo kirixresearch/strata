@@ -1992,21 +1992,28 @@ xd::IIteratorPtr FsDatabase::query(const xd::QueryParams& qp)
 }
 
 
-bool FsDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* info)
+bool FsDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* def)
 {
     std::wstring phys_path = makeFullPath(path);
 
     if (xf_get_file_exist(phys_path + L".xddef"))
-        return loadDefinitionFromFile(phys_path, info);
+        return loadDefinitionFromFile(phys_path + L".xddef", def);
 
     if (xf_get_file_exist(phys_path))
     {
-        IXdsqlTablePtr tbl = openTable(path);
-
+        IXdfsSetPtr set  = openTable(path);
+        if (set.isNull())
+            return false;
+        set->getFormatDefinition(def);
+        return true;
+    }
+     else
+    {
+        return false;
     }
 }
 
-bool FsDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefinition* info)
+bool FsDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefinition* def)
 {
     std::wstring phys_path = makeFullPath(path) + L".xddef";
     
@@ -2015,16 +2022,16 @@ bool FsDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefini
     if (!xf_get_directory_exist(dir))
         _mkdirTree(dir);
 
-    if (info->object_id.empty())
+    if (def->object_id.empty())
     {
         // add an object id
-        xd::FormatDefinition def = *info;
-        def.object_id = kl::getUniqueString();
-        return saveDefinitionToFile(phys_path, &def);
+        xd::FormatDefinition fd = *def;
+        fd.object_id = kl::getUniqueString();
+        return saveDefinitionToFile(phys_path, &fd);
     }
      else
     {
-        return saveDefinitionToFile(phys_path, info);
+        return saveDefinitionToFile(phys_path, def);
     }
 }
 

@@ -59,16 +59,27 @@ bool FixedLengthTextSet::init(const std::wstring& filename, const xd::FormatDefi
     if (!xf_get_file_exist(filename))
         return false;
 
-    if (def.columns.size() == 0)
-        return false;  // zero columns is not allowed
-
-    if (!def.fixed_line_delimited && def.fixed_row_width == 0)
-        return false;  // not allowed
-
     // set our member variables
     m_path = filename;
     m_def = def;
+    m_def.format = xd::formatFixedLengthText;
     
+    if (m_def.fixed_row_width == 0)
+        m_def.fixed_row_width = 80;  // must have some kind of default row width
+
+    if (m_def.columns.size() == 0)
+    {
+        // must have some kind of column
+        xd::ColumnInfo col;
+        col.name = L"Field1";
+        col.type = xd::typeCharacter;
+        col.source_offset = 0;
+        col.source_width = m_def.fixed_row_width;
+        col.width = m_def.fixed_row_width;
+
+        m_def.columns.push_back(col);
+    }
+
     return m_file.open(filename, def);
 }
 

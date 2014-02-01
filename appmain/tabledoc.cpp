@@ -2339,7 +2339,6 @@ bool TableDoc::open(const std::wstring& _path,
     }
      else
     {
-
         xd::IAttributesPtr attr = db->getAttributes();
         std::wstring url = attr->getStringAttribute(xd::dbattrDatabaseUrl);
         if (url.length() > 0)
@@ -2386,12 +2385,20 @@ bool TableDoc::open(const std::wstring& _path,
     updateCaption();
 
     // load a model for this table
+    std::wstring model_id;
+
     if (m_temporary_model)
-        m_model = TableDocMgr::loadModel(wxT(""));
+        model_id = L"";
          else
-        m_model = TableDocMgr::loadModel(file_info->getObjectId());
+        model_id = file_info->getObjectId();
 
-
+    m_model = TableDocMgr::loadModel(model_id);
+    if (m_last_model_id != model_id)
+    {
+        m_active_view.clear();
+        m_last_model_id = model_id;
+    }
+    
     xd::IIteratorPtr browse_iter;
 
     if (optional_iterator.isOk())

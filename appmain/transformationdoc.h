@@ -146,8 +146,6 @@ public:
     TransformationDoc();
     virtual ~TransformationDoc();
     
-    bool open(const wxString& filename);
-
     // ITransformationDoc
     void initFromDefinition(const xd::FormatDefinition& def);
     void close();
@@ -249,7 +247,6 @@ private:
     kcl::RowSelectionGrid* m_grid;
     
     std::vector<TransformField> m_source_fields;
-    wxString m_path;
     bool m_dirty;
     int m_last_selected_fieldtype;
 
