@@ -78,14 +78,15 @@ DelimitedTextIterator::~DelimitedTextIterator()
 
 bool DelimitedTextIterator::init(xd::IDatabasePtr db,
                                  DelimitedTextSet* set,
-                                 const std::wstring& filename)
+                                 const std::wstring& columns)
 {
-    if (!m_file.openFile(filename))
+    if (!m_file.openFile(set->m_file.getFilename()))
         return false;
 
     m_database = db;
     m_set = set;
     m_set->ref();
+    m_columns = columns;
         
     m_file.setDelimiters(m_set->m_def.delimiters);
     m_file.setLineDelimiters(m_set->m_def.line_delimiters);
@@ -97,8 +98,7 @@ bool DelimitedTextIterator::init(xd::IDatabasePtr db,
         m_file.skip(1);
     }    
     
-    refreshStructure();
-    return true;
+    return refreshStructure();
 }
 
 
@@ -233,86 +233,188 @@ xd::IStructurePtr DelimitedTextIterator::getStructure()
 
 bool DelimitedTextIterator::refreshStructure()
 {
-/*
-    // clear out any existing structure
-    std::vector<DelimitedTextDataAccessInfo*>::iterator field_it;
-    for (field_it = m_fields.begin();
-         field_it != m_fields.end(); ++field_it)
-    {
-        delete (*field_it);
-    }
     m_fields.clear();
 
+    xd::IStructurePtr set_structure = m_set->getStructure();
+    xd::IColumnInfoPtr colinfo;
 
-    xd::IStructurePtr source_structure = m_set->getSourceStructure();
-    xd::IStructurePtr destination_structure = m_set->getDestinationStructure();
-    xd::IStructurePtr final_structure = m_set->getStructure();
-    
-    // if m_use_source_iterator is true, populate the DAI from the set's source
-    // structure, otherwise, populate the DAI from the set's structure
-    if (m_use_source_iterator)
+
+    // add fields from structure
+    bool default_structure_visible = false;
+    if (m_columns.empty() || m_columns == L"*")
+        default_structure_visible = true;
+
+
+    int i, col_count = set_structure->getColumnCount();
+
+    for (i = 0; i < col_count; ++i)
     {
-        int i, col_count = source_structure->getColumnCount();
-        for (i = 0; i < col_count; ++i)
-        {
-            xd::IColumnInfoPtr colinfo;
-            colinfo = source_structure->getColumnInfoByIdx(i);
-            
-            DelimitedTextDataAccessInfo* dai = new DelimitedTextDataAccessInfo;
-            dai->name = colinfo->getName();
-            dai->type = colinfo->getType();
-            dai->width = colinfo->getWidth();
-            dai->scale = colinfo->getScale();
-            dai->ordinal = colinfo->getColumnOrdinal();
-            m_fields.push_back(dai);
-        }
+        colinfo = set_structure->getColumnInfoByIdx(i);
+        
+        DelimitedTextDataAccessInfo* dai = new DelimitedTextDataAccessInfo;
+        dai->name = colinfo->getName();
+        dai->type = colinfo->getType();
+        dai->width = colinfo->getWidth();
+        dai->scale = colinfo->getScale();
+        dai->ordinal = colinfo->getColumnOrdinal();
+        dai->expr_text = colinfo->getExpression();
+        m_fields.push_back(dai);
+        
+        // parse any expression, if necessary
+        if (dai->expr_text.length() > 0)
+            dai->expr = parse(dai->expr_text);
     }
-     else
+
+
+    if (m_columns.length() > 0 && m_columns != L"*")
     {
-        int i, col_count = final_structure->getColumnCount();
-        for (i = 0; i < col_count; ++i)
+        std::vector<std::wstring> colvec;
+        std::vector<std::wstring>::iterator it;
+
+        kl::parseDelimitedList(m_columns, colvec, L',', true);
+
+        for (it = colvec.begin(); it != colvec.end(); ++it)
         {
-            xd::IColumnInfoPtr colinfo;
-            colinfo = final_structure->getColumnInfoByIdx(i);
-            
-            DelimitedTextDataAccessInfo* dai = new DelimitedTextDataAccessInfo;
-            dai->name = colinfo->getName();
-            dai->type = colinfo->getType();
-            dai->width = colinfo->getWidth();
-            dai->scale = colinfo->getScale();
-            dai->ordinal = colinfo->getColumnOrdinal();
-            dai->expr_text = colinfo->getExpression();
-            
-            if (dai->expr_text.length() > 0)
+            std::wstring& part = *it;
+            kl::trim(part);
+
+            colinfo = set_structure->getColumnInfo(part);
+
+            if (colinfo.isNull() && part[0] == '[')
             {
-                // this is a calculated field
-                dai->expr = parseDestinationExpression(dai->expr_text);
+                // maybe the above just needs to be dequoted
+                std::wstring dequote_part = part;
+                dequote(dequote_part, '[', ']');
+                colinfo = set_structure->getColumnInfo(dequote_part);
+            }
+
+            if (colinfo)
+            {
+                DelimitedTextDataAccessInfo* dai = new DelimitedTextDataAccessInfo;
+                dai->name = colinfo->getName();
+                dai->type = colinfo->getType();
+                dai->width = colinfo->getWidth();
+                dai->scale = colinfo->getScale();
+                dai->ordinal = colinfo->getColumnOrdinal();
+                dai->expr_text = colinfo->getExpression();
+                m_fields.push_back(dai);
+        
+                // parse any expression, if necessary
+                if (dai->expr_text.length() > 0)
+                    dai->expr = parse(dai->expr_text);
+                continue;
             }
              else
             {
-                // this is not a calculated field, lookup and
-                // parse the destination structure's expression
-                xd::IColumnInfoPtr dest_colinfo;
-                dest_colinfo = destination_structure->getColumnInfoByIdx(i);
-                if (dest_colinfo.isNull())
+                // string is not a column name, so look for 'AS' keyword
+                wchar_t* as_ptr = zl_stristr((wchar_t*)it->c_str(),
+                                            L"AS",
+                                            true,
+                                            false);
+                std::wstring colname;
+                std::wstring expr;
+
+                if (as_ptr)
                 {
-                    #ifdef _DEBUG
-                    int* p = NULL;
-                    *p = 1; // crash, debug break
-                    #endif
+                    int as_pos = as_ptr ? (as_ptr - it->c_str()) : -1;
+                    colname = it->substr(as_pos+2);
+                    expr = it->substr(0, as_pos);
                     
+                    kl::trim(colname);
+                    kl::trim(expr);
+
+                    dequote(colname, '[', ']');
+                }
+                 else
+                {
+                    expr = *it;
+                    
+                    wchar_t buf[32];
+                    int colname_counter = 0;
+                    do
+                    {
+                        swprintf(buf, 32, L"EXPR%03d", ++colname_counter);
+                    } while (set_structure->getColumnExist(buf));
+
+                    colname = buf;
+                }
+
+
+                std::wstring dequote_expr = expr;
+                dequote(dequote_expr, '[', ']');
+
+
+                // see if the expression is just a column and use its precise type info if it is
+                colinfo = set_structure->getColumnInfo(dequote_expr);
+                if (colinfo)
+                {
+                    DelimitedTextDataAccessInfo* dai = new DelimitedTextDataAccessInfo;
+                    dai->name = colname;
+                    dai->type = colinfo->getType();
+                    dai->width = colinfo->getWidth();
+                    dai->scale = colinfo->getScale();
+                    dai->ordinal = colinfo->getColumnOrdinal();
+                    dai->expr_text = colinfo->getExpression();
+                    m_fields.push_back(dai);
+        
+                    // parse any expression, if necessary
+                    if (dai->expr_text.length() > 0)
+                        dai->expr = parse(dai->expr_text);
                     continue;
                 }
-                
-                std::wstring dest_expr_text = dest_colinfo->getExpression();
-                if (dest_expr_text.length() > 0)
-                    dai->expr = parseSourceExpression(dest_expr_text);
+
+
+
+
+
+                kscript::ExprParser* p = parse(expr);
+                if (!p)
+                    return false;
+
+                int xd_type = kscript2xdType(p->getType());
+                if (xd_type == xd::typeInvalid || xd_type == xd::typeUndefined)
+                {
+                    delete p;
+                    return false;
+                }
+
+                int width;
+                int scale = 0;
+
+                switch (xd_type)
+                {
+                    case xd::typeNumeric:
+                        width = 18;
+                        scale = 2;
+                        break;
+                    case xd::typeDouble:
+                        width = 8;
+                        scale = 2;
+                        break;
+                    case xd::typeDate:
+                    case xd::typeInteger:
+                        width = 4;
+                        break;
+                    case xd::typeDateTime:
+                        width = 8;
+                        break;
+                    default:
+                        width = 254;
+                        break;
+                }
+
+                DelimitedTextDataAccessInfo* dai = new DelimitedTextDataAccessInfo;
+                dai->name = colname;
+                dai->type = xd_type;
+                dai->width = width;
+                dai->scale = scale;
+                dai->ordinal = 0;
+                dai->expr_text = expr;
+                dai->expr = p;
+                m_fields.push_back(dai);
             }
-            
-            m_fields.push_back(dai);
         }
     }
-    */
 
     return true;
 }

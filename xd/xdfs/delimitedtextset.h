@@ -73,7 +73,7 @@ public:
 private:
 
     bool loadConfigurationFromDataFile();
-    bool determineFirstRowHeader();
+    bool determineIfFirstRowIsHeader();
     void populateColumnNameMatchVector();
 
 private:

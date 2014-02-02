@@ -563,12 +563,52 @@ void TextDoc::getColumnListItems(std::vector<ColumnListItem>& list)
     */
 }
 
+
+
+inline void setDelimitersComboBoxSelection(wxComboBox* combobox,
+                                           const wxString& delimiters)
+{
+    if (delimiters == wxT(","))
+        combobox->SetSelection(DelimiterIdx_Comma);
+    else if (delimiters == wxT("\t"))
+        combobox->SetSelection(DelimiterIdx_Tab);
+    else if (delimiters == wxT(";"))
+        combobox->SetSelection(DelimiterIdx_Semicolon);
+    else if (delimiters == wxT(" "))
+        combobox->SetSelection(DelimiterIdx_Space);
+    else if (delimiters == wxT("|"))
+        combobox->SetSelection(DelimiterIdx_Pipe);
+    else if (delimiters.IsEmpty())
+        combobox->SetSelection(DelimiterIdx_None);
+    else
+    {
+        combobox->SetValue(delimiters);
+        combobox->SetInsertionPointEnd();
+    }
+}
+
+inline void setTextQualifierComboBoxSelection(wxComboBox* combobox,
+                                              const wxString& text_qualifier)
+{
+    if (text_qualifier == wxT("\""))
+        combobox->SetSelection(TextQualifierIdx_DoubleQuote);
+     else if (text_qualifier == wxT("'"))
+        combobox->SetSelection(TextQualifierIdx_SingleQuote);
+     else if (text_qualifier.IsEmpty())
+        combobox->SetSelection(TextQualifierIdx_None);
+     else
+    {
+        combobox->SetValue(text_qualifier);
+        combobox->SetInsertionPointEnd();
+    }
+}
+
+
 bool TextDoc::initFixedLengthView()
 {
     xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
-
 
     // load the fixed-length text metadata from the set
 
@@ -609,7 +649,6 @@ bool TextDoc::initFixedLengthView()
     m_rowwidth_spinctrl->SetRange(1, max_rowwidth);
     m_skipchars_spinctrl->SetRange(0, max_skipchars);
     
-
     // set the TextView's settings
     m_textview->setRowWidth(m_def.fixed_row_width);
     m_textview->setSkipChars(m_def.fixed_start_offset);
@@ -629,7 +668,6 @@ bool TextDoc::initFixedLengthView()
     
     m_loading_definition = false;
 
-
     // no fields were added from the fixed-length text set's metadata
     if (m_textview->getColumnCount() == 0)
     {
@@ -645,44 +683,55 @@ bool TextDoc::initFixedLengthView()
     return true;
 }
 
-inline void setDelimitersComboBoxSelection(wxComboBox* combobox,
-                                           const wxString& delimiters)
-{
-    if (delimiters == wxT(","))
-        combobox->SetSelection(DelimiterIdx_Comma);
-    else if (delimiters == wxT("\t"))
-        combobox->SetSelection(DelimiterIdx_Tab);
-    else if (delimiters == wxT(";"))
-        combobox->SetSelection(DelimiterIdx_Semicolon);
-    else if (delimiters == wxT(" "))
-        combobox->SetSelection(DelimiterIdx_Space);
-    else if (delimiters == wxT("|"))
-        combobox->SetSelection(DelimiterIdx_Pipe);
-    else if (delimiters.IsEmpty())
-        combobox->SetSelection(DelimiterIdx_None);
-    else
-    {
-        combobox->SetValue(delimiters);
-        combobox->SetInsertionPointEnd();
-    }
-}
 
-inline void setTextQualifierComboBoxSelection(wxComboBox* combobox,
-                                              const wxString& text_qualifier)
+bool TextDoc::initTextDelimitedView()
 {
-    if (text_qualifier == wxT("\""))
-        combobox->SetSelection(TextQualifierIdx_DoubleQuote);
-     else if (text_qualifier == wxT("'"))
-        combobox->SetSelection(TextQualifierIdx_SingleQuote);
-     else if (text_qualifier.IsEmpty())
-        combobox->SetSelection(TextQualifierIdx_None);
-     else
-    {
-        combobox->SetValue(text_qualifier);
-        combobox->SetInsertionPointEnd();
-    }
-}
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return false;
 
+    // load the text-delimited metadata from the set
+    m_loading_definition = true;
+
+    // set the field delimiter dropdown
+    setDelimitersComboBoxSelection(m_delimiters_combobox, m_def.delimiters);
+
+    // set the text qualifier dropdown
+    setTextQualifierComboBoxSelection(m_textqualifier_combobox, m_def.text_qualifiers);
+
+    // set the first row field names checkbox
+    m_firstrowfieldnames_checkbox->SetValue(m_def.first_row_column_names);
+
+    m_loading_definition = false;
+
+    // store these for use in checking to see if the selection
+    // or values have changed
+    m_last_textqualifier_sel = m_textqualifier_combobox->GetSelection();
+    m_last_delimiters_sel = m_delimiters_combobox->GetSelection();
+    m_last_textqualifier = m_def.text_qualifiers;
+    m_last_delimiters = m_def.delimiters;
+    
+    // set up the grid for the text-delimited set
+    xd::QueryParams qp;
+    qp.from = towstr(m_path);
+    qp.format = m_def;
+    m_textdelimited_iter = db->query(qp);
+    m_grid_model = new XdGridModel;
+    m_grid_model->setIterator(m_textdelimited_iter);
+    
+    m_grid->setModel(m_grid_model);
+    m_grid->createDefaultView();
+    
+    wxFont font(10, wxMODERN, wxNORMAL, wxNORMAL);
+    m_grid->SetFont(font);
+    m_grid->setRowLabelSize(0);
+    m_grid->setHeaderSize(20);      // hard-coded to match the TextView
+    m_grid->setRowHeight(16);       // hard-coded to match the TextView
+    m_grid->refresh(kcl::Grid::refreshAll);
+    m_grid->autoColumnResize(-1);
+    
+    return true;
+}
 
 
 bool TextDoc::open(const wxString& filename)
@@ -774,6 +823,10 @@ bool TextDoc::save()
 
 void TextDoc::refresh()
 {
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
     // repopulate the TransformationDoc from the destination structure
     ITransformationDocPtr transdoc;
     transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
@@ -783,56 +836,27 @@ void TextDoc::refresh()
     // update the TableDoc's base set
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
-        tabledoc->open(towstr(m_path));
+    {
+        // if path is a data file, open an iterator with the definition, so
+        // that the data engine doesn't have to run determineColumn() again,
+        // which can be a lengthy operation
+
+        if (m_path_is_datafile)
+        {
+            xd::QueryParams qp;
+            qp.from = towstr(m_path);
+            qp.format = m_def;
+            xd::IIteratorPtr iter = db->query(qp);
+            if (iter.isOk())
+                tabledoc->open(towstr(m_path), iter);
+        }
+         else
+        {
+            tabledoc->open(towstr(m_path));
+        }
+    }
 }
 
-bool TextDoc::initTextDelimitedView()
-{
-    xd::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return false;
-
-
-
-    // load the text-delimited metadata from the set
-    m_loading_definition = true;
-
-    // set the field delimiter dropdown
-    setDelimitersComboBoxSelection(m_delimiters_combobox, m_def.delimiters);
-
-    // set the text qualifier dropdown
-    setTextQualifierComboBoxSelection(m_textqualifier_combobox, m_def.text_qualifiers);
-
-    // set the first row field names checkbox
-    m_firstrowfieldnames_checkbox->SetValue(m_def.first_row_column_names);
-
-    m_loading_definition = false;
-
-    // store these for use in checking to see if the selection
-    // or values have changed
-    m_last_textqualifier_sel = m_textqualifier_combobox->GetSelection();
-    m_last_delimiters_sel = m_delimiters_combobox->GetSelection();
-    m_last_textqualifier = m_def.text_qualifiers;
-    m_last_delimiters = m_def.delimiters;
-    
-    // set up the grid for the text-delimited set    
-    m_textdelimited_iter = db->query(m_def.data_path, L"", L"", L"", NULL);
-    m_grid_model = new XdGridModel;
-    m_grid_model->setIterator(m_textdelimited_iter);
-    
-    m_grid->setModel(m_grid_model);
-    m_grid->createDefaultView();
-    
-    wxFont font(10, wxMODERN, wxNORMAL, wxNORMAL);
-    m_grid->SetFont(font);
-    m_grid->setRowLabelSize(0);
-    m_grid->setHeaderSize(20);      // hard-coded to match the TextView
-    m_grid->setRowHeight(16);       // hard-coded to match the TextView
-    m_grid->refresh(kcl::Grid::refreshAll);
-    m_grid->autoColumnResize(-1);
-    
-    return true;
-}
 
 wxBoxSizer* TextDoc::createMainSettingsSizer()
 {

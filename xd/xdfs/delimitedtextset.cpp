@@ -83,7 +83,7 @@ bool DelimitedTextSet::init(const std::wstring& filename, const xd::FormatDefini
             m_def.format = xd::formatDelimitedText;
             m_def.delimiters = L"\t";
             m_def.text_qualifiers = L"";
-            m_def.first_row_column_names = false;
+            m_def.first_row_column_names = determineIfFirstRowIsHeader();
         }
          else
         {
@@ -91,7 +91,7 @@ bool DelimitedTextSet::init(const std::wstring& filename, const xd::FormatDefini
             m_def.format = xd::formatDelimitedText;
             m_def.delimiters = L",";
             m_def.text_qualifiers = L"\"";
-            m_def.first_row_column_names = false;
+            m_def.first_row_column_names = determineIfFirstRowIsHeader();
             
             // however, many csv files also use other delimiters, like semicolons
             FsSetFormatInfo info;
@@ -179,12 +179,12 @@ xd::IIteratorPtr DelimitedTextSet::createIterator(const std::wstring& columns,
     if (order.empty())
     {
         DelimitedTextIterator* iter = new DelimitedTextIterator;
-        if (!iter->init(m_database, this, m_file.getFilename()))
+        if (!iter->init(m_database, this, columns))
         {
             delete iter;
             return xcm::null;
         }
-            
+
         return static_cast<xd::IIterator*>(iter);
     }
     
@@ -480,7 +480,7 @@ static std::wstring makeValidFieldName(const std::wstring& name,
 // row contains field names. determineColumns*() should be called
 // after this function to find out field widths
 
-bool DelimitedTextSet::determineFirstRowHeader()
+bool DelimitedTextSet::determineIfFirstRowIsHeader()
 {
     // go to the beginning of the file
     m_file.rewind();
@@ -722,6 +722,7 @@ bool parseDelimitedStringDate(const std::wstring& str,
 
 struct DetermineColumnInfo
 {
+    std::wstring name;
     int type;
     int max_width;
     int max_scale;
@@ -735,6 +736,7 @@ struct DetermineColumnInfo
     
     DetermineColumnInfo(const DetermineColumnInfo& c)
     {
+        name = c.name;
         type = c.type;
         max_width = c.max_width;
         max_scale = c.max_scale;
@@ -742,6 +744,7 @@ struct DetermineColumnInfo
     
     DetermineColumnInfo& operator=(const DetermineColumnInfo& c)
     {
+        name = c.name;
         type = c.type;
         max_width = c.max_width;
         max_scale = c.max_scale;
@@ -825,7 +828,10 @@ bool DelimitedTextSet::determineColumns(int check_rows, xd::IJob* job)
                  else
                 colname = temps;
             
-            col_stats.push_back(DetermineColumnInfo());
+            DetermineColumnInfo dci;
+            dci.name = colname;
+
+            col_stats.push_back(dci);
             col_count++;
         }
         
@@ -957,6 +963,19 @@ bool DelimitedTextSet::determineColumns(int check_rows, xd::IJob* job)
         ijob->setStatus(xd::jobFinished);
     }
     
+
+    std::vector<DetermineColumnInfo>::iterator it, it_end = col_stats.end();
+    xd::ColumnInfo col;
+    for (it = col_stats.begin(); it != it_end; ++it)
+    {
+        col.name = it->name;
+        col.type = it->type;
+        col.width = it->max_width;
+        col.scale = it->max_scale;
+        col.nulls_allowed = false;
+        m_def.columns.push_back(col);
+    }
+
     // once again, go back to the beginning of the file
     m_file.rewind();
     return true;

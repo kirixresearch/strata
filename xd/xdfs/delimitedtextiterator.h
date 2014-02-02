@@ -89,7 +89,7 @@ public:
     DelimitedTextIterator();
     ~DelimitedTextIterator();
 
-    bool init(xd::IDatabasePtr db, DelimitedTextSet* set, const std::wstring& filename);
+    bool init(xd::IDatabasePtr db, DelimitedTextSet* set, const std::wstring& columns);
 
     void setTable(const std::wstring& tbl);
     std::wstring getTable();
@@ -134,6 +134,7 @@ private:
 
     xd::IDatabasePtr m_database;
     DelimitedTextSet* m_set;
+    std::wstring m_columns;
     
     DelimitedTextFile m_file;
     std::vector<DelimitedTextDataAccessInfo*> m_fields;
