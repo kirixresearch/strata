@@ -53,8 +53,8 @@ public:
     bool getFormatDefinition(xd::FormatDefinition* def);
 
     xd::IIteratorPtr createIterator(const std::wstring& columns,
-                                       const std::wstring& expr,
-                                       xd::IJob* job);
+                                    const std::wstring& expr,
+                                    xd::IJob* job);
 
     xd::rowpos_t getRowCount();
 
@@ -67,7 +67,7 @@ public:
     xd::IStructurePtr getStructure();
 
     bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
-    bool determineColumns(int check_rows, xd::IJob* job);
+    bool determineColumns(int check_rows, int max_seconds, xd::IJob* job);
     bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job) { return false; }
  
 private:

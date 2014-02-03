@@ -182,7 +182,7 @@ ITextDocPtr createTextDoc(const std::wstring& filename,
             frame->setActiveChild(textdoc_site);        
     }
     
-    textdoc->refresh();
+    textdoc->refreshDocuments();
 
     return static_cast<ITextDoc*>(textdoc);
 }
@@ -367,7 +367,7 @@ bool TextDoc::initDoc(IFramePtr frame,
     if (m_view == TextDoc::FixedLengthView)
         initFixedLengthView();
     else if (m_view == TextDoc::TextDelimitedView)    
-        initTextDelimitedView();
+        initDelimitedTextView();
     
     // create the main sizer
     m_main_sizer = new wxBoxSizer(wxVERTICAL);
@@ -684,7 +684,7 @@ bool TextDoc::initFixedLengthView()
 }
 
 
-bool TextDoc::initTextDelimitedView()
+bool TextDoc::initDelimitedTextView()
 {
     xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
@@ -763,7 +763,7 @@ bool TextDoc::open(const wxString& filename)
         if (m_view == TextDoc::FixedLengthView)
             res = initFixedLengthView();
         else if (m_view == TextDoc::TextDelimitedView)    
-            res = initTextDelimitedView();
+            res = initDelimitedTextView();
             
         return res;
     }
@@ -814,14 +814,14 @@ bool TextDoc::save()
 
     if (do_refresh)
     {
-        refresh();
+        refreshDocuments();
     }
 
     m_dirty = false;
     return true;
 }
 
-void TextDoc::refresh()
+void TextDoc::refreshDocuments()
 {
     xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
@@ -1052,7 +1052,11 @@ void TextDoc::refreshGrid()
     if (db.isNull())
         return;
 
-    m_textdelimited_iter = db->query(m_def.data_path, L"", L"", L"", NULL);
+    xd::QueryParams qp;
+    qp.from = towstr(m_path);
+    qp.format = m_def;
+    m_textdelimited_iter = db->query(qp);
+
     m_grid_model->setIterator(m_textdelimited_iter);
     
     m_grid->Freeze();
@@ -1539,7 +1543,7 @@ void TextDoc::onFileTypeChanged(wxCommandEvent& evt)
     if (sel == FileType_TextDelimited)
     {
         m_view = TextDoc::TextDelimitedView;
-        initTextDelimitedView();
+        initDelimitedTextView();
     }
     
     if (sel == FileType_FixedLength)
@@ -1748,13 +1752,9 @@ void TextDoc::onFixedLengthLineDelimitedChecked(wxCommandEvent& evt)
     save();
 
     if (m_def.fixed_line_delimited)
-    {
         m_textview->setFileType(TextViewModel::lineDelimited);
-    }
-     else
-    {
+         else
         m_textview->setFileType(TextViewModel::lineFixed);
-    }
 
     m_textview->refresh();
     
@@ -1999,46 +1999,55 @@ void TextDoc::onTextDelimitedTextQualifierCombo(wxCommandEvent& evt)
 
 void TextDoc::onTextDelimitedFirstRowFieldNamesChecked(wxCommandEvent& evt)
 {
-/*
-    std::vector< std::pair<wxString, wxString> > name_changes;
-    std::pair<wxString, wxString> name_pair;
-    
-    // set the parameters for a text-delimited set
-    xd::IDelimitedTextSetPtr tset = m_textdelimited_set;
-    if (tset.isOk())
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
+    // first, make a backup of the definition the way it was
+    if (m_def.first_row_column_names)
+        m_def_frc = m_def;
+         else
+        m_def_nofrc = m_def;
+
+    bool first_row_field_names = evt.IsChecked();
+
+    if (first_row_field_names)
     {
-        xd::IStructurePtr s = tset->getSourceStructure();
-        xd::IColumnInfoPtr colinfo;
-        
-        // get the old field names
-        int i, col_count = s->getColumnCount();
-        for (i = 0; i < col_count; ++i)
+        m_def.first_row_column_names = true;
+        if (m_def_frc.format == xd::formatDefault)
         {
-            colinfo = s->getColumnInfoByIdx(i);
-            name_pair.first = colinfo->getName();
-            name_changes.push_back(name_pair);
+            xd::FormatDefinition defaults = m_def;
+            defaults.columns.clear();
+
+            wxBusyCursor bc;
+            db->loadDefinition(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def_frc, &defaults);
         }
-        
-        // set the first row field names in the text-delimited set
-        // and refresh the grid
-        tset->setFirstRowColumnNames(isFirstRowFieldNames());
-        refreshGrid();
-        
-        // now, get the new field names
-        s = tset->getSourceStructure();
-        for (i = 0; i < col_count; ++i)
+
+        m_def.columns = m_def_frc.columns;
+    }
+     else
+    {
+        m_def.first_row_column_names = false;
+        if (m_def_nofrc.format == xd::formatDefault)
         {
-            colinfo = s->getColumnInfoByIdx(i);
-            name_changes[i].second = colinfo->getName();
+            xd::FormatDefinition defaults = m_def;
+            defaults.columns.clear();
+
+            wxBusyCursor bc;
+            db->loadDefinition(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def_nofrc, &defaults);
         }
+
+        m_def.columns = m_def_nofrc.columns;
     }
 
+    save();
+    refreshGrid();
+    refreshDocuments();
+
     // this call will update both the TransformationDoc and the TableDoc
-    doBulkFieldRename(name_changes);
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
-*/
 }
 
 void TextDoc::onTextDelimitedCaptionBeginEdit(kcl::GridEvent& evt)

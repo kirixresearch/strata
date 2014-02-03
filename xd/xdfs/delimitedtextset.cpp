@@ -119,12 +119,17 @@ bool DelimitedTextSet::init(const std::wstring& filename, const xd::FormatDefini
 
     if (m_def.columns.size() == 0)
     {
-        int rows_to_check = ROWS_TO_DETERMINE_STRUCTURE;
-        
+        // check as many rows as we can in 7 seconds or less
+        int rows_to_check = -1;
+        int max_seconds = 7;
+
         // if the file is small (<= 2MB), just read in the whole
         // file to make sure we have a good structure
         if (xf_get_file_size(filename) < 2000000)
+        {
             rows_to_check = -1;
+            max_seconds = -1;
+        }
 
         // originally, if we couldn't define the structure of the file, we
         // would bail out; now simply try to determine the structure, but
@@ -136,7 +141,7 @@ bool DelimitedTextSet::init(const std::wstring& filename, const xd::FormatDefini
         // doesn't have rows until after the structure is set and the
         // row written out
 
-        determineColumns(rows_to_check, NULL);
+        determineColumns(rows_to_check, max_seconds, NULL);
     }
 
     return true;
@@ -247,14 +252,16 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
     if (m_file.eof())
         return false;
     
-    std::vector<xd::IColumnInfoPtr> fields;
-    
+    std::vector<xd::ColumnInfo> fields;
+    std::vector<std::wstring> params;
+    std::vector<std::wstring> tempvec;
+    std::vector<std::wstring>::iterator it;
+    xd::ColumnInfo colinfo;
+    std::wstring params_str;
+
     size_t i, row_cell_count = m_file.getRowCellCount();
     for (i = 0; i < row_cell_count; ++i)
     {
-        xd::IColumnInfoPtr colinfo = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        fields.push_back(colinfo);
-        
         std::wstring str = m_file.getString(i);
         kl::trim(str);
         size_t open = str.find_last_of('(');
@@ -263,21 +270,20 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
         if (open == str.npos || close == str.npos || open > close || close != str.length()-1)
             return false;
         
-        std::wstring name = str.substr(0, open);
-        std::wstring params_str = str.substr(open+1, close-open-1);
+        colinfo.name = str.substr(0, open);
+        params_str = str.substr(open+1, close-open-1);
         
-        kl::trim(name);
+        kl::trim(colinfo.name);
         kl::trim(params_str);
         kl::replaceStr(params_str, L"\t", L" ");
         
-        std::vector<std::wstring> params;
-        kl::parseDelimitedList(params_str, params, L' ');
+        tempvec.clear();
+        kl::parseDelimitedList(params_str, tempvec, L' ');
         
         // remove all empty elements from the parameters array; 
         // this takes care of multiple whitespaces in the parameters string
-        std::vector<std::wstring> temps  = params;
         params.clear();
-        for (std::vector<std::wstring>::iterator it = temps.begin(); it != temps.end(); ++it)
+        for (it = tempvec.begin(); it != tempvec.end(); ++it)
         {
             if (it->length() > 0)
                 params.push_back(*it);
@@ -285,8 +291,6 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
         
         if (params.size() == 0)
             return false; // no parameters specified
-        
-        colinfo->setName(name);
         
         if (params[0] == L"C")
         {
@@ -297,8 +301,8 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
             if (width < 1)
                 return false;
             
-            colinfo->setType(xd::typeCharacter);
-            colinfo->setWidth(width);
+            colinfo.type = xd::typeCharacter;
+            colinfo.width = width;
         }
          else if (params[0] == L"N")
         {
@@ -309,89 +313,42 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
             if (width < 1)
                 return false;
             
-            colinfo->setType(xd::typeNumeric);
-            colinfo->setWidth(width);
+            colinfo.type = xd::typeNumeric;
+            colinfo.width = width;
             
             if (params.size() >= 3)
             {
                 int scale = kl::wtoi(params[2]);
                 if (scale < 0)
                     return false;
-                colinfo->setScale(scale);
+                colinfo.scale = scale;
             }
         }
          else if (params[0] == L"D")
         {
-            colinfo->setType(xd::typeDate);
-            colinfo->setWidth(4);
+            colinfo.type = xd::typeDate;
+            colinfo.width = 4;
         }
          else if (params[0] == L"T")
         {
-            colinfo->setType(xd::typeDateTime);
-            colinfo->setWidth(8);
+            colinfo.type = xd::typeDateTime;
+            colinfo.width = 8;
         }
          else if (params[0] == L"B")
         {
-            colinfo->setType(xd::typeBoolean);
-            colinfo->setWidth(1);
+            colinfo.type = xd::typeBoolean;
+            colinfo.width = 1;
         }
+
+        fields.push_back(colinfo);
     }
     
-
-    /*
-    // update the types and widths in the source structure
-    m_source_structure.clear();
-    m_source_structure = static_cast<xd::IStructure*>(new Structure);
-    IStructureInternalPtr src_struct_int = m_source_structure;
-
-    for (i = 0; i < fields.size(); ++i)
-    {        
-        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        col->setName(fields[i]->getName());
-        col->setType(xd::typeCharacter);
-        col->setScale(0);
-        col->setExpression(L"");
-        col->setColumnOrdinal(i);
-
-        switch (fields[i]->getType())
-        {
-            default:
-            case xd::typeCharacter:
-            case xd::typeWideCharacter:
-                col->setWidth(fields[i]->getWidth());
-                break;
-            case xd::typeDate:
-                col->setWidth(50);
-                break;
-            case xd::typeNumeric:
-                col->setWidth(50);
-                break;
-        }
-        
-        src_struct_int->addColumn(col);
-    }
-    modifySourceStructure(m_source_structure, NULL);
-
-    populateColumnNameMatchVector();
-
-    // make sure m_dest_structure is filled out
-    m_dest_structure = createDefaultDestinationStructure(m_source_structure);
-    
-    // update the destination structure with the proper types we detected
-    for (i = 0; i < fields.size(); ++i)
-    {
-        xd::IColumnInfoPtr col = m_dest_structure->getColumnInfoByIdx(i);
-        col->setType(fields[i]->getType());
-        col->setWidth(fields[i]->getWidth());
-        col->setScale(fields[i]->getScale());
-    }
-    */
-
 
     m_def.format = xd::formatTypedDelimitedText;
     m_def.delimiters = L",";
     m_def.text_qualifiers = L"\"";
     m_def.first_row_column_names = true;
+    m_def.columns = fields;
 
     return true;
 }
@@ -400,13 +357,14 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
 xd::IStructurePtr DelimitedTextSet::getStructure()
 {
     Structure* structure = new Structure;
+    ColumnInfo* col;
     xd::IStructurePtr sp = static_cast<xd::IStructure*>(structure);
 
     std::vector<xd::ColumnInfo>::iterator it, it_end = m_def.columns.end();
     int counter = 0;
     for (it = m_def.columns.begin(); it != it_end; ++it)
     {
-        ColumnInfo* col = new ColumnInfo;
+        col = new ColumnInfo;
         
         col->setName(it->name);
         col->setType(it->type);
@@ -753,7 +711,7 @@ struct DetermineColumnInfo
 };
 
 
-bool DelimitedTextSet::determineColumns(int check_rows, xd::IJob* job)
+bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJob* job)
 {
     // if field information is stored in the header row, no need to sense structure
     if (loadConfigurationFromDataFile())
@@ -769,6 +727,15 @@ bool DelimitedTextSet::determineColumns(int check_rows, xd::IJob* job)
         ijob->setMaxCount((check_rows != -1) ? check_rows : 0);
     }
     
+
+    int max_clock_cycles = -1;
+    clock_t c1;
+    if (max_seconds > 0)
+    {
+        c1 = clock();
+        max_clock_cycles = CLOCKS_PER_SEC * max_seconds;
+    }
+
 
     // pass through file metadata to the DelimitedTextFile class
     m_file.setDelimiters(m_def.delimiters);
@@ -892,6 +859,12 @@ bool DelimitedTextSet::determineColumns(int check_rows, xd::IJob* job)
         rows_read++;
         if ((check_rows != -1) && (rows_read >= check_rows))
             break;
+
+        if (max_clock_cycles != -1 && (rows_read % 100) == 0 && rows_read > 1000)
+        {
+            if ((clock() - c1) > max_clock_cycles)
+                break;
+        }
 
         if (job && rows_read % 1000 == 0)
         {

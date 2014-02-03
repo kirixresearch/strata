@@ -96,7 +96,7 @@ public:
     void close();
     bool save();
     wxString getPath();
-    void refresh();
+    void refreshDocuments();
     
     // IColumnListTarget
     void getColumnListItems(std::vector<ColumnListItem>& items);
@@ -113,7 +113,7 @@ private:
     void refreshGrid();
 
     bool initFixedLengthView();
-    bool initTextDelimitedView();
+    bool initDelimitedTextView();
     
     wxBoxSizer* createMainSettingsSizer();
     wxBoxSizer* createFixedLengthSettingsSizer();
@@ -218,6 +218,9 @@ private:
     std::vector<wxString> m_textqualifier_labels;   // labels for text qualifier combobox
 
     xd::FormatDefinition m_def;
+
+    xd::FormatDefinition m_def_frc;    // m_def copy with first-row-columns = true
+    xd::FormatDefinition m_def_nofrc;  // m_def copy with first-row-columns = false
 
     DECLARE_EVENT_TABLE()
 };

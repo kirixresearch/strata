@@ -1992,7 +1992,7 @@ xd::IIteratorPtr FsDatabase::query(const xd::QueryParams& qp)
 }
 
 
-bool FsDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* def)
+bool FsDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* def, const xd::FormatDefinition* defaults)
 {
     std::wstring phys_path = makeFullPath(path);
 
@@ -2001,9 +2001,15 @@ bool FsDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* 
 
     if (xf_get_file_exist(phys_path))
     {
-        IXdfsSetPtr set  = openTable(path);
+        IXdfsSetPtr set;
+        if (defaults)
+            set = openSetEx(path, *defaults);
+             else
+            set = openTable(path);
+
         if (set.isNull())
             return false;
+
         set->getFormatDefinition(def);
         return true;
     }
