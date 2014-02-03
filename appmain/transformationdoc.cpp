@@ -243,30 +243,6 @@ static std::vector<RowErrorChecker> getRowErrorCheckerVector(
     return vec;
 }
 
-xd::IStructurePtr getTextSourceStructure(IDocumentSitePtr doc_site)
-{
-    xd::IStructurePtr source_struct;
-    
-    /*
-
-    // get the source structure so we can check the expression return type
-    ITextDocPtr textdoc = lookupOtherDocument(doc_site, "appmain.TextDoc");
-    if (textdoc.isOk())
-    {
-        xd::IxSetPtr set = textdoc->getTextSet();
-        xd::IFixedLengthDefinitionPtr fset = set;
-        xd::IDelimitedTextSetPtr tset = set;
-        if (fset.isOk())
-            source_struct = fset->getSourceStructure();
-             else if (tset.isOk())
-            source_struct = tset->getSourceStructure();
-    }
-    
-    */
-
-    return source_struct;
-}
-
 
     
     
@@ -1398,7 +1374,6 @@ bool TransformationDoc::doErrorCheck()
 
 xd::IStructurePtr TransformationDoc::createStructureFromGrid()
 {
-    // -- create the xd::IStructure --
     xd::IStructurePtr s = g_app->getDatabase()->createStructure();
 
     int row, row_count = m_grid->getRowCount();
@@ -1683,104 +1658,6 @@ bool TransformationDoc::doSave()
             m_grid->setCellInteger(row, colFieldScale, scale);
     }
 
-    /*
-    xd::IxSetPtr text_set;
-    xd::IFixedLengthDefinitionPtr fset;
-    xd::IDelimitedTextSetPtr tset;
-
-    wxString name, source_name, expression;
-    int type, width, scale, format_sel;
-
-    ITextDocPtr textdoc = lookupOtherDocument(m_doc_site, "appmain.TextDoc");
-    
-    #ifdef _DEBUG
-    if (textdoc.isNull())
-    {
-        appMessageBox(wxT("Debug Message from Ben: The bug that happens while closing text doc has occurred. Set your breakpoint."));
-    }
-    #else
-    if (textdoc.isNull())
-        return false;
-    #endif
-    
-    if (textdoc.isOk())
-    {
-        // get the proper set from the TextDoc
-        fset = text_set;
-        tset = text_set;
-        
-        // get a structure that we can configure
-        xd::IStructurePtr new_struct = textdoc->getStructure();
-        xd::IColumnInfoPtr colinfo;
-        
-        // populate the new structure
-        int row, row_count = m_grid->getRowCount();
-        for (row = 0; row < row_count; ++row)
-        {
-            name = m_grid->getCellString(row, colFieldName);
-            type = m_grid->getCellComboSel(row, colFieldType);
-            width = m_grid->getCellInteger(row, colFieldWidth);
-            scale = m_grid->getCellInteger(row, colFieldScale);
-            source_name = m_grid->getCellString(row, colSourceName);
-            format_sel = m_grid->getCellComboSel(row, colFieldFormula);
-            expression = getFieldExpression(row);
-
-            colinfo = new_struct->createColumn();
-            colinfo->setName(towstr(name));
-            colinfo->setType(choice2xd(type));
-            colinfo->setWidth(width);
-            colinfo->setScale(scale);
-            colinfo->setExpression(towstr(expression));
-        }
-
-        // we're working on a fixed-length text set
-        if (fset)
-        {
-            // purge the old destination structure
-            xd::IStructurePtr s = fset->getDestinationStructure();
-            
-            int col, col_count = s->getColumnCount();
-            for (col = 0; col < col_count; ++col)
-            {
-                colinfo = s->getColumnInfoByIdx(col);
-                s->deleteColumn(colinfo->getName());
-            }
-
-            // remove all columns from the structure and repopulate it
-            fset->modifyDestinationStructure(s, NULL);
-            fset->modifyDestinationStructure(new_struct, NULL);
-            
-            // save the set configuration
-            fset->saveConfiguration();
-        }
-        
-        // we're working on a text-delimited set
-        if (tset)
-        {
-            // purge the old destination structure
-            xd::IStructurePtr s = tset->getDestinationStructure();
-            xd::IColumnInfoPtr colinfo;
-            
-            int col, col_count = s->getColumnCount();
-            for (col = 0; col < col_count; ++col)
-            {
-                colinfo = s->getColumnInfoByIdx(col);
-                s->deleteColumn(colinfo->getName());
-            }
-
-            // remove all columns from the structure and repopulate it
-            tset->modifyDestinationStructure(s, NULL);
-            tset->modifyDestinationStructure(new_struct, NULL);
-            
-            // save the set configuration
-            tset->saveConfiguration();
-        }
-        
-        // store the updated set we used to initialize the grid
-        m_init_set = text_set;
-    }
-
-    */
 
     // update the TableDoc's view
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
