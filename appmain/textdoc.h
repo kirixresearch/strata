@@ -103,10 +103,6 @@ public:
     
 private:
     
-    bool isDestinationSameAsSourceStructure();
-    void resetTransformationDocAndTableDoc();
-    void doBulkFieldRename(std::vector< std::pair<wxString, wxString> > to_rename);
-    
     void doTextModeLayout();    // changes the layout based on the file type
     bool updateColumnList();
     void updateStatusBar();

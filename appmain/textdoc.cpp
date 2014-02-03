@@ -974,7 +974,10 @@ wxBoxSizer* TextDoc::createTextDelimitedSettingsSizer()
                                            ID_DelimitersComboBox,
                                            wxEmptyString,
                                            wxDefaultPosition,
-                                           wxDefaultSize);
+                                           wxDefaultSize,
+                                           0,
+                                           NULL,
+                                           wxTE_PROCESS_ENTER);
                                            
     for (i = 0; i < m_delimiters_labels.size(); ++i)
         m_delimiters_combobox->Append(m_delimiters_labels[i]);
@@ -985,7 +988,11 @@ wxBoxSizer* TextDoc::createTextDelimitedSettingsSizer()
                                               ID_TextQualifierComboBox,
                                               wxEmptyString,
                                               wxDefaultPosition,
-                                              wxDefaultSize);
+                                              wxDefaultSize,
+                                              0,
+                                              NULL,
+                                              wxTE_PROCESS_ENTER);
+
     for (i = 0; i < m_textqualifier_labels.size(); ++i)
         m_textqualifier_combobox->Append(m_textqualifier_labels[i]);
     
@@ -1557,7 +1564,6 @@ void TextDoc::onFileTypeChanged(wxCommandEvent& evt)
     doTextModeLayout();
     
     // reset the TransformationDoc's grid and the TableDoc's grid
-    resetTransformationDocAndTableDoc();
     updateStatusBar();
 }
 
@@ -1772,12 +1778,14 @@ void TextDoc::onFixedLengthLineDelimitedChecked(wxCommandEvent& evt)
 
 void TextDoc::onTextDelimitedFieldDelimiterTextEnter(wxCommandEvent& evt)
 {
-/*
-    wxString s = evt.GetString();
-    
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
+    wxString s = evt.GetString(); 
     if (s.IsNumber())
     {
-        // users can optionall key in an character code as a decimal value
+        // users can optional key in an character code as a decimal value
         wxChar ch = kl::wtoi(towstr(s));
         s = ch;
     }
@@ -1786,88 +1794,69 @@ void TextDoc::onTextDelimitedFieldDelimiterTextEnter(wxCommandEvent& evt)
     if (s == m_last_delimiters)
         return;
 
-    // if the user has edited the destination set structure in the
-    // TransformationDoc, ask them if they are sure they want continue
-    if (!isDestinationSameAsSourceStructure())
-    {
-        if (showOverwriteTransformationChangesDialog() != wxYES)
-        {
-            setDelimitersComboBoxSelection(m_delimiters_combobox,
-                                           m_last_delimiters);
-            return;
-        }
-    }
-    
     // if the user typed in one of the default delimiters,
     // use that combobox entry instead
     setDelimitersComboBoxSelection(m_delimiters_combobox, s);
     m_last_delimiters = s;
     
-    // set the parameters for a text-delimited set
-    xd::IDelimitedTextSetPtr tset = m_textdelimited_set;
-    if (tset.isOk())
-    {
-        AppBusyCursor busy_cursor;
-        tset->setDelimiters(towstr(getFieldDelimiters()), true);
-        refreshGrid();
 
-        // reset the TransformationDoc's grid and the TableDoc's grid
-        resetTransformationDocAndTableDoc();
-    }
+    m_def_frc = xd::FormatDefinition();
+    m_def_nofrc = xd::FormatDefinition();
 
+    xd::FormatDefinition defaults = m_def;
+    defaults.delimiters = towstr(s);
+    defaults.columns.clear();
+
+    wxBusyCursor bc;
+    db->loadDefinition(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
+
+
+    refreshGrid();
+    refreshDocuments();
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
-*/
 }
 
 void TextDoc::onTextDelimitedTextQualifierTextEnter(wxCommandEvent& evt)
 {
-/*
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
     wxString s = evt.GetString();
     
     // we didn't change the text qualifier, so we're done
     if (s == m_last_textqualifier)
         return;
 
-    // if the user has edited the destination set structure in the
-    // TransformationDoc, ask them if they are sure they want continue
-    if (!isDestinationSameAsSourceStructure())
-    {
-        if (showOverwriteTransformationChangesDialog() != wxYES)
-        {
-            setTextQualifierComboBoxSelection(m_textqualifier_combobox,
-                                              m_last_textqualifier);
-            return;
-        }
-    }
 
     // if the user typed in one of the default text qualifiers,
     // use that combobox entry instead
     setTextQualifierComboBoxSelection(m_textqualifier_combobox, s);
     m_last_textqualifier = s;
     
-    // set the parameters for a text-delimited set
-    xd::IDelimitedTextSetPtr tset = m_textdelimited_set;
-    if (tset.isOk())
-    {
-        AppBusyCursor busy_cursor;
-        tset->setTextQualifier(towstr(getTextQualifier()), true);
-        refreshGrid();
 
-        // reset the TransformationDoc's grid and the TableDoc's grid
-        resetTransformationDocAndTableDoc();
-    }
+    m_def_frc = xd::FormatDefinition();
+    m_def_nofrc = xd::FormatDefinition();
 
+    xd::FormatDefinition defaults = m_def;
+    defaults.text_qualifiers = towstr(s);
+    defaults.columns.clear();
+
+    wxBusyCursor bc;
+    db->loadDefinition(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
+
+
+    refreshGrid();
+    refreshDocuments();
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
-*/
 }
 
 void TextDoc::onTextDelimitedTextQualifierTextChanged(wxCommandEvent& evt)
 {
-/*
     wxString s = evt.GetString();
     
     // don't chop off the text if we selected one of the combobox items
@@ -1887,12 +1876,14 @@ void TextDoc::onTextDelimitedTextQualifierTextChanged(wxCommandEvent& evt)
     }
 
     m_dirty = true;
-*/
 }
 
 void TextDoc::onTextDelimitedFieldDelimiterCombo(wxCommandEvent& evt)
 {
-/*
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
     int sel = evt.GetSelection();
     
     // if "Other..." was selected, make sure the combobox text is empty
@@ -1908,47 +1899,37 @@ void TextDoc::onTextDelimitedFieldDelimiterCombo(wxCommandEvent& evt)
     if (sel == m_last_delimiters_sel)
         return;
         
-    // if the user has edited the destination set structure in the
-    // TransformationDoc, ask them if they are sure they want continue
-    if (!isDestinationSameAsSourceStructure())
-    {
-        if (showOverwriteTransformationChangesDialog() != wxYES)
-        {
-            setDelimitersComboBoxSelection(m_delimiters_combobox,
-                                           m_last_delimiters);
-            return;
-        }
-    }
     
     m_last_delimiters_sel = sel;
     m_last_delimiters = getFieldDelimiters();
     
-    // set the parameters for a text-delimited set
-    xd::IDelimitedTextSetPtr tset = m_textdelimited_set;
-    if (tset.isOk())
-    {
-        AppBusyCursor busy_cursor;
-        tset->setDelimiters(towstr(getFieldDelimiters()), true);
-        refreshGrid();
-        
-        // when changing delimiters, the text-delimited set has to determine
-        // the columns, and in so doing, re-senses if the first row is column
-        // names or not, so we need to update this value appropriately
-        m_firstrowfieldnames_checkbox->SetValue(tset->isFirstRowColumnNames());
 
-        // reset the TransformationDoc's grid and the TableDoc's grid
-        resetTransformationDocAndTableDoc();
-    }
+    // if the user typed in one of the default delimiters,
+    // use that combobox entry instead
+    
+    m_def_frc = xd::FormatDefinition();
+    m_def_nofrc = xd::FormatDefinition();
 
+    xd::FormatDefinition defaults = m_def;
+    defaults.delimiters = towstr(getFieldDelimiters());
+    defaults.columns.clear();
+
+    wxBusyCursor bc;
+    db->loadDefinition(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
+
+    refreshGrid();
+    refreshDocuments();
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
-*/
 }
 
 void TextDoc::onTextDelimitedTextQualifierCombo(wxCommandEvent& evt)
 {
-/*
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
     int sel = evt.GetSelection();
 
     // if "Other..." was selected, make sure the combobox text is empty
@@ -1964,37 +1945,28 @@ void TextDoc::onTextDelimitedTextQualifierCombo(wxCommandEvent& evt)
     if (sel == m_last_textqualifier_sel)
         return;
 
-    // if the user has edited the destination set structure in the
-    // TransformationDoc, ask them if they are sure they want continue
-    if (!isDestinationSameAsSourceStructure())
-    {
-        if (showOverwriteTransformationChangesDialog() != wxYES)
-        {
-            setTextQualifierComboBoxSelection(m_textqualifier_combobox,
-                                              m_last_textqualifier);
-            return;
-        }
-    }
+
 
     m_last_textqualifier_sel = sel;
     m_last_textqualifier = getTextQualifier();
 
-    // set the parameters for a text-delimited set
-    xd::IDelimitedTextSetPtr tset = m_textdelimited_set;
-    if (tset.isOk())
-    {
-        AppBusyCursor busy_cursor;
-        tset->setTextQualifier(towstr(getTextQualifier()), true);
-        refreshGrid();
+    m_def_frc = xd::FormatDefinition();
+    m_def_nofrc = xd::FormatDefinition();
 
-        // reset the TransformationDoc's grid and the TableDoc's grid
-        resetTransformationDocAndTableDoc();
-    }
+    xd::FormatDefinition defaults = m_def;
+    defaults.text_qualifiers = towstr(getTextQualifier());
+    defaults.columns.clear();
 
+    wxBusyCursor bc;
+    db->loadDefinition(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
+
+
+    refreshGrid();
+    refreshDocuments();
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
-*/
+
 }
 
 void TextDoc::onTextDelimitedFirstRowFieldNamesChecked(wxCommandEvent& evt)
@@ -2155,139 +2127,6 @@ void TextDoc::onTextDelimitedCaptionEndEdit(kcl::GridEvent& evt)
     m_dirty = true;
 */
 }
-
-bool TextDoc::isDestinationSameAsSourceStructure()
-{
-/*
-    // this function determines if the user has edited
-    // anything in the TransformationDoc or not
-
-    xd::IDelimitedTextSetPtr tset = getTextSet();
-    xd::IFixedLengthDefinitionPtr fset = getTextSet();
-    xd::IStructurePtr src_struct, dest_struct;
-    
-    if (tset)
-    {
-        src_struct = tset->getSourceStructure();
-        dest_struct = tset->getDestinationStructure();
-    }
-    
-    if (fset)
-    {
-        src_struct = fset->getSourceStructure();
-        dest_struct = fset->getDestinationStructure();
-    }
-    
-    int src_colcount = src_struct->getColumnCount();
-    int dest_colcount = dest_struct->getColumnCount();
-    if (src_colcount != dest_colcount)
-        return false;
-        
-    xd::IColumnInfoPtr src_colinfo;
-    xd::IColumnInfoPtr dest_colinfo;
-    int i;
-    
-    for (i = 0; i < src_colcount; ++i)
-    {
-        src_colinfo = src_struct->getColumnInfoByIdx(i);
-        dest_colinfo = dest_struct->getColumnInfoByIdx(i);
-        
-        if (src_colinfo->getName() != dest_colinfo->getName())
-            return false;
-            
-        if (src_colinfo->getType() != dest_colinfo->getType())
-            return false;
-        
-        if (src_colinfo->getWidth() != dest_colinfo->getWidth())
-            return false;
-            
-        if (src_colinfo->getScale() != dest_colinfo->getScale())
-            return false;
-    }
-*/
-    return true;
-}
-
-void TextDoc::resetTransformationDocAndTableDoc()
-{
-/*
-    // this function re-initializes both the TransformationDoc and the
-    // TableDoc if a "big" change is made to the set (e.g. changing a
-    // field delimiter, etc.)
-
-    ITransformationDocPtr transdoc;
-    transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
-    if (transdoc)
-        transdoc->initFromSet(getTextSet());
-    
-    ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
-    if (tabledoc)
-    {
-        xd::IxSetPtr set = getTextSet();
-        if (set.isNull())
-            return;
-
-        xd::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(m_path));
-        if (finfo.isNull())
-            return;
-
-        ITableDocModelPtr model = TableDocMgr::loadModel(finfo->getObjectId());
-        ITableDocViewEnumPtr views = model->getViewEnum();
-        
-        int i, count = views->size();
-        for (i = 0; i < count; ++i)
-        {
-            ITableDocObjectPtr obj = views->getItem(i);
-            model->deleteObject(obj);
-        }
-
-        // calling this after deleting all the views will cause
-        // the TableDoc to "re-initialize" with a default view
-        tabledoc->open(m_path);
-    }
-*/
-}
-
-void TextDoc::doBulkFieldRename(std::vector< std::pair<wxString, wxString> > to_rename)
-{
-/*
-    // this function updates any columns in the TransformationDoc or TableDoc
-    // which are associated with the source column that we're modifying
-
-    // repopulate the TransformationDoc from the destination structure
-    ITransformationDocPtr transdoc;
-    transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
-    if (transdoc)
-        transdoc->initFromSet(getTextSet());
-
-    // update any corresponding columns in the TableDoc's view
-    ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
-    if (tabledoc)
-    {
-        ITableDocViewPtr tabledocview = tabledoc->getActiveView();
-        if (tabledoc.isOk() && tabledocview.isOk())
-        {
-            std::vector< std::pair<wxString, wxString> >::iterator it;
-            for (it = to_rename.begin(); it != to_rename.end(); ++it)
-            {
-                // we couldn't find the column in the view, continue
-                int colidx = tabledocview->getColumnIdx(towstr(it->first));
-                if (colidx == -1)
-                    continue;
-                    
-                ITableDocViewColPtr viewcol = tabledocview->getColumn(colidx);
-                if (viewcol)
-                    viewcol->setName(towstr(it->second));
-            }
-
-            // refresh the TableDoc's set and view
-            tabledoc->open(m_path);
-            tabledoc->refreshActiveView();
-        }
-    }
-*/
-}
-
 
 bool TextDoc::saveLayoutTemplate(const wxString& path)
 {
