@@ -14,6 +14,7 @@
 #include <kl/string.h>
 #include <kl/crypt.h>
 #include <kl/file.h>
+#include <kl/url.h>
 #include "app.h"
 #include "mainframe.h"
 #include "dlgsettings.h"
@@ -79,6 +80,8 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
     if (dlg.ShowModal() != wxID_OK)
         return;
 
+    wxBusyCursor bc;
+
     Connection& ci = dlg.getConnectionInfo();
     std::vector<ConnectionTable>::iterator it;
 
@@ -87,9 +90,23 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
     for (it = ci.tables.begin(); it != ci.tables.end(); ++it)
     {
         xd::FormatDefinition fi;
-        fi.data_connection_string = cstr;
-        fi.data_path = it->input_tablename;
-        db->saveDefinition(it->output_tablename, &fi);
+
+        if (cstr.length() == 0)
+        {
+            if (db->loadDefinition(kl::filenameToUrl(it->input_tablename), &fi))
+            {
+                fi.data_path = kl::filenameToUrl(it->input_tablename);
+                db->saveDefinition(it->output_tablename, &fi);
+            }
+        }
+         else
+        {
+            xd::FormatDefinition fi;
+            fi.data_connection_string = cstr;
+            fi.data_path = it->input_tablename;
+            db->saveDefinition(it->output_tablename, &fi);
+        }
+
     }
     
     refreshList();
@@ -186,7 +203,6 @@ void MainFrame::onDelete(wxCommandEvent& evt)
 
 
     refreshList();
-
 }
 
 
@@ -219,6 +235,8 @@ void MainFrame::refreshList()
             if (def.data_path.length() > 0)
             {
                 data_path_name = kl::afterLast(def.data_path, PATH_SEPARATOR_CHAR);
+
+                // for objects located in this xdfs database (example '/data.ebc')
                 if (kl::stringFrequency(data_path_name, '/') > 0 && data_path_name[0] == '/')
                     data_path_name = data_path_name.substr(1);
             }
@@ -233,7 +251,7 @@ void MainFrame::refreshList()
             }
 
 
-            addItem(fname, data_path_name, getLocationString(def));
+            addItem(def.object_id, finfo->getName(), getLocationString(def));
         }
     }
 
@@ -247,7 +265,7 @@ void MainFrame::refreshList()
 void MainFrame::addItem(const std::wstring& id, const std::wstring& name, const std::wstring& location)
 {
     kcl::ScrollListItem* item = new kcl::ScrollListItem;
-    item->setExtraString(id);
+    item->setExtraString(name);
 
     // create bitmap element
     kcl::ScrollListElement* bitmap;
@@ -299,6 +317,11 @@ wxString getPhysPathFromDatabasePath(const wxString& database_path)
 {
     if (database_path.empty())
         return database_path;
+
+    if (database_path.StartsWith("file://"))
+    {
+        return kl::urlToFilename(database_path.ToStdWstring());
+    }
 
     xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
