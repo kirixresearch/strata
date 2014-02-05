@@ -1067,7 +1067,13 @@ void Controller::apiRead(RequestInfo& req)
         }
 
 
-        xd::IIteratorPtr iter = db->query(req.getURI(), L"", req.getValue(L"where"), req.getValue(L"order"), NULL);
+        xd::QueryParams qp;
+        qp.from = req.getURI();
+        qp.columns = L"";
+        qp.where = req.getValue(L"where");
+        qp.order = req.getValue(L"order");
+
+        xd::IIteratorPtr iter = db->query(qp);
         if (!iter.isOk())
         {
             req.sendNotFoundError();

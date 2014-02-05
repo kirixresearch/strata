@@ -396,11 +396,10 @@ void WebSocketsClient::doPublishAssets()
     {
         xd::IFileInfoPtr finfo = files->getItem(i);
 
-
         kl::JsonNode item = assets.appendElement();
         item.setObject();
 
-        item["id"] = finfo->getName();
+        item["location"] = finfo->getName();
         item["name"] = finfo->getName();
     }
     

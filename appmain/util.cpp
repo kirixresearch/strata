@@ -777,6 +777,11 @@ wxString getPhysPathFromDatabasePath(const wxString& database_path)
     if (database_path.empty())
         return database_path;
 
+    if (database_path.StartsWith("file://"))
+    {
+        return kl::urlToFilename(database_path.ToStdWstring());
+    }
+
     xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return wxEmptyString;
