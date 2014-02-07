@@ -32,9 +32,10 @@ bool sqlAlter(xd::IDatabasePtr db,
               ThreadErrorInfo& error,
               xd::IJob* job)
 {
-    SqlStatement stmt(_command);
+    std::wstring command = _command.substr(6); // chop off "ALTER "
 
-    stmt.addKeyword(L"ALTER");
+    SqlStatement stmt(command);
+
     stmt.addKeyword(L"TABLE");
     stmt.addKeyword(L"BEFORE");
     stmt.addKeyword(L"AFTER");
@@ -272,7 +273,7 @@ bool sqlAlter(xd::IDatabasePtr db,
                     error.setError(xd::errorSyntax, L"Invalid syntax; missing original column in MODIFY clause of ALTER statement");
                     return false;
                 }
-                
+                dequote(old_name, '[', ']');
                 
                 std::wstring to = popToken(*col_it);
                 if (0 != wcscasecmp(to.c_str(), L"TO"))
