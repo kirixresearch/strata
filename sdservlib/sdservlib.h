@@ -17,7 +17,9 @@
 #include <string>
 #include <kl/xcm.h>
 #include <kl/string.h>
+#include <kl/signal.h>
 #include <xd/xd.h>
+#include "request.h"
 
 class Controller;
 class WebSocketsClient;
@@ -54,6 +56,8 @@ public:
     void signalServerReady();
     void signalServerNotReady();
     void updateLastAccessTimestamp();
+
+    xcm::signal3<const std::wstring& /*method*/, RequestInfo&, bool* /*handled*/> sigRequest;
 
 private:
 

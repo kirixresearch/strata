@@ -86,6 +86,14 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
     // end debugging code
  
 
+    bool handled = false;
+    m_sdserv->sigRequest.fire(method, req, &handled);
+    if (handled)
+    {
+        end = clock();
+        printf("%5d %4dms\n", req.getContentLength(), (end-start));
+        return;
+    }
 
     //     if (method == L"login")                 apiLogin(req);
     //else if (method == L"selectdb")              apiSelectDb(req);
