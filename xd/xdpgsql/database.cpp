@@ -1245,7 +1245,7 @@ xd::IStructurePtr PgsqlDatabase::createStructure()
 
 bool PgsqlDatabase::createTable(const std::wstring& path,
                                 xd::IStructurePtr struct_config,
-                                xd::FormatDefinition* format_info)
+                                const xd::FormatDefinition* format_info)
 {
     std::wstring tbl = pgsqlQuoteIdentifierIfNecessary(path);
 

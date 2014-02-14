@@ -120,8 +120,7 @@ public:
 
 class OdbcSet;
 class OdbcIterator : public CommonBaseIterator,
-                     public xd::ICacheRowUpdate,
-                     public xd::IIteratorRelation
+                     public xd::ICacheRowUpdate
 {
     friend class OdbcDatabase;
     friend class OdbcSet;

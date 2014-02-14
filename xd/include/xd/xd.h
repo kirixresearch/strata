@@ -640,6 +640,7 @@ struct CopyParams
     std::wstring where;
     std::wstring order;
     int limit;
+    xd::FormatDefinition output_format;
 };
 
 struct QueryParams
@@ -687,7 +688,7 @@ public:
 
     virtual bool createFolder(const std::wstring& path) = 0;
     virtual bool createStream(const std::wstring& path, const std::wstring& mime_type) = 0;
-    virtual bool createTable(const std::wstring& path, IStructurePtr struct_config, FormatDefinition* format_info) = 0;
+    virtual bool createTable(const std::wstring& path, IStructurePtr struct_config, const FormatDefinition* format_info) = 0;
 
     virtual bool loadDefinition(const std::wstring& path, FormatDefinition* format_info, const FormatDefinition* defaults = NULL) { return false; }
     virtual bool saveDefinition(const std::wstring& path, const FormatDefinition* format_info) { return false; }

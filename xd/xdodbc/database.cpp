@@ -2072,7 +2072,7 @@ xd::IStructurePtr OdbcDatabase::createStructure()
 
 bool OdbcDatabase::createTable(const std::wstring& path,
                                xd::IStructurePtr struct_config,
-                               xd::FormatDefinition* format_info)
+                               const xd::FormatDefinition* format_info)
 {
     std::wstring quote_openchar = m_attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
     std::wstring quote_closechar = m_attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);

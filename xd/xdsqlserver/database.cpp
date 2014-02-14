@@ -543,7 +543,7 @@ xd::IStructurePtr SqlServerDatabase::createStructure()
 
 bool SqlServerDatabase::createTable(const std::wstring& path,
                                     xd::IStructurePtr struct_config,
-                                    xd::FormatDefinition* format_info)
+                                    const xd::FormatDefinition* format_info)
 {
     std::wstring command;
     command.reserve(1024);

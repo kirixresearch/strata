@@ -1198,17 +1198,14 @@ bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
     
     if (info->append)
     {
-        xd::FormatDefinition fi;
-        fi.format = xd::formatDefault;
-
-        IXdsqlTablePtr output = openSetEx(info->output, fi);
+        IXdsqlTablePtr output = openSetEx(info->output, info->output_format);
         if (output.isNull())
             return false;
     }
      else
     {
         deleteFile(info->output);
-        if (!createTable(info->output, structure, NULL))
+        if (!createTable(info->output, structure, &info->output_format))
             return false;
     }
 
@@ -2078,7 +2075,7 @@ static int xdToDelimitedTextEncoding(int xd_encoding)
 
 bool FsDatabase::createTable(const std::wstring& path,
                              xd::IStructurePtr structure,
-                             xd::FormatDefinition* format_info)
+                             const xd::FormatDefinition* format_info)
 {
     if (path.length() == 0)
         return false;
