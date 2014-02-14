@@ -42,8 +42,8 @@ std::wstring url_unescape(const std::wstring& input);
 std::wstring url_encodeURI(const std::wstring& input);
 std::wstring url_decodeURI(const std::wstring& input);
 
-std::wstring url_encodeURIComponent(const std::wstring input);
-std::wstring url_decodeURIComponent(const std::wstring input);
+std::wstring url_encodeURIComponent(const std::wstring& input);
+std::wstring url_decodeURIComponent(const std::wstring& input);
 
 
 };

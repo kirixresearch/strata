@@ -107,7 +107,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;rpcrt4.lib;wxbase29ud.lib;wxbase29ud_net.lib;wxmsw29ud_core.lib;wxmsw29ud_adv.lib;wxpngd.lib;wxzlibd.lib;../paladin/lib/paladinud.lib;../kcl/lib/kclud.lib;../kl/lib/klud.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;rpcrt4.lib;wxbase30ud.lib;wxbase30ud_net.lib;wxmsw30ud_core.lib;wxmsw30ud_adv.lib;wxpngd.lib;wxzlibd.lib;../paladin/lib/paladinud.lib;../kcl/lib/kclud.lib;../kl/lib/klud.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

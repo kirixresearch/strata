@@ -45,7 +45,9 @@ bool CopyJob::isInputValid()
         "params":
         {
             "input" : <path>,
-            "output" : <path>
+            "output" : <path>,
+            "where" : <expr>,
+            "order" : <expr>
         }
     }
 */

@@ -278,12 +278,12 @@ std::wstring url_decodeURI(const std::wstring& input)
     return doDecode(input);
 }
 
-std::wstring url_encodeURIComponent(const std::wstring input)
+std::wstring url_encodeURIComponent(const std::wstring& input)
 {
     return doEncode(input, L"%@&$#{}[]<>=:/,;?+\\|^`\" ");
 }
 
-std::wstring url_decodeURIComponent(const std::wstring input)
+std::wstring url_decodeURIComponent(const std::wstring& input)
 {
     return doDecode(input);
 }

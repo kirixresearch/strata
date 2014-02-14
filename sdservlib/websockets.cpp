@@ -328,7 +328,7 @@ void WebSocketsClient::onMessage(const std::string& msg)
             kl::trim(key);
             kl::trim(value);
 
-            req.setValue(key, value);
+            req.setValue(key, kl::url_decodeURIComponent(value));
 
             pos = amp+1;
         }
