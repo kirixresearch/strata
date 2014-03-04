@@ -30,7 +30,6 @@ Sdserv::Sdserv()
     setOption(L"http.port", L"80,443s");
     setOption(L"websockets.ssl", L"true");
 
-    //setOption(L"sdserv.config_file", L"");
     //setOption(L"sdserv.database", L"");
     //setOption(L"sdserv.win32evt_ready", L"");
     //setOption(L"sdserv.win32evt_notready", L"");
@@ -85,48 +84,12 @@ std::wstring Sdserv::getDatabaseConnectionString(const std::wstring& database_na
     if (kl::icontains(database_name, L"xdprovider="))
         return database_name;
 
-    // first, look for option "database.<dbname>"
-
+    // next, look for option "database.<dbname>"
     std::wstring res = getOption(L"database." + database_name);
     if (res.length() > 0)
     {
         kl::replaceStr(res, L"%database%", database_name);
         return res;
-    }
-
-
-    // then, check a config file, if available
-
-    std::wstring config_file = getOption(L"sdserv.config_file");
-
-    kl::JsonNode config = getJsonNodeFromFile(config_file);
-    if (config.isNull())
-        return L"";
-
-    if (database_name.empty())
-        return L"";
-
-    kl::JsonNode databases = config["databases"];
-    if (databases.childExists(database_name))
-    {
-        kl::JsonNode database = databases[database_name];
-        kl::JsonNode connection_string = database["connection_string"];
-        return connection_string.getString();
-    }
-     else
-    {
-        // check for wild card entry
-        if (databases.childExists("*"))
-        {
-            kl::JsonNode wildcard = databases["*"];
-            std::wstring cstr = wildcard["connection_string"].getString();
-            if (cstr.empty())
-                return L"";
-
-            kl::replaceStr(cstr, L"%database%", database_name);
-            return cstr;
-        }
-
     }
 
     return L"";
@@ -273,11 +236,7 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
     int i;
     for (i = 1; i < argc; ++i)
     {
-        if (0 == strcmp(argv[i], "-f") && i+1 < argc)
-        {
-            setOption(L"sdserv.config_file", kl::towstring(argv[i+1]));
-        }
-         else if (0 == strcmp(argv[i], "-d") && i+1 < argc)
+        if (0 == strcmp(argv[i], "-d") && i+1 < argc)
         {
             setOption(L"sdserv.database", kl::towstring(argv[i+1]));
         }
