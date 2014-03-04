@@ -190,15 +190,15 @@ size_t utf8_toutf8(char* dest,
         i++;
     }
     
+    if (output_buf_size)
+        *output_buf_size = (dest-dest_start);
+    
     if (dest < dest_end)
     {
         *dest = '\0';
         dest++;
     }
 
-    if (output_buf_size)
-        *output_buf_size = (dest-dest_start);
-    
     return i;
 }
 
