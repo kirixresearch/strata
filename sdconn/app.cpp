@@ -156,7 +156,7 @@ bool SdconnApp::startServer()
         Sdserv& sdserv = g_app->getSdserv();
         sdserv.setOption(L"sdserv.server_type", L"websockets");
         sdserv.setOption(L"websockets.ssl", L"true");
-        sdserv.setOption(L"websockets.server", "dataex.goldprairie.com");
+        sdserv.setOption(L"websockets.server", server);
         sdserv.setOption(L"sdserv.database", L"default");
         sdserv.setOption(L"database.default", m_database_connection_str);
         sdserv.setOption(L"login.username", user);
