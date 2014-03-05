@@ -201,15 +201,6 @@ int Sdserv::runServer()
             m_database = dbmgr->open(cstr);
         }
 
-
-        if (m_database.isNull())
-        {
-            printf("Could not open database.\n");
-            signalServerNotReady();
-            return 1;
-        }
-
-
         m_controller->setConnectionString(cstr);
     }
 

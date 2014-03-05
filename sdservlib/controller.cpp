@@ -249,62 +249,7 @@ xd::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
         return m_database;
     }
 
-    xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
-    if (dbmgr.isNull())
-        return xcm::null;
-
-    xd::IDatabasePtr db = dbmgr->open(m_connection_string);
-
-    /*
-    if (db.isNull())
-    {
-        dbmgr->createDatabase(m_connection_string);
-        db = dbmgr->open(m_connection_string);
-        printf("creating database: %ls\n", m_connection_string.c_str());
-        if (db.isNull())
-            printf("...but couldn't open database right away...\n");
-
-        if (db.isNull())
-            return xcm::null;
-    }
-    */
-
-    m_database = db;
-    return db;
-
-/*
-    std::wstring base_path = L"/";
-
-    std::map< std::wstring , xd::IDatabasePtr >::iterator it;
-    
-    {
-        KL_AUTO_LOCK(m_databases_object_mutex);
-        it = m_databases.find(base_path);
-        if (it != m_databases.end())
-            return it->second;
-    }
-
-    xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
-    if (dbmgr.isNull())
-        return xcm::null;
-
-
-    std::wstring cstr = m_sdserv.getDatabaseConnectionString();
-    if (cstr.length() == 0)
-        return xcm::null;
-
-
-    xd::IDatabasePtr db = dbmgr->open(cstr);
-
-    if (db.isNull())
-        return xcm::null;
-
-    {
-        KL_AUTO_LOCK(m_databases_object_mutex);
-        m_databases[base_path] = db;
-        return db;
-    }
-    */
+    return xcm::null;
 }
 
 
@@ -314,7 +259,11 @@ void Controller::apiFolderInfo(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
+
 
     std::wstring path = req.getURI();
     
@@ -380,7 +329,10 @@ void Controller::apiFileInfo(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
     
     std::wstring path = req.getURI();
 
@@ -443,7 +395,11 @@ void Controller::apiCreateTable(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
+
     
     if (!req.getValueExists(L"columns"))
     {
@@ -497,7 +453,10 @@ void Controller::apiCreateFolder(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
     
     std::wstring path = req.getURI();
     
@@ -520,7 +479,11 @@ void Controller::apiMoveFile(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
+
 
     if (!req.getValueExists(L"destination"))
     {
@@ -550,7 +513,11 @@ void Controller::apiRenameFile(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
+
     
     if (!req.getValueExists(L"new_name"))
     {
@@ -579,8 +546,12 @@ void Controller::apiDeleteFile(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
-    
+    }
+
+
     std::wstring path = req.getURI();
     
     if (path == L"" || path == L"/")
@@ -606,7 +577,11 @@ void Controller::apiCopyData(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
+
     
     xd::CopyParams info;
     info.input = req.getValue(L"input");
@@ -629,7 +604,12 @@ void Controller::apiCreateStream(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
+
+
     
     if (!req.getValueExists(L"path"))
     {
@@ -658,7 +638,11 @@ void Controller::apiOpenStream(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
+
     
     std::wstring path = req.getURI();
     
@@ -688,7 +672,11 @@ void Controller::apiReadStream(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
+
         
     if (!req.getValueExists(L"handle"))
     {
@@ -755,7 +743,11 @@ void Controller::apiWriteStream(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
+
     
     if (!req.getValueExists(L"handle"))
     {
@@ -827,7 +819,11 @@ void Controller::apiQuery(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
+
     
         
     if (req.getValue(L"mode") == L"createiterator")
@@ -922,7 +918,11 @@ void Controller::apiGroupQuery(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
+
 
     std::wstring path = req.getValue(L"path");
     std::wstring output = req.getValue(L"output");
@@ -959,7 +959,11 @@ void Controller::apiDescribeTable(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
+
     
 
     kl::JsonNode response;
@@ -1043,7 +1047,11 @@ void Controller::apiRead(RequestInfo& req)
     {
         xd::IDatabasePtr db = getSessionDatabase(req);
         if (db.isNull())
+        {
+            returnApiError(req, "Could not connect to database");
             return;
+        }
+
 
         xd::IFileInfoPtr finfo = db->getFileInfo(req.getURI());
         if (finfo.isNull())
@@ -1310,7 +1318,11 @@ void Controller::apiInsertRows(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
+
 
     std::wstring columns_param, handle;
 
@@ -1470,7 +1482,11 @@ void Controller::apiClone(RequestInfo& req)
 /*
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
+
     
     SdservSession* session = getSdservSession(req);
     if (!session)
@@ -1567,7 +1583,11 @@ void Controller::apiAlter(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
         return;
+    }
+
     
     if (!req.getValueExists(L"path"))
     {
@@ -1953,6 +1973,14 @@ void Controller::apiInitDb(RequestInfo& req)
         {
             dbmgr->createDatabase(m_connection_string);
             db = dbmgr->open(m_connection_string);
+            
+            if (db.isOk())
+            {
+                KL_AUTO_LOCK(m_databases_object_mutex);
+                m_sdserv->m_database = db;
+                m_database = db;
+            }
+
             printf("creating database: %ls\n", m_connection_string.c_str());
             if (db.isNull())
                 printf("...but couldn't open database right away...\n");
