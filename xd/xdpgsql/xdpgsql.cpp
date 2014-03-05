@@ -91,7 +91,7 @@ public:
         
 
         std::wstring pgcmd;
-        pgcmd += L"hostaddr='" + host + L"'";
+        pgcmd += L"host='" + host + L"'";
         pgcmd += L" port='" + port + L"'";
         pgcmd += L" dbname='template1'";
         pgcmd += L" user='" + uid + L"'";
