@@ -190,6 +190,7 @@ int Sdserv::runServer()
         if (cstr.empty())
         {
             printf("Unknown database '%ls'.  Exiting...\n", database.c_str());
+            signalServerNotReady();
             return 1;
         }
 
@@ -204,6 +205,7 @@ int Sdserv::runServer()
         if (m_database.isNull())
         {
             printf("Could not open database.\n");
+            signalServerNotReady();
             return 1;
         }
 

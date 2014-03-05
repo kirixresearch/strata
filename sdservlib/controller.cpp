@@ -121,6 +121,7 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
     else if (method == L"importupload")          apiImportUpload(req);
     else if (method == L"importload")            apiImportLoad(req);
     else if (method == L"jobinfo")               apiJobInfo(req);
+    else if (method == L"initdb")                apiInitDb(req);
 
     end = clock();
     printf("%5d %4dms\n", req.getContentLength(), (end-start));
@@ -254,6 +255,7 @@ xd::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
 
     xd::IDatabasePtr db = dbmgr->open(m_connection_string);
 
+    /*
     if (db.isNull())
     {
         dbmgr->createDatabase(m_connection_string);
@@ -265,6 +267,7 @@ xd::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
         if (db.isNull())
             return xcm::null;
     }
+    */
 
     m_database = db;
     return db;
@@ -1935,6 +1938,31 @@ void Controller::apiJobInfo(RequestInfo& req)
     response["current_count"].setInteger((int)job_info->getCurrentCount());
     response["status"] = status_string;
     
+    req.write(response.toString());
+}
+
+
+void Controller::apiInitDb(RequestInfo& req)
+{
+    xd::IDatabasePtr db = getSessionDatabase(req);
+
+    if (db.isNull())
+    {
+        xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
+        if (dbmgr.isOk())
+        {
+            dbmgr->createDatabase(m_connection_string);
+            db = dbmgr->open(m_connection_string);
+            printf("creating database: %ls\n", m_connection_string.c_str());
+            if (db.isNull())
+                printf("...but couldn't open database right away...\n");
+        }
+    }
+
+    // return success/failure to caller
+    kl::JsonNode response;
+    response["success"].setBoolean(db.isOk());
+
     req.write(response.toString());
 }
 

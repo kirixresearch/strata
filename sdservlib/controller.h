@@ -131,6 +131,7 @@ private:
     void apiImportUpload(RequestInfo& req);
     void apiImportLoad(RequestInfo& req);
     void apiJobInfo(RequestInfo& req);
+    void apiInitDb(RequestInfo& req);
 
 private:
 
