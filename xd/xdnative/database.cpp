@@ -3032,6 +3032,7 @@ bool XdnativeDatabase::createTable(const std::wstring& path,
         return false;
     }
 
+    set->setTemporary(false);
     set->unref();
     return true;
 }

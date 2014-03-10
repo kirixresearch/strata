@@ -111,6 +111,7 @@ protected:
 protected:
 
     XdnativeDatabase* m_database;
+    bool m_temporary;
 
 private:
     
@@ -125,8 +126,6 @@ private:
     std::vector<xd::IColumnInfoPtr> m_calc_fields;
     unsigned long long m_calcrefresh_time;
     bool m_rel_init;
-
-    bool m_temporary;
 };
 
 

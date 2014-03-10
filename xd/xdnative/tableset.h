@@ -213,7 +213,6 @@ private:
 
 private:
 
-    bool m_temporary;
     xd::tableord_t m_ordinal;
     std::wstring m_ofspath;
     xd::rowpos_t m_row_count;
