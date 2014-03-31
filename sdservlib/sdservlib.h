@@ -47,6 +47,7 @@ public:
     bool initOptionsFromCommandLine(int argc, const char* argv[]);
     void setOption(const std::wstring& option, const std::wstring& value);
     std::wstring getOption(const std::wstring& option);
+    std::wstring getWebSocketsConnectionId();
 
     int runServer();
     std::wstring getDatabaseConnectionString(const std::wstring& database = L"");
@@ -58,6 +59,7 @@ public:
     void updateLastAccessTimestamp();
 
     xcm::signal3<const std::wstring& /*method*/, RequestInfo&, bool* /*handled*/> sigRequest;
+    xcm::signal0 sigWebSocketsConnection;
 
 private:
 

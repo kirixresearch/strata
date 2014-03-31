@@ -264,7 +264,7 @@ void WebSocketsClient::onMessage(const std::string& msg)
     std::wstring wmsg = kl::towstring(msg);
     
     // parse headers
-    std::wstring msgtype, token, method, path, params, notify, session;
+    std::wstring msgtype, token, method, path, params, notify, session, connection;
 
     size_t end = wmsg.find(L"\n\n");
     size_t pos = 0;
@@ -293,6 +293,7 @@ void WebSocketsClient::onMessage(const std::string& msg)
         else if (key == L"Path") path = value;
         else if (key == L"Notify") notify = value;
         else if (key == L"Session") session = value;
+        else if (key == L"Connection") connection = value;
 
         pos = lf+1;
     }
@@ -367,6 +368,10 @@ void WebSocketsClient::onMessage(const std::string& msg)
                 // new session
                 m_session = session;
             }
+
+            m_connection = connection;
+
+            m_sdserv->sigWebSocketsConnection();
         }
 
     }

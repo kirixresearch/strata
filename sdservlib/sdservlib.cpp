@@ -325,3 +325,10 @@ std::wstring Sdserv::getOption(const std::wstring& option)
 }
 
 
+std::wstring Sdserv::getWebSocketsConnectionId()
+{
+    if (m_ws_client)
+        return m_ws_client->m_connection;
+         else
+        return L"";
+}

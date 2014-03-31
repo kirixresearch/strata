@@ -87,6 +87,7 @@ public:
     int m_publish_flag;
     int m_write_flag;
     std::wstring m_session;
+    std::wstring m_connection;
 
 private:
 
