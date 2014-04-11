@@ -56,6 +56,7 @@ struct SessionQueryResult : public ServerSessionObject
     std::vector<SessionQueryResultColumn> columns;
     xd::rowpos_t rowpos;
     xd::rowpos_t rowcount;
+    kl::mutex mutex;
 };
 
 struct SessionStream : public ServerSessionObject

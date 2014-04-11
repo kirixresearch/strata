@@ -1122,6 +1122,11 @@ void Controller::apiRead(RequestInfo& req)
         }
     }
     
+
+    KL_AUTO_LOCK(so->mutex);
+
+
+
     xd::IIterator* iter = so->iter.p;
     
     if (so->columns.size() == 0)
