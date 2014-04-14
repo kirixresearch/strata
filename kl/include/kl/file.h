@@ -123,6 +123,7 @@ void xf_filetime_to_systemtime(xf_filetime_t ft, xf_timestruct_t* out);
 bool xf_get_file_exist(const std::wstring& file_path);
 bool xf_get_directory_exist(const std::wstring& dir_path);
 std::wstring xf_get_file_directory(const std::wstring& filename);
+std::wstring xf_concat_path(const std::wstring& path, const std::wstring& append);
 bool xf_mkdir(const std::wstring& dir);
 bool xf_rmdir(const std::wstring& dir);
 bool xf_rmtree(const std::wstring& dir);

@@ -134,6 +134,18 @@ std::wstring xf_get_file_directory(const std::wstring& filename)
 }
 
 
+std::wstring xf_concat_path(const std::wstring& path, const std::wstring& append)
+{
+    if (path.empty())
+        return append;
+    
+    std::wstring result = path;
+    wchar_t last = result[result.length()-1];
+    if (last != '/' && last != '\\')
+        result += xf_path_separator_wchar;
+
+    return (result + append);
+}
 
 
 

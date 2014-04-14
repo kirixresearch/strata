@@ -9,9 +9,6 @@
  */
 
 
-// NOTE: this code is in paladin, too
-
-
 #include <ctime>
 #include <memory.h>
 #include "kl/crypt.h"
