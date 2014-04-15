@@ -259,7 +259,7 @@ void CompImage::setImage(const wxImage& image)
     base64_buf[base64_len] = 0;
 
     // set the property
-    setProperty(PROP_CONTENT_VALUE, base64_buf);
+    setProperty(PROP_CONTENT_VALUE, kl::towstring(base64_buf));
 
     delete[] raw_buf;
     delete[] base64_buf;
