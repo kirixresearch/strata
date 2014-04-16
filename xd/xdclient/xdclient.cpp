@@ -46,10 +46,14 @@ public:
         std::wstring database = c.getValue(L"database");
         std::wstring uid = c.getValue(L"user id");
         std::wstring password = c.getValue(L"password");
-        
+        std::wstring cookie_file = c.getValue(L"cookie file");
+
 
         ClientDatabase* db = new ClientDatabase;
         db->ref();
+
+        if (!cookie_file.empty())
+            db->setCookieFilePath(cookie_file);
 
         if (!db->open(host, kl::wtoi(port), database, uid, password))
         {

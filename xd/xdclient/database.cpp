@@ -65,13 +65,7 @@ ClientDatabase::ClientDatabase()
     m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"[");
     m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"]");
 
-    m_cookie_file = kl::stdswprintf(L"xdclient_%d_%p.dat", (int)time(NULL), this);
-
-    #ifdef WIN32
-    m_cookie_file = xf_get_temp_path() + L"\\" + m_cookie_file;
-    #else
-    m_cookie_file = xf_get_temp_path() + L"/" + m_cookie_file;
-    #endif
+    setCookieFilePath(xf_concat_path(xf_get_temp_path(), kl::stdswprintf(L"xdclient_%d_%p.dat", (int)time(NULL), this)));
 }
 
 ClientDatabase::~ClientDatabase()
@@ -154,6 +148,13 @@ std::wstring ClientDatabase::getRequestPath(const std::wstring& path, const std:
 
     return res;
 }
+
+void ClientDatabase::setCookieFilePath(const std::wstring& cookie_file)
+{
+    m_cookie_file = cookie_file;
+    m_attr->setStringAttribute(xd::dbattrCookieFilePath, m_cookie_file);
+}
+
 
 HttpRequest* ClientDatabase::getHttpObject()
 {

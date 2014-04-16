@@ -249,6 +249,7 @@ enum
     dbattrDatabaseUrl = 1003,
     dbattrDatabaseName = 1004,
     dbattrFilesystemPath = 1005,
+    dbattrCookieFilePath = 1006,
 
     dbattrIdentifierQuoteOpenChar = 1900,
     dbattrIdentifierQuoteCloseChar = 1901,

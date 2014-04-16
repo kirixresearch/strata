@@ -60,6 +60,8 @@ public:
     ClientDatabase();
     ~ClientDatabase();
 
+    void setCookieFilePath(const std::wstring& cookie_file);
+
     bool open(const std::wstring& host,
               int port,
               const std::wstring& database, 
