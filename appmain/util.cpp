@@ -1727,12 +1727,13 @@ bool isValidFileVersion(kl::JsonNode node, const std::wstring& type, int version
     return true;
 }
 
-std::wstring doHttpRequest(const std::wstring& url, const std::map<std::wstring,std::wstring>& post_params)
+std::wstring doHttpRequest(const std::wstring& url, const std::map<std::wstring,std::wstring>& post_params, const std::wstring& cookie_file)
 {
     std::string fetch_url = kl::tostring(url);
     std::string result_string;
     std::string post_string;
-    
+    std::string str_cookie_file;
+
     CURL* curl = curlCreateHandle();
     CurlAutoDestroy ad(curl);
     
@@ -1747,6 +1748,12 @@ std::wstring doHttpRequest(const std::wstring& url, const std::map<std::wstring,
     curl_result = curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "");
     curl_result = curl_easy_setopt(curl, CURLOPT_URL, fetch_url.c_str());
     
+    if (cookie_file.length() > 0)
+    {
+        str_cookie_file = kl::tostring(cookie_file);
+        curl_result = curl_easy_setopt(curl, CURLOPT_COOKIEFILE, str_cookie_file.c_str());
+        curl_result = curl_easy_setopt(curl, CURLOPT_COOKIEJAR, str_cookie_file.c_str());
+    }
 
     if (post_params.size() > 0)
     {
@@ -1777,7 +1784,6 @@ std::wstring doHttpRequest(const std::wstring& url, const std::map<std::wstring,
         curl_result = curl_easy_setopt(curl, CURLOPT_HTTPGET, TRUE);
         if (curl_result != CURLE_OK)
             return L"";
-
     }
 
     // get http proxy info from the registry

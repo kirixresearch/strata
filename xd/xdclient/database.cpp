@@ -50,7 +50,10 @@ ClientDatabase::ClientDatabase()
     m_last_job = 0;
     m_connection_thread_id = 0;
 
-    m_attr = static_cast<xd::IAttributes*>(new DatabaseAttributes);
+    DatabaseAttributes* attr = new DatabaseAttributes;
+    attr->sigAttributeUpdated.connect(this, &ClientDatabase::onDatabaseAttributeUpdated);
+
+    m_attr = static_cast<xd::IAttributes*>(attr);
     m_attr->setStringAttribute(xd::dbattrKeywords, xdclient_keywords);
     m_attr->setIntAttribute(xd::dbattrColumnMaxNameLength, 80);
     m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 80);
@@ -65,7 +68,8 @@ ClientDatabase::ClientDatabase()
     m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"[");
     m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"]");
 
-    setCookieFilePath(xf_concat_path(xf_get_temp_path(), kl::stdswprintf(L"xdclient_%d_%p.dat", (int)time(NULL), this)));
+    m_attr->setStringAttribute(xd::dbattrCookieFilePath,
+                               xf_concat_path(xf_get_temp_path(), kl::stdswprintf(L"xdclient_%d_%p.dat", (int)time(NULL), this)));
 }
 
 ClientDatabase::~ClientDatabase()
@@ -149,11 +153,15 @@ std::wstring ClientDatabase::getRequestPath(const std::wstring& path, const std:
     return res;
 }
 
-void ClientDatabase::setCookieFilePath(const std::wstring& cookie_file)
+
+void ClientDatabase::onDatabaseAttributeUpdated(int attr_id)
 {
-    m_cookie_file = cookie_file;
-    m_attr->setStringAttribute(xd::dbattrCookieFilePath, m_cookie_file);
+    if (attr_id == xd::dbattrCookieFilePath)
+    {
+        m_cookie_file = m_attr->getStringAttribute(xd::dbattrCookieFilePath);
+    }
 }
+
 
 
 HttpRequest* ClientDatabase::getHttpObject()

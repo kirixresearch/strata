@@ -47,7 +47,8 @@ public:
 
 // database class definition
 class ClientDatabase : public xd::IDatabase,
-                       public IClientDatabase
+                       public IClientDatabase,
+                       public xcm::signal_sink
 {
     XCM_CLASS_NAME("xdclient.Database")
     XCM_BEGIN_INTERFACE_MAP(ClientDatabase)
@@ -60,7 +61,7 @@ public:
     ClientDatabase();
     ~ClientDatabase();
 
-    void setCookieFilePath(const std::wstring& cookie_file);
+    void onDatabaseAttributeUpdated(int attr_id);
 
     bool open(const std::wstring& host,
               int port,

@@ -53,7 +53,7 @@ public:
         db->ref();
 
         if (!cookie_file.empty())
-            db->setCookieFilePath(cookie_file);
+            db->getAttributes()->setStringAttribute(xd::dbattrCookieFilePath, cookie_file);
 
         if (!db->open(host, kl::wtoi(port), database, uid, password))
         {

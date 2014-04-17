@@ -312,7 +312,7 @@ jobs::IJobPtr appCreateJob(const std::wstring& job_id);
 bool isValidFileVersion(kl::JsonNode node, const std::wstring& type, int version);
 
 // perform simple/small web requests, returning result as a string
-std::wstring doHttpRequest(const std::wstring& url, const std::map<std::wstring,std::wstring>& post_params = std::map<std::wstring,std::wstring>());
+std::wstring doHttpRequest(const std::wstring& url, const std::map<std::wstring,std::wstring>& post_params = std::map<std::wstring,std::wstring>(), const std::wstring& cookie_file = L"");
 
 // checks an output path for g_app->getDatabase().  It will
 // pop up an error message if something is wrong.

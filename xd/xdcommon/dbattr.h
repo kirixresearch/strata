@@ -37,8 +37,13 @@ public:
     std::wstring getStringAttribute(int attr_id);
     void setStringAttribute(int attr_id, const std::wstring& value);
 
+public:
+
+    xcm::signal1<int /*attr_id*/> sigAttributeUpdated;
+
 private:
 
+    kl::mutex m_obj_mutex;
     std::map<int, bool> m_bool_attrs;
     std::map<int, int> m_int_attrs;
     std::map<int, std::wstring> m_str_attrs;
