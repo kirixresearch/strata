@@ -30,6 +30,7 @@ typedef int32_t  jsword;
 typedef jsword  jsval;
 
 struct JSObject;
+struct JSContext;
 
 /* starting interface:    nsISupports */
 #define NS_ISUPPORTS_IID_STR "00000000-0000-0000-c000-000000000046"
@@ -1904,17 +1905,17 @@ NS_IMETHODIMP nsBadCertListener2::NotifyCertProblem(nsIInterfaceRequestor *socke
 #endif
 
 
-/* starting interface:    nsIRecentBadCertsService */
-#define NS_IRECENTBADCERTSSERVICE_IID_STR "a5ae8b05-a76e-408f-b0ba-02a831265749"
+/* starting interface:    nsIRecentBadCerts */
+#define NS_IRECENTBADCERTS_IID_STR "0fed7784-d152-44d6-95a7-67a59024de0f"
 
-#define NS_IRECENTBADCERTSSERVICE_IID \
-  {0xa5ae8b05, 0xa76e, 0x408f, \
-    { 0xb0, 0xba, 0x02, 0xa8, 0x31, 0x26, 0x57, 0x49 }}
+#define NS_IRECENTBADCERTS_IID \
+  {0x0fed7784, 0xd152, 0x44d6, \
+    { 0x95, 0xa7, 0x67, 0xa5, 0x90, 0x24, 0xde, 0x0f }}
 
-class NS_NO_VTABLE nsIRecentBadCertsService : public nsISupports {
+class NS_NO_VTABLE nsIRecentBadCerts : public nsISupports {
  public: 
 
-  NS_DECLARE_STATIC_IID_ACCESSOR(NS_IRECENTBADCERTSSERVICE_IID)
+  NS_DECLARE_STATIC_IID_ACCESSOR(NS_IRECENTBADCERTS_IID)
 
   /* nsISSLStatus getRecentBadCert (in AString host_name_with_port); */
   NS_IMETHOD GetRecentBadCert(const nsAString & host_name_with_port, nsISSLStatus * *_retval) = 0;
@@ -1922,65 +1923,77 @@ class NS_NO_VTABLE nsIRecentBadCertsService : public nsISupports {
   /* void addBadCert (in AString host_name_with_port, in nsISSLStatus status); */
   NS_IMETHOD AddBadCert(const nsAString & host_name_with_port, nsISSLStatus *status) = 0;
 
+  /* void resetStoredCerts (); */
+  NS_IMETHOD ResetStoredCerts(void) = 0;
+
 };
 
-  NS_DEFINE_STATIC_IID_ACCESSOR(nsIRecentBadCertsService, NS_IRECENTBADCERTSSERVICE_IID)
+  NS_DEFINE_STATIC_IID_ACCESSOR(nsIRecentBadCerts, NS_IRECENTBADCERTS_IID)
 
 /* Use this macro when declaring classes that implement this interface. */
-#define NS_DECL_NSIRECENTBADCERTSSERVICE \
+#define NS_DECL_NSIRECENTBADCERTS \
   NS_IMETHOD GetRecentBadCert(const nsAString & host_name_with_port, nsISSLStatus * *_retval); \
-  NS_IMETHOD AddBadCert(const nsAString & host_name_with_port, nsISSLStatus *status); 
+  NS_IMETHOD AddBadCert(const nsAString & host_name_with_port, nsISSLStatus *status); \
+  NS_IMETHOD ResetStoredCerts(void); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
-#define NS_FORWARD_NSIRECENTBADCERTSSERVICE(_to) \
+#define NS_FORWARD_NSIRECENTBADCERTS(_to) \
   NS_IMETHOD GetRecentBadCert(const nsAString & host_name_with_port, nsISSLStatus * *_retval) { return _to GetRecentBadCert(host_name_with_port, _retval); } \
-  NS_IMETHOD AddBadCert(const nsAString & host_name_with_port, nsISSLStatus *status) { return _to AddBadCert(host_name_with_port, status); } 
+  NS_IMETHOD AddBadCert(const nsAString & host_name_with_port, nsISSLStatus *status) { return _to AddBadCert(host_name_with_port, status); } \
+  NS_IMETHOD ResetStoredCerts(void) { return _to ResetStoredCerts(); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
-#define NS_FORWARD_SAFE_NSIRECENTBADCERTSSERVICE(_to) \
+#define NS_FORWARD_SAFE_NSIRECENTBADCERTS(_to) \
   NS_IMETHOD GetRecentBadCert(const nsAString & host_name_with_port, nsISSLStatus * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetRecentBadCert(host_name_with_port, _retval); } \
-  NS_IMETHOD AddBadCert(const nsAString & host_name_with_port, nsISSLStatus *status) { return !_to ? NS_ERROR_NULL_POINTER : _to->AddBadCert(host_name_with_port, status); } 
+  NS_IMETHOD AddBadCert(const nsAString & host_name_with_port, nsISSLStatus *status) { return !_to ? NS_ERROR_NULL_POINTER : _to->AddBadCert(host_name_with_port, status); } \
+  NS_IMETHOD ResetStoredCerts(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->ResetStoredCerts(); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
 
 /* Header file */
-class nsRecentBadCertsService : public nsIRecentBadCertsService
+class nsRecentBadCerts : public nsIRecentBadCerts
 {
 public:
   NS_DECL_ISUPPORTS
-  NS_DECL_NSIRECENTBADCERTSSERVICE
+  NS_DECL_NSIRECENTBADCERTS
 
-  nsRecentBadCertsService();
+  nsRecentBadCerts();
 
 private:
-  ~nsRecentBadCertsService();
+  ~nsRecentBadCerts();
 
 protected:
   /* additional members */
 };
 
 /* Implementation file */
-NS_IMPL_ISUPPORTS1(nsRecentBadCertsService, nsIRecentBadCertsService)
+NS_IMPL_ISUPPORTS1(nsRecentBadCerts, nsIRecentBadCerts)
 
-nsRecentBadCertsService::nsRecentBadCertsService()
+nsRecentBadCerts::nsRecentBadCerts()
 {
   /* member initializers and constructor code */
 }
 
-nsRecentBadCertsService::~nsRecentBadCertsService()
+nsRecentBadCerts::~nsRecentBadCerts()
 {
   /* destructor code */
 }
 
 /* nsISSLStatus getRecentBadCert (in AString host_name_with_port); */
-NS_IMETHODIMP nsRecentBadCertsService::GetRecentBadCert(const nsAString & host_name_with_port, nsISSLStatus * *_retval)
+NS_IMETHODIMP nsRecentBadCerts::GetRecentBadCert(const nsAString & host_name_with_port, nsISSLStatus * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* void addBadCert (in AString host_name_with_port, in nsISSLStatus status); */
-NS_IMETHODIMP nsRecentBadCertsService::AddBadCert(const nsAString & host_name_with_port, nsISSLStatus *status)
+NS_IMETHODIMP nsRecentBadCerts::AddBadCert(const nsAString & host_name_with_port, nsISSLStatus *status)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void resetStoredCerts (); */
+NS_IMETHODIMP nsRecentBadCerts::ResetStoredCerts()
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -2120,6 +2133,321 @@ NS_IMETHODIMP nsCertOverrideService::GetAllOverrideHostsWithPorts(PRUint32 *coun
 
 /* PRUint32 isCertUsedForOverrides (in nsIX509Cert cert, in boolean check_temporaries, in boolean check_permanents); */
 NS_IMETHODIMP nsCertOverrideService::IsCertUsedForOverrides(nsIX509Cert *cert, bool check_temporaries, bool check_permanents, PRUint32 *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* End of implementation class template. */
+#endif
+
+class nsIOpenSignedJARFileCallback; /* forward declaration */
+
+
+/* starting interface:    nsIX509CertDB */
+#define NS_IX509CERTDB_IID_STR "6502291d-4477-43a3-9688-4b453d055c1d"
+
+#define NS_IX509CERTDB_IID \
+  {0x6502291d, 0x4477, 0x43a3, \
+    { 0x96, 0x88, 0x4b, 0x45, 0x3d, 0x05, 0x5c, 0x1d }}
+
+class NS_NO_VTABLE nsIX509CertDB : public nsISupports {
+ public: 
+
+  NS_DECLARE_STATIC_IID_ACCESSOR(NS_IX509CERTDB_IID)
+
+  enum {
+    UNTRUSTED = 0U,
+    TRUSTED_SSL = 1U,
+    TRUSTED_EMAIL = 2U,
+    TRUSTED_OBJSIGN = 4U
+  };
+
+  /* nsIX509Cert findCertByNickname (in nsISupports token, in AString nickname); */
+  NS_IMETHOD FindCertByNickname(nsISupports *token, const nsAString & nickname, nsIX509Cert * *_retval) = 0;
+
+  /* nsIX509Cert findCertByDBKey (in string db_key, in nsISupports token); */
+  NS_IMETHOD FindCertByDBKey(const char * db_key, nsISupports *token, nsIX509Cert * *_retval) = 0;
+
+  /* void findCertNicknames (in nsISupports token, in unsigned long type, out unsigned long count, [array, size_is (count)] out wstring cert_name_list); */
+  NS_IMETHOD FindCertNicknames(nsISupports *token, uint32_t type, uint32_t *count, PRUnichar * **cert_name_list) = 0;
+
+  /* nsIX509Cert findEmailEncryptionCert (in AString nickname); */
+  NS_IMETHOD FindEmailEncryptionCert(const nsAString & nickname, nsIX509Cert * *_retval) = 0;
+
+  /* nsIX509Cert findEmailSigningCert (in AString nickname); */
+  NS_IMETHOD FindEmailSigningCert(const nsAString & nickname, nsIX509Cert * *_retval) = 0;
+
+  /* nsIX509Cert findCertByEmailAddress (in nsISupports token, in string email_address); */
+  NS_IMETHOD FindCertByEmailAddress(nsISupports *token, const char * email_address, nsIX509Cert * *_retval) = 0;
+
+  /* void importCertificates ([array, size_is (length)] in octet data, in unsigned long length, in unsigned long type, in nsIInterfaceRequestor ctx); */
+  NS_IMETHOD ImportCertificates(uint8_t *data, uint32_t length, uint32_t type, nsIInterfaceRequestor *ctx) = 0;
+
+  /* void importEmailCertificate ([array, size_is (length)] in octet data, in unsigned long length, in nsIInterfaceRequestor ctx); */
+  NS_IMETHOD ImportEmailCertificate(uint8_t *data, uint32_t length, nsIInterfaceRequestor *ctx) = 0;
+
+  /* void importServerCertificate ([array, size_is (length)] in octet data, in unsigned long length, in nsIInterfaceRequestor ctx); */
+  NS_IMETHOD ImportServerCertificate(uint8_t *data, uint32_t length, nsIInterfaceRequestor *ctx) = 0;
+
+  /* void importUserCertificate ([array, size_is (length)] in octet data, in unsigned long length, in nsIInterfaceRequestor ctx); */
+  NS_IMETHOD ImportUserCertificate(uint8_t *data, uint32_t length, nsIInterfaceRequestor *ctx) = 0;
+
+  /* void deleteCertificate (in nsIX509Cert cert); */
+  NS_IMETHOD DeleteCertificate(nsIX509Cert *cert) = 0;
+
+  /* void setCertTrust (in nsIX509Cert cert, in unsigned long type, in unsigned long trust); */
+  NS_IMETHOD SetCertTrust(nsIX509Cert *cert, uint32_t type, uint32_t trust) = 0;
+
+  /* boolean isCertTrusted (in nsIX509Cert cert, in unsigned long cert_type, in unsigned long trust_type); */
+  NS_IMETHOD IsCertTrusted(nsIX509Cert *cert, uint32_t cert_type, uint32_t trust_type, bool *_retval) = 0;
+
+  /* void importCertsFromFile (in nsISupports token, in nsIFile file, in unsigned long type); */
+  NS_IMETHOD ImportCertsFromFile(nsISupports *token, nsIFile *file, uint32_t type) = 0;
+
+  /* void importPKCS12File (in nsISupports token, in nsIFile file); */
+  NS_IMETHOD ImportPKCS12File(nsISupports *token, nsIFile *file) = 0;
+
+  /* void exportPKCS12File (in nsISupports token, in nsIFile file, in unsigned long count, [array, size_is (count)] in nsIX509Cert certs); */
+  NS_IMETHOD ExportPKCS12File(nsISupports *token, nsIFile *file, uint32_t count, nsIX509Cert **certs) = 0;
+
+  /* nsIX509Cert constructX509FromBase64 (in string base64); */
+  NS_IMETHOD ConstructX509FromBase64(const char * base64, nsIX509Cert * *_retval) = 0;
+
+  /* nsIRecentBadCerts getRecentBadCerts (in boolean is_private); */
+  NS_IMETHOD GetRecentBadCerts(bool is_private, nsIRecentBadCerts * *_retval) = 0;
+
+  /* void openSignedJARFileAsync (in nsIFile jar_file, in nsIOpenSignedJARFileCallback callback_); */
+  NS_IMETHOD OpenSignedJARFileAsync(nsIFile *jar_file, nsIOpenSignedJARFileCallback *callback_) = 0;
+
+  /* void addCert (in ACString cert_der, in string trust, in string name); */
+  NS_IMETHOD AddCert(const nsACString & cert_der, const char * trust, const char * name) = 0;
+
+  enum {
+    FLAG_LOCAL_ONLY = 1U,
+    FLAG_NO_DV_FALLBACK_FOR_EV = 2U
+  };
+
+};
+
+  NS_DEFINE_STATIC_IID_ACCESSOR(nsIX509CertDB, NS_IX509CERTDB_IID)
+
+/* Use this macro when declaring classes that implement this interface. */
+#define NS_DECL_NSIX509CERTDB \
+  NS_IMETHOD FindCertByNickname(nsISupports *token, const nsAString & nickname, nsIX509Cert * *_retval); \
+  NS_IMETHOD FindCertByDBKey(const char * db_key, nsISupports *token, nsIX509Cert * *_retval); \
+  NS_IMETHOD FindCertNicknames(nsISupports *token, uint32_t type, uint32_t *count, PRUnichar * **cert_name_list); \
+  NS_IMETHOD FindEmailEncryptionCert(const nsAString & nickname, nsIX509Cert * *_retval); \
+  NS_IMETHOD FindEmailSigningCert(const nsAString & nickname, nsIX509Cert * *_retval); \
+  NS_IMETHOD FindCertByEmailAddress(nsISupports *token, const char * email_address, nsIX509Cert * *_retval); \
+  NS_IMETHOD ImportCertificates(uint8_t *data, uint32_t length, uint32_t type, nsIInterfaceRequestor *ctx); \
+  NS_IMETHOD ImportEmailCertificate(uint8_t *data, uint32_t length, nsIInterfaceRequestor *ctx); \
+  NS_IMETHOD ImportServerCertificate(uint8_t *data, uint32_t length, nsIInterfaceRequestor *ctx); \
+  NS_IMETHOD ImportUserCertificate(uint8_t *data, uint32_t length, nsIInterfaceRequestor *ctx); \
+  NS_IMETHOD DeleteCertificate(nsIX509Cert *cert); \
+  NS_IMETHOD SetCertTrust(nsIX509Cert *cert, uint32_t type, uint32_t trust); \
+  NS_IMETHOD IsCertTrusted(nsIX509Cert *cert, uint32_t cert_type, uint32_t trust_type, bool *_retval); \
+  NS_IMETHOD ImportCertsFromFile(nsISupports *token, nsIFile *file, uint32_t type); \
+  NS_IMETHOD ImportPKCS12File(nsISupports *token, nsIFile *file); \
+  NS_IMETHOD ExportPKCS12File(nsISupports *token, nsIFile *file, uint32_t count, nsIX509Cert **certs); \
+  NS_IMETHOD ConstructX509FromBase64(const char * base64, nsIX509Cert * *_retval); \
+  NS_IMETHOD GetRecentBadCerts(bool is_private, nsIRecentBadCerts * *_retval); \
+  NS_IMETHOD OpenSignedJARFileAsync(nsIFile *jar_file, nsIOpenSignedJARFileCallback *callback_); \
+  NS_IMETHOD AddCert(const nsACString & cert_der, const char * trust, const char * name); \
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object. */
+#define NS_FORWARD_NSIX509CERTDB(_to) \
+  NS_IMETHOD FindCertByNickname(nsISupports *token, const nsAString & nickname, nsIX509Cert * *_retval) { return _to FindCertByNickname(token, nickname, _retval); } \
+  NS_IMETHOD FindCertByDBKey(const char * db_key, nsISupports *token, nsIX509Cert * *_retval) { return _to FindCertByDBKey(db_key, token, _retval); } \
+  NS_IMETHOD FindCertNicknames(nsISupports *token, uint32_t type, uint32_t *count, PRUnichar * **cert_name_list) { return _to FindCertNicknames(token, type, count, cert_name_list); } \
+  NS_IMETHOD FindEmailEncryptionCert(const nsAString & nickname, nsIX509Cert * *_retval) { return _to FindEmailEncryptionCert(nickname, _retval); } \
+  NS_IMETHOD FindEmailSigningCert(const nsAString & nickname, nsIX509Cert * *_retval) { return _to FindEmailSigningCert(nickname, _retval); } \
+  NS_IMETHOD FindCertByEmailAddress(nsISupports *token, const char * email_address, nsIX509Cert * *_retval) { return _to FindCertByEmailAddress(token, email_address, _retval); } \
+  NS_IMETHOD ImportCertificates(uint8_t *data, uint32_t length, uint32_t type, nsIInterfaceRequestor *ctx) { return _to ImportCertificates(data, length, type, ctx); } \
+  NS_IMETHOD ImportEmailCertificate(uint8_t *data, uint32_t length, nsIInterfaceRequestor *ctx) { return _to ImportEmailCertificate(data, length, ctx); } \
+  NS_IMETHOD ImportServerCertificate(uint8_t *data, uint32_t length, nsIInterfaceRequestor *ctx) { return _to ImportServerCertificate(data, length, ctx); } \
+  NS_IMETHOD ImportUserCertificate(uint8_t *data, uint32_t length, nsIInterfaceRequestor *ctx) { return _to ImportUserCertificate(data, length, ctx); } \
+  NS_IMETHOD DeleteCertificate(nsIX509Cert *cert) { return _to DeleteCertificate(cert); } \
+  NS_IMETHOD SetCertTrust(nsIX509Cert *cert, uint32_t type, uint32_t trust) { return _to SetCertTrust(cert, type, trust); } \
+  NS_IMETHOD IsCertTrusted(nsIX509Cert *cert, uint32_t cert_type, uint32_t trust_type, bool *_retval) { return _to IsCertTrusted(cert, cert_type, trust_type, _retval); } \
+  NS_IMETHOD ImportCertsFromFile(nsISupports *token, nsIFile *file, uint32_t type) { return _to ImportCertsFromFile(token, file, type); } \
+  NS_IMETHOD ImportPKCS12File(nsISupports *token, nsIFile *file) { return _to ImportPKCS12File(token, file); } \
+  NS_IMETHOD ExportPKCS12File(nsISupports *token, nsIFile *file, uint32_t count, nsIX509Cert **certs) { return _to ExportPKCS12File(token, file, count, certs); } \
+  NS_IMETHOD ConstructX509FromBase64(const char * base64, nsIX509Cert * *_retval) { return _to ConstructX509FromBase64(base64, _retval); } \
+  NS_IMETHOD GetRecentBadCerts(bool is_private, nsIRecentBadCerts * *_retval) { return _to GetRecentBadCerts(is_private, _retval); } \
+  NS_IMETHOD OpenSignedJARFileAsync(nsIFile *jar_file, nsIOpenSignedJARFileCallback *callback_) { return _to OpenSignedJARFileAsync(jar_file, callback_); } \
+  NS_IMETHOD AddCert(const nsACString & cert_der, const char * trust, const char * name) { return _to AddCert(cert_der, trust, name); } \
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
+#define NS_FORWARD_SAFE_NSIX509CERTDB(_to) \
+  NS_IMETHOD FindCertByNickname(nsISupports *token, const nsAString & nickname, nsIX509Cert * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindCertByNickname(token, nickname, _retval); } \
+  NS_IMETHOD FindCertByDBKey(const char * db_key, nsISupports *token, nsIX509Cert * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindCertByDBKey(db_key, token, _retval); } \
+  NS_IMETHOD FindCertNicknames(nsISupports *token, uint32_t type, uint32_t *count, PRUnichar * **cert_name_list) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindCertNicknames(token, type, count, cert_name_list); } \
+  NS_IMETHOD FindEmailEncryptionCert(const nsAString & nickname, nsIX509Cert * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindEmailEncryptionCert(nickname, _retval); } \
+  NS_IMETHOD FindEmailSigningCert(const nsAString & nickname, nsIX509Cert * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindEmailSigningCert(nickname, _retval); } \
+  NS_IMETHOD FindCertByEmailAddress(nsISupports *token, const char * email_address, nsIX509Cert * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindCertByEmailAddress(token, email_address, _retval); } \
+  NS_IMETHOD ImportCertificates(uint8_t *data, uint32_t length, uint32_t type, nsIInterfaceRequestor *ctx) { return !_to ? NS_ERROR_NULL_POINTER : _to->ImportCertificates(data, length, type, ctx); } \
+  NS_IMETHOD ImportEmailCertificate(uint8_t *data, uint32_t length, nsIInterfaceRequestor *ctx) { return !_to ? NS_ERROR_NULL_POINTER : _to->ImportEmailCertificate(data, length, ctx); } \
+  NS_IMETHOD ImportServerCertificate(uint8_t *data, uint32_t length, nsIInterfaceRequestor *ctx) { return !_to ? NS_ERROR_NULL_POINTER : _to->ImportServerCertificate(data, length, ctx); } \
+  NS_IMETHOD ImportUserCertificate(uint8_t *data, uint32_t length, nsIInterfaceRequestor *ctx) { return !_to ? NS_ERROR_NULL_POINTER : _to->ImportUserCertificate(data, length, ctx); } \
+  NS_IMETHOD DeleteCertificate(nsIX509Cert *cert) { return !_to ? NS_ERROR_NULL_POINTER : _to->DeleteCertificate(cert); } \
+  NS_IMETHOD SetCertTrust(nsIX509Cert *cert, uint32_t type, uint32_t trust) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetCertTrust(cert, type, trust); } \
+  NS_IMETHOD IsCertTrusted(nsIX509Cert *cert, uint32_t cert_type, uint32_t trust_type, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->IsCertTrusted(cert, cert_type, trust_type, _retval); } \
+  NS_IMETHOD ImportCertsFromFile(nsISupports *token, nsIFile *file, uint32_t type) { return !_to ? NS_ERROR_NULL_POINTER : _to->ImportCertsFromFile(token, file, type); } \
+  NS_IMETHOD ImportPKCS12File(nsISupports *token, nsIFile *file) { return !_to ? NS_ERROR_NULL_POINTER : _to->ImportPKCS12File(token, file); } \
+  NS_IMETHOD ExportPKCS12File(nsISupports *token, nsIFile *file, uint32_t count, nsIX509Cert **certs) { return !_to ? NS_ERROR_NULL_POINTER : _to->ExportPKCS12File(token, file, count, certs); } \
+  NS_IMETHOD ConstructX509FromBase64(const char * base64, nsIX509Cert * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ConstructX509FromBase64(base64, _retval); } \
+  NS_IMETHOD GetRecentBadCerts(bool is_private, nsIRecentBadCerts * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetRecentBadCerts(is_private, _retval); } \
+  NS_IMETHOD OpenSignedJARFileAsync(nsIFile *jar_file, nsIOpenSignedJARFileCallback *callback_) { return !_to ? NS_ERROR_NULL_POINTER : _to->OpenSignedJARFileAsync(jar_file, callback_); } \
+  NS_IMETHOD AddCert(const nsACString & cert_der, const char * trust, const char * name) { return !_to ? NS_ERROR_NULL_POINTER : _to->AddCert(cert_der, trust, name); } \
+
+#if 0
+/* Use the code below as a template for the implementation class for this interface. */
+
+/* Header file */
+class nsX509CertDB : public nsIX509CertDB
+{
+public:
+  NS_DECL_ISUPPORTS
+  NS_DECL_NSIX509CERTDB
+
+  nsX509CertDB();
+
+private:
+  ~nsX509CertDB();
+
+protected:
+  /* additional members */
+};
+
+/* Implementation file */
+NS_IMPL_ISUPPORTS1(nsX509CertDB, nsIX509CertDB)
+
+nsX509CertDB::nsX509CertDB()
+{
+  /* member initializers and constructor code */
+}
+
+nsX509CertDB::~nsX509CertDB()
+{
+  /* destructor code */
+}
+
+/* nsIX509Cert findCertByNickname (in nsISupports token, in AString nickname); */
+NS_IMETHODIMP nsX509CertDB::FindCertByNickname(nsISupports *token, const nsAString & nickname, nsIX509Cert * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIX509Cert findCertByDBKey (in string db_key, in nsISupports token); */
+NS_IMETHODIMP nsX509CertDB::FindCertByDBKey(const char * db_key, nsISupports *token, nsIX509Cert * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void findCertNicknames (in nsISupports token, in unsigned long type, out unsigned long count, [array, size_is (count)] out wstring cert_name_list); */
+NS_IMETHODIMP nsX509CertDB::FindCertNicknames(nsISupports *token, uint32_t type, uint32_t *count, PRUnichar * **cert_name_list)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIX509Cert findEmailEncryptionCert (in AString nickname); */
+NS_IMETHODIMP nsX509CertDB::FindEmailEncryptionCert(const nsAString & nickname, nsIX509Cert * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIX509Cert findEmailSigningCert (in AString nickname); */
+NS_IMETHODIMP nsX509CertDB::FindEmailSigningCert(const nsAString & nickname, nsIX509Cert * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIX509Cert findCertByEmailAddress (in nsISupports token, in string email_address); */
+NS_IMETHODIMP nsX509CertDB::FindCertByEmailAddress(nsISupports *token, const char * email_address, nsIX509Cert * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void importCertificates ([array, size_is (length)] in octet data, in unsigned long length, in unsigned long type, in nsIInterfaceRequestor ctx); */
+NS_IMETHODIMP nsX509CertDB::ImportCertificates(uint8_t *data, uint32_t length, uint32_t type, nsIInterfaceRequestor *ctx)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void importEmailCertificate ([array, size_is (length)] in octet data, in unsigned long length, in nsIInterfaceRequestor ctx); */
+NS_IMETHODIMP nsX509CertDB::ImportEmailCertificate(uint8_t *data, uint32_t length, nsIInterfaceRequestor *ctx)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void importServerCertificate ([array, size_is (length)] in octet data, in unsigned long length, in nsIInterfaceRequestor ctx); */
+NS_IMETHODIMP nsX509CertDB::ImportServerCertificate(uint8_t *data, uint32_t length, nsIInterfaceRequestor *ctx)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void importUserCertificate ([array, size_is (length)] in octet data, in unsigned long length, in nsIInterfaceRequestor ctx); */
+NS_IMETHODIMP nsX509CertDB::ImportUserCertificate(uint8_t *data, uint32_t length, nsIInterfaceRequestor *ctx)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void deleteCertificate (in nsIX509Cert cert); */
+NS_IMETHODIMP nsX509CertDB::DeleteCertificate(nsIX509Cert *cert)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void setCertTrust (in nsIX509Cert cert, in unsigned long type, in unsigned long trust); */
+NS_IMETHODIMP nsX509CertDB::SetCertTrust(nsIX509Cert *cert, uint32_t type, uint32_t trust)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* boolean isCertTrusted (in nsIX509Cert cert, in unsigned long cert_type, in unsigned long trust_type); */
+NS_IMETHODIMP nsX509CertDB::IsCertTrusted(nsIX509Cert *cert, uint32_t cert_type, uint32_t trust_type, bool *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void importCertsFromFile (in nsISupports token, in nsIFile file, in unsigned long type); */
+NS_IMETHODIMP nsX509CertDB::ImportCertsFromFile(nsISupports *token, nsIFile *file, uint32_t type)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void importPKCS12File (in nsISupports token, in nsIFile file); */
+NS_IMETHODIMP nsX509CertDB::ImportPKCS12File(nsISupports *token, nsIFile *file)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void exportPKCS12File (in nsISupports token, in nsIFile file, in unsigned long count, [array, size_is (count)] in nsIX509Cert certs); */
+NS_IMETHODIMP nsX509CertDB::ExportPKCS12File(nsISupports *token, nsIFile *file, uint32_t count, nsIX509Cert **certs)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIX509Cert constructX509FromBase64 (in string base64); */
+NS_IMETHODIMP nsX509CertDB::ConstructX509FromBase64(const char * base64, nsIX509Cert * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIRecentBadCerts getRecentBadCerts (in boolean is_private); */
+NS_IMETHODIMP nsX509CertDB::GetRecentBadCerts(bool is_private, nsIRecentBadCerts * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void openSignedJARFileAsync (in nsIFile jar_file, in nsIOpenSignedJARFileCallback callback_); */
+NS_IMETHODIMP nsX509CertDB::OpenSignedJARFileAsync(nsIFile *jar_file, nsIOpenSignedJARFileCallback *callback_)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void addCert (in ACString cert_der, in string trust, in string name); */
+NS_IMETHODIMP nsX509CertDB::AddCert(const nsACString & cert_der, const char * trust, const char * name)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -2826,11 +3154,11 @@ NS_IMETHODIMP nsRequest::SetLoadFlags(nsLoadFlags aLoadFlags)
 
 
 /* starting interface:    nsIURI */
-#define NS_IURI_IID_STR "07a22cc0-0ce5-11d3-9331-00104ba0fd40"
+#define NS_IURI_IID_STR "395fe045-7d18-4adb-a3fd-af98c8a1af11"
 
 #define NS_IURI_IID \
-  {0x07a22cc0, 0x0ce5, 0x11d3, \
-    { 0x93, 0x31, 0x00, 0x10, 0x4b, 0xa0, 0xfd, 0x40 }}
+  {0x395fe045, 0x7d18, 0x4adb, \
+    { 0xa3, 0xfd, 0xaf, 0x98, 0xc8, 0xa1, 0xaf, 0x11 }}
 
 class NS_NO_VTABLE nsIURI : public nsISupports {
  public: 
@@ -2897,6 +3225,22 @@ class NS_NO_VTABLE nsIURI : public nsISupports {
   /* readonly attribute ACString originCharset; */
   NS_IMETHOD GetOriginCharset(nsACString & aOriginCharset) = 0;
 
+  /* attribute AUTF8String ref; */
+  NS_IMETHOD GetRef(nsACString & aRef) = 0;
+  NS_IMETHOD SetRef(const nsACString & aRef) = 0;
+
+  /* boolean equalsExceptRef (in nsIURI other); */
+  NS_IMETHOD EqualsExceptRef(nsIURI *other, bool *_retval) = 0;
+
+  /* nsIURI cloneIgnoringRef (); */
+  NS_IMETHOD CloneIgnoringRef(nsIURI * *_retval) = 0;
+
+  /* readonly attribute AUTF8String specIgnoringRef; */
+  NS_IMETHOD GetSpecIgnoringRef(nsACString & aSpecIgnoringRef) = 0;
+
+  /* readonly attribute boolean hasRef; */
+  NS_IMETHOD GetHasRef(bool *aHasRef) = 0;
+
 };
 
   NS_DEFINE_STATIC_IID_ACCESSOR(nsIURI, NS_IURI_IID)
@@ -2928,7 +3272,13 @@ class NS_NO_VTABLE nsIURI : public nsISupports {
   NS_IMETHOD Resolve(const nsACString & relative_path, nsACString & _retval); \
   NS_IMETHOD GetAsciiSpec(nsACString & aAsciiSpec); \
   NS_IMETHOD GetAsciiHost(nsACString & aAsciiHost); \
-  NS_IMETHOD GetOriginCharset(nsACString & aOriginCharset); 
+  NS_IMETHOD GetOriginCharset(nsACString & aOriginCharset); \
+  NS_IMETHOD GetRef(nsACString & aRef); \
+  NS_IMETHOD SetRef(const nsACString & aRef); \
+  NS_IMETHOD EqualsExceptRef(nsIURI *other, bool *_retval); \
+  NS_IMETHOD CloneIgnoringRef(nsIURI * *_retval); \
+  NS_IMETHOD GetSpecIgnoringRef(nsACString & aSpecIgnoringRef); \
+  NS_IMETHOD GetHasRef(bool *aHasRef); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIURI(_to) \
@@ -2957,7 +3307,13 @@ class NS_NO_VTABLE nsIURI : public nsISupports {
   NS_IMETHOD Resolve(const nsACString & relative_path, nsACString & _retval) { return _to Resolve(relative_path, _retval); } \
   NS_IMETHOD GetAsciiSpec(nsACString & aAsciiSpec) { return _to GetAsciiSpec(aAsciiSpec); } \
   NS_IMETHOD GetAsciiHost(nsACString & aAsciiHost) { return _to GetAsciiHost(aAsciiHost); } \
-  NS_IMETHOD GetOriginCharset(nsACString & aOriginCharset) { return _to GetOriginCharset(aOriginCharset); } 
+  NS_IMETHOD GetOriginCharset(nsACString & aOriginCharset) { return _to GetOriginCharset(aOriginCharset); } \
+  NS_IMETHOD GetRef(nsACString & aRef) { return _to GetRef(aRef); } \
+  NS_IMETHOD SetRef(const nsACString & aRef) { return _to SetRef(aRef); } \
+  NS_IMETHOD EqualsExceptRef(nsIURI *other, bool *_retval) { return _to EqualsExceptRef(other, _retval); } \
+  NS_IMETHOD CloneIgnoringRef(nsIURI * *_retval) { return _to CloneIgnoringRef(_retval); } \
+  NS_IMETHOD GetSpecIgnoringRef(nsACString & aSpecIgnoringRef) { return _to GetSpecIgnoringRef(aSpecIgnoringRef); } \
+  NS_IMETHOD GetHasRef(bool *aHasRef) { return _to GetHasRef(aHasRef); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIURI(_to) \
@@ -2986,7 +3342,13 @@ class NS_NO_VTABLE nsIURI : public nsISupports {
   NS_IMETHOD Resolve(const nsACString & relative_path, nsACString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Resolve(relative_path, _retval); } \
   NS_IMETHOD GetAsciiSpec(nsACString & aAsciiSpec) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAsciiSpec(aAsciiSpec); } \
   NS_IMETHOD GetAsciiHost(nsACString & aAsciiHost) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAsciiHost(aAsciiHost); } \
-  NS_IMETHOD GetOriginCharset(nsACString & aOriginCharset) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetOriginCharset(aOriginCharset); } 
+  NS_IMETHOD GetOriginCharset(nsACString & aOriginCharset) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetOriginCharset(aOriginCharset); } \
+  NS_IMETHOD GetRef(nsACString & aRef) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetRef(aRef); } \
+  NS_IMETHOD SetRef(const nsACString & aRef) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetRef(aRef); } \
+  NS_IMETHOD EqualsExceptRef(nsIURI *other, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->EqualsExceptRef(other, _retval); } \
+  NS_IMETHOD CloneIgnoringRef(nsIURI * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CloneIgnoringRef(_retval); } \
+  NS_IMETHOD GetSpecIgnoringRef(nsACString & aSpecIgnoringRef) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSpecIgnoringRef(aSpecIgnoringRef); } \
+  NS_IMETHOD GetHasRef(bool *aHasRef) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetHasRef(aHasRef); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -3158,16 +3520,52 @@ NS_IMETHODIMP nsURI::GetOriginCharset(nsACString & aOriginCharset)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
+/* attribute AUTF8String ref; */
+NS_IMETHODIMP nsURI::GetRef(nsACString & aRef)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsURI::SetRef(const nsACString & aRef)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* boolean equalsExceptRef (in nsIURI other); */
+NS_IMETHODIMP nsURI::EqualsExceptRef(nsIURI *other, bool *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIURI cloneIgnoringRef (); */
+NS_IMETHODIMP nsURI::CloneIgnoringRef(nsIURI * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute AUTF8String specIgnoringRef; */
+NS_IMETHODIMP nsURI::GetSpecIgnoringRef(nsACString & aSpecIgnoringRef)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute boolean hasRef; */
+NS_IMETHODIMP nsURI::GetHasRef(bool *aHasRef)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 /* End of implementation class template. */
 #endif
 
+class nsIInputStream; /* forward declaration */
+
 
 /* starting interface:    nsIURIFixup */
-#define NS_IURIFIXUP_IID_STR "773081ac-9f81-4bdb-9e7a-5e87b4361f09"
+#define NS_IURIFIXUP_IID_STR "731877f8-973b-414c-b772-9ca1f3fffb7e"
 
 #define NS_IURIFIXUP_IID \
-  {0x773081ac, 0x9f81, 0x4bdb, \
-    { 0x9e, 0x7a, 0x5e, 0x87, 0xb4, 0x36, 0x1f, 0x09 }}
+  {0x731877f8, 0x973b, 0x414c, \
+    { 0xb7, 0x72, 0x9c, 0xa1, 0xf3, 0xff, 0xfb, 0x7e }}
 
 class NS_NO_VTABLE nsIURIFixup : public nsISupports {
  public: 
@@ -3177,17 +3575,18 @@ class NS_NO_VTABLE nsIURIFixup : public nsISupports {
   enum {
     FIXUP_FLAG_NONE = 0U,
     FIXUP_FLAG_ALLOW_KEYWORD_LOOKUP = 1U,
-    FIXUP_FLAGS_MAKE_ALTERNATE_URI = 2U
+    FIXUP_FLAGS_MAKE_ALTERNATE_URI = 2U,
+    FIXUP_FLAG_FIX_SCHEME_TYPOS = 8U
   };
 
   /* nsIURI createExposableURI (in nsIURI uri); */
   NS_IMETHOD CreateExposableURI(nsIURI *uri, nsIURI * *_retval) = 0;
 
-  /* nsIURI createFixupURI (in AUTF8String aURIText, in unsigned long fixup_flags); */
-  NS_IMETHOD CreateFixupURI(const nsACString & aURIText, uint32_t fixup_flags, nsIURI * *_retval) = 0;
+  /* nsIURI createFixupURI (in AUTF8String uri_text, in unsigned long fixup_flags, [optional] out nsIInputStream post_data); */
+  NS_IMETHOD CreateFixupURI(const nsACString & uri_text, uint32_t fixup_flags, nsIInputStream * *post_data, nsIURI * *_retval) = 0;
 
-  /* nsIURI keywordToURI (in AUTF8String keyword); */
-  NS_IMETHOD KeywordToURI(const nsACString & keyword, nsIURI * *_retval) = 0;
+  /* nsIURI keywordToURI (in AUTF8String keyword, [optional] out nsIInputStream post_data); */
+  NS_IMETHOD KeywordToURI(const nsACString & keyword, nsIInputStream * *post_data, nsIURI * *_retval) = 0;
 
 };
 
@@ -3196,20 +3595,20 @@ class NS_NO_VTABLE nsIURIFixup : public nsISupports {
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSIURIFIXUP \
   NS_IMETHOD CreateExposableURI(nsIURI *uri, nsIURI * *_retval); \
-  NS_IMETHOD CreateFixupURI(const nsACString & aURIText, uint32_t fixup_flags, nsIURI * *_retval); \
-  NS_IMETHOD KeywordToURI(const nsACString & keyword, nsIURI * *_retval); 
+  NS_IMETHOD CreateFixupURI(const nsACString & uri_text, uint32_t fixup_flags, nsIInputStream * *post_data, nsIURI * *_retval); \
+  NS_IMETHOD KeywordToURI(const nsACString & keyword, nsIInputStream * *post_data, nsIURI * *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIURIFIXUP(_to) \
   NS_IMETHOD CreateExposableURI(nsIURI *uri, nsIURI * *_retval) { return _to CreateExposableURI(uri, _retval); } \
-  NS_IMETHOD CreateFixupURI(const nsACString & aURIText, uint32_t fixup_flags, nsIURI * *_retval) { return _to CreateFixupURI(aURIText, fixup_flags, _retval); } \
-  NS_IMETHOD KeywordToURI(const nsACString & keyword, nsIURI * *_retval) { return _to KeywordToURI(keyword, _retval); } 
+  NS_IMETHOD CreateFixupURI(const nsACString & uri_text, uint32_t fixup_flags, nsIInputStream * *post_data, nsIURI * *_retval) { return _to CreateFixupURI(uri_text, fixup_flags, post_data, _retval); } \
+  NS_IMETHOD KeywordToURI(const nsACString & keyword, nsIInputStream * *post_data, nsIURI * *_retval) { return _to KeywordToURI(keyword, post_data, _retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIURIFIXUP(_to) \
   NS_IMETHOD CreateExposableURI(nsIURI *uri, nsIURI * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateExposableURI(uri, _retval); } \
-  NS_IMETHOD CreateFixupURI(const nsACString & aURIText, uint32_t fixup_flags, nsIURI * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateFixupURI(aURIText, fixup_flags, _retval); } \
-  NS_IMETHOD KeywordToURI(const nsACString & keyword, nsIURI * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->KeywordToURI(keyword, _retval); } 
+  NS_IMETHOD CreateFixupURI(const nsACString & uri_text, uint32_t fixup_flags, nsIInputStream * *post_data, nsIURI * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateFixupURI(uri_text, fixup_flags, post_data, _retval); } \
+  NS_IMETHOD KeywordToURI(const nsACString & keyword, nsIInputStream * *post_data, nsIURI * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->KeywordToURI(keyword, post_data, _retval); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -3249,14 +3648,14 @@ NS_IMETHODIMP nsURIFixup::CreateExposableURI(nsIURI *uri, nsIURI * *_retval)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIURI createFixupURI (in AUTF8String aURIText, in unsigned long fixup_flags); */
-NS_IMETHODIMP nsURIFixup::CreateFixupURI(const nsACString & aURIText, uint32_t fixup_flags, nsIURI * *_retval)
+/* nsIURI createFixupURI (in AUTF8String uri_text, in unsigned long fixup_flags, [optional] out nsIInputStream post_data); */
+NS_IMETHODIMP nsURIFixup::CreateFixupURI(const nsACString & uri_text, uint32_t fixup_flags, nsIInputStream * *post_data, nsIURI * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIURI keywordToURI (in AUTF8String keyword); */
-NS_IMETHODIMP nsURIFixup::KeywordToURI(const nsACString & keyword, nsIURI * *_retval)
+/* nsIURI keywordToURI (in AUTF8String keyword, [optional] out nsIInputStream post_data); */
+NS_IMETHODIMP nsURIFixup::KeywordToURI(const nsACString & keyword, nsIInputStream * *post_data, nsIURI * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -10584,8 +10983,8 @@ class NS_NO_VTABLE nsIDOMHTMLTextAreaElement : public nsIDOMHTMLElement {
   NS_IMETHOD GetSelectionEnd(int32_t *aSelectionEnd) = 0;
   NS_IMETHOD SetSelectionEnd(int32_t aSelectionEnd) = 0;
 
-  /* void setSelectionRange (in long selectionStart, in long selectionEnd, [optional] in DOMString direction); */
-  NS_IMETHOD SetSelectionRange(int32_t selectionStart, int32_t selectionEnd, const nsAString & direction) = 0;
+  /* void setSelectionRange (in long selection_start, in long selection_end, [optional] in DOMString direction); */
+  NS_IMETHOD SetSelectionRange(int32_t selection_start, int32_t selection_end, const nsAString & direction) = 0;
 
   /* attribute DOMString selectionDirection; */
   NS_IMETHOD GetSelectionDirection(nsAString & aSelectionDirection) = 0;
@@ -10641,7 +11040,7 @@ class NS_NO_VTABLE nsIDOMHTMLTextAreaElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetSelectionStart(int32_t aSelectionStart); \
   NS_IMETHOD GetSelectionEnd(int32_t *aSelectionEnd); \
   NS_IMETHOD SetSelectionEnd(int32_t aSelectionEnd); \
-  NS_IMETHOD SetSelectionRange(int32_t selectionStart, int32_t selectionEnd, const nsAString & direction); \
+  NS_IMETHOD SetSelectionRange(int32_t selection_start, int32_t selection_end, const nsAString & direction); \
   NS_IMETHOD GetSelectionDirection(nsAString & aSelectionDirection); \
   NS_IMETHOD SetSelectionDirection(const nsAString & aSelectionDirection); \
   NS_IMETHOD GetTabIndex(int32_t *aTabIndex); \
@@ -10687,7 +11086,7 @@ class NS_NO_VTABLE nsIDOMHTMLTextAreaElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetSelectionStart(int32_t aSelectionStart) { return _to SetSelectionStart(aSelectionStart); } \
   NS_IMETHOD GetSelectionEnd(int32_t *aSelectionEnd) { return _to GetSelectionEnd(aSelectionEnd); } \
   NS_IMETHOD SetSelectionEnd(int32_t aSelectionEnd) { return _to SetSelectionEnd(aSelectionEnd); } \
-  NS_IMETHOD SetSelectionRange(int32_t selectionStart, int32_t selectionEnd, const nsAString & direction) { return _to SetSelectionRange(selectionStart, selectionEnd, direction); } \
+  NS_IMETHOD SetSelectionRange(int32_t selection_start, int32_t selection_end, const nsAString & direction) { return _to SetSelectionRange(selection_start, selection_end, direction); } \
   NS_IMETHOD GetSelectionDirection(nsAString & aSelectionDirection) { return _to GetSelectionDirection(aSelectionDirection); } \
   NS_IMETHOD SetSelectionDirection(const nsAString & aSelectionDirection) { return _to SetSelectionDirection(aSelectionDirection); } \
   NS_IMETHOD GetTabIndex(int32_t *aTabIndex) { return _to GetTabIndex(aTabIndex); } \
@@ -10733,7 +11132,7 @@ class NS_NO_VTABLE nsIDOMHTMLTextAreaElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetSelectionStart(int32_t aSelectionStart) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSelectionStart(aSelectionStart); } \
   NS_IMETHOD GetSelectionEnd(int32_t *aSelectionEnd) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSelectionEnd(aSelectionEnd); } \
   NS_IMETHOD SetSelectionEnd(int32_t aSelectionEnd) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSelectionEnd(aSelectionEnd); } \
-  NS_IMETHOD SetSelectionRange(int32_t selectionStart, int32_t selectionEnd, const nsAString & direction) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSelectionRange(selectionStart, selectionEnd, direction); } \
+  NS_IMETHOD SetSelectionRange(int32_t selection_start, int32_t selection_end, const nsAString & direction) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSelectionRange(selection_start, selection_end, direction); } \
   NS_IMETHOD GetSelectionDirection(nsAString & aSelectionDirection) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSelectionDirection(aSelectionDirection); } \
   NS_IMETHOD SetSelectionDirection(const nsAString & aSelectionDirection) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSelectionDirection(aSelectionDirection); } \
   NS_IMETHOD GetTabIndex(int32_t *aTabIndex) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTabIndex(aTabIndex); } \
@@ -10966,8 +11365,8 @@ NS_IMETHODIMP nsDOMHTMLTextAreaElement::SetSelectionEnd(int32_t aSelectionEnd)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void setSelectionRange (in long selectionStart, in long selectionEnd, [optional] in DOMString direction); */
-NS_IMETHODIMP nsDOMHTMLTextAreaElement::SetSelectionRange(int32_t selectionStart, int32_t selectionEnd, const nsAString & direction)
+/* void setSelectionRange (in long selection_start, in long selection_end, [optional] in DOMString direction); */
+NS_IMETHODIMP nsDOMHTMLTextAreaElement::SetSelectionRange(int32_t selection_start, int32_t selection_end, const nsAString & direction)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -11504,14 +11903,14 @@ class nsIDOMWindow : public nsISupports {
   /* boolean confirm ([optional] in DOMString text); */
   NS_IMETHOD Confirm(const nsAString & text, bool *_retval) = 0;
 
-  /* DOMString prompt ([optional] in DOMString aMessage, [optional] in DOMString aInitial); */
-  NS_IMETHOD Prompt(const nsAString & aMessage, const nsAString & aInitial, nsAString & _retval) = 0;
+  /* DOMString prompt ([optional] in DOMString message, [optional] in DOMString initial); */
+  NS_IMETHOD Prompt(const nsAString & message, const nsAString & initial, nsAString & _retval) = 0;
 
   /* void print (); */
   NS_IMETHOD Print(void) = 0;
 
-  /* [optional_argc] nsIVariant showModalDialog (in DOMString aURI, [optional] in nsIVariant aArgs, [optional] in DOMString aOptions); */
-  NS_IMETHOD ShowModalDialog(const nsAString & aURI, nsIVariant *aArgs, const nsAString & aOptions, uint8_t _argc, nsIVariant * *_retval) = 0;
+  /* [optional_argc] nsIVariant showModalDialog (in DOMString uri, [optional] in nsIVariant args, [optional] in DOMString options); */
+  NS_IMETHOD ShowModalDialog(const nsAString & uri, nsIVariant *args, const nsAString & options, uint8_t _argc, nsIVariant * *_retval) = 0;
 
   /* [binaryname(PostMessageMoz),implicit_jscontext] void postMessage (in jsval message, in DOMString targetOrigin); */
   NS_IMETHOD PostMessageMoz(jsval message, const nsAString & targetOrigin, JSContext* cx) = 0;
@@ -11818,9 +12217,9 @@ class nsIDOMWindow : public nsISupports {
   NS_IMETHOD GetApplicationCache(nsIDOMOfflineResourceList * *aApplicationCache); \
   NS_IMETHOD Alert(const nsAString & text); \
   NS_IMETHOD Confirm(const nsAString & text, bool *_retval); \
-  NS_IMETHOD Prompt(const nsAString & aMessage, const nsAString & aInitial, nsAString & _retval); \
+  NS_IMETHOD Prompt(const nsAString & message, const nsAString & initial, nsAString & _retval); \
   NS_IMETHOD Print(void); \
-  NS_IMETHOD ShowModalDialog(const nsAString & aURI, nsIVariant *aArgs, const nsAString & aOptions, uint8_t _argc, nsIVariant * *_retval); \
+  NS_IMETHOD ShowModalDialog(const nsAString & uri, nsIVariant *args, const nsAString & options, uint8_t _argc, nsIVariant * *_retval); \
   NS_IMETHOD PostMessageMoz(jsval message, const nsAString & targetOrigin, JSContext* cx); \
   NS_IMETHOD Atob(const nsAString & aAsciiString, nsAString & _retval); \
   NS_IMETHOD Btoa(const nsAString & aBase64Data, nsAString & _retval); \
@@ -11963,9 +12362,9 @@ class nsIDOMWindow : public nsISupports {
   NS_IMETHOD GetApplicationCache(nsIDOMOfflineResourceList * *aApplicationCache) { return _to GetApplicationCache(aApplicationCache); } \
   NS_IMETHOD Alert(const nsAString & text) { return _to Alert(text); } \
   NS_IMETHOD Confirm(const nsAString & text, bool *_retval) { return _to Confirm(text, _retval); } \
-  NS_IMETHOD Prompt(const nsAString & aMessage, const nsAString & aInitial, nsAString & _retval) { return _to Prompt(aMessage, aInitial, _retval); } \
+  NS_IMETHOD Prompt(const nsAString & message, const nsAString & initial, nsAString & _retval) { return _to Prompt(message, initial, _retval); } \
   NS_IMETHOD Print(void) { return _to Print(); } \
-  NS_IMETHOD ShowModalDialog(const nsAString & aURI, nsIVariant *aArgs, const nsAString & aOptions, uint8_t _argc, nsIVariant * *_retval) { return _to ShowModalDialog(aURI, aArgs, aOptions, _argc, _retval); } \
+  NS_IMETHOD ShowModalDialog(const nsAString & uri, nsIVariant *args, const nsAString & options, uint8_t _argc, nsIVariant * *_retval) { return _to ShowModalDialog(uri, args, options, _argc, _retval); } \
   NS_IMETHOD PostMessageMoz(jsval message, const nsAString & targetOrigin, JSContext* cx) { return _to PostMessageMoz(message, targetOrigin, cx); } \
   NS_IMETHOD Atob(const nsAString & aAsciiString, nsAString & _retval) { return _to Atob(aAsciiString, _retval); } \
   NS_IMETHOD Btoa(const nsAString & aBase64Data, nsAString & _retval) { return _to Btoa(aBase64Data, _retval); } \
@@ -12108,9 +12507,9 @@ class nsIDOMWindow : public nsISupports {
   NS_IMETHOD GetApplicationCache(nsIDOMOfflineResourceList * *aApplicationCache) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetApplicationCache(aApplicationCache); } \
   NS_IMETHOD Alert(const nsAString & text) { return !_to ? NS_ERROR_NULL_POINTER : _to->Alert(text); } \
   NS_IMETHOD Confirm(const nsAString & text, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Confirm(text, _retval); } \
-  NS_IMETHOD Prompt(const nsAString & aMessage, const nsAString & aInitial, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Prompt(aMessage, aInitial, _retval); } \
+  NS_IMETHOD Prompt(const nsAString & message, const nsAString & initial, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Prompt(message, initial, _retval); } \
   NS_IMETHOD Print(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Print(); } \
-  NS_IMETHOD ShowModalDialog(const nsAString & aURI, nsIVariant *aArgs, const nsAString & aOptions, uint8_t _argc, nsIVariant * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ShowModalDialog(aURI, aArgs, aOptions, _argc, _retval); } \
+  NS_IMETHOD ShowModalDialog(const nsAString & uri, nsIVariant *args, const nsAString & options, uint8_t _argc, nsIVariant * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ShowModalDialog(uri, args, options, _argc, _retval); } \
   NS_IMETHOD PostMessageMoz(jsval message, const nsAString & targetOrigin, JSContext* cx) { return !_to ? NS_ERROR_NULL_POINTER : _to->PostMessageMoz(message, targetOrigin, cx); } \
   NS_IMETHOD Atob(const nsAString & aAsciiString, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Atob(aAsciiString, _retval); } \
   NS_IMETHOD Btoa(const nsAString & aBase64Data, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Btoa(aBase64Data, _retval); } \
@@ -12437,8 +12836,8 @@ NS_IMETHODIMP nsDOMWindow::Confirm(const nsAString & text, bool *_retval)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* DOMString prompt ([optional] in DOMString aMessage, [optional] in DOMString aInitial); */
-NS_IMETHODIMP nsDOMWindow::Prompt(const nsAString & aMessage, const nsAString & aInitial, nsAString & _retval)
+/* DOMString prompt ([optional] in DOMString message, [optional] in DOMString initial); */
+NS_IMETHODIMP nsDOMWindow::Prompt(const nsAString & message, const nsAString & initial, nsAString & _retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -12449,8 +12848,8 @@ NS_IMETHODIMP nsDOMWindow::Print()
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* [optional_argc] nsIVariant showModalDialog (in DOMString aURI, [optional] in nsIVariant aArgs, [optional] in DOMString aOptions); */
-NS_IMETHODIMP nsDOMWindow::ShowModalDialog(const nsAString & aURI, nsIVariant *aArgs, const nsAString & aOptions, uint8_t _argc, nsIVariant * *_retval)
+/* [optional_argc] nsIVariant showModalDialog (in DOMString uri, [optional] in nsIVariant args, [optional] in DOMString options); */
+NS_IMETHODIMP nsDOMWindow::ShowModalDialog(const nsAString & uri, nsIVariant *args, const nsAString & options, uint8_t _argc, nsIVariant * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }

@@ -854,7 +854,7 @@ void PromptService::onBadCertificate(const wxString& message, nsIDOMWindow* dom_
     ns_smartptr<nsIURI> uri;
     nsEmbedCString load_uri_text;
     wx2ns(load_uri, load_uri_text);
-    uri_fixup->CreateFixupURI(load_uri_text, 0, &uri.p);
+    uri_fixup->CreateFixupURI(load_uri_text, 0, NULL, &uri.p);
 
     if (!uri)
         return;
@@ -866,47 +866,55 @@ void PromptService::onBadCertificate(const wxString& message, nsIDOMWindow* dom_
     if (ns_port <= 0)
         ns_port = 443;
     
-    ns_smartptr<nsIRecentBadCertsService> bad_certs = nsGetService("@mozilla.org/security/recentbadcerts;1");
-    if (bad_certs)
-    {
-        wxString wx_host_port = ns2wx(ns_host);
-        wx_host_port += wxString::Format(wxT(":%d"), ns_port);
-        
-        nsEmbedString ns_host_port;
-        wx2ns(wx_host_port, ns_host_port);
-            
-        ns_smartptr<nsISSLStatus> status;
-        bad_certs->GetRecentBadCert(ns_host_port, &status.p);
-        if (status)
-        {
-            ns_smartptr<nsICertOverrideService> cert_override = nsGetService("@mozilla.org/security/certoverride;1");
-            if (cert_override)
-            {
-                ns_smartptr<nsIX509Cert> cert;
-                status->GetServerCert(&cert.p);
-                
-                if (cert)
-                {
-                    bool is_untrusted, is_domain_mismatch, is_not_valid_at_this_time;
-                    
-                    status->GetIsUntrusted(&is_untrusted);
-                    status->GetIsDomainMismatch(&is_domain_mismatch);
-                    status->GetIsNotValidAtThisTime(&is_not_valid_at_this_time);
-                
-                    unsigned int flags = 0;
-                    if (is_untrusted)
-                        flags |= nsICertOverrideService::ERROR_UNTRUSTED;
-                    if (is_domain_mismatch)
-                        flags |= nsICertOverrideService::ERROR_MISMATCH;
-                    if (is_not_valid_at_this_time)
-                        flags |= nsICertOverrideService::ERROR_TIME;
+    ns_smartptr<nsIX509CertDB> cert_db = nsGetService("@mozilla.org/security/x509certdb;1");
+    if (cert_db.empty())
+        return;
 
-                    cert_override->RememberValidityOverride(ns_host, ns_port, cert, flags, PR_FALSE /* permanently */);
+    ns_smartptr<nsIRecentBadCerts> recent_bad_certs;
+
+    cert_db->GetRecentBadCerts(false, &recent_bad_certs.p);
+    if (recent_bad_certs.empty())
+        return;
+
+
+    wxString wx_host_port = ns2wx(ns_host);
+    wx_host_port += wxString::Format(wxT(":%d"), ns_port);
+        
+    nsEmbedString ns_host_port;
+    wx2ns(wx_host_port, ns_host_port);
+
+    ns_smartptr<nsISSLStatus> status;
+    recent_bad_certs->GetRecentBadCert(ns_host_port, &status.p);
+
+    if (status.empty())
+        return;
+
+    ns_smartptr<nsIX509Cert> cert;
+    status->GetServerCert(&cert.p);
+    if (cert.empty())
+        return;
+
+
+    ns_smartptr<nsICertOverrideService> cert_override = nsGetService("@mozilla.org/security/certoverride;1");
+    if (cert_override)
+    {
+        bool is_untrusted, is_domain_mismatch, is_not_valid_at_this_time;
                     
-                    ctrl->OpenURI(load_uri);
-                }
-            }
-        }
+        status->GetIsUntrusted(&is_untrusted);
+        status->GetIsDomainMismatch(&is_domain_mismatch);
+        status->GetIsNotValidAtThisTime(&is_not_valid_at_this_time);
+                
+        unsigned int flags = 0;
+        if (is_untrusted)
+            flags |= nsICertOverrideService::ERROR_UNTRUSTED;
+        if (is_domain_mismatch)
+            flags |= nsICertOverrideService::ERROR_MISMATCH;
+        if (is_not_valid_at_this_time)
+            flags |= nsICertOverrideService::ERROR_TIME;
+
+        cert_override->RememberValidityOverride(ns_host, ns_port, cert, flags, false /* remember it permanently */);
+                    
+        ctrl->OpenURI(load_uri);
     }
 }
 

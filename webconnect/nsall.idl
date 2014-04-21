@@ -58,6 +58,7 @@ typedef long jsword;
 typedef jsword jsval;
 %{C++
 struct JSObject;
+struct JSContext;
 %}
 native JSVal(jsval);
 
@@ -339,13 +340,15 @@ interface nsIBadCertListener2 : nsISupports
 };
 
 
-[scriptable, uuid(a5ae8b05-a76e-408f-b0ba-02a831265749)]
-interface nsIRecentBadCertsService : nsISupports
+[scriptable, uuid(0fed7784-d152-44d6-95a7-67a59024de0f)]
+interface nsIRecentBadCerts : nsISupports
 {
     nsISSLStatus getRecentBadCert(in AString host_name_with_port);
     
     void addBadCert(in AString host_name_with_port,
                     in nsISSLStatus status);
+
+    void resetStoredCerts();
 };
 
 
@@ -392,6 +395,90 @@ interface nsICertOverrideService : nsISupports
                             in boolean check_temporaries,
                             in boolean check_permanents);
 };
+
+
+interface nsIOpenSignedJARFileCallback;
+
+[scriptable, uuid(6502291d-4477-43a3-9688-4b453d055c1d)]
+interface nsIX509CertDB : nsISupports
+{
+    const unsigned long UNTRUSTED = 0;
+    const unsigned long TRUSTED_SSL = 1;
+    const unsigned long TRUSTED_EMAIL = 2;
+    const unsigned long TRUSTED_OBJSIGN = 4;
+
+    nsIX509Cert findCertByNickname(in nsISupports token, in AString nickname);
+    nsIX509Cert findCertByDBKey(in string db_key, in nsISupports token);
+
+    void findCertNicknames(in nsISupports token, 
+                           in unsigned long type,
+                           out unsigned long count,
+                           [array, size_is(count)] out wstring cert_name_list);
+
+    nsIX509Cert findEmailEncryptionCert(in AString nickname);
+
+    nsIX509Cert findEmailSigningCert(in AString nickname);
+
+    nsIX509Cert findCertByEmailAddress(in nsISupports token, in string email_address);
+
+    void importCertificates([array, size_is(length)] in octet data,
+                            in unsigned long length,
+                            in unsigned long type,
+                            in nsIInterfaceRequestor ctx);
+
+    void importEmailCertificate([array, size_is(length)] in octet data,
+                            in unsigned long length,
+                            in nsIInterfaceRequestor ctx);
+
+    void importServerCertificate([array, size_is(length)] in octet data,
+                            in unsigned long length,
+                            in nsIInterfaceRequestor ctx);
+
+    void importUserCertificate([array, size_is(length)] in octet data,
+                            in unsigned long length,
+                            in nsIInterfaceRequestor ctx);
+
+    void deleteCertificate(in nsIX509Cert cert);
+
+    void setCertTrust(in nsIX509Cert cert,
+                      in unsigned long type,
+                      in unsigned long trust);
+
+    boolean isCertTrusted(in nsIX509Cert cert,
+                          in unsigned long cert_type,
+                          in unsigned long trust_type);
+
+    void importCertsFromFile(in nsISupports token,
+                             in nsIFile file,
+                             in unsigned long type);
+
+    void importPKCS12File(in nsISupports token,
+                          in nsIFile file);
+
+    void exportPKCS12File(in nsISupports token,
+                          in nsIFile file,
+                          in unsigned long count,
+                          [array, size_is(count)] in nsIX509Cert certs);
+
+    nsIX509Cert constructX509FromBase64(in string base64);
+    nsIRecentBadCerts getRecentBadCerts(in boolean is_private);
+
+    void openSignedJARFileAsync(in nsIFile jar_file,
+                                in nsIOpenSignedJARFileCallback callback_);
+
+    void addCert(in ACString cert_der, in string trust, in string name);
+
+    const unsigned long FLAG_LOCAL_ONLY = 1;
+    const unsigned long FLAG_NO_DV_FALLBACK_FOR_EV = 2;
+/*
+    int32_t verifyCertNow(in nsIX509Cert cert,
+                          in int64_t usage,
+                          in uint32_t flags,
+                          out nsIX509CertList verified_chain,
+                          out bool has_ev_policy);
+*/
+};
+
 
 
 
@@ -534,7 +621,7 @@ interface nsIRequest : nsISupports
 ///////////////////////////////////////////////////////////////////////////////
 
 
-[scriptable, uuid(07a22cc0-0ce5-11d3-9331-00104ba0fd40)]
+[scriptable, uuid(395fe045-7d18-4adb-a3fd-af98c8a1af11)]
 interface nsIURI : nsISupports
 {
     attribute AUTF8String spec;
@@ -556,6 +643,13 @@ interface nsIURI : nsISupports
     readonly attribute ACString asciiSpec;
     readonly attribute ACString asciiHost;
     readonly attribute ACString originCharset;
+    attribute AUTF8String ref;
+
+    boolean equalsExceptRef(in nsIURI other);
+    nsIURI cloneIgnoringRef();
+
+    readonly attribute AUTF8String specIgnoringRef;
+    readonly attribute boolean hasRef;
 };
 
 
@@ -563,16 +657,19 @@ interface nsIURI : nsISupports
 //  nsIURIFixup
 ///////////////////////////////////////////////////////////////////////////////
 
-[scriptable, uuid(773081ac-9f81-4bdb-9e7a-5e87b4361f09)]
+interface nsIInputStream;
+
+[scriptable, uuid(731877f8-973b-414c-b772-9ca1f3fffb7e)]
 interface nsIURIFixup : nsISupports
 {
     const unsigned long FIXUP_FLAG_NONE = 0;
     const unsigned long FIXUP_FLAG_ALLOW_KEYWORD_LOOKUP = 1;
     const unsigned long FIXUP_FLAGS_MAKE_ALTERNATE_URI = 2;
+    const unsigned long FIXUP_FLAG_FIX_SCHEME_TYPOS = 8;
 
     nsIURI createExposableURI(in nsIURI uri);
-    nsIURI createFixupURI(in AUTF8String aURIText, in unsigned long fixup_flags);
-    nsIURI keywordToURI(in AUTF8String keyword);
+    nsIURI createFixupURI(in AUTF8String uri_text, in unsigned long fixup_flags, [optional] out nsIInputStream post_data);
+    nsIURI keywordToURI(in AUTF8String keyword, [optional] out nsIInputStream post_data);
 };
 
 
