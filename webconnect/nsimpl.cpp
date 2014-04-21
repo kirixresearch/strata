@@ -711,7 +711,8 @@ NS_IMETHODIMP ProgressListenerAdaptor::OnProgressChange64(
 NS_IMETHODIMP ProgressListenerAdaptor::OnLocationChange(
                      nsIWebProgress* web_progress,
                      nsIRequest* request,
-                     nsIURI* location)
+                     nsIURI* location,
+                     uint32_t flags)
 {
    return NS_OK;
 }
@@ -744,8 +745,8 @@ NS_IMETHODIMP ProgressListenerAdaptor::OnRefreshAttempted(
                         nsIWebProgress* web_progress,
                         nsIURI* refresh_uri,
                         PRInt32 millis,
-                        PRBool same_uri,
-                        PRBool *retval)
+                        bool same_uri,
+                        bool *retval)
 {
     return NS_OK;
 }

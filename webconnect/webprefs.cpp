@@ -31,11 +31,13 @@ bool wxWebPreferences::GetBoolPref(const wxString& name)
     if (prefs.empty())
         return false;
         
-    PRBool val;
+   // PRBool val;
+    bool val;
     if (NS_FAILED(prefs->GetBoolPref((const char*)name.mbc_str(), &val)))
         return false;
         
-    return (val == PR_TRUE ? true : false);
+   // return (val == PR_TRUE ? true : false);
+    return val;
 }
 
 wxString wxWebPreferences::GetStringPref(const wxString& name)

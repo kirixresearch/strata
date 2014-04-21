@@ -421,42 +421,42 @@ public:
         return this->Alert(m_parent, dialog_title, text);
     }
 
-    NS_IMETHOD AlertCheck(const PRUnichar* dialog_title, const PRUnichar* text, const PRUnichar* check_msg, PRBool* check_state)
+    NS_IMETHOD AlertCheck(const PRUnichar* dialog_title, const PRUnichar* text, const PRUnichar* check_msg, bool* check_state)
     {
         return this->AlertCheck(m_parent, dialog_title, text, check_msg, check_state);
     }
 
-    NS_IMETHOD Confirm(const PRUnichar* dialog_title, const PRUnichar* text, PRBool* _retval)
+    NS_IMETHOD Confirm(const PRUnichar* dialog_title, const PRUnichar* text, bool* _retval)
     {
         return this->Confirm(m_parent, dialog_title, text, _retval);
     }
 
-    NS_IMETHOD ConfirmCheck(const PRUnichar* dialog_title, const PRUnichar* text, const PRUnichar* check_msg, PRBool* check_state, PRBool* _retval)
+    NS_IMETHOD ConfirmCheck(const PRUnichar* dialog_title, const PRUnichar* text, const PRUnichar* check_msg, bool* check_state, bool* _retval)
     {
         return this->ConfirmCheck(m_parent, dialog_title, text, check_msg, check_state, _retval);
     }
 
-    NS_IMETHOD ConfirmEx(const PRUnichar* dialog_title, const PRUnichar* text, PRUint32 button_flags, const PRUnichar* button0_title, const PRUnichar* button1_title, const PRUnichar* button2_title, const PRUnichar* check_msg, PRBool* check_state, PRInt32* _retval)
+    NS_IMETHOD ConfirmEx(const PRUnichar* dialog_title, const PRUnichar* text, PRUint32 button_flags, const PRUnichar* button0_title, const PRUnichar* button1_title, const PRUnichar* button2_title, const PRUnichar* check_msg, bool* check_state, PRInt32* _retval)
     {
         return this->ConfirmEx(m_parent, dialog_title, text, button_flags, button0_title, button1_title, button2_title, check_msg, check_state, _retval);
     }
 
-    NS_IMETHOD Prompt(const PRUnichar* dialog_title, const PRUnichar* text, PRUnichar** value, const PRUnichar* check_msg, PRBool* check_state, PRBool* _retval)
+    NS_IMETHOD Prompt(const PRUnichar* dialog_title, const PRUnichar* text, PRUnichar** value, const PRUnichar* check_msg, bool* check_state, bool* _retval)
     {
         return this->Prompt(m_parent, dialog_title, text, value, check_msg, check_state, _retval);
     }
 
-    NS_IMETHOD PromptPassword(const PRUnichar* dialog_title, const PRUnichar* text, PRUnichar** password, const PRUnichar* check_msg, PRBool* check_state, PRBool* _retval)
+    NS_IMETHOD PromptPassword(const PRUnichar* dialog_title, const PRUnichar* text, PRUnichar** password, const PRUnichar* check_msg, bool* check_state, bool* _retval)
     {
         return this->PromptPassword(m_parent, dialog_title, text, password, check_msg, check_state, _retval);
     }
 
-    NS_IMETHOD PromptUsernameAndPassword(const PRUnichar* dialog_title, const PRUnichar* text, PRUnichar** username, PRUnichar** password, const PRUnichar* check_msg, PRBool* check_state, PRBool *_retval)
+    NS_IMETHOD PromptUsernameAndPassword(const PRUnichar* dialog_title, const PRUnichar* text, PRUnichar** username, PRUnichar** password, const PRUnichar* check_msg, bool* check_state, bool *_retval)
     {
         return this->PromptUsernameAndPassword(m_parent, dialog_title, text, username, password, check_msg, check_state, _retval);
     }
 
-    NS_IMETHOD Select(const PRUnichar* dialog_title, const PRUnichar* text, PRUint32 count, const PRUnichar** select_list, PRInt32 *out_selection, PRBool *_retval)
+    NS_IMETHOD Select(const PRUnichar* dialog_title, const PRUnichar* text, PRUint32 count, const PRUnichar** select_list, PRInt32 *out_selection, bool *_retval)
     {
         return this->Select(m_parent, dialog_title, text, count, select_list, out_selection, _retval);
     }
@@ -517,7 +517,7 @@ NS_IMETHODIMP PromptService::AlertCheck(
                                     const PRUnichar* ns_dialog_title,
                                     const PRUnichar* ns_text,
                                     const PRUnichar* ns_check_msg,
-                                    PRBool* checkValue)
+                                    bool* checkValue)
 {
     wxString dialog_title = ns2wx(ns_dialog_title);
     wxString text = ns2wx(ns_text);
@@ -530,7 +530,7 @@ NS_IMETHODIMP PromptService::Confirm(
                                     nsIDOMWindow* parent,
                                     const PRUnichar* ns_dialog_title,
                                     const PRUnichar* ns_text,
-                                    PRBool* retval)
+                                    bool* retval)
 {
     wxString dialog_title = ns2wx(ns_dialog_title);
     wxString text = ns2wx(ns_text);
@@ -556,8 +556,8 @@ NS_IMETHODIMP PromptService::ConfirmCheck(
                                     const PRUnichar* dialog_title,
                                     const PRUnichar* text,
                                     const PRUnichar* check_msg,
-                                    PRBool* check_value,
-                                    PRBool* retval)
+                                    bool* check_value,
+                                    bool* retval)
 {
     return NS_OK;
 }
@@ -571,7 +571,7 @@ NS_IMETHODIMP PromptService::ConfirmEx(
                                     const PRUnichar* button1_title,
                                     const PRUnichar* button2_title,
                                     const PRUnichar* check_msg,
-                                    PRBool* check_value,
+                                    bool* check_value,
                                     PRInt32* button_pressed)
 {
     return NS_OK;
@@ -583,8 +583,8 @@ NS_IMETHODIMP PromptService::Prompt(
                                     const PRUnichar* _text,
                                     PRUnichar** _value,
                                     const PRUnichar* check_msg,
-                                    PRBool* check_value,
-                                    PRBool* retval)
+                                    bool* check_value,
+                                    bool* retval)
 {
     // check message and check value aren't implemented yet
     
@@ -619,8 +619,8 @@ NS_IMETHODIMP PromptService::PromptUsernameAndPassword(
                                     PRUnichar** username,
                                     PRUnichar** password,
                                     const PRUnichar* check_msg,
-                                    PRBool* check_value,
-                                    PRBool* retval)
+                                    bool* check_value,
+                                    bool* retval)
 {
     // this version is used by xulrunner 1.8.x -- see below for the newer version
     wxWindow* wxparent = GetTopFrameFromDOMWindow(parent);
@@ -649,8 +649,8 @@ NS_IMETHODIMP PromptService::PromptPassword(
                                     const PRUnichar* text,
                                     PRUnichar** password,
                                     const PRUnichar* check_msg,
-                                    PRBool* check_value,
-                                    PRBool* retval)
+                                    bool* check_value,
+                                    bool* retval)
 {
     return NS_OK;
 }
@@ -661,7 +661,7 @@ NS_IMETHODIMP PromptService::Select(nsIDOMWindow* parent,
                                     PRUint32 count,
                                     const PRUnichar** select_list,
                                     PRInt32* out_selection,
-                                    PRBool* retval)
+                                    bool* retval)
 {
     *retval = PR_TRUE;
     return NS_OK;
@@ -671,7 +671,7 @@ NS_IMETHODIMP PromptService::ConfirmUnknownIssuer(
                                     nsIInterfaceRequestor* socketInfo,
                                     nsIX509Cert* cert,
                                     PRInt16* certAddType,
-                                    PRBool* retval)
+                                    bool* retval)
 {
     if (wxWebControl::GetIgnoreCertErrors())
     {
@@ -701,8 +701,8 @@ NS_IMETHODIMP PromptService::PromptAuth(nsIDOMWindow* parent,
                                         PRUint32 level,
                                         nsIAuthInformation* auth_info,
                                         const PRUnichar* checkbox_label,
-                                        PRBool* check_value,
-                                        PRBool* retval)
+                                        bool* check_value,
+                                        bool* retval)
 {
     // this version used by newer >= 1.9.1 versions of xulrunner
     wxWindow* wxparent = GetTopFrameFromDOMWindow(parent);
@@ -739,7 +739,7 @@ NS_IMETHODIMP PromptService::AsyncPromptAuth(nsIDOMWindow* parent,
                                         PRUint32 level,
                                         nsIAuthInformation* auth_info,
                                         const PRUnichar* checkbox_label,
-                                        PRBool* check_value,
+                                        bool* check_value,
                                         nsICancelable** retval)
 {
     return NS_OK;
@@ -751,7 +751,7 @@ NS_IMETHODIMP PromptService::ConfirmMismatchDomain(
                                     nsIInterfaceRequestor* socketInfo,
                                     const nsACString& targetURL,
                                     nsIX509Cert *cert,
-                                    PRBool* retval)
+                                    bool* retval)
 {
     if (wxWebControl::GetIgnoreCertErrors())
     {
@@ -778,7 +778,7 @@ NS_IMETHODIMP PromptService::ConfirmMismatchDomain(
 NS_IMETHODIMP PromptService::ConfirmCertExpired(
                                     nsIInterfaceRequestor* socketInfo,
                                     nsIX509Cert* cert,
-                                    PRBool* retval)
+                                    bool* retval)
 {
     if (wxWebControl::GetIgnoreCertErrors())
     {
@@ -814,7 +814,7 @@ NS_IMETHODIMP PromptService::NotifyCertProblem(
                                     nsIInterfaceRequestor *socket_info,
                                     nsISSLStatus *status,
                                     const nsACString& target_site,
-                                    PRBool *retval)
+                                    bool *retval)
 {
     if (wxWebControl::GetIgnoreCertErrors())
     {
@@ -887,7 +887,7 @@ void PromptService::onBadCertificate(const wxString& message, nsIDOMWindow* dom_
                 
                 if (cert)
                 {
-                    PRBool is_untrusted, is_domain_mismatch, is_not_valid_at_this_time;
+                    bool is_untrusted, is_domain_mismatch, is_not_valid_at_this_time;
                     
                     status->GetIsUntrusted(&is_untrusted);
                     status->GetIsDomainMismatch(&is_domain_mismatch);
@@ -917,7 +917,7 @@ void PromptService::onBadCertificate(const wxString& message, nsIDOMWindow* dom_
 NS_IMETHODIMP PromptService::PromptAuth(nsIChannel* channel,
                                         PRUint32 level,
                                         nsIAuthInformation* auth_info,
-                                        PRBool* _retval)
+                                        bool* _retval)
 {
     return this->PromptAuth(m_parent, channel, level, auth_info, NULL, NULL, _retval);
 }
@@ -1009,7 +1009,7 @@ NS_IMETHODIMP PromptFactory::CreateInstance(nsISupports* outer,
     return res;
 }
 
-NS_IMETHODIMP PromptFactory::LockFactory(PRBool lock)
+NS_IMETHODIMP PromptFactory::LockFactory(bool lock)
 {
     return NS_OK;
 }
@@ -1119,10 +1119,10 @@ NS_IMETHODIMP PrintingPromptService::ShowProgress(nsIDOMWindow* parent,
                                                   nsIWebBrowserPrint* webBrowserPrint,
                                                   nsIPrintSettings* printSettings,
                                                   nsIObserver* openDialogObserver,
-                                                  PRBool isForPrinting,
+                                                  bool isForPrinting,
                                                   nsIWebProgressListener** webProgressListener,
                                                   nsIPrintProgressParams** printProgressParams,
-                                                  PRBool* notifyOnOpen)
+                                                  bool* notifyOnOpen)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -1183,7 +1183,7 @@ public:
         return res;
     }
     
-    NS_IMETHOD LockFactory(PRBool lock)
+    NS_IMETHOD LockFactory(bool lock)
     {
         return NS_OK;
     }
@@ -1267,7 +1267,8 @@ public:
     NS_IMETHOD OnLocationChange(
                              nsIWebProgress* web_progress,
                              nsIRequest* request,
-                             nsIURI* location)
+                             nsIURI* location,
+                             unsigned int flags)
     {
        return NS_OK;
     }
@@ -1294,8 +1295,8 @@ public:
                         nsIWebProgress* web_progress,
                         nsIURI* refresh_uri,
                         PRInt32 millis,
-                        PRBool same_uri,
-                        PRBool *retval)
+                        bool same_uri,
+                        bool *retval)
     {
         return NS_OK;
     }
@@ -1352,7 +1353,7 @@ public:
         return res;
     }
     
-    NS_IMETHOD LockFactory(PRBool lock)
+    NS_IMETHOD LockFactory(bool lock)
     {
         return NS_OK;
     }
@@ -1518,7 +1519,7 @@ public:
                                    nsISupports* window_context,
                                    const PRUnichar* default_file,
                                    const PRUnichar* suggested_file_extension,
-                                   PRBool force_prompt,
+                                   bool force_prompt,
                                    nsILocalFile** new_file)
     {
         ns_smartptr<nsISupports> context = window_context;
@@ -1606,7 +1607,7 @@ public:
         return res;
     }
     
-    NS_IMETHOD LockFactory(PRBool lock)
+    NS_IMETHOD LockFactory(bool lock)
     {
         return NS_OK;
     }
@@ -1654,7 +1655,7 @@ public:
     NS_IMETHOD RememberValidityOverride(const nsACString& host_name,
                                         PRInt32 port, nsIX509Cert* cert,
                                         PRUint32 override_bits,
-                                        PRBool temporary)
+                                        bool temporary)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
@@ -1663,8 +1664,8 @@ public:
                                    PRInt32 port,
                                    nsIX509Cert* cert,
                                    PRUint32* override_bits,
-                                   PRBool* is_temporary,
-                                   PRBool *_retval)
+                                   bool* is_temporary,
+                                   bool *_retval)
     {
         *override_bits = 3;
         *_retval = PR_TRUE;
@@ -1676,8 +1677,8 @@ public:
                                    nsACString& hash_alg,
                                    nsACString& fingerprint,
                                    PRUint32* override_bits,
-                                   PRBool* is_temporary,
-                                   PRBool* _retval)
+                                   bool* is_temporary,
+                                   bool* _retval)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
@@ -1695,8 +1696,8 @@ public:
     }
 
     NS_IMETHOD IsCertUsedForOverrides(nsIX509Cert *cert,
-                                      PRBool check_temporaries,
-                                      PRBool check_permanents,
+                                      bool check_temporaries,
+                                      bool check_permanents,
                                       PRUint32 *_retval)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
@@ -1748,7 +1749,7 @@ public:
         return res;
     }
     
-    NS_IMETHOD LockFactory(PRBool lock)
+    NS_IMETHOD LockFactory(bool lock)
     {
         return NS_OK;
     }

@@ -54,11 +54,10 @@ typedef unsigned long long PRTime;
 %}
 
 
-//typedef long jsword;
-//typedef jsword jsval;
+typedef long jsword;
+typedef jsword jsval;
 %{C++
 struct JSObject;
-typedef long jsval;
 %}
 native JSVal(jsval);
 
@@ -408,7 +407,7 @@ typedef voidPtr nativeWindow;
     class nsIWidget;
 %}
 
-[scriptable, uuid(046bc8a0-8015-11d3-af70-00a024ffc08c)]
+[scriptable, uuid(9da319f3-eee6-4504-81a5-6a19cf6215bf)]
 interface nsIBaseWindow : nsISupports
 {
     [noscript] void initWindow(in nativeWindow parentNativeWindow,
@@ -441,10 +440,11 @@ interface nsIBaseWindow : nsISupports
 
     [noscript] attribute nsIWidget parentWidget;
     attribute nativeWindow parentNativeWindow;
+    readonly attribute DOMString nativeHandle;
     attribute boolean visibility;
     attribute boolean enabled;
-    attribute boolean blurSuppression;
     [noscript] readonly attribute nsIWidget mainWidget;
+    readonly attribute double unscaledDevicePixelsPerCSSPixel;
     
     void setFocus();
 
@@ -808,7 +808,7 @@ interface nsIDocShellTreeNode : nsISupports
 };
 
 
-[scriptable, uuid(09b54ec1-d98a-49a9-bc95-3219e8b55089)]
+[scriptable, uuid(e35bbb39-985b-4d62-81da-73c330222e5f)]
 interface nsIDocShellTreeItem : nsIDocShellTreeNode
 {
     attribute wstring name;
@@ -1288,21 +1288,53 @@ interface nsIDOMEventListener;
 interface DOMException;
 
 
-[scriptable, builtinclass, uuid(1797d5a4-b12a-428d-9eef-a0e13839728c)]
+[scriptable, builtinclass, uuid(b128448c-7b53-4769-92cb-cd6eafee676c)]
 interface nsIDOMEventTarget : nsISupports
 {
     [optional_argc] void addEventListener(in DOMString type,
                           in nsIDOMEventListener listener,
                           [optional] in boolean use_capture,
-                          [optional] in boolean wants_untrusted,
-                          in char argc);
+                          [optional] in boolean wants_untrusted);
+
+    [noscript, optional_argc] void addSystemEventListener(
+                          in DOMString type,
+                          in nsIDOMEventListener listener,
+                          [optional] in boolean use_capture,
+                          [optional] in boolean wants_untrusted);
 
     void removeEventListener(
                           in DOMString type,
                           in nsIDOMEventListener listener,
                           [optional] in boolean use_capture);
 
+    [noscript] void removeSystemEventListener(
+                          in DOMString type,
+                          in nsIDOMEventListener listener,
+                          [optional] in boolean aUseCapture);
+
+
     boolean dispatchEvent(in nsIDOMEvent evt) raises(DOMException);
+
+/*
+    [notxpcom, nostdcall] EventTargetPtr GetTargetForDOMEvent();
+
+    [notxpcom, nostdcall] EventTargetPtr GetTargetForEventTargetChain();
+
+    [noscript, nostdcall] void PreHandleEvent(in nsEventChainPreVisitorRef visitor);
+
+    [noscript, nostdcall] void WillHandleEvent(in nsEventChainPostVisitorRef visitor);
+   
+    [noscript, nostdcall] void PostHandleEvent(in nsEventChainPostVisitorRef visitor);
+
+    [noscript, nostdcall] void DispatchDOMEvent(in WidgetEventPtr event_,
+                                                in nsIDOMEvent dom_event,
+                                                in nsPresContextPtr pres_context,
+                                                in nsEventStatusPtr event_status);
+
+    [notxpcom, nostdcall] nsIScriptContext GetContextForEventHandlers(out nsresult rv);
+
+    [notxpcom, nostdcall] JSContextPtr GetJSContextForEventHandlers();
+*/
 };
 
 
@@ -1622,8 +1654,8 @@ interface nsIDOMHTMLTextAreaElement : nsIDOMHTMLElement
     attribute long selectionStart;
     attribute long selectionEnd;
     
-    void setSelectionRange(in long selectionStart,
-                           in long selectionEnd,
+    void setSelectionRange(in long selection_start,
+                           in long selection_end,
                            [optional] in DOMString direction);
     
     attribute DOMString selectionDirection;
@@ -1729,8 +1761,9 @@ interface nsIPrompt;
 interface nsIControllers;
 interface nsIAnimationFrameListener;
 interface nsIDOMMozURLProperty;
+interface nsIFrameRequestCallback;
 
-[scriptable, uuid(3f5b2af2-604e-4253-8d25-6d3cafc13a69)]
+[scriptable, uuid(b0ebb526-ed69-43c6-8242-b381a1fe79da)]
 interface nsIDOMWindow : nsISupports
 {
     readonly attribute nsIDOMWindow window;
@@ -1757,27 +1790,45 @@ interface nsIDOMWindow : nsISupports
 
 
     readonly attribute unsigned long length;
-    readonly attribute nsIDOMWindow top;
+    [binaryname(ScriptableTop)] readonly attribute nsIDOMWindow top;
+    [noscript] readonly attribute nsIDOMWindow realTop;
+
+    %{C++
+    nsresult GetTop(nsIDOMWindow** window) { return GetRealTop(window); }
+    %}
+
+    [binaryname(ScriptableParent)] readonly attribute nsIDOMWindow parent;
+    [noscript] readonly attribute nsIDOMWindow realParent;
+
+    %{C++
+    nsresult GetParent(nsIDOMWindow** window) { return GetRealParent(window); }
+    %}
+
     attribute nsIDOMWindow opener;
-    readonly attribute nsIDOMWindow parent;
-    readonly attribute nsIDOMElement frameElement;
+
+    [binaryname(ScriptableFrameElement)] readonly attribute nsIDOMElement frameElement;
+    [noscript] readonly attribute nsIDOMElement realFrameElement;
+
+    %{C++
+    nsresult GetFrameElement(nsIDOMElement** element) { return GetRealFrameElement(element); }
+    %}
+
     readonly attribute nsIDOMNavigator navigator;
     readonly attribute nsIDOMOfflineResourceList applicationCache;
 
-    void alert(in DOMString text);
-    boolean confirm(in DOMString text);
+    void alert([optional, Null(Stringify)] in DOMString text);
+    boolean confirm([optional] in DOMString text);
 
-    DOMString prompt([optional] in DOMString aMessage,
-                     [optional] in DOMString aInitial);
+    DOMString prompt([optional] in DOMString message,
+                     [optional] in DOMString initial);
 
     void print();
 
-    nsIVariant showModalDialog(in DOMString aURI,
-                               [optional] in nsIVariant aArgs,
-                               [optional] in DOMString aOptions);
+    [optional_argc] nsIVariant showModalDialog(in DOMString uri,
+                               [optional] in nsIVariant args,
+                               [optional] in DOMString options);
 
-    //[implicit_jscontext, binaryname(PostMessageMoz)]
-    [noscript]
+    [implicit_jscontext, binaryname(PostMessageMoz)]
     void postMessage(in jsval message, in DOMString targetOrigin);
 
     DOMString atob(in DOMString aAsciiString);
@@ -1785,6 +1836,9 @@ interface nsIDOMWindow : nsISupports
 
     readonly attribute nsIDOMStorage sessionStorage;
     readonly attribute nsIDOMStorage localStorage;
+
+    readonly attribute nsISupports indexedDB;
+    readonly attribute nsISupports mozIndexedDB;
 
     nsISelection getSelection();
 
@@ -1812,6 +1866,9 @@ interface nsIDOMWindow : nsISupports
     nsIDOMCSSStyleDeclaration getComputedStyle(in nsIDOMElement elt, 
                                                [optional] in DOMString pseudoElt);
     
+    nsIDOMCSSStyleDeclaration getDefaultComputedStyle(in nsIDOMElement elt,
+                                               [optional] in DOMString pseudoElt);
+
     [noscript] readonly attribute nsIDOMEventTarget windowRoot;
 
     [noscript] readonly attribute nsIDOMWindowCollection frames;
@@ -1824,18 +1881,18 @@ interface nsIDOMWindow : nsISupports
 
     void sizeToContent();
     
-    readonly attribute nsIDOMWindow content;
+    [noscript] readonly attribute nsIDOMWindow content;
     [noscript] readonly attribute nsIPrompt prompter;
 
     readonly attribute boolean closed;
     readonly attribute nsIDOMCrypto crypto;
     readonly attribute nsIDOMPkcs11 pkcs11;
     readonly attribute nsIControllers controllers;
-    
-    attribute DOMString defaultStatus;
 
     readonly attribute float mozInnerScreenX;
     readonly attribute float mozInnerScreenY;
+    readonly attribute float devicePixelRatio;
+
     readonly attribute long scrollMaxX;
     readonly attribute long scrollMaxY;
 
@@ -1872,12 +1929,16 @@ interface nsIDOMWindow : nsISupports
 
     readonly attribute unsigned long long mozPaintCount;
 
-    void mozRequestAnimationFrame([optional] in nsIAnimationFrameListener aListener);
-    readonly attribute long long mozAnimationStartTime;
-    readonly attribute nsIDOMMozURLProperty URL;
-    readonly attribute nsIDOMStorageList globalStorage;
+    long mozRequestAnimationFrame([optional] in nsIFrameRequestCallback callback_);
+    [implicit_jscontext] long requestAnimationFrame(in jsval callback_);
+    
+    void mozCancelAnimationFrame(in long handle_);
+    void mozCancelRequestAnimationFrame(in long handle_);
+    void cancelAnimationFrame(in long handle_);
 
-/*
+    readonly attribute long long mozAnimationStartTime;
+
+
     [implicit_jscontext] attribute jsval onafterprint;
     [implicit_jscontext] attribute jsval onbeforeprint;
     [implicit_jscontext] attribute jsval onbeforeunload;
@@ -1892,9 +1953,11 @@ interface nsIDOMWindow : nsISupports
     [implicit_jscontext] attribute jsval onunload;
     [implicit_jscontext] attribute jsval ondevicemotion;
     [implicit_jscontext] attribute jsval ondeviceorientation;
+    [implicit_jscontext] attribute jsval ondeviceproximity;
+    [implicit_jscontext] attribute jsval onuserproximity;
+    [implicit_jscontext] attribute jsval ondevicelight;
     [implicit_jscontext] attribute jsval onmouseenter;
     [implicit_jscontext] attribute jsval onmouseleave;
-*/
 };
 
 
@@ -2018,7 +2081,7 @@ interface nsIDOMMouseEvent : nsIDOMUIEvent
 ///////////////////////////////////////////////////////////////////////////////
 
 
-[scriptable, uuid(3e5432cd-9568-4bd1-8cbe-d50aba110743)]
+[scriptable, uuid(0b976267-4aaa-4f36-a2d4-27b5ca8d73bb)]
 interface nsIEmbeddingSiteWindow : nsISupports
 {
     const unsigned long DIM_FLAGS_POSITION = 1;
@@ -2042,6 +2105,8 @@ interface nsIEmbeddingSiteWindow : nsISupports
     attribute boolean visibility;
     attribute wstring title;
     [noscript] readonly attribute voidPtr siteWindow;
+
+    void blur();
 };
 
 
@@ -2281,7 +2346,7 @@ interface nsIMIMEInfo : nsIHandlerInfo
 ///////////////////////////////////////////////////////////////////////////////
 
 
-[scriptable, uuid(e162bfa0-01bd-4e9f-9843-8fb2efcd6d1f)]
+[scriptable, uuid(55d25e49-793f-4727-a69f-de8b15f4b985)]
 interface nsIPrefBranch : nsISupports
 {
     const long PREF_INVALID = 0;
@@ -2296,6 +2361,8 @@ interface nsIPrefBranch : nsISupports
     boolean getBoolPref(in string pref_name);
     void setBoolPref(in string pref_name, in boolean val);
     
+    float getFloatPref(in string aPrefName);
+
     string getCharPref(in string pref_name);
     void setCharPref(in string pref_name, in string val);
     
@@ -3012,7 +3079,7 @@ interface nsITooltipListener : nsISupports
 interface nsIWebProgress;
 interface nsIRequest;
 
-[scriptable, uuid(570f39d1-efd0-11d3-b093-00a024ffc08c)]
+[scriptable, uuid(a0cda7e4-c6ca-11e0-b6a5-001320257da5)]
 interface nsIWebProgressListener : nsISupports
 {
     const unsigned long STATE_START = 1;
@@ -3036,6 +3103,9 @@ interface nsIWebProgressListener : nsISupports
     const unsigned long STATE_SECURE_MED = 65536;
     const unsigned long STATE_SECURE_LOW = 131072;
 
+    const unsigned long LOCATION_CHANGE_SAME_DOCUMENT = 1;
+    const unsigned long LOCATION_CHANGE_ERROR_PAGE = 2;
+
     void onStateChange(in nsIWebProgress web_progress,
                        in nsIRequest request,
                        in unsigned long state_flags,
@@ -3050,7 +3120,8 @@ interface nsIWebProgressListener : nsISupports
                       
     void onLocationChange(in nsIWebProgress web_progress,
                           in nsIRequest request,
-                          in nsIURI location);
+                          in nsIURI location,
+                          [optional] in unsigned long flags);
                           
     void onStatusChange(in nsIWebProgress web_progress,
                         in nsIRequest request,
@@ -3213,14 +3284,10 @@ interface nsIWebBrowser : nsISupports
 
 interface nsIWebBrowser;
 
-[scriptable, uuid(ba434c60-9d52-11d3-afb0-00a024ffc08c)]
+[scriptable, uuid(e8c414c4-dc38-4ba3-ab4e-ec4cbbe22907)]
 interface nsIWebBrowserChrome : nsISupports
-{
-    void setStatus(in unsigned long status_type, in wstring status);
-    attribute nsIWebBrowser webBrowser;
-    
+{    
     const unsigned long STATUS_SCRIPT=0x00000001;
-    const unsigned long STATUS_SCRIPT_DEFAULT=0x00000002;
     const unsigned long STATUS_LINK=0x00000003;
 
     const unsigned long CHROME_DEFAULT=0x00000001;
@@ -3240,6 +3307,14 @@ interface nsIWebBrowserChrome : nsISupports
 
     const unsigned long CHROME_WINDOW_MIN=0x00004000;
     const unsigned long CHROME_WINDOW_POPUP=0x00008000;
+
+    const unsigned long CHROME_PRIVATE_WINDOW=0x00010000;
+    const unsigned long CHROME_NON_PRIVATE_WINDOW=0x00020000;
+    const unsigned long CHROME_PRIVATE_LIFETIME=0x00040000;
+
+    const unsigned long CHROME_MODAL_CONTENT_WINDOW=0x00080000;
+    const unsigned long CHROME_MAC_SUPPRESS_ANIMATION=0x01000000;
+
     const unsigned long CHROME_WINDOW_RAISED=0x02000000;
     const unsigned long CHROME_WINDOW_LOWERED=0x04000000;
     const unsigned long CHROME_CENTER_SCREEN=0x08000000;
@@ -3248,7 +3323,10 @@ interface nsIWebBrowserChrome : nsISupports
     const unsigned long CHROME_OPENAS_DIALOG=0x40000000;
     const unsigned long CHROME_OPENAS_CHROME =0x80000000;
     const unsigned long CHROME_ALL=0x00000ffe;
-    
+ 
+    void setStatus(in unsigned long status_type, in wstring status);
+    attribute nsIWebBrowser webBrowser;
+   
     attribute unsigned long chromeFlags;
     
     void destroyBrowserWindow();
@@ -3409,7 +3487,7 @@ interface nsIInputStream;
 interface nsIDOMDocument;
 interface nsISHistory;
 
-[scriptable, uuid(f5d9e7b0-d930-11d3-b057-00a024ffc08c)]
+[scriptable, uuid(28404f7e-0f17-4dc3-a21a-2074d8659b02)]
 interface nsIWebNavigation : nsISupports
 {
     readonly attribute boolean canGoBack;
@@ -3430,6 +3508,14 @@ interface nsIWebNavigation : nsISupports
     const unsigned long LOAD_FLAGS_CHARSET_CHANGE = 1024;
     const unsigned long LOAD_FLAGS_STOP_CONTENT = 2048;
     const unsigned long LOAD_FLAGS_FROM_EXTERNAL = 4096;
+    const unsigned long LOAD_FLAGS_ALLOW_MIXED_CONTENT = 8192;
+    const unsigned long LOAD_FLAGS_FIRST_LOAD = 16384;
+    const unsigned long LOAD_FLAGS_ALLOW_POPUPS = 32768;
+    const unsigned long LOAD_FLAGS_BYPASS_CLASSIFIER = 65536;
+    const unsigned long LOAD_FLAGS_FORCE_ALLOW_COOKIES = 131072;
+    const unsigned long LOAD_FLAGS_DISALLOW_INHERIT_OWNER = 262144;
+    const unsigned long LOAD_FLAGS_ALLOW_THIRD_PARTY_FIXUP = 1048576;
+
     const unsigned long STOP_NETWORK = 1;
     const unsigned long STOP_CONTENT = 2;
     const unsigned long STOP_ALL = 3;
@@ -3482,7 +3568,7 @@ interface nsIWebBrowserChrome;
 interface nsIPrompt;
 interface nsIWindowCreator;
 
-[scriptable, uuid(002286a8-494b-43b3-8ddd-49e3fc50622b)]
+[scriptable, uuid(67bc1691-fbaf-484a-a15b-c96212b45034)]
 interface nsIWindowWatcher : nsISupports
 {
     nsIDOMWindow openWindow(in nsIDOMWindow parent,
@@ -3498,7 +3584,8 @@ interface nsIWindowWatcher : nsISupports
     nsIPrompt getNewPrompter(in nsIDOMWindow parent);
     nsIAuthPrompt getNewAuthPrompter(in nsIDOMWindow parent);
     void setWindowCreator(in nsIWindowCreator creator);
-                            
+    boolean hasWindowCreator();
+                        
     nsIWebBrowserChrome getChromeForWindow(in nsIDOMWindow window);
     
     nsIDOMWindow getWindowByName(in wstring target_name,

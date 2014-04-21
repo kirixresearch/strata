@@ -59,6 +59,16 @@ typedef unsigned long long PRUint64;
 typedef PRUint64 PRTime;
 
 
+#ifdef _MSC_VER
+typedef unsigned long long uint64_t;
+typedef long long int64_t;
+typedef int int32_t;
+typedef unsigned int uint32_t;
+typedef short int int16_t;
+typedef unsigned short int uint16_t;
+typedef unsigned char uint8_t;
+typedef char int8_t;
+#endif
 
 #define PR_CALLBACK
 
@@ -155,6 +165,7 @@ PRUint32 NS_CStringGetData(const nsACString& str, const char** str_data, PRBool*
 #define NS_INIT_ISUPPORTS()
 #define NS_FASTCALL
 #define NS_CONSTRUCTOR_FASTCALL
+#define NS_HIDDEN
 
 #define NS_COM
 #define NS_COM_GLUE
@@ -245,7 +256,7 @@ public:
         return NS_ERROR_NO_INTERFACE; \
     }
 
-
+    /*
 #ifdef WIN32
 #define NS_DECLARE_STATIC_IID_ACCESSOR(iid) \
     static const nsIID& GetIID() { \
@@ -259,9 +270,23 @@ public:
         return nsiid; \
     }
 #endif
-    
-#define NS_DEFINE_STATIC_IID_ACCESSOR(iid) NS_DECLARE_STATIC_IID_ACCESSOR(iid)
+    */
+
+//#define NS_DEFINE_STATIC_IID_ACCESSOR(iid) NS_DECLARE_STATIC_IID_ACCESSOR(iid)
 //#define NS_DEFINE_STATIC_IID_ACCESSOR(iface, iid)
+
+#define NS_DECLARE_STATIC_IID_ACCESSOR(the_iid)                         \
+  template <class Dummy>                                                \
+  struct COMTypeInfo                                                    \
+  {                                                                     \
+    static const nsIID kIID NS_HIDDEN;                                  \
+  };                                                                    \
+  static const nsIID& GetIID() {return COMTypeInfo<int>::kIID;}
+
+#define NS_DEFINE_STATIC_IID_ACCESSOR(the_interface, the_iid)           \
+  template <class Dummy>                                                \
+  const nsIID the_interface::COMTypeInfo<Dummy>::kIID NS_HIDDEN = the_iid;
+
 
 
 class refcount_holder

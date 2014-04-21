@@ -83,7 +83,9 @@ public:
     NS_IMETHOD OnLocationChange(
                              nsIWebProgress* web_progress,
                              nsIRequest* request,
-                             nsIURI* location);
+                             nsIURI* location,
+                             uint32_t flags);
+
     NS_IMETHOD OnStatusChange(
                              nsIWebProgress* web_progress,
                              nsIRequest* request,
@@ -99,8 +101,8 @@ public:
                             nsIWebProgress* web_progress,
                             nsIURI* refresh_uri,
                             PRInt32 millis,
-                            PRBool same_uri,
-                            PRBool *retval);
+                            bool same_uri,
+                            bool *retval);
 
 public:
 

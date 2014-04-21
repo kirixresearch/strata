@@ -394,6 +394,7 @@
   <ItemGroup>
     <ClInclude Include="dom.h" />
     <ClInclude Include="domprivate.h" />
+    <ClInclude Include="jspubtd.h" />
     <ClInclude Include="nsall.h" />
     <ClInclude Include="nsbase.h" />
     <ClInclude Include="nsinclude.h" />

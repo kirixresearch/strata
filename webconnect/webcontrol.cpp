@@ -148,10 +148,11 @@ class NS_NO_VTABLE nsIChromeInternal : public nsISupports
 {
 public: 
 
-    NS_DEFINE_STATIC_IID_ACCESSOR(NS_ICHROMEINTERNAL_IID)
+    NS_DECLARE_STATIC_IID_ACCESSOR(NS_ICHROMEINTERNAL_IID)
 
     virtual wxWebControl* GetWebControl() = 0;
 };
+NS_DEFINE_STATIC_IID_ACCESSOR(nsIChromeInternal, NS_ICHROMEINTERNAL_IID)
 
 
 class BrowserChrome : public nsIWebBrowserChrome,
@@ -173,7 +174,6 @@ public:
     NS_DECL_NSIWEBPROGRESSLISTENER
     NS_DECL_NSIINTERFACEREQUESTOR
     NS_DECL_NSIEMBEDDINGSITEWINDOW
-    NS_DECL_NSIEMBEDDINGSITEWINDOW2
     NS_DECL_NSICONTEXTMENULISTENER2
     NS_DECL_NSITOOLTIPLISTENER
     NS_DECL_NSIDOMEVENTLISTENER
@@ -409,7 +409,7 @@ NS_IMETHODIMP BrowserChrome::ShowAsModal()
     return m_dialog_retval;
 }
 
-NS_IMETHODIMP BrowserChrome::IsWindowModal(PRBool* retval)
+NS_IMETHODIMP BrowserChrome::IsWindowModal(bool* retval)
 {
     *retval = m_dialog ? PR_TRUE : PR_FALSE;
     return NS_OK;
@@ -457,13 +457,13 @@ NS_IMETHODIMP BrowserChrome::SetTitle(const PRUnichar* title)
     return NS_OK;
 }
 
-NS_IMETHODIMP BrowserChrome::GetVisibility(PRBool* visibility)
+NS_IMETHODIMP BrowserChrome::GetVisibility(bool* visibility)
 {
     *visibility = PR_TRUE;
     return NS_OK;
 }
 
-NS_IMETHODIMP BrowserChrome::SetVisibility(PRBool visibility)
+NS_IMETHODIMP BrowserChrome::SetVisibility(bool visibility)
 {
     return NS_OK;
 }
@@ -639,7 +639,8 @@ NS_IMETHODIMP BrowserChrome::OnStateChange(nsIWebProgress* progress,
 // nsIWebProgressListener::OnLocationChange()
 NS_IMETHODIMP BrowserChrome::OnLocationChange(nsIWebProgress* progress,
                                               nsIRequest* request,
-                                              nsIURI* location)
+                                              nsIURI* location,
+                                              uint32_t flags)
 {
     if (!m_wnd)
         return NS_OK;
@@ -768,7 +769,7 @@ NS_IMETHODIMP BrowserChrome::HandleEvent(nsIDOMEvent* evt)
             return NS_OK;
     
         // skip https
-        PRBool b = PR_FALSE;
+        bool b = PR_FALSE;
         uri->SchemeIs("https", &b);
         if (b)
             return NS_OK;
@@ -1000,7 +1001,7 @@ public:
     }
     
     NS_IMETHODIMP OnStartURIOpen(nsIURI* uri,
-                                 PRBool* abort)
+                                 bool* abort)
     {
         nsEmbedCString spec;
         nsresult res = uri->GetSpec(spec);
@@ -1014,10 +1015,10 @@ public:
     }
 
     NS_IMETHODIMP DoContent(const char* content_type,
-                            PRBool is_content_preferred,
+                            bool is_content_preferred,
                             nsIRequest* request,
                             nsIStreamListener** content_handler,
-                            PRBool* retval)
+                            bool* retval)
     {
         *retval = PR_FALSE;
         *content_handler = static_cast<nsIStreamListener*>(this);
@@ -1027,15 +1028,15 @@ public:
 
     NS_IMETHODIMP IsPreferred(const char* content_type,
                               char** desired_content_type,
-                              PRBool* retval)
+                              bool* retval)
     {
         return CanHandleContent(content_type, PR_TRUE, desired_content_type, retval);
     }
 
     NS_IMETHODIMP CanHandleContent(const char* _content_type,
-                                   PRBool is_content_preferred,
+                                   bool is_content_preferred,
                                    char** desired_content_type,
-                                   PRBool* retval)
+                                   bool* retval)
     {
         wxString content_type = wxString::From8BitData(_content_type);
         content_type.MakeLower();
@@ -1154,7 +1155,7 @@ public:
     }
     
     NS_IMETHODIMP OnStartURIOpen(nsIURI* uri,
-                                 PRBool* abort)
+                                 bool* abort)
     {
         if (!m_wnd)
             return NS_OK;
@@ -1207,25 +1208,25 @@ public:
     }
 
     NS_IMETHODIMP DoContent(const char* content_type,
-                            PRBool is_content_preferred,
+                            bool is_content_preferred,
                             nsIRequest* request,
                             nsIStreamListener** content_handler,
-                            PRBool* retval)
+                            bool* retval)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
     NS_IMETHODIMP IsPreferred(const char* content_type,
                               char** desired_content_type,
-                              PRBool* retval)
+                              bool* retval)
     {
         return CanHandleContent(content_type, PR_TRUE, desired_content_type, retval);
     }
 
     NS_IMETHODIMP CanHandleContent(const char* _content_type,
-                                   PRBool is_content_preferred,
+                                   bool is_content_preferred,
                                    char** desired_content_type,
-                                   PRBool* retval)
+                                   bool* retval)
     {
         if (!m_wnd)
         {
@@ -1424,7 +1425,7 @@ public:
     {
     }
     
-    NS_IMETHODIMP HasMoreElements(PRBool* retval)
+    NS_IMETHODIMP HasMoreElements(bool* retval)
     {
         if (!retval)
             return NS_ERROR_NULL_POINTER;
@@ -1495,7 +1496,7 @@ public:
     
     void AddPaths(nsISimpleEnumerator* paths)
     {
-        PRBool more = PR_FALSE;
+        bool more = PR_FALSE;
         
         while (1)
         {
@@ -1528,7 +1529,7 @@ public:
         m_paths.Add(path);
     }
 
-    NS_IMETHODIMP GetFile(const char* prop, PRBool* persistant, nsIFile** retval)
+    NS_IMETHODIMP GetFile(const char* prop, bool* persistant, nsIFile** retval)
     {
         if (!retval)
             return NS_ERROR_NULL_POINTER;
@@ -1687,11 +1688,11 @@ bool GeckoEngine::Init()
     if (xpcom_path.empty() || xpcom_path[xpcom_path.length()-1] != path_separator)
         xpcom_path += path_separator;
     #if defined __WXMSW__
-    xpcom_path += "xpcom.dll";
+    xpcom_path += "xul.dll";
     #elif defined __WXMAC__
-    xpcom_path += "libxpcom.dylib";
+    xpcom_path += "libxul.dylib";
     #else
-    xpcom_path += "libxpcom.so";
+    xpcom_path += "libxul.so";
     #endif
 
         
@@ -2159,10 +2160,11 @@ wxWebControl::wxWebControl(wxWindow* parent,
                            wxWindowID id,
                            const wxPoint& pos,
                            const wxSize& size)
-                           : wxControl(parent, id, pos, size,  wxNO_BORDER)
+                           : wxControl(parent, id, pos, size, wxNO_BORDER)
 {
     // set return value for IsOk() to false until initialization can be
     // verified as successful (end of the constructor)
+
     m_ok = false;
     m_content_loaded = true;
 
@@ -2245,7 +2247,7 @@ wxWebControl::wxWebControl(wxWindow* parent,
         wxASSERT(0);
         return;
     }
-    
+
     // set our web progress listener
 
     nsIWeakReference* weak = NS_GetWeakReference((nsIWebProgressListener*)m_chrome);
@@ -2261,7 +2263,6 @@ wxWebControl::wxWebControl(wxWindow* parent,
     m_ptrs->m_web_browser->SetParentURIContentListener(static_cast<nsIURIContentListener*>(m_main_uri_listener));
 
     // get the event target
-    
     ns_smartptr<nsIDOMWindow> dom_window;
     m_ptrs->m_web_browser->GetContentDOMWindow(&dom_window.p);
     if (!dom_window)
@@ -2277,7 +2278,7 @@ wxWebControl::wxWebControl(wxWindow* parent,
         wxASSERT(0);
         return;
     }
-
+ 
 
     // initialize chrome events
     m_chrome->ChromeInit();
@@ -2313,7 +2314,7 @@ wxWebControl::wxWebControl(wxWindow* parent,
     // to return true)
     m_ok = true;
     
-    
+    /*
     PRUnichar* ns_uri = wxToUnichar(L"about:blank");
     m_ptrs->m_web_navigation->LoadURI(ns_uri,
                                       nsIWebNavigation::LOAD_FLAGS_NONE,
@@ -2321,9 +2322,10 @@ wxWebControl::wxWebControl(wxWindow* parent,
                                       NULL,
                                       NULL);
     freeUnichar(ns_uri);
+    */
     
     // show the browser component
-    res = m_ptrs->m_base_window->SetVisibility(PR_TRUE);
+    res = m_ptrs->m_base_window->SetVisibility(true);
 }
 
 wxWebControl::~wxWebControl()
@@ -2399,7 +2401,7 @@ bool wxWebControl::Find(const wxString& text,
     m_ptrs->m_web_browser_find->SetSearchFrames((flags & wxWEB_FIND_SEARCH_FRAMES) != 0 ? PR_TRUE : PR_FALSE);
     
     
-    PRBool retval = PR_FALSE;
+    bool retval = PR_FALSE;
     m_ptrs->m_web_browser_find->FindNext(&retval);
     
     return retval ? true : false;
@@ -2849,6 +2851,8 @@ void wxWebControl::OpenURI(const wxString& uri,
     }
        
     
+    if (!m_ptrs || m_ptrs->m_web_navigation.empty())
+        return;
     
     PRUnichar* ns_uri = wxToUnichar(uri);
 
@@ -3312,7 +3316,7 @@ bool wxWebControl::CanCutSelection()
     if (!IsOk())
         return false;
     
-    PRBool retval;
+    bool retval;
     m_ptrs->m_clipboard_commands->CanCutSelection(&retval);
     return retval ? true : false;
 }
@@ -3331,7 +3335,7 @@ bool wxWebControl::CanCopySelection()
     if (!IsOk())
         return false;
 
-    PRBool retval;
+    bool retval;
     m_ptrs->m_clipboard_commands->CanCopySelection(&retval);
     return retval ? true : false;
 }
@@ -3350,7 +3354,7 @@ bool wxWebControl::CanCopyLinkLocation()
     if (!IsOk())
         return false;
 
-    PRBool retval;
+    bool retval;
     m_ptrs->m_clipboard_commands->CanCopyLinkLocation(&retval);
     return retval ? true : false;
 }
@@ -3369,7 +3373,7 @@ bool wxWebControl::CanCopyImageLocation()
     if (!IsOk())
         return false;
 
-    PRBool retval;
+    bool retval;
     m_ptrs->m_clipboard_commands->CanCopyImageLocation(&retval);
     return retval ? true : false;
 }
@@ -3388,7 +3392,7 @@ bool wxWebControl::CanCopyImageContents()
     if (!IsOk())
         return false;
 
-    PRBool retval;
+    bool retval;
     m_ptrs->m_clipboard_commands->CanCopyImageContents(&retval);
     return retval ? true : false;
 }
@@ -3407,7 +3411,7 @@ bool wxWebControl::CanPaste()
     if (!IsOk())
         return false;
 
-    PRBool retval;
+    bool retval;
     m_ptrs->m_clipboard_commands->CanPaste(&retval);
     return retval ? true : false;
 }
@@ -3599,20 +3603,26 @@ void wxWebControl::OnSize(wxSizeEvent& evt)
 {
     if (!IsOk())
         return;
+#ifdef __WXGTK__
 
     WebControlRefreshTimer* t = new WebControlRefreshTimer;
     t->m_ctrl = this;
 
-#ifdef __WXGTK__
     t->Start(1,true);
 #else
-    t->Notify();
+
+    if (m_ptrs && m_ptrs->m_base_window)
+    {
+        wxRect cli_rect = evt.GetSize();
+        m_ptrs->m_base_window->SetPositionAndSize(0, 0,
+                                    cli_rect.GetWidth(),
+                                    cli_rect.GetHeight(),
+                                    PR_TRUE);
+    }
+
 #endif
 
 }
-
-
-
 
 
 
@@ -3641,7 +3651,7 @@ class nsIDOMWindowInternal;
 class nsIScriptGlobalObject : public nsISupports
 {
 public:
-  NS_DEFINE_STATIC_IID_ACCESSOR(NS_ISCRIPTGLOBALOBJECT_IID)
+    NS_DECLARE_STATIC_IID_ACCESSOR(NS_ISCRIPTGLOBALOBJECT_IID)
 
     virtual void SetContext(nsIScriptContext* context) = 0;
     virtual nsIScriptContext* GetContext() = 0;
@@ -3649,8 +3659,8 @@ public:
     virtual nsresult SetNewDocument(
                     nsIDOMDocument* document,
                     nsISupports* state,
-                    PRBool remove_event_listeners,
-                    PRBool clear_scope) = 0;
+                    bool remove_event_listeners,
+                    bool clear_scope) = 0;
                     
     virtual void SetDocShell(nsIDocShell* doc_shell) = 0;
     virtual nsIDocShell* GetDocShell() = 0;
@@ -3669,11 +3679,11 @@ public:
 
     virtual JSObject* GetGlobalJSObject() = 0;
     virtual void OnFinalize(JSObject* js_object) = 0;
-    virtual void SetScriptsEnabled(PRBool enabled, PRBool fire_timeouts) = 0;
+    virtual void SetScriptsEnabled(bool enabled, bool fire_timeouts) = 0;
     virtual nsresult SetNewArguments(PRUint32 argc, void* argv) = 0;
 };
 
-
+NS_DEFINE_STATIC_IID_ACCESSOR(nsIScriptGlobalObject, NS_ISCRIPTGLOBALOBJECT_IID)
 
 #define NS_ISCRIPTCONTEXT_IID \
 { /* b3fd8821-b46d-4160-913f-cc8fe8176f5f */ \
@@ -3688,7 +3698,7 @@ typedef void (*nsScriptTerminationFunc)(nsISupports* ref);
 class nsIScriptContext : public nsISupports
 {
 public:
-    NS_DEFINE_STATIC_IID_ACCESSOR(NS_ISCRIPTCONTEXT_IID)
+    NS_DECLARE_STATIC_IID_ACCESSOR(NS_ISCRIPTCONTEXT_IID)
 
     virtual nsresult EvaluateString(
                                    const nsAString& script,
@@ -3698,7 +3708,7 @@ public:
                                    PRUint32 line_no,
                                    const char* version,
                                    nsAString* retval,
-                                   PRBool* is_undefined) = 0;
+                                   bool* is_undefined) = 0;
 
     virtual nsresult EvaluateStringWithValue(
                                    const nsAString& script,
@@ -3708,7 +3718,7 @@ public:
                                    PRUint32 line_no,
                                    const char* version,
                                    void* retval,
-                                   PRBool* is_undefined) = 0;
+                                   bool* is_undefined) = 0;
 
     virtual nsresult CompileScript(const PRUnichar* text,
                                    PRInt32 text_length,
@@ -3722,7 +3732,7 @@ public:
     virtual nsresult ExecuteScript(void* script_object,
                                    void* scope_object,
                                    nsAString* retval,
-                                   PRBool* is_undefined) = 0;
+                                   bool* is_undefined) = 0;
 
     virtual nsresult CompileEventHandler(
                                    void* target,
@@ -3731,7 +3741,7 @@ public:
                                    const nsAString& body,
                                    const char* url,
                                    PRUint32 line_no,
-                                   PRBool shared,
+                                   bool shared,
                                    void** handler) = 0;
 
     virtual nsresult CallEventHandler(
@@ -3754,7 +3764,7 @@ public:
                                    const nsAString& body,
                                    const char* url,
                                    PRUint32 line_no,
-                                   PRBool shared,
+                                   bool shared,
                                    void** function_object) = 0;
 
     virtual void SetDefaultLanguageVersion(const char* aVersion) = 0;
@@ -3762,23 +3772,23 @@ public:
     virtual nsIScriptGlobalObject* GetGlobalObject() = 0;
     virtual void *GetNativeContext() = 0;
     virtual nsresult InitContext(nsIScriptGlobalObject* global_object) = 0;
-    virtual PRBool IsContextInitialized() = 0;
+    virtual bool IsContextInitialized() = 0;
     virtual void GC() = 0;
 
-    virtual void ScriptEvaluated(PRBool terminated) = 0;
+    virtual void ScriptEvaluated(bool terminated) = 0;
     virtual void SetOwner(nsIScriptContextOwner* owner) = 0;
     virtual nsIScriptContextOwner *GetOwner() = 0;
 
     virtual nsresult SetTerminationFunction(nsScriptTerminationFunc func,
                                             nsISupports* ref) = 0;
 
-    virtual PRBool GetScriptsEnabled() = 0;
-    virtual void SetScriptsEnabled(PRBool enabled,
-                                   PRBool fire_timeouts) = 0;
+    virtual bool GetScriptsEnabled() = 0;
+    virtual void SetScriptsEnabled(bool enabled,
+                                   bool fire_timeouts) = 0;
 
-    virtual PRBool GetProcessingScriptTag() = 0;
-    virtual void SetProcessingScriptTag(PRBool result) = 0;
-    virtual void SetGCOnDestruction(PRBool gc_on_destruction) = 0;
+    virtual bool GetProcessingScriptTag() = 0;
+    virtual void SetProcessingScriptTag(bool result) = 0;
+    virtual void SetGCOnDestruction(bool gc_on_destruction) = 0;
 
     virtual nsresult InitClasses(JSObject* global_obj) = 0;
     virtual void WillInitializeContext() = 0;

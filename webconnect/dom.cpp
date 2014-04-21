@@ -568,7 +568,7 @@ bool wxDOMNode::IsSupported(const wxString& feature,
     wx2ns(feature, nsfeature);
     wx2ns(version, nsversion);
 
-    PRBool result = PR_FALSE;
+    bool result = PR_FALSE;
     m_data->node_ptr->IsSupported(nsfeature, nsversion, &result);
 
     if (result == PR_TRUE)
@@ -591,7 +591,7 @@ bool wxDOMNode::HasChildNodes()
     if (!IsOk())
         return false;
         
-    PRBool result = PR_FALSE;
+    bool result = PR_FALSE;
     m_data->node_ptr->HasChildNodes(&result);
 
     if (result == PR_TRUE)
@@ -614,7 +614,7 @@ bool wxDOMNode::HasAttributes()
     if (!IsOk())
         return false;
         
-    PRBool result = PR_FALSE;
+    bool result = PR_FALSE;
     m_data->node_ptr->HasAttributes(&result);
 
     if (result == PR_TRUE)
@@ -869,7 +869,7 @@ bool wxDOMAttr::GetSpecified()
     if (!IsOk())
         return false;
         
-    PRBool b = PR_FALSE;
+    bool b = PR_FALSE;
     m_data->attr_ptr->GetSpecified(&b);
     
     return (b == PR_TRUE ? true : false);
@@ -1355,7 +1355,7 @@ bool wxDOMElement::HasAttribute(const wxString& name)
     nsEmbedString nsname;
     wx2ns(name, nsname);
 
-    PRBool result = PR_FALSE;
+    bool result = PR_FALSE;
     m_data->element_ptr->HasAttribute(nsname, &result);
 
     if (result == PR_TRUE)
@@ -1384,7 +1384,7 @@ bool wxDOMElement::HasAttributeNS(const wxString& namespace_uri,
     wx2ns(namespace_uri, nsnamespace_uri);
     wx2ns(local_name, nslocal_name);
 
-    PRBool result = PR_FALSE;
+    bool result = PR_FALSE;
     m_data->element_ptr->HasAttributeNS(nsnamespace_uri,
                                         nslocal_name,
                                         &result);
@@ -2936,7 +2936,7 @@ bool wxDOMHTMLButtonElement::GetDisabled()
     if (!IsOk())
         return false;
 
-    PRBool b = PR_FALSE;
+    bool b = PR_FALSE;
     m_data->button_ptr->GetDisabled(&b);
 
     return (b == PR_TRUE ? true : false);
@@ -3159,7 +3159,7 @@ bool wxDOMHTMLInputElement::GetDefaultChecked()
     if (!IsOk())
         return false;
         
-    PRBool b = PR_FALSE;
+    bool b = PR_FALSE;
     m_data->input_ptr->GetDefaultChecked(&b);
     
     return (b == PR_TRUE ? true : false);
@@ -3356,7 +3356,7 @@ bool wxDOMHTMLInputElement::GetChecked()
     if (!IsOk())
         return false;
         
-    PRBool b = PR_FALSE;
+    bool b = PR_FALSE;
     m_data->input_ptr->GetChecked(&b);
     
     return (b == PR_TRUE ? true : false);
@@ -3393,7 +3393,7 @@ bool wxDOMHTMLInputElement::GetDisabled()
     if (!IsOk())
         return false;
         
-    PRBool b = PR_FALSE;
+    bool b = PR_FALSE;
     m_data->input_ptr->GetDisabled(&b);
     
     return (b == PR_TRUE ? true : false);
@@ -3507,7 +3507,7 @@ bool wxDOMHTMLInputElement::GetReadOnly()
     if (!IsOk())
         return false;
         
-    PRBool b = PR_FALSE;
+    bool b = PR_FALSE;
     m_data->input_ptr->GetReadOnly(&b);
     
     return (b == PR_TRUE ? true : false);
@@ -3855,7 +3855,7 @@ bool wxDOMHTMLLinkElement::GetDisabled()
     if (!IsOk())
         return false;
         
-    PRBool b = PR_FALSE;
+    bool b = PR_FALSE;
     m_data->link_ptr->GetDisabled(&b);
     
     return (b == PR_TRUE ? true : false);
@@ -4261,7 +4261,7 @@ bool wxDOMHTMLOptionElement::GetDefaultSelected()
     if (!IsOk())
         return false;
         
-    PRBool b = PR_FALSE;
+    bool b = PR_FALSE;
     m_data->option_ptr->GetDefaultSelected(&b);
     
     return (b == PR_TRUE ? true : false);
@@ -4337,7 +4337,7 @@ bool wxDOMHTMLOptionElement::GetDisabled()
     if (!IsOk())
         return false;
         
-    PRBool b = PR_FALSE;
+    bool b = PR_FALSE;
     m_data->option_ptr->GetDisabled(&b);
     
     return (b == PR_TRUE ? true : false);
@@ -4414,7 +4414,7 @@ bool wxDOMHTMLOptionElement::GetSelected()
     if (!IsOk())
         return false;
         
-    PRBool b = PR_FALSE;
+    bool b = PR_FALSE;
     m_data->option_ptr->GetSelected(&b);
     
     return (b == PR_TRUE ? true : false);
@@ -4763,7 +4763,7 @@ bool wxDOMHTMLSelectElement::GetDisabled()
     if (!IsOk())
         return false;
         
-    PRBool b = PR_FALSE;
+    bool b = PR_FALSE;
     m_data->select_ptr->GetDisabled(&b);
     
     return (b == PR_TRUE ? true : false);
@@ -4800,7 +4800,7 @@ bool wxDOMHTMLSelectElement::GetMultiple()
     if (!IsOk())
         return false;
         
-    PRBool b = PR_FALSE;
+    bool b = PR_FALSE;
     m_data->select_ptr->GetMultiple(&b);
     
     return (b == PR_TRUE ? true : false);
@@ -5188,7 +5188,7 @@ bool wxDOMHTMLTextAreaElement::GetDisabled()
     if (!IsOk())
         return false;
         
-    PRBool b = PR_FALSE;
+    bool b = PR_FALSE;
     m_data->textarea_ptr->GetDisabled(&b);
     
     return (b == PR_TRUE ? true : false);
@@ -5265,7 +5265,7 @@ bool wxDOMHTMLTextAreaElement::GetReadOnly()
     if (!IsOk())
         return false;
         
-    PRBool b = PR_FALSE;
+    bool b = PR_FALSE;
     m_data->textarea_ptr->GetReadOnly(&b);
     
     return (b == PR_TRUE ? true : false);
