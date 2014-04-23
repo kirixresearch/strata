@@ -2577,8 +2577,10 @@ interface nsIPrintSettingsService : nsISupports
 
 interface nsIPrintSession;
 
+//[ref] native nsNativeIntMarginRef(nsIntMargin);
+//[ref] native IntegerArray(nsTArray<int32_t>);
 
-[scriptable, uuid(343700dd-078b-42b6-a809-b9c1d7e951d0)]
+[scriptable, uuid(1bcfc611-8941-4c39-9e06-7116e564a1ce)]
 interface nsIPrintSettings : nsISupports
 {
     const unsigned long kInitSaveOddEvenPages = 0x1;
@@ -2611,31 +2613,41 @@ interface nsIPrintSettings : nsISupports
     const unsigned long kInitSaveResolutionName = 0x40000000;
     const unsigned long kInitSaveDownloadFonts = 0x80000000;
     const unsigned long kInitSaveAll = 0xffffffff;
+
     const long kPrintOddPages = 0x1;
     const long kPrintEvenPages = 0x2;
     const long kEnableSelectionRB = 0x4;
+
     const long kRangeAllPages = 0;
     const long kRangeSpecifiedPageRange = 1;
     const long kRangeSelection = 2;
     const long kRangeFocusFrame = 3;
+
     const long kJustLeft = 0;
     const long kJustCenter = 1;
     const long kJustRight = 2;
+
     const short kUseInternalDefault = 0;
     const short kUseSettingWhenPossible = 1;
+
     const short kPaperSizeNativeData = 0;
     const short kPaperSizeDefined = 1;
+
     const short kPaperSizeInches = 0;
     const short kPaperSizeMillimeters = 1;
+
     const short kPortraitOrientation = 0;
     const short kLandscapeOrientation = 1;
+
     const short kNoFrames = 0;
     const short kFramesAsIs = 1;
     const short kSelectedFrame = 2;
     const short kEachFrameSep = 3;
+
     const short kFrameEnableNone = 0;
     const short kFrameEnableAll = 1;
     const short kFrameEnableAsIsAndEach = 2;
+
     const short kOutputFormatNative = 0;
     const short kOutputFormatPS = 1;
     const short kOutputFormatPDF = 2;
@@ -2647,7 +2659,7 @@ interface nsIPrintSettings : nsISupports
     nsIPrintSettings clone();
     void assign(in nsIPrintSettings print_settings);
 
-    [noscript] attribute nsIPrintSession printSession; /* We hold a weak reference */
+    [noscript] attribute nsIPrintSession printSession;
 
     attribute long startPageRange; 
     attribute long endPageRange; 
@@ -2702,17 +2714,22 @@ interface nsIPrintSettings : nsISupports
     attribute wstring toFileName;
     attribute short outputFormat;
     attribute long printPageDelay;
+    attribute long resolution;
+    attribute long duplex;
     attribute boolean isInitializedFromPrinter;
     attribute boolean isInitializedFromPrefs;
-/*
-    [noscript] void SetMarginInTwips(in nsNativeMarginRef aMargin);
-    [noscript] void SetEdgeInTwips(in nsNativeMarginRef aEdge);
-    [noscript] void GetMarginInTwips(in nsNativeMarginRef aMargin);
-    [noscript] void GetEdgeInTwips(in nsNativeMarginRef aEdge);
+    attribute boolean persistMarginBoxSettings;
+
+    /*
+    [noscript] void SetMarginInTwips(in nsNativeIntMarginRef margin);
+    [noscript] void SetEdgeInTwips(in nsNativeIntMarginRef edge);
+    [noscript] void GetMarginInTwips(in nsNativeIntMarginRef margin);
+    [noscript] void GetEdgeInTwips(in nsNativeIntMarginRef edge);
     [noscript] void SetupSilentPrinting();
-    [noscript] void SetUnwriteableMarginInTwips(in nsNativeMarginRef aEdge);
-    [noscript] void GetUnwriteableMarginInTwips(in nsNativeMarginRef aEdge);
-*/
+    [noscript] void SetUnwriteableMarginInTwips(in nsNativeIntMarginRef edge);
+    [noscript] void GetUnwriteableMarginInTwips(in nsNativeIntMarginRef edge);
+    [noscript] void GetPageRanges(in IntegerArray pages);
+    */
 };
 
 

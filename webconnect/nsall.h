@@ -16088,11 +16088,11 @@ class nsIPrintSession; /* forward declaration */
 
 
 /* starting interface:    nsIPrintSettings */
-#define NS_IPRINTSETTINGS_IID_STR "343700dd-078b-42b6-a809-b9c1d7e951d0"
+#define NS_IPRINTSETTINGS_IID_STR "1bcfc611-8941-4c39-9e06-7116e564a1ce"
 
 #define NS_IPRINTSETTINGS_IID \
-  {0x343700dd, 0x078b, 0x42b6, \
-    { 0xa8, 0x09, 0xb9, 0xc1, 0xd7, 0xe9, 0x51, 0xd0 }}
+  {0x1bcfc611, 0x8941, 0x4c39, \
+    { 0x9e, 0x06, 0x71, 0x16, 0xe5, 0x64, 0xa1, 0xce }}
 
 class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
  public: 
@@ -16394,6 +16394,14 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD GetPrintPageDelay(int32_t *aPrintPageDelay) = 0;
   NS_IMETHOD SetPrintPageDelay(int32_t aPrintPageDelay) = 0;
 
+  /* attribute long resolution; */
+  NS_IMETHOD GetResolution(int32_t *aResolution) = 0;
+  NS_IMETHOD SetResolution(int32_t aResolution) = 0;
+
+  /* attribute long duplex; */
+  NS_IMETHOD GetDuplex(int32_t *aDuplex) = 0;
+  NS_IMETHOD SetDuplex(int32_t aDuplex) = 0;
+
   /* attribute boolean isInitializedFromPrinter; */
   NS_IMETHOD GetIsInitializedFromPrinter(bool *aIsInitializedFromPrinter) = 0;
   NS_IMETHOD SetIsInitializedFromPrinter(bool aIsInitializedFromPrinter) = 0;
@@ -16401,6 +16409,10 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   /* attribute boolean isInitializedFromPrefs; */
   NS_IMETHOD GetIsInitializedFromPrefs(bool *aIsInitializedFromPrefs) = 0;
   NS_IMETHOD SetIsInitializedFromPrefs(bool aIsInitializedFromPrefs) = 0;
+
+  /* attribute boolean persistMarginBoxSettings; */
+  NS_IMETHOD GetPersistMarginBoxSettings(bool *aPersistMarginBoxSettings) = 0;
+  NS_IMETHOD SetPersistMarginBoxSettings(bool aPersistMarginBoxSettings) = 0;
 
 };
 
@@ -16522,10 +16534,16 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetOutputFormat(int16_t aOutputFormat); \
   NS_IMETHOD GetPrintPageDelay(int32_t *aPrintPageDelay); \
   NS_IMETHOD SetPrintPageDelay(int32_t aPrintPageDelay); \
+  NS_IMETHOD GetResolution(int32_t *aResolution); \
+  NS_IMETHOD SetResolution(int32_t aResolution); \
+  NS_IMETHOD GetDuplex(int32_t *aDuplex); \
+  NS_IMETHOD SetDuplex(int32_t aDuplex); \
   NS_IMETHOD GetIsInitializedFromPrinter(bool *aIsInitializedFromPrinter); \
   NS_IMETHOD SetIsInitializedFromPrinter(bool aIsInitializedFromPrinter); \
   NS_IMETHOD GetIsInitializedFromPrefs(bool *aIsInitializedFromPrefs); \
-  NS_IMETHOD SetIsInitializedFromPrefs(bool aIsInitializedFromPrefs); 
+  NS_IMETHOD SetIsInitializedFromPrefs(bool aIsInitializedFromPrefs); \
+  NS_IMETHOD GetPersistMarginBoxSettings(bool *aPersistMarginBoxSettings); \
+  NS_IMETHOD SetPersistMarginBoxSettings(bool aPersistMarginBoxSettings); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIPRINTSETTINGS(_to) \
@@ -16643,10 +16661,16 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetOutputFormat(int16_t aOutputFormat) { return _to SetOutputFormat(aOutputFormat); } \
   NS_IMETHOD GetPrintPageDelay(int32_t *aPrintPageDelay) { return _to GetPrintPageDelay(aPrintPageDelay); } \
   NS_IMETHOD SetPrintPageDelay(int32_t aPrintPageDelay) { return _to SetPrintPageDelay(aPrintPageDelay); } \
+  NS_IMETHOD GetResolution(int32_t *aResolution) { return _to GetResolution(aResolution); } \
+  NS_IMETHOD SetResolution(int32_t aResolution) { return _to SetResolution(aResolution); } \
+  NS_IMETHOD GetDuplex(int32_t *aDuplex) { return _to GetDuplex(aDuplex); } \
+  NS_IMETHOD SetDuplex(int32_t aDuplex) { return _to SetDuplex(aDuplex); } \
   NS_IMETHOD GetIsInitializedFromPrinter(bool *aIsInitializedFromPrinter) { return _to GetIsInitializedFromPrinter(aIsInitializedFromPrinter); } \
   NS_IMETHOD SetIsInitializedFromPrinter(bool aIsInitializedFromPrinter) { return _to SetIsInitializedFromPrinter(aIsInitializedFromPrinter); } \
   NS_IMETHOD GetIsInitializedFromPrefs(bool *aIsInitializedFromPrefs) { return _to GetIsInitializedFromPrefs(aIsInitializedFromPrefs); } \
-  NS_IMETHOD SetIsInitializedFromPrefs(bool aIsInitializedFromPrefs) { return _to SetIsInitializedFromPrefs(aIsInitializedFromPrefs); } 
+  NS_IMETHOD SetIsInitializedFromPrefs(bool aIsInitializedFromPrefs) { return _to SetIsInitializedFromPrefs(aIsInitializedFromPrefs); } \
+  NS_IMETHOD GetPersistMarginBoxSettings(bool *aPersistMarginBoxSettings) { return _to GetPersistMarginBoxSettings(aPersistMarginBoxSettings); } \
+  NS_IMETHOD SetPersistMarginBoxSettings(bool aPersistMarginBoxSettings) { return _to SetPersistMarginBoxSettings(aPersistMarginBoxSettings); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIPRINTSETTINGS(_to) \
@@ -16764,10 +16788,16 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetOutputFormat(int16_t aOutputFormat) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetOutputFormat(aOutputFormat); } \
   NS_IMETHOD GetPrintPageDelay(int32_t *aPrintPageDelay) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPrintPageDelay(aPrintPageDelay); } \
   NS_IMETHOD SetPrintPageDelay(int32_t aPrintPageDelay) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPrintPageDelay(aPrintPageDelay); } \
+  NS_IMETHOD GetResolution(int32_t *aResolution) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetResolution(aResolution); } \
+  NS_IMETHOD SetResolution(int32_t aResolution) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetResolution(aResolution); } \
+  NS_IMETHOD GetDuplex(int32_t *aDuplex) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDuplex(aDuplex); } \
+  NS_IMETHOD SetDuplex(int32_t aDuplex) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetDuplex(aDuplex); } \
   NS_IMETHOD GetIsInitializedFromPrinter(bool *aIsInitializedFromPrinter) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetIsInitializedFromPrinter(aIsInitializedFromPrinter); } \
   NS_IMETHOD SetIsInitializedFromPrinter(bool aIsInitializedFromPrinter) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetIsInitializedFromPrinter(aIsInitializedFromPrinter); } \
   NS_IMETHOD GetIsInitializedFromPrefs(bool *aIsInitializedFromPrefs) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetIsInitializedFromPrefs(aIsInitializedFromPrefs); } \
-  NS_IMETHOD SetIsInitializedFromPrefs(bool aIsInitializedFromPrefs) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetIsInitializedFromPrefs(aIsInitializedFromPrefs); } 
+  NS_IMETHOD SetIsInitializedFromPrefs(bool aIsInitializedFromPrefs) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetIsInitializedFromPrefs(aIsInitializedFromPrefs); } \
+  NS_IMETHOD GetPersistMarginBoxSettings(bool *aPersistMarginBoxSettings) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPersistMarginBoxSettings(aPersistMarginBoxSettings); } \
+  NS_IMETHOD SetPersistMarginBoxSettings(bool aPersistMarginBoxSettings) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPersistMarginBoxSettings(aPersistMarginBoxSettings); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -17377,6 +17407,26 @@ NS_IMETHODIMP nsPrintSettings::SetPrintPageDelay(int32_t aPrintPageDelay)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
+/* attribute long resolution; */
+NS_IMETHODIMP nsPrintSettings::GetResolution(int32_t *aResolution)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsPrintSettings::SetResolution(int32_t aResolution)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute long duplex; */
+NS_IMETHODIMP nsPrintSettings::GetDuplex(int32_t *aDuplex)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsPrintSettings::SetDuplex(int32_t aDuplex)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 /* attribute boolean isInitializedFromPrinter; */
 NS_IMETHODIMP nsPrintSettings::GetIsInitializedFromPrinter(bool *aIsInitializedFromPrinter)
 {
@@ -17393,6 +17443,16 @@ NS_IMETHODIMP nsPrintSettings::GetIsInitializedFromPrefs(bool *aIsInitializedFro
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 NS_IMETHODIMP nsPrintSettings::SetIsInitializedFromPrefs(bool aIsInitializedFromPrefs)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute boolean persistMarginBoxSettings; */
+NS_IMETHODIMP nsPrintSettings::GetPersistMarginBoxSettings(bool *aPersistMarginBoxSettings)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsPrintSettings::SetPersistMarginBoxSettings(bool aPersistMarginBoxSettings)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }

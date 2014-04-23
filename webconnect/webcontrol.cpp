@@ -3048,7 +3048,7 @@ void wxWebControl::Print(bool silent)
 
     ns_smartptr<nsIPrintSettings> settings = m_ptrs->m_print_settings;
     if (settings)
-    {        
+    {
         settings->SetShowPrintProgress(PR_TRUE);
         settings->SetPrintSilent(silent ? PR_TRUE : PR_FALSE);
         web_browser_print->Print(settings, NULL);        
@@ -3066,7 +3066,8 @@ void wxWebControl::Print(bool silent)
 //
 // Returns:
 
-void wxWebControl::SetPageSettings(double page_width, double page_height,
+void wxWebControl::SetPageSettings(int orientation,
+                                   double page_width, double page_height,
                                    double left_margin, double right_margin, 
                                    double top_margin, double bottom_margin)
 {
@@ -3085,17 +3086,10 @@ void wxWebControl::SetPageSettings(double page_width, double page_height,
     ns_smartptr<nsIPrintSettings> settings = m_ptrs->m_print_settings;
     if (settings)
     {
-        // if the page width is greater than the page height,
-        // set the proper orientation
-        settings->SetOrientation(settings->kPortraitOrientation);
-        if (page_width > page_height)
-        {
-            double t = page_width;
-            page_width = page_height;
-            page_height = t;
-
+        if (orientation == wxLANDSCAPE)
             settings->SetOrientation(settings->kLandscapeOrientation);
-        }
+             else
+            settings->SetOrientation(settings->kPortraitOrientation);
 
         settings->SetPaperWidth(page_width);
         settings->SetPaperHeight(page_height);
@@ -3117,7 +3111,8 @@ void wxWebControl::SetPageSettings(double page_width, double page_height,
 //
 // Returns:
 
-void wxWebControl::GetPageSettings(double* page_width, double* page_height,
+void wxWebControl::GetPageSettings(int* orientation,
+                                   double* page_width, double* page_height,
                                    double* left_margin, double* right_margin, 
                                    double* top_margin, double* bottom_margin)
 {
@@ -3145,13 +3140,15 @@ void wxWebControl::GetPageSettings(double* page_width, double* page_height,
         
         // if the orientation is set, reverse the page width
         // and page height
-        PRInt32 orientation;
-        settings->GetOrientation(&orientation);
-        if (orientation == settings->kLandscapeOrientation)
+        PRInt32 ns_orientation = settings->kPortraitOrientation;
+        settings->GetOrientation(&ns_orientation);
+        if (ns_orientation == settings->kLandscapeOrientation)
         {
-            double t = *page_width;
-            *page_width = *page_height;
-            *page_height = t;
+            *orientation = wxLANDSCAPE;
+        }
+         else
+        {
+            *orientation = wxPORTRAIT;
         }
     }
 }
