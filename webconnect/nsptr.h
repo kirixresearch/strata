@@ -51,7 +51,7 @@ public:
         }
     }
     
-	ns_smartptr(const ns_smartptr_unknown& u) : ns_smartptr_unknown()
+    ns_smartptr(const ns_smartptr_unknown& u) : ns_smartptr_unknown()
     {
         u.qi(T::GetIID(), (void**)&p);
     }

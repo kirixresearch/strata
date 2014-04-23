@@ -21229,42 +21229,47 @@ NS_IMETHODIMP nsPrincipal::Placeholder()
 /* End of implementation class template. */
 #endif
 
+class nsIDocShell; /* forward declaration */
+
+class nsIDomainPolicy; /* forward declaration */
+
 
 /* starting interface:    nsIScriptSecurityManager */
-#define NS_ISCRIPTSECURITYMANAGER_IID_STR "f4d74511-2b2d-4a14-a3e4-a392ac5ac3ff"
+#define NS_ISCRIPTSECURITYMANAGER_IID_STR "2911ae60-1b5f-47e6-941e-1bb7b53a167d"
 
 #define NS_ISCRIPTSECURITYMANAGER_IID \
-  {0xf4d74511, 0x2b2d, 0x4a14, \
-    { 0xa3, 0xe4, 0xa3, 0x92, 0xac, 0x5a, 0xc3, 0xff }}
+  {0x2911ae60, 0x1b5f, 0x47e6, \
+    { 0x94, 0x1e, 0x1b, 0xb7, 0xb5, 0x3a, 0x16, 0x7d }}
 
 class NS_NO_VTABLE nsIScriptSecurityManager : public nsIXPCSecurityManager {
  public: 
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_ISCRIPTSECURITYMANAGER_IID)
 
-  /* void checkPropertyAccess (in JSContextPtr js_context, in JSObjectPtr js_object, in string class_name, in JSVal property, in PRUint32 action); */
+  /* [noscript] void checkPropertyAccess (in JSContextPtr js_context, in JSObjectPtr js_object, in string class_name, in JSVal property, in PRUint32 action); */
   NS_IMETHOD CheckPropertyAccess(JSContext *js_context, JSObject *js_object, const char * class_name, jsval property, PRUint32 action) = 0;
 
-  /* void checkConnect (in JSContextPtr js_context, in nsIURI target_uri, in string class_name, in string property); */
-  NS_IMETHOD CheckConnect(JSContext *js_context, nsIURI *target_uri, const char * class_name, const char * property) = 0;
-
-  /* void checkLoadURIFromScript (in JSContextPtr cx, in nsIURI uri); */
+  /* [noscript] void checkLoadURIFromScript (in JSContextPtr cx, in nsIURI uri); */
   NS_IMETHOD CheckLoadURIFromScript(JSContext *cx, nsIURI *uri) = 0;
+
+  enum {
+    STANDARD = 0U,
+    LOAD_IS_AUTOMATIC_DOCUMENT_REPLACEMENT = 1U,
+    ALLOW_CHROME = 2U,
+    DISALLOW_INHERIT_PRINCIPAL = 3U,
+    DISALLOW_SCRIPT_OR_DATA = 3U,
+    DISALLOW_SCRIPT = 8U,
+    DONT_REPORT_ERRORS = 16U
+  };
 
   /* void checkLoadURIWithPrincipal (in nsIPrincipal principal, in nsIURI uri, in unsigned long flags); */
   NS_IMETHOD CheckLoadURIWithPrincipal(nsIPrincipal *principal, nsIURI *uri, uint32_t flags) = 0;
 
-  /* void checkLoadURI (in nsIURI from, in nsIURI uri, in unsigned long flags); */
-  NS_IMETHOD CheckLoadURI(nsIURI *from, nsIURI *uri, uint32_t flags) = 0;
+  /* void checkLoadURIStrWithPrincipal (in nsIPrincipal principal, in AUTF8String uri, in unsigned long flags); */
+  NS_IMETHOD CheckLoadURIStrWithPrincipal(nsIPrincipal *principal, const nsACString & uri, uint32_t flags) = 0;
 
-  /* void checkLoadURIStr (in AUTF8String from, in AUTF8String uri, in unsigned long flags); */
-  NS_IMETHOD CheckLoadURIStr(const nsACString & from, const nsACString & uri, uint32_t flags) = 0;
-
-  /* void checkFunctionAccess (in JSContextPtr cx, in voidPtr fun_obj, in voidPtr target_obj); */
-  NS_IMETHOD CheckFunctionAccess(JSContext *cx, void *fun_obj, void *target_obj) = 0;
-
-  /* boolean canExecuteScripts (in JSContextPtr cx, in nsIPrincipal principal); */
-  NS_IMETHOD CanExecuteScripts(JSContext *cx, nsIPrincipal *principal, bool *_retval) = 0;
+  /* [noscript,notxpcom] boolean scriptAllowed (in JSObjectPtr global); */
+  NS_IMETHOD_(bool) ScriptAllowed(JSObject *global) = 0;
 
   /* nsIPrincipal getSubjectPrincipal (); */
   NS_IMETHOD GetSubjectPrincipal(nsIPrincipal * *_retval) = 0;
@@ -21272,50 +21277,53 @@ class NS_NO_VTABLE nsIScriptSecurityManager : public nsIXPCSecurityManager {
   /* nsIPrincipal getSystemPrincipal (); */
   NS_IMETHOD GetSystemPrincipal(nsIPrincipal * *_retval) = 0;
 
-  /* nsIPrincipal getCertificatePrincipal (in AUTF8String cert_fingerprint, in AUTF8String subject_name, in AUTF8String pretty_name, in nsISupports cert, in nsIURI uri); */
-  NS_IMETHOD GetCertificatePrincipal(const nsACString & cert_fingerprint, const nsACString & subject_name, const nsACString & pretty_name, nsISupports *cert, nsIURI *uri, nsIPrincipal * *_retval) = 0;
+  /* nsIPrincipal getSimpleCodebasePrincipal (in nsIURI uri); */
+  NS_IMETHOD GetSimpleCodebasePrincipal(nsIURI *uri, nsIPrincipal * *_retval) = 0;
 
-  /* nsIPrincipal getCodebasePrincipal (in nsIURI uri); */
+  /* nsIPrincipal getAppCodebasePrincipal (in nsIURI uri, in unsigned long app_id, in boolean in_moz_browser); */
+  NS_IMETHOD GetAppCodebasePrincipal(nsIURI *uri, uint32_t app_id, bool in_moz_browser, nsIPrincipal * *_retval) = 0;
+
+  /* nsIPrincipal getDocShellCodebasePrincipal (in nsIURI uri, in nsIDocShell doc_shell); */
+  NS_IMETHOD GetDocShellCodebasePrincipal(nsIURI *uri, nsIDocShell *doc_shell, nsIPrincipal * *_retval) = 0;
+
+  /* nsIPrincipal getNoAppCodebasePrincipal (in nsIURI uri); */
+  NS_IMETHOD GetNoAppCodebasePrincipal(nsIURI *uri, nsIPrincipal * *_retval) = 0;
+
+  /* [deprecated] nsIPrincipal getCodebasePrincipal (in nsIURI uri); */
   NS_IMETHOD GetCodebasePrincipal(nsIURI *uri, nsIPrincipal * *_retval) = 0;
 
-  /* short requestCapability (in nsIPrincipal principal, in string capability); */
-  NS_IMETHOD RequestCapability(nsIPrincipal *principal, const char * capability, int16_t *_retval) = 0;
-
-  /* boolean isCapabilityEnabled (in string capability); */
-  NS_IMETHOD IsCapabilityEnabled(const char * capability, bool *_retval) = 0;
-
-  /* void enableCapability (in string capability); */
-  NS_IMETHOD EnableCapability(const char * capability) = 0;
-
-  /* void revertCapability (in string capability); */
-  NS_IMETHOD RevertCapability(const char * capability) = 0;
-
-  /* void disableCapability (in string capability); */
-  NS_IMETHOD DisableCapability(const char * capability) = 0;
-
-  /* void setCanEnableCapability (in AUTF8String certificate_id, in string capability, in short can_enable); */
-  NS_IMETHOD SetCanEnableCapability(const nsACString & certificate_id, const char * capability, int16_t can_enable) = 0;
-
-  /* nsIPrincipal getObjectPrincipal (in JSContextPtr cx, in JSObjectPtr obj); */
+  /* [noscript] nsIPrincipal getObjectPrincipal (in JSContextPtr cx, in JSObjectPtr obj); */
   NS_IMETHOD GetObjectPrincipal(JSContext *cx, JSObject *obj, nsIPrincipal * *_retval) = 0;
 
-  /* boolean subjectPrincipalIsSystem (); */
+  /* [noscript] boolean subjectPrincipalIsSystem (); */
   NS_IMETHOD SubjectPrincipalIsSystem(bool *_retval) = 0;
 
-  /* void checkSameOrigin (in JSContextPtr js_context, in nsIURI target_uri); */
+  /* [noscript] void checkSameOrigin (in JSContextPtr js_context, in nsIURI target_uri); */
   NS_IMETHOD CheckSameOrigin(JSContext *js_context, nsIURI *target_uri) = 0;
 
   /* void checkSameOriginURI (in nsIURI source_uri, in nsIURI target_uri); */
   NS_IMETHOD CheckSameOriginURI(nsIURI *source_uri, nsIURI *target_uri) = 0;
 
-  /* void checkSameOriginPrincipal (in nsIPrincipal source_principal, in nsIPrincipal target_principal); */
-  NS_IMETHOD CheckSameOriginPrincipal(nsIPrincipal *source_principal, nsIPrincipal *target_principal) = 0;
+  /* nsIPrincipal getChannelPrincipal (in nsIChannel channel); */
+  NS_IMETHOD GetChannelPrincipal(nsIChannel *channel, nsIPrincipal * *_retval) = 0;
 
-  /* nsIPrincipal getPrincipalFromContext (in JSContextPtr cx); */
-  NS_IMETHOD GetPrincipalFromContext(JSContext *cx, nsIPrincipal * *_retval) = 0;
+  /* boolean isSystemPrincipal (in nsIPrincipal principal); */
+  NS_IMETHOD IsSystemPrincipal(nsIPrincipal *principal, bool *_retval) = 0;
 
-  /* boolean securityCompareURIs (in nsIURI subject_uri, in nsIURI object_uri); */
-  NS_IMETHOD SecurityCompareURIs(nsIURI *subject_uri, nsIURI *object_uri, bool *_retval) = 0;
+  /* [noscript,notxpcom] nsIPrincipal getCxSubjectPrincipal (in JSContextPtr cx); */
+  NS_IMETHOD_(nsIPrincipal *) GetCxSubjectPrincipal(JSContext *cx) = 0;
+
+  /* AUTF8String getJarPrefix (in unsigned long app_id, in boolean in_moz_browser); */
+  NS_IMETHOD GetJarPrefix(uint32_t app_id, bool in_moz_browser, nsACString & _retval) = 0;
+
+  /* nsIDomainPolicy activateDomainPolicy (); */
+  NS_IMETHOD ActivateDomainPolicy(nsIDomainPolicy * *_retval) = 0;
+
+  /* readonly attribute boolean domainPolicyActive; */
+  NS_IMETHOD GetDomainPolicyActive(bool *aDomainPolicyActive) = 0;
+
+  /* boolean policyAllowsScript (in nsIURI domain); */
+  NS_IMETHOD PolicyAllowsScript(nsIURI *domain, bool *_retval) = 0;
 
 };
 
@@ -21324,86 +21332,80 @@ class NS_NO_VTABLE nsIScriptSecurityManager : public nsIXPCSecurityManager {
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSISCRIPTSECURITYMANAGER \
   NS_IMETHOD CheckPropertyAccess(JSContext *js_context, JSObject *js_object, const char * class_name, jsval property, PRUint32 action); \
-  NS_IMETHOD CheckConnect(JSContext *js_context, nsIURI *target_uri, const char * class_name, const char * property); \
   NS_IMETHOD CheckLoadURIFromScript(JSContext *cx, nsIURI *uri); \
   NS_IMETHOD CheckLoadURIWithPrincipal(nsIPrincipal *principal, nsIURI *uri, uint32_t flags); \
-  NS_IMETHOD CheckLoadURI(nsIURI *from, nsIURI *uri, uint32_t flags); \
-  NS_IMETHOD CheckLoadURIStr(const nsACString & from, const nsACString & uri, uint32_t flags); \
-  NS_IMETHOD CheckFunctionAccess(JSContext *cx, void *fun_obj, void *target_obj); \
-  NS_IMETHOD CanExecuteScripts(JSContext *cx, nsIPrincipal *principal, bool *_retval); \
+  NS_IMETHOD CheckLoadURIStrWithPrincipal(nsIPrincipal *principal, const nsACString & uri, uint32_t flags); \
+  NS_IMETHOD_(bool) ScriptAllowed(JSObject *global); \
   NS_IMETHOD GetSubjectPrincipal(nsIPrincipal * *_retval); \
   NS_IMETHOD GetSystemPrincipal(nsIPrincipal * *_retval); \
-  NS_IMETHOD GetCertificatePrincipal(const nsACString & cert_fingerprint, const nsACString & subject_name, const nsACString & pretty_name, nsISupports *cert, nsIURI *uri, nsIPrincipal * *_retval); \
+  NS_IMETHOD GetSimpleCodebasePrincipal(nsIURI *uri, nsIPrincipal * *_retval); \
+  NS_IMETHOD GetAppCodebasePrincipal(nsIURI *uri, uint32_t app_id, bool in_moz_browser, nsIPrincipal * *_retval); \
+  NS_IMETHOD GetDocShellCodebasePrincipal(nsIURI *uri, nsIDocShell *doc_shell, nsIPrincipal * *_retval); \
+  NS_IMETHOD GetNoAppCodebasePrincipal(nsIURI *uri, nsIPrincipal * *_retval); \
   NS_IMETHOD GetCodebasePrincipal(nsIURI *uri, nsIPrincipal * *_retval); \
-  NS_IMETHOD RequestCapability(nsIPrincipal *principal, const char * capability, int16_t *_retval); \
-  NS_IMETHOD IsCapabilityEnabled(const char * capability, bool *_retval); \
-  NS_IMETHOD EnableCapability(const char * capability); \
-  NS_IMETHOD RevertCapability(const char * capability); \
-  NS_IMETHOD DisableCapability(const char * capability); \
-  NS_IMETHOD SetCanEnableCapability(const nsACString & certificate_id, const char * capability, int16_t can_enable); \
   NS_IMETHOD GetObjectPrincipal(JSContext *cx, JSObject *obj, nsIPrincipal * *_retval); \
   NS_IMETHOD SubjectPrincipalIsSystem(bool *_retval); \
   NS_IMETHOD CheckSameOrigin(JSContext *js_context, nsIURI *target_uri); \
   NS_IMETHOD CheckSameOriginURI(nsIURI *source_uri, nsIURI *target_uri); \
-  NS_IMETHOD CheckSameOriginPrincipal(nsIPrincipal *source_principal, nsIPrincipal *target_principal); \
-  NS_IMETHOD GetPrincipalFromContext(JSContext *cx, nsIPrincipal * *_retval); \
-  NS_IMETHOD SecurityCompareURIs(nsIURI *subject_uri, nsIURI *object_uri, bool *_retval); 
+  NS_IMETHOD GetChannelPrincipal(nsIChannel *channel, nsIPrincipal * *_retval); \
+  NS_IMETHOD IsSystemPrincipal(nsIPrincipal *principal, bool *_retval); \
+  NS_IMETHOD_(nsIPrincipal *) GetCxSubjectPrincipal(JSContext *cx); \
+  NS_IMETHOD GetJarPrefix(uint32_t app_id, bool in_moz_browser, nsACString & _retval); \
+  NS_IMETHOD ActivateDomainPolicy(nsIDomainPolicy * *_retval); \
+  NS_IMETHOD GetDomainPolicyActive(bool *aDomainPolicyActive); \
+  NS_IMETHOD PolicyAllowsScript(nsIURI *domain, bool *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSISCRIPTSECURITYMANAGER(_to) \
   NS_IMETHOD CheckPropertyAccess(JSContext *js_context, JSObject *js_object, const char * class_name, jsval property, PRUint32 action) { return _to CheckPropertyAccess(js_context, js_object, class_name, property, action); } \
-  NS_IMETHOD CheckConnect(JSContext *js_context, nsIURI *target_uri, const char * class_name, const char * property) { return _to CheckConnect(js_context, target_uri, class_name, property); } \
   NS_IMETHOD CheckLoadURIFromScript(JSContext *cx, nsIURI *uri) { return _to CheckLoadURIFromScript(cx, uri); } \
   NS_IMETHOD CheckLoadURIWithPrincipal(nsIPrincipal *principal, nsIURI *uri, uint32_t flags) { return _to CheckLoadURIWithPrincipal(principal, uri, flags); } \
-  NS_IMETHOD CheckLoadURI(nsIURI *from, nsIURI *uri, uint32_t flags) { return _to CheckLoadURI(from, uri, flags); } \
-  NS_IMETHOD CheckLoadURIStr(const nsACString & from, const nsACString & uri, uint32_t flags) { return _to CheckLoadURIStr(from, uri, flags); } \
-  NS_IMETHOD CheckFunctionAccess(JSContext *cx, void *fun_obj, void *target_obj) { return _to CheckFunctionAccess(cx, fun_obj, target_obj); } \
-  NS_IMETHOD CanExecuteScripts(JSContext *cx, nsIPrincipal *principal, bool *_retval) { return _to CanExecuteScripts(cx, principal, _retval); } \
+  NS_IMETHOD CheckLoadURIStrWithPrincipal(nsIPrincipal *principal, const nsACString & uri, uint32_t flags) { return _to CheckLoadURIStrWithPrincipal(principal, uri, flags); } \
+  NS_IMETHOD_(bool) ScriptAllowed(JSObject *global) { return _to ScriptAllowed(global); } \
   NS_IMETHOD GetSubjectPrincipal(nsIPrincipal * *_retval) { return _to GetSubjectPrincipal(_retval); } \
   NS_IMETHOD GetSystemPrincipal(nsIPrincipal * *_retval) { return _to GetSystemPrincipal(_retval); } \
-  NS_IMETHOD GetCertificatePrincipal(const nsACString & cert_fingerprint, const nsACString & subject_name, const nsACString & pretty_name, nsISupports *cert, nsIURI *uri, nsIPrincipal * *_retval) { return _to GetCertificatePrincipal(cert_fingerprint, subject_name, pretty_name, cert, uri, _retval); } \
+  NS_IMETHOD GetSimpleCodebasePrincipal(nsIURI *uri, nsIPrincipal * *_retval) { return _to GetSimpleCodebasePrincipal(uri, _retval); } \
+  NS_IMETHOD GetAppCodebasePrincipal(nsIURI *uri, uint32_t app_id, bool in_moz_browser, nsIPrincipal * *_retval) { return _to GetAppCodebasePrincipal(uri, app_id, in_moz_browser, _retval); } \
+  NS_IMETHOD GetDocShellCodebasePrincipal(nsIURI *uri, nsIDocShell *doc_shell, nsIPrincipal * *_retval) { return _to GetDocShellCodebasePrincipal(uri, doc_shell, _retval); } \
+  NS_IMETHOD GetNoAppCodebasePrincipal(nsIURI *uri, nsIPrincipal * *_retval) { return _to GetNoAppCodebasePrincipal(uri, _retval); } \
   NS_IMETHOD GetCodebasePrincipal(nsIURI *uri, nsIPrincipal * *_retval) { return _to GetCodebasePrincipal(uri, _retval); } \
-  NS_IMETHOD RequestCapability(nsIPrincipal *principal, const char * capability, int16_t *_retval) { return _to RequestCapability(principal, capability, _retval); } \
-  NS_IMETHOD IsCapabilityEnabled(const char * capability, bool *_retval) { return _to IsCapabilityEnabled(capability, _retval); } \
-  NS_IMETHOD EnableCapability(const char * capability) { return _to EnableCapability(capability); } \
-  NS_IMETHOD RevertCapability(const char * capability) { return _to RevertCapability(capability); } \
-  NS_IMETHOD DisableCapability(const char * capability) { return _to DisableCapability(capability); } \
-  NS_IMETHOD SetCanEnableCapability(const nsACString & certificate_id, const char * capability, int16_t can_enable) { return _to SetCanEnableCapability(certificate_id, capability, can_enable); } \
   NS_IMETHOD GetObjectPrincipal(JSContext *cx, JSObject *obj, nsIPrincipal * *_retval) { return _to GetObjectPrincipal(cx, obj, _retval); } \
   NS_IMETHOD SubjectPrincipalIsSystem(bool *_retval) { return _to SubjectPrincipalIsSystem(_retval); } \
   NS_IMETHOD CheckSameOrigin(JSContext *js_context, nsIURI *target_uri) { return _to CheckSameOrigin(js_context, target_uri); } \
   NS_IMETHOD CheckSameOriginURI(nsIURI *source_uri, nsIURI *target_uri) { return _to CheckSameOriginURI(source_uri, target_uri); } \
-  NS_IMETHOD CheckSameOriginPrincipal(nsIPrincipal *source_principal, nsIPrincipal *target_principal) { return _to CheckSameOriginPrincipal(source_principal, target_principal); } \
-  NS_IMETHOD GetPrincipalFromContext(JSContext *cx, nsIPrincipal * *_retval) { return _to GetPrincipalFromContext(cx, _retval); } \
-  NS_IMETHOD SecurityCompareURIs(nsIURI *subject_uri, nsIURI *object_uri, bool *_retval) { return _to SecurityCompareURIs(subject_uri, object_uri, _retval); } 
+  NS_IMETHOD GetChannelPrincipal(nsIChannel *channel, nsIPrincipal * *_retval) { return _to GetChannelPrincipal(channel, _retval); } \
+  NS_IMETHOD IsSystemPrincipal(nsIPrincipal *principal, bool *_retval) { return _to IsSystemPrincipal(principal, _retval); } \
+  NS_IMETHOD_(nsIPrincipal *) GetCxSubjectPrincipal(JSContext *cx) { return _to GetCxSubjectPrincipal(cx); } \
+  NS_IMETHOD GetJarPrefix(uint32_t app_id, bool in_moz_browser, nsACString & _retval) { return _to GetJarPrefix(app_id, in_moz_browser, _retval); } \
+  NS_IMETHOD ActivateDomainPolicy(nsIDomainPolicy * *_retval) { return _to ActivateDomainPolicy(_retval); } \
+  NS_IMETHOD GetDomainPolicyActive(bool *aDomainPolicyActive) { return _to GetDomainPolicyActive(aDomainPolicyActive); } \
+  NS_IMETHOD PolicyAllowsScript(nsIURI *domain, bool *_retval) { return _to PolicyAllowsScript(domain, _retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSISCRIPTSECURITYMANAGER(_to) \
   NS_IMETHOD CheckPropertyAccess(JSContext *js_context, JSObject *js_object, const char * class_name, jsval property, PRUint32 action) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckPropertyAccess(js_context, js_object, class_name, property, action); } \
-  NS_IMETHOD CheckConnect(JSContext *js_context, nsIURI *target_uri, const char * class_name, const char * property) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckConnect(js_context, target_uri, class_name, property); } \
   NS_IMETHOD CheckLoadURIFromScript(JSContext *cx, nsIURI *uri) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckLoadURIFromScript(cx, uri); } \
   NS_IMETHOD CheckLoadURIWithPrincipal(nsIPrincipal *principal, nsIURI *uri, uint32_t flags) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckLoadURIWithPrincipal(principal, uri, flags); } \
-  NS_IMETHOD CheckLoadURI(nsIURI *from, nsIURI *uri, uint32_t flags) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckLoadURI(from, uri, flags); } \
-  NS_IMETHOD CheckLoadURIStr(const nsACString & from, const nsACString & uri, uint32_t flags) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckLoadURIStr(from, uri, flags); } \
-  NS_IMETHOD CheckFunctionAccess(JSContext *cx, void *fun_obj, void *target_obj) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckFunctionAccess(cx, fun_obj, target_obj); } \
-  NS_IMETHOD CanExecuteScripts(JSContext *cx, nsIPrincipal *principal, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CanExecuteScripts(cx, principal, _retval); } \
+  NS_IMETHOD CheckLoadURIStrWithPrincipal(nsIPrincipal *principal, const nsACString & uri, uint32_t flags) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckLoadURIStrWithPrincipal(principal, uri, flags); } \
+  NS_IMETHOD_(bool) ScriptAllowed(JSObject *global); \
   NS_IMETHOD GetSubjectPrincipal(nsIPrincipal * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSubjectPrincipal(_retval); } \
   NS_IMETHOD GetSystemPrincipal(nsIPrincipal * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSystemPrincipal(_retval); } \
-  NS_IMETHOD GetCertificatePrincipal(const nsACString & cert_fingerprint, const nsACString & subject_name, const nsACString & pretty_name, nsISupports *cert, nsIURI *uri, nsIPrincipal * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetCertificatePrincipal(cert_fingerprint, subject_name, pretty_name, cert, uri, _retval); } \
+  NS_IMETHOD GetSimpleCodebasePrincipal(nsIURI *uri, nsIPrincipal * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSimpleCodebasePrincipal(uri, _retval); } \
+  NS_IMETHOD GetAppCodebasePrincipal(nsIURI *uri, uint32_t app_id, bool in_moz_browser, nsIPrincipal * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAppCodebasePrincipal(uri, app_id, in_moz_browser, _retval); } \
+  NS_IMETHOD GetDocShellCodebasePrincipal(nsIURI *uri, nsIDocShell *doc_shell, nsIPrincipal * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDocShellCodebasePrincipal(uri, doc_shell, _retval); } \
+  NS_IMETHOD GetNoAppCodebasePrincipal(nsIURI *uri, nsIPrincipal * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetNoAppCodebasePrincipal(uri, _retval); } \
   NS_IMETHOD GetCodebasePrincipal(nsIURI *uri, nsIPrincipal * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetCodebasePrincipal(uri, _retval); } \
-  NS_IMETHOD RequestCapability(nsIPrincipal *principal, const char * capability, int16_t *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->RequestCapability(principal, capability, _retval); } \
-  NS_IMETHOD IsCapabilityEnabled(const char * capability, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->IsCapabilityEnabled(capability, _retval); } \
-  NS_IMETHOD EnableCapability(const char * capability) { return !_to ? NS_ERROR_NULL_POINTER : _to->EnableCapability(capability); } \
-  NS_IMETHOD RevertCapability(const char * capability) { return !_to ? NS_ERROR_NULL_POINTER : _to->RevertCapability(capability); } \
-  NS_IMETHOD DisableCapability(const char * capability) { return !_to ? NS_ERROR_NULL_POINTER : _to->DisableCapability(capability); } \
-  NS_IMETHOD SetCanEnableCapability(const nsACString & certificate_id, const char * capability, int16_t can_enable) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetCanEnableCapability(certificate_id, capability, can_enable); } \
   NS_IMETHOD GetObjectPrincipal(JSContext *cx, JSObject *obj, nsIPrincipal * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetObjectPrincipal(cx, obj, _retval); } \
   NS_IMETHOD SubjectPrincipalIsSystem(bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->SubjectPrincipalIsSystem(_retval); } \
   NS_IMETHOD CheckSameOrigin(JSContext *js_context, nsIURI *target_uri) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckSameOrigin(js_context, target_uri); } \
   NS_IMETHOD CheckSameOriginURI(nsIURI *source_uri, nsIURI *target_uri) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckSameOriginURI(source_uri, target_uri); } \
-  NS_IMETHOD CheckSameOriginPrincipal(nsIPrincipal *source_principal, nsIPrincipal *target_principal) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckSameOriginPrincipal(source_principal, target_principal); } \
-  NS_IMETHOD GetPrincipalFromContext(JSContext *cx, nsIPrincipal * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPrincipalFromContext(cx, _retval); } \
-  NS_IMETHOD SecurityCompareURIs(nsIURI *subject_uri, nsIURI *object_uri, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->SecurityCompareURIs(subject_uri, object_uri, _retval); } 
+  NS_IMETHOD GetChannelPrincipal(nsIChannel *channel, nsIPrincipal * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetChannelPrincipal(channel, _retval); } \
+  NS_IMETHOD IsSystemPrincipal(nsIPrincipal *principal, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->IsSystemPrincipal(principal, _retval); } \
+  NS_IMETHOD_(nsIPrincipal *) GetCxSubjectPrincipal(JSContext *cx); \
+  NS_IMETHOD GetJarPrefix(uint32_t app_id, bool in_moz_browser, nsACString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetJarPrefix(app_id, in_moz_browser, _retval); } \
+  NS_IMETHOD ActivateDomainPolicy(nsIDomainPolicy * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ActivateDomainPolicy(_retval); } \
+  NS_IMETHOD GetDomainPolicyActive(bool *aDomainPolicyActive) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDomainPolicyActive(aDomainPolicyActive); } \
+  NS_IMETHOD PolicyAllowsScript(nsIURI *domain, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->PolicyAllowsScript(domain, _retval); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -21437,19 +21439,13 @@ nsScriptSecurityManager::~nsScriptSecurityManager()
   /* destructor code */
 }
 
-/* void checkPropertyAccess (in JSContextPtr js_context, in JSObjectPtr js_object, in string class_name, in JSVal property, in PRUint32 action); */
+/* [noscript] void checkPropertyAccess (in JSContextPtr js_context, in JSObjectPtr js_object, in string class_name, in JSVal property, in PRUint32 action); */
 NS_IMETHODIMP nsScriptSecurityManager::CheckPropertyAccess(JSContext *js_context, JSObject *js_object, const char * class_name, jsval property, PRUint32 action)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void checkConnect (in JSContextPtr js_context, in nsIURI target_uri, in string class_name, in string property); */
-NS_IMETHODIMP nsScriptSecurityManager::CheckConnect(JSContext *js_context, nsIURI *target_uri, const char * class_name, const char * property)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void checkLoadURIFromScript (in JSContextPtr cx, in nsIURI uri); */
+/* [noscript] void checkLoadURIFromScript (in JSContextPtr cx, in nsIURI uri); */
 NS_IMETHODIMP nsScriptSecurityManager::CheckLoadURIFromScript(JSContext *cx, nsIURI *uri)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
@@ -21461,26 +21457,14 @@ NS_IMETHODIMP nsScriptSecurityManager::CheckLoadURIWithPrincipal(nsIPrincipal *p
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void checkLoadURI (in nsIURI from, in nsIURI uri, in unsigned long flags); */
-NS_IMETHODIMP nsScriptSecurityManager::CheckLoadURI(nsIURI *from, nsIURI *uri, uint32_t flags)
+/* void checkLoadURIStrWithPrincipal (in nsIPrincipal principal, in AUTF8String uri, in unsigned long flags); */
+NS_IMETHODIMP nsScriptSecurityManager::CheckLoadURIStrWithPrincipal(nsIPrincipal *principal, const nsACString & uri, uint32_t flags)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void checkLoadURIStr (in AUTF8String from, in AUTF8String uri, in unsigned long flags); */
-NS_IMETHODIMP nsScriptSecurityManager::CheckLoadURIStr(const nsACString & from, const nsACString & uri, uint32_t flags)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void checkFunctionAccess (in JSContextPtr cx, in voidPtr fun_obj, in voidPtr target_obj); */
-NS_IMETHODIMP nsScriptSecurityManager::CheckFunctionAccess(JSContext *cx, void *fun_obj, void *target_obj)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* boolean canExecuteScripts (in JSContextPtr cx, in nsIPrincipal principal); */
-NS_IMETHODIMP nsScriptSecurityManager::CanExecuteScripts(JSContext *cx, nsIPrincipal *principal, bool *_retval)
+/* [noscript,notxpcom] boolean scriptAllowed (in JSObjectPtr global); */
+NS_IMETHODIMP_(bool) nsScriptSecurityManager::ScriptAllowed(JSObject *global)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -21497,67 +21481,49 @@ NS_IMETHODIMP nsScriptSecurityManager::GetSystemPrincipal(nsIPrincipal * *_retva
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIPrincipal getCertificatePrincipal (in AUTF8String cert_fingerprint, in AUTF8String subject_name, in AUTF8String pretty_name, in nsISupports cert, in nsIURI uri); */
-NS_IMETHODIMP nsScriptSecurityManager::GetCertificatePrincipal(const nsACString & cert_fingerprint, const nsACString & subject_name, const nsACString & pretty_name, nsISupports *cert, nsIURI *uri, nsIPrincipal * *_retval)
+/* nsIPrincipal getSimpleCodebasePrincipal (in nsIURI uri); */
+NS_IMETHODIMP nsScriptSecurityManager::GetSimpleCodebasePrincipal(nsIURI *uri, nsIPrincipal * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIPrincipal getCodebasePrincipal (in nsIURI uri); */
+/* nsIPrincipal getAppCodebasePrincipal (in nsIURI uri, in unsigned long app_id, in boolean in_moz_browser); */
+NS_IMETHODIMP nsScriptSecurityManager::GetAppCodebasePrincipal(nsIURI *uri, uint32_t app_id, bool in_moz_browser, nsIPrincipal * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIPrincipal getDocShellCodebasePrincipal (in nsIURI uri, in nsIDocShell doc_shell); */
+NS_IMETHODIMP nsScriptSecurityManager::GetDocShellCodebasePrincipal(nsIURI *uri, nsIDocShell *doc_shell, nsIPrincipal * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIPrincipal getNoAppCodebasePrincipal (in nsIURI uri); */
+NS_IMETHODIMP nsScriptSecurityManager::GetNoAppCodebasePrincipal(nsIURI *uri, nsIPrincipal * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [deprecated] nsIPrincipal getCodebasePrincipal (in nsIURI uri); */
 NS_IMETHODIMP nsScriptSecurityManager::GetCodebasePrincipal(nsIURI *uri, nsIPrincipal * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* short requestCapability (in nsIPrincipal principal, in string capability); */
-NS_IMETHODIMP nsScriptSecurityManager::RequestCapability(nsIPrincipal *principal, const char * capability, int16_t *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* boolean isCapabilityEnabled (in string capability); */
-NS_IMETHODIMP nsScriptSecurityManager::IsCapabilityEnabled(const char * capability, bool *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void enableCapability (in string capability); */
-NS_IMETHODIMP nsScriptSecurityManager::EnableCapability(const char * capability)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void revertCapability (in string capability); */
-NS_IMETHODIMP nsScriptSecurityManager::RevertCapability(const char * capability)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void disableCapability (in string capability); */
-NS_IMETHODIMP nsScriptSecurityManager::DisableCapability(const char * capability)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void setCanEnableCapability (in AUTF8String certificate_id, in string capability, in short can_enable); */
-NS_IMETHODIMP nsScriptSecurityManager::SetCanEnableCapability(const nsACString & certificate_id, const char * capability, int16_t can_enable)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* nsIPrincipal getObjectPrincipal (in JSContextPtr cx, in JSObjectPtr obj); */
+/* [noscript] nsIPrincipal getObjectPrincipal (in JSContextPtr cx, in JSObjectPtr obj); */
 NS_IMETHODIMP nsScriptSecurityManager::GetObjectPrincipal(JSContext *cx, JSObject *obj, nsIPrincipal * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* boolean subjectPrincipalIsSystem (); */
+/* [noscript] boolean subjectPrincipalIsSystem (); */
 NS_IMETHODIMP nsScriptSecurityManager::SubjectPrincipalIsSystem(bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void checkSameOrigin (in JSContextPtr js_context, in nsIURI target_uri); */
+/* [noscript] void checkSameOrigin (in JSContextPtr js_context, in nsIURI target_uri); */
 NS_IMETHODIMP nsScriptSecurityManager::CheckSameOrigin(JSContext *js_context, nsIURI *target_uri)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
@@ -21569,20 +21535,44 @@ NS_IMETHODIMP nsScriptSecurityManager::CheckSameOriginURI(nsIURI *source_uri, ns
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void checkSameOriginPrincipal (in nsIPrincipal source_principal, in nsIPrincipal target_principal); */
-NS_IMETHODIMP nsScriptSecurityManager::CheckSameOriginPrincipal(nsIPrincipal *source_principal, nsIPrincipal *target_principal)
+/* nsIPrincipal getChannelPrincipal (in nsIChannel channel); */
+NS_IMETHODIMP nsScriptSecurityManager::GetChannelPrincipal(nsIChannel *channel, nsIPrincipal * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIPrincipal getPrincipalFromContext (in JSContextPtr cx); */
-NS_IMETHODIMP nsScriptSecurityManager::GetPrincipalFromContext(JSContext *cx, nsIPrincipal * *_retval)
+/* boolean isSystemPrincipal (in nsIPrincipal principal); */
+NS_IMETHODIMP nsScriptSecurityManager::IsSystemPrincipal(nsIPrincipal *principal, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* boolean securityCompareURIs (in nsIURI subject_uri, in nsIURI object_uri); */
-NS_IMETHODIMP nsScriptSecurityManager::SecurityCompareURIs(nsIURI *subject_uri, nsIURI *object_uri, bool *_retval)
+/* [noscript,notxpcom] nsIPrincipal getCxSubjectPrincipal (in JSContextPtr cx); */
+NS_IMETHODIMP_(nsIPrincipal *) nsScriptSecurityManager::GetCxSubjectPrincipal(JSContext *cx)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* AUTF8String getJarPrefix (in unsigned long app_id, in boolean in_moz_browser); */
+NS_IMETHODIMP nsScriptSecurityManager::GetJarPrefix(uint32_t app_id, bool in_moz_browser, nsACString & _retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIDomainPolicy activateDomainPolicy (); */
+NS_IMETHODIMP nsScriptSecurityManager::ActivateDomainPolicy(nsIDomainPolicy * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute boolean domainPolicyActive; */
+NS_IMETHODIMP nsScriptSecurityManager::GetDomainPolicyActive(bool *aDomainPolicyActive)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* boolean policyAllowsScript (in nsIURI domain); */
+NS_IMETHODIMP nsScriptSecurityManager::PolicyAllowsScript(nsIURI *domain, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }

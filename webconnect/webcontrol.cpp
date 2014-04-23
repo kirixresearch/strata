@@ -3630,179 +3630,64 @@ void wxWebControl::OnSize(wxSizeEvent& evt)
 
 
 
+/*
+namespace JS
+{
 
-
-
-
-#define NS_ISCRIPTGLOBALOBJECT_IID \
-{ 0xd326a211, 0xdc31, 0x45c6, \
- { 0x98, 0x97, 0x22, 0x11, 0xea, 0xbc, 0xd0, 0x1c } }
-
-class nsIScriptContext;
-class nsIArray;
-class nsScriptErrorEvent;
-class nsEventStatus;
-class nsIScriptGlobalObjectOwner;
-class nsPresContext;
-class nsEvent;
-class nsIDocShell;
-class nsIDOMWindowInternal;
-
-class nsIScriptGlobalObject : public nsISupports
+template <typename T>
+class Handle
 {
 public:
-    NS_DECLARE_STATIC_IID_ACCESSOR(NS_ISCRIPTGLOBALOBJECT_IID)
-
-    virtual void SetContext(nsIScriptContext* context) = 0;
-    virtual nsIScriptContext* GetContext() = 0;
-    
-    virtual nsresult SetNewDocument(
-                    nsIDOMDocument* document,
-                    nsISupports* state,
-                    bool remove_event_listeners,
-                    bool clear_scope) = 0;
-                    
-    virtual void SetDocShell(nsIDocShell* doc_shell) = 0;
-    virtual nsIDocShell* GetDocShell() = 0;
-    
-    virtual void SetOpenerWindow(nsIDOMWindowInternal* opener) = 0;
-    
-    virtual void SetGlobalObjectOwner(nsIScriptGlobalObjectOwner* owner) = 0;
-    virtual nsIScriptGlobalObjectOwner* GetGlobalObjectOwner() = 0;
-
-    virtual nsresult HandleDOMEvent(
-                    nsPresContext* pres_context, 
-                    nsEvent* event, 
-                    nsIDOMEvent** dom_event,
-                    PRUint32 flags,
-                    nsEventStatus* event_status)=0;
-
-    virtual JSObject* GetGlobalJSObject() = 0;
-    virtual void OnFinalize(JSObject* js_object) = 0;
-    virtual void SetScriptsEnabled(bool enabled, bool fire_timeouts) = 0;
-    virtual nsresult SetNewArguments(PRUint32 argc, void* argv) = 0;
+    T ptr;
 };
 
-NS_DEFINE_STATIC_IID_ACCESSOR(nsIScriptGlobalObject, NS_ISCRIPTGLOBALOBJECT_IID)
 
-#define NS_ISCRIPTCONTEXT_IID \
-{ /* b3fd8821-b46d-4160-913f-cc8fe8176f5f */ \
-  0xb3fd8821, 0xb46d, 0x4160, \
-  {0x91, 0x3f, 0xcc, 0x8f, 0xe8, 0x17, 0x6f, 0x5f} }
+class CompileOptions
+{
+};
 
-class nsIAtom;
-class nsIScriptContextOwner;
-typedef void (*nsScriptTerminationFunc)(nsISupports* ref);
+};
 
-
+#define NS_ISCRIPTCONTEXT_IID { 0x513c2c1a, 0xf4f1, 0x44da, { 0x8e, 0x38, 0xf4, 0x0c, 0x30, 0x9a, 0x5d, 0xef } }
 class nsIScriptContext : public nsISupports
 {
 public:
     NS_DECLARE_STATIC_IID_ACCESSOR(NS_ISCRIPTCONTEXT_IID)
 
-    virtual nsresult EvaluateString(
-                                   const nsAString& script,
-                                   void* scope_object,
-                                   nsIPrincipal* principal,
-                                   const char* url,
-                                   PRUint32 line_no,
-                                   const char* version,
-                                   nsAString* retval,
-                                   bool* is_undefined) = 0;
-
-    virtual nsresult EvaluateStringWithValue(
-                                   const nsAString& script,
-                                   void* scope_object,
-                                   nsIPrincipal* principal,
-                                   const char* url,
-                                   PRUint32 line_no,
-                                   const char* version,
-                                   void* retval,
-                                   bool* is_undefined) = 0;
-
-    virtual nsresult CompileScript(const PRUnichar* text,
-                                   PRInt32 text_length,
-                                   void* scope_object,
-                                   nsIPrincipal* principal,
-                                   const char* url,
-                                   PRUint32 line_no,
-                                   const char* version,
-                                   void** script_object) = 0;
-
-    virtual nsresult ExecuteScript(void* script_object,
-                                   void* scope_object,
-                                   nsAString* retval,
-                                   bool* is_undefined) = 0;
-
-    virtual nsresult CompileEventHandler(
-                                   void* target,
-                                   nsIAtom* name,
-                                   const char* event_name,
-                                   const nsAString& body,
-                                   const char* url,
-                                   PRUint32 line_no,
-                                   bool shared,
-                                   void** handler) = 0;
-
-    virtual nsresult CallEventHandler(
-                                   JSObject* target,
-                                   JSObject* handler,
-                                   unsigned int argc,
-                                   jsval* argv,
-                                   jsval* rval) = 0;
-
-    virtual nsresult BindCompiledEventHandler(
-                                   void* aTarget,
-                                   nsIAtom* aName,
-                                   void* aHandler) = 0;
-
-    virtual nsresult CompileFunction(
-                                   void* target,
-                                   const nsACString& name,
-                                   PRUint32 arg_count,
-                                   const char** arg_array,
-                                   const nsAString& body,
-                                   const char* url,
-                                   PRUint32 line_no,
-                                   bool shared,
-                                   void** function_object) = 0;
-
-    virtual void SetDefaultLanguageVersion(const char* aVersion) = 0;
-
-    virtual nsIScriptGlobalObject* GetGlobalObject() = 0;
-    virtual void *GetNativeContext() = 0;
-    virtual nsresult InitContext(nsIScriptGlobalObject* global_object) = 0;
-    virtual bool IsContextInitialized() = 0;
-    virtual void GC() = 0;
-
-    virtual void ScriptEvaluated(bool terminated) = 0;
-    virtual void SetOwner(nsIScriptContextOwner* owner) = 0;
-    virtual nsIScriptContextOwner *GetOwner() = 0;
-
-    virtual nsresult SetTerminationFunction(nsScriptTerminationFunc func,
-                                            nsISupports* ref) = 0;
-
-    virtual bool GetScriptsEnabled() = 0;
-    virtual void SetScriptsEnabled(bool enabled,
-                                   bool fire_timeouts) = 0;
-
-    virtual bool GetProcessingScriptTag() = 0;
-    virtual void SetProcessingScriptTag(bool result) = 0;
-    virtual void SetGCOnDestruction(bool gc_on_destruction) = 0;
-
-    virtual nsresult InitClasses(JSObject* global_obj) = 0;
-    virtual void WillInitializeContext() = 0;
-    virtual void DidInitializeContext() = 0;
+    virtual nsresult EvaluateString(const nsAString& aScript,
+                                    JS::Handle<JSObject*> aScopeObject,
+                                    JS::CompileOptions &aOptions,
+                                    bool aCoerceToString,
+                                    JS::Value* aRetValue,
+                                    void **aOffThreadToken = nullptr) = 0;
 };
+NS_DEFINE_STATIC_IID_ACCESSOR(nsIScriptContext, NS_ISCRIPTCONTEXT_IID)
 
+
+#define NS_ISCRIPTGLOBALOBJECT_IID { 0x30c64680, 0x909a, 0x4435, { 0x90, 0x3b, 0x29, 0x3e, 0xb5, 0x5d, 0xc7, 0xa0 } }
+class nsIGlobalObject : public nsISupports
+{
+public:
+    virtual JSObject* GetGlobalJSObject() = 0;
+};
+class nsIScriptGlobalObject : public nsIGlobalObject
+{
+public:
+  NS_DECLARE_STATIC_IID_ACCESSOR(NS_ISCRIPTGLOBALOBJECT_IID)
+
+  virtual nsresult EnsureScriptEnvironment() = 0;
+  virtual nsIScriptContext* GetScriptContext() = 0;
+};
+NS_DEFINE_STATIC_IID_ACCESSOR(nsIScriptGlobalObject, NS_ISCRIPTGLOBALOBJECT_IID)
+*/
 
 
 
 
 bool wxWebControl::Execute(const wxString& js_code)
 {
-    nsresult rv;
-
+    return false;
+/*
     ns_smartptr<nsIScriptSecurityManager> security_manager;
     security_manager = nsGetService("@mozilla.org/scriptsecuritymanager;1");
     if (security_manager.empty())
@@ -3816,25 +3701,32 @@ bool wxWebControl::Execute(const wxString& js_code)
     ns_smartptr<nsIScriptGlobalObject> sgo = nsRequestInterface(m_ptrs->m_web_browser);
     if (sgo.empty())
         return false;
-    ns_smartptr<nsIScriptContext> ctx = sgo->GetContext();
+    ns_smartptr<nsIScriptContext> ctx = sgo->GetScriptContext();
     if (ctx.empty())
         return false;
 
-    void* obj = sgo->GetGlobalJSObject();
-    
+    nsresult rv;
+    jsval out;
     nsEmbedString str;
     wx2ns(js_code, str);
 
-    jsval out;
-    rv = ctx->EvaluateStringWithValue(
+
+    JS::Handle<JSObject*> handle_global;
+    handle_global.ptr = sgo->GetGlobalJSObject();
+
+    JS::CompileOptions options;
+
+    //JS::CompileOptions options(cx);
+    //options.setFileAndLine(spec, 0)
+    //       .setVersion(JSVERSION_DEFAULT);
+
+    rv = ctx->EvaluateString(
         str,
-        sgo->GetGlobalJSObject(),
-        principal,
-        "mozembed",
-        0,
-        nsnull,
-        &out,
-        nsnull);
+        handle_global,
+        options,
+        true,
+        nullptr);
         
     return true;
+*/
 }

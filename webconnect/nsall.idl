@@ -3752,82 +3752,65 @@ interface nsIPrincipal : nsISupports //nsISerializable
 //  nsIScriptSecurityManager
 ///////////////////////////////////////////////////////////////////////////////
 
-[uuid(f4d74511-2b2d-4a14-a3e4-a392ac5ac3ff)]
+interface nsIDocShell;
+interface nsIDomainPolicy;
+
+
+[uuid(2911ae60-1b5f-47e6-941e-1bb7b53a167d)]
 interface nsIScriptSecurityManager : nsIXPCSecurityManager
 {
-    void checkPropertyAccess(
+    [noscript] void checkPropertyAccess(
                       in JSContextPtr js_context,
                       in JSObjectPtr js_object,
                       in string class_name,
                       in JSVal property,
                       in PRUint32 action);
 
-    void checkConnect(in JSContextPtr js_context,
-                      in nsIURI target_uri,
-                      in string class_name,
-                      in string property);
+    [noscript] void checkLoadURIFromScript(in JSContextPtr cx, in nsIURI uri);
 
-    void checkLoadURIFromScript(
-                      in JSContextPtr cx,
-                      in nsIURI uri);
+    const unsigned long STANDARD = 0;
+    const unsigned long LOAD_IS_AUTOMATIC_DOCUMENT_REPLACEMENT = 1;
+    const unsigned long ALLOW_CHROME = 2;
+    const unsigned long DISALLOW_INHERIT_PRINCIPAL = 3;
+    const unsigned long DISALLOW_SCRIPT_OR_DATA = DISALLOW_INHERIT_PRINCIPAL;
+    const unsigned long DISALLOW_SCRIPT = 8;
+    const unsigned long DONT_REPORT_ERRORS = 16;
 
     void checkLoadURIWithPrincipal(
                       in nsIPrincipal principal,
                       in nsIURI uri, 
                       in unsigned long flags);
 
-    void checkLoadURI(in nsIURI from,
-                      in nsIURI uri,
-                      in unsigned long flags);
+    void checkLoadURIStrWithPrincipal(in nsIPrincipal principal,
+                                      in AUTF8String uri,
+                                      in unsigned long flags);
 
-    void checkLoadURIStr(
-                      in AUTF8String from,
-                      in AUTF8String uri,
-                      in unsigned long flags);
-
-    void checkFunctionAccess(
-                      in JSContextPtr cx,
-                      in voidPtr fun_obj,
-                      in voidPtr target_obj);
-
-    boolean canExecuteScripts(
-                      in JSContextPtr cx,
-                      in nsIPrincipal principal);
+    [noscript,notxpcom] boolean scriptAllowed(in JSObjectPtr global);
 
     nsIPrincipal getSubjectPrincipal();
 
     nsIPrincipal getSystemPrincipal();
 
-    nsIPrincipal getCertificatePrincipal(
-                      in AUTF8String cert_fingerprint,
-                      in AUTF8String subject_name,
-                      in AUTF8String pretty_name,
-                      in nsISupports cert,
-                      in nsIURI uri);
-            
-    nsIPrincipal getCodebasePrincipal(in nsIURI uri);
+    nsIPrincipal getSimpleCodebasePrincipal(in nsIURI uri);
 
-    short requestCapability(
-                      in nsIPrincipal principal,
-                      in string capability);
+    nsIPrincipal getAppCodebasePrincipal(in nsIURI uri,
+                                         in unsigned long app_id,
+                                         in boolean in_moz_browser);
 
-    boolean isCapabilityEnabled(in string capability);
-    void enableCapability(in string capability);
-    void revertCapability(in string capability);
-    void disableCapability(in string capability);
+    nsIPrincipal getDocShellCodebasePrincipal(in nsIURI uri,
+                                              in nsIDocShell doc_shell);
 
-    void setCanEnableCapability(
-                      in AUTF8String certificate_id,
-                      in string capability,
-                      in short can_enable);
+    nsIPrincipal getNoAppCodebasePrincipal(in nsIURI uri);
 
-    nsIPrincipal getObjectPrincipal(
-                      in JSContextPtr cx,
-                      in JSObjectPtr obj);
+    [deprecated] nsIPrincipal getCodebasePrincipal(in nsIURI uri);
 
-    boolean subjectPrincipalIsSystem();
+    [noscript] nsIPrincipal getObjectPrincipal(in JSContextPtr cx,
+                                               in JSObjectPtr obj);
 
-    void checkSameOrigin(
+    [noscript] boolean subjectPrincipalIsSystem();
+
+
+    [noscript] void checkSameOrigin(
                       in JSContextPtr js_context,
                       in nsIURI target_uri);
 
@@ -3835,15 +3818,18 @@ interface nsIScriptSecurityManager : nsIXPCSecurityManager
                       in nsIURI source_uri,
                       in nsIURI target_uri);
 
-    void checkSameOriginPrincipal(
-                      in nsIPrincipal source_principal,
-                      in nsIPrincipal target_principal);
+    nsIPrincipal getChannelPrincipal(in nsIChannel channel);
 
-    nsIPrincipal getPrincipalFromContext(in JSContextPtr cx);
+    boolean isSystemPrincipal(in nsIPrincipal principal);
 
-    boolean securityCompareURIs(
-                      in nsIURI subject_uri,
-                      in nsIURI object_uri);
+    [noscript,notxpcom] nsIPrincipal getCxSubjectPrincipal(in JSContextPtr cx);
+
+    AUTF8String getJarPrefix(in unsigned long app_id, in boolean in_moz_browser);
+
+    nsIDomainPolicy activateDomainPolicy();
+    readonly attribute boolean domainPolicyActive;
+
+    boolean policyAllowsScript(in nsIURI domain);
 };
 
 
@@ -3863,3 +3849,4 @@ interface nsISSLCertErrorDialog : nsISupports
                        in ACString host_name,
                        in PRUint32 port_number);
 };
+
