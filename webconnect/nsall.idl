@@ -3867,3 +3867,52 @@ interface nsISSLCertErrorDialog : nsISupports
                        in PRUint32 port_number);
 };
 
+
+
+
+
+[scriptable, uuid(2aaa897a-293c-4d2b-a657-8c9b7136996d)]
+interface nsICookieService : nsISupports
+{
+    string getCookieString(in nsIURI uri, in nsIChannel channel);
+    string getCookieStringFromHttp(in nsIURI uri, in nsIURI first_uri, in nsIChannel channel);
+    void setCookieString(in nsIURI uri, in nsIPrompt prompt, in string cookie, in nsIChannel channel);
+    void setCookieStringFromHttp(in nsIURI uri, in nsIURI first_uri, in nsIPrompt prompt, in string cookie, in string server_time, in nsIChannel channel);
+};
+
+interface nsICookie2;
+
+[scriptable, uuid(aaab6710-0f2c-11d5-a53b-0010a401eb10)]
+interface nsICookieManager : nsISupports
+{
+    void removeAll();
+
+    readonly attribute nsISimpleEnumerator enumerator;
+
+    void remove(in AUTF8String host,
+                in ACString name,
+                in AUTF8String path,
+                in boolean blocked);
+};
+
+
+
+[scriptable, uuid(daf0caa7-b431-4b4d-ba51-08c179bb9dfe)]
+interface nsICookieManager2 : nsICookieManager
+{
+    void add(in AUTF8String host,
+             in AUTF8String path,
+             in ACString name,
+             in ACString value,
+             in boolean is_secure,
+             in boolean is_http_only,
+             in boolean is_session,
+             in PRInt64 expiry);
+
+    boolean cookieExists(in nsICookie2 cookie);
+    unsigned long countCookiesFromHost(in AUTF8String host);
+    nsISimpleEnumerator getCookiesFromHost(in AUTF8String host);
+    void importCookies(in nsIFile cookie_file);
+    nsISimpleEnumerator getCookiesForApp(in unsigned long app_id, in boolean only_browser_element);
+    void removeCookiesForApp(in unsigned long app_id, in boolean only_browser_element);
+};

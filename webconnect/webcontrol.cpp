@@ -107,16 +107,12 @@ public:
 
     void AddPluginPath(const wxString& path);
     
-    // xulrunner versions 1.8 will return true, 1.9 will return false
-    bool IsVersion18() const { return m_is18; }
-    
 private:
 
     wxString m_gecko_path;
     wxString m_storage_path;
     wxString m_history_filename;
     bool m_ok;
-    bool m_is18;
     
     ContentListenerPtrArray m_content_listeners;
     ns_smartptr<nsIAppShell> m_appshell;
@@ -1583,7 +1579,6 @@ NS_INTERFACE_MAP_END
 GeckoEngine::GeckoEngine()
 {
     m_ok = false;
-    m_is18 = false;
     m_plugin_provider = new PluginListProvider;
     m_plugin_provider->AddRef();
 }
@@ -1873,26 +1868,6 @@ bool GeckoEngine::Init()
 
 
     m_ok = true;
-    
-    m_is18 = m_appshell.empty() ? false : true;
-    
-    
-    if (m_is18)
-    {
-        // 24 May 2008 - a bug was discovered; if a web control is not created
-        // in about 1 minute of the web engine being initialized, something goes
-        // wrong with the message queue, and the web control will only update
-        // when the mouse is moved over it-- strange.  I think there must be some
-        // thread condition that waits until the first web control is created.
-        // In any case, creating a web control here appears to solve the problem;
-        // It's destroyed 10 seconds after creation.
-        
-        wxWebFrame* f = new wxWebFrame(NULL, -1, wxT(""));
-        f->SetShouldPreventAppExit(false);
-        f->GetWebControl()->OpenURI(wxT("about:blank"));
-        
-        DelayedWindowDestroy* d = new DelayedWindowDestroy(f, 10);
-    }
     
     return true;
 }
@@ -3623,7 +3598,77 @@ void wxWebControl::OnSize(wxSizeEvent& evt)
 
 
 
+bool wxWebControl::AddCookie(const wxString& host,
+                             const wxString& path,
+                             const wxString& name,
+                             const wxString& value,
+                             bool is_secure,
+                             bool is_http_only,
+                             bool is_session,
+                             wxLongLong expiry)
+{
+    ns_smartptr<nsICookieManager2> cookie_manager;
+    cookie_manager = nsGetService("@mozilla.org/cookiemanager;1");
+    if (cookie_manager.empty())
+        return false;
+    
+    nsEmbedCString ns_host, ns_path, ns_name, ns_value;
+    
+    wx2ns(host, ns_host);
+    wx2ns(path, ns_path);
+    wx2ns(name, ns_name);
+    wx2ns(value, ns_value);
 
+    nsresult res;
+    res = cookie_manager->Add(ns_host, ns_path, ns_name, ns_value, is_secure, is_http_only, is_session, expiry.GetValue());
+
+    return true;
+
+/*
+    ns_smartptr<nsICookieService> cookie_service;
+    cookie_service = nsGetService("@mozilla.org/cookieService;1");
+    if (cookie_service.empty())
+        return false;
+
+    ns_smartptr<nsIURI> uri = nsNewURI("https://" + host + path);
+
+    wxString set_string = name + "=" + value;
+    set_string += ";domain=localhost;expires=Thu, 1 Oct 2015 15:24:55 GMT";
+
+    nsresult nsres = cookie_service->SetCookieString(uri, NULL, set_string.ToAscii(), NULL);
+*/
+
+    return true;
+}
+
+bool wxWebControl::ImportCookies(const wxString& cookie_file)
+{
+    ns_smartptr<nsICookieManager2> cookie_manager;
+    cookie_manager = nsGetService("@mozilla.org/cookiemanager;1");
+    if (cookie_manager.empty())
+        return false;
+
+    ns_smartptr<nsILocalFile> file;
+    nsresult res = NS_NewNativeLocalFile(nsDependentCString((const char*)cookie_file.ToAscii()), PR_TRUE, &file.p);
+    if (NS_FAILED(res))
+        return false;
+
+    cookie_manager->ImportCookies(file);
+    return true;
+}
+
+
+bool wxWebControl::RemoveAllCookies()
+{
+    ns_smartptr<nsICookieManager2> cookie_manager;
+    cookie_manager = nsGetService("@mozilla.org/cookiemanager;1");
+    if (cookie_manager.empty())
+        return false;
+
+    cookie_manager->RemoveAll();
+
+    return true;
+}
 
 
 

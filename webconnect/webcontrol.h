@@ -399,6 +399,20 @@ public:
     // javascript
     bool Execute(const wxString& js_code);
     
+    // cookies
+    static bool AddCookie(const wxString& host,
+                          const wxString& path,
+                          const wxString& name,
+                          const wxString& value,
+                          bool is_secure,
+                          bool is_http_only,
+                          bool is_session,
+                          wxLongLong expiry = wxLongLong(0xfffffff, 0xffffffff));
+
+    static bool ImportCookies(const wxString& cookie_file);
+
+    static bool RemoveAllCookies();
+
     // printing
     void Print(bool silent = false);
     void SetPageSettings(int orientation,

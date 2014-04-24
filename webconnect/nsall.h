@@ -21714,4 +21714,357 @@ NS_IMETHODIMP nsSSLCertErrorDialog::ShowCertError(nsIInterfaceRequestor *ctx, ns
 #endif
 
 
+/* starting interface:    nsICookieService */
+#define NS_ICOOKIESERVICE_IID_STR "2aaa897a-293c-4d2b-a657-8c9b7136996d"
+
+#define NS_ICOOKIESERVICE_IID \
+  {0x2aaa897a, 0x293c, 0x4d2b, \
+    { 0xa6, 0x57, 0x8c, 0x9b, 0x71, 0x36, 0x99, 0x6d }}
+
+class NS_NO_VTABLE nsICookieService : public nsISupports {
+ public: 
+
+  NS_DECLARE_STATIC_IID_ACCESSOR(NS_ICOOKIESERVICE_IID)
+
+  /* string getCookieString (in nsIURI uri, in nsIChannel channel); */
+  NS_IMETHOD GetCookieString(nsIURI *uri, nsIChannel *channel, char * *_retval) = 0;
+
+  /* string getCookieStringFromHttp (in nsIURI uri, in nsIURI first_uri, in nsIChannel channel); */
+  NS_IMETHOD GetCookieStringFromHttp(nsIURI *uri, nsIURI *first_uri, nsIChannel *channel, char * *_retval) = 0;
+
+  /* void setCookieString (in nsIURI uri, in nsIPrompt prompt, in string cookie, in nsIChannel channel); */
+  NS_IMETHOD SetCookieString(nsIURI *uri, nsIPrompt *prompt, const char * cookie, nsIChannel *channel) = 0;
+
+  /* void setCookieStringFromHttp (in nsIURI uri, in nsIURI first_uri, in nsIPrompt prompt, in string cookie, in string server_time, in nsIChannel channel); */
+  NS_IMETHOD SetCookieStringFromHttp(nsIURI *uri, nsIURI *first_uri, nsIPrompt *prompt, const char * cookie, const char * server_time, nsIChannel *channel) = 0;
+
+};
+
+  NS_DEFINE_STATIC_IID_ACCESSOR(nsICookieService, NS_ICOOKIESERVICE_IID)
+
+/* Use this macro when declaring classes that implement this interface. */
+#define NS_DECL_NSICOOKIESERVICE \
+  NS_IMETHOD GetCookieString(nsIURI *uri, nsIChannel *channel, char * *_retval); \
+  NS_IMETHOD GetCookieStringFromHttp(nsIURI *uri, nsIURI *first_uri, nsIChannel *channel, char * *_retval); \
+  NS_IMETHOD SetCookieString(nsIURI *uri, nsIPrompt *prompt, const char * cookie, nsIChannel *channel); \
+  NS_IMETHOD SetCookieStringFromHttp(nsIURI *uri, nsIURI *first_uri, nsIPrompt *prompt, const char * cookie, const char * server_time, nsIChannel *channel); 
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object. */
+#define NS_FORWARD_NSICOOKIESERVICE(_to) \
+  NS_IMETHOD GetCookieString(nsIURI *uri, nsIChannel *channel, char * *_retval) { return _to GetCookieString(uri, channel, _retval); } \
+  NS_IMETHOD GetCookieStringFromHttp(nsIURI *uri, nsIURI *first_uri, nsIChannel *channel, char * *_retval) { return _to GetCookieStringFromHttp(uri, first_uri, channel, _retval); } \
+  NS_IMETHOD SetCookieString(nsIURI *uri, nsIPrompt *prompt, const char * cookie, nsIChannel *channel) { return _to SetCookieString(uri, prompt, cookie, channel); } \
+  NS_IMETHOD SetCookieStringFromHttp(nsIURI *uri, nsIURI *first_uri, nsIPrompt *prompt, const char * cookie, const char * server_time, nsIChannel *channel) { return _to SetCookieStringFromHttp(uri, first_uri, prompt, cookie, server_time, channel); } 
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
+#define NS_FORWARD_SAFE_NSICOOKIESERVICE(_to) \
+  NS_IMETHOD GetCookieString(nsIURI *uri, nsIChannel *channel, char * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetCookieString(uri, channel, _retval); } \
+  NS_IMETHOD GetCookieStringFromHttp(nsIURI *uri, nsIURI *first_uri, nsIChannel *channel, char * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetCookieStringFromHttp(uri, first_uri, channel, _retval); } \
+  NS_IMETHOD SetCookieString(nsIURI *uri, nsIPrompt *prompt, const char * cookie, nsIChannel *channel) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetCookieString(uri, prompt, cookie, channel); } \
+  NS_IMETHOD SetCookieStringFromHttp(nsIURI *uri, nsIURI *first_uri, nsIPrompt *prompt, const char * cookie, const char * server_time, nsIChannel *channel) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetCookieStringFromHttp(uri, first_uri, prompt, cookie, server_time, channel); } 
+
+#if 0
+/* Use the code below as a template for the implementation class for this interface. */
+
+/* Header file */
+class nsCookieService : public nsICookieService
+{
+public:
+  NS_DECL_ISUPPORTS
+  NS_DECL_NSICOOKIESERVICE
+
+  nsCookieService();
+
+private:
+  ~nsCookieService();
+
+protected:
+  /* additional members */
+};
+
+/* Implementation file */
+NS_IMPL_ISUPPORTS1(nsCookieService, nsICookieService)
+
+nsCookieService::nsCookieService()
+{
+  /* member initializers and constructor code */
+}
+
+nsCookieService::~nsCookieService()
+{
+  /* destructor code */
+}
+
+/* string getCookieString (in nsIURI uri, in nsIChannel channel); */
+NS_IMETHODIMP nsCookieService::GetCookieString(nsIURI *uri, nsIChannel *channel, char * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* string getCookieStringFromHttp (in nsIURI uri, in nsIURI first_uri, in nsIChannel channel); */
+NS_IMETHODIMP nsCookieService::GetCookieStringFromHttp(nsIURI *uri, nsIURI *first_uri, nsIChannel *channel, char * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void setCookieString (in nsIURI uri, in nsIPrompt prompt, in string cookie, in nsIChannel channel); */
+NS_IMETHODIMP nsCookieService::SetCookieString(nsIURI *uri, nsIPrompt *prompt, const char * cookie, nsIChannel *channel)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void setCookieStringFromHttp (in nsIURI uri, in nsIURI first_uri, in nsIPrompt prompt, in string cookie, in string server_time, in nsIChannel channel); */
+NS_IMETHODIMP nsCookieService::SetCookieStringFromHttp(nsIURI *uri, nsIURI *first_uri, nsIPrompt *prompt, const char * cookie, const char * server_time, nsIChannel *channel)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* End of implementation class template. */
+#endif
+
+class nsICookie2; /* forward declaration */
+
+
+/* starting interface:    nsICookieManager */
+#define NS_ICOOKIEMANAGER_IID_STR "aaab6710-0f2c-11d5-a53b-0010a401eb10"
+
+#define NS_ICOOKIEMANAGER_IID \
+  {0xaaab6710, 0x0f2c, 0x11d5, \
+    { 0xa5, 0x3b, 0x00, 0x10, 0xa4, 0x01, 0xeb, 0x10 }}
+
+class NS_NO_VTABLE nsICookieManager : public nsISupports {
+ public: 
+
+  NS_DECLARE_STATIC_IID_ACCESSOR(NS_ICOOKIEMANAGER_IID)
+
+  /* void removeAll (); */
+  NS_IMETHOD RemoveAll(void) = 0;
+
+  /* readonly attribute nsISimpleEnumerator enumerator; */
+  NS_IMETHOD GetEnumerator(nsISimpleEnumerator * *aEnumerator) = 0;
+
+  /* void remove (in AUTF8String host, in ACString name, in AUTF8String path, in boolean blocked); */
+  NS_IMETHOD Remove(const nsACString & host, const nsACString & name, const nsACString & path, bool blocked) = 0;
+
+};
+
+  NS_DEFINE_STATIC_IID_ACCESSOR(nsICookieManager, NS_ICOOKIEMANAGER_IID)
+
+/* Use this macro when declaring classes that implement this interface. */
+#define NS_DECL_NSICOOKIEMANAGER \
+  NS_IMETHOD RemoveAll(void); \
+  NS_IMETHOD GetEnumerator(nsISimpleEnumerator * *aEnumerator); \
+  NS_IMETHOD Remove(const nsACString & host, const nsACString & name, const nsACString & path, bool blocked); 
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object. */
+#define NS_FORWARD_NSICOOKIEMANAGER(_to) \
+  NS_IMETHOD RemoveAll(void) { return _to RemoveAll(); } \
+  NS_IMETHOD GetEnumerator(nsISimpleEnumerator * *aEnumerator) { return _to GetEnumerator(aEnumerator); } \
+  NS_IMETHOD Remove(const nsACString & host, const nsACString & name, const nsACString & path, bool blocked) { return _to Remove(host, name, path, blocked); } 
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
+#define NS_FORWARD_SAFE_NSICOOKIEMANAGER(_to) \
+  NS_IMETHOD RemoveAll(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->RemoveAll(); } \
+  NS_IMETHOD GetEnumerator(nsISimpleEnumerator * *aEnumerator) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetEnumerator(aEnumerator); } \
+  NS_IMETHOD Remove(const nsACString & host, const nsACString & name, const nsACString & path, bool blocked) { return !_to ? NS_ERROR_NULL_POINTER : _to->Remove(host, name, path, blocked); } 
+
+#if 0
+/* Use the code below as a template for the implementation class for this interface. */
+
+/* Header file */
+class nsCookieManager : public nsICookieManager
+{
+public:
+  NS_DECL_ISUPPORTS
+  NS_DECL_NSICOOKIEMANAGER
+
+  nsCookieManager();
+
+private:
+  ~nsCookieManager();
+
+protected:
+  /* additional members */
+};
+
+/* Implementation file */
+NS_IMPL_ISUPPORTS1(nsCookieManager, nsICookieManager)
+
+nsCookieManager::nsCookieManager()
+{
+  /* member initializers and constructor code */
+}
+
+nsCookieManager::~nsCookieManager()
+{
+  /* destructor code */
+}
+
+/* void removeAll (); */
+NS_IMETHODIMP nsCookieManager::RemoveAll()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute nsISimpleEnumerator enumerator; */
+NS_IMETHODIMP nsCookieManager::GetEnumerator(nsISimpleEnumerator * *aEnumerator)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void remove (in AUTF8String host, in ACString name, in AUTF8String path, in boolean blocked); */
+NS_IMETHODIMP nsCookieManager::Remove(const nsACString & host, const nsACString & name, const nsACString & path, bool blocked)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* End of implementation class template. */
+#endif
+
+
+/* starting interface:    nsICookieManager2 */
+#define NS_ICOOKIEMANAGER2_IID_STR "daf0caa7-b431-4b4d-ba51-08c179bb9dfe"
+
+#define NS_ICOOKIEMANAGER2_IID \
+  {0xdaf0caa7, 0xb431, 0x4b4d, \
+    { 0xba, 0x51, 0x08, 0xc1, 0x79, 0xbb, 0x9d, 0xfe }}
+
+class NS_NO_VTABLE nsICookieManager2 : public nsICookieManager {
+ public: 
+
+  NS_DECLARE_STATIC_IID_ACCESSOR(NS_ICOOKIEMANAGER2_IID)
+
+  /* void add (in AUTF8String host, in AUTF8String path, in ACString name, in ACString value, in boolean is_secure, in boolean is_http_only, in boolean is_session, in PRInt64 expiry); */
+  NS_IMETHOD Add(const nsACString & host, const nsACString & path, const nsACString & name, const nsACString & value, bool is_secure, bool is_http_only, bool is_session, PRInt64 expiry) = 0;
+
+  /* boolean cookieExists (in nsICookie2 cookie); */
+  NS_IMETHOD CookieExists(nsICookie2 *cookie, bool *_retval) = 0;
+
+  /* unsigned long countCookiesFromHost (in AUTF8String host); */
+  NS_IMETHOD CountCookiesFromHost(const nsACString & host, uint32_t *_retval) = 0;
+
+  /* nsISimpleEnumerator getCookiesFromHost (in AUTF8String host); */
+  NS_IMETHOD GetCookiesFromHost(const nsACString & host, nsISimpleEnumerator * *_retval) = 0;
+
+  /* void importCookies (in nsIFile cookie_file); */
+  NS_IMETHOD ImportCookies(nsIFile *cookie_file) = 0;
+
+  /* nsISimpleEnumerator getCookiesForApp (in unsigned long app_id, in boolean only_browser_element); */
+  NS_IMETHOD GetCookiesForApp(uint32_t app_id, bool only_browser_element, nsISimpleEnumerator * *_retval) = 0;
+
+  /* void removeCookiesForApp (in unsigned long app_id, in boolean only_browser_element); */
+  NS_IMETHOD RemoveCookiesForApp(uint32_t app_id, bool only_browser_element) = 0;
+
+};
+
+  NS_DEFINE_STATIC_IID_ACCESSOR(nsICookieManager2, NS_ICOOKIEMANAGER2_IID)
+
+/* Use this macro when declaring classes that implement this interface. */
+#define NS_DECL_NSICOOKIEMANAGER2 \
+  NS_IMETHOD Add(const nsACString & host, const nsACString & path, const nsACString & name, const nsACString & value, bool is_secure, bool is_http_only, bool is_session, PRInt64 expiry); \
+  NS_IMETHOD CookieExists(nsICookie2 *cookie, bool *_retval); \
+  NS_IMETHOD CountCookiesFromHost(const nsACString & host, uint32_t *_retval); \
+  NS_IMETHOD GetCookiesFromHost(const nsACString & host, nsISimpleEnumerator * *_retval); \
+  NS_IMETHOD ImportCookies(nsIFile *cookie_file); \
+  NS_IMETHOD GetCookiesForApp(uint32_t app_id, bool only_browser_element, nsISimpleEnumerator * *_retval); \
+  NS_IMETHOD RemoveCookiesForApp(uint32_t app_id, bool only_browser_element); 
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object. */
+#define NS_FORWARD_NSICOOKIEMANAGER2(_to) \
+  NS_IMETHOD Add(const nsACString & host, const nsACString & path, const nsACString & name, const nsACString & value, bool is_secure, bool is_http_only, bool is_session, PRInt64 expiry) { return _to Add(host, path, name, value, is_secure, is_http_only, is_session, expiry); } \
+  NS_IMETHOD CookieExists(nsICookie2 *cookie, bool *_retval) { return _to CookieExists(cookie, _retval); } \
+  NS_IMETHOD CountCookiesFromHost(const nsACString & host, uint32_t *_retval) { return _to CountCookiesFromHost(host, _retval); } \
+  NS_IMETHOD GetCookiesFromHost(const nsACString & host, nsISimpleEnumerator * *_retval) { return _to GetCookiesFromHost(host, _retval); } \
+  NS_IMETHOD ImportCookies(nsIFile *cookie_file) { return _to ImportCookies(cookie_file); } \
+  NS_IMETHOD GetCookiesForApp(uint32_t app_id, bool only_browser_element, nsISimpleEnumerator * *_retval) { return _to GetCookiesForApp(app_id, only_browser_element, _retval); } \
+  NS_IMETHOD RemoveCookiesForApp(uint32_t app_id, bool only_browser_element) { return _to RemoveCookiesForApp(app_id, only_browser_element); } 
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
+#define NS_FORWARD_SAFE_NSICOOKIEMANAGER2(_to) \
+  NS_IMETHOD Add(const nsACString & host, const nsACString & path, const nsACString & name, const nsACString & value, bool is_secure, bool is_http_only, bool is_session, PRInt64 expiry) { return !_to ? NS_ERROR_NULL_POINTER : _to->Add(host, path, name, value, is_secure, is_http_only, is_session, expiry); } \
+  NS_IMETHOD CookieExists(nsICookie2 *cookie, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CookieExists(cookie, _retval); } \
+  NS_IMETHOD CountCookiesFromHost(const nsACString & host, uint32_t *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CountCookiesFromHost(host, _retval); } \
+  NS_IMETHOD GetCookiesFromHost(const nsACString & host, nsISimpleEnumerator * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetCookiesFromHost(host, _retval); } \
+  NS_IMETHOD ImportCookies(nsIFile *cookie_file) { return !_to ? NS_ERROR_NULL_POINTER : _to->ImportCookies(cookie_file); } \
+  NS_IMETHOD GetCookiesForApp(uint32_t app_id, bool only_browser_element, nsISimpleEnumerator * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetCookiesForApp(app_id, only_browser_element, _retval); } \
+  NS_IMETHOD RemoveCookiesForApp(uint32_t app_id, bool only_browser_element) { return !_to ? NS_ERROR_NULL_POINTER : _to->RemoveCookiesForApp(app_id, only_browser_element); } 
+
+#if 0
+/* Use the code below as a template for the implementation class for this interface. */
+
+/* Header file */
+class nsCookieManager2 : public nsICookieManager2
+{
+public:
+  NS_DECL_ISUPPORTS
+  NS_DECL_NSICOOKIEMANAGER2
+
+  nsCookieManager2();
+
+private:
+  ~nsCookieManager2();
+
+protected:
+  /* additional members */
+};
+
+/* Implementation file */
+NS_IMPL_ISUPPORTS1(nsCookieManager2, nsICookieManager2)
+
+nsCookieManager2::nsCookieManager2()
+{
+  /* member initializers and constructor code */
+}
+
+nsCookieManager2::~nsCookieManager2()
+{
+  /* destructor code */
+}
+
+/* void add (in AUTF8String host, in AUTF8String path, in ACString name, in ACString value, in boolean is_secure, in boolean is_http_only, in boolean is_session, in PRInt64 expiry); */
+NS_IMETHODIMP nsCookieManager2::Add(const nsACString & host, const nsACString & path, const nsACString & name, const nsACString & value, bool is_secure, bool is_http_only, bool is_session, PRInt64 expiry)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* boolean cookieExists (in nsICookie2 cookie); */
+NS_IMETHODIMP nsCookieManager2::CookieExists(nsICookie2 *cookie, bool *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* unsigned long countCookiesFromHost (in AUTF8String host); */
+NS_IMETHODIMP nsCookieManager2::CountCookiesFromHost(const nsACString & host, uint32_t *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsISimpleEnumerator getCookiesFromHost (in AUTF8String host); */
+NS_IMETHODIMP nsCookieManager2::GetCookiesFromHost(const nsACString & host, nsISimpleEnumerator * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void importCookies (in nsIFile cookie_file); */
+NS_IMETHODIMP nsCookieManager2::ImportCookies(nsIFile *cookie_file)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsISimpleEnumerator getCookiesForApp (in unsigned long app_id, in boolean only_browser_element); */
+NS_IMETHODIMP nsCookieManager2::GetCookiesForApp(uint32_t app_id, bool only_browser_element, nsISimpleEnumerator * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void removeCookiesForApp (in unsigned long app_id, in boolean only_browser_element); */
+NS_IMETHODIMP nsCookieManager2::RemoveCookiesForApp(uint32_t app_id, bool only_browser_element)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* End of implementation class template. */
+#endif
+
+
 #endif /* __gen_nsall_h__ */
