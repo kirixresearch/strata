@@ -1311,6 +1311,8 @@ bool AppController::init()
     site->setName(wxT("FindPanel"));
     
     
+    apphookAppStartup();
+
 
     // create the default project if it doesn't already exist
     bool default_project_created = getAppPrefsBoolean(wxT("general.default_project_created"));
@@ -4699,6 +4701,12 @@ bool AppController::openWeb(const wxString& _location,
                             int open_mask,
                             int* site_id)
 {
+    bool handled = false;
+    bool res = apphookOpenWeb(_location, &handled);
+    if (handled)
+        return res;
+
+
     if (site_id)
         *site_id = 0;
         

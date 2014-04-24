@@ -16,6 +16,7 @@
 void apphookInitFrame();
 void apphookInitCommands();
 void apphookInitMenuBar(wxMenuBar* menubar);
+void apphookAppStartup();
 void apphookAppReady();
 
 void apphookPostOpenProject();
@@ -23,7 +24,10 @@ void apphookPostOpenProject();
 bool apphookOpenTemplate(const wxString& location,
                          xd::IFileInfoPtr file_info,
                          bool* handled);
-                         
+
+bool apphookOpenWeb(const wxString& location,
+                    bool* handled);
+
 jobs::IJobPtr apphookExecute(const wxString& location,
                              xd::IFileInfoPtr file_info,
                              bool* handled);
