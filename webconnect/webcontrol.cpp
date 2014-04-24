@@ -2009,13 +2009,6 @@ bool wxWebControl::GetIgnoreCertErrors()
     return g_ignore_ssl_cert_errors;
 }
 
-//static
-bool wxWebControl::IsVersion18()
-{
-    return g_gecko_engine.IsVersion18();
-}
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //  wxWebFavIconProgress class implementation
