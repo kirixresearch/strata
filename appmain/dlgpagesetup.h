@@ -138,6 +138,7 @@ public:
     
     wxPaperSize getPaperSize();
     int getOrientation();
+    void setOrientation(int orientation /* wxPORTRAIT, wxLANDSCAPE */);
     
 private:
     

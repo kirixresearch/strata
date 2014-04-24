@@ -2809,12 +2809,14 @@ void WebDoc::onPageSetup(wxCommandEvent& evt)
     double right_margin = 0;
     double top_margin = 0;
     double bottom_margin = 0;
+    int orientation = wxPORTRAIT;
 
-    m_webcontrol->GetPageSettings(&page_width, &page_height,
+    m_webcontrol->GetPageSettings(&orientation, &page_width, &page_height,
                                   &left_margin, &right_margin, &top_margin, &bottom_margin);
 
     PageSetupDialog dlg(this);
     dlg.setPageDimensions(page_width, page_height);
+    dlg.setOrientation(orientation);
     dlg.setMargins(left_margin,
                    right_margin,
                    top_margin,
@@ -2824,12 +2826,14 @@ void WebDoc::onPageSetup(wxCommandEvent& evt)
     if (dlg.ShowModal() == wxID_OK)
     {
         dlg.getPageDimensions(&page_width, &page_height);
+        orientation = dlg.getOrientation();
         dlg.getMargins(&left_margin,
                        &right_margin,
                        &top_margin,
                        &bottom_margin);
 
-        m_webcontrol->SetPageSettings(page_width, page_height,
+        m_webcontrol->SetPageSettings(orientation,
+                                      page_width, page_height,
                                       left_margin, right_margin, top_margin, bottom_margin);
     }
 
