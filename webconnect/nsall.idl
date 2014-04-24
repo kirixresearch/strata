@@ -3518,12 +3518,13 @@ interface nsIWebBrowserFocus : nsISupports
 
 
 interface nsIChannel;
+interface nsILoadContext;
 interface nsIWebProgressListener;
 interface nsIInputStream;
 interface nsIDOMDocument;
 
 
-[scriptable, uuid(dd4e0a6a-210f-419a-ad85-40e8543b9465)]
+[scriptable, uuid(35c1f231-582b-4315-a26c-a1227e3539b4)]
 interface nsIWebBrowserPersist : nsICancelable
 {
     const unsigned long PERSIST_FLAGS_NONE = 0;
@@ -3574,8 +3575,18 @@ interface nsIWebBrowserPersist : nsICancelable
                  in nsIURI referrer,
                  in nsIInputStream post_data,
                  in string extra_headers,
-                 in nsIFile file);
-                 
+                 in nsIFile file,
+                 in nsILoadContext privacy_context);
+
+    void savePrivacyAwareURI(
+                 in nsIURI uri,
+                 in nsISupports cache_key,
+                 in nsIURI referrer,
+                 in nsIInputStream post_data,
+                 in string extra_headers,
+                 in nsIFile file,
+                 in boolean is_private);
+           
     void saveChannel(in nsIChannel channel,
                      in nsISupports file);
         

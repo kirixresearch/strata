@@ -20353,6 +20353,8 @@ NS_IMETHODIMP nsWebBrowserFocus::SetFocusedElement(nsIDOMElement *aFocusedElemen
 
 class nsIChannel; /* forward declaration */
 
+class nsILoadContext; /* forward declaration */
+
 class nsIWebProgressListener; /* forward declaration */
 
 class nsIInputStream; /* forward declaration */
@@ -20361,11 +20363,11 @@ class nsIDOMDocument; /* forward declaration */
 
 
 /* starting interface:    nsIWebBrowserPersist */
-#define NS_IWEBBROWSERPERSIST_IID_STR "dd4e0a6a-210f-419a-ad85-40e8543b9465"
+#define NS_IWEBBROWSERPERSIST_IID_STR "35c1f231-582b-4315-a26c-a1227e3539b4"
 
 #define NS_IWEBBROWSERPERSIST_IID \
-  {0xdd4e0a6a, 0x210f, 0x419a, \
-    { 0xad, 0x85, 0x40, 0xe8, 0x54, 0x3b, 0x94, 0x65 }}
+  {0x35c1f231, 0x582b, 0x4315, \
+    { 0xa2, 0x6c, 0xa1, 0x22, 0x7e, 0x35, 0x39, 0xb4 }}
 
 class NS_NO_VTABLE nsIWebBrowserPersist : public nsICancelable {
  public: 
@@ -20424,8 +20426,11 @@ class NS_NO_VTABLE nsIWebBrowserPersist : public nsICancelable {
   NS_IMETHOD GetProgressListener(nsIWebProgressListener * *aProgressListener) = 0;
   NS_IMETHOD SetProgressListener(nsIWebProgressListener *aProgressListener) = 0;
 
-  /* void saveURI (in nsIURI uri, in nsISupports cache_key, in nsIURI referrer, in nsIInputStream post_data, in string extra_headers, in nsIFile file); */
-  NS_IMETHOD SaveURI(nsIURI *uri, nsISupports *cache_key, nsIURI *referrer, nsIInputStream *post_data, const char * extra_headers, nsIFile *file) = 0;
+  /* void saveURI (in nsIURI uri, in nsISupports cache_key, in nsIURI referrer, in nsIInputStream post_data, in string extra_headers, in nsIFile file, in nsILoadContext privacy_context); */
+  NS_IMETHOD SaveURI(nsIURI *uri, nsISupports *cache_key, nsIURI *referrer, nsIInputStream *post_data, const char * extra_headers, nsIFile *file, nsILoadContext *privacy_context) = 0;
+
+  /* void savePrivacyAwareURI (in nsIURI uri, in nsISupports cache_key, in nsIURI referrer, in nsIInputStream post_data, in string extra_headers, in nsIFile file, in boolean is_private); */
+  NS_IMETHOD SavePrivacyAwareURI(nsIURI *uri, nsISupports *cache_key, nsIURI *referrer, nsIInputStream *post_data, const char * extra_headers, nsIFile *file, bool is_private) = 0;
 
   /* void saveChannel (in nsIChannel channel, in nsISupports file); */
   NS_IMETHOD SaveChannel(nsIChannel *channel, nsISupports *file) = 0;
@@ -20448,7 +20453,8 @@ class NS_NO_VTABLE nsIWebBrowserPersist : public nsICancelable {
   NS_IMETHOD GetResult(uint32_t *aResult); \
   NS_IMETHOD GetProgressListener(nsIWebProgressListener * *aProgressListener); \
   NS_IMETHOD SetProgressListener(nsIWebProgressListener *aProgressListener); \
-  NS_IMETHOD SaveURI(nsIURI *uri, nsISupports *cache_key, nsIURI *referrer, nsIInputStream *post_data, const char * extra_headers, nsIFile *file); \
+  NS_IMETHOD SaveURI(nsIURI *uri, nsISupports *cache_key, nsIURI *referrer, nsIInputStream *post_data, const char * extra_headers, nsIFile *file, nsILoadContext *privacy_context); \
+  NS_IMETHOD SavePrivacyAwareURI(nsIURI *uri, nsISupports *cache_key, nsIURI *referrer, nsIInputStream *post_data, const char * extra_headers, nsIFile *file, bool is_private); \
   NS_IMETHOD SaveChannel(nsIChannel *channel, nsISupports *file); \
   NS_IMETHOD SaveDocument(nsIDOMDocument *document, nsISupports *file, nsISupports *data_path, const char * output_content_type, uint32_t encoding_flags, uint32_t wrap_column); \
   NS_IMETHOD CancelSave(void); 
@@ -20461,7 +20467,8 @@ class NS_NO_VTABLE nsIWebBrowserPersist : public nsICancelable {
   NS_IMETHOD GetResult(uint32_t *aResult) { return _to GetResult(aResult); } \
   NS_IMETHOD GetProgressListener(nsIWebProgressListener * *aProgressListener) { return _to GetProgressListener(aProgressListener); } \
   NS_IMETHOD SetProgressListener(nsIWebProgressListener *aProgressListener) { return _to SetProgressListener(aProgressListener); } \
-  NS_IMETHOD SaveURI(nsIURI *uri, nsISupports *cache_key, nsIURI *referrer, nsIInputStream *post_data, const char * extra_headers, nsIFile *file) { return _to SaveURI(uri, cache_key, referrer, post_data, extra_headers, file); } \
+  NS_IMETHOD SaveURI(nsIURI *uri, nsISupports *cache_key, nsIURI *referrer, nsIInputStream *post_data, const char * extra_headers, nsIFile *file, nsILoadContext *privacy_context) { return _to SaveURI(uri, cache_key, referrer, post_data, extra_headers, file, privacy_context); } \
+  NS_IMETHOD SavePrivacyAwareURI(nsIURI *uri, nsISupports *cache_key, nsIURI *referrer, nsIInputStream *post_data, const char * extra_headers, nsIFile *file, bool is_private) { return _to SavePrivacyAwareURI(uri, cache_key, referrer, post_data, extra_headers, file, is_private); } \
   NS_IMETHOD SaveChannel(nsIChannel *channel, nsISupports *file) { return _to SaveChannel(channel, file); } \
   NS_IMETHOD SaveDocument(nsIDOMDocument *document, nsISupports *file, nsISupports *data_path, const char * output_content_type, uint32_t encoding_flags, uint32_t wrap_column) { return _to SaveDocument(document, file, data_path, output_content_type, encoding_flags, wrap_column); } \
   NS_IMETHOD CancelSave(void) { return _to CancelSave(); } 
@@ -20474,7 +20481,8 @@ class NS_NO_VTABLE nsIWebBrowserPersist : public nsICancelable {
   NS_IMETHOD GetResult(uint32_t *aResult) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetResult(aResult); } \
   NS_IMETHOD GetProgressListener(nsIWebProgressListener * *aProgressListener) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetProgressListener(aProgressListener); } \
   NS_IMETHOD SetProgressListener(nsIWebProgressListener *aProgressListener) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetProgressListener(aProgressListener); } \
-  NS_IMETHOD SaveURI(nsIURI *uri, nsISupports *cache_key, nsIURI *referrer, nsIInputStream *post_data, const char * extra_headers, nsIFile *file) { return !_to ? NS_ERROR_NULL_POINTER : _to->SaveURI(uri, cache_key, referrer, post_data, extra_headers, file); } \
+  NS_IMETHOD SaveURI(nsIURI *uri, nsISupports *cache_key, nsIURI *referrer, nsIInputStream *post_data, const char * extra_headers, nsIFile *file, nsILoadContext *privacy_context) { return !_to ? NS_ERROR_NULL_POINTER : _to->SaveURI(uri, cache_key, referrer, post_data, extra_headers, file, privacy_context); } \
+  NS_IMETHOD SavePrivacyAwareURI(nsIURI *uri, nsISupports *cache_key, nsIURI *referrer, nsIInputStream *post_data, const char * extra_headers, nsIFile *file, bool is_private) { return !_to ? NS_ERROR_NULL_POINTER : _to->SavePrivacyAwareURI(uri, cache_key, referrer, post_data, extra_headers, file, is_private); } \
   NS_IMETHOD SaveChannel(nsIChannel *channel, nsISupports *file) { return !_to ? NS_ERROR_NULL_POINTER : _to->SaveChannel(channel, file); } \
   NS_IMETHOD SaveDocument(nsIDOMDocument *document, nsISupports *file, nsISupports *data_path, const char * output_content_type, uint32_t encoding_flags, uint32_t wrap_column) { return !_to ? NS_ERROR_NULL_POINTER : _to->SaveDocument(document, file, data_path, output_content_type, encoding_flags, wrap_column); } \
   NS_IMETHOD CancelSave(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->CancelSave(); } 
@@ -20543,8 +20551,14 @@ NS_IMETHODIMP nsWebBrowserPersist::SetProgressListener(nsIWebProgressListener *a
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void saveURI (in nsIURI uri, in nsISupports cache_key, in nsIURI referrer, in nsIInputStream post_data, in string extra_headers, in nsIFile file); */
-NS_IMETHODIMP nsWebBrowserPersist::SaveURI(nsIURI *uri, nsISupports *cache_key, nsIURI *referrer, nsIInputStream *post_data, const char * extra_headers, nsIFile *file)
+/* void saveURI (in nsIURI uri, in nsISupports cache_key, in nsIURI referrer, in nsIInputStream post_data, in string extra_headers, in nsIFile file, in nsILoadContext privacy_context); */
+NS_IMETHODIMP nsWebBrowserPersist::SaveURI(nsIURI *uri, nsISupports *cache_key, nsIURI *referrer, nsIInputStream *post_data, const char * extra_headers, nsIFile *file, nsILoadContext *privacy_context)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void savePrivacyAwareURI (in nsIURI uri, in nsISupports cache_key, in nsIURI referrer, in nsIInputStream post_data, in string extra_headers, in nsIFile file, in boolean is_private); */
+NS_IMETHODIMP nsWebBrowserPersist::SavePrivacyAwareURI(nsIURI *uri, nsISupports *cache_key, nsIURI *referrer, nsIInputStream *post_data, const char * extra_headers, nsIFile *file, bool is_private)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }

@@ -2534,7 +2534,7 @@ bool wxWebControl::SaveRequest(const wxString& uri_str,
     
     persist->SetPersistFlags(nsIWebBrowserPersist::PERSIST_FLAGS_BYPASS_CACHE);
     
-    rv = persist->SaveURI(uri, nsnull, nsnull, sp_post_data.p, nsnull, file);
+    rv = persist->SaveURI(uri, nsnull, nsnull, sp_post_data.p, nsnull, file, nsnull);
     
     if (NS_FAILED(rv))
     {
@@ -2693,7 +2693,7 @@ void wxWebControl::FetchFavIcon(void* _uri)
     la->Release();
 
     
-    nsresult rv = persist->SaveURI(uri, nsnull, nsnull, nsnull, nsnull, file);
+    nsresult rv = persist->SaveURI(uri, nsnull, nsnull, nsnull, nsnull, file, nsnull);
     
     if (NS_FAILED(rv))
     {
@@ -3221,7 +3221,8 @@ bool wxWebControl::SaveCurrent(const wxString& destination_path)
                                     nsnull, // nsIURI referrer
                                     nsnull, // post data
                                     nsnull, // extra headers
-                                    file.p); // target file
+                                    file.p, // target file
+                                    nsnull);
     
     if (NS_FAILED(res))
         return false;
@@ -3617,6 +3618,7 @@ bool wxWebControl::AddCookie(const wxString& host,
 
     return true;
 
+
 /*
     ns_smartptr<nsICookieService> cookie_service;
     cookie_service = nsGetService("@mozilla.org/cookieService;1");
@@ -3626,12 +3628,11 @@ bool wxWebControl::AddCookie(const wxString& host,
     ns_smartptr<nsIURI> uri = nsNewURI("https://" + host + path);
 
     wxString set_string = name + "=" + value;
-    set_string += ";domain=localhost;expires=Thu, 1 Oct 2015 15:24:55 GMT";
+    set_string += ";domain=localhost;expires=Thu, 1 Oct 2015 15:24:55 GMT; secure; HttpOnly";
 
-    nsresult nsres = cookie_service->SetCookieString(uri, NULL, set_string.ToAscii(), NULL);
-*/
-
+    nsresult nsres = cookie_service->SetCookieStringFromHttp(uri, uri, NULL, set_string.ToAscii(), NULL, NULL);
     return true;
+*/
 }
 
 bool wxWebControl::ImportCookies(const wxString& cookie_file)
