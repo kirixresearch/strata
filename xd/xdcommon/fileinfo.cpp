@@ -70,6 +70,20 @@ bool FileInfo::isMount()
     return is_mount;
 }
 
+bool FileInfo::getMountInfo(std::wstring& _cstr, std::wstring& _rpath)
+{
+    if (!is_mount)
+    {
+        _cstr = L"";
+        _rpath = L"";
+        return false;
+    }
+
+    _cstr = cstr;
+    _rpath = rpath;
+    return true;
+}
+
 const std::wstring& FileInfo::getPrimaryKey()
 {
     return primary_key;

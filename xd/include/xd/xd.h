@@ -331,17 +331,18 @@ xcm_interface IFileInfo : public xcm::IObject
 
 public:
 
-    virtual const std::wstring& getName() = 0;                       // file/object name
-    virtual int getType() = 0;                                       // file type enums (table, stream, etc)
-    virtual int getFormat() = 0;                                     // file format enums (ttb, dbf, delimited, fixed length, etc.)
-    virtual unsigned int getFlags() = 0;                             // object information enums
-    virtual const std::wstring& getMimeType() = 0;                   // mime type, empty if none
-    virtual long long getSize() = 0;                                 // size, in bytes (if applicable)
-    virtual rowpos_t getRowCount() = 0;                              // size, in rows (if applicable)
-    virtual bool isMount() = 0;                                      // true if object is a mount
-    virtual const std::wstring& getPrimaryKey() = 0;                 // primary key of a table
-    virtual const std::wstring& getObjectId() = 0;                   // object id (i.e. set id, oid, etc)
-    virtual const std::wstring& getUrl() = 0;                        // url associated with object
+    virtual const std::wstring& getName() = 0;                              // file/object name
+    virtual int getType() = 0;                                              // file type enums (table, stream, etc)
+    virtual int getFormat() = 0;                                            // file format enums (ttb, dbf, delimited, fixed length, etc)
+    virtual unsigned int getFlags() = 0;                                    // object information enums
+    virtual const std::wstring& getMimeType() = 0;                          // mime type, empty if none
+    virtual long long getSize() = 0;                                        // size, in bytes (if applicable)
+    virtual rowpos_t getRowCount() = 0;                                     // size, in rows (if applicable)
+    virtual bool isMount() = 0;                                             // true if object is a mount
+    virtual bool getMountInfo(std::wstring& cstr, std::wstring& rpath) = 0; // get mount information
+    virtual const std::wstring& getPrimaryKey() = 0;                        // primary key of a table
+    virtual const std::wstring& getObjectId() = 0;                          // object id (i.e. set id, oid, etc)
+    virtual const std::wstring& getUrl() = 0;                               // url associated with object
 };
 
 

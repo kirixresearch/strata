@@ -2092,6 +2092,20 @@ public:
         return is_mount;
     }
 
+    bool getMountInfo(std::wstring& _cstr, std::wstring& _rpath)
+    {
+        if (!is_mount)
+        {
+            _cstr = L"";
+            _rpath = L"";
+            return false;
+        }
+
+        _cstr = cstr;
+        _rpath = rpath;
+        return true;
+    }
+
     const std::wstring& getPrimaryKey()
     {
         return primary_key;
@@ -2121,6 +2135,8 @@ public:
     std::wstring primary_key;
     std::wstring object_id;
     std::wstring url;
+    std::wstring cstr;
+    std::wstring rpath;
 
     long long size;
     int type;
@@ -2240,6 +2256,8 @@ xd::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
             f->type = xd::filetypeFolder;
             f->format = xd::formatDefault;
             f->is_mount = true;
+            f->cstr = cstr;
+            f->rpath = rpath;
             return static_cast<xd::IFileInfo*>(f);
         }
          else
@@ -2285,6 +2303,12 @@ xd::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
             f->object_id = file_object_id;
             f->url = file_url;
             
+            if (f->is_mount)
+            {
+                f->cstr = cstr;
+                f->rpath = rpath;
+            }
+
             return static_cast<xd::IFileInfo*>(f);
         }
     }

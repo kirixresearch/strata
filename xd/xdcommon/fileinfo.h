@@ -37,6 +37,7 @@ public:
     long long getSize();
     xd::rowpos_t getRowCount();
     bool isMount();
+    bool getMountInfo(std::wstring& cstr, std::wstring& rpath);
     const std::wstring& getPrimaryKey();
     const std::wstring& getObjectId();
     const std::wstring& getUrl();
@@ -54,6 +55,8 @@ public:
     long long size;
     xd::rowpos_t row_count;
     bool is_mount;
+    std::wstring cstr;
+    std::wstring rpath;
 };
 
 

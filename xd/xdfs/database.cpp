@@ -1430,6 +1430,20 @@ public:
         return is_mount;
     }
 
+    bool getMountInfo(std::wstring& _cstr, std::wstring& _rpath)
+    {
+        if (!is_mount)
+        {
+            _cstr = L"";
+            _rpath = L"";
+            return false;
+        }
+
+        _cstr = cstr;
+        _rpath = rpath;
+        return true;
+    }
+
     const std::wstring& getPrimaryKey()
     {
         return primary_key;
@@ -1460,6 +1474,8 @@ public:
     int type;
     int format;
     bool is_mount;
+    std::wstring cstr;
+    std::wstring rpath;
     FsDatabase* db;
     xd::rowpos_t row_count;
 };
@@ -1523,7 +1539,13 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
             f->name = kl::afterLast(path, L'/');
             f->type = file_type;
             f->format = file_format;
-            f->is_mount = (is_mount == 1 ? true : false);
+            f->is_mount = false;
+            if (is_mount == 1)
+            {
+                f->is_mount = true;
+                f->cstr = cstr;
+                f->rpath = rpath;
+            }
             f->primary_key = file_primary_key;
             f->object_id = object_id;
             
@@ -1713,6 +1735,8 @@ xd::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
                     f->name = info.m_name.substr(0, info.m_name.length() - 6);
                     f->type = fd.object_type;
                     f->is_mount = true;
+                    f->cstr = fd.data_connection_string;
+                    f->rpath = fd.data_path;
                     retval->append(f);
                 }
 
