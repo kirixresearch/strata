@@ -271,31 +271,49 @@ class FileInfoLess
 {
 public:
 
-     bool operator()(const xd::IFileInfoPtr& f1,
-                     const xd::IFileInfoPtr& f2) const                
-     {
+    bool isCloudFolder(const xd::IFileInfoPtr& f1) const
+    {
+        if (!f1->isMount())
+            return false;
+
+        std::wstring cstr, rpath;
+        f1->getMountInfo(cstr, rpath);
+        if (kl::icontains(cstr, L"dbdoccloudfolder="))
+            return true;
+
+        return false;
+    }
+
+    bool operator()(const xd::IFileInfoPtr& f1,
+                    const xd::IFileInfoPtr& f2) const                
+    {
         int f1_type = f1->getType();
         int f2_type = f2->getType();
-        
+
+        bool f1_cloud = isCloudFolder(f1);
+        bool f2_cloud = isCloudFolder(f2);
+
+        // we want cloud folders to be on top
+        if (f1_cloud && f2_cloud)
+            return false;
+        if (f1_cloud && !f2_cloud)
+            return true;
+        if (f2_cloud)
+            return false;
+       
         const std::wstring& f1_name = f1->getName();
         const std::wstring& f2_name = f2->getName();
-
-        // we want the "cloud" folder to always be on top
-
+       
         if (f1_name == f2_name)
             return false;
-
-        if (kl::iequals(f1_name, L"cloud"))
-            return true;
-        if (kl::iequals(f2_name, L"cloud"))
-            return false;
-
+       
         // folders always float to the top
-
+       
         if (f1_type == xd::filetypeFolder || f2_type == xd::filetypeFolder)
         {
             if (f1_type == f2_type)
             {
+
                 return wcscasecmp(f1_name.c_str(), f2_name.c_str()) < 0 ? true : false;
             }
              else if (f1_type == xd::filetypeFolder)
@@ -310,7 +328,7 @@ public:
         
             
         return wcscasecmp(f1_name.c_str(), f2_name.c_str()) < 0 ? true : false;
-     }
+    }
 };
 
 
@@ -602,10 +620,16 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
             }
             
 
-            if (item_name.CmpNoCase("cloud") == 0)
+            if (info->isMount())
             {
-                item->setBitmap(GETBMP(gf_globe_16), fsbmpSmall);
-                item->setBitmap(GETBMP(gf_globe_16), fsbmpSmallExpanded);
+                std::wstring cstr, rpath;
+                info->getMountInfo(cstr, rpath);
+
+                if (kl::icontains(cstr, L"dbdoccloudfolder="))
+                {
+                    item->setBitmap(GETBMP(gf_globe_16), fsbmpSmall);
+                    item->setBitmap(GETBMP(gf_globe_16), fsbmpSmallExpanded);
+                }
             }
                 
             vec->append(static_cast<IFsItem*>(item));
