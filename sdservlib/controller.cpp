@@ -95,6 +95,8 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
         return;
     }
 
+    req.setContentType("application/json");
+
     //     if (method == L"login")                 apiLogin(req);
     //else if (method == L"selectdb")              apiSelectDb(req);
          if (method == L"folderinfo")            apiFolderInfo(req);
@@ -1038,6 +1040,7 @@ void Controller::apiRead(RequestInfo& req)
     std::wstring handle = req.getValue(L"handle");
     int start = kl::wtoi(req.getValue(L"start", L"-1"));
     int limit = kl::wtoi(req.getValue(L"limit", L"-1"));
+    bool metadata = (req.getValue(L"metadata") == L"true" ? true : false);
     SessionQueryResult* so = NULL;
 
     if (limit < 0)
@@ -1181,6 +1184,38 @@ void Controller::apiRead(RequestInfo& req)
 
     if (so->rowcount != -1)
         str += L"\"total_count\": \"" +  kl::itowstring((int)so->rowcount) + L"\", ";
+
+    if (metadata)
+    {
+        xd::IStructurePtr structure = so->iter->getStructure();
+        if (structure.isOk())
+        {
+            int idx, count = structure->getColumnCount();
+    
+            // set the items
+            str += L"\"columns\": [";
+
+            for (idx = 0; idx < count; ++idx)
+            {  
+                xd::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
+
+                if (idx > 0)
+                    str += L",";
+
+                str += L"{\"name\":";
+                quotedAppend(str, info->getName());
+                str += L",\"type\":\"" +  xd::dbtypeToString(info->getType()) + L"\"";
+                str += L",\"width\":" + kl::itowstring(info->getWidth());
+                str += L",\"scale\":" + kl::itowstring(info->getScale());
+                str += L",\"expression\":";
+                quotedAppend(str, info->getExpression());
+                str += L"}";
+            }
+
+            str += L"],";
+        }
+    }
+
 
     str += L"\"rows\": [ ";
     std::wstring cell;
