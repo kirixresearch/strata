@@ -85,10 +85,8 @@ class WebDOMNode : public kscript::ValueObject
         KSCRIPT_GUI_METHOD("replaceChild", WebDOMNode::replaceChild)
         KSCRIPT_GUI_METHOD("removeChild", WebDOMNode::removeChild)
         KSCRIPT_GUI_METHOD("appendChild", WebDOMNode::appendChild)
-        KSCRIPT_GUI_METHOD("getAttributes", WebDOMNode::getAttributes)
         KSCRIPT_GUI_METHOD("cloneNode", WebDOMNode::cloneNode)
         KSCRIPT_GUI_METHOD("normalize", WebDOMNode::normalize)
-        KSCRIPT_GUI_METHOD("isSupported", WebDOMNode::isSupported)        
         KSCRIPT_GUI_METHOD("hasChildNodes", WebDOMNode::hasChildNodes)
         KSCRIPT_GUI_METHOD("hasAttributes", WebDOMNode::hasAttributes)
         KSCRIPT_GUI_METHOD("getPrefix", WebDOMNode::getPrefix)
@@ -119,10 +117,8 @@ public:
     void replaceChild(kscript::ExprEnv* env, kscript::Value* retval);
     void removeChild(kscript::ExprEnv* env, kscript::Value* retval);
     void appendChild(kscript::ExprEnv* env, kscript::Value* retval);
-    void getAttributes(kscript::ExprEnv* env, kscript::Value* retval);
     void cloneNode(kscript::ExprEnv* env, kscript::Value* retval);
     void normalize(kscript::ExprEnv* env, kscript::Value* retval);
-    void isSupported(kscript::ExprEnv* env, kscript::Value* retval);
     void hasChildNodes(kscript::ExprEnv* env, kscript::Value* retval);
     void hasAttributes(kscript::ExprEnv* env, kscript::Value* retval);
     void getPrefix(kscript::ExprEnv* env, kscript::Value* retval);
@@ -184,6 +180,7 @@ class WebDOMElement : public WebDOMNode
     BEGIN_KSCRIPT_DERIVED_CLASS("WebDOMElement", WebDOMElement, WebDOMNode)
         KSCRIPT_GUI_METHOD("constructor", WebDOMElement::constructor)
         KSCRIPT_GUI_METHOD("getTagName", WebDOMElement::getTagName)
+        KSCRIPT_GUI_METHOD("getAttributes", WebDOMElement::getAttributes)
         KSCRIPT_GUI_METHOD("getElementsByTagName", WebDOMElement::getElementsByTagName)
         KSCRIPT_GUI_METHOD("getAttribute", WebDOMElement::getAttribute)
         KSCRIPT_GUI_METHOD("setAttribute", WebDOMElement::setAttribute)
@@ -201,6 +198,7 @@ public:
     
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
     void getTagName(kscript::ExprEnv* env, kscript::Value* retval);
+    void getAttributes(kscript::ExprEnv* env, kscript::Value* retval);
     void getElementsByTagName(kscript::ExprEnv* env, kscript::Value* retval);
     void getAttribute(kscript::ExprEnv* env, kscript::Value* retval);
     void setAttribute(kscript::ExprEnv* env, kscript::Value* retval);

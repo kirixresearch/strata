@@ -1972,7 +1972,7 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
         size_t td_count = 0;
         for (coln = 0; coln < col_count; ++coln)
         {
-            wxDOMNode cell = col_nodes.Item(coln);
+            wxDOMElement cell = col_nodes.Item(coln);
             
             
             // skip rows with header elements (TH)
@@ -1987,7 +1987,7 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
                 continue;
             
             // skip any cell with a rowspan attribute
-            wxDOMNamedNodeMap attr = cell.GetAttributes();
+            wxDOMNamedAttrMap attr = cell.GetAttributes();
             wxDOMNode rowspan_node = attr.GetNamedItem(wxT("rowspan"));
             if (rowspan_node.IsOk())
                 continue;

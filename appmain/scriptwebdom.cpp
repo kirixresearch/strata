@@ -576,51 +576,6 @@ void WebDOMNode::appendChild(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.getAttributes
-// Description: Gets the attributes of this node.
-//
-// Syntax: WebDOMNode.getAttributes() : Array(WebDOMAttr)
-//
-// Remarks: Returns an array of attributes.
-//
-// Returns: An array of attributes.
-
-void WebDOMNode::getAttributes(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // note: in the DOM specification, this returns a DOM 
-    // Named Node Map; however, the practical way it appears
-    // to be exposed in conventional ECMAScript is as an 
-    // array of DOM attributes
-
-    // set the default return value
-    retval->setArray(env);
-
-    if (!m_node.IsOk())
-        return;
-
-    // get the attributes
-    wxDOMNamedNodeMap attributes = m_node.GetAttributes();
-    if (!attributes.IsOk())
-        return;
-
-    // add each attribute to the output arrays
-    size_t i;
-    size_t count = attributes.GetLength();
-    for (i = 0; i < count; ++i)
-    {
-        wxDOMNode node = attributes.Item(i);
-        if (node.IsOk())
-        {
-            WebDOMNode* attr = createAppropriateDOMNode(env, node);
-            attr->m_node = node;
-            
-            kscript::Value val;
-            val.setObject(attr);
-            retval->appendMember(&val);
-        }
-    }
-}
-
 // (METHOD) WebDOMNode.cloneNode
 // Description: Clones this node.
 //
@@ -675,36 +630,6 @@ void WebDOMNode::normalize(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.isSupported
-// Description: Determines if a feature in a particular version 
-//     is supported.
-//
-// Syntax: WebDOMNode.isSupported(feature : String, 
-//                                version : String) : Boolean
-//
-// Param(feature): The |feature| to check.
-// Param(version): The |version| to check.
-//
-// Remarks: Returns true if a feature is supported in a particular
-//     version, and false otherwise.
-
-void WebDOMNode::isSupported(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // TODO: review documentation
-
-    retval->setBoolean(false);
-    
-    if (!m_node.IsOk())
-        return;
-    
-    if (env->getParamCount() < 2)
-        return;
-    
-    wxString feature = env->getParam(0)->getString();
-    wxString version = env->getParam(1)->getString();
-
-    retval->setBoolean(m_node.IsSupported(feature, version));
-}
 
 // (METHOD) WebDOMNode.hasChildNodes
 // Description: Returns true if this node has child nodes, and false otherwise.
@@ -1165,6 +1090,53 @@ void WebDOMElement::getTagName(kscript::ExprEnv* env, kscript::Value* retval)
     if (element.IsOk())
     {
         retval->setString(element.GetTagName().wc_str());
+    }
+}
+
+
+// (METHOD) WebDOMElement.getAttributes
+// Description: Gets the attributes of this node.
+//
+// Syntax: WebDOMNode.getAttributes() : Array(WebDOMAttr)
+//
+// Remarks: Returns an array of attributes.
+//
+// Returns: An array of attributes.
+
+void WebDOMElement::getAttributes(kscript::ExprEnv* env, kscript::Value* retval)
+{
+    // note: in the DOM specification, this returns a DOM 
+    // Named Node Map; however, the practical way it appears
+    // to be exposed in conventional ECMAScript is as an 
+    // array of DOM attributes
+
+    // set the default return value
+    retval->setArray(env);
+
+    wxDOMElement element = m_node;
+    if (!element.IsOk())
+        return;
+
+    // get the attributes
+    wxDOMNamedAttrMap attributes = element.GetAttributes();
+    if (!attributes.IsOk())
+        return;
+
+    // add each attribute to the output arrays
+    size_t i;
+    size_t count = attributes.GetLength();
+    for (i = 0; i < count; ++i)
+    {
+        wxDOMNode node = attributes.Item(i);
+        if (node.IsOk())
+        {
+            WebDOMNode* attr = createAppropriateDOMNode(env, node);
+            attr->m_node = node;
+            
+            kscript::Value val;
+            val.setObject(attr);
+            retval->appendMember(&val);
+        }
     }
 }
 
