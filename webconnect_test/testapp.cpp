@@ -399,7 +399,7 @@ MyFrame::MyFrame(wxWindow* parent,
     toolbar->AddTool(ID_GoForward, wxT("Go Forward"), wxArtProvider::GetBitmap(wxART_GO_FORWARD));
     toolbar->AddTool(ID_GoHome, wxT("Go Home"), wxArtProvider::GetBitmap(wxART_GO_HOME));
 
-    m_urlbar = new wxComboBox(toolbar, wxID_URL, wxT(""), wxPoint(0,0), wxSize(850,18));    
+    m_urlbar = new wxComboBox(toolbar, wxID_URL, wxT(""), wxPoint(0,0), wxSize(850,23));    
     toolbar->AddControl(m_urlbar, wxT("Location"));
 
     toolbar->Realize();
@@ -549,6 +549,7 @@ void MyFrame::OnPageSetup(wxCommandEvent& evt)
 
     // get the web control page settings;
     // currently, units are in inches
+    int orientation;
     double page_width = 0;
     double page_height = 0;
     double left_margin = 0;
@@ -556,7 +557,7 @@ void MyFrame::OnPageSetup(wxCommandEvent& evt)
     double top_margin = 0;
     double bottom_margin = 0;
 
-    m_browser->GetPageSettings(&page_width, &page_height,
+    m_browser->GetPageSettings(&orientation, &page_width, &page_height,
                                &left_margin, &right_margin, 
                                &top_margin, &bottom_margin);
 
@@ -577,6 +578,7 @@ void MyFrame::OnPageSetup(wxCommandEvent& evt)
     data = dlg.GetPageSetupData();
 
     // convert the dialog data from mm back to inches
+    int paper_orientation = wxPORTRAIT;
     wxSize paper_size = data.GetPaperSize();
     wxPoint top_left_margin = data.GetMarginTopLeft();
     wxPoint bottom_right_margin = data.GetMarginBottomRight();
@@ -589,7 +591,7 @@ void MyFrame::OnPageSetup(wxCommandEvent& evt)
     bottom_margin = bottom_right_margin.y/25.4;      
 
     // save the page settings
-    m_browser->SetPageSettings(page_width, page_height,
+    m_browser->SetPageSettings(paper_orientation, page_width, page_height,
                                left_margin, right_margin, top_margin, bottom_margin);    
 }
 
