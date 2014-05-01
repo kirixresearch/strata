@@ -3215,7 +3215,7 @@ wxString wxDOMHTMLInputElement::GetAccessKey()
         return wxEmptyString;
 
     nsEmbedString ns;
-    m_data->input_ptr->GetAccessKey(ns);
+    m_data->htmlelement_ptr->GetAccessKey(ns);
 
     return ns2wx(ns);
 }
@@ -3237,7 +3237,7 @@ void wxDOMHTMLInputElement::SetAccessKey(const wxString& value)
     nsEmbedString nsvalue;
     wx2ns(value, nsvalue);
     
-    m_data->input_ptr->SetAccessKey(nsvalue);
+    m_data->htmlelement_ptr->SetAccessKey(nsvalue);
 }
 
 // (METHOD) wxDOMHTMLInputElement::GetAlign
@@ -3600,7 +3600,7 @@ int wxDOMHTMLInputElement::GetTabIndex()
         return 0;
         
     PRInt32 val = 0;
-    m_data->input_ptr->GetTabIndex(&val);
+    m_data->htmlelement_ptr->GetTabIndex(&val);
     return val;
 }
 
@@ -3619,7 +3619,7 @@ void wxDOMHTMLInputElement::SetTabIndex(int value)
         return;
         
     PRInt32 val = value;
-    m_data->input_ptr->SetTabIndex(val);
+    m_data->htmlelement_ptr->SetTabIndex(val);
 }
 
 // (METHOD) wxDOMHTMLInputElement::GetType
@@ -3716,7 +3716,7 @@ void wxDOMHTMLInputElement::Blur()
     if (!IsOk())
         return;
         
-    m_data->input_ptr->Blur();
+    m_data->htmlelement_ptr->Blur();
 }
 
 // (METHOD) wxDOMHTMLInputElement::Focus
@@ -3733,7 +3733,7 @@ void wxDOMHTMLInputElement::Focus()
     if (!IsOk())
         return;
         
-    m_data->input_ptr->Focus();
+    m_data->htmlelement_ptr->Focus();
 }
 
 // (METHOD) wxDOMHTMLInputElement::Select
@@ -3767,7 +3767,7 @@ void wxDOMHTMLInputElement::Click()
     if (!IsOk())
         return;
         
-    m_data->input_ptr->Click();
+    m_data->htmlelement_ptr->Click();
 }
 
 

@@ -8361,13 +8361,15 @@ NS_IMETHODIMP nsDOMEventTarget::DispatchEvent(nsIDOMEvent *evt, bool *_retval)
 /* End of implementation class template. */
 #endif
 
+class nsIDOMHTMLMenuElement; /* forward declaration */
+
 
 /* starting interface:    nsIDOMHTMLElement */
-#define NS_IDOMHTMLELEMENT_IID_STR "6ecb115c-8a7b-495b-958e-2ef5d8a50244"
+#define NS_IDOMHTMLELEMENT_IID_STR "e29ddc73-ac40-40fe-8bbd-14bf2d52c53a"
 
 #define NS_IDOMHTMLELEMENT_IID \
-  {0x6ecb115c, 0x8a7b, 0x495b, \
-    { 0x95, 0x8e, 0x2e, 0xf5, 0xd8, 0xa5, 0x02, 0x44 }}
+  {0xe29ddc73, 0xac40, 0x40fe, \
+    { 0x8b, 0xbd, 0x14, 0xbf, 0x2d, 0x52, 0xc5, 0x3a }}
 
 class NS_NO_VTABLE nsIDOMHTMLElement : public nsIDOMElement {
  public: 
@@ -8394,6 +8396,53 @@ class NS_NO_VTABLE nsIDOMHTMLElement : public nsIDOMElement {
   NS_IMETHOD GetClassName(nsAString & aClassName) = 0;
   NS_IMETHOD SetClassName(const nsAString & aClassName) = 0;
 
+  /* readonly attribute nsISupports dataset; */
+  NS_IMETHOD GetDataset(nsISupports * *aDataset) = 0;
+
+  /* attribute boolean itemScope; */
+  NS_IMETHOD GetItemScope(bool *aItemScope) = 0;
+  NS_IMETHOD SetItemScope(bool aItemScope) = 0;
+
+  /* attribute nsIVariant itemType; */
+  NS_IMETHOD GetItemType(nsIVariant * *aItemType) = 0;
+  NS_IMETHOD SetItemType(nsIVariant *aItemType) = 0;
+
+  /* attribute DOMString itemId; */
+  NS_IMETHOD GetItemId(nsAString & aItemId) = 0;
+  NS_IMETHOD SetItemId(const nsAString & aItemId) = 0;
+
+  /* readonly attribute nsISupports properties; */
+  NS_IMETHOD GetProperties(nsISupports * *aProperties) = 0;
+
+  /* attribute nsIVariant itemValue; */
+  NS_IMETHOD GetItemValue(nsIVariant * *aItemValue) = 0;
+  NS_IMETHOD SetItemValue(nsIVariant *aItemValue) = 0;
+
+  /* attribute nsIVariant itemProp; */
+  NS_IMETHOD GetItemProp(nsIVariant * *aItemProp) = 0;
+  NS_IMETHOD SetItemProp(nsIVariant *aItemProp) = 0;
+
+  /* attribute nsIVariant itemRef; */
+  NS_IMETHOD GetItemRef(nsIVariant * *aItemRef) = 0;
+  NS_IMETHOD SetItemRef(nsIVariant *aItemRef) = 0;
+
+  /* attribute boolean hidden; */
+  NS_IMETHOD GetHidden(bool *aHidden) = 0;
+  NS_IMETHOD SetHidden(bool aHidden) = 0;
+
+  /* void click (); */
+  NS_IMETHOD Click(void) = 0;
+
+  /* attribute long tabIndex; */
+  NS_IMETHOD GetTabIndex(int32_t *aTabIndex) = 0;
+  NS_IMETHOD SetTabIndex(int32_t aTabIndex) = 0;
+
+  /* void focus (); */
+  NS_IMETHOD Focus(void) = 0;
+
+  /* void blur (); */
+  NS_IMETHOD Blur(void) = 0;
+
   /* attribute DOMString accessKey; */
   NS_IMETHOD GetAccessKey(nsAString & aAccessKey) = 0;
   NS_IMETHOD SetAccessKey(const nsAString & aAccessKey) = 0;
@@ -8401,14 +8450,52 @@ class NS_NO_VTABLE nsIDOMHTMLElement : public nsIDOMElement {
   /* readonly attribute DOMString accessKeyLabel; */
   NS_IMETHOD GetAccessKeyLabel(nsAString & aAccessKeyLabel) = 0;
 
-  /* void blur (); */
-  NS_IMETHOD Blur(void) = 0;
+  /* attribute boolean draggable; */
+  NS_IMETHOD GetDraggable(bool *aDraggable) = 0;
+  NS_IMETHOD SetDraggable(bool aDraggable) = 0;
 
-  /* void focus (); */
-  NS_IMETHOD Focus(void) = 0;
+  /* attribute DOMString contentEditable; */
+  NS_IMETHOD GetContentEditable(nsAString & aContentEditable) = 0;
+  NS_IMETHOD SetContentEditable(const nsAString & aContentEditable) = 0;
 
-  /* void click (); */
-  NS_IMETHOD Click(void) = 0;
+  /* readonly attribute boolean isContentEditable; */
+  NS_IMETHOD GetIsContentEditable(bool *aIsContentEditable) = 0;
+
+  /* readonly attribute nsIDOMHTMLMenuElement contextMenu; */
+  NS_IMETHOD GetContextMenu(nsIDOMHTMLMenuElement * *aContextMenu) = 0;
+
+  /* attribute boolean spellcheck; */
+  NS_IMETHOD GetSpellcheck(bool *aSpellcheck) = 0;
+  NS_IMETHOD SetSpellcheck(bool aSpellcheck) = 0;
+
+  /* attribute DOMString innerHTML; */
+  NS_IMETHOD GetInnerHTML(nsAString & aInnerHTML) = 0;
+  NS_IMETHOD SetInnerHTML(const nsAString & aInnerHTML) = 0;
+
+  /* attribute DOMString outerHTML; */
+  NS_IMETHOD GetOuterHTML(nsAString & aOuterHTML) = 0;
+  NS_IMETHOD SetOuterHTML(const nsAString & aOuterHTML) = 0;
+
+  /* void insertAdjacentHTML (in DOMString position, in DOMString text); */
+  NS_IMETHOD InsertAdjacentHTML(const nsAString & position, const nsAString & text) = 0;
+
+  /* [optional_argc] void scrollIntoView ([optional] in boolean top); */
+  NS_IMETHOD ScrollIntoView(bool top, uint8_t _argc) = 0;
+
+  /* readonly attribute nsIDOMElement offsetParent; */
+  NS_IMETHOD GetOffsetParent(nsIDOMElement * *aOffsetParent) = 0;
+
+  /* readonly attribute long offsetTop; */
+  NS_IMETHOD GetOffsetTop(int32_t *aOffsetTop) = 0;
+
+  /* readonly attribute long offsetLeft; */
+  NS_IMETHOD GetOffsetLeft(int32_t *aOffsetLeft) = 0;
+
+  /* readonly attribute long offsetWidth; */
+  NS_IMETHOD GetOffsetWidth(int32_t *aOffsetWidth) = 0;
+
+  /* readonly attribute long offsetHeight; */
+  NS_IMETHOD GetOffsetHeight(int32_t *aOffsetHeight) = 0;
 
 };
 
@@ -8426,12 +8513,49 @@ class NS_NO_VTABLE nsIDOMHTMLElement : public nsIDOMElement {
   NS_IMETHOD SetDir(const nsAString & aDir); \
   NS_IMETHOD GetClassName(nsAString & aClassName); \
   NS_IMETHOD SetClassName(const nsAString & aClassName); \
+  NS_IMETHOD GetDataset(nsISupports * *aDataset); \
+  NS_IMETHOD GetItemScope(bool *aItemScope); \
+  NS_IMETHOD SetItemScope(bool aItemScope); \
+  NS_IMETHOD GetItemType(nsIVariant * *aItemType); \
+  NS_IMETHOD SetItemType(nsIVariant *aItemType); \
+  NS_IMETHOD GetItemId(nsAString & aItemId); \
+  NS_IMETHOD SetItemId(const nsAString & aItemId); \
+  NS_IMETHOD GetProperties(nsISupports * *aProperties); \
+  NS_IMETHOD GetItemValue(nsIVariant * *aItemValue); \
+  NS_IMETHOD SetItemValue(nsIVariant *aItemValue); \
+  NS_IMETHOD GetItemProp(nsIVariant * *aItemProp); \
+  NS_IMETHOD SetItemProp(nsIVariant *aItemProp); \
+  NS_IMETHOD GetItemRef(nsIVariant * *aItemRef); \
+  NS_IMETHOD SetItemRef(nsIVariant *aItemRef); \
+  NS_IMETHOD GetHidden(bool *aHidden); \
+  NS_IMETHOD SetHidden(bool aHidden); \
+  NS_IMETHOD Click(void); \
+  NS_IMETHOD GetTabIndex(int32_t *aTabIndex); \
+  NS_IMETHOD SetTabIndex(int32_t aTabIndex); \
+  NS_IMETHOD Focus(void); \
+  NS_IMETHOD Blur(void); \
   NS_IMETHOD GetAccessKey(nsAString & aAccessKey); \
   NS_IMETHOD SetAccessKey(const nsAString & aAccessKey); \
   NS_IMETHOD GetAccessKeyLabel(nsAString & aAccessKeyLabel); \
-  NS_IMETHOD Blur(void); \
-  NS_IMETHOD Focus(void); \
-  NS_IMETHOD Click(void); 
+  NS_IMETHOD GetDraggable(bool *aDraggable); \
+  NS_IMETHOD SetDraggable(bool aDraggable); \
+  NS_IMETHOD GetContentEditable(nsAString & aContentEditable); \
+  NS_IMETHOD SetContentEditable(const nsAString & aContentEditable); \
+  NS_IMETHOD GetIsContentEditable(bool *aIsContentEditable); \
+  NS_IMETHOD GetContextMenu(nsIDOMHTMLMenuElement * *aContextMenu); \
+  NS_IMETHOD GetSpellcheck(bool *aSpellcheck); \
+  NS_IMETHOD SetSpellcheck(bool aSpellcheck); \
+  NS_IMETHOD GetInnerHTML(nsAString & aInnerHTML); \
+  NS_IMETHOD SetInnerHTML(const nsAString & aInnerHTML); \
+  NS_IMETHOD GetOuterHTML(nsAString & aOuterHTML); \
+  NS_IMETHOD SetOuterHTML(const nsAString & aOuterHTML); \
+  NS_IMETHOD InsertAdjacentHTML(const nsAString & position, const nsAString & text); \
+  NS_IMETHOD ScrollIntoView(bool top, uint8_t _argc); \
+  NS_IMETHOD GetOffsetParent(nsIDOMElement * *aOffsetParent); \
+  NS_IMETHOD GetOffsetTop(int32_t *aOffsetTop); \
+  NS_IMETHOD GetOffsetLeft(int32_t *aOffsetLeft); \
+  NS_IMETHOD GetOffsetWidth(int32_t *aOffsetWidth); \
+  NS_IMETHOD GetOffsetHeight(int32_t *aOffsetHeight); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIDOMHTMLELEMENT(_to) \
@@ -8445,12 +8569,49 @@ class NS_NO_VTABLE nsIDOMHTMLElement : public nsIDOMElement {
   NS_IMETHOD SetDir(const nsAString & aDir) { return _to SetDir(aDir); } \
   NS_IMETHOD GetClassName(nsAString & aClassName) { return _to GetClassName(aClassName); } \
   NS_IMETHOD SetClassName(const nsAString & aClassName) { return _to SetClassName(aClassName); } \
+  NS_IMETHOD GetDataset(nsISupports * *aDataset) { return _to GetDataset(aDataset); } \
+  NS_IMETHOD GetItemScope(bool *aItemScope) { return _to GetItemScope(aItemScope); } \
+  NS_IMETHOD SetItemScope(bool aItemScope) { return _to SetItemScope(aItemScope); } \
+  NS_IMETHOD GetItemType(nsIVariant * *aItemType) { return _to GetItemType(aItemType); } \
+  NS_IMETHOD SetItemType(nsIVariant *aItemType) { return _to SetItemType(aItemType); } \
+  NS_IMETHOD GetItemId(nsAString & aItemId) { return _to GetItemId(aItemId); } \
+  NS_IMETHOD SetItemId(const nsAString & aItemId) { return _to SetItemId(aItemId); } \
+  NS_IMETHOD GetProperties(nsISupports * *aProperties) { return _to GetProperties(aProperties); } \
+  NS_IMETHOD GetItemValue(nsIVariant * *aItemValue) { return _to GetItemValue(aItemValue); } \
+  NS_IMETHOD SetItemValue(nsIVariant *aItemValue) { return _to SetItemValue(aItemValue); } \
+  NS_IMETHOD GetItemProp(nsIVariant * *aItemProp) { return _to GetItemProp(aItemProp); } \
+  NS_IMETHOD SetItemProp(nsIVariant *aItemProp) { return _to SetItemProp(aItemProp); } \
+  NS_IMETHOD GetItemRef(nsIVariant * *aItemRef) { return _to GetItemRef(aItemRef); } \
+  NS_IMETHOD SetItemRef(nsIVariant *aItemRef) { return _to SetItemRef(aItemRef); } \
+  NS_IMETHOD GetHidden(bool *aHidden) { return _to GetHidden(aHidden); } \
+  NS_IMETHOD SetHidden(bool aHidden) { return _to SetHidden(aHidden); } \
+  NS_IMETHOD Click(void) { return _to Click(); } \
+  NS_IMETHOD GetTabIndex(int32_t *aTabIndex) { return _to GetTabIndex(aTabIndex); } \
+  NS_IMETHOD SetTabIndex(int32_t aTabIndex) { return _to SetTabIndex(aTabIndex); } \
+  NS_IMETHOD Focus(void) { return _to Focus(); } \
+  NS_IMETHOD Blur(void) { return _to Blur(); } \
   NS_IMETHOD GetAccessKey(nsAString & aAccessKey) { return _to GetAccessKey(aAccessKey); } \
   NS_IMETHOD SetAccessKey(const nsAString & aAccessKey) { return _to SetAccessKey(aAccessKey); } \
   NS_IMETHOD GetAccessKeyLabel(nsAString & aAccessKeyLabel) { return _to GetAccessKeyLabel(aAccessKeyLabel); } \
-  NS_IMETHOD Blur(void) { return _to Blur(); } \
-  NS_IMETHOD Focus(void) { return _to Focus(); } \
-  NS_IMETHOD Click(void) { return _to Click(); } 
+  NS_IMETHOD GetDraggable(bool *aDraggable) { return _to GetDraggable(aDraggable); } \
+  NS_IMETHOD SetDraggable(bool aDraggable) { return _to SetDraggable(aDraggable); } \
+  NS_IMETHOD GetContentEditable(nsAString & aContentEditable) { return _to GetContentEditable(aContentEditable); } \
+  NS_IMETHOD SetContentEditable(const nsAString & aContentEditable) { return _to SetContentEditable(aContentEditable); } \
+  NS_IMETHOD GetIsContentEditable(bool *aIsContentEditable) { return _to GetIsContentEditable(aIsContentEditable); } \
+  NS_IMETHOD GetContextMenu(nsIDOMHTMLMenuElement * *aContextMenu) { return _to GetContextMenu(aContextMenu); } \
+  NS_IMETHOD GetSpellcheck(bool *aSpellcheck) { return _to GetSpellcheck(aSpellcheck); } \
+  NS_IMETHOD SetSpellcheck(bool aSpellcheck) { return _to SetSpellcheck(aSpellcheck); } \
+  NS_IMETHOD GetInnerHTML(nsAString & aInnerHTML) { return _to GetInnerHTML(aInnerHTML); } \
+  NS_IMETHOD SetInnerHTML(const nsAString & aInnerHTML) { return _to SetInnerHTML(aInnerHTML); } \
+  NS_IMETHOD GetOuterHTML(nsAString & aOuterHTML) { return _to GetOuterHTML(aOuterHTML); } \
+  NS_IMETHOD SetOuterHTML(const nsAString & aOuterHTML) { return _to SetOuterHTML(aOuterHTML); } \
+  NS_IMETHOD InsertAdjacentHTML(const nsAString & position, const nsAString & text) { return _to InsertAdjacentHTML(position, text); } \
+  NS_IMETHOD ScrollIntoView(bool top, uint8_t _argc) { return _to ScrollIntoView(top, _argc); } \
+  NS_IMETHOD GetOffsetParent(nsIDOMElement * *aOffsetParent) { return _to GetOffsetParent(aOffsetParent); } \
+  NS_IMETHOD GetOffsetTop(int32_t *aOffsetTop) { return _to GetOffsetTop(aOffsetTop); } \
+  NS_IMETHOD GetOffsetLeft(int32_t *aOffsetLeft) { return _to GetOffsetLeft(aOffsetLeft); } \
+  NS_IMETHOD GetOffsetWidth(int32_t *aOffsetWidth) { return _to GetOffsetWidth(aOffsetWidth); } \
+  NS_IMETHOD GetOffsetHeight(int32_t *aOffsetHeight) { return _to GetOffsetHeight(aOffsetHeight); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIDOMHTMLELEMENT(_to) \
@@ -8464,12 +8625,49 @@ class NS_NO_VTABLE nsIDOMHTMLElement : public nsIDOMElement {
   NS_IMETHOD SetDir(const nsAString & aDir) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetDir(aDir); } \
   NS_IMETHOD GetClassName(nsAString & aClassName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetClassName(aClassName); } \
   NS_IMETHOD SetClassName(const nsAString & aClassName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetClassName(aClassName); } \
+  NS_IMETHOD GetDataset(nsISupports * *aDataset) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDataset(aDataset); } \
+  NS_IMETHOD GetItemScope(bool *aItemScope) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetItemScope(aItemScope); } \
+  NS_IMETHOD SetItemScope(bool aItemScope) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetItemScope(aItemScope); } \
+  NS_IMETHOD GetItemType(nsIVariant * *aItemType) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetItemType(aItemType); } \
+  NS_IMETHOD SetItemType(nsIVariant *aItemType) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetItemType(aItemType); } \
+  NS_IMETHOD GetItemId(nsAString & aItemId) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetItemId(aItemId); } \
+  NS_IMETHOD SetItemId(const nsAString & aItemId) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetItemId(aItemId); } \
+  NS_IMETHOD GetProperties(nsISupports * *aProperties) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetProperties(aProperties); } \
+  NS_IMETHOD GetItemValue(nsIVariant * *aItemValue) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetItemValue(aItemValue); } \
+  NS_IMETHOD SetItemValue(nsIVariant *aItemValue) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetItemValue(aItemValue); } \
+  NS_IMETHOD GetItemProp(nsIVariant * *aItemProp) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetItemProp(aItemProp); } \
+  NS_IMETHOD SetItemProp(nsIVariant *aItemProp) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetItemProp(aItemProp); } \
+  NS_IMETHOD GetItemRef(nsIVariant * *aItemRef) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetItemRef(aItemRef); } \
+  NS_IMETHOD SetItemRef(nsIVariant *aItemRef) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetItemRef(aItemRef); } \
+  NS_IMETHOD GetHidden(bool *aHidden) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetHidden(aHidden); } \
+  NS_IMETHOD SetHidden(bool aHidden) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetHidden(aHidden); } \
+  NS_IMETHOD Click(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Click(); } \
+  NS_IMETHOD GetTabIndex(int32_t *aTabIndex) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTabIndex(aTabIndex); } \
+  NS_IMETHOD SetTabIndex(int32_t aTabIndex) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTabIndex(aTabIndex); } \
+  NS_IMETHOD Focus(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Focus(); } \
+  NS_IMETHOD Blur(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Blur(); } \
   NS_IMETHOD GetAccessKey(nsAString & aAccessKey) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAccessKey(aAccessKey); } \
   NS_IMETHOD SetAccessKey(const nsAString & aAccessKey) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetAccessKey(aAccessKey); } \
   NS_IMETHOD GetAccessKeyLabel(nsAString & aAccessKeyLabel) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAccessKeyLabel(aAccessKeyLabel); } \
-  NS_IMETHOD Blur(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Blur(); } \
-  NS_IMETHOD Focus(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Focus(); } \
-  NS_IMETHOD Click(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Click(); } 
+  NS_IMETHOD GetDraggable(bool *aDraggable) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDraggable(aDraggable); } \
+  NS_IMETHOD SetDraggable(bool aDraggable) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetDraggable(aDraggable); } \
+  NS_IMETHOD GetContentEditable(nsAString & aContentEditable) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetContentEditable(aContentEditable); } \
+  NS_IMETHOD SetContentEditable(const nsAString & aContentEditable) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetContentEditable(aContentEditable); } \
+  NS_IMETHOD GetIsContentEditable(bool *aIsContentEditable) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetIsContentEditable(aIsContentEditable); } \
+  NS_IMETHOD GetContextMenu(nsIDOMHTMLMenuElement * *aContextMenu) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetContextMenu(aContextMenu); } \
+  NS_IMETHOD GetSpellcheck(bool *aSpellcheck) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSpellcheck(aSpellcheck); } \
+  NS_IMETHOD SetSpellcheck(bool aSpellcheck) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSpellcheck(aSpellcheck); } \
+  NS_IMETHOD GetInnerHTML(nsAString & aInnerHTML) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetInnerHTML(aInnerHTML); } \
+  NS_IMETHOD SetInnerHTML(const nsAString & aInnerHTML) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetInnerHTML(aInnerHTML); } \
+  NS_IMETHOD GetOuterHTML(nsAString & aOuterHTML) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetOuterHTML(aOuterHTML); } \
+  NS_IMETHOD SetOuterHTML(const nsAString & aOuterHTML) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetOuterHTML(aOuterHTML); } \
+  NS_IMETHOD InsertAdjacentHTML(const nsAString & position, const nsAString & text) { return !_to ? NS_ERROR_NULL_POINTER : _to->InsertAdjacentHTML(position, text); } \
+  NS_IMETHOD ScrollIntoView(bool top, uint8_t _argc) { return !_to ? NS_ERROR_NULL_POINTER : _to->ScrollIntoView(top, _argc); } \
+  NS_IMETHOD GetOffsetParent(nsIDOMElement * *aOffsetParent) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetOffsetParent(aOffsetParent); } \
+  NS_IMETHOD GetOffsetTop(int32_t *aOffsetTop) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetOffsetTop(aOffsetTop); } \
+  NS_IMETHOD GetOffsetLeft(int32_t *aOffsetLeft) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetOffsetLeft(aOffsetLeft); } \
+  NS_IMETHOD GetOffsetWidth(int32_t *aOffsetWidth) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetOffsetWidth(aOffsetWidth); } \
+  NS_IMETHOD GetOffsetHeight(int32_t *aOffsetHeight) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetOffsetHeight(aOffsetHeight); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -8553,6 +8751,116 @@ NS_IMETHODIMP nsDOMHTMLElement::SetClassName(const nsAString & aClassName)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
+/* readonly attribute nsISupports dataset; */
+NS_IMETHODIMP nsDOMHTMLElement::GetDataset(nsISupports * *aDataset)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute boolean itemScope; */
+NS_IMETHODIMP nsDOMHTMLElement::GetItemScope(bool *aItemScope)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLElement::SetItemScope(bool aItemScope)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute nsIVariant itemType; */
+NS_IMETHODIMP nsDOMHTMLElement::GetItemType(nsIVariant * *aItemType)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLElement::SetItemType(nsIVariant *aItemType)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute DOMString itemId; */
+NS_IMETHODIMP nsDOMHTMLElement::GetItemId(nsAString & aItemId)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLElement::SetItemId(const nsAString & aItemId)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute nsISupports properties; */
+NS_IMETHODIMP nsDOMHTMLElement::GetProperties(nsISupports * *aProperties)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute nsIVariant itemValue; */
+NS_IMETHODIMP nsDOMHTMLElement::GetItemValue(nsIVariant * *aItemValue)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLElement::SetItemValue(nsIVariant *aItemValue)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute nsIVariant itemProp; */
+NS_IMETHODIMP nsDOMHTMLElement::GetItemProp(nsIVariant * *aItemProp)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLElement::SetItemProp(nsIVariant *aItemProp)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute nsIVariant itemRef; */
+NS_IMETHODIMP nsDOMHTMLElement::GetItemRef(nsIVariant * *aItemRef)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLElement::SetItemRef(nsIVariant *aItemRef)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute boolean hidden; */
+NS_IMETHODIMP nsDOMHTMLElement::GetHidden(bool *aHidden)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLElement::SetHidden(bool aHidden)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void click (); */
+NS_IMETHODIMP nsDOMHTMLElement::Click()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute long tabIndex; */
+NS_IMETHODIMP nsDOMHTMLElement::GetTabIndex(int32_t *aTabIndex)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLElement::SetTabIndex(int32_t aTabIndex)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void focus (); */
+NS_IMETHODIMP nsDOMHTMLElement::Focus()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void blur (); */
+NS_IMETHODIMP nsDOMHTMLElement::Blur()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 /* attribute DOMString accessKey; */
 NS_IMETHODIMP nsDOMHTMLElement::GetAccessKey(nsAString & aAccessKey)
 {
@@ -8569,20 +8877,106 @@ NS_IMETHODIMP nsDOMHTMLElement::GetAccessKeyLabel(nsAString & aAccessKeyLabel)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void blur (); */
-NS_IMETHODIMP nsDOMHTMLElement::Blur()
+/* attribute boolean draggable; */
+NS_IMETHODIMP nsDOMHTMLElement::GetDraggable(bool *aDraggable)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLElement::SetDraggable(bool aDraggable)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void focus (); */
-NS_IMETHODIMP nsDOMHTMLElement::Focus()
+/* attribute DOMString contentEditable; */
+NS_IMETHODIMP nsDOMHTMLElement::GetContentEditable(nsAString & aContentEditable)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLElement::SetContentEditable(const nsAString & aContentEditable)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void click (); */
-NS_IMETHODIMP nsDOMHTMLElement::Click()
+/* readonly attribute boolean isContentEditable; */
+NS_IMETHODIMP nsDOMHTMLElement::GetIsContentEditable(bool *aIsContentEditable)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute nsIDOMHTMLMenuElement contextMenu; */
+NS_IMETHODIMP nsDOMHTMLElement::GetContextMenu(nsIDOMHTMLMenuElement * *aContextMenu)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute boolean spellcheck; */
+NS_IMETHODIMP nsDOMHTMLElement::GetSpellcheck(bool *aSpellcheck)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLElement::SetSpellcheck(bool aSpellcheck)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute DOMString innerHTML; */
+NS_IMETHODIMP nsDOMHTMLElement::GetInnerHTML(nsAString & aInnerHTML)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLElement::SetInnerHTML(const nsAString & aInnerHTML)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute DOMString outerHTML; */
+NS_IMETHODIMP nsDOMHTMLElement::GetOuterHTML(nsAString & aOuterHTML)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLElement::SetOuterHTML(const nsAString & aOuterHTML)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void insertAdjacentHTML (in DOMString position, in DOMString text); */
+NS_IMETHODIMP nsDOMHTMLElement::InsertAdjacentHTML(const nsAString & position, const nsAString & text)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [optional_argc] void scrollIntoView ([optional] in boolean top); */
+NS_IMETHODIMP nsDOMHTMLElement::ScrollIntoView(bool top, uint8_t _argc)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute nsIDOMElement offsetParent; */
+NS_IMETHODIMP nsDOMHTMLElement::GetOffsetParent(nsIDOMElement * *aOffsetParent)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute long offsetTop; */
+NS_IMETHODIMP nsDOMHTMLElement::GetOffsetTop(int32_t *aOffsetTop)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute long offsetLeft; */
+NS_IMETHODIMP nsDOMHTMLElement::GetOffsetLeft(int32_t *aOffsetLeft)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute long offsetWidth; */
+NS_IMETHODIMP nsDOMHTMLElement::GetOffsetWidth(int32_t *aOffsetWidth)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute long offsetHeight; */
+NS_IMETHODIMP nsDOMHTMLElement::GetOffsetHeight(int32_t *aOffsetHeight)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -9428,13 +9822,13 @@ class nsIControllers; /* forward declaration */
 
 
 /* starting interface:    nsIDOMHTMLInputElement */
-#define NS_IDOMHTMLINPUTELEMENT_IID_STR "90fa1822-deca-4732-bc50-0b5393ffd129"
+#define NS_IDOMHTMLINPUTELEMENT_IID_STR "64aeda0b-e9b5-4868-a4f9-e4776e32e733"
 
 #define NS_IDOMHTMLINPUTELEMENT_IID \
-  {0x90fa1822, 0xdeca, 0x4732, \
-    { 0xbc, 0x50, 0x0b, 0x53, 0x93, 0xff, 0xd1, 0x29 }}
+  {0x64aeda0b, 0xe9b5, 0x4868, \
+    { 0xa4, 0xf9, 0xe4, 0x77, 0x6e, 0x32, 0xe7, 0x33 }}
 
-class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
+class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsISupports {
  public: 
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_IDOMHTMLINPUTELEMENT_IID)
@@ -9493,16 +9887,32 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   /* readonly attribute nsIDOMFileList files; */
   NS_IMETHOD GetFiles(nsIDOMFileList * *aFiles) = 0;
 
+  /* attribute unsigned long height; */
+  NS_IMETHOD GetHeight(uint32_t *aHeight) = 0;
+  NS_IMETHOD SetHeight(uint32_t aHeight) = 0;
+
   /* attribute boolean indeterminate; */
   NS_IMETHOD GetIndeterminate(bool *aIndeterminate) = 0;
   NS_IMETHOD SetIndeterminate(bool aIndeterminate) = 0;
 
+  /* attribute DOMString inputMode; */
+  NS_IMETHOD GetInputMode(nsAString & aInputMode) = 0;
+  NS_IMETHOD SetInputMode(const nsAString & aInputMode) = 0;
+
   /* readonly attribute nsIDOMHTMLElement list; */
   NS_IMETHOD GetList(nsIDOMHTMLElement * *aList) = 0;
+
+  /* attribute DOMString max; */
+  NS_IMETHOD GetMax(nsAString & aMax) = 0;
+  NS_IMETHOD SetMax(const nsAString & aMax) = 0;
 
   /* attribute long maxLength; */
   NS_IMETHOD GetMaxLength(int32_t *aMaxLength) = 0;
   NS_IMETHOD SetMaxLength(int32_t aMaxLength) = 0;
+
+  /* attribute DOMString min; */
+  NS_IMETHOD GetMin(nsAString & aMin) = 0;
+  NS_IMETHOD SetMin(const nsAString & aMin) = 0;
 
   /* attribute boolean multiple; */
   NS_IMETHOD GetMultiple(bool *aMultiple) = 0;
@@ -9528,6 +9938,10 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   NS_IMETHOD GetRequired(bool *aRequired) = 0;
   NS_IMETHOD SetRequired(bool aRequired) = 0;
 
+  /* attribute DOMString step; */
+  NS_IMETHOD GetStep(nsAString & aStep) = 0;
+  NS_IMETHOD SetStep(const nsAString & aStep) = 0;
+
   /* attribute DOMString align; */
   NS_IMETHOD GetAlign(nsAString & aAlign) = 0;
   NS_IMETHOD SetAlign(const nsAString & aAlign) = 0;
@@ -9535,6 +9949,10 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   /* attribute unsigned long size; */
   NS_IMETHOD GetSize(uint32_t *aSize) = 0;
   NS_IMETHOD SetSize(uint32_t aSize) = 0;
+
+  /* attribute unsigned long width; */
+  NS_IMETHOD GetWidth(uint32_t *aWidth) = 0;
+  NS_IMETHOD SetWidth(uint32_t aWidth) = 0;
 
   /* attribute DOMString src; */
   NS_IMETHOD GetSrc(nsAString & aSrc) = 0;
@@ -9551,6 +9969,16 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   /* attribute DOMString value; */
   NS_IMETHOD GetValue(nsAString & aValue) = 0;
   NS_IMETHOD SetValue(const nsAString & aValue) = 0;
+
+  /* attribute double valueAsNumber; */
+  NS_IMETHOD GetValueAsNumber(double *aValueAsNumber) = 0;
+  NS_IMETHOD SetValueAsNumber(double aValueAsNumber) = 0;
+
+  /* [optional_argc] void stepDown ([optional] in long n); */
+  NS_IMETHOD StepDown(int32_t n, uint8_t _argc) = 0;
+
+  /* [optional_argc] void stepUp ([optional] in long n); */
+  NS_IMETHOD StepUp(int32_t n, uint8_t _argc) = 0;
 
   /* readonly attribute boolean willValidate; */
   NS_IMETHOD GetWillValidate(bool *aWillValidate) = 0;
@@ -9585,10 +10013,6 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   NS_IMETHOD GetSelectionDirection(nsAString & aSelectionDirection) = 0;
   NS_IMETHOD SetSelectionDirection(const nsAString & aSelectionDirection) = 0;
 
-  /* attribute long tabIndex; */
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex) = 0;
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex) = 0;
-
   /* attribute DOMString useMap; */
   NS_IMETHOD GetUseMap(nsAString & aUseMap) = 0;
   NS_IMETHOD SetUseMap(const nsAString & aUseMap) = 0;
@@ -9605,8 +10029,8 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   /* void mozSetFileNameArray ([array, size_is (aLength)] in wstring aFileNames, in unsigned long aLength); */
   NS_IMETHOD MozSetFileNameArray(const PRUnichar * *aFileNames, uint32_t aLength) = 0;
 
-  /* boolean mozIsTextField (in boolean aExcludePassword); */
-  NS_IMETHOD MozIsTextField(bool aExcludePassword, bool *_retval) = 0;
+  /* boolean mozIsTextField (in boolean exclude_password); */
+  NS_IMETHOD MozIsTextField(bool exclude_password, bool *_retval) = 0;
 
 };
 
@@ -9640,11 +10064,19 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   NS_IMETHOD GetFormTarget(nsAString & aFormTarget); \
   NS_IMETHOD SetFormTarget(const nsAString & aFormTarget); \
   NS_IMETHOD GetFiles(nsIDOMFileList * *aFiles); \
+  NS_IMETHOD GetHeight(uint32_t *aHeight); \
+  NS_IMETHOD SetHeight(uint32_t aHeight); \
   NS_IMETHOD GetIndeterminate(bool *aIndeterminate); \
   NS_IMETHOD SetIndeterminate(bool aIndeterminate); \
+  NS_IMETHOD GetInputMode(nsAString & aInputMode); \
+  NS_IMETHOD SetInputMode(const nsAString & aInputMode); \
   NS_IMETHOD GetList(nsIDOMHTMLElement * *aList); \
+  NS_IMETHOD GetMax(nsAString & aMax); \
+  NS_IMETHOD SetMax(const nsAString & aMax); \
   NS_IMETHOD GetMaxLength(int32_t *aMaxLength); \
   NS_IMETHOD SetMaxLength(int32_t aMaxLength); \
+  NS_IMETHOD GetMin(nsAString & aMin); \
+  NS_IMETHOD SetMin(const nsAString & aMin); \
   NS_IMETHOD GetMultiple(bool *aMultiple); \
   NS_IMETHOD SetMultiple(bool aMultiple); \
   NS_IMETHOD GetName(nsAString & aName); \
@@ -9657,10 +10089,14 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetReadOnly(bool aReadOnly); \
   NS_IMETHOD GetRequired(bool *aRequired); \
   NS_IMETHOD SetRequired(bool aRequired); \
+  NS_IMETHOD GetStep(nsAString & aStep); \
+  NS_IMETHOD SetStep(const nsAString & aStep); \
   NS_IMETHOD GetAlign(nsAString & aAlign); \
   NS_IMETHOD SetAlign(const nsAString & aAlign); \
   NS_IMETHOD GetSize(uint32_t *aSize); \
   NS_IMETHOD SetSize(uint32_t aSize); \
+  NS_IMETHOD GetWidth(uint32_t *aWidth); \
+  NS_IMETHOD SetWidth(uint32_t aWidth); \
   NS_IMETHOD GetSrc(nsAString & aSrc); \
   NS_IMETHOD SetSrc(const nsAString & aSrc); \
   NS_IMETHOD GetType(nsAString & aType); \
@@ -9669,6 +10105,10 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetDefaultValue(const nsAString & aDefaultValue); \
   NS_IMETHOD GetValue(nsAString & aValue); \
   NS_IMETHOD SetValue(const nsAString & aValue); \
+  NS_IMETHOD GetValueAsNumber(double *aValueAsNumber); \
+  NS_IMETHOD SetValueAsNumber(double aValueAsNumber); \
+  NS_IMETHOD StepDown(int32_t n, uint8_t _argc); \
+  NS_IMETHOD StepUp(int32_t n, uint8_t _argc); \
   NS_IMETHOD GetWillValidate(bool *aWillValidate); \
   NS_IMETHOD GetValidity(nsIDOMValidityState * *aValidity); \
   NS_IMETHOD GetValidationMessage(nsAString & aValidationMessage); \
@@ -9682,15 +10122,13 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetSelectionRange(int32_t selectionStart, int32_t selectionEnd, const nsAString & direction); \
   NS_IMETHOD GetSelectionDirection(nsAString & aSelectionDirection); \
   NS_IMETHOD SetSelectionDirection(const nsAString & aSelectionDirection); \
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex); \
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex); \
   NS_IMETHOD GetUseMap(nsAString & aUseMap); \
   NS_IMETHOD SetUseMap(const nsAString & aUseMap); \
   NS_IMETHOD GetControllers(nsIControllers * *aControllers); \
   NS_IMETHOD GetTextLength(int32_t *aTextLength); \
   NS_IMETHOD MozGetFileNameArray(uint32_t *aLength, PRUnichar * **aFileNames); \
   NS_IMETHOD MozSetFileNameArray(const PRUnichar * *aFileNames, uint32_t aLength); \
-  NS_IMETHOD MozIsTextField(bool aExcludePassword, bool *_retval); 
+  NS_IMETHOD MozIsTextField(bool exclude_password, bool *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIDOMHTMLINPUTELEMENT(_to) \
@@ -9720,11 +10158,19 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   NS_IMETHOD GetFormTarget(nsAString & aFormTarget) { return _to GetFormTarget(aFormTarget); } \
   NS_IMETHOD SetFormTarget(const nsAString & aFormTarget) { return _to SetFormTarget(aFormTarget); } \
   NS_IMETHOD GetFiles(nsIDOMFileList * *aFiles) { return _to GetFiles(aFiles); } \
+  NS_IMETHOD GetHeight(uint32_t *aHeight) { return _to GetHeight(aHeight); } \
+  NS_IMETHOD SetHeight(uint32_t aHeight) { return _to SetHeight(aHeight); } \
   NS_IMETHOD GetIndeterminate(bool *aIndeterminate) { return _to GetIndeterminate(aIndeterminate); } \
   NS_IMETHOD SetIndeterminate(bool aIndeterminate) { return _to SetIndeterminate(aIndeterminate); } \
+  NS_IMETHOD GetInputMode(nsAString & aInputMode) { return _to GetInputMode(aInputMode); } \
+  NS_IMETHOD SetInputMode(const nsAString & aInputMode) { return _to SetInputMode(aInputMode); } \
   NS_IMETHOD GetList(nsIDOMHTMLElement * *aList) { return _to GetList(aList); } \
+  NS_IMETHOD GetMax(nsAString & aMax) { return _to GetMax(aMax); } \
+  NS_IMETHOD SetMax(const nsAString & aMax) { return _to SetMax(aMax); } \
   NS_IMETHOD GetMaxLength(int32_t *aMaxLength) { return _to GetMaxLength(aMaxLength); } \
   NS_IMETHOD SetMaxLength(int32_t aMaxLength) { return _to SetMaxLength(aMaxLength); } \
+  NS_IMETHOD GetMin(nsAString & aMin) { return _to GetMin(aMin); } \
+  NS_IMETHOD SetMin(const nsAString & aMin) { return _to SetMin(aMin); } \
   NS_IMETHOD GetMultiple(bool *aMultiple) { return _to GetMultiple(aMultiple); } \
   NS_IMETHOD SetMultiple(bool aMultiple) { return _to SetMultiple(aMultiple); } \
   NS_IMETHOD GetName(nsAString & aName) { return _to GetName(aName); } \
@@ -9737,10 +10183,14 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetReadOnly(bool aReadOnly) { return _to SetReadOnly(aReadOnly); } \
   NS_IMETHOD GetRequired(bool *aRequired) { return _to GetRequired(aRequired); } \
   NS_IMETHOD SetRequired(bool aRequired) { return _to SetRequired(aRequired); } \
+  NS_IMETHOD GetStep(nsAString & aStep) { return _to GetStep(aStep); } \
+  NS_IMETHOD SetStep(const nsAString & aStep) { return _to SetStep(aStep); } \
   NS_IMETHOD GetAlign(nsAString & aAlign) { return _to GetAlign(aAlign); } \
   NS_IMETHOD SetAlign(const nsAString & aAlign) { return _to SetAlign(aAlign); } \
   NS_IMETHOD GetSize(uint32_t *aSize) { return _to GetSize(aSize); } \
   NS_IMETHOD SetSize(uint32_t aSize) { return _to SetSize(aSize); } \
+  NS_IMETHOD GetWidth(uint32_t *aWidth) { return _to GetWidth(aWidth); } \
+  NS_IMETHOD SetWidth(uint32_t aWidth) { return _to SetWidth(aWidth); } \
   NS_IMETHOD GetSrc(nsAString & aSrc) { return _to GetSrc(aSrc); } \
   NS_IMETHOD SetSrc(const nsAString & aSrc) { return _to SetSrc(aSrc); } \
   NS_IMETHOD GetType(nsAString & aType) { return _to GetType(aType); } \
@@ -9749,6 +10199,10 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetDefaultValue(const nsAString & aDefaultValue) { return _to SetDefaultValue(aDefaultValue); } \
   NS_IMETHOD GetValue(nsAString & aValue) { return _to GetValue(aValue); } \
   NS_IMETHOD SetValue(const nsAString & aValue) { return _to SetValue(aValue); } \
+  NS_IMETHOD GetValueAsNumber(double *aValueAsNumber) { return _to GetValueAsNumber(aValueAsNumber); } \
+  NS_IMETHOD SetValueAsNumber(double aValueAsNumber) { return _to SetValueAsNumber(aValueAsNumber); } \
+  NS_IMETHOD StepDown(int32_t n, uint8_t _argc) { return _to StepDown(n, _argc); } \
+  NS_IMETHOD StepUp(int32_t n, uint8_t _argc) { return _to StepUp(n, _argc); } \
   NS_IMETHOD GetWillValidate(bool *aWillValidate) { return _to GetWillValidate(aWillValidate); } \
   NS_IMETHOD GetValidity(nsIDOMValidityState * *aValidity) { return _to GetValidity(aValidity); } \
   NS_IMETHOD GetValidationMessage(nsAString & aValidationMessage) { return _to GetValidationMessage(aValidationMessage); } \
@@ -9762,15 +10216,13 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetSelectionRange(int32_t selectionStart, int32_t selectionEnd, const nsAString & direction) { return _to SetSelectionRange(selectionStart, selectionEnd, direction); } \
   NS_IMETHOD GetSelectionDirection(nsAString & aSelectionDirection) { return _to GetSelectionDirection(aSelectionDirection); } \
   NS_IMETHOD SetSelectionDirection(const nsAString & aSelectionDirection) { return _to SetSelectionDirection(aSelectionDirection); } \
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex) { return _to GetTabIndex(aTabIndex); } \
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex) { return _to SetTabIndex(aTabIndex); } \
   NS_IMETHOD GetUseMap(nsAString & aUseMap) { return _to GetUseMap(aUseMap); } \
   NS_IMETHOD SetUseMap(const nsAString & aUseMap) { return _to SetUseMap(aUseMap); } \
   NS_IMETHOD GetControllers(nsIControllers * *aControllers) { return _to GetControllers(aControllers); } \
   NS_IMETHOD GetTextLength(int32_t *aTextLength) { return _to GetTextLength(aTextLength); } \
   NS_IMETHOD MozGetFileNameArray(uint32_t *aLength, PRUnichar * **aFileNames) { return _to MozGetFileNameArray(aLength, aFileNames); } \
   NS_IMETHOD MozSetFileNameArray(const PRUnichar * *aFileNames, uint32_t aLength) { return _to MozSetFileNameArray(aFileNames, aLength); } \
-  NS_IMETHOD MozIsTextField(bool aExcludePassword, bool *_retval) { return _to MozIsTextField(aExcludePassword, _retval); } 
+  NS_IMETHOD MozIsTextField(bool exclude_password, bool *_retval) { return _to MozIsTextField(exclude_password, _retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIDOMHTMLINPUTELEMENT(_to) \
@@ -9800,11 +10252,19 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   NS_IMETHOD GetFormTarget(nsAString & aFormTarget) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFormTarget(aFormTarget); } \
   NS_IMETHOD SetFormTarget(const nsAString & aFormTarget) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFormTarget(aFormTarget); } \
   NS_IMETHOD GetFiles(nsIDOMFileList * *aFiles) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFiles(aFiles); } \
+  NS_IMETHOD GetHeight(uint32_t *aHeight) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetHeight(aHeight); } \
+  NS_IMETHOD SetHeight(uint32_t aHeight) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetHeight(aHeight); } \
   NS_IMETHOD GetIndeterminate(bool *aIndeterminate) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetIndeterminate(aIndeterminate); } \
   NS_IMETHOD SetIndeterminate(bool aIndeterminate) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetIndeterminate(aIndeterminate); } \
+  NS_IMETHOD GetInputMode(nsAString & aInputMode) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetInputMode(aInputMode); } \
+  NS_IMETHOD SetInputMode(const nsAString & aInputMode) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetInputMode(aInputMode); } \
   NS_IMETHOD GetList(nsIDOMHTMLElement * *aList) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetList(aList); } \
+  NS_IMETHOD GetMax(nsAString & aMax) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMax(aMax); } \
+  NS_IMETHOD SetMax(const nsAString & aMax) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetMax(aMax); } \
   NS_IMETHOD GetMaxLength(int32_t *aMaxLength) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMaxLength(aMaxLength); } \
   NS_IMETHOD SetMaxLength(int32_t aMaxLength) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetMaxLength(aMaxLength); } \
+  NS_IMETHOD GetMin(nsAString & aMin) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMin(aMin); } \
+  NS_IMETHOD SetMin(const nsAString & aMin) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetMin(aMin); } \
   NS_IMETHOD GetMultiple(bool *aMultiple) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMultiple(aMultiple); } \
   NS_IMETHOD SetMultiple(bool aMultiple) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetMultiple(aMultiple); } \
   NS_IMETHOD GetName(nsAString & aName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetName(aName); } \
@@ -9817,10 +10277,14 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetReadOnly(bool aReadOnly) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetReadOnly(aReadOnly); } \
   NS_IMETHOD GetRequired(bool *aRequired) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetRequired(aRequired); } \
   NS_IMETHOD SetRequired(bool aRequired) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetRequired(aRequired); } \
+  NS_IMETHOD GetStep(nsAString & aStep) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetStep(aStep); } \
+  NS_IMETHOD SetStep(const nsAString & aStep) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetStep(aStep); } \
   NS_IMETHOD GetAlign(nsAString & aAlign) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAlign(aAlign); } \
   NS_IMETHOD SetAlign(const nsAString & aAlign) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetAlign(aAlign); } \
   NS_IMETHOD GetSize(uint32_t *aSize) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSize(aSize); } \
   NS_IMETHOD SetSize(uint32_t aSize) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSize(aSize); } \
+  NS_IMETHOD GetWidth(uint32_t *aWidth) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetWidth(aWidth); } \
+  NS_IMETHOD SetWidth(uint32_t aWidth) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetWidth(aWidth); } \
   NS_IMETHOD GetSrc(nsAString & aSrc) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSrc(aSrc); } \
   NS_IMETHOD SetSrc(const nsAString & aSrc) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSrc(aSrc); } \
   NS_IMETHOD GetType(nsAString & aType) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetType(aType); } \
@@ -9829,6 +10293,10 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetDefaultValue(const nsAString & aDefaultValue) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetDefaultValue(aDefaultValue); } \
   NS_IMETHOD GetValue(nsAString & aValue) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetValue(aValue); } \
   NS_IMETHOD SetValue(const nsAString & aValue) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetValue(aValue); } \
+  NS_IMETHOD GetValueAsNumber(double *aValueAsNumber) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetValueAsNumber(aValueAsNumber); } \
+  NS_IMETHOD SetValueAsNumber(double aValueAsNumber) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetValueAsNumber(aValueAsNumber); } \
+  NS_IMETHOD StepDown(int32_t n, uint8_t _argc) { return !_to ? NS_ERROR_NULL_POINTER : _to->StepDown(n, _argc); } \
+  NS_IMETHOD StepUp(int32_t n, uint8_t _argc) { return !_to ? NS_ERROR_NULL_POINTER : _to->StepUp(n, _argc); } \
   NS_IMETHOD GetWillValidate(bool *aWillValidate) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetWillValidate(aWillValidate); } \
   NS_IMETHOD GetValidity(nsIDOMValidityState * *aValidity) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetValidity(aValidity); } \
   NS_IMETHOD GetValidationMessage(nsAString & aValidationMessage) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetValidationMessage(aValidationMessage); } \
@@ -9842,15 +10310,13 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetSelectionRange(int32_t selectionStart, int32_t selectionEnd, const nsAString & direction) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSelectionRange(selectionStart, selectionEnd, direction); } \
   NS_IMETHOD GetSelectionDirection(nsAString & aSelectionDirection) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSelectionDirection(aSelectionDirection); } \
   NS_IMETHOD SetSelectionDirection(const nsAString & aSelectionDirection) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSelectionDirection(aSelectionDirection); } \
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTabIndex(aTabIndex); } \
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTabIndex(aTabIndex); } \
   NS_IMETHOD GetUseMap(nsAString & aUseMap) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetUseMap(aUseMap); } \
   NS_IMETHOD SetUseMap(const nsAString & aUseMap) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetUseMap(aUseMap); } \
   NS_IMETHOD GetControllers(nsIControllers * *aControllers) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetControllers(aControllers); } \
   NS_IMETHOD GetTextLength(int32_t *aTextLength) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTextLength(aTextLength); } \
   NS_IMETHOD MozGetFileNameArray(uint32_t *aLength, PRUnichar * **aFileNames) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozGetFileNameArray(aLength, aFileNames); } \
   NS_IMETHOD MozSetFileNameArray(const PRUnichar * *aFileNames, uint32_t aLength) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozSetFileNameArray(aFileNames, aLength); } \
-  NS_IMETHOD MozIsTextField(bool aExcludePassword, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozIsTextField(aExcludePassword, _retval); } 
+  NS_IMETHOD MozIsTextField(bool exclude_password, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozIsTextField(exclude_password, _retval); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -10016,6 +10482,16 @@ NS_IMETHODIMP nsDOMHTMLInputElement::GetFiles(nsIDOMFileList * *aFiles)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
+/* attribute unsigned long height; */
+NS_IMETHODIMP nsDOMHTMLInputElement::GetHeight(uint32_t *aHeight)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLInputElement::SetHeight(uint32_t aHeight)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 /* attribute boolean indeterminate; */
 NS_IMETHODIMP nsDOMHTMLInputElement::GetIndeterminate(bool *aIndeterminate)
 {
@@ -10026,8 +10502,28 @@ NS_IMETHODIMP nsDOMHTMLInputElement::SetIndeterminate(bool aIndeterminate)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
+/* attribute DOMString inputMode; */
+NS_IMETHODIMP nsDOMHTMLInputElement::GetInputMode(nsAString & aInputMode)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLInputElement::SetInputMode(const nsAString & aInputMode)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 /* readonly attribute nsIDOMHTMLElement list; */
 NS_IMETHODIMP nsDOMHTMLInputElement::GetList(nsIDOMHTMLElement * *aList)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute DOMString max; */
+NS_IMETHODIMP nsDOMHTMLInputElement::GetMax(nsAString & aMax)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLInputElement::SetMax(const nsAString & aMax)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -10038,6 +10534,16 @@ NS_IMETHODIMP nsDOMHTMLInputElement::GetMaxLength(int32_t *aMaxLength)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 NS_IMETHODIMP nsDOMHTMLInputElement::SetMaxLength(int32_t aMaxLength)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute DOMString min; */
+NS_IMETHODIMP nsDOMHTMLInputElement::GetMin(nsAString & aMin)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLInputElement::SetMin(const nsAString & aMin)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -10102,6 +10608,16 @@ NS_IMETHODIMP nsDOMHTMLInputElement::SetRequired(bool aRequired)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
+/* attribute DOMString step; */
+NS_IMETHODIMP nsDOMHTMLInputElement::GetStep(nsAString & aStep)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLInputElement::SetStep(const nsAString & aStep)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 /* attribute DOMString align; */
 NS_IMETHODIMP nsDOMHTMLInputElement::GetAlign(nsAString & aAlign)
 {
@@ -10118,6 +10634,16 @@ NS_IMETHODIMP nsDOMHTMLInputElement::GetSize(uint32_t *aSize)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 NS_IMETHODIMP nsDOMHTMLInputElement::SetSize(uint32_t aSize)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute unsigned long width; */
+NS_IMETHODIMP nsDOMHTMLInputElement::GetWidth(uint32_t *aWidth)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLInputElement::SetWidth(uint32_t aWidth)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -10158,6 +10684,28 @@ NS_IMETHODIMP nsDOMHTMLInputElement::GetValue(nsAString & aValue)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 NS_IMETHODIMP nsDOMHTMLInputElement::SetValue(const nsAString & aValue)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute double valueAsNumber; */
+NS_IMETHODIMP nsDOMHTMLInputElement::GetValueAsNumber(double *aValueAsNumber)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLInputElement::SetValueAsNumber(double aValueAsNumber)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [optional_argc] void stepDown ([optional] in long n); */
+NS_IMETHODIMP nsDOMHTMLInputElement::StepDown(int32_t n, uint8_t _argc)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [optional_argc] void stepUp ([optional] in long n); */
+NS_IMETHODIMP nsDOMHTMLInputElement::StepUp(int32_t n, uint8_t _argc)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -10234,16 +10782,6 @@ NS_IMETHODIMP nsDOMHTMLInputElement::SetSelectionDirection(const nsAString & aSe
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* attribute long tabIndex; */
-NS_IMETHODIMP nsDOMHTMLInputElement::GetTabIndex(int32_t *aTabIndex)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsDOMHTMLInputElement::SetTabIndex(int32_t aTabIndex)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
 /* attribute DOMString useMap; */
 NS_IMETHODIMP nsDOMHTMLInputElement::GetUseMap(nsAString & aUseMap)
 {
@@ -10278,8 +10816,8 @@ NS_IMETHODIMP nsDOMHTMLInputElement::MozSetFileNameArray(const PRUnichar * *aFil
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* boolean mozIsTextField (in boolean aExcludePassword); */
-NS_IMETHODIMP nsDOMHTMLInputElement::MozIsTextField(bool aExcludePassword, bool *_retval)
+/* boolean mozIsTextField (in boolean exclude_password); */
+NS_IMETHODIMP nsDOMHTMLInputElement::MozIsTextField(bool exclude_password, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
