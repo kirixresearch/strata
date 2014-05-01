@@ -57,9 +57,9 @@ struct wxDOMNodeListData
 };
 
 
-struct wxDOMNamedNodeMapData
+struct wxDOMNamedAttrMapData
 {
-    ns_smartptr<nsIDOMNamedNodeMap> ptr;
+    ns_smartptr<nsIDOMMozNamedAttrMap> ptr;
 };
 
 

@@ -17,10 +17,10 @@ class wxDOMNode;
 class wxDOMElement;
 class wxDOMDocument;
 class wxDOMNodeList;
-class wxDOMNamedNodeMap;
+class wxDOMNamedAttrMap;
 struct wxDOMNodeData;
 struct wxDOMNodeListData;
-struct wxDOMNamedNodeMapData;
+struct wxDOMNamedAttrMapData;
 struct wxDOMEventData;
 
 
@@ -42,7 +42,7 @@ friend class wxDOMAttr;
 friend class wxDOMElement;
 friend class wxDOMDocument;
 friend class wxDOMNodeList;
-friend class wxDOMNamedNodeMap;
+friend class wxDOMNamedAttrMap;
 friend class wxDOMHTMLSelectElement;
 
 public:
@@ -81,13 +81,10 @@ public:
     wxDOMNode ReplaceChild(wxDOMNode& new_child, wxDOMNode& old_child);
     wxDOMNode RemoveChild(wxDOMNode& old_child);
     wxDOMNode AppendChild(wxDOMNode& new_child);
-    
-    wxDOMNamedNodeMap GetAttributes();
 
-    wxDOMNode CloneNode(bool deep);
+    wxDOMNode CloneNode(bool deep = true);
     void Normalize();
 
-    bool IsSupported(const wxString& feature, const wxString& version);
     bool HasChildNodes();
     bool HasAttributes();
 
@@ -149,25 +146,26 @@ private:
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//  wxDOMNamedNodeMap class
+//  wxDOMNamedAttrMap class
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// (CLASS) wxDOMNamedNodeMap
+// (CLASS) wxDOMNamedAttrMap
 // Category: DOM
 // Description: Encapsulates a DOM named node map.
-// Remarks: The wxDOMNamedNodeMap encapsulates a DOM named node map.
+// Remarks: The wxDOMNamedAttrMap encapsulates a DOM named node map.
 
-class wxDOMNamedNodeMap
+class wxDOMNamedAttrMap
 {
 friend class wxDOMNode;
+friend class wxDOMElement;
 
 public:
 
-    wxDOMNamedNodeMap();
-    ~wxDOMNamedNodeMap();
-    wxDOMNamedNodeMap(const wxDOMNamedNodeMap& c);
-    wxDOMNamedNodeMap& operator=(const wxDOMNamedNodeMap& c);
+    wxDOMNamedAttrMap();
+    ~wxDOMNamedAttrMap();
+    wxDOMNamedAttrMap(const wxDOMNamedAttrMap& c);
+    wxDOMNamedAttrMap& operator=(const wxDOMNamedAttrMap& c);
     
     bool IsOk() const;
     
@@ -187,7 +185,7 @@ public:
     
 private:
 
-    wxDOMNamedNodeMapData* m_data;
+    wxDOMNamedAttrMapData* m_data;
 };
 
 
@@ -249,6 +247,8 @@ public:
     // DOMElement interface
     
     wxString GetTagName();
+    wxDOMNamedAttrMap GetAttributes();
+
     wxString GetAttribute(const wxString& name);
 
     void SetAttribute(const wxString& name, const wxString& value);

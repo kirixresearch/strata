@@ -5270,11 +5270,11 @@ class DOMException; /* forward declaration */
 
 
 /* starting interface:    nsIDOMNode */
-#define NS_IDOMNODE_IID_STR "c8ac3f81-63e1-4c31-8543-70a656642789"
+#define NS_IDOMNODE_IID_STR "56545150-a001-484e-9ed4-cb319eebd7b3"
 
 #define NS_IDOMNODE_IID \
-  {0xc8ac3f81, 0x63e1, 0x4c31, \
-    { 0x85, 0x43, 0x70, 0xa6, 0x56, 0x64, 0x27, 0x89 }}
+  {0x56545150, 0xa001, 0x484e, \
+    { 0x9e, 0xd4, 0xcb, 0x31, 0x9e, 0xeb, 0xd7, 0xb3 }}
 
 class NS_NO_VTABLE nsIDOMNode : public nsISupports {
  public: 
@@ -5327,9 +5327,6 @@ class NS_NO_VTABLE nsIDOMNode : public nsISupports {
   /* readonly attribute nsIDOMNode nextSibling; */
   NS_IMETHOD GetNextSibling(nsIDOMNode * *aNextSibling) = 0;
 
-  /* readonly attribute nsIDOMNamedNodeMap attributes; */
-  NS_IMETHOD GetAttributes(nsIDOMNamedNodeMap * *aAttributes) = 0;
-
   /* readonly attribute nsIDOMDocument ownerDocument; */
   NS_IMETHOD GetOwnerDocument(nsIDOMDocument * *aOwnerDocument) = 0;
 
@@ -5348,14 +5345,11 @@ class NS_NO_VTABLE nsIDOMNode : public nsISupports {
   /* boolean hasChildNodes (); */
   NS_IMETHOD HasChildNodes(bool *_retval) = 0;
 
-  /* nsIDOMNode cloneNode (in boolean deep); */
-  NS_IMETHOD CloneNode(bool deep, nsIDOMNode * *_retval) = 0;
+  /* [optional_argc] nsIDOMNode cloneNode ([optional] in boolean deep); */
+  NS_IMETHOD CloneNode(bool deep, uint8_t _argc, nsIDOMNode * *_retval) = 0;
 
   /* void normalize (); */
   NS_IMETHOD Normalize(void) = 0;
-
-  /* boolean isSupported (in DOMString feature, in DOMString xversion); */
-  NS_IMETHOD IsSupported(const nsAString & feature, const nsAString & xversion, bool *_retval) = 0;
 
   /* readonly attribute DOMString namespaceURI; */
   NS_IMETHOD GetNamespaceURI(nsAString & aNamespaceURI) = 0;
@@ -5387,9 +5381,6 @@ class NS_NO_VTABLE nsIDOMNode : public nsISupports {
   /* attribute DOMString textContent; */
   NS_IMETHOD GetTextContent(nsAString & aTextContent) = 0;
   NS_IMETHOD SetTextContent(const nsAString & aTextContent) = 0;
-
-  /* boolean isSameNode (in nsIDOMNode other); */
-  NS_IMETHOD IsSameNode(nsIDOMNode *other, bool *_retval) = 0;
 
   /* DOMString lookupPrefix (in DOMString namespace_uri); */
   NS_IMETHOD LookupPrefix(const nsAString & namespace_uri, nsAString & _retval) = 0;
@@ -5429,16 +5420,14 @@ class NS_NO_VTABLE nsIDOMNode : public nsISupports {
   NS_IMETHOD GetLastChild(nsIDOMNode * *aLastChild); \
   NS_IMETHOD GetPreviousSibling(nsIDOMNode * *aPreviousSibling); \
   NS_IMETHOD GetNextSibling(nsIDOMNode * *aNextSibling); \
-  NS_IMETHOD GetAttributes(nsIDOMNamedNodeMap * *aAttributes); \
   NS_IMETHOD GetOwnerDocument(nsIDOMDocument * *aOwnerDocument); \
   NS_IMETHOD InsertBefore(nsIDOMNode *new_child, nsIDOMNode *ref_child, nsIDOMNode * *_retval); \
   NS_IMETHOD ReplaceChild(nsIDOMNode *new_child, nsIDOMNode *old_child, nsIDOMNode * *_retval); \
   NS_IMETHOD RemoveChild(nsIDOMNode *old_child, nsIDOMNode * *_retval); \
   NS_IMETHOD AppendChild(nsIDOMNode *new_child, nsIDOMNode * *_retval); \
   NS_IMETHOD HasChildNodes(bool *_retval); \
-  NS_IMETHOD CloneNode(bool deep, nsIDOMNode * *_retval); \
+  NS_IMETHOD CloneNode(bool deep, uint8_t _argc, nsIDOMNode * *_retval); \
   NS_IMETHOD Normalize(void); \
-  NS_IMETHOD IsSupported(const nsAString & feature, const nsAString & xversion, bool *_retval); \
   NS_IMETHOD GetNamespaceURI(nsAString & aNamespaceURI); \
   NS_IMETHOD GetPrefix(nsAString & aPrefix); \
   NS_IMETHOD GetLocalName(nsAString & aLocalName); \
@@ -5447,7 +5436,6 @@ class NS_NO_VTABLE nsIDOMNode : public nsISupports {
   NS_IMETHOD CompareDocumentPosition(nsIDOMNode *other, uint16_t *_retval); \
   NS_IMETHOD GetTextContent(nsAString & aTextContent); \
   NS_IMETHOD SetTextContent(const nsAString & aTextContent); \
-  NS_IMETHOD IsSameNode(nsIDOMNode *other, bool *_retval); \
   NS_IMETHOD LookupPrefix(const nsAString & namespace_uri, nsAString & _retval); \
   NS_IMETHOD IsDefaultNamespace(const nsAString & namespace_uri, bool *_retval); \
   NS_IMETHOD LookupNamespaceURI(const nsAString & prefix, nsAString & _retval); \
@@ -5469,16 +5457,14 @@ class NS_NO_VTABLE nsIDOMNode : public nsISupports {
   NS_IMETHOD GetLastChild(nsIDOMNode * *aLastChild) { return _to GetLastChild(aLastChild); } \
   NS_IMETHOD GetPreviousSibling(nsIDOMNode * *aPreviousSibling) { return _to GetPreviousSibling(aPreviousSibling); } \
   NS_IMETHOD GetNextSibling(nsIDOMNode * *aNextSibling) { return _to GetNextSibling(aNextSibling); } \
-  NS_IMETHOD GetAttributes(nsIDOMNamedNodeMap * *aAttributes) { return _to GetAttributes(aAttributes); } \
   NS_IMETHOD GetOwnerDocument(nsIDOMDocument * *aOwnerDocument) { return _to GetOwnerDocument(aOwnerDocument); } \
   NS_IMETHOD InsertBefore(nsIDOMNode *new_child, nsIDOMNode *ref_child, nsIDOMNode * *_retval) { return _to InsertBefore(new_child, ref_child, _retval); } \
   NS_IMETHOD ReplaceChild(nsIDOMNode *new_child, nsIDOMNode *old_child, nsIDOMNode * *_retval) { return _to ReplaceChild(new_child, old_child, _retval); } \
   NS_IMETHOD RemoveChild(nsIDOMNode *old_child, nsIDOMNode * *_retval) { return _to RemoveChild(old_child, _retval); } \
   NS_IMETHOD AppendChild(nsIDOMNode *new_child, nsIDOMNode * *_retval) { return _to AppendChild(new_child, _retval); } \
   NS_IMETHOD HasChildNodes(bool *_retval) { return _to HasChildNodes(_retval); } \
-  NS_IMETHOD CloneNode(bool deep, nsIDOMNode * *_retval) { return _to CloneNode(deep, _retval); } \
+  NS_IMETHOD CloneNode(bool deep, uint8_t _argc, nsIDOMNode * *_retval) { return _to CloneNode(deep, _argc, _retval); } \
   NS_IMETHOD Normalize(void) { return _to Normalize(); } \
-  NS_IMETHOD IsSupported(const nsAString & feature, const nsAString & xversion, bool *_retval) { return _to IsSupported(feature, xversion, _retval); } \
   NS_IMETHOD GetNamespaceURI(nsAString & aNamespaceURI) { return _to GetNamespaceURI(aNamespaceURI); } \
   NS_IMETHOD GetPrefix(nsAString & aPrefix) { return _to GetPrefix(aPrefix); } \
   NS_IMETHOD GetLocalName(nsAString & aLocalName) { return _to GetLocalName(aLocalName); } \
@@ -5487,7 +5473,6 @@ class NS_NO_VTABLE nsIDOMNode : public nsISupports {
   NS_IMETHOD CompareDocumentPosition(nsIDOMNode *other, uint16_t *_retval) { return _to CompareDocumentPosition(other, _retval); } \
   NS_IMETHOD GetTextContent(nsAString & aTextContent) { return _to GetTextContent(aTextContent); } \
   NS_IMETHOD SetTextContent(const nsAString & aTextContent) { return _to SetTextContent(aTextContent); } \
-  NS_IMETHOD IsSameNode(nsIDOMNode *other, bool *_retval) { return _to IsSameNode(other, _retval); } \
   NS_IMETHOD LookupPrefix(const nsAString & namespace_uri, nsAString & _retval) { return _to LookupPrefix(namespace_uri, _retval); } \
   NS_IMETHOD IsDefaultNamespace(const nsAString & namespace_uri, bool *_retval) { return _to IsDefaultNamespace(namespace_uri, _retval); } \
   NS_IMETHOD LookupNamespaceURI(const nsAString & prefix, nsAString & _retval) { return _to LookupNamespaceURI(prefix, _retval); } \
@@ -5509,16 +5494,14 @@ class NS_NO_VTABLE nsIDOMNode : public nsISupports {
   NS_IMETHOD GetLastChild(nsIDOMNode * *aLastChild) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetLastChild(aLastChild); } \
   NS_IMETHOD GetPreviousSibling(nsIDOMNode * *aPreviousSibling) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPreviousSibling(aPreviousSibling); } \
   NS_IMETHOD GetNextSibling(nsIDOMNode * *aNextSibling) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetNextSibling(aNextSibling); } \
-  NS_IMETHOD GetAttributes(nsIDOMNamedNodeMap * *aAttributes) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAttributes(aAttributes); } \
   NS_IMETHOD GetOwnerDocument(nsIDOMDocument * *aOwnerDocument) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetOwnerDocument(aOwnerDocument); } \
   NS_IMETHOD InsertBefore(nsIDOMNode *new_child, nsIDOMNode *ref_child, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->InsertBefore(new_child, ref_child, _retval); } \
   NS_IMETHOD ReplaceChild(nsIDOMNode *new_child, nsIDOMNode *old_child, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ReplaceChild(new_child, old_child, _retval); } \
   NS_IMETHOD RemoveChild(nsIDOMNode *old_child, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->RemoveChild(old_child, _retval); } \
   NS_IMETHOD AppendChild(nsIDOMNode *new_child, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->AppendChild(new_child, _retval); } \
   NS_IMETHOD HasChildNodes(bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->HasChildNodes(_retval); } \
-  NS_IMETHOD CloneNode(bool deep, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CloneNode(deep, _retval); } \
+  NS_IMETHOD CloneNode(bool deep, uint8_t _argc, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CloneNode(deep, _argc, _retval); } \
   NS_IMETHOD Normalize(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Normalize(); } \
-  NS_IMETHOD IsSupported(const nsAString & feature, const nsAString & xversion, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->IsSupported(feature, xversion, _retval); } \
   NS_IMETHOD GetNamespaceURI(nsAString & aNamespaceURI) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetNamespaceURI(aNamespaceURI); } \
   NS_IMETHOD GetPrefix(nsAString & aPrefix) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPrefix(aPrefix); } \
   NS_IMETHOD GetLocalName(nsAString & aLocalName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetLocalName(aLocalName); } \
@@ -5527,7 +5510,6 @@ class NS_NO_VTABLE nsIDOMNode : public nsISupports {
   NS_IMETHOD CompareDocumentPosition(nsIDOMNode *other, uint16_t *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CompareDocumentPosition(other, _retval); } \
   NS_IMETHOD GetTextContent(nsAString & aTextContent) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTextContent(aTextContent); } \
   NS_IMETHOD SetTextContent(const nsAString & aTextContent) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTextContent(aTextContent); } \
-  NS_IMETHOD IsSameNode(nsIDOMNode *other, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->IsSameNode(other, _retval); } \
   NS_IMETHOD LookupPrefix(const nsAString & namespace_uri, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->LookupPrefix(namespace_uri, _retval); } \
   NS_IMETHOD IsDefaultNamespace(const nsAString & namespace_uri, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->IsDefaultNamespace(namespace_uri, _retval); } \
   NS_IMETHOD LookupNamespaceURI(const nsAString & prefix, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->LookupNamespaceURI(prefix, _retval); } \
@@ -5632,12 +5614,6 @@ NS_IMETHODIMP nsDOMNode::GetNextSibling(nsIDOMNode * *aNextSibling)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* readonly attribute nsIDOMNamedNodeMap attributes; */
-NS_IMETHODIMP nsDOMNode::GetAttributes(nsIDOMNamedNodeMap * *aAttributes)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
 /* readonly attribute nsIDOMDocument ownerDocument; */
 NS_IMETHODIMP nsDOMNode::GetOwnerDocument(nsIDOMDocument * *aOwnerDocument)
 {
@@ -5674,20 +5650,14 @@ NS_IMETHODIMP nsDOMNode::HasChildNodes(bool *_retval)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIDOMNode cloneNode (in boolean deep); */
-NS_IMETHODIMP nsDOMNode::CloneNode(bool deep, nsIDOMNode * *_retval)
+/* [optional_argc] nsIDOMNode cloneNode ([optional] in boolean deep); */
+NS_IMETHODIMP nsDOMNode::CloneNode(bool deep, uint8_t _argc, nsIDOMNode * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* void normalize (); */
 NS_IMETHODIMP nsDOMNode::Normalize()
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* boolean isSupported (in DOMString feature, in DOMString xversion); */
-NS_IMETHODIMP nsDOMNode::IsSupported(const nsAString & feature, const nsAString & xversion, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -5734,12 +5704,6 @@ NS_IMETHODIMP nsDOMNode::GetTextContent(nsAString & aTextContent)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 NS_IMETHODIMP nsDOMNode::SetTextContent(const nsAString & aTextContent)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* boolean isSameNode (in nsIDOMNode other); */
-NS_IMETHODIMP nsDOMNode::IsSameNode(nsIDOMNode *other, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -5832,11 +5796,11 @@ class NS_NO_VTABLE nsIDOM3Node : public nsISupports {
   /* boolean isSameNode (in nsIDOMNode other); */
   NS_IMETHOD IsSameNode(nsIDOMNode *other, bool *_retval) = 0;
 
-  /* DOMString lookupPrefix (in DOMString namespaceURI); */
-  NS_IMETHOD LookupPrefix(const nsAString & namespaceURI, nsAString & _retval) = 0;
+  /* DOMString lookupPrefix (in DOMString namespace_uri); */
+  NS_IMETHOD LookupPrefix(const nsAString & namespace_uri, nsAString & _retval) = 0;
 
-  /* boolean isDefaultNamespace (in DOMString namespaceURI); */
-  NS_IMETHOD IsDefaultNamespace(const nsAString & namespaceURI, bool *_retval) = 0;
+  /* boolean isDefaultNamespace (in DOMString namespace_uri); */
+  NS_IMETHOD IsDefaultNamespace(const nsAString & namespace_uri, bool *_retval) = 0;
 
   /* DOMString lookupNamespaceURI (in DOMString prefix); */
   NS_IMETHOD LookupNamespaceURI(const nsAString & prefix, nsAString & _retval) = 0;
@@ -5864,8 +5828,8 @@ class NS_NO_VTABLE nsIDOM3Node : public nsISupports {
   NS_IMETHOD GetTextContent(nsAString & aTextContent); \
   NS_IMETHOD SetTextContent(const nsAString & aTextContent); \
   NS_IMETHOD IsSameNode(nsIDOMNode *other, bool *_retval); \
-  NS_IMETHOD LookupPrefix(const nsAString & namespaceURI, nsAString & _retval); \
-  NS_IMETHOD IsDefaultNamespace(const nsAString & namespaceURI, bool *_retval); \
+  NS_IMETHOD LookupPrefix(const nsAString & namespace_uri, nsAString & _retval); \
+  NS_IMETHOD IsDefaultNamespace(const nsAString & namespace_uri, bool *_retval); \
   NS_IMETHOD LookupNamespaceURI(const nsAString & prefix, nsAString & _retval); \
   NS_IMETHOD IsEqualNode(nsIDOMNode *arg, bool *_retval); \
   NS_IMETHOD GetFeature(const nsAString & feature, const nsAString & xversion, nsISupports * *_retval); \
@@ -5879,8 +5843,8 @@ class NS_NO_VTABLE nsIDOM3Node : public nsISupports {
   NS_IMETHOD GetTextContent(nsAString & aTextContent) { return _to GetTextContent(aTextContent); } \
   NS_IMETHOD SetTextContent(const nsAString & aTextContent) { return _to SetTextContent(aTextContent); } \
   NS_IMETHOD IsSameNode(nsIDOMNode *other, bool *_retval) { return _to IsSameNode(other, _retval); } \
-  NS_IMETHOD LookupPrefix(const nsAString & namespaceURI, nsAString & _retval) { return _to LookupPrefix(namespaceURI, _retval); } \
-  NS_IMETHOD IsDefaultNamespace(const nsAString & namespaceURI, bool *_retval) { return _to IsDefaultNamespace(namespaceURI, _retval); } \
+  NS_IMETHOD LookupPrefix(const nsAString & namespace_uri, nsAString & _retval) { return _to LookupPrefix(namespace_uri, _retval); } \
+  NS_IMETHOD IsDefaultNamespace(const nsAString & namespace_uri, bool *_retval) { return _to IsDefaultNamespace(namespace_uri, _retval); } \
   NS_IMETHOD LookupNamespaceURI(const nsAString & prefix, nsAString & _retval) { return _to LookupNamespaceURI(prefix, _retval); } \
   NS_IMETHOD IsEqualNode(nsIDOMNode *arg, bool *_retval) { return _to IsEqualNode(arg, _retval); } \
   NS_IMETHOD GetFeature(const nsAString & feature, const nsAString & xversion, nsISupports * *_retval) { return _to GetFeature(feature, xversion, _retval); } \
@@ -5894,8 +5858,8 @@ class NS_NO_VTABLE nsIDOM3Node : public nsISupports {
   NS_IMETHOD GetTextContent(nsAString & aTextContent) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTextContent(aTextContent); } \
   NS_IMETHOD SetTextContent(const nsAString & aTextContent) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTextContent(aTextContent); } \
   NS_IMETHOD IsSameNode(nsIDOMNode *other, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->IsSameNode(other, _retval); } \
-  NS_IMETHOD LookupPrefix(const nsAString & namespaceURI, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->LookupPrefix(namespaceURI, _retval); } \
-  NS_IMETHOD IsDefaultNamespace(const nsAString & namespaceURI, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->IsDefaultNamespace(namespaceURI, _retval); } \
+  NS_IMETHOD LookupPrefix(const nsAString & namespace_uri, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->LookupPrefix(namespace_uri, _retval); } \
+  NS_IMETHOD IsDefaultNamespace(const nsAString & namespace_uri, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->IsDefaultNamespace(namespace_uri, _retval); } \
   NS_IMETHOD LookupNamespaceURI(const nsAString & prefix, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->LookupNamespaceURI(prefix, _retval); } \
   NS_IMETHOD IsEqualNode(nsIDOMNode *arg, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->IsEqualNode(arg, _retval); } \
   NS_IMETHOD GetFeature(const nsAString & feature, const nsAString & xversion, nsISupports * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFeature(feature, xversion, _retval); } \
@@ -5962,14 +5926,14 @@ NS_IMETHODIMP nsDOM3Node::IsSameNode(nsIDOMNode *other, bool *_retval)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* DOMString lookupPrefix (in DOMString namespaceURI); */
-NS_IMETHODIMP nsDOM3Node::LookupPrefix(const nsAString & namespaceURI, nsAString & _retval)
+/* DOMString lookupPrefix (in DOMString namespace_uri); */
+NS_IMETHODIMP nsDOM3Node::LookupPrefix(const nsAString & namespace_uri, nsAString & _retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* boolean isDefaultNamespace (in DOMString namespaceURI); */
-NS_IMETHODIMP nsDOM3Node::IsDefaultNamespace(const nsAString & namespaceURI, bool *_retval)
+/* boolean isDefaultNamespace (in DOMString namespace_uri); */
+NS_IMETHODIMP nsDOM3Node::IsDefaultNamespace(const nsAString & namespace_uri, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -6053,8 +6017,8 @@ class NS_NO_VTABLE nsIDOM3Document : public nsIDOM3Node {
   /* void normalizeDocument (); */
   NS_IMETHOD NormalizeDocument(void) = 0;
 
-  /* nsIDOMNode renameNode (in nsIDOMNode node, in DOMString namespaceURI, in DOMString qualifiedName) raises (DOMException); */
-  NS_IMETHOD RenameNode(nsIDOMNode *node, const nsAString & namespaceURI, const nsAString & qualifiedName, nsIDOMNode * *_retval) = 0;
+  /* nsIDOMNode renameNode (in nsIDOMNode node, in DOMString namespace_uri, in DOMString qualified_name) raises (DOMException); */
+  NS_IMETHOD RenameNode(nsIDOMNode *node, const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMNode * *_retval) = 0;
 
 };
 
@@ -6075,7 +6039,7 @@ class NS_NO_VTABLE nsIDOM3Document : public nsIDOM3Node {
   NS_IMETHOD AdoptNode(nsIDOMNode *xsource, nsIDOMNode * *_retval); \
   NS_IMETHOD GetDomConfig(nsIDOMDOMConfiguration * *aDomConfig); \
   NS_IMETHOD NormalizeDocument(void); \
-  NS_IMETHOD RenameNode(nsIDOMNode *node, const nsAString & namespaceURI, const nsAString & qualifiedName, nsIDOMNode * *_retval); 
+  NS_IMETHOD RenameNode(nsIDOMNode *node, const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMNode * *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIDOM3DOCUMENT(_to) \
@@ -6092,7 +6056,7 @@ class NS_NO_VTABLE nsIDOM3Document : public nsIDOM3Node {
   NS_IMETHOD AdoptNode(nsIDOMNode *xsource, nsIDOMNode * *_retval) { return _to AdoptNode(xsource, _retval); } \
   NS_IMETHOD GetDomConfig(nsIDOMDOMConfiguration * *aDomConfig) { return _to GetDomConfig(aDomConfig); } \
   NS_IMETHOD NormalizeDocument(void) { return _to NormalizeDocument(); } \
-  NS_IMETHOD RenameNode(nsIDOMNode *node, const nsAString & namespaceURI, const nsAString & qualifiedName, nsIDOMNode * *_retval) { return _to RenameNode(node, namespaceURI, qualifiedName, _retval); } 
+  NS_IMETHOD RenameNode(nsIDOMNode *node, const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMNode * *_retval) { return _to RenameNode(node, namespace_uri, qualified_name, _retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIDOM3DOCUMENT(_to) \
@@ -6109,7 +6073,7 @@ class NS_NO_VTABLE nsIDOM3Document : public nsIDOM3Node {
   NS_IMETHOD AdoptNode(nsIDOMNode *xsource, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->AdoptNode(xsource, _retval); } \
   NS_IMETHOD GetDomConfig(nsIDOMDOMConfiguration * *aDomConfig) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDomConfig(aDomConfig); } \
   NS_IMETHOD NormalizeDocument(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->NormalizeDocument(); } \
-  NS_IMETHOD RenameNode(nsIDOMNode *node, const nsAString & namespaceURI, const nsAString & qualifiedName, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->RenameNode(node, namespaceURI, qualifiedName, _retval); } 
+  NS_IMETHOD RenameNode(nsIDOMNode *node, const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->RenameNode(node, namespace_uri, qualified_name, _retval); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -6213,8 +6177,8 @@ NS_IMETHODIMP nsDOM3Document::NormalizeDocument()
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIDOMNode renameNode (in nsIDOMNode node, in DOMString namespaceURI, in DOMString qualifiedName) raises (DOMException); */
-NS_IMETHODIMP nsDOM3Document::RenameNode(nsIDOMNode *node, const nsAString & namespaceURI, const nsAString & qualifiedName, nsIDOMNode * *_retval)
+/* nsIDOMNode renameNode (in nsIDOMNode node, in DOMString namespace_uri, in DOMString qualified_name) raises (DOMException); */
+NS_IMETHODIMP nsDOM3Document::RenameNode(nsIDOMNode *node, const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMNode * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -6357,13 +6321,21 @@ class nsIDOMAttr; /* forward declaration */
 
 class DOMException; /* forward declaration */
 
+class nsIDOMMozNamedAttrMap; /* forward declaration */
+
+class nsIDOMHTMLCollection; /* forward declaration */
+
+class nsIDOMClientRectList; /* forward declaration */
+
+class nsIDOMClientRect; /* forward declaration */
+
 
 /* starting interface:    nsIDOMElement */
-#define NS_IDOMELEMENT_IID_STR "56aaaf03-f8f1-4c06-9cb5-f3e33a39e5c3"
+#define NS_IDOMELEMENT_IID_STR "989422ef-120d-4d29-8a56-6aa2505a8b02"
 
 #define NS_IDOMELEMENT_IID \
-  {0x56aaaf03, 0xf8f1, 0x4c06, \
-    { 0x9c, 0xb5, 0xf3, 0xe3, 0x3a, 0x39, 0xe5, 0xc3 }}
+  {0x989422ef, 0x120d, 0x4d29, \
+    { 0x8a, 0x56, 0x6a, 0xa2, 0x50, 0x5a, 0x8b, 0x02 }}
 
 class NS_NO_VTABLE nsIDOMElement : public nsIDOMNode {
  public: 
@@ -6373,35 +6345,44 @@ class NS_NO_VTABLE nsIDOMElement : public nsIDOMNode {
   /* readonly attribute DOMString tagName; */
   NS_IMETHOD GetTagName(nsAString & aTagName) = 0;
 
+  /* readonly attribute nsISupports classList; */
+  NS_IMETHOD GetClassList(nsISupports * *aClassList) = 0;
+
+  /* readonly attribute nsIDOMMozNamedAttrMap attributes; */
+  NS_IMETHOD GetAttributes(nsIDOMMozNamedAttrMap * *aAttributes) = 0;
+
   /* DOMString getAttribute (in DOMString name); */
   NS_IMETHOD GetAttribute(const nsAString & name, nsAString & _retval) = 0;
-
-  /* void setAttribute (in DOMString name, in DOMString value) raises (DOMException); */
-  NS_IMETHOD SetAttribute(const nsAString & name, const nsAString & value) = 0;
-
-  /* void removeAttribute (in DOMString name) raises (DOMException); */
-  NS_IMETHOD RemoveAttribute(const nsAString & name) = 0;
-
-  /* nsIDOMAttr getAttributeNode (in DOMString name); */
-  NS_IMETHOD GetAttributeNode(const nsAString & name, nsIDOMAttr * *_retval) = 0;
-
-  /* nsIDOMAttr setAttributeNode (in nsIDOMAttr new_attr) raises (DOMException); */
-  NS_IMETHOD SetAttributeNode(nsIDOMAttr *new_attr, nsIDOMAttr * *_retval) = 0;
-
-  /* nsIDOMAttr removeAttributeNode (in nsIDOMAttr old_attr) raises (DOMException); */
-  NS_IMETHOD RemoveAttributeNode(nsIDOMAttr *old_attr, nsIDOMAttr * *_retval) = 0;
-
-  /* nsIDOMNodeList getElementsByTagName (in DOMString name); */
-  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMNodeList * *_retval) = 0;
 
   /* DOMString getAttributeNS (in DOMString namespace_uri, in DOMString local_name); */
   NS_IMETHOD GetAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, nsAString & _retval) = 0;
 
-  /* void setAttributeNS (in DOMString namespace_uri, in DOMString qualified_name, in DOMString value) raises (DOMException); */
+  /* void setAttribute (in DOMString name, in DOMString value); */
+  NS_IMETHOD SetAttribute(const nsAString & name, const nsAString & value) = 0;
+
+  /* void setAttributeNS (in DOMString namespace_uri, in DOMString qualified_name, in DOMString value); */
   NS_IMETHOD SetAttributeNS(const nsAString & namespace_uri, const nsAString & qualified_name, const nsAString & value) = 0;
 
-  /* void removeAttributeNS (in DOMString namespace_uri, in DOMString local_name) raises (DOMException); */
+  /* void removeAttribute (in DOMString name); */
+  NS_IMETHOD RemoveAttribute(const nsAString & name) = 0;
+
+  /* void removeAttributeNS (in DOMString namespace_uri, in DOMString local_name); */
   NS_IMETHOD RemoveAttributeNS(const nsAString & namespace_uri, const nsAString & local_name) = 0;
+
+  /* boolean hasAttribute (in DOMString name); */
+  NS_IMETHOD HasAttribute(const nsAString & name, bool *_retval) = 0;
+
+  /* boolean hasAttributeNS (in DOMString namespace_uri, in DOMString local_name); */
+  NS_IMETHOD HasAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, bool *_retval) = 0;
+
+  /* nsIDOMAttr getAttributeNode (in DOMString name); */
+  NS_IMETHOD GetAttributeNode(const nsAString & name, nsIDOMAttr * *_retval) = 0;
+
+  /* nsIDOMAttr setAttributeNode (in nsIDOMAttr new_attr); */
+  NS_IMETHOD SetAttributeNode(nsIDOMAttr *new_attr, nsIDOMAttr * *_retval) = 0;
+
+  /* nsIDOMAttr removeAttributeNode (in nsIDOMAttr old_attr); */
+  NS_IMETHOD RemoveAttributeNode(nsIDOMAttr *old_attr, nsIDOMAttr * *_retval) = 0;
 
   /* nsIDOMAttr getAttributeNodeNS (in DOMString namespace_uri, in DOMString local_name); */
   NS_IMETHOD GetAttributeNodeNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMAttr * *_retval) = 0;
@@ -6409,14 +6390,94 @@ class NS_NO_VTABLE nsIDOMElement : public nsIDOMNode {
   /* nsIDOMAttr setAttributeNodeNS (in nsIDOMAttr newAttr) raises (DOMException); */
   NS_IMETHOD SetAttributeNodeNS(nsIDOMAttr *newAttr, nsIDOMAttr * *_retval) = 0;
 
+  /* nsIDOMNodeList getElementsByTagName (in DOMString name); */
+  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMNodeList * *_retval) = 0;
+
   /* nsIDOMNodeList getElementsByTagNameNS (in DOMString namespace_uri, in DOMString local_name); */
   NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNodeList * *_retval) = 0;
 
-  /* boolean hasAttribute (in DOMString name); */
-  NS_IMETHOD HasAttribute(const nsAString & name, bool *_retval) = 0;
+  /* nsIDOMHTMLCollection getElementsByClassName (in DOMString classes); */
+  NS_IMETHOD GetElementsByClassName(const nsAString & classes, nsIDOMHTMLCollection * *_retval) = 0;
 
-  /* boolean hasAttributeNS (in DOMString namespace_uri, in DOMString local_name); */
-  NS_IMETHOD HasAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, bool *_retval) = 0;
+  /* [binaryname(ChildElements)] readonly attribute nsIDOMNodeList children; */
+  NS_IMETHOD GetChildElements(nsIDOMNodeList * *aChildren) = 0;
+
+  /* readonly attribute nsIDOMElement firstElementChild; */
+  NS_IMETHOD GetFirstElementChild(nsIDOMElement * *aFirstElementChild) = 0;
+
+  /* readonly attribute nsIDOMElement lastElementChild; */
+  NS_IMETHOD GetLastElementChild(nsIDOMElement * *aLastElementChild) = 0;
+
+  /* readonly attribute nsIDOMElement previousElementSibling; */
+  NS_IMETHOD GetPreviousElementSibling(nsIDOMElement * *aPreviousElementSibling) = 0;
+
+  /* readonly attribute nsIDOMElement nextElementSibling; */
+  NS_IMETHOD GetNextElementSibling(nsIDOMElement * *aNextElementSibling) = 0;
+
+  /* readonly attribute unsigned long childElementCount; */
+  NS_IMETHOD GetChildElementCount(uint32_t *aChildElementCount) = 0;
+
+  /* [binaryname(MozRemove)] void remove (); */
+  NS_IMETHOD MozRemove(void) = 0;
+
+  /* nsIDOMClientRectList getClientRects (); */
+  NS_IMETHOD GetClientRects(nsIDOMClientRectList * *_retval) = 0;
+
+  /* nsIDOMClientRect getBoundingClientRect (); */
+  NS_IMETHOD GetBoundingClientRect(nsIDOMClientRect * *_retval) = 0;
+
+  /* attribute long scrollTop; */
+  NS_IMETHOD GetScrollTop(int32_t *aScrollTop) = 0;
+  NS_IMETHOD SetScrollTop(int32_t aScrollTop) = 0;
+
+  /* attribute long scrollLeft; */
+  NS_IMETHOD GetScrollLeft(int32_t *aScrollLeft) = 0;
+  NS_IMETHOD SetScrollLeft(int32_t aScrollLeft) = 0;
+
+  /* readonly attribute long scrollWidth; */
+  NS_IMETHOD GetScrollWidth(int32_t *aScrollWidth) = 0;
+
+  /* readonly attribute long scrollHeight; */
+  NS_IMETHOD GetScrollHeight(int32_t *aScrollHeight) = 0;
+
+  /* readonly attribute long clientTop; */
+  NS_IMETHOD GetClientTop(int32_t *aClientTop) = 0;
+
+  /* readonly attribute long clientLeft; */
+  NS_IMETHOD GetClientLeft(int32_t *aClientLeft) = 0;
+
+  /* readonly attribute long clientWidth; */
+  NS_IMETHOD GetClientWidth(int32_t *aClientWidth) = 0;
+
+  /* readonly attribute long clientHeight; */
+  NS_IMETHOD GetClientHeight(int32_t *aClientHeight) = 0;
+
+  /* readonly attribute long scrollLeftMax; */
+  NS_IMETHOD GetScrollLeftMax(int32_t *aScrollLeftMax) = 0;
+
+  /* readonly attribute long scrollTopMax; */
+  NS_IMETHOD GetScrollTopMax(int32_t *aScrollTopMax) = 0;
+
+  /* boolean mozMatchesSelector ([Null (Stringify)] in DOMString selector); */
+  NS_IMETHOD MozMatchesSelector(const nsAString & selector, bool *_retval) = 0;
+
+  /* void setCapture ([optional] in boolean retarget_to_element); */
+  NS_IMETHOD SetCapture(bool retarget_to_element) = 0;
+
+  /* void releaseCapture (); */
+  NS_IMETHOD ReleaseCapture(void) = 0;
+
+  /* void mozRequestFullScreen (); */
+  NS_IMETHOD MozRequestFullScreen(void) = 0;
+
+  /* void mozRequestPointerLock (); */
+  NS_IMETHOD MozRequestPointerLock(void) = 0;
+
+  /* nsIDOMElement querySelector ([Null (Stringify)] in DOMString selectors); */
+  NS_IMETHOD QuerySelector(const nsAString & selectors, nsIDOMElement * *_retval) = 0;
+
+  /* nsIDOMNodeList querySelectorAll ([Null (Stringify)] in DOMString selectors); */
+  NS_IMETHOD QuerySelectorAll(const nsAString & selectors, nsIDOMNodeList * *_retval) = 0;
 
 };
 
@@ -6425,59 +6486,152 @@ class NS_NO_VTABLE nsIDOMElement : public nsIDOMNode {
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSIDOMELEMENT \
   NS_IMETHOD GetTagName(nsAString & aTagName); \
+  NS_IMETHOD GetClassList(nsISupports * *aClassList); \
+  NS_IMETHOD GetAttributes(nsIDOMMozNamedAttrMap * *aAttributes); \
   NS_IMETHOD GetAttribute(const nsAString & name, nsAString & _retval); \
+  NS_IMETHOD GetAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, nsAString & _retval); \
   NS_IMETHOD SetAttribute(const nsAString & name, const nsAString & value); \
+  NS_IMETHOD SetAttributeNS(const nsAString & namespace_uri, const nsAString & qualified_name, const nsAString & value); \
   NS_IMETHOD RemoveAttribute(const nsAString & name); \
+  NS_IMETHOD RemoveAttributeNS(const nsAString & namespace_uri, const nsAString & local_name); \
+  NS_IMETHOD HasAttribute(const nsAString & name, bool *_retval); \
+  NS_IMETHOD HasAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, bool *_retval); \
   NS_IMETHOD GetAttributeNode(const nsAString & name, nsIDOMAttr * *_retval); \
   NS_IMETHOD SetAttributeNode(nsIDOMAttr *new_attr, nsIDOMAttr * *_retval); \
   NS_IMETHOD RemoveAttributeNode(nsIDOMAttr *old_attr, nsIDOMAttr * *_retval); \
-  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMNodeList * *_retval); \
-  NS_IMETHOD GetAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, nsAString & _retval); \
-  NS_IMETHOD SetAttributeNS(const nsAString & namespace_uri, const nsAString & qualified_name, const nsAString & value); \
-  NS_IMETHOD RemoveAttributeNS(const nsAString & namespace_uri, const nsAString & local_name); \
   NS_IMETHOD GetAttributeNodeNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMAttr * *_retval); \
   NS_IMETHOD SetAttributeNodeNS(nsIDOMAttr *newAttr, nsIDOMAttr * *_retval); \
+  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMNodeList * *_retval); \
   NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNodeList * *_retval); \
-  NS_IMETHOD HasAttribute(const nsAString & name, bool *_retval); \
-  NS_IMETHOD HasAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, bool *_retval); 
+  NS_IMETHOD GetElementsByClassName(const nsAString & classes, nsIDOMHTMLCollection * *_retval); \
+  NS_IMETHOD GetChildElements(nsIDOMNodeList * *aChildren); \
+  NS_IMETHOD GetFirstElementChild(nsIDOMElement * *aFirstElementChild); \
+  NS_IMETHOD GetLastElementChild(nsIDOMElement * *aLastElementChild); \
+  NS_IMETHOD GetPreviousElementSibling(nsIDOMElement * *aPreviousElementSibling); \
+  NS_IMETHOD GetNextElementSibling(nsIDOMElement * *aNextElementSibling); \
+  NS_IMETHOD GetChildElementCount(uint32_t *aChildElementCount); \
+  NS_IMETHOD MozRemove(void); \
+  NS_IMETHOD GetClientRects(nsIDOMClientRectList * *_retval); \
+  NS_IMETHOD GetBoundingClientRect(nsIDOMClientRect * *_retval); \
+  NS_IMETHOD GetScrollTop(int32_t *aScrollTop); \
+  NS_IMETHOD SetScrollTop(int32_t aScrollTop); \
+  NS_IMETHOD GetScrollLeft(int32_t *aScrollLeft); \
+  NS_IMETHOD SetScrollLeft(int32_t aScrollLeft); \
+  NS_IMETHOD GetScrollWidth(int32_t *aScrollWidth); \
+  NS_IMETHOD GetScrollHeight(int32_t *aScrollHeight); \
+  NS_IMETHOD GetClientTop(int32_t *aClientTop); \
+  NS_IMETHOD GetClientLeft(int32_t *aClientLeft); \
+  NS_IMETHOD GetClientWidth(int32_t *aClientWidth); \
+  NS_IMETHOD GetClientHeight(int32_t *aClientHeight); \
+  NS_IMETHOD GetScrollLeftMax(int32_t *aScrollLeftMax); \
+  NS_IMETHOD GetScrollTopMax(int32_t *aScrollTopMax); \
+  NS_IMETHOD MozMatchesSelector(const nsAString & selector, bool *_retval); \
+  NS_IMETHOD SetCapture(bool retarget_to_element); \
+  NS_IMETHOD ReleaseCapture(void); \
+  NS_IMETHOD MozRequestFullScreen(void); \
+  NS_IMETHOD MozRequestPointerLock(void); \
+  NS_IMETHOD QuerySelector(const nsAString & selectors, nsIDOMElement * *_retval); \
+  NS_IMETHOD QuerySelectorAll(const nsAString & selectors, nsIDOMNodeList * *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIDOMELEMENT(_to) \
   NS_IMETHOD GetTagName(nsAString & aTagName) { return _to GetTagName(aTagName); } \
+  NS_IMETHOD GetClassList(nsISupports * *aClassList) { return _to GetClassList(aClassList); } \
+  NS_IMETHOD GetAttributes(nsIDOMMozNamedAttrMap * *aAttributes) { return _to GetAttributes(aAttributes); } \
   NS_IMETHOD GetAttribute(const nsAString & name, nsAString & _retval) { return _to GetAttribute(name, _retval); } \
+  NS_IMETHOD GetAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, nsAString & _retval) { return _to GetAttributeNS(namespace_uri, local_name, _retval); } \
   NS_IMETHOD SetAttribute(const nsAString & name, const nsAString & value) { return _to SetAttribute(name, value); } \
+  NS_IMETHOD SetAttributeNS(const nsAString & namespace_uri, const nsAString & qualified_name, const nsAString & value) { return _to SetAttributeNS(namespace_uri, qualified_name, value); } \
   NS_IMETHOD RemoveAttribute(const nsAString & name) { return _to RemoveAttribute(name); } \
+  NS_IMETHOD RemoveAttributeNS(const nsAString & namespace_uri, const nsAString & local_name) { return _to RemoveAttributeNS(namespace_uri, local_name); } \
+  NS_IMETHOD HasAttribute(const nsAString & name, bool *_retval) { return _to HasAttribute(name, _retval); } \
+  NS_IMETHOD HasAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, bool *_retval) { return _to HasAttributeNS(namespace_uri, local_name, _retval); } \
   NS_IMETHOD GetAttributeNode(const nsAString & name, nsIDOMAttr * *_retval) { return _to GetAttributeNode(name, _retval); } \
   NS_IMETHOD SetAttributeNode(nsIDOMAttr *new_attr, nsIDOMAttr * *_retval) { return _to SetAttributeNode(new_attr, _retval); } \
   NS_IMETHOD RemoveAttributeNode(nsIDOMAttr *old_attr, nsIDOMAttr * *_retval) { return _to RemoveAttributeNode(old_attr, _retval); } \
-  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMNodeList * *_retval) { return _to GetElementsByTagName(name, _retval); } \
-  NS_IMETHOD GetAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, nsAString & _retval) { return _to GetAttributeNS(namespace_uri, local_name, _retval); } \
-  NS_IMETHOD SetAttributeNS(const nsAString & namespace_uri, const nsAString & qualified_name, const nsAString & value) { return _to SetAttributeNS(namespace_uri, qualified_name, value); } \
-  NS_IMETHOD RemoveAttributeNS(const nsAString & namespace_uri, const nsAString & local_name) { return _to RemoveAttributeNS(namespace_uri, local_name); } \
   NS_IMETHOD GetAttributeNodeNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMAttr * *_retval) { return _to GetAttributeNodeNS(namespace_uri, local_name, _retval); } \
   NS_IMETHOD SetAttributeNodeNS(nsIDOMAttr *newAttr, nsIDOMAttr * *_retval) { return _to SetAttributeNodeNS(newAttr, _retval); } \
+  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMNodeList * *_retval) { return _to GetElementsByTagName(name, _retval); } \
   NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNodeList * *_retval) { return _to GetElementsByTagNameNS(namespace_uri, local_name, _retval); } \
-  NS_IMETHOD HasAttribute(const nsAString & name, bool *_retval) { return _to HasAttribute(name, _retval); } \
-  NS_IMETHOD HasAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, bool *_retval) { return _to HasAttributeNS(namespace_uri, local_name, _retval); } 
+  NS_IMETHOD GetElementsByClassName(const nsAString & classes, nsIDOMHTMLCollection * *_retval) { return _to GetElementsByClassName(classes, _retval); } \
+  NS_IMETHOD GetChildElements(nsIDOMNodeList * *aChildren) { return _to GetChildElements(aChildren); } \
+  NS_IMETHOD GetFirstElementChild(nsIDOMElement * *aFirstElementChild) { return _to GetFirstElementChild(aFirstElementChild); } \
+  NS_IMETHOD GetLastElementChild(nsIDOMElement * *aLastElementChild) { return _to GetLastElementChild(aLastElementChild); } \
+  NS_IMETHOD GetPreviousElementSibling(nsIDOMElement * *aPreviousElementSibling) { return _to GetPreviousElementSibling(aPreviousElementSibling); } \
+  NS_IMETHOD GetNextElementSibling(nsIDOMElement * *aNextElementSibling) { return _to GetNextElementSibling(aNextElementSibling); } \
+  NS_IMETHOD GetChildElementCount(uint32_t *aChildElementCount) { return _to GetChildElementCount(aChildElementCount); } \
+  NS_IMETHOD MozRemove(void) { return _to MozRemove(); } \
+  NS_IMETHOD GetClientRects(nsIDOMClientRectList * *_retval) { return _to GetClientRects(_retval); } \
+  NS_IMETHOD GetBoundingClientRect(nsIDOMClientRect * *_retval) { return _to GetBoundingClientRect(_retval); } \
+  NS_IMETHOD GetScrollTop(int32_t *aScrollTop) { return _to GetScrollTop(aScrollTop); } \
+  NS_IMETHOD SetScrollTop(int32_t aScrollTop) { return _to SetScrollTop(aScrollTop); } \
+  NS_IMETHOD GetScrollLeft(int32_t *aScrollLeft) { return _to GetScrollLeft(aScrollLeft); } \
+  NS_IMETHOD SetScrollLeft(int32_t aScrollLeft) { return _to SetScrollLeft(aScrollLeft); } \
+  NS_IMETHOD GetScrollWidth(int32_t *aScrollWidth) { return _to GetScrollWidth(aScrollWidth); } \
+  NS_IMETHOD GetScrollHeight(int32_t *aScrollHeight) { return _to GetScrollHeight(aScrollHeight); } \
+  NS_IMETHOD GetClientTop(int32_t *aClientTop) { return _to GetClientTop(aClientTop); } \
+  NS_IMETHOD GetClientLeft(int32_t *aClientLeft) { return _to GetClientLeft(aClientLeft); } \
+  NS_IMETHOD GetClientWidth(int32_t *aClientWidth) { return _to GetClientWidth(aClientWidth); } \
+  NS_IMETHOD GetClientHeight(int32_t *aClientHeight) { return _to GetClientHeight(aClientHeight); } \
+  NS_IMETHOD GetScrollLeftMax(int32_t *aScrollLeftMax) { return _to GetScrollLeftMax(aScrollLeftMax); } \
+  NS_IMETHOD GetScrollTopMax(int32_t *aScrollTopMax) { return _to GetScrollTopMax(aScrollTopMax); } \
+  NS_IMETHOD MozMatchesSelector(const nsAString & selector, bool *_retval) { return _to MozMatchesSelector(selector, _retval); } \
+  NS_IMETHOD SetCapture(bool retarget_to_element) { return _to SetCapture(retarget_to_element); } \
+  NS_IMETHOD ReleaseCapture(void) { return _to ReleaseCapture(); } \
+  NS_IMETHOD MozRequestFullScreen(void) { return _to MozRequestFullScreen(); } \
+  NS_IMETHOD MozRequestPointerLock(void) { return _to MozRequestPointerLock(); } \
+  NS_IMETHOD QuerySelector(const nsAString & selectors, nsIDOMElement * *_retval) { return _to QuerySelector(selectors, _retval); } \
+  NS_IMETHOD QuerySelectorAll(const nsAString & selectors, nsIDOMNodeList * *_retval) { return _to QuerySelectorAll(selectors, _retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIDOMELEMENT(_to) \
   NS_IMETHOD GetTagName(nsAString & aTagName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTagName(aTagName); } \
+  NS_IMETHOD GetClassList(nsISupports * *aClassList) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetClassList(aClassList); } \
+  NS_IMETHOD GetAttributes(nsIDOMMozNamedAttrMap * *aAttributes) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAttributes(aAttributes); } \
   NS_IMETHOD GetAttribute(const nsAString & name, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAttribute(name, _retval); } \
+  NS_IMETHOD GetAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAttributeNS(namespace_uri, local_name, _retval); } \
   NS_IMETHOD SetAttribute(const nsAString & name, const nsAString & value) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetAttribute(name, value); } \
+  NS_IMETHOD SetAttributeNS(const nsAString & namespace_uri, const nsAString & qualified_name, const nsAString & value) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetAttributeNS(namespace_uri, qualified_name, value); } \
   NS_IMETHOD RemoveAttribute(const nsAString & name) { return !_to ? NS_ERROR_NULL_POINTER : _to->RemoveAttribute(name); } \
+  NS_IMETHOD RemoveAttributeNS(const nsAString & namespace_uri, const nsAString & local_name) { return !_to ? NS_ERROR_NULL_POINTER : _to->RemoveAttributeNS(namespace_uri, local_name); } \
+  NS_IMETHOD HasAttribute(const nsAString & name, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->HasAttribute(name, _retval); } \
+  NS_IMETHOD HasAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->HasAttributeNS(namespace_uri, local_name, _retval); } \
   NS_IMETHOD GetAttributeNode(const nsAString & name, nsIDOMAttr * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAttributeNode(name, _retval); } \
   NS_IMETHOD SetAttributeNode(nsIDOMAttr *new_attr, nsIDOMAttr * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetAttributeNode(new_attr, _retval); } \
   NS_IMETHOD RemoveAttributeNode(nsIDOMAttr *old_attr, nsIDOMAttr * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->RemoveAttributeNode(old_attr, _retval); } \
-  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMNodeList * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementsByTagName(name, _retval); } \
-  NS_IMETHOD GetAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAttributeNS(namespace_uri, local_name, _retval); } \
-  NS_IMETHOD SetAttributeNS(const nsAString & namespace_uri, const nsAString & qualified_name, const nsAString & value) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetAttributeNS(namespace_uri, qualified_name, value); } \
-  NS_IMETHOD RemoveAttributeNS(const nsAString & namespace_uri, const nsAString & local_name) { return !_to ? NS_ERROR_NULL_POINTER : _to->RemoveAttributeNS(namespace_uri, local_name); } \
   NS_IMETHOD GetAttributeNodeNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMAttr * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAttributeNodeNS(namespace_uri, local_name, _retval); } \
   NS_IMETHOD SetAttributeNodeNS(nsIDOMAttr *newAttr, nsIDOMAttr * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetAttributeNodeNS(newAttr, _retval); } \
+  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMNodeList * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementsByTagName(name, _retval); } \
   NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNodeList * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementsByTagNameNS(namespace_uri, local_name, _retval); } \
-  NS_IMETHOD HasAttribute(const nsAString & name, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->HasAttribute(name, _retval); } \
-  NS_IMETHOD HasAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->HasAttributeNS(namespace_uri, local_name, _retval); } 
+  NS_IMETHOD GetElementsByClassName(const nsAString & classes, nsIDOMHTMLCollection * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementsByClassName(classes, _retval); } \
+  NS_IMETHOD GetChildElements(nsIDOMNodeList * *aChildren) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetChildElements(aChildren); } \
+  NS_IMETHOD GetFirstElementChild(nsIDOMElement * *aFirstElementChild) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFirstElementChild(aFirstElementChild); } \
+  NS_IMETHOD GetLastElementChild(nsIDOMElement * *aLastElementChild) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetLastElementChild(aLastElementChild); } \
+  NS_IMETHOD GetPreviousElementSibling(nsIDOMElement * *aPreviousElementSibling) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPreviousElementSibling(aPreviousElementSibling); } \
+  NS_IMETHOD GetNextElementSibling(nsIDOMElement * *aNextElementSibling) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetNextElementSibling(aNextElementSibling); } \
+  NS_IMETHOD GetChildElementCount(uint32_t *aChildElementCount) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetChildElementCount(aChildElementCount); } \
+  NS_IMETHOD MozRemove(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozRemove(); } \
+  NS_IMETHOD GetClientRects(nsIDOMClientRectList * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetClientRects(_retval); } \
+  NS_IMETHOD GetBoundingClientRect(nsIDOMClientRect * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetBoundingClientRect(_retval); } \
+  NS_IMETHOD GetScrollTop(int32_t *aScrollTop) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetScrollTop(aScrollTop); } \
+  NS_IMETHOD SetScrollTop(int32_t aScrollTop) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetScrollTop(aScrollTop); } \
+  NS_IMETHOD GetScrollLeft(int32_t *aScrollLeft) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetScrollLeft(aScrollLeft); } \
+  NS_IMETHOD SetScrollLeft(int32_t aScrollLeft) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetScrollLeft(aScrollLeft); } \
+  NS_IMETHOD GetScrollWidth(int32_t *aScrollWidth) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetScrollWidth(aScrollWidth); } \
+  NS_IMETHOD GetScrollHeight(int32_t *aScrollHeight) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetScrollHeight(aScrollHeight); } \
+  NS_IMETHOD GetClientTop(int32_t *aClientTop) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetClientTop(aClientTop); } \
+  NS_IMETHOD GetClientLeft(int32_t *aClientLeft) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetClientLeft(aClientLeft); } \
+  NS_IMETHOD GetClientWidth(int32_t *aClientWidth) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetClientWidth(aClientWidth); } \
+  NS_IMETHOD GetClientHeight(int32_t *aClientHeight) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetClientHeight(aClientHeight); } \
+  NS_IMETHOD GetScrollLeftMax(int32_t *aScrollLeftMax) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetScrollLeftMax(aScrollLeftMax); } \
+  NS_IMETHOD GetScrollTopMax(int32_t *aScrollTopMax) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetScrollTopMax(aScrollTopMax); } \
+  NS_IMETHOD MozMatchesSelector(const nsAString & selector, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozMatchesSelector(selector, _retval); } \
+  NS_IMETHOD SetCapture(bool retarget_to_element) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetCapture(retarget_to_element); } \
+  NS_IMETHOD ReleaseCapture(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->ReleaseCapture(); } \
+  NS_IMETHOD MozRequestFullScreen(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozRequestFullScreen(); } \
+  NS_IMETHOD MozRequestPointerLock(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozRequestPointerLock(); } \
+  NS_IMETHOD QuerySelector(const nsAString & selectors, nsIDOMElement * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->QuerySelector(selectors, _retval); } \
+  NS_IMETHOD QuerySelectorAll(const nsAString & selectors, nsIDOMNodeList * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->QuerySelectorAll(selectors, _retval); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -6517,44 +6671,20 @@ NS_IMETHODIMP nsDOMElement::GetTagName(nsAString & aTagName)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
+/* readonly attribute nsISupports classList; */
+NS_IMETHODIMP nsDOMElement::GetClassList(nsISupports * *aClassList)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute nsIDOMMozNamedAttrMap attributes; */
+NS_IMETHODIMP nsDOMElement::GetAttributes(nsIDOMMozNamedAttrMap * *aAttributes)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 /* DOMString getAttribute (in DOMString name); */
 NS_IMETHODIMP nsDOMElement::GetAttribute(const nsAString & name, nsAString & _retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void setAttribute (in DOMString name, in DOMString value) raises (DOMException); */
-NS_IMETHODIMP nsDOMElement::SetAttribute(const nsAString & name, const nsAString & value)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void removeAttribute (in DOMString name) raises (DOMException); */
-NS_IMETHODIMP nsDOMElement::RemoveAttribute(const nsAString & name)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* nsIDOMAttr getAttributeNode (in DOMString name); */
-NS_IMETHODIMP nsDOMElement::GetAttributeNode(const nsAString & name, nsIDOMAttr * *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* nsIDOMAttr setAttributeNode (in nsIDOMAttr new_attr) raises (DOMException); */
-NS_IMETHODIMP nsDOMElement::SetAttributeNode(nsIDOMAttr *new_attr, nsIDOMAttr * *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* nsIDOMAttr removeAttributeNode (in nsIDOMAttr old_attr) raises (DOMException); */
-NS_IMETHODIMP nsDOMElement::RemoveAttributeNode(nsIDOMAttr *old_attr, nsIDOMAttr * *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* nsIDOMNodeList getElementsByTagName (in DOMString name); */
-NS_IMETHODIMP nsDOMElement::GetElementsByTagName(const nsAString & name, nsIDOMNodeList * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -6565,14 +6695,56 @@ NS_IMETHODIMP nsDOMElement::GetAttributeNS(const nsAString & namespace_uri, cons
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void setAttributeNS (in DOMString namespace_uri, in DOMString qualified_name, in DOMString value) raises (DOMException); */
+/* void setAttribute (in DOMString name, in DOMString value); */
+NS_IMETHODIMP nsDOMElement::SetAttribute(const nsAString & name, const nsAString & value)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void setAttributeNS (in DOMString namespace_uri, in DOMString qualified_name, in DOMString value); */
 NS_IMETHODIMP nsDOMElement::SetAttributeNS(const nsAString & namespace_uri, const nsAString & qualified_name, const nsAString & value)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void removeAttributeNS (in DOMString namespace_uri, in DOMString local_name) raises (DOMException); */
+/* void removeAttribute (in DOMString name); */
+NS_IMETHODIMP nsDOMElement::RemoveAttribute(const nsAString & name)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void removeAttributeNS (in DOMString namespace_uri, in DOMString local_name); */
 NS_IMETHODIMP nsDOMElement::RemoveAttributeNS(const nsAString & namespace_uri, const nsAString & local_name)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* boolean hasAttribute (in DOMString name); */
+NS_IMETHODIMP nsDOMElement::HasAttribute(const nsAString & name, bool *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* boolean hasAttributeNS (in DOMString namespace_uri, in DOMString local_name); */
+NS_IMETHODIMP nsDOMElement::HasAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, bool *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIDOMAttr getAttributeNode (in DOMString name); */
+NS_IMETHODIMP nsDOMElement::GetAttributeNode(const nsAString & name, nsIDOMAttr * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIDOMAttr setAttributeNode (in nsIDOMAttr new_attr); */
+NS_IMETHODIMP nsDOMElement::SetAttributeNode(nsIDOMAttr *new_attr, nsIDOMAttr * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIDOMAttr removeAttributeNode (in nsIDOMAttr old_attr); */
+NS_IMETHODIMP nsDOMElement::RemoveAttributeNode(nsIDOMAttr *old_attr, nsIDOMAttr * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -6589,20 +6761,184 @@ NS_IMETHODIMP nsDOMElement::SetAttributeNodeNS(nsIDOMAttr *newAttr, nsIDOMAttr *
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
+/* nsIDOMNodeList getElementsByTagName (in DOMString name); */
+NS_IMETHODIMP nsDOMElement::GetElementsByTagName(const nsAString & name, nsIDOMNodeList * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 /* nsIDOMNodeList getElementsByTagNameNS (in DOMString namespace_uri, in DOMString local_name); */
 NS_IMETHODIMP nsDOMElement::GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNodeList * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* boolean hasAttribute (in DOMString name); */
-NS_IMETHODIMP nsDOMElement::HasAttribute(const nsAString & name, bool *_retval)
+/* nsIDOMHTMLCollection getElementsByClassName (in DOMString classes); */
+NS_IMETHODIMP nsDOMElement::GetElementsByClassName(const nsAString & classes, nsIDOMHTMLCollection * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* boolean hasAttributeNS (in DOMString namespace_uri, in DOMString local_name); */
-NS_IMETHODIMP nsDOMElement::HasAttributeNS(const nsAString & namespace_uri, const nsAString & local_name, bool *_retval)
+/* [binaryname(ChildElements)] readonly attribute nsIDOMNodeList children; */
+NS_IMETHODIMP nsDOMElement::GetChildElements(nsIDOMNodeList * *aChildren)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute nsIDOMElement firstElementChild; */
+NS_IMETHODIMP nsDOMElement::GetFirstElementChild(nsIDOMElement * *aFirstElementChild)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute nsIDOMElement lastElementChild; */
+NS_IMETHODIMP nsDOMElement::GetLastElementChild(nsIDOMElement * *aLastElementChild)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute nsIDOMElement previousElementSibling; */
+NS_IMETHODIMP nsDOMElement::GetPreviousElementSibling(nsIDOMElement * *aPreviousElementSibling)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute nsIDOMElement nextElementSibling; */
+NS_IMETHODIMP nsDOMElement::GetNextElementSibling(nsIDOMElement * *aNextElementSibling)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute unsigned long childElementCount; */
+NS_IMETHODIMP nsDOMElement::GetChildElementCount(uint32_t *aChildElementCount)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [binaryname(MozRemove)] void remove (); */
+NS_IMETHODIMP nsDOMElement::MozRemove()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIDOMClientRectList getClientRects (); */
+NS_IMETHODIMP nsDOMElement::GetClientRects(nsIDOMClientRectList * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIDOMClientRect getBoundingClientRect (); */
+NS_IMETHODIMP nsDOMElement::GetBoundingClientRect(nsIDOMClientRect * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute long scrollTop; */
+NS_IMETHODIMP nsDOMElement::GetScrollTop(int32_t *aScrollTop)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMElement::SetScrollTop(int32_t aScrollTop)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute long scrollLeft; */
+NS_IMETHODIMP nsDOMElement::GetScrollLeft(int32_t *aScrollLeft)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMElement::SetScrollLeft(int32_t aScrollLeft)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute long scrollWidth; */
+NS_IMETHODIMP nsDOMElement::GetScrollWidth(int32_t *aScrollWidth)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute long scrollHeight; */
+NS_IMETHODIMP nsDOMElement::GetScrollHeight(int32_t *aScrollHeight)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute long clientTop; */
+NS_IMETHODIMP nsDOMElement::GetClientTop(int32_t *aClientTop)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute long clientLeft; */
+NS_IMETHODIMP nsDOMElement::GetClientLeft(int32_t *aClientLeft)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute long clientWidth; */
+NS_IMETHODIMP nsDOMElement::GetClientWidth(int32_t *aClientWidth)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute long clientHeight; */
+NS_IMETHODIMP nsDOMElement::GetClientHeight(int32_t *aClientHeight)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute long scrollLeftMax; */
+NS_IMETHODIMP nsDOMElement::GetScrollLeftMax(int32_t *aScrollLeftMax)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute long scrollTopMax; */
+NS_IMETHODIMP nsDOMElement::GetScrollTopMax(int32_t *aScrollTopMax)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* boolean mozMatchesSelector ([Null (Stringify)] in DOMString selector); */
+NS_IMETHODIMP nsDOMElement::MozMatchesSelector(const nsAString & selector, bool *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void setCapture ([optional] in boolean retarget_to_element); */
+NS_IMETHODIMP nsDOMElement::SetCapture(bool retarget_to_element)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void releaseCapture (); */
+NS_IMETHODIMP nsDOMElement::ReleaseCapture()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void mozRequestFullScreen (); */
+NS_IMETHODIMP nsDOMElement::MozRequestFullScreen()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void mozRequestPointerLock (); */
+NS_IMETHODIMP nsDOMElement::MozRequestPointerLock()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIDOMElement querySelector ([Null (Stringify)] in DOMString selectors); */
+NS_IMETHODIMP nsDOMElement::QuerySelector(const nsAString & selectors, nsIDOMElement * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIDOMNodeList querySelectorAll ([Null (Stringify)] in DOMString selectors); */
+NS_IMETHODIMP nsDOMElement::QuerySelectorAll(const nsAString & selectors, nsIDOMNodeList * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -6803,11 +7139,11 @@ class nsIDOMEntityReference; /* forward declaration */
 
 
 /* starting interface:    nsIDOMDocument */
-#define NS_IDOMDOCUMENT_IID_STR "6cba4f7e-7e71-427d-b914-44517ae1e45b"
+#define NS_IDOMDOCUMENT_IID_STR "aa4b59de-462a-4f61-abd9-4232fef3dacc"
 
 #define NS_IDOMDOCUMENT_IID \
-  {0x6cba4f7e, 0x7e71, 0x427d, \
-    { 0xb9, 0x14, 0x44, 0x51, 0x7a, 0xe1, 0xe4, 0x5b }}
+  {0xaa4b59de, 0x462a, 0x4f61, \
+    { 0xab, 0xd9, 0x42, 0x32, 0xfe, 0xf3, 0xda, 0xcc }}
 
 class NS_NO_VTABLE nsIDOMDocument : public nsIDOMNode {
  public: 
@@ -6823,8 +7159,8 @@ class NS_NO_VTABLE nsIDOMDocument : public nsIDOMNode {
   /* readonly attribute nsIDOMElement documentElement; */
   NS_IMETHOD GetDocumentElement(nsIDOMElement * *aDocumentElement) = 0;
 
-  /* nsIDOMElement createElement (in DOMString tagName) raises (DOMException); */
-  NS_IMETHOD CreateElement(const nsAString & tagName, nsIDOMElement * *_retval) = 0;
+  /* nsIDOMElement createElement (in DOMString tag_name) raises (DOMException); */
+  NS_IMETHOD CreateElement(const nsAString & tag_name, nsIDOMElement * *_retval) = 0;
 
   /* nsIDOMDocumentFragment createDocumentFragment (); */
   NS_IMETHOD CreateDocumentFragment(nsIDOMDocumentFragment * *_retval) = 0;
@@ -6844,41 +7180,32 @@ class NS_NO_VTABLE nsIDOMDocument : public nsIDOMNode {
   /* nsIDOMAttr createAttribute (in DOMString name) raises (DOMException); */
   NS_IMETHOD CreateAttribute(const nsAString & name, nsIDOMAttr * *_retval) = 0;
 
-  /* nsIDOMNodeList getElementsByTagName (in DOMString tagname); */
-  NS_IMETHOD GetElementsByTagName(const nsAString & tagname, nsIDOMNodeList * *_retval) = 0;
+  /* nsIDOMNodeList getElementsByTagName (in DOMString tag_name); */
+  NS_IMETHOD GetElementsByTagName(const nsAString & tag_name, nsIDOMNodeList * *_retval) = 0;
 
-  /* nsIDOMNode importNode (in nsIDOMNode importedNode, in boolean deep) raises (DOMException); */
-  NS_IMETHOD ImportNode(nsIDOMNode *importedNode, bool deep, nsIDOMNode * *_retval) = 0;
+  /* [optional_argc] nsIDOMNode importNode (in nsIDOMNode imported_node, [optional] in boolean deep) raises (DOMException); */
+  NS_IMETHOD ImportNode(nsIDOMNode *imported_node, bool deep, uint8_t _argc, nsIDOMNode * *_retval) = 0;
 
-  /* nsIDOMElement createElementNS (in DOMString namespaceURI, in DOMString qualifiedName) raises (DOMException); */
-  NS_IMETHOD CreateElementNS(const nsAString & namespaceURI, const nsAString & qualifiedName, nsIDOMElement * *_retval) = 0;
+  /* nsIDOMElement createElementNS (in DOMString namespace_uri, in DOMString qualified_name) raises (DOMException); */
+  NS_IMETHOD CreateElementNS(const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMElement * *_retval) = 0;
 
-  /* nsIDOMAttr createAttributeNS (in DOMString namespaceURI, in DOMString qualifiedName) raises (DOMException); */
-  NS_IMETHOD CreateAttributeNS(const nsAString & namespaceURI, const nsAString & qualifiedName, nsIDOMAttr * *_retval) = 0;
+  /* nsIDOMAttr createAttributeNS (in DOMString namespace_uri, in DOMString qualified_name) raises (DOMException); */
+  NS_IMETHOD CreateAttributeNS(const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMAttr * *_retval) = 0;
 
-  /* nsIDOMNodeList getElementsByTagNameNS (in DOMString namespaceURI, in DOMString localName); */
-  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespaceURI, const nsAString & localName, nsIDOMNodeList * *_retval) = 0;
+  /* nsIDOMNodeList getElementsByTagNameNS (in DOMString namespace_uri, in DOMString localName); */
+  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & localName, nsIDOMNodeList * *_retval) = 0;
 
-  /* nsIDOMElement getElementById (in DOMString elementId); */
-  NS_IMETHOD GetElementById(const nsAString & elementId, nsIDOMElement * *_retval) = 0;
+  /* nsIDOMElement getElementById (in DOMString element_id); */
+  NS_IMETHOD GetElementById(const nsAString & element_id, nsIDOMElement * *_retval) = 0;
 
   /* readonly attribute DOMString inputEncoding; */
   NS_IMETHOD GetInputEncoding(nsAString & aInputEncoding) = 0;
 
-  /* readonly attribute DOMString xmlEncoding; */
-  NS_IMETHOD GetXmlEncoding(nsAString & aXmlEncoding) = 0;
-
-  /* attribute boolean xmlStandalone; */
-  NS_IMETHOD GetXmlStandalone(bool *aXmlStandalone) = 0;
-  NS_IMETHOD SetXmlStandalone(bool aXmlStandalone) = 0;
-
-  /* attribute DOMString xmlVersion; */
-  NS_IMETHOD GetXmlVersion(nsAString & aXmlVersion) = 0;
-  NS_IMETHOD SetXmlVersion(const nsAString & aXmlVersion) = 0;
-
-  /* attribute DOMString documentURI; */
+  /* readonly attribute DOMString documentURI; */
   NS_IMETHOD GetDocumentURI(nsAString & aDocumentURI) = 0;
-  NS_IMETHOD SetDocumentURI(const nsAString & aDocumentURI) = 0;
+
+  /* readonly attribute DOMString URL; */
+  NS_IMETHOD GetURL(nsAString & aURL) = 0;
 
   /* nsIDOMNode adoptNode (in nsIDOMNode source) raises (DOMException); */
   NS_IMETHOD AdoptNode(nsIDOMNode *source, nsIDOMNode * *_retval) = 0;
@@ -6886,14 +7213,14 @@ class NS_NO_VTABLE nsIDOMDocument : public nsIDOMNode {
   /* nsIDOMRange createRange (); */
   NS_IMETHOD CreateRange(nsIDOMRange * *_retval) = 0;
 
-  /* nsIDOMNodeIterator createNodeIterator (in nsIDOMNode root, in unsigned long whatToShow, in nsIDOMNodeFilter filter, in boolean entityReferenceExpansion) raises (DOMException); */
-  NS_IMETHOD CreateNodeIterator(nsIDOMNode *root, uint32_t whatToShow, nsIDOMNodeFilter *filter, bool entityReferenceExpansion, nsIDOMNodeIterator * *_retval) = 0;
+  /* nsIDOMNodeIterator createNodeIterator (in nsIDOMNode root, in unsigned long whatToShow, in nsIDOMNodeFilter filter) raises (DOMException); */
+  NS_IMETHOD CreateNodeIterator(nsIDOMNode *root, uint32_t whatToShow, nsIDOMNodeFilter *filter, nsIDOMNodeIterator * *_retval) = 0;
 
-  /* nsIDOMTreeWalker createTreeWalker (in nsIDOMNode root, in unsigned long whatToShow, in nsIDOMNodeFilter filter, in boolean entityReferenceExpansion) raises (DOMException); */
-  NS_IMETHOD CreateTreeWalker(nsIDOMNode *root, uint32_t whatToShow, nsIDOMNodeFilter *filter, bool entityReferenceExpansion, nsIDOMTreeWalker * *_retval) = 0;
+  /* nsIDOMTreeWalker createTreeWalker (in nsIDOMNode root, in unsigned long what_to_show, in nsIDOMNodeFilter filter) raises (DOMException); */
+  NS_IMETHOD CreateTreeWalker(nsIDOMNode *root, uint32_t what_to_show, nsIDOMNodeFilter *filter, nsIDOMTreeWalker * *_retval) = 0;
 
-  /* nsIDOMEvent createEvent (in DOMString eventType) raises (DOMException); */
-  NS_IMETHOD CreateEvent(const nsAString & eventType, nsIDOMEvent * *_retval) = 0;
+  /* nsIDOMEvent createEvent (in DOMString event_type) raises (DOMException); */
+  NS_IMETHOD CreateEvent(const nsAString & event_type, nsIDOMEvent * *_retval) = 0;
 
   /* readonly attribute nsIDOMWindow defaultView; */
   NS_IMETHOD GetDefaultView(nsIDOMWindow * *aDefaultView) = 0;
@@ -6936,9 +7263,9 @@ class NS_NO_VTABLE nsIDOMDocument : public nsIDOMNode {
   /* readonly attribute DOMString preferredStyleSheetSet; */
   NS_IMETHOD GetPreferredStyleSheetSet(nsAString & aPreferredStyleSheetSet) = 0;
 
-  /* attribute DOMString selectedStyleSheetSet; */
-  NS_IMETHOD GetSelectedStyleSheetSet(nsAString & aSelectedStyleSheetSet) = 0;
-  NS_IMETHOD SetSelectedStyleSheetSet(const nsAString & aSelectedStyleSheetSet) = 0;
+  /* [binaryname(MozSelectedStyleSheetSet)] attribute DOMString selectedStyleSheetSet; */
+  NS_IMETHOD GetMozSelectedStyleSheetSet(nsAString & aSelectedStyleSheetSet) = 0;
+  NS_IMETHOD SetMozSelectedStyleSheetSet(const nsAString & aSelectedStyleSheetSet) = 0;
 
   /* readonly attribute DOMString lastStyleSheetSet; */
   NS_IMETHOD GetLastStyleSheetSet(nsAString & aLastStyleSheetSet) = 0;
@@ -6946,8 +7273,8 @@ class NS_NO_VTABLE nsIDOMDocument : public nsIDOMNode {
   /* readonly attribute nsIDOMDOMStringList styleSheetSets; */
   NS_IMETHOD GetStyleSheetSets(nsIDOMDOMStringList * *aStyleSheetSets) = 0;
 
-  /* void enableStyleSheetsForSet (in DOMString name); */
-  NS_IMETHOD EnableStyleSheetsForSet(const nsAString & name) = 0;
+  /* [binaryname(MozEnableStyleSheetsForSet)] void enableStyleSheetsForSet (in DOMString name); */
+  NS_IMETHOD MozEnableStyleSheetsForSet(const nsAString & name) = 0;
 
   /* nsIDOMElement elementFromPoint (in float x, in float y); */
   NS_IMETHOD ElementFromPoint(float x, float y, nsIDOMElement * *_retval) = 0;
@@ -6964,8 +7291,8 @@ class NS_NO_VTABLE nsIDOMDocument : public nsIDOMNode {
   /* void releaseCapture (); */
   NS_IMETHOD ReleaseCapture(void) = 0;
 
-  /* void mozSetImageElement (in DOMString aImageElementId, in nsIDOMElement aImageElement); */
-  NS_IMETHOD MozSetImageElement(const nsAString & aImageElementId, nsIDOMElement *aImageElement) = 0;
+  /* void mozSetImageElement (in DOMString image_element_id, in nsIDOMElement image_element); */
+  NS_IMETHOD MozSetImageElement(const nsAString & image_element_id, nsIDOMElement *image_element) = 0;
 
   /* readonly attribute nsIDOMHTMLElement mozFullScreenElement; */
   NS_IMETHOD GetMozFullScreenElement(nsIDOMHTMLElement * *aMozFullScreenElement) = 0;
@@ -6976,9 +7303,38 @@ class NS_NO_VTABLE nsIDOMDocument : public nsIDOMNode {
   /* readonly attribute boolean mozFullScreen; */
   NS_IMETHOD GetMozFullScreen(bool *aMozFullScreen) = 0;
 
-  /* [noscript] attribute jsval onreadystatechange; */
-  NS_IMETHOD GetOnreadystatechange(jsval *aOnreadystatechange) = 0;
-  NS_IMETHOD SetOnreadystatechange(jsval aOnreadystatechange) = 0;
+  /* readonly attribute boolean mozFullScreenEnabled; */
+  NS_IMETHOD GetMozFullScreenEnabled(bool *aMozFullScreenEnabled) = 0;
+
+  /* readonly attribute nsIDOMElement mozPointerLockElement; */
+  NS_IMETHOD GetMozPointerLockElement(nsIDOMElement * *aMozPointerLockElement) = 0;
+
+  /* nsISupports caretPositionFromPoint (in float x, in float y); */
+  NS_IMETHOD CaretPositionFromPoint(float x, float y, nsISupports * *_retval) = 0;
+
+  /* void mozExitPointerLock (); */
+  NS_IMETHOD MozExitPointerLock(void) = 0;
+
+  /* readonly attribute boolean hidden; */
+  NS_IMETHOD GetHidden(bool *aHidden) = 0;
+
+  /* readonly attribute boolean mozHidden; */
+  NS_IMETHOD GetMozHidden(bool *aMozHidden) = 0;
+
+  /* readonly attribute DOMString visibilityState; */
+  NS_IMETHOD GetVisibilityState(nsAString & aVisibilityState) = 0;
+
+  /* readonly attribute DOMString mozVisibilityState; */
+  NS_IMETHOD GetMozVisibilityState(nsAString & aMozVisibilityState) = 0;
+
+  /* readonly attribute DOMString compatMode; */
+  NS_IMETHOD GetCompatMode(nsAString & aCompatMode) = 0;
+
+  /* nsIDOMElement querySelector ([Null (Stringify)] in DOMString selectors); */
+  NS_IMETHOD QuerySelector(const nsAString & selectors, nsIDOMElement * *_retval) = 0;
+
+  /* nsIDOMNodeList querySelectorAll ([Null (Stringify)] in DOMString selectors); */
+  NS_IMETHOD QuerySelectorAll(const nsAString & selectors, nsIDOMNodeList * *_retval) = 0;
 
 };
 
@@ -6989,32 +7345,27 @@ class NS_NO_VTABLE nsIDOMDocument : public nsIDOMNode {
   NS_IMETHOD GetDoctype(nsIDOMDocumentType * *aDoctype); \
   NS_IMETHOD GetImplementation(nsIDOMDOMImplementation * *aImplementation); \
   NS_IMETHOD GetDocumentElement(nsIDOMElement * *aDocumentElement); \
-  NS_IMETHOD CreateElement(const nsAString & tagName, nsIDOMElement * *_retval); \
+  NS_IMETHOD CreateElement(const nsAString & tag_name, nsIDOMElement * *_retval); \
   NS_IMETHOD CreateDocumentFragment(nsIDOMDocumentFragment * *_retval); \
   NS_IMETHOD CreateTextNode(const nsAString & data, nsIDOMText * *_retval); \
   NS_IMETHOD CreateComment(const nsAString & data, nsIDOMComment * *_retval); \
   NS_IMETHOD CreateCDATASection(const nsAString & data, nsIDOMCDATASection * *_retval); \
   NS_IMETHOD CreateProcessingInstruction(const nsAString & target, const nsAString & data, nsIDOMProcessingInstruction * *_retval); \
   NS_IMETHOD CreateAttribute(const nsAString & name, nsIDOMAttr * *_retval); \
-  NS_IMETHOD GetElementsByTagName(const nsAString & tagname, nsIDOMNodeList * *_retval); \
-  NS_IMETHOD ImportNode(nsIDOMNode *importedNode, bool deep, nsIDOMNode * *_retval); \
-  NS_IMETHOD CreateElementNS(const nsAString & namespaceURI, const nsAString & qualifiedName, nsIDOMElement * *_retval); \
-  NS_IMETHOD CreateAttributeNS(const nsAString & namespaceURI, const nsAString & qualifiedName, nsIDOMAttr * *_retval); \
-  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespaceURI, const nsAString & localName, nsIDOMNodeList * *_retval); \
-  NS_IMETHOD GetElementById(const nsAString & elementId, nsIDOMElement * *_retval); \
+  NS_IMETHOD GetElementsByTagName(const nsAString & tag_name, nsIDOMNodeList * *_retval); \
+  NS_IMETHOD ImportNode(nsIDOMNode *imported_node, bool deep, uint8_t _argc, nsIDOMNode * *_retval); \
+  NS_IMETHOD CreateElementNS(const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMElement * *_retval); \
+  NS_IMETHOD CreateAttributeNS(const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMAttr * *_retval); \
+  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & localName, nsIDOMNodeList * *_retval); \
+  NS_IMETHOD GetElementById(const nsAString & element_id, nsIDOMElement * *_retval); \
   NS_IMETHOD GetInputEncoding(nsAString & aInputEncoding); \
-  NS_IMETHOD GetXmlEncoding(nsAString & aXmlEncoding); \
-  NS_IMETHOD GetXmlStandalone(bool *aXmlStandalone); \
-  NS_IMETHOD SetXmlStandalone(bool aXmlStandalone); \
-  NS_IMETHOD GetXmlVersion(nsAString & aXmlVersion); \
-  NS_IMETHOD SetXmlVersion(const nsAString & aXmlVersion); \
   NS_IMETHOD GetDocumentURI(nsAString & aDocumentURI); \
-  NS_IMETHOD SetDocumentURI(const nsAString & aDocumentURI); \
+  NS_IMETHOD GetURL(nsAString & aURL); \
   NS_IMETHOD AdoptNode(nsIDOMNode *source, nsIDOMNode * *_retval); \
   NS_IMETHOD CreateRange(nsIDOMRange * *_retval); \
-  NS_IMETHOD CreateNodeIterator(nsIDOMNode *root, uint32_t whatToShow, nsIDOMNodeFilter *filter, bool entityReferenceExpansion, nsIDOMNodeIterator * *_retval); \
-  NS_IMETHOD CreateTreeWalker(nsIDOMNode *root, uint32_t whatToShow, nsIDOMNodeFilter *filter, bool entityReferenceExpansion, nsIDOMTreeWalker * *_retval); \
-  NS_IMETHOD CreateEvent(const nsAString & eventType, nsIDOMEvent * *_retval); \
+  NS_IMETHOD CreateNodeIterator(nsIDOMNode *root, uint32_t whatToShow, nsIDOMNodeFilter *filter, nsIDOMNodeIterator * *_retval); \
+  NS_IMETHOD CreateTreeWalker(nsIDOMNode *root, uint32_t what_to_show, nsIDOMNodeFilter *filter, nsIDOMTreeWalker * *_retval); \
+  NS_IMETHOD CreateEvent(const nsAString & event_type, nsIDOMEvent * *_retval); \
   NS_IMETHOD GetDefaultView(nsIDOMWindow * *aDefaultView); \
   NS_IMETHOD GetCharacterSet(nsAString & aCharacterSet); \
   NS_IMETHOD GetDir(nsAString & aDir); \
@@ -7030,54 +7381,58 @@ class NS_NO_VTABLE nsIDOMDocument : public nsIDOMNode {
   NS_IMETHOD GetElementsByClassName(const nsAString & classes, nsIDOMNodeList * *_retval); \
   NS_IMETHOD GetStyleSheets(nsIDOMStyleSheetList * *aStyleSheets); \
   NS_IMETHOD GetPreferredStyleSheetSet(nsAString & aPreferredStyleSheetSet); \
-  NS_IMETHOD GetSelectedStyleSheetSet(nsAString & aSelectedStyleSheetSet); \
-  NS_IMETHOD SetSelectedStyleSheetSet(const nsAString & aSelectedStyleSheetSet); \
+  NS_IMETHOD GetMozSelectedStyleSheetSet(nsAString & aSelectedStyleSheetSet); \
+  NS_IMETHOD SetMozSelectedStyleSheetSet(const nsAString & aSelectedStyleSheetSet); \
   NS_IMETHOD GetLastStyleSheetSet(nsAString & aLastStyleSheetSet); \
   NS_IMETHOD GetStyleSheetSets(nsIDOMDOMStringList * *aStyleSheetSets); \
-  NS_IMETHOD EnableStyleSheetsForSet(const nsAString & name); \
+  NS_IMETHOD MozEnableStyleSheetsForSet(const nsAString & name); \
   NS_IMETHOD ElementFromPoint(float x, float y, nsIDOMElement * *_retval); \
   NS_IMETHOD GetContentType(nsAString & aContentType); \
   NS_IMETHOD GetMozSyntheticDocument(bool *aMozSyntheticDocument); \
   NS_IMETHOD GetCurrentScript(nsIDOMElement * *aCurrentScript); \
   NS_IMETHOD ReleaseCapture(void); \
-  NS_IMETHOD MozSetImageElement(const nsAString & aImageElementId, nsIDOMElement *aImageElement); \
+  NS_IMETHOD MozSetImageElement(const nsAString & image_element_id, nsIDOMElement *image_element); \
   NS_IMETHOD GetMozFullScreenElement(nsIDOMHTMLElement * *aMozFullScreenElement); \
   NS_IMETHOD MozCancelFullScreen(void); \
   NS_IMETHOD GetMozFullScreen(bool *aMozFullScreen); \
-  NS_IMETHOD GetOnreadystatechange(jsval *aOnreadystatechange); \
-  NS_IMETHOD SetOnreadystatechange(jsval aOnreadystatechange); 
+  NS_IMETHOD GetMozFullScreenEnabled(bool *aMozFullScreenEnabled); \
+  NS_IMETHOD GetMozPointerLockElement(nsIDOMElement * *aMozPointerLockElement); \
+  NS_IMETHOD CaretPositionFromPoint(float x, float y, nsISupports * *_retval); \
+  NS_IMETHOD MozExitPointerLock(void); \
+  NS_IMETHOD GetHidden(bool *aHidden); \
+  NS_IMETHOD GetMozHidden(bool *aMozHidden); \
+  NS_IMETHOD GetVisibilityState(nsAString & aVisibilityState); \
+  NS_IMETHOD GetMozVisibilityState(nsAString & aMozVisibilityState); \
+  NS_IMETHOD GetCompatMode(nsAString & aCompatMode); \
+  NS_IMETHOD QuerySelector(const nsAString & selectors, nsIDOMElement * *_retval); \
+  NS_IMETHOD QuerySelectorAll(const nsAString & selectors, nsIDOMNodeList * *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIDOMDOCUMENT(_to) \
   NS_IMETHOD GetDoctype(nsIDOMDocumentType * *aDoctype) { return _to GetDoctype(aDoctype); } \
   NS_IMETHOD GetImplementation(nsIDOMDOMImplementation * *aImplementation) { return _to GetImplementation(aImplementation); } \
   NS_IMETHOD GetDocumentElement(nsIDOMElement * *aDocumentElement) { return _to GetDocumentElement(aDocumentElement); } \
-  NS_IMETHOD CreateElement(const nsAString & tagName, nsIDOMElement * *_retval) { return _to CreateElement(tagName, _retval); } \
+  NS_IMETHOD CreateElement(const nsAString & tag_name, nsIDOMElement * *_retval) { return _to CreateElement(tag_name, _retval); } \
   NS_IMETHOD CreateDocumentFragment(nsIDOMDocumentFragment * *_retval) { return _to CreateDocumentFragment(_retval); } \
   NS_IMETHOD CreateTextNode(const nsAString & data, nsIDOMText * *_retval) { return _to CreateTextNode(data, _retval); } \
   NS_IMETHOD CreateComment(const nsAString & data, nsIDOMComment * *_retval) { return _to CreateComment(data, _retval); } \
   NS_IMETHOD CreateCDATASection(const nsAString & data, nsIDOMCDATASection * *_retval) { return _to CreateCDATASection(data, _retval); } \
   NS_IMETHOD CreateProcessingInstruction(const nsAString & target, const nsAString & data, nsIDOMProcessingInstruction * *_retval) { return _to CreateProcessingInstruction(target, data, _retval); } \
   NS_IMETHOD CreateAttribute(const nsAString & name, nsIDOMAttr * *_retval) { return _to CreateAttribute(name, _retval); } \
-  NS_IMETHOD GetElementsByTagName(const nsAString & tagname, nsIDOMNodeList * *_retval) { return _to GetElementsByTagName(tagname, _retval); } \
-  NS_IMETHOD ImportNode(nsIDOMNode *importedNode, bool deep, nsIDOMNode * *_retval) { return _to ImportNode(importedNode, deep, _retval); } \
-  NS_IMETHOD CreateElementNS(const nsAString & namespaceURI, const nsAString & qualifiedName, nsIDOMElement * *_retval) { return _to CreateElementNS(namespaceURI, qualifiedName, _retval); } \
-  NS_IMETHOD CreateAttributeNS(const nsAString & namespaceURI, const nsAString & qualifiedName, nsIDOMAttr * *_retval) { return _to CreateAttributeNS(namespaceURI, qualifiedName, _retval); } \
-  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespaceURI, const nsAString & localName, nsIDOMNodeList * *_retval) { return _to GetElementsByTagNameNS(namespaceURI, localName, _retval); } \
-  NS_IMETHOD GetElementById(const nsAString & elementId, nsIDOMElement * *_retval) { return _to GetElementById(elementId, _retval); } \
+  NS_IMETHOD GetElementsByTagName(const nsAString & tag_name, nsIDOMNodeList * *_retval) { return _to GetElementsByTagName(tag_name, _retval); } \
+  NS_IMETHOD ImportNode(nsIDOMNode *imported_node, bool deep, uint8_t _argc, nsIDOMNode * *_retval) { return _to ImportNode(imported_node, deep, _argc, _retval); } \
+  NS_IMETHOD CreateElementNS(const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMElement * *_retval) { return _to CreateElementNS(namespace_uri, qualified_name, _retval); } \
+  NS_IMETHOD CreateAttributeNS(const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMAttr * *_retval) { return _to CreateAttributeNS(namespace_uri, qualified_name, _retval); } \
+  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & localName, nsIDOMNodeList * *_retval) { return _to GetElementsByTagNameNS(namespace_uri, localName, _retval); } \
+  NS_IMETHOD GetElementById(const nsAString & element_id, nsIDOMElement * *_retval) { return _to GetElementById(element_id, _retval); } \
   NS_IMETHOD GetInputEncoding(nsAString & aInputEncoding) { return _to GetInputEncoding(aInputEncoding); } \
-  NS_IMETHOD GetXmlEncoding(nsAString & aXmlEncoding) { return _to GetXmlEncoding(aXmlEncoding); } \
-  NS_IMETHOD GetXmlStandalone(bool *aXmlStandalone) { return _to GetXmlStandalone(aXmlStandalone); } \
-  NS_IMETHOD SetXmlStandalone(bool aXmlStandalone) { return _to SetXmlStandalone(aXmlStandalone); } \
-  NS_IMETHOD GetXmlVersion(nsAString & aXmlVersion) { return _to GetXmlVersion(aXmlVersion); } \
-  NS_IMETHOD SetXmlVersion(const nsAString & aXmlVersion) { return _to SetXmlVersion(aXmlVersion); } \
   NS_IMETHOD GetDocumentURI(nsAString & aDocumentURI) { return _to GetDocumentURI(aDocumentURI); } \
-  NS_IMETHOD SetDocumentURI(const nsAString & aDocumentURI) { return _to SetDocumentURI(aDocumentURI); } \
+  NS_IMETHOD GetURL(nsAString & aURL) { return _to GetURL(aURL); } \
   NS_IMETHOD AdoptNode(nsIDOMNode *source, nsIDOMNode * *_retval) { return _to AdoptNode(source, _retval); } \
   NS_IMETHOD CreateRange(nsIDOMRange * *_retval) { return _to CreateRange(_retval); } \
-  NS_IMETHOD CreateNodeIterator(nsIDOMNode *root, uint32_t whatToShow, nsIDOMNodeFilter *filter, bool entityReferenceExpansion, nsIDOMNodeIterator * *_retval) { return _to CreateNodeIterator(root, whatToShow, filter, entityReferenceExpansion, _retval); } \
-  NS_IMETHOD CreateTreeWalker(nsIDOMNode *root, uint32_t whatToShow, nsIDOMNodeFilter *filter, bool entityReferenceExpansion, nsIDOMTreeWalker * *_retval) { return _to CreateTreeWalker(root, whatToShow, filter, entityReferenceExpansion, _retval); } \
-  NS_IMETHOD CreateEvent(const nsAString & eventType, nsIDOMEvent * *_retval) { return _to CreateEvent(eventType, _retval); } \
+  NS_IMETHOD CreateNodeIterator(nsIDOMNode *root, uint32_t whatToShow, nsIDOMNodeFilter *filter, nsIDOMNodeIterator * *_retval) { return _to CreateNodeIterator(root, whatToShow, filter, _retval); } \
+  NS_IMETHOD CreateTreeWalker(nsIDOMNode *root, uint32_t what_to_show, nsIDOMNodeFilter *filter, nsIDOMTreeWalker * *_retval) { return _to CreateTreeWalker(root, what_to_show, filter, _retval); } \
+  NS_IMETHOD CreateEvent(const nsAString & event_type, nsIDOMEvent * *_retval) { return _to CreateEvent(event_type, _retval); } \
   NS_IMETHOD GetDefaultView(nsIDOMWindow * *aDefaultView) { return _to GetDefaultView(aDefaultView); } \
   NS_IMETHOD GetCharacterSet(nsAString & aCharacterSet) { return _to GetCharacterSet(aCharacterSet); } \
   NS_IMETHOD GetDir(nsAString & aDir) { return _to GetDir(aDir); } \
@@ -7093,54 +7448,58 @@ class NS_NO_VTABLE nsIDOMDocument : public nsIDOMNode {
   NS_IMETHOD GetElementsByClassName(const nsAString & classes, nsIDOMNodeList * *_retval) { return _to GetElementsByClassName(classes, _retval); } \
   NS_IMETHOD GetStyleSheets(nsIDOMStyleSheetList * *aStyleSheets) { return _to GetStyleSheets(aStyleSheets); } \
   NS_IMETHOD GetPreferredStyleSheetSet(nsAString & aPreferredStyleSheetSet) { return _to GetPreferredStyleSheetSet(aPreferredStyleSheetSet); } \
-  NS_IMETHOD GetSelectedStyleSheetSet(nsAString & aSelectedStyleSheetSet) { return _to GetSelectedStyleSheetSet(aSelectedStyleSheetSet); } \
-  NS_IMETHOD SetSelectedStyleSheetSet(const nsAString & aSelectedStyleSheetSet) { return _to SetSelectedStyleSheetSet(aSelectedStyleSheetSet); } \
+  NS_IMETHOD GetMozSelectedStyleSheetSet(nsAString & aSelectedStyleSheetSet) { return _to GetMozSelectedStyleSheetSet(aSelectedStyleSheetSet); } \
+  NS_IMETHOD SetMozSelectedStyleSheetSet(const nsAString & aSelectedStyleSheetSet) { return _to SetMozSelectedStyleSheetSet(aSelectedStyleSheetSet); } \
   NS_IMETHOD GetLastStyleSheetSet(nsAString & aLastStyleSheetSet) { return _to GetLastStyleSheetSet(aLastStyleSheetSet); } \
   NS_IMETHOD GetStyleSheetSets(nsIDOMDOMStringList * *aStyleSheetSets) { return _to GetStyleSheetSets(aStyleSheetSets); } \
-  NS_IMETHOD EnableStyleSheetsForSet(const nsAString & name) { return _to EnableStyleSheetsForSet(name); } \
+  NS_IMETHOD MozEnableStyleSheetsForSet(const nsAString & name) { return _to MozEnableStyleSheetsForSet(name); } \
   NS_IMETHOD ElementFromPoint(float x, float y, nsIDOMElement * *_retval) { return _to ElementFromPoint(x, y, _retval); } \
   NS_IMETHOD GetContentType(nsAString & aContentType) { return _to GetContentType(aContentType); } \
   NS_IMETHOD GetMozSyntheticDocument(bool *aMozSyntheticDocument) { return _to GetMozSyntheticDocument(aMozSyntheticDocument); } \
   NS_IMETHOD GetCurrentScript(nsIDOMElement * *aCurrentScript) { return _to GetCurrentScript(aCurrentScript); } \
   NS_IMETHOD ReleaseCapture(void) { return _to ReleaseCapture(); } \
-  NS_IMETHOD MozSetImageElement(const nsAString & aImageElementId, nsIDOMElement *aImageElement) { return _to MozSetImageElement(aImageElementId, aImageElement); } \
+  NS_IMETHOD MozSetImageElement(const nsAString & image_element_id, nsIDOMElement *image_element) { return _to MozSetImageElement(image_element_id, image_element); } \
   NS_IMETHOD GetMozFullScreenElement(nsIDOMHTMLElement * *aMozFullScreenElement) { return _to GetMozFullScreenElement(aMozFullScreenElement); } \
   NS_IMETHOD MozCancelFullScreen(void) { return _to MozCancelFullScreen(); } \
   NS_IMETHOD GetMozFullScreen(bool *aMozFullScreen) { return _to GetMozFullScreen(aMozFullScreen); } \
-  NS_IMETHOD GetOnreadystatechange(jsval *aOnreadystatechange) { return _to GetOnreadystatechange(aOnreadystatechange); } \
-  NS_IMETHOD SetOnreadystatechange(jsval aOnreadystatechange) { return _to SetOnreadystatechange(aOnreadystatechange); } 
+  NS_IMETHOD GetMozFullScreenEnabled(bool *aMozFullScreenEnabled) { return _to GetMozFullScreenEnabled(aMozFullScreenEnabled); } \
+  NS_IMETHOD GetMozPointerLockElement(nsIDOMElement * *aMozPointerLockElement) { return _to GetMozPointerLockElement(aMozPointerLockElement); } \
+  NS_IMETHOD CaretPositionFromPoint(float x, float y, nsISupports * *_retval) { return _to CaretPositionFromPoint(x, y, _retval); } \
+  NS_IMETHOD MozExitPointerLock(void) { return _to MozExitPointerLock(); } \
+  NS_IMETHOD GetHidden(bool *aHidden) { return _to GetHidden(aHidden); } \
+  NS_IMETHOD GetMozHidden(bool *aMozHidden) { return _to GetMozHidden(aMozHidden); } \
+  NS_IMETHOD GetVisibilityState(nsAString & aVisibilityState) { return _to GetVisibilityState(aVisibilityState); } \
+  NS_IMETHOD GetMozVisibilityState(nsAString & aMozVisibilityState) { return _to GetMozVisibilityState(aMozVisibilityState); } \
+  NS_IMETHOD GetCompatMode(nsAString & aCompatMode) { return _to GetCompatMode(aCompatMode); } \
+  NS_IMETHOD QuerySelector(const nsAString & selectors, nsIDOMElement * *_retval) { return _to QuerySelector(selectors, _retval); } \
+  NS_IMETHOD QuerySelectorAll(const nsAString & selectors, nsIDOMNodeList * *_retval) { return _to QuerySelectorAll(selectors, _retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIDOMDOCUMENT(_to) \
   NS_IMETHOD GetDoctype(nsIDOMDocumentType * *aDoctype) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDoctype(aDoctype); } \
   NS_IMETHOD GetImplementation(nsIDOMDOMImplementation * *aImplementation) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetImplementation(aImplementation); } \
   NS_IMETHOD GetDocumentElement(nsIDOMElement * *aDocumentElement) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDocumentElement(aDocumentElement); } \
-  NS_IMETHOD CreateElement(const nsAString & tagName, nsIDOMElement * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateElement(tagName, _retval); } \
+  NS_IMETHOD CreateElement(const nsAString & tag_name, nsIDOMElement * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateElement(tag_name, _retval); } \
   NS_IMETHOD CreateDocumentFragment(nsIDOMDocumentFragment * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateDocumentFragment(_retval); } \
   NS_IMETHOD CreateTextNode(const nsAString & data, nsIDOMText * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateTextNode(data, _retval); } \
   NS_IMETHOD CreateComment(const nsAString & data, nsIDOMComment * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateComment(data, _retval); } \
   NS_IMETHOD CreateCDATASection(const nsAString & data, nsIDOMCDATASection * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateCDATASection(data, _retval); } \
   NS_IMETHOD CreateProcessingInstruction(const nsAString & target, const nsAString & data, nsIDOMProcessingInstruction * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateProcessingInstruction(target, data, _retval); } \
   NS_IMETHOD CreateAttribute(const nsAString & name, nsIDOMAttr * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateAttribute(name, _retval); } \
-  NS_IMETHOD GetElementsByTagName(const nsAString & tagname, nsIDOMNodeList * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementsByTagName(tagname, _retval); } \
-  NS_IMETHOD ImportNode(nsIDOMNode *importedNode, bool deep, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ImportNode(importedNode, deep, _retval); } \
-  NS_IMETHOD CreateElementNS(const nsAString & namespaceURI, const nsAString & qualifiedName, nsIDOMElement * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateElementNS(namespaceURI, qualifiedName, _retval); } \
-  NS_IMETHOD CreateAttributeNS(const nsAString & namespaceURI, const nsAString & qualifiedName, nsIDOMAttr * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateAttributeNS(namespaceURI, qualifiedName, _retval); } \
-  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespaceURI, const nsAString & localName, nsIDOMNodeList * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementsByTagNameNS(namespaceURI, localName, _retval); } \
-  NS_IMETHOD GetElementById(const nsAString & elementId, nsIDOMElement * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementById(elementId, _retval); } \
+  NS_IMETHOD GetElementsByTagName(const nsAString & tag_name, nsIDOMNodeList * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementsByTagName(tag_name, _retval); } \
+  NS_IMETHOD ImportNode(nsIDOMNode *imported_node, bool deep, uint8_t _argc, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ImportNode(imported_node, deep, _argc, _retval); } \
+  NS_IMETHOD CreateElementNS(const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMElement * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateElementNS(namespace_uri, qualified_name, _retval); } \
+  NS_IMETHOD CreateAttributeNS(const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMAttr * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateAttributeNS(namespace_uri, qualified_name, _retval); } \
+  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & localName, nsIDOMNodeList * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementsByTagNameNS(namespace_uri, localName, _retval); } \
+  NS_IMETHOD GetElementById(const nsAString & element_id, nsIDOMElement * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementById(element_id, _retval); } \
   NS_IMETHOD GetInputEncoding(nsAString & aInputEncoding) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetInputEncoding(aInputEncoding); } \
-  NS_IMETHOD GetXmlEncoding(nsAString & aXmlEncoding) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetXmlEncoding(aXmlEncoding); } \
-  NS_IMETHOD GetXmlStandalone(bool *aXmlStandalone) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetXmlStandalone(aXmlStandalone); } \
-  NS_IMETHOD SetXmlStandalone(bool aXmlStandalone) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetXmlStandalone(aXmlStandalone); } \
-  NS_IMETHOD GetXmlVersion(nsAString & aXmlVersion) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetXmlVersion(aXmlVersion); } \
-  NS_IMETHOD SetXmlVersion(const nsAString & aXmlVersion) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetXmlVersion(aXmlVersion); } \
   NS_IMETHOD GetDocumentURI(nsAString & aDocumentURI) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDocumentURI(aDocumentURI); } \
-  NS_IMETHOD SetDocumentURI(const nsAString & aDocumentURI) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetDocumentURI(aDocumentURI); } \
+  NS_IMETHOD GetURL(nsAString & aURL) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetURL(aURL); } \
   NS_IMETHOD AdoptNode(nsIDOMNode *source, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->AdoptNode(source, _retval); } \
   NS_IMETHOD CreateRange(nsIDOMRange * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateRange(_retval); } \
-  NS_IMETHOD CreateNodeIterator(nsIDOMNode *root, uint32_t whatToShow, nsIDOMNodeFilter *filter, bool entityReferenceExpansion, nsIDOMNodeIterator * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateNodeIterator(root, whatToShow, filter, entityReferenceExpansion, _retval); } \
-  NS_IMETHOD CreateTreeWalker(nsIDOMNode *root, uint32_t whatToShow, nsIDOMNodeFilter *filter, bool entityReferenceExpansion, nsIDOMTreeWalker * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateTreeWalker(root, whatToShow, filter, entityReferenceExpansion, _retval); } \
-  NS_IMETHOD CreateEvent(const nsAString & eventType, nsIDOMEvent * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateEvent(eventType, _retval); } \
+  NS_IMETHOD CreateNodeIterator(nsIDOMNode *root, uint32_t whatToShow, nsIDOMNodeFilter *filter, nsIDOMNodeIterator * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateNodeIterator(root, whatToShow, filter, _retval); } \
+  NS_IMETHOD CreateTreeWalker(nsIDOMNode *root, uint32_t what_to_show, nsIDOMNodeFilter *filter, nsIDOMTreeWalker * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateTreeWalker(root, what_to_show, filter, _retval); } \
+  NS_IMETHOD CreateEvent(const nsAString & event_type, nsIDOMEvent * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateEvent(event_type, _retval); } \
   NS_IMETHOD GetDefaultView(nsIDOMWindow * *aDefaultView) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDefaultView(aDefaultView); } \
   NS_IMETHOD GetCharacterSet(nsAString & aCharacterSet) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetCharacterSet(aCharacterSet); } \
   NS_IMETHOD GetDir(nsAString & aDir) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDir(aDir); } \
@@ -7156,22 +7515,31 @@ class NS_NO_VTABLE nsIDOMDocument : public nsIDOMNode {
   NS_IMETHOD GetElementsByClassName(const nsAString & classes, nsIDOMNodeList * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementsByClassName(classes, _retval); } \
   NS_IMETHOD GetStyleSheets(nsIDOMStyleSheetList * *aStyleSheets) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetStyleSheets(aStyleSheets); } \
   NS_IMETHOD GetPreferredStyleSheetSet(nsAString & aPreferredStyleSheetSet) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPreferredStyleSheetSet(aPreferredStyleSheetSet); } \
-  NS_IMETHOD GetSelectedStyleSheetSet(nsAString & aSelectedStyleSheetSet) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSelectedStyleSheetSet(aSelectedStyleSheetSet); } \
-  NS_IMETHOD SetSelectedStyleSheetSet(const nsAString & aSelectedStyleSheetSet) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSelectedStyleSheetSet(aSelectedStyleSheetSet); } \
+  NS_IMETHOD GetMozSelectedStyleSheetSet(nsAString & aSelectedStyleSheetSet) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMozSelectedStyleSheetSet(aSelectedStyleSheetSet); } \
+  NS_IMETHOD SetMozSelectedStyleSheetSet(const nsAString & aSelectedStyleSheetSet) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetMozSelectedStyleSheetSet(aSelectedStyleSheetSet); } \
   NS_IMETHOD GetLastStyleSheetSet(nsAString & aLastStyleSheetSet) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetLastStyleSheetSet(aLastStyleSheetSet); } \
   NS_IMETHOD GetStyleSheetSets(nsIDOMDOMStringList * *aStyleSheetSets) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetStyleSheetSets(aStyleSheetSets); } \
-  NS_IMETHOD EnableStyleSheetsForSet(const nsAString & name) { return !_to ? NS_ERROR_NULL_POINTER : _to->EnableStyleSheetsForSet(name); } \
+  NS_IMETHOD MozEnableStyleSheetsForSet(const nsAString & name) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozEnableStyleSheetsForSet(name); } \
   NS_IMETHOD ElementFromPoint(float x, float y, nsIDOMElement * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ElementFromPoint(x, y, _retval); } \
   NS_IMETHOD GetContentType(nsAString & aContentType) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetContentType(aContentType); } \
   NS_IMETHOD GetMozSyntheticDocument(bool *aMozSyntheticDocument) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMozSyntheticDocument(aMozSyntheticDocument); } \
   NS_IMETHOD GetCurrentScript(nsIDOMElement * *aCurrentScript) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetCurrentScript(aCurrentScript); } \
   NS_IMETHOD ReleaseCapture(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->ReleaseCapture(); } \
-  NS_IMETHOD MozSetImageElement(const nsAString & aImageElementId, nsIDOMElement *aImageElement) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozSetImageElement(aImageElementId, aImageElement); } \
+  NS_IMETHOD MozSetImageElement(const nsAString & image_element_id, nsIDOMElement *image_element) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozSetImageElement(image_element_id, image_element); } \
   NS_IMETHOD GetMozFullScreenElement(nsIDOMHTMLElement * *aMozFullScreenElement) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMozFullScreenElement(aMozFullScreenElement); } \
   NS_IMETHOD MozCancelFullScreen(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozCancelFullScreen(); } \
   NS_IMETHOD GetMozFullScreen(bool *aMozFullScreen) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMozFullScreen(aMozFullScreen); } \
-  NS_IMETHOD GetOnreadystatechange(jsval *aOnreadystatechange) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetOnreadystatechange(aOnreadystatechange); } \
-  NS_IMETHOD SetOnreadystatechange(jsval aOnreadystatechange) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetOnreadystatechange(aOnreadystatechange); } 
+  NS_IMETHOD GetMozFullScreenEnabled(bool *aMozFullScreenEnabled) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMozFullScreenEnabled(aMozFullScreenEnabled); } \
+  NS_IMETHOD GetMozPointerLockElement(nsIDOMElement * *aMozPointerLockElement) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMozPointerLockElement(aMozPointerLockElement); } \
+  NS_IMETHOD CaretPositionFromPoint(float x, float y, nsISupports * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CaretPositionFromPoint(x, y, _retval); } \
+  NS_IMETHOD MozExitPointerLock(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozExitPointerLock(); } \
+  NS_IMETHOD GetHidden(bool *aHidden) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetHidden(aHidden); } \
+  NS_IMETHOD GetMozHidden(bool *aMozHidden) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMozHidden(aMozHidden); } \
+  NS_IMETHOD GetVisibilityState(nsAString & aVisibilityState) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetVisibilityState(aVisibilityState); } \
+  NS_IMETHOD GetMozVisibilityState(nsAString & aMozVisibilityState) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMozVisibilityState(aMozVisibilityState); } \
+  NS_IMETHOD GetCompatMode(nsAString & aCompatMode) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetCompatMode(aCompatMode); } \
+  NS_IMETHOD QuerySelector(const nsAString & selectors, nsIDOMElement * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->QuerySelector(selectors, _retval); } \
+  NS_IMETHOD QuerySelectorAll(const nsAString & selectors, nsIDOMNodeList * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->QuerySelectorAll(selectors, _retval); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -7223,8 +7591,8 @@ NS_IMETHODIMP nsDOMDocument::GetDocumentElement(nsIDOMElement * *aDocumentElemen
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIDOMElement createElement (in DOMString tagName) raises (DOMException); */
-NS_IMETHODIMP nsDOMDocument::CreateElement(const nsAString & tagName, nsIDOMElement * *_retval)
+/* nsIDOMElement createElement (in DOMString tag_name) raises (DOMException); */
+NS_IMETHODIMP nsDOMDocument::CreateElement(const nsAString & tag_name, nsIDOMElement * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -7265,38 +7633,38 @@ NS_IMETHODIMP nsDOMDocument::CreateAttribute(const nsAString & name, nsIDOMAttr 
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIDOMNodeList getElementsByTagName (in DOMString tagname); */
-NS_IMETHODIMP nsDOMDocument::GetElementsByTagName(const nsAString & tagname, nsIDOMNodeList * *_retval)
+/* nsIDOMNodeList getElementsByTagName (in DOMString tag_name); */
+NS_IMETHODIMP nsDOMDocument::GetElementsByTagName(const nsAString & tag_name, nsIDOMNodeList * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIDOMNode importNode (in nsIDOMNode importedNode, in boolean deep) raises (DOMException); */
-NS_IMETHODIMP nsDOMDocument::ImportNode(nsIDOMNode *importedNode, bool deep, nsIDOMNode * *_retval)
+/* [optional_argc] nsIDOMNode importNode (in nsIDOMNode imported_node, [optional] in boolean deep) raises (DOMException); */
+NS_IMETHODIMP nsDOMDocument::ImportNode(nsIDOMNode *imported_node, bool deep, uint8_t _argc, nsIDOMNode * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIDOMElement createElementNS (in DOMString namespaceURI, in DOMString qualifiedName) raises (DOMException); */
-NS_IMETHODIMP nsDOMDocument::CreateElementNS(const nsAString & namespaceURI, const nsAString & qualifiedName, nsIDOMElement * *_retval)
+/* nsIDOMElement createElementNS (in DOMString namespace_uri, in DOMString qualified_name) raises (DOMException); */
+NS_IMETHODIMP nsDOMDocument::CreateElementNS(const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMElement * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIDOMAttr createAttributeNS (in DOMString namespaceURI, in DOMString qualifiedName) raises (DOMException); */
-NS_IMETHODIMP nsDOMDocument::CreateAttributeNS(const nsAString & namespaceURI, const nsAString & qualifiedName, nsIDOMAttr * *_retval)
+/* nsIDOMAttr createAttributeNS (in DOMString namespace_uri, in DOMString qualified_name) raises (DOMException); */
+NS_IMETHODIMP nsDOMDocument::CreateAttributeNS(const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMAttr * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIDOMNodeList getElementsByTagNameNS (in DOMString namespaceURI, in DOMString localName); */
-NS_IMETHODIMP nsDOMDocument::GetElementsByTagNameNS(const nsAString & namespaceURI, const nsAString & localName, nsIDOMNodeList * *_retval)
+/* nsIDOMNodeList getElementsByTagNameNS (in DOMString namespace_uri, in DOMString localName); */
+NS_IMETHODIMP nsDOMDocument::GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & localName, nsIDOMNodeList * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIDOMElement getElementById (in DOMString elementId); */
-NS_IMETHODIMP nsDOMDocument::GetElementById(const nsAString & elementId, nsIDOMElement * *_retval)
+/* nsIDOMElement getElementById (in DOMString element_id); */
+NS_IMETHODIMP nsDOMDocument::GetElementById(const nsAString & element_id, nsIDOMElement * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -7307,38 +7675,14 @@ NS_IMETHODIMP nsDOMDocument::GetInputEncoding(nsAString & aInputEncoding)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* readonly attribute DOMString xmlEncoding; */
-NS_IMETHODIMP nsDOMDocument::GetXmlEncoding(nsAString & aXmlEncoding)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute boolean xmlStandalone; */
-NS_IMETHODIMP nsDOMDocument::GetXmlStandalone(bool *aXmlStandalone)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsDOMDocument::SetXmlStandalone(bool aXmlStandalone)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute DOMString xmlVersion; */
-NS_IMETHODIMP nsDOMDocument::GetXmlVersion(nsAString & aXmlVersion)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsDOMDocument::SetXmlVersion(const nsAString & aXmlVersion)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute DOMString documentURI; */
+/* readonly attribute DOMString documentURI; */
 NS_IMETHODIMP nsDOMDocument::GetDocumentURI(nsAString & aDocumentURI)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsDOMDocument::SetDocumentURI(const nsAString & aDocumentURI)
+
+/* readonly attribute DOMString URL; */
+NS_IMETHODIMP nsDOMDocument::GetURL(nsAString & aURL)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -7355,20 +7699,20 @@ NS_IMETHODIMP nsDOMDocument::CreateRange(nsIDOMRange * *_retval)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIDOMNodeIterator createNodeIterator (in nsIDOMNode root, in unsigned long whatToShow, in nsIDOMNodeFilter filter, in boolean entityReferenceExpansion) raises (DOMException); */
-NS_IMETHODIMP nsDOMDocument::CreateNodeIterator(nsIDOMNode *root, uint32_t whatToShow, nsIDOMNodeFilter *filter, bool entityReferenceExpansion, nsIDOMNodeIterator * *_retval)
+/* nsIDOMNodeIterator createNodeIterator (in nsIDOMNode root, in unsigned long whatToShow, in nsIDOMNodeFilter filter) raises (DOMException); */
+NS_IMETHODIMP nsDOMDocument::CreateNodeIterator(nsIDOMNode *root, uint32_t whatToShow, nsIDOMNodeFilter *filter, nsIDOMNodeIterator * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIDOMTreeWalker createTreeWalker (in nsIDOMNode root, in unsigned long whatToShow, in nsIDOMNodeFilter filter, in boolean entityReferenceExpansion) raises (DOMException); */
-NS_IMETHODIMP nsDOMDocument::CreateTreeWalker(nsIDOMNode *root, uint32_t whatToShow, nsIDOMNodeFilter *filter, bool entityReferenceExpansion, nsIDOMTreeWalker * *_retval)
+/* nsIDOMTreeWalker createTreeWalker (in nsIDOMNode root, in unsigned long what_to_show, in nsIDOMNodeFilter filter) raises (DOMException); */
+NS_IMETHODIMP nsDOMDocument::CreateTreeWalker(nsIDOMNode *root, uint32_t what_to_show, nsIDOMNodeFilter *filter, nsIDOMTreeWalker * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIDOMEvent createEvent (in DOMString eventType) raises (DOMException); */
-NS_IMETHODIMP nsDOMDocument::CreateEvent(const nsAString & eventType, nsIDOMEvent * *_retval)
+/* nsIDOMEvent createEvent (in DOMString event_type) raises (DOMException); */
+NS_IMETHODIMP nsDOMDocument::CreateEvent(const nsAString & event_type, nsIDOMEvent * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -7459,12 +7803,12 @@ NS_IMETHODIMP nsDOMDocument::GetPreferredStyleSheetSet(nsAString & aPreferredSty
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* attribute DOMString selectedStyleSheetSet; */
-NS_IMETHODIMP nsDOMDocument::GetSelectedStyleSheetSet(nsAString & aSelectedStyleSheetSet)
+/* [binaryname(MozSelectedStyleSheetSet)] attribute DOMString selectedStyleSheetSet; */
+NS_IMETHODIMP nsDOMDocument::GetMozSelectedStyleSheetSet(nsAString & aSelectedStyleSheetSet)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsDOMDocument::SetSelectedStyleSheetSet(const nsAString & aSelectedStyleSheetSet)
+NS_IMETHODIMP nsDOMDocument::SetMozSelectedStyleSheetSet(const nsAString & aSelectedStyleSheetSet)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -7481,8 +7825,8 @@ NS_IMETHODIMP nsDOMDocument::GetStyleSheetSets(nsIDOMDOMStringList * *aStyleShee
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void enableStyleSheetsForSet (in DOMString name); */
-NS_IMETHODIMP nsDOMDocument::EnableStyleSheetsForSet(const nsAString & name)
+/* [binaryname(MozEnableStyleSheetsForSet)] void enableStyleSheetsForSet (in DOMString name); */
+NS_IMETHODIMP nsDOMDocument::MozEnableStyleSheetsForSet(const nsAString & name)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -7517,8 +7861,8 @@ NS_IMETHODIMP nsDOMDocument::ReleaseCapture()
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void mozSetImageElement (in DOMString aImageElementId, in nsIDOMElement aImageElement); */
-NS_IMETHODIMP nsDOMDocument::MozSetImageElement(const nsAString & aImageElementId, nsIDOMElement *aImageElement)
+/* void mozSetImageElement (in DOMString image_element_id, in nsIDOMElement image_element); */
+NS_IMETHODIMP nsDOMDocument::MozSetImageElement(const nsAString & image_element_id, nsIDOMElement *image_element)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -7541,12 +7885,68 @@ NS_IMETHODIMP nsDOMDocument::GetMozFullScreen(bool *aMozFullScreen)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* [noscript] attribute jsval onreadystatechange; */
-NS_IMETHODIMP nsDOMDocument::GetOnreadystatechange(jsval *aOnreadystatechange)
+/* readonly attribute boolean mozFullScreenEnabled; */
+NS_IMETHODIMP nsDOMDocument::GetMozFullScreenEnabled(bool *aMozFullScreenEnabled)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsDOMDocument::SetOnreadystatechange(jsval aOnreadystatechange)
+
+/* readonly attribute nsIDOMElement mozPointerLockElement; */
+NS_IMETHODIMP nsDOMDocument::GetMozPointerLockElement(nsIDOMElement * *aMozPointerLockElement)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsISupports caretPositionFromPoint (in float x, in float y); */
+NS_IMETHODIMP nsDOMDocument::CaretPositionFromPoint(float x, float y, nsISupports * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void mozExitPointerLock (); */
+NS_IMETHODIMP nsDOMDocument::MozExitPointerLock()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute boolean hidden; */
+NS_IMETHODIMP nsDOMDocument::GetHidden(bool *aHidden)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute boolean mozHidden; */
+NS_IMETHODIMP nsDOMDocument::GetMozHidden(bool *aMozHidden)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute DOMString visibilityState; */
+NS_IMETHODIMP nsDOMDocument::GetVisibilityState(nsAString & aVisibilityState)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute DOMString mozVisibilityState; */
+NS_IMETHODIMP nsDOMDocument::GetMozVisibilityState(nsAString & aMozVisibilityState)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute DOMString compatMode; */
+NS_IMETHODIMP nsDOMDocument::GetCompatMode(nsAString & aCompatMode)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIDOMElement querySelector ([Null (Stringify)] in DOMString selectors); */
+NS_IMETHODIMP nsDOMDocument::QuerySelector(const nsAString & selectors, nsIDOMElement * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIDOMNodeList querySelectorAll ([Null (Stringify)] in DOMString selectors); */
+NS_IMETHODIMP nsDOMDocument::QuerySelectorAll(const nsAString & selectors, nsIDOMNodeList * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -11405,17 +11805,17 @@ class nsIDOMNode; /* forward declaration */
 class DOMException; /* forward declaration */
 
 
-/* starting interface:    nsIDOMNamedNodeMap */
-#define NS_IDOMNAMEDNODEMAP_IID_STR "a6cf907b-15b3-11d2-932e-00805f8add32"
+/* starting interface:    nsIDOMMozNamedAttrMap */
+#define NS_IDOMMOZNAMEDATTRMAP_IID_STR "cb5564cd-26ec-418f-a6d6-1d57cd2c971c"
 
-#define NS_IDOMNAMEDNODEMAP_IID \
-  {0xa6cf907b, 0x15b3, 0x11d2, \
-    { 0x93, 0x2e, 0x00, 0x80, 0x5f, 0x8a, 0xdd, 0x32 }}
+#define NS_IDOMMOZNAMEDATTRMAP_IID \
+  {0xcb5564cd, 0x26ec, 0x418f, \
+    { 0xa6, 0xd6, 0x1d, 0x57, 0xcd, 0x2c, 0x97, 0x1c }}
 
-class NS_NO_VTABLE nsIDOMNamedNodeMap : public nsISupports {
+class NS_NO_VTABLE nsIDOMMozNamedAttrMap : public nsISupports {
  public: 
 
-  NS_DECLARE_STATIC_IID_ACCESSOR(NS_IDOMNAMEDNODEMAP_IID)
+  NS_DECLARE_STATIC_IID_ACCESSOR(NS_IDOMMOZNAMEDATTRMAP_IID)
 
   /* nsIDOMNode getNamedItem (in DOMString name); */
   NS_IMETHOD GetNamedItem(const nsAString & name, nsIDOMNode * *_retval) = 0;
@@ -11443,10 +11843,10 @@ class NS_NO_VTABLE nsIDOMNamedNodeMap : public nsISupports {
 
 };
 
-  NS_DEFINE_STATIC_IID_ACCESSOR(nsIDOMNamedNodeMap, NS_IDOMNAMEDNODEMAP_IID)
+  NS_DEFINE_STATIC_IID_ACCESSOR(nsIDOMMozNamedAttrMap, NS_IDOMMOZNAMEDATTRMAP_IID)
 
 /* Use this macro when declaring classes that implement this interface. */
-#define NS_DECL_NSIDOMNAMEDNODEMAP \
+#define NS_DECL_NSIDOMMOZNAMEDATTRMAP \
   NS_IMETHOD GetNamedItem(const nsAString & name, nsIDOMNode * *_retval); \
   NS_IMETHOD SetNamedItem(nsIDOMNode *arg, nsIDOMNode * *_retval); \
   NS_IMETHOD RemoveNamedItem(const nsAString & name, nsIDOMNode * *_retval); \
@@ -11457,7 +11857,7 @@ class NS_NO_VTABLE nsIDOMNamedNodeMap : public nsISupports {
   NS_IMETHOD RemoveNamedItemNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNode * *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
-#define NS_FORWARD_NSIDOMNAMEDNODEMAP(_to) \
+#define NS_FORWARD_NSIDOMMOZNAMEDATTRMAP(_to) \
   NS_IMETHOD GetNamedItem(const nsAString & name, nsIDOMNode * *_retval) { return _to GetNamedItem(name, _retval); } \
   NS_IMETHOD SetNamedItem(nsIDOMNode *arg, nsIDOMNode * *_retval) { return _to SetNamedItem(arg, _retval); } \
   NS_IMETHOD RemoveNamedItem(const nsAString & name, nsIDOMNode * *_retval) { return _to RemoveNamedItem(name, _retval); } \
@@ -11468,7 +11868,7 @@ class NS_NO_VTABLE nsIDOMNamedNodeMap : public nsISupports {
   NS_IMETHOD RemoveNamedItemNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNode * *_retval) { return _to RemoveNamedItemNS(namespace_uri, local_name, _retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
-#define NS_FORWARD_SAFE_NSIDOMNAMEDNODEMAP(_to) \
+#define NS_FORWARD_SAFE_NSIDOMMOZNAMEDATTRMAP(_to) \
   NS_IMETHOD GetNamedItem(const nsAString & name, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetNamedItem(name, _retval); } \
   NS_IMETHOD SetNamedItem(nsIDOMNode *arg, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetNamedItem(arg, _retval); } \
   NS_IMETHOD RemoveNamedItem(const nsAString & name, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->RemoveNamedItem(name, _retval); } \
@@ -11482,78 +11882,78 @@ class NS_NO_VTABLE nsIDOMNamedNodeMap : public nsISupports {
 /* Use the code below as a template for the implementation class for this interface. */
 
 /* Header file */
-class nsDOMNamedNodeMap : public nsIDOMNamedNodeMap
+class nsDOMMozNamedAttrMap : public nsIDOMMozNamedAttrMap
 {
 public:
   NS_DECL_ISUPPORTS
-  NS_DECL_NSIDOMNAMEDNODEMAP
+  NS_DECL_NSIDOMMOZNAMEDATTRMAP
 
-  nsDOMNamedNodeMap();
+  nsDOMMozNamedAttrMap();
 
 private:
-  ~nsDOMNamedNodeMap();
+  ~nsDOMMozNamedAttrMap();
 
 protected:
   /* additional members */
 };
 
 /* Implementation file */
-NS_IMPL_ISUPPORTS1(nsDOMNamedNodeMap, nsIDOMNamedNodeMap)
+NS_IMPL_ISUPPORTS1(nsDOMMozNamedAttrMap, nsIDOMMozNamedAttrMap)
 
-nsDOMNamedNodeMap::nsDOMNamedNodeMap()
+nsDOMMozNamedAttrMap::nsDOMMozNamedAttrMap()
 {
   /* member initializers and constructor code */
 }
 
-nsDOMNamedNodeMap::~nsDOMNamedNodeMap()
+nsDOMMozNamedAttrMap::~nsDOMMozNamedAttrMap()
 {
   /* destructor code */
 }
 
 /* nsIDOMNode getNamedItem (in DOMString name); */
-NS_IMETHODIMP nsDOMNamedNodeMap::GetNamedItem(const nsAString & name, nsIDOMNode * *_retval)
+NS_IMETHODIMP nsDOMMozNamedAttrMap::GetNamedItem(const nsAString & name, nsIDOMNode * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* nsIDOMNode setNamedItem (in nsIDOMNode arg) raises (DOMException); */
-NS_IMETHODIMP nsDOMNamedNodeMap::SetNamedItem(nsIDOMNode *arg, nsIDOMNode * *_retval)
+NS_IMETHODIMP nsDOMMozNamedAttrMap::SetNamedItem(nsIDOMNode *arg, nsIDOMNode * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* nsIDOMNode removeNamedItem (in DOMString name) raises (DOMException); */
-NS_IMETHODIMP nsDOMNamedNodeMap::RemoveNamedItem(const nsAString & name, nsIDOMNode * *_retval)
+NS_IMETHODIMP nsDOMMozNamedAttrMap::RemoveNamedItem(const nsAString & name, nsIDOMNode * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* nsIDOMNode item (in unsigned long index); */
-NS_IMETHODIMP nsDOMNamedNodeMap::Item(uint32_t index, nsIDOMNode * *_retval)
+NS_IMETHODIMP nsDOMMozNamedAttrMap::Item(uint32_t index, nsIDOMNode * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* readonly attribute unsigned long length; */
-NS_IMETHODIMP nsDOMNamedNodeMap::GetLength(uint32_t *aLength)
+NS_IMETHODIMP nsDOMMozNamedAttrMap::GetLength(uint32_t *aLength)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* nsIDOMNode getNamedItemNS (in DOMString namespace_uri, in DOMString local_name); */
-NS_IMETHODIMP nsDOMNamedNodeMap::GetNamedItemNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNode * *_retval)
+NS_IMETHODIMP nsDOMMozNamedAttrMap::GetNamedItemNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNode * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* nsIDOMNode setNamedItemNS (in nsIDOMNode arg) raises (DOMException); */
-NS_IMETHODIMP nsDOMNamedNodeMap::SetNamedItemNS(nsIDOMNode *arg, nsIDOMNode * *_retval)
+NS_IMETHODIMP nsDOMMozNamedAttrMap::SetNamedItemNS(nsIDOMNode *arg, nsIDOMNode * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* nsIDOMNode removeNamedItemNS (in DOMString namespace_uri, in DOMString local_name) raises (DOMException); */
-NS_IMETHODIMP nsDOMNamedNodeMap::RemoveNamedItemNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNode * *_retval)
+NS_IMETHODIMP nsDOMMozNamedAttrMap::RemoveNamedItemNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNode * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }

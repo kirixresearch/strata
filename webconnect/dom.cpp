@@ -485,25 +485,6 @@ wxDOMNode wxDOMNode::AppendChild(wxDOMNode& new_child)
     return node;
 }
 
-// (METHOD) wxDOMNode::GetAttributes
-// Description:
-//
-// Syntax: wxDOMNamedNodeMap wxDOMNode::GetAttributes()
-//
-// Remarks:
-//
-// Returns:
-
-wxDOMNamedNodeMap wxDOMNode::GetAttributes()
-{
-    wxDOMNamedNodeMap node_map;
-
-    if (!IsOk())
-        return node_map;
-
-    m_data->node_ptr->GetAttributes(&node_map.m_data->ptr.p);
-    return node_map;
-}
 
 // (METHOD) wxDOMNode::CloneNode
 // Description:
@@ -522,7 +503,7 @@ wxDOMNode wxDOMNode::CloneNode(bool deep)
         return node;
         
     nsIDOMNode* result = NULL;
-    m_data->node_ptr->CloneNode((deep ? PR_TRUE : PR_FALSE),
+    m_data->node_ptr->CloneNode((deep ? PR_TRUE : PR_FALSE), 1,
                                 &result);
 
     if (!result)
@@ -548,34 +529,6 @@ void wxDOMNode::Normalize()
     m_data->node_ptr->Normalize();
 }
 
-// (METHOD) wxDOMNode::IsSupported
-// Description:
-//
-// Syntax: bool wxDOMNode::IsSupported(const wxString& feature, 
-//                                     const wxString& version)
-//
-// Remarks:
-//
-// Returns:
-
-bool wxDOMNode::IsSupported(const wxString& feature, 
-                            const wxString& version)
-{
-    if (!IsOk())
-        return false;
-
-    nsEmbedString nsfeature, nsversion;
-    wx2ns(feature, nsfeature);
-    wx2ns(version, nsversion);
-
-    bool result = PR_FALSE;
-    m_data->node_ptr->IsSupported(nsfeature, nsversion, &result);
-
-    if (result == PR_TRUE)
-        return true;
-
-    return false;
-}
 
 // (METHOD) wxDOMNode::HasChildNodes
 // Description:
@@ -988,6 +941,30 @@ wxString wxDOMElement::GetTagName()
     
     return ns2wx(str);
 }
+
+
+
+// (METHOD) wxDOMElement::GetAttributes
+// Description:
+//
+// Syntax: wxDOMNamedAttrMap wxDOMNode::GetAttributes()
+//
+// Remarks:
+//
+// Returns:
+
+wxDOMNamedAttrMap wxDOMElement::GetAttributes()
+{
+    wxDOMNamedAttrMap attr_map;
+
+    if (!IsOk())
+        return attr_map;
+
+    m_data->element_ptr->GetAttributes(&attr_map.m_data->ptr.p);
+    return attr_map;
+}
+
+
 
 // (METHOD) wxDOMElement::GetAttribute
 // Description:
@@ -1692,6 +1669,7 @@ wxDOMNode wxDOMDocument::ImportNode(wxDOMNode& arg,
     nsIDOMNode* result;
     m_data->doc_ptr->ImportNode(arg.m_data->node_ptr,
                                 (deep ? PR_TRUE : PR_FALSE),
+                                2,
                                 &result);
 
     if (!result)
@@ -5525,63 +5503,63 @@ size_t wxDOMNodeList::GetLength()
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//  wxDOMNamedNodeMap class implementation
+//  wxDOMNamedAttrMap class implementation
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// (CONSTRUCTOR) wxDOMNamedNodeMap::wxDOMNamedNodeMap
-// Description: Creates a new wxDOMNamedNodeMap object.
+// (CONSTRUCTOR) wxDOMNamedAttrMap::wxDOMNamedAttrMap
+// Description: Creates a new wxDOMNamedAttrMap object.
 //
-// Syntax: wxDOMNamedNodeMap::wxDOMNamedNodeMap()
+// Syntax: wxDOMNamedAttrMap::wxDOMNamedAttrMap()
 //
-// Remarks: Creates a new wxDOMNamedNodeMap object.
+// Remarks: Creates a new wxDOMNamedAttrMap object.
 
-wxDOMNamedNodeMap::wxDOMNamedNodeMap()
+wxDOMNamedAttrMap::wxDOMNamedAttrMap()
 {
-    m_data = new wxDOMNamedNodeMapData;
+    m_data = new wxDOMNamedAttrMapData;
 }
 
-wxDOMNamedNodeMap::~wxDOMNamedNodeMap()
+wxDOMNamedAttrMap::~wxDOMNamedAttrMap()
 {
     delete m_data;
 }
 
-wxDOMNamedNodeMap::wxDOMNamedNodeMap(const wxDOMNamedNodeMap& c)
+wxDOMNamedAttrMap::wxDOMNamedAttrMap(const wxDOMNamedAttrMap& c)
 {
-    m_data = new wxDOMNamedNodeMapData;
+    m_data = new wxDOMNamedAttrMapData;
     m_data->ptr = c.m_data->ptr;
 }
 
-wxDOMNamedNodeMap& wxDOMNamedNodeMap::operator=(const wxDOMNamedNodeMap& c)
+wxDOMNamedAttrMap& wxDOMNamedAttrMap::operator=(const wxDOMNamedAttrMap& c)
 {
     m_data->ptr = c.m_data->ptr;
     return *this;
 }
 
-// (METHOD) wxDOMNamedNodeMap::IsOk
+// (METHOD) wxDOMNamedAttrMap::IsOk
 // Description:
 //
-// Syntax: bool wxDOMNamedNodeMap::IsOk() const
+// Syntax: bool wxDOMNamedAttrMap::IsOk() const
 //
 // Remarks:
 //
 // Returns: Returns true if the DOM Named Node Map is valid, and false otherwise.
 
-bool wxDOMNamedNodeMap::IsOk() const
+bool wxDOMNamedAttrMap::IsOk() const
 {
     return (m_data->ptr ? true : false);
 }
 
-// (METHOD) wxDOMNamedNodeMap::GetLength
+// (METHOD) wxDOMNamedAttrMap::GetLength
 // Description:
 //
-// Syntax: size_t wxDOMNamedNodeMap::GetLength()
+// Syntax: size_t wxDOMNamedAttrMap::GetLength()
 //
 // Remarks:
 //
 // Returns:
 
-size_t wxDOMNamedNodeMap::GetLength()
+size_t wxDOMNamedAttrMap::GetLength()
 {
     if (!IsOk())
         return 0;
@@ -5590,16 +5568,16 @@ size_t wxDOMNamedNodeMap::GetLength()
     return res;
 }
 
-// (METHOD) wxDOMNamedNodeMap::Item
+// (METHOD) wxDOMNamedAttrMap::Item
 // Description:
 //
-// Syntax: wxDOMNode wxDOMNamedNodeMap::Item(size_t idx)
+// Syntax: wxDOMNode wxDOMNamedAttrMap::Item(size_t idx)
 //
 // Remarks:
 //
 // Returns:
 
-wxDOMNode wxDOMNamedNodeMap::Item(size_t idx)
+wxDOMNode wxDOMNamedAttrMap::Item(size_t idx)
 {
     wxDOMNode node;
     if (!IsOk())
@@ -5609,16 +5587,16 @@ wxDOMNode wxDOMNamedNodeMap::Item(size_t idx)
     return node;
 }
 
-// (METHOD) wxDOMNamedNodeMap::GetNamedItem
+// (METHOD) wxDOMNamedAttrMap::GetNamedItem
 // Description:
 //
-// Syntax: wxDOMNode wxDOMNamedNodeMap::GetNamedItem(const wxString& name)
+// Syntax: wxDOMNode wxDOMNamedAttrMap::GetNamedItem(const wxString& name)
 //
 // Remarks:
 //
 // Returns:
 
-wxDOMNode wxDOMNamedNodeMap::GetNamedItem(const wxString& name)
+wxDOMNode wxDOMNamedAttrMap::GetNamedItem(const wxString& name)
 {
     nsEmbedString nsstr;
     wx2ns(name, nsstr);
@@ -5631,17 +5609,17 @@ wxDOMNode wxDOMNamedNodeMap::GetNamedItem(const wxString& name)
     return node;
 }
 
-// (METHOD) wxDOMNamedNodeMap::GetNamedItemNS
+// (METHOD) wxDOMNamedAttrMap::GetNamedItemNS
 // Description:
 //
-// Syntax: wxDOMNode wxDOMNamedNodeMap::GetNamedItemNS(const wxString& namespace_uri,
+// Syntax: wxDOMNode wxDOMNamedAttrMap::GetNamedItemNS(const wxString& namespace_uri,
 //                                                     const wxString& name)
 //
 // Remarks:
 //
 // Returns:
 
-wxDOMNode wxDOMNamedNodeMap::GetNamedItemNS(const wxString& namespace_uri,
+wxDOMNode wxDOMNamedAttrMap::GetNamedItemNS(const wxString& namespace_uri,
                                             const wxString& name)
 {
     nsEmbedString nsstr_uri, nsstr_name;
@@ -5655,16 +5633,16 @@ wxDOMNode wxDOMNamedNodeMap::GetNamedItemNS(const wxString& namespace_uri,
     return node;
 }
 
-// (METHOD) wxDOMNamedNodeMap::RemoveNamedItem
+// (METHOD) wxDOMNamedAttrMap::RemoveNamedItem
 // Description:
 //
-// Syntax: wxDOMNode wxDOMNamedNodeMap::RemoveNamedItem(const wxString& name)
+// Syntax: wxDOMNode wxDOMNamedAttrMap::RemoveNamedItem(const wxString& name)
 //
 // Remarks:
 //
 // Returns:
 
-wxDOMNode wxDOMNamedNodeMap::RemoveNamedItem(const wxString& name)
+wxDOMNode wxDOMNamedAttrMap::RemoveNamedItem(const wxString& name)
 {
     nsEmbedString nsstr;
     wx2ns(name, nsstr);
@@ -5676,17 +5654,17 @@ wxDOMNode wxDOMNamedNodeMap::RemoveNamedItem(const wxString& name)
     return node;
 }
 
-// (METHOD) wxDOMNamedNodeMap::RemoveNamedItemNS
+// (METHOD) wxDOMNamedAttrMap::RemoveNamedItemNS
 // Description:
 //
-// Syntax: wxDOMNode wxDOMNamedNodeMap::RemoveNamedItemNS(const wxString& namespace_uri,
+// Syntax: wxDOMNode wxDOMNamedAttrMap::RemoveNamedItemNS(const wxString& namespace_uri,
 //                                                        const wxString& name)
 //
 // Remarks:
 //
 // Returns:
 
-wxDOMNode wxDOMNamedNodeMap::RemoveNamedItemNS(const wxString& namespace_uri,
+wxDOMNode wxDOMNamedAttrMap::RemoveNamedItemNS(const wxString& namespace_uri,
                                                const wxString& name)
 {
     nsEmbedString nsstr_uri, nsstr_name;
@@ -5700,16 +5678,16 @@ wxDOMNode wxDOMNamedNodeMap::RemoveNamedItemNS(const wxString& namespace_uri,
     return node;
 }
 
-// (METHOD) wxDOMNamedNodeMap::SetNamedItem
+// (METHOD) wxDOMNamedAttrMap::SetNamedItem
 // Description:
 //
-// Syntax: wxDOMNode wxDOMNamedNodeMap::SetNamedItem(wxDOMNode& arg)
+// Syntax: wxDOMNode wxDOMNamedAttrMap::SetNamedItem(wxDOMNode& arg)
 //
 // Remarks:
 //
 // Returns:
 
-wxDOMNode wxDOMNamedNodeMap::SetNamedItem(wxDOMNode& arg)
+wxDOMNode wxDOMNamedAttrMap::SetNamedItem(wxDOMNode& arg)
 {
     wxDOMNode node;
     if (!IsOk())
@@ -5718,16 +5696,16 @@ wxDOMNode wxDOMNamedNodeMap::SetNamedItem(wxDOMNode& arg)
     return node;
 }
 
-// (METHOD) wxDOMNamedNodeMap::SetNamedItemNS
+// (METHOD) wxDOMNamedAttrMap::SetNamedItemNS
 // Description:
 //
-// Syntax: wxDOMNode wxDOMNamedNodeMap::SetNamedItemNS(wxDOMNode& arg)
+// Syntax: wxDOMNode wxDOMNamedAttrMap::SetNamedItemNS(wxDOMNode& arg)
 //
 // Remarks:
 //
 // Returns:
 
-wxDOMNode wxDOMNamedNodeMap::SetNamedItemNS(wxDOMNode& arg)
+wxDOMNode wxDOMNamedAttrMap::SetNamedItemNS(wxDOMNode& arg)
 {
     wxDOMNode node;
     if (!IsOk())

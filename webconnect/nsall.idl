@@ -947,7 +947,7 @@ interface nsIDOMUserDataHandler;
 interface nsIDOMElement;
 interface DOMException;
 
-[scriptable, uuid(c8ac3f81-63e1-4c31-8543-70a656642789)]
+[scriptable, uuid(56545150-a001-484e-9ed4-cb319eebd7b3)]
 interface nsIDOMNode : nsISupports
 {
     const unsigned short ELEMENT_NODE = 1;
@@ -973,7 +973,6 @@ interface nsIDOMNode : nsISupports
     readonly attribute nsIDOMNode lastChild;
     readonly attribute nsIDOMNode previousSibling;
     readonly attribute nsIDOMNode nextSibling;
-    readonly attribute nsIDOMNamedNodeMap attributes;
     readonly attribute nsIDOMDocument ownerDocument;
            
     nsIDOMNode insertBefore(in nsIDOMNode new_child, in nsIDOMNode ref_child) raises(DOMException);
@@ -981,9 +980,8 @@ interface nsIDOMNode : nsISupports
     nsIDOMNode removeChild(in nsIDOMNode old_child)  raises(DOMException);
     nsIDOMNode appendChild(in nsIDOMNode new_child) raises(DOMException);
     boolean hasChildNodes();
-    nsIDOMNode cloneNode(in boolean deep);
+    [optional_argc] nsIDOMNode cloneNode([optional] in boolean deep);
     void normalize();
-    boolean isSupported(in DOMString feature, in DOMString xversion);
     
     readonly attribute DOMString namespaceURI;
     readonly attribute DOMString prefix;
@@ -1001,11 +999,10 @@ interface nsIDOMNode : nsISupports
     const unsigned short DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20;
 
     unsigned short compareDocumentPosition(in nsIDOMNode other)
-                                raises(DOMException);
+                                           raises(DOMException);
 
     attribute DOMString textContent;
 
-    boolean isSameNode(in nsIDOMNode other);
     DOMString lookupPrefix(in DOMString namespace_uri);
     boolean isDefaultNamespace(in DOMString namespace_uri);
     DOMString lookupNamespaceURI(in DOMString prefix);
@@ -1052,8 +1049,8 @@ interface nsIDOM3Node : nsISupports
     attribute DOMString textContent;
 
     boolean isSameNode(in nsIDOMNode other);
-    DOMString lookupPrefix(in DOMString namespaceURI);
-    boolean isDefaultNamespace(in DOMString namespaceURI);
+    DOMString lookupPrefix(in DOMString namespace_uri);
+    boolean isDefaultNamespace(in DOMString namespace_uri);
     DOMString lookupNamespaceURI(in DOMString prefix);
     boolean isEqualNode(in nsIDOMNode arg);
     nsISupports getFeature(in DOMString feature, in DOMString xversion);
@@ -1083,7 +1080,7 @@ interface nsIDOM3Document : nsIDOM3Node
     nsIDOMNode adoptNode(in nsIDOMNode xsource) raises(DOMException);
     readonly attribute nsIDOMDOMConfiguration domConfig;
     void normalizeDocument();
-    nsIDOMNode renameNode(in nsIDOMNode node, in DOMString namespaceURI, in DOMString qualifiedName) raises(DOMException);
+    nsIDOMNode renameNode(in nsIDOMNode node, in DOMString namespace_uri, in DOMString qualified_name) raises(DOMException);
 };
 
 
@@ -1116,49 +1113,92 @@ interface nsIDOMAttr : nsIDOMNode
 
 interface nsIDOMAttr;
 interface DOMException;
+interface nsIDOMMozNamedAttrMap;
+interface nsIDOMHTMLCollection;
+interface nsIDOMClientRectList;
+interface nsIDOMClientRect;
 
 
-[scriptable, uuid(56aaaf03-f8f1-4c06-9cb5-f3e33a39e5c3)]
+[scriptable, uuid(989422ef-120d-4d29-8a56-6aa2505a8b02)]
 interface nsIDOMElement : nsIDOMNode
 {
     readonly attribute DOMString tagName;
+    readonly attribute nsISupports classList;
+    readonly attribute nsIDOMMozNamedAttrMap attributes;
 
     DOMString getAttribute(in DOMString name);
-
-    void setAttribute(in DOMString name,
-                      in DOMString value) raises(DOMException);
-
-    void removeAttribute(in DOMString name) raises(DOMException);
-
-    nsIDOMAttr getAttributeNode(in DOMString name);
-    nsIDOMAttr setAttributeNode(in nsIDOMAttr new_attr) raises(DOMException);
-
-    nsIDOMAttr removeAttributeNode(in nsIDOMAttr old_attr) raises(DOMException);
- 
-    nsIDOMNodeList getElementsByTagName(in DOMString name);
 
     DOMString getAttributeNS(in DOMString namespace_uri,
                              in DOMString local_name);
 
+    void setAttribute(in DOMString name,
+                      in DOMString value);
+
     void setAttributeNS(in DOMString namespace_uri,
                         in DOMString qualified_name,
-                        in DOMString value) raises(DOMException);
+                        in DOMString value);
       
+    void removeAttribute(in DOMString name);
+
     void removeAttributeNS(in DOMString namespace_uri,
-                           in DOMString local_name) raises(DOMException);
+                           in DOMString local_name);
+
+    boolean hasAttribute(in DOMString name);
+
+    boolean hasAttributeNS(in DOMString namespace_uri,
+                           in DOMString local_name);
+
+    nsIDOMAttr getAttributeNode(in DOMString name);
+
+    nsIDOMAttr setAttributeNode(in nsIDOMAttr new_attr);
+
+    nsIDOMAttr removeAttributeNode(in nsIDOMAttr old_attr);
 
     nsIDOMAttr getAttributeNodeNS(in DOMString namespace_uri,
                                   in DOMString local_name);
          
     nsIDOMAttr setAttributeNodeNS(in nsIDOMAttr newAttr) raises(DOMException);
     
+    nsIDOMNodeList getElementsByTagName(in DOMString name);
+
     nsIDOMNodeList getElementsByTagNameNS(in DOMString namespace_uri,
                                           in DOMString local_name);
-               
-    boolean hasAttribute(in DOMString name);
 
-    boolean hasAttributeNS(in DOMString namespace_uri,
-                           in DOMString local_name);
+    nsIDOMHTMLCollection getElementsByClassName(in DOMString classes);
+
+    [binaryname(ChildElements)] readonly attribute nsIDOMNodeList children;
+
+    readonly attribute nsIDOMElement firstElementChild;
+    readonly attribute nsIDOMElement lastElementChild;
+    readonly attribute nsIDOMElement previousElementSibling;
+    readonly attribute nsIDOMElement nextElementSibling;
+
+    readonly attribute unsigned long childElementCount;
+
+    [binaryname(MozRemove)] void remove();
+
+    nsIDOMClientRectList getClientRects();
+
+    nsIDOMClientRect getBoundingClientRect();
+
+    attribute long scrollTop;
+    attribute long scrollLeft;
+    readonly attribute long scrollWidth;
+    readonly attribute long scrollHeight;
+    readonly attribute long clientTop;
+    readonly attribute long clientLeft;
+    readonly attribute long clientWidth;
+    readonly attribute long clientHeight;
+    readonly attribute long scrollLeftMax;
+    readonly attribute long scrollTopMax;
+
+    boolean mozMatchesSelector([Null(Stringify)] in DOMString selector);
+    void setCapture([optional] in boolean retarget_to_element);
+    void releaseCapture();
+    void mozRequestFullScreen();
+    void mozRequestPointerLock();
+    nsIDOMElement querySelector([Null(Stringify)] in DOMString selectors);
+    nsIDOMNodeList querySelectorAll([Null(Stringify)] in DOMString selectors);
 };
 
 
@@ -1225,50 +1265,47 @@ interface nsIDOMHTMLElement;
 interface nsIDOMEntityReference;
 
 
-[scriptable, uuid(6cba4f7e-7e71-427d-b914-44517ae1e45b)]
+[scriptable, uuid(aa4b59de-462a-4f61-abd9-4232fef3dacc)]
 interface nsIDOMDocument : nsIDOMNode
 {
     readonly attribute nsIDOMDocumentType doctype;
     readonly attribute nsIDOMDOMImplementation implementation;
     readonly attribute nsIDOMElement documentElement;
   
-    nsIDOMElement createElement(in DOMString tagName) raises(DOMException);
+    nsIDOMElement createElement(in DOMString tag_name) raises(DOMException);
     nsIDOMDocumentFragment createDocumentFragment();
     nsIDOMText createTextNode(in DOMString data);
     nsIDOMComment createComment(in DOMString data);
     nsIDOMCDATASection createCDATASection(in DOMString data) raises(DOMException);
     nsIDOMProcessingInstruction createProcessingInstruction(in DOMString target, in DOMString data) raises(DOMException);
     nsIDOMAttr createAttribute(in DOMString name) raises(DOMException);
-    nsIDOMNodeList getElementsByTagName(in DOMString tagname);
-    nsIDOMNode importNode(in nsIDOMNode importedNode, in boolean deep) raises(DOMException);
-    nsIDOMElement createElementNS(in DOMString namespaceURI, in DOMString qualifiedName) raises(DOMException);
-    nsIDOMAttr createAttributeNS(in DOMString namespaceURI, in DOMString qualifiedName) raises(DOMException);
-    nsIDOMNodeList getElementsByTagNameNS(in DOMString namespaceURI, in DOMString localName);
-    nsIDOMElement getElementById(in DOMString elementId);
+    nsIDOMNodeList getElementsByTagName(in DOMString tag_name);
+    [optional_argc] nsIDOMNode importNode(in nsIDOMNode imported_node, [optional] in boolean deep) raises(DOMException);
+    nsIDOMElement createElementNS(in DOMString namespace_uri, in DOMString qualified_name) raises(DOMException);
+    nsIDOMAttr createAttributeNS(in DOMString namespace_uri, in DOMString qualified_name) raises(DOMException);
+    nsIDOMNodeList getElementsByTagNameNS(in DOMString namespace_uri, in DOMString localName);
+    nsIDOMElement getElementById(in DOMString element_id);
     
     readonly attribute DOMString inputEncoding;
-    readonly attribute DOMString xmlEncoding;
-    attribute boolean xmlStandalone;
-    attribute DOMString xmlVersion;
-    attribute DOMString documentURI;
+    readonly attribute DOMString documentURI;
+    readonly attribute DOMString URL;
 
     nsIDOMNode adoptNode(in nsIDOMNode source) raises(DOMException);
+
     nsIDOMRange createRange();
 
     nsIDOMNodeIterator createNodeIterator(in nsIDOMNode root,
                             in unsigned long whatToShow,
-                            in nsIDOMNodeFilter filter,
-                            in boolean entityReferenceExpansion)
+                            in nsIDOMNodeFilter filter)
                             raises(DOMException);
 
     nsIDOMTreeWalker createTreeWalker(in nsIDOMNode root,
-                            in unsigned long whatToShow,
-                            in nsIDOMNodeFilter filter,
-                            in boolean entityReferenceExpansion)
+                            in unsigned long what_to_show,
+                            in nsIDOMNodeFilter filter)
                             raises(DOMException);
 
-    nsIDOMEvent createEvent(in DOMString eventType)
-    raises(DOMException);
+    nsIDOMEvent createEvent(in DOMString event_type)
+                            raises(DOMException);
 
 
 
@@ -1289,11 +1326,11 @@ interface nsIDOMDocument : nsIDOMNode
 
     readonly attribute nsIDOMStyleSheetList styleSheets;
     readonly attribute DOMString preferredStyleSheetSet;
-    attribute DOMString selectedStyleSheetSet;
+    [binaryname(MozSelectedStyleSheetSet)] attribute DOMString selectedStyleSheetSet;
     readonly attribute DOMString lastStyleSheetSet;
     readonly attribute nsIDOMDOMStringList styleSheetSets;
     
-    void enableStyleSheetsForSet(in DOMString name);
+    [binaryname(MozEnableStyleSheetsForSet)] void enableStyleSheetsForSet(in DOMString name);
     nsIDOMElement elementFromPoint(in float x, in float y);
 
     readonly attribute DOMString contentType;
@@ -1302,16 +1339,28 @@ interface nsIDOMDocument : nsIDOMNode
 
     void releaseCapture();
 
-    void mozSetImageElement(in DOMString aImageElementId,
-                            in nsIDOMElement aImageElement);
+    void mozSetImageElement(in DOMString image_element_id,
+                            in nsIDOMElement image_element);
 
     readonly attribute nsIDOMHTMLElement mozFullScreenElement;
 
     void mozCancelFullScreen();   
 
     readonly attribute boolean mozFullScreen;  
-    //[implicit_jscontext]
-    [noscript] attribute jsval onreadystatechange; 
+    readonly attribute boolean mozFullScreenEnabled;
+    readonly attribute nsIDOMElement mozPointerLockElement;
+    nsISupports caretPositionFromPoint(in float x, in float y);
+    void mozExitPointerLock();
+
+    readonly attribute boolean hidden;
+    readonly attribute boolean mozHidden;
+    readonly attribute DOMString visibilityState;
+    readonly attribute DOMString mozVisibilityState;
+
+    readonly attribute DOMString compatMode;
+
+    nsIDOMElement querySelector([Null(Stringify)] in DOMString selectors);
+    nsIDOMNodeList querySelectorAll([Null(Stringify)] in DOMString selectors);
 };
 
 
@@ -1763,7 +1812,7 @@ interface nsIDOMHTMLTextAreaElement : nsIDOMHTMLElement
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//  nsIDOMNamedNodeMap
+//  nsIDOMNamedAttrMap
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -1771,8 +1820,8 @@ interface nsIDOMNode;
 interface DOMException;
 
 
-[scriptable, uuid(a6cf907b-15b3-11d2-932e-00805f8add32)]
-interface nsIDOMNamedNodeMap : nsISupports
+[scriptable, uuid(cb5564cd-26ec-418f-a6d6-1d57cd2c971c)]
+interface nsIDOMMozNamedAttrMap : nsISupports
 {
     nsIDOMNode getNamedItem(in DOMString name);
     nsIDOMNode setNamedItem(in nsIDOMNode arg) raises(DOMException);
@@ -1785,15 +1834,13 @@ interface nsIDOMNamedNodeMap : nsISupports
                               in DOMString local_name);
                                               
     nsIDOMNode setNamedItemNS(in nsIDOMNode arg)
-                                      raises(DOMException);
+                              raises(DOMException);
     
     nsIDOMNode removeNamedItemNS(
                               in DOMString namespace_uri,
                               in DOMString local_name)
                                       raises(DOMException);
 };
-
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
