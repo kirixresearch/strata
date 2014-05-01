@@ -2210,6 +2210,12 @@ bool WebDoc::initDoc(IFramePtr frame,
         return false;
     }
 
+
+    // force cfw ChildFrame and auimdi windows to not want tabs
+    docsite_wnd->SetWindowStyle(docsite_wnd->GetWindowStyle() & ~wxTAB_TRAVERSAL);
+    docsite_wnd->GetParent()->SetWindowStyle(docsite_wnd->GetParent()->GetWindowStyle() & ~wxTAB_TRAVERSAL);
+
+
     m_frame = frame;
     m_site_id = doc_site->getId();
 
