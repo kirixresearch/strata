@@ -1344,44 +1344,44 @@ NS_IMETHODIMP nsLocalFile::SetRelativeDescriptor(nsILocalFile *from_file, const 
 /* End of implementation class template. */
 #endif
 
-class nsIEventQueue; /* forward declaration */
+class nsIRunnable; /* forward declaration */
 
 
 /* starting interface:    nsIAppShell */
-#define NS_IAPPSHELL_IID_STR "a0757c31-eeac-11d1-9ec1-00aa002fb821"
+#define NS_IAPPSHELL_IID_STR "2d10ca53-f143-439a-bb2e-c1fbc71f6a05"
 
 #define NS_IAPPSHELL_IID \
-  {0xa0757c31, 0xeeac, 0x11d1, \
-    { 0x9e, 0xc1, 0x00, 0xaa, 0x00, 0x2f, 0xb8, 0x21 }}
+  {0x2d10ca53, 0xf143, 0x439a, \
+    { 0xbb, 0x2e, 0xc1, 0xfb, 0xc7, 0x1f, 0x6a, 0x05 }}
 
 class NS_NO_VTABLE nsIAppShell : public nsISupports {
  public: 
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_IAPPSHELL_IID)
 
-  /* void Create (inout int argc, inout string argv); */
-  NS_IMETHOD Create(int *argc, char * *argv) = 0;
-
-  /* void Run (); */
+  /* void run (); */
   NS_IMETHOD Run(void) = 0;
 
-  /* void Spinup (); */
-  NS_IMETHOD Spinup(void) = 0;
-
-  /* void Spindown (); */
-  NS_IMETHOD Spindown(void) = 0;
-
-  /* void ListenToEventQueue (in nsIEventQueue queue, in boolean listen); */
-  NS_IMETHOD ListenToEventQueue(nsIEventQueue *queue, bool listen) = 0;
-
-  /* void GetNativeEvent (in PRBoolRef realEvent, in voidPtrRef event); */
-  NS_IMETHOD GetNativeEvent(PRBool & realEvent, void* & event) = 0;
-
-  /* void DispatchNativeEvent (in boolean realEvent, in voidPtr event); */
-  NS_IMETHOD DispatchNativeEvent(bool realEvent, void *event) = 0;
-
-  /* void Exit (); */
+  /* void exit (); */
   NS_IMETHOD Exit(void) = 0;
+
+  /* void favorPerformanceHint (in boolean favor_perf_over_starvation, in unsigned long starvation_delay); */
+  NS_IMETHOD FavorPerformanceHint(bool favor_perf_over_starvation, uint32_t starvation_delay) = 0;
+
+  /* void suspendNative (); */
+  NS_IMETHOD SuspendNative(void) = 0;
+
+  /* void resumeNative (); */
+  NS_IMETHOD ResumeNative(void) = 0;
+
+  /* readonly attribute unsigned long eventloop_nesting_level; */
+  NS_IMETHOD GetEventloop_nesting_level(uint32_t *aEventloop_nesting_level) = 0;
+
+  /* void runInStableState (in nsIRunnable runnable); */
+  NS_IMETHOD RunInStableState(nsIRunnable *runnable) = 0;
+
+  /* void runBeforeNextEvent (in nsIRunnable runnable); */
+  NS_IMETHOD RunBeforeNextEvent(nsIRunnable *runnable) = 0;
 
 };
 
@@ -1389,36 +1389,36 @@ class NS_NO_VTABLE nsIAppShell : public nsISupports {
 
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSIAPPSHELL \
-  NS_IMETHOD Create(int *argc, char * *argv); \
   NS_IMETHOD Run(void); \
-  NS_IMETHOD Spinup(void); \
-  NS_IMETHOD Spindown(void); \
-  NS_IMETHOD ListenToEventQueue(nsIEventQueue *queue, bool listen); \
-  NS_IMETHOD GetNativeEvent(PRBool & realEvent, void* & event); \
-  NS_IMETHOD DispatchNativeEvent(bool realEvent, void *event); \
-  NS_IMETHOD Exit(void); 
+  NS_IMETHOD Exit(void); \
+  NS_IMETHOD FavorPerformanceHint(bool favor_perf_over_starvation, uint32_t starvation_delay); \
+  NS_IMETHOD SuspendNative(void); \
+  NS_IMETHOD ResumeNative(void); \
+  NS_IMETHOD GetEventloop_nesting_level(uint32_t *aEventloop_nesting_level); \
+  NS_IMETHOD RunInStableState(nsIRunnable *runnable); \
+  NS_IMETHOD RunBeforeNextEvent(nsIRunnable *runnable); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIAPPSHELL(_to) \
-  NS_IMETHOD Create(int *argc, char * *argv) { return _to Create(argc, argv); } \
   NS_IMETHOD Run(void) { return _to Run(); } \
-  NS_IMETHOD Spinup(void) { return _to Spinup(); } \
-  NS_IMETHOD Spindown(void) { return _to Spindown(); } \
-  NS_IMETHOD ListenToEventQueue(nsIEventQueue *queue, bool listen) { return _to ListenToEventQueue(queue, listen); } \
-  NS_IMETHOD GetNativeEvent(PRBool & realEvent, void* & event) { return _to GetNativeEvent(realEvent, event); } \
-  NS_IMETHOD DispatchNativeEvent(bool realEvent, void *event) { return _to DispatchNativeEvent(realEvent, event); } \
-  NS_IMETHOD Exit(void) { return _to Exit(); } 
+  NS_IMETHOD Exit(void) { return _to Exit(); } \
+  NS_IMETHOD FavorPerformanceHint(bool favor_perf_over_starvation, uint32_t starvation_delay) { return _to FavorPerformanceHint(favor_perf_over_starvation, starvation_delay); } \
+  NS_IMETHOD SuspendNative(void) { return _to SuspendNative(); } \
+  NS_IMETHOD ResumeNative(void) { return _to ResumeNative(); } \
+  NS_IMETHOD GetEventloop_nesting_level(uint32_t *aEventloop_nesting_level) { return _to GetEventloop_nesting_level(aEventloop_nesting_level); } \
+  NS_IMETHOD RunInStableState(nsIRunnable *runnable) { return _to RunInStableState(runnable); } \
+  NS_IMETHOD RunBeforeNextEvent(nsIRunnable *runnable) { return _to RunBeforeNextEvent(runnable); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIAPPSHELL(_to) \
-  NS_IMETHOD Create(int *argc, char * *argv) { return !_to ? NS_ERROR_NULL_POINTER : _to->Create(argc, argv); } \
   NS_IMETHOD Run(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Run(); } \
-  NS_IMETHOD Spinup(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Spinup(); } \
-  NS_IMETHOD Spindown(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Spindown(); } \
-  NS_IMETHOD ListenToEventQueue(nsIEventQueue *queue, bool listen) { return !_to ? NS_ERROR_NULL_POINTER : _to->ListenToEventQueue(queue, listen); } \
-  NS_IMETHOD GetNativeEvent(PRBool & realEvent, void* & event) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetNativeEvent(realEvent, event); } \
-  NS_IMETHOD DispatchNativeEvent(bool realEvent, void *event) { return !_to ? NS_ERROR_NULL_POINTER : _to->DispatchNativeEvent(realEvent, event); } \
-  NS_IMETHOD Exit(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Exit(); } 
+  NS_IMETHOD Exit(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Exit(); } \
+  NS_IMETHOD FavorPerformanceHint(bool favor_perf_over_starvation, uint32_t starvation_delay) { return !_to ? NS_ERROR_NULL_POINTER : _to->FavorPerformanceHint(favor_perf_over_starvation, starvation_delay); } \
+  NS_IMETHOD SuspendNative(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->SuspendNative(); } \
+  NS_IMETHOD ResumeNative(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->ResumeNative(); } \
+  NS_IMETHOD GetEventloop_nesting_level(uint32_t *aEventloop_nesting_level) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetEventloop_nesting_level(aEventloop_nesting_level); } \
+  NS_IMETHOD RunInStableState(nsIRunnable *runnable) { return !_to ? NS_ERROR_NULL_POINTER : _to->RunInStableState(runnable); } \
+  NS_IMETHOD RunBeforeNextEvent(nsIRunnable *runnable) { return !_to ? NS_ERROR_NULL_POINTER : _to->RunBeforeNextEvent(runnable); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -1452,50 +1452,50 @@ nsAppShell::~nsAppShell()
   /* destructor code */
 }
 
-/* void Create (inout int argc, inout string argv); */
-NS_IMETHODIMP nsAppShell::Create(int *argc, char * *argv)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void Run (); */
+/* void run (); */
 NS_IMETHODIMP nsAppShell::Run()
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void Spinup (); */
-NS_IMETHODIMP nsAppShell::Spinup()
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void Spindown (); */
-NS_IMETHODIMP nsAppShell::Spindown()
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void ListenToEventQueue (in nsIEventQueue queue, in boolean listen); */
-NS_IMETHODIMP nsAppShell::ListenToEventQueue(nsIEventQueue *queue, bool listen)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void GetNativeEvent (in PRBoolRef realEvent, in voidPtrRef event); */
-NS_IMETHODIMP nsAppShell::GetNativeEvent(PRBool & realEvent, void* & event)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void DispatchNativeEvent (in boolean realEvent, in voidPtr event); */
-NS_IMETHODIMP nsAppShell::DispatchNativeEvent(bool realEvent, void *event)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void Exit (); */
+/* void exit (); */
 NS_IMETHODIMP nsAppShell::Exit()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void favorPerformanceHint (in boolean favor_perf_over_starvation, in unsigned long starvation_delay); */
+NS_IMETHODIMP nsAppShell::FavorPerformanceHint(bool favor_perf_over_starvation, uint32_t starvation_delay)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void suspendNative (); */
+NS_IMETHODIMP nsAppShell::SuspendNative()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void resumeNative (); */
+NS_IMETHODIMP nsAppShell::ResumeNative()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute unsigned long eventloop_nesting_level; */
+NS_IMETHODIMP nsAppShell::GetEventloop_nesting_level(uint32_t *aEventloop_nesting_level)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void runInStableState (in nsIRunnable runnable); */
+NS_IMETHODIMP nsAppShell::RunInStableState(nsIRunnable *runnable)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void runBeforeNextEvent (in nsIRunnable runnable); */
+NS_IMETHODIMP nsAppShell::RunBeforeNextEvent(nsIRunnable *runnable)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -14064,79 +14064,6 @@ NS_IMETHODIMP nsEmbeddingSiteWindow::GetSiteWindow(void **aSiteWindow)
 
 /* void blur (); */
 NS_IMETHODIMP nsEmbeddingSiteWindow::Blur()
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* End of implementation class template. */
-#endif
-
-
-/* starting interface:    nsIEmbeddingSiteWindow2 */
-#define NS_IEMBEDDINGSITEWINDOW2_IID_STR "e932bf55-0a64-4beb-923a-1f32d3661044"
-
-#define NS_IEMBEDDINGSITEWINDOW2_IID \
-  {0xe932bf55, 0x0a64, 0x4beb, \
-    { 0x92, 0x3a, 0x1f, 0x32, 0xd3, 0x66, 0x10, 0x44 }}
-
-class NS_NO_VTABLE nsIEmbeddingSiteWindow2 : public nsIEmbeddingSiteWindow {
- public: 
-
-  NS_DECLARE_STATIC_IID_ACCESSOR(NS_IEMBEDDINGSITEWINDOW2_IID)
-
-  /* void blur (); */
-  NS_IMETHOD Blur(void) = 0;
-
-};
-
-  NS_DEFINE_STATIC_IID_ACCESSOR(nsIEmbeddingSiteWindow2, NS_IEMBEDDINGSITEWINDOW2_IID)
-
-/* Use this macro when declaring classes that implement this interface. */
-#define NS_DECL_NSIEMBEDDINGSITEWINDOW2 \
-  NS_IMETHOD Blur(void); 
-
-/* Use this macro to declare functions that forward the behavior of this interface to another object. */
-#define NS_FORWARD_NSIEMBEDDINGSITEWINDOW2(_to) \
-  NS_IMETHOD Blur(void) { return _to Blur(); } 
-
-/* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
-#define NS_FORWARD_SAFE_NSIEMBEDDINGSITEWINDOW2(_to) \
-  NS_IMETHOD Blur(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Blur(); } 
-
-#if 0
-/* Use the code below as a template for the implementation class for this interface. */
-
-/* Header file */
-class nsEmbeddingSiteWindow2 : public nsIEmbeddingSiteWindow2
-{
-public:
-  NS_DECL_ISUPPORTS
-  NS_DECL_NSIEMBEDDINGSITEWINDOW2
-
-  nsEmbeddingSiteWindow2();
-
-private:
-  ~nsEmbeddingSiteWindow2();
-
-protected:
-  /* additional members */
-};
-
-/* Implementation file */
-NS_IMPL_ISUPPORTS1(nsEmbeddingSiteWindow2, nsIEmbeddingSiteWindow2)
-
-nsEmbeddingSiteWindow2::nsEmbeddingSiteWindow2()
-{
-  /* member initializers and constructor code */
-}
-
-nsEmbeddingSiteWindow2::~nsEmbeddingSiteWindow2()
-{
-  /* destructor code */
-}
-
-/* void blur (); */
-NS_IMETHODIMP nsEmbeddingSiteWindow2::Blur()
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }

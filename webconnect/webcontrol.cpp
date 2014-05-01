@@ -155,8 +155,8 @@ class BrowserChrome : public nsIWebBrowserChrome,
                       public nsIChromeInternal,
                       public nsIWebBrowserChromeFocus,
                       public nsIWebProgressListener,
-                      public nsIEmbeddingSiteWindow2,
                       public nsIInterfaceRequestor,
+                      public nsIEmbeddingSiteWindow,
                       public nsSupportsWeakReference,
                       public nsIContextMenuListener2,
                       public nsITooltipListener,
@@ -223,7 +223,6 @@ NS_INTERFACE_MAP_BEGIN(BrowserChrome)
     NS_INTERFACE_MAP_ENTRY(nsIWebBrowserChromeFocus)
     NS_INTERFACE_MAP_ENTRY(nsIWebProgressListener)
     NS_INTERFACE_MAP_ENTRY(nsIEmbeddingSiteWindow)
-    NS_INTERFACE_MAP_ENTRY(nsIEmbeddingSiteWindow2)
     NS_INTERFACE_MAP_ENTRY(nsIInterfaceRequestor)
     NS_INTERFACE_MAP_ENTRY(nsISupportsWeakReference)
     NS_INTERFACE_MAP_ENTRY(nsIContextMenuListener2)
@@ -1704,13 +1703,13 @@ bool GeckoEngine::Init()
     
     
     // create an app shell
+    /*
     const nsCID appshell_cid = NS_APPSHELL_CID;
     m_appshell = nsCreateInstance(appshell_cid);
     if (m_appshell)
     {
-        m_appshell->Create(0, nsnull);
-        m_appshell->Spinup();
     }
+    */
 
     // set the window creator
     
@@ -2107,7 +2106,7 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 
-BEGIN_EVENT_TABLE(wxWebControl, wxControl)
+BEGIN_EVENT_TABLE(wxWebControl, wxNavigationEnabled<wxControl>)
     EVT_SIZE(wxWebControl::OnSize)
     EVT_SET_FOCUS(wxWebControl::OnSetFocus)
     EVT_KILL_FOCUS(wxWebControl::OnKillFocus)

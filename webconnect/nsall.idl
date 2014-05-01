@@ -266,24 +266,22 @@ interface nsILocalFile : nsIFile
 ///////////////////////////////////////////////////////////////////////////////
 
 
-interface nsIEventQueue;
+interface nsIRunnable;
 native int(int);
 
-
-[uuid(a0757c31-eeac-11d1-9ec1-00aa002fb821)]
+[uuid(2d10ca53-f143-439a-bb2e-c1fbc71f6a05)]
 interface nsIAppShell : nsISupports
 {
-    void Create(inout int argc, inout string argv);
-    void Run();
-    void Spinup();
-    void Spindown();
-    void ListenToEventQueue(in nsIEventQueue queue, in boolean listen);
-    void GetNativeEvent(in PRBoolRef realEvent, in voidPtrRef event);
-    void DispatchNativeEvent(in boolean realEvent, in voidPtr event);
-    void Exit();
+    void run();
+    void exit();
+    void favorPerformanceHint(in boolean favor_perf_over_starvation,
+                              in unsigned long starvation_delay);
+    void suspendNative();
+    void resumeNative();
+    readonly attribute unsigned long eventloop_nesting_level;
+    void runInStableState(in nsIRunnable runnable);
+    void runBeforeNextEvent(in nsIRunnable runnable);
 };
-
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2205,21 +2203,6 @@ interface nsIEmbeddingSiteWindow : nsISupports
 
     void blur();
 };
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//  nsIEmbeddingSiteWindow2
-///////////////////////////////////////////////////////////////////////////////
-
-
-[scriptable, uuid(e932bf55-0a64-4beb-923a-1f32d3661044)]
-interface nsIEmbeddingSiteWindow2 : nsIEmbeddingSiteWindow
-{
-    void blur();
-};
-
 
 
 
