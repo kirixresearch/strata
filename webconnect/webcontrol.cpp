@@ -158,6 +158,7 @@ class BrowserChrome : public nsIWebBrowserChrome,
                       public nsIInterfaceRequestor,
                       public nsIEmbeddingSiteWindow,
                       public nsSupportsWeakReference,
+                      public nsIContextMenuListener2,
                       public nsITooltipListener,
                       public nsIDOMEventListener
 {
@@ -169,6 +170,7 @@ public:
     NS_DECL_NSIWEBPROGRESSLISTENER
     NS_DECL_NSIINTERFACEREQUESTOR
     NS_DECL_NSIEMBEDDINGSITEWINDOW
+    NS_DECL_NSICONTEXTMENULISTENER2
     NS_DECL_NSITOOLTIPLISTENER
     NS_DECL_NSIDOMEVENTLISTENER
 
@@ -223,6 +225,7 @@ NS_INTERFACE_MAP_BEGIN(BrowserChrome)
     NS_INTERFACE_MAP_ENTRY(nsIEmbeddingSiteWindow)
     NS_INTERFACE_MAP_ENTRY(nsIInterfaceRequestor)
     NS_INTERFACE_MAP_ENTRY(nsISupportsWeakReference)
+    NS_INTERFACE_MAP_ENTRY(nsIContextMenuListener2)
     NS_INTERFACE_MAP_ENTRY(nsITooltipListener)
     NS_INTERFACE_MAP_ENTRY(nsIDOMEventListener)
 NS_INTERFACE_MAP_END
@@ -672,6 +675,54 @@ NS_IMETHODIMP BrowserChrome::OnSecurityChange(nsIWebProgress* progress,
 {
     return NS_OK;
 }
+
+
+NS_IMETHODIMP BrowserChrome::OnShowContextMenu(PRUint32 context_flags,
+                                               nsIContextMenuInfo* info)
+{
+    if (!m_wnd)
+        return NS_OK;
+
+    wxWebEvent evt(wxEVT_WEB_SHOWCONTEXTMENU, m_wnd->GetId());
+    
+    ns_smartptr<nsIDOMEvent> mouse_event;
+    info->GetMouseEvent(&mouse_event.p);
+    
+    if (mouse_event)
+    {
+        ns_smartptr<nsIDOMEventTarget> target;
+        mouse_event->GetTarget(&target.p);
+        
+        evt.m_target_node.m_data->setNode(target);
+
+        // note: following parallels code in mouse event; see if the target
+        // or any of its parent nodes are anchors and if so, set the event href;
+        // the reason we have to look through the parents of the target is
+        // because the target may be a child node of the element where the
+        // actual href is specified, and as a result, may not itself contain
+        // the href; this happens, for example, when portions of the text in a
+        // hyperlink are bold
+        ns_smartptr<nsIDOMNode> node;
+        node = target;
+        node.p = GetAnchor(node.p);
+        
+        ns_smartptr<nsIDOMHTMLAnchorElement> anchor;
+        anchor = node;
+
+        if (anchor)
+        {
+            nsEmbedString nss;
+            anchor->GetHref(nss);
+            evt.SetHref(ns2wx(nss));
+        }
+    }
+
+    evt.SetEventObject(m_wnd);
+    m_wnd->GetEventHandler()->ProcessEvent(evt);
+    
+    return NS_OK;
+}
+
 
 NS_IMETHODIMP BrowserChrome::OnShowTooltip(PRInt32 x,
                                            PRInt32 y,

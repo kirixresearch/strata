@@ -841,6 +841,7 @@ interface nsIComponentRegistrar : nsISupports
 
 
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //  nsIContextMenuInfo
 ///////////////////////////////////////////////////////////////////////////////
@@ -850,7 +851,6 @@ interface nsIComponentRegistrar : nsISupports
 interface nsIDOMEvent;
 interface nsIDOMNode;
 interface imgIContainer;
-
 
 [scriptable, uuid(2f977d56-5485-11d4-87e2-0010a4e75ef2)]
 interface nsIContextMenuInfo : nsISupports
@@ -862,6 +862,19 @@ interface nsIContextMenuInfo : nsISupports
     readonly attribute nsIURI imageSrc;
     readonly attribute imgIContainer backgroundImageContainer;
     readonly attribute nsIURI backgroundImageSrc;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//  nsIContextMenuListener2
+///////////////////////////////////////////////////////////////////////////////
+
+
+[scriptable, uuid(7fb719b3-d804-4964-9596-77cf924ee314)]
+interface nsIContextMenuListener2 : nsISupports
+{
+    void onShowContextMenu(in unsigned long context_flags,
+                           in nsIContextMenuInfo utils);
 };
 
 

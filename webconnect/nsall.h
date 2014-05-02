@@ -4741,6 +4741,79 @@ NS_IMETHODIMP nsContextMenuInfo::GetBackgroundImageSrc(nsIURI * *aBackgroundImag
 /* End of implementation class template. */
 #endif
 
+
+/* starting interface:    nsIContextMenuListener2 */
+#define NS_ICONTEXTMENULISTENER2_IID_STR "7fb719b3-d804-4964-9596-77cf924ee314"
+
+#define NS_ICONTEXTMENULISTENER2_IID \
+  {0x7fb719b3, 0xd804, 0x4964, \
+    { 0x95, 0x96, 0x77, 0xcf, 0x92, 0x4e, 0xe3, 0x14 }}
+
+class NS_NO_VTABLE nsIContextMenuListener2 : public nsISupports {
+ public: 
+
+  NS_DECLARE_STATIC_IID_ACCESSOR(NS_ICONTEXTMENULISTENER2_IID)
+
+  /* void onShowContextMenu (in unsigned long context_flags, in nsIContextMenuInfo utils); */
+  NS_IMETHOD OnShowContextMenu(uint32_t context_flags, nsIContextMenuInfo *utils) = 0;
+
+};
+
+  NS_DEFINE_STATIC_IID_ACCESSOR(nsIContextMenuListener2, NS_ICONTEXTMENULISTENER2_IID)
+
+/* Use this macro when declaring classes that implement this interface. */
+#define NS_DECL_NSICONTEXTMENULISTENER2 \
+  NS_IMETHOD OnShowContextMenu(uint32_t context_flags, nsIContextMenuInfo *utils); 
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object. */
+#define NS_FORWARD_NSICONTEXTMENULISTENER2(_to) \
+  NS_IMETHOD OnShowContextMenu(uint32_t context_flags, nsIContextMenuInfo *utils) { return _to OnShowContextMenu(context_flags, utils); } 
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
+#define NS_FORWARD_SAFE_NSICONTEXTMENULISTENER2(_to) \
+  NS_IMETHOD OnShowContextMenu(uint32_t context_flags, nsIContextMenuInfo *utils) { return !_to ? NS_ERROR_NULL_POINTER : _to->OnShowContextMenu(context_flags, utils); } 
+
+#if 0
+/* Use the code below as a template for the implementation class for this interface. */
+
+/* Header file */
+class nsContextMenuListener2 : public nsIContextMenuListener2
+{
+public:
+  NS_DECL_ISUPPORTS
+  NS_DECL_NSICONTEXTMENULISTENER2
+
+  nsContextMenuListener2();
+
+private:
+  ~nsContextMenuListener2();
+
+protected:
+  /* additional members */
+};
+
+/* Implementation file */
+NS_IMPL_ISUPPORTS1(nsContextMenuListener2, nsIContextMenuListener2)
+
+nsContextMenuListener2::nsContextMenuListener2()
+{
+  /* member initializers and constructor code */
+}
+
+nsContextMenuListener2::~nsContextMenuListener2()
+{
+  /* destructor code */
+}
+
+/* void onShowContextMenu (in unsigned long context_flags, in nsIContextMenuInfo utils); */
+NS_IMETHODIMP nsContextMenuListener2::OnShowContextMenu(uint32_t context_flags, nsIContextMenuInfo *utils)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* End of implementation class template. */
+#endif
+
 class nsISimpleEnumerator; /* forward declaration */
 
 
