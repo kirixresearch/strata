@@ -566,34 +566,6 @@ public:
 
 
 
-class WebDOMHTMLParamElement : public WebDOMHTMLElement
-{
-    BEGIN_KSCRIPT_DERIVED_CLASS("WebDOMHTMLParamElement", WebDOMHTMLParamElement, WebDOMHTMLElement)
-        KSCRIPT_GUI_METHOD("constructor", WebDOMHTMLParamElement::constructor)
-        KSCRIPT_GUI_METHOD("getName", WebDOMHTMLParamElement::getName)
-        KSCRIPT_GUI_METHOD("setName", WebDOMHTMLParamElement::setName)
-        KSCRIPT_GUI_METHOD("getType", WebDOMHTMLParamElement::getType)
-        KSCRIPT_GUI_METHOD("setType", WebDOMHTMLParamElement::setType)
-        KSCRIPT_GUI_METHOD("getValueType", WebDOMHTMLParamElement::getValueType)
-        KSCRIPT_GUI_METHOD("setValueType", WebDOMHTMLParamElement::setValueType)
-    END_KSCRIPT_CLASS()
-    
-public:
-
-    WebDOMHTMLParamElement();
-    ~WebDOMHTMLParamElement();
-
-    void constructor(kscript::ExprEnv* env, kscript::Value* retval);
-    void getName(kscript::ExprEnv* env, kscript::Value* retval);
-    void setName(kscript::ExprEnv* env, kscript::Value* retval);
-    void getType(kscript::ExprEnv* env, kscript::Value* retval);
-    void setType(kscript::ExprEnv* env, kscript::Value* retval);
-    void getValueType(kscript::ExprEnv* env, kscript::Value* retval);
-    void setValueType(kscript::ExprEnv* env, kscript::Value* retval);
-};
-
-
-
 class WebDOMHTMLSelectElement : public WebDOMHTMLElement
 {
     BEGIN_KSCRIPT_DERIVED_CLASS("WebDOMHTMLSelectElement", WebDOMHTMLSelectElement, WebDOMHTMLElement)
@@ -613,8 +585,6 @@ class WebDOMHTMLSelectElement : public WebDOMHTMLElement
         KSCRIPT_GUI_METHOD("setName", WebDOMHTMLSelectElement::setName)
         KSCRIPT_GUI_METHOD("getSize", WebDOMHTMLSelectElement::getSize)
         KSCRIPT_GUI_METHOD("setSize", WebDOMHTMLSelectElement::setSize)
-        KSCRIPT_GUI_METHOD("getTabIndex", WebDOMHTMLSelectElement::getTabIndex)
-        KSCRIPT_GUI_METHOD("setTabIndex", WebDOMHTMLSelectElement::setTabIndex)
         KSCRIPT_GUI_METHOD("add", WebDOMHTMLSelectElement::add)
         KSCRIPT_GUI_METHOD("remove", WebDOMHTMLSelectElement::remove)
         KSCRIPT_GUI_METHOD("blur", WebDOMHTMLSelectElement::blur)
@@ -642,8 +612,6 @@ public:
     void setName(kscript::ExprEnv* env, kscript::Value* retval);
     void getSize(kscript::ExprEnv* env, kscript::Value* retval);
     void setSize(kscript::ExprEnv* env, kscript::Value* retval);
-    void getTabIndex(kscript::ExprEnv* env, kscript::Value* retval);
-    void setTabIndex(kscript::ExprEnv* env, kscript::Value* retval);
     void add(kscript::ExprEnv* env, kscript::Value* retval);
     void remove(kscript::ExprEnv* env, kscript::Value* retval);
     void blur(kscript::ExprEnv* env, kscript::Value* retval);
@@ -671,8 +639,6 @@ class WebDOMHTMLTextAreaElement : public WebDOMHTMLElement
         KSCRIPT_GUI_METHOD("setReadOnly", WebDOMHTMLTextAreaElement::setReadOnly)
         KSCRIPT_GUI_METHOD("getRows", WebDOMHTMLTextAreaElement::getRows)
         KSCRIPT_GUI_METHOD("setRows", WebDOMHTMLTextAreaElement::setRows)
-        KSCRIPT_GUI_METHOD("getTabIndex", WebDOMHTMLTextAreaElement::getTabIndex)
-        KSCRIPT_GUI_METHOD("setTabIndex", WebDOMHTMLTextAreaElement::setTabIndex)
         KSCRIPT_GUI_METHOD("getType", WebDOMHTMLTextAreaElement::getType)       
         KSCRIPT_GUI_METHOD("blur", WebDOMHTMLTextAreaElement::blur)
         KSCRIPT_GUI_METHOD("focus", WebDOMHTMLTextAreaElement::focus)
@@ -700,8 +666,6 @@ public:
     void setReadOnly(kscript::ExprEnv* env, kscript::Value* retval);
     void getRows(kscript::ExprEnv* env, kscript::Value* retval);
     void setRows(kscript::ExprEnv* env, kscript::Value* retval);
-    void getTabIndex(kscript::ExprEnv* env, kscript::Value* retval);
-    void setTabIndex(kscript::ExprEnv* env, kscript::Value* retval);
     void getType(kscript::ExprEnv* env, kscript::Value* retval);
     void blur(kscript::ExprEnv* env, kscript::Value* retval);
     void focus(kscript::ExprEnv* env, kscript::Value* retval);

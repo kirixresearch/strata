@@ -603,7 +603,6 @@ ScriptHost::ScriptHost()
     WebDOMHTMLInputElement::compiletimeBind(m_expr);
     WebDOMHTMLLinkElement::compiletimeBind(m_expr);
     WebDOMHTMLOptionElement::compiletimeBind(m_expr);
-    WebDOMHTMLParamElement::compiletimeBind(m_expr);
     WebDOMHTMLSelectElement::compiletimeBind(m_expr);
     WebDOMHTMLTextAreaElement::compiletimeBind(m_expr);
     
