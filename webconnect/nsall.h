@@ -24,6 +24,8 @@ typedef int64_t  PRInt64;
 
 typedef uint64_t  PRTime;
 
+typedef uint32_t  uint32_t;
+
 #endif
 typedef int32_t  jsword;
 
@@ -1509,11 +1511,11 @@ class nsIInterfaceRequestor; /* forward declaration */
 
 
 /* starting interface:    nsIX509Cert */
-#define NS_IX509CERT_IID_STR "f0980f60-ee3d-11d4-998b-00b0d02354a0"
+#define NS_IX509CERT_IID_STR "45b24b0a-6189-4b05-af0b-8d4d66d57c59"
 
 #define NS_IX509CERT_IID \
-  {0xf0980f60, 0xee3d, 0x11d4, \
-    { 0x99, 0x8b, 0x00, 0xb0, 0xd0, 0x23, 0x54, 0xa0 }}
+  {0x45b24b0a, 0x6189, 0x4b05, \
+    { 0xaf, 0x0b, 0x8d, 0x4d, 0x66, 0xd5, 0x7c, 0x59 }}
 
 class NS_NO_VTABLE nsIX509Cert : public nsISupports {
  public: 
@@ -2142,13 +2144,15 @@ NS_IMETHODIMP nsCertOverrideService::IsCertUsedForOverrides(nsIX509Cert *cert, b
 
 class nsIOpenSignedJARFileCallback; /* forward declaration */
 
+typedef uint32_t  AppTrustedRoot;
+
 
 /* starting interface:    nsIX509CertDB */
-#define NS_IX509CERTDB_IID_STR "6502291d-4477-43a3-9688-4b453d055c1d"
+#define NS_IX509CERTDB_IID_STR "398dfa21-f29d-4530-bb42-136c6e7d9486"
 
 #define NS_IX509CERTDB_IID \
-  {0x6502291d, 0x4477, 0x43a3, \
-    { 0x96, 0x88, 0x4b, 0x45, 0x3d, 0x05, 0x5c, 0x1d }}
+  {0x398dfa21, 0xf29d, 0x4530, \
+    { 0xbb, 0x42, 0x13, 0x6c, 0x6e, 0x7d, 0x94, 0x86 }}
 
 class NS_NO_VTABLE nsIX509CertDB : public nsISupports {
  public: 
@@ -2213,11 +2217,22 @@ class NS_NO_VTABLE nsIX509CertDB : public nsISupports {
   /* nsIX509Cert constructX509FromBase64 (in string base64); */
   NS_IMETHOD ConstructX509FromBase64(const char * base64, nsIX509Cert * *_retval) = 0;
 
+  /* nsIX509Cert constructX509 (in string cert_der, in unsigned long length); */
+  NS_IMETHOD ConstructX509(const char * cert_der, uint32_t length, nsIX509Cert * *_retval) = 0;
+
   /* nsIRecentBadCerts getRecentBadCerts (in boolean is_private); */
   NS_IMETHOD GetRecentBadCerts(bool is_private, nsIRecentBadCerts * *_retval) = 0;
 
-  /* void openSignedJARFileAsync (in nsIFile jar_file, in nsIOpenSignedJARFileCallback callback_); */
-  NS_IMETHOD OpenSignedJARFileAsync(nsIFile *jar_file, nsIOpenSignedJARFileCallback *callback_) = 0;
+  enum {
+    AppMarketplaceProdPublicRoot = 1U,
+    AppMarketplaceProdReviewersRoot = 2U,
+    AppMarketplaceDevPublicRoot = 3U,
+    AppMarketplaceDevReviewersRoot = 4U,
+    AppXPCShellRoot = 5U
+  };
+
+  /* void openSignedAppFileAsync (in AppTrustedRoot trustedRoot, in nsIFile jar_file, in nsIOpenSignedJARFileCallback callback_); */
+  NS_IMETHOD OpenSignedAppFileAsync(AppTrustedRoot trustedRoot, nsIFile *jar_file, nsIOpenSignedJARFileCallback *callback_) = 0;
 
   /* void addCert (in ACString cert_der, in string trust, in string name); */
   NS_IMETHOD AddCert(const nsACString & cert_der, const char * trust, const char * name) = 0;
@@ -2250,8 +2265,9 @@ class NS_NO_VTABLE nsIX509CertDB : public nsISupports {
   NS_IMETHOD ImportPKCS12File(nsISupports *token, nsIFile *file); \
   NS_IMETHOD ExportPKCS12File(nsISupports *token, nsIFile *file, uint32_t count, nsIX509Cert **certs); \
   NS_IMETHOD ConstructX509FromBase64(const char * base64, nsIX509Cert * *_retval); \
+  NS_IMETHOD ConstructX509(const char * cert_der, uint32_t length, nsIX509Cert * *_retval); \
   NS_IMETHOD GetRecentBadCerts(bool is_private, nsIRecentBadCerts * *_retval); \
-  NS_IMETHOD OpenSignedJARFileAsync(nsIFile *jar_file, nsIOpenSignedJARFileCallback *callback_); \
+  NS_IMETHOD OpenSignedAppFileAsync(AppTrustedRoot trustedRoot, nsIFile *jar_file, nsIOpenSignedJARFileCallback *callback_); \
   NS_IMETHOD AddCert(const nsACString & cert_der, const char * trust, const char * name); \
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
@@ -2273,8 +2289,9 @@ class NS_NO_VTABLE nsIX509CertDB : public nsISupports {
   NS_IMETHOD ImportPKCS12File(nsISupports *token, nsIFile *file) { return _to ImportPKCS12File(token, file); } \
   NS_IMETHOD ExportPKCS12File(nsISupports *token, nsIFile *file, uint32_t count, nsIX509Cert **certs) { return _to ExportPKCS12File(token, file, count, certs); } \
   NS_IMETHOD ConstructX509FromBase64(const char * base64, nsIX509Cert * *_retval) { return _to ConstructX509FromBase64(base64, _retval); } \
+  NS_IMETHOD ConstructX509(const char * cert_der, uint32_t length, nsIX509Cert * *_retval) { return _to ConstructX509(cert_der, length, _retval); } \
   NS_IMETHOD GetRecentBadCerts(bool is_private, nsIRecentBadCerts * *_retval) { return _to GetRecentBadCerts(is_private, _retval); } \
-  NS_IMETHOD OpenSignedJARFileAsync(nsIFile *jar_file, nsIOpenSignedJARFileCallback *callback_) { return _to OpenSignedJARFileAsync(jar_file, callback_); } \
+  NS_IMETHOD OpenSignedAppFileAsync(AppTrustedRoot trustedRoot, nsIFile *jar_file, nsIOpenSignedJARFileCallback *callback_) { return _to OpenSignedAppFileAsync(trustedRoot, jar_file, callback_); } \
   NS_IMETHOD AddCert(const nsACString & cert_der, const char * trust, const char * name) { return _to AddCert(cert_der, trust, name); } \
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
@@ -2296,8 +2313,9 @@ class NS_NO_VTABLE nsIX509CertDB : public nsISupports {
   NS_IMETHOD ImportPKCS12File(nsISupports *token, nsIFile *file) { return !_to ? NS_ERROR_NULL_POINTER : _to->ImportPKCS12File(token, file); } \
   NS_IMETHOD ExportPKCS12File(nsISupports *token, nsIFile *file, uint32_t count, nsIX509Cert **certs) { return !_to ? NS_ERROR_NULL_POINTER : _to->ExportPKCS12File(token, file, count, certs); } \
   NS_IMETHOD ConstructX509FromBase64(const char * base64, nsIX509Cert * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ConstructX509FromBase64(base64, _retval); } \
+  NS_IMETHOD ConstructX509(const char * cert_der, uint32_t length, nsIX509Cert * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ConstructX509(cert_der, length, _retval); } \
   NS_IMETHOD GetRecentBadCerts(bool is_private, nsIRecentBadCerts * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetRecentBadCerts(is_private, _retval); } \
-  NS_IMETHOD OpenSignedJARFileAsync(nsIFile *jar_file, nsIOpenSignedJARFileCallback *callback_) { return !_to ? NS_ERROR_NULL_POINTER : _to->OpenSignedJARFileAsync(jar_file, callback_); } \
+  NS_IMETHOD OpenSignedAppFileAsync(AppTrustedRoot trustedRoot, nsIFile *jar_file, nsIOpenSignedJARFileCallback *callback_) { return !_to ? NS_ERROR_NULL_POINTER : _to->OpenSignedAppFileAsync(trustedRoot, jar_file, callback_); } \
   NS_IMETHOD AddCert(const nsACString & cert_der, const char * trust, const char * name) { return !_to ? NS_ERROR_NULL_POINTER : _to->AddCert(cert_der, trust, name); } \
 
 #if 0
@@ -2434,14 +2452,20 @@ NS_IMETHODIMP nsX509CertDB::ConstructX509FromBase64(const char * base64, nsIX509
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
+/* nsIX509Cert constructX509 (in string cert_der, in unsigned long length); */
+NS_IMETHODIMP nsX509CertDB::ConstructX509(const char * cert_der, uint32_t length, nsIX509Cert * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 /* nsIRecentBadCerts getRecentBadCerts (in boolean is_private); */
 NS_IMETHODIMP nsX509CertDB::GetRecentBadCerts(bool is_private, nsIRecentBadCerts * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void openSignedJARFileAsync (in nsIFile jar_file, in nsIOpenSignedJARFileCallback callback_); */
-NS_IMETHODIMP nsX509CertDB::OpenSignedJARFileAsync(nsIFile *jar_file, nsIOpenSignedJARFileCallback *callback_)
+/* void openSignedAppFileAsync (in AppTrustedRoot trustedRoot, in nsIFile jar_file, in nsIOpenSignedJARFileCallback callback_); */
+NS_IMETHODIMP nsX509CertDB::OpenSignedAppFileAsync(AppTrustedRoot trustedRoot, nsIFile *jar_file, nsIOpenSignedJARFileCallback *callback_)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -2793,13 +2817,15 @@ class nsICacheSession; /* forward declaration */
 
 class nsICacheVisitor; /* forward declaration */
 
+class nsIEventTarget; /* forward declaration */
+
 
 /* starting interface:    nsICacheService */
-#define NS_ICACHESERVICE_IID_STR "de114eb4-29fc-4959-b2f7-2d03eb9bc771"
+#define NS_ICACHESERVICE_IID_STR "14dbe1e9-f3bc-45af-92f4-2c574fcd4e39"
 
 #define NS_ICACHESERVICE_IID \
-  {0xde114eb4, 0x29fc, 0x4959, \
-    { 0xb2, 0xf7, 0x2d, 0x03, 0xeb, 0x9b, 0xc7, 0x71 }}
+  {0x14dbe1e9, 0xf3bc, 0x45af, \
+    { 0x92, 0xf4, 0x2c, 0x57, 0x4f, 0xcd, 0x4e, 0x39 }}
 
 class NS_NO_VTABLE nsICacheService : public nsISupports {
  public: 
@@ -2815,6 +2841,9 @@ class NS_NO_VTABLE nsICacheService : public nsISupports {
   /* void evictEntries (in nsCacheStoragePolicy storage_policy); */
   NS_IMETHOD EvictEntries(nsCacheStoragePolicy storage_policy) = 0;
 
+  /* readonly attribute nsIEventTarget cacheIOTarget; */
+  NS_IMETHOD GetCacheIOTarget(nsIEventTarget * *aCacheIOTarget) = 0;
+
 };
 
   NS_DEFINE_STATIC_IID_ACCESSOR(nsICacheService, NS_ICACHESERVICE_IID)
@@ -2823,19 +2852,22 @@ class NS_NO_VTABLE nsICacheService : public nsISupports {
 #define NS_DECL_NSICACHESERVICE \
   NS_IMETHOD CreateSession(const char * client_id, nsCacheStoragePolicy storage_policy, bool stream_based, nsICacheSession * *_retval); \
   NS_IMETHOD VisitEntries(nsICacheVisitor *visitor); \
-  NS_IMETHOD EvictEntries(nsCacheStoragePolicy storage_policy); 
+  NS_IMETHOD EvictEntries(nsCacheStoragePolicy storage_policy); \
+  NS_IMETHOD GetCacheIOTarget(nsIEventTarget * *aCacheIOTarget); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSICACHESERVICE(_to) \
   NS_IMETHOD CreateSession(const char * client_id, nsCacheStoragePolicy storage_policy, bool stream_based, nsICacheSession * *_retval) { return _to CreateSession(client_id, storage_policy, stream_based, _retval); } \
   NS_IMETHOD VisitEntries(nsICacheVisitor *visitor) { return _to VisitEntries(visitor); } \
-  NS_IMETHOD EvictEntries(nsCacheStoragePolicy storage_policy) { return _to EvictEntries(storage_policy); } 
+  NS_IMETHOD EvictEntries(nsCacheStoragePolicy storage_policy) { return _to EvictEntries(storage_policy); } \
+  NS_IMETHOD GetCacheIOTarget(nsIEventTarget * *aCacheIOTarget) { return _to GetCacheIOTarget(aCacheIOTarget); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSICACHESERVICE(_to) \
   NS_IMETHOD CreateSession(const char * client_id, nsCacheStoragePolicy storage_policy, bool stream_based, nsICacheSession * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateSession(client_id, storage_policy, stream_based, _retval); } \
   NS_IMETHOD VisitEntries(nsICacheVisitor *visitor) { return !_to ? NS_ERROR_NULL_POINTER : _to->VisitEntries(visitor); } \
-  NS_IMETHOD EvictEntries(nsCacheStoragePolicy storage_policy) { return !_to ? NS_ERROR_NULL_POINTER : _to->EvictEntries(storage_policy); } 
+  NS_IMETHOD EvictEntries(nsCacheStoragePolicy storage_policy) { return !_to ? NS_ERROR_NULL_POINTER : _to->EvictEntries(storage_policy); } \
+  NS_IMETHOD GetCacheIOTarget(nsIEventTarget * *aCacheIOTarget) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetCacheIOTarget(aCacheIOTarget); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -2883,6 +2915,12 @@ NS_IMETHODIMP nsCacheService::VisitEntries(nsICacheVisitor *visitor)
 
 /* void evictEntries (in nsCacheStoragePolicy storage_policy); */
 NS_IMETHODIMP nsCacheService::EvictEntries(nsCacheStoragePolicy storage_policy)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute nsIEventTarget cacheIOTarget; */
+NS_IMETHODIMP nsCacheService::GetCacheIOTarget(nsIEventTarget * *aCacheIOTarget)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }

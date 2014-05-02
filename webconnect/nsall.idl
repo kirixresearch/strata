@@ -29,6 +29,7 @@ typedef long PRInt32;
 typedef long long PRInt64;
 typedef unsigned long long PRTime;
 
+typedef unsigned long uint32_t;
 
 [ref, utf8string] native AUTF8String(ignored);
 
@@ -293,7 +294,7 @@ interface nsIInterfaceRequestor;
 interface nsIInterfaceRequestor;
 
 
-[scriptable, uuid(f0980f60-ee3d-11d4-998b-00b0d02354a0)]
+[scriptable, uuid(45b24b0a-6189-4b05-af0b-8d4d66d57c59)]
 interface nsIX509Cert : nsISupports
 {
     // to be filled out later
@@ -396,8 +397,9 @@ interface nsICertOverrideService : nsISupports
 
 
 interface nsIOpenSignedJARFileCallback;
+typedef uint32_t AppTrustedRoot;
 
-[scriptable, uuid(6502291d-4477-43a3-9688-4b453d055c1d)]
+[scriptable, uuid(398dfa21-f29d-4530-bb42-136c6e7d9486)]
 interface nsIX509CertDB : nsISupports
 {
     const unsigned long UNTRUSTED = 0;
@@ -459,9 +461,18 @@ interface nsIX509CertDB : nsISupports
                           [array, size_is(count)] in nsIX509Cert certs);
 
     nsIX509Cert constructX509FromBase64(in string base64);
+    nsIX509Cert constructX509(in string cert_der, in unsigned long length);
+
     nsIRecentBadCerts getRecentBadCerts(in boolean is_private);
 
-    void openSignedJARFileAsync(in nsIFile jar_file,
+    const AppTrustedRoot AppMarketplaceProdPublicRoot = 1;
+    const AppTrustedRoot AppMarketplaceProdReviewersRoot = 2;
+    const AppTrustedRoot AppMarketplaceDevPublicRoot = 3;
+    const AppTrustedRoot AppMarketplaceDevReviewersRoot = 4;
+    const AppTrustedRoot AppXPCShellRoot = 5;
+
+    void openSignedAppFileAsync(in AppTrustedRoot trustedRoot,
+                                in nsIFile jar_file,
                                 in nsIOpenSignedJARFileCallback callback_);
 
     void addCert(in ACString cert_der, in string trust, in string name);
@@ -547,8 +558,9 @@ interface nsIBaseWindow : nsISupports
 typedef long nsCacheStoragePolicy;
 interface nsICacheSession;
 interface nsICacheVisitor;
+interface nsIEventTarget;
 
-[scriptable, uuid(de114eb4-29fc-4959-b2f7-2d03eb9bc771)]
+[scriptable, uuid(14dbe1e9-f3bc-45af-92f4-2c574fcd4e39)]
 interface nsICacheService : nsISupports
 {
     nsICacheSession createSession(in string client_id,
@@ -556,6 +568,8 @@ interface nsICacheService : nsISupports
                                   in boolean stream_based);
     void visitEntries(in nsICacheVisitor visitor);
     void evictEntries(in nsCacheStoragePolicy storage_policy);
+
+    readonly attribute nsIEventTarget cacheIOTarget;
 };
 
 
