@@ -81,6 +81,11 @@ const PRBool PR_FALSE = 0;
 
 
 
+namespace mozilla { class WidgetEvent; };
+namespace mozilla { namespace dom { class EventTarget; } };
+namespace IPC     { class Message; };
+class nsDOMEvent;
+
 ///////////////////////////////////////////////////////////////////////////////
 //  function declarations
 ///////////////////////////////////////////////////////////////////////////////

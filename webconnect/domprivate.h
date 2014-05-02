@@ -29,7 +29,6 @@ struct wxDOMNodeData
         input_ptr = supports;
         link_ptr = supports;
         option_ptr = supports;
-        param_ptr = supports;
         select_ptr = supports;
         textarea_ptr = supports;
     }
@@ -45,7 +44,6 @@ struct wxDOMNodeData
     ns_smartptr<nsIDOMHTMLInputElement> input_ptr;
     ns_smartptr<nsIDOMHTMLLinkElement> link_ptr;
     ns_smartptr<nsIDOMHTMLOptionElement> option_ptr;
-    ns_smartptr<nsIDOMHTMLParamElement> param_ptr;
     ns_smartptr<nsIDOMHTMLSelectElement> select_ptr;
     ns_smartptr<nsIDOMHTMLTextAreaElement> textarea_ptr;
 };

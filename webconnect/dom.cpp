@@ -4421,176 +4421,6 @@ void wxDOMHTMLOptionElement::SetSelected(bool value)
 
 
 
-
-///////////////////////////////////////////////////////////////////////////////
-//  wxDOMHTMLParamElement class implementation
-///////////////////////////////////////////////////////////////////////////////
-
-
-// (CONSTRUCTOR) wxDOMHTMLParamElement::wxDOMHTMLParamElement
-// Description: Creates a new wxDOMHTMLParamElement object.
-//
-// Syntax: wxDOMHTMLParamElement::wxDOMHTMLParamElement()
-//
-// Remarks: Creates a new wxDOMHTMLParamElement object.
-
-wxDOMHTMLParamElement::wxDOMHTMLParamElement()
-{
-}
-
-wxDOMHTMLParamElement::wxDOMHTMLParamElement(const wxDOMNode& node) : wxDOMHTMLElement(node)
-{
-}
-
-wxDOMHTMLParamElement& wxDOMHTMLParamElement::operator=(const wxDOMNode& c)
-{
-    assign(c);
-    return *this;
-}
-
-// (METHOD) wxDOMHTMLParamElement::IsOk
-// Description:
-//
-// Syntax: bool wxDOMHTMLParamElement::IsOk() const
-//
-// Remarks:
-//
-// Returns: Returns true if the DOM HTML Param Element is valid, and false otherwise.
-
-bool wxDOMHTMLParamElement::IsOk() const
-{
-    if (!m_data->node_ptr)
-        return false;
-    
-    if (!m_data->htmlelement_ptr)
-        return false;
-    
-    return (m_data->param_ptr ? true : false);
-}
-
-// (METHOD) wxDOMHTMLParamElement::GetName
-// Description:
-//
-// Syntax: wxString wxDOMHTMLParamElement::GetName()
-//
-// Remarks:
-//
-// Returns:
-
-wxString wxDOMHTMLParamElement::GetName()
-{
-    if (!IsOk())
-        return wxEmptyString;
-
-    nsEmbedString ns;
-    m_data->param_ptr->GetName(ns);
-
-    return ns2wx(ns);
-}
-
-// (METHOD) wxDOMHTMLParamElement::SetName
-// Description:
-//
-// Syntax: void wxDOMHTMLParamElement::SetName(const wxString& name)
-//
-// Remarks:
-//
-// Returns:
-
-void wxDOMHTMLParamElement::SetName(const wxString& name)
-{
-    if (!IsOk())
-        return;
-
-    nsEmbedString nsname;
-    wx2ns(name, nsname);
-    
-    m_data->param_ptr->SetName(nsname);
-}
-
-// (METHOD) wxDOMHTMLParamElement::GetType
-// Description:
-//
-// Syntax: wxString wxDOMHTMLParamElement::GetType()
-//
-// Remarks:
-//
-// Returns:
-
-wxString wxDOMHTMLParamElement::GetType()
-{
-    if (!IsOk())
-        return wxEmptyString;
-
-    nsEmbedString ns;
-    m_data->param_ptr->GetType(ns);
-
-    return ns2wx(ns);
-}
-
-// (METHOD) wxDOMHTMLParamElement::SetType
-// Description:
-//
-// Syntax: void wxDOMHTMLParamElement::SetType(const wxString& type)
-//
-// Remarks:
-//
-// Returns:
-
-void wxDOMHTMLParamElement::SetType(const wxString& type)
-{
-    if (!IsOk())
-        return;
-
-    nsEmbedString nstype;
-    wx2ns(type, nstype);
-    
-    m_data->param_ptr->SetType(nstype);
-}
-
-// (METHOD) wxDOMHTMLParamElement::GetValueType
-// Description:
-//
-// Syntax: wxString wxDOMHTMLParamElement::GetValueType()
-//
-// Remarks:
-//
-// Returns:
-
-wxString wxDOMHTMLParamElement::GetValueType()
-{
-    if (!IsOk())
-        return wxEmptyString;
-
-    nsEmbedString ns;
-    m_data->param_ptr->GetValueType(ns);
-
-    return ns2wx(ns);
-}
-
-// (METHOD) wxDOMHTMLParamElement::SetValueType
-// Description:
-//
-// Syntax: void wxDOMHTMLParamElement::SetValueType(const wxString& valuetype)
-//
-// Remarks:
-//
-// Returns:
-
-void wxDOMHTMLParamElement::SetValueType(const wxString& valuetype)
-{
-    if (!IsOk())
-        return;
-
-    nsEmbedString nsvaluetype;
-    wx2ns(valuetype, nsvaluetype);
-    
-    m_data->param_ptr->SetValueType(nsvaluetype);
-}
-
-
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //  wxDOMHTMLSelectElement class implementation
 ///////////////////////////////////////////////////////////////////////////////
@@ -4848,18 +4678,18 @@ void wxDOMHTMLSelectElement::SetName(const wxString& value)
 // (METHOD) wxDOMHTMLSelectElement::GetSize
 // Description:
 //
-// Syntax: int wxDOMHTMLSelectElement::GetSize()
+// Syntax: unsigned int wxDOMHTMLSelectElement::GetSize()
 //
 // Remarks:
 //
 // Returns:
 
-int wxDOMHTMLSelectElement::GetSize()
+unsigned int wxDOMHTMLSelectElement::GetSize()
 {
     if (!IsOk())
         return 0;
 
-    PRInt32 val = 0;
+    uint32_t val = 0;
     m_data->select_ptr->GetSize(&val);
     return val;
 }
@@ -4867,57 +4697,21 @@ int wxDOMHTMLSelectElement::GetSize()
 // (METHOD) wxDOMHTMLSelectElement::SetSize
 // Description:
 //
-// Syntax: void wxDOMHTMLSelectElement::SetSize(int value)
+// Syntax: void wxDOMHTMLSelectElement::SetSize(unsigned int value)
 //
 // Remarks:
 //
 // Returns:
 
-void wxDOMHTMLSelectElement::SetSize(int value)
+void wxDOMHTMLSelectElement::SetSize(unsigned int value)
 {
     if (!IsOk())
         return;
-        
-    PRInt32 val = value;
-    m_data->select_ptr->SetSize(val);
+    
+    m_data->select_ptr->SetSize(value);
 }
 
-// (METHOD) wxDOMHTMLSelectElement::GetTabIndex
-// Description:
-//
-// Syntax: int wxDOMHTMLSelectElement::GetTabIndex()
-//
-// Remarks:
-//
-// Returns:
 
-int wxDOMHTMLSelectElement::GetTabIndex()
-{
-    if (!IsOk())
-        return 0;
-
-    PRInt32 val = 0;
-    m_data->select_ptr->GetTabIndex(&val);
-    return val;
-}
-
-// (METHOD) wxDOMHTMLSelectElement::SetTabIndex
-// Description:
-//
-// Syntax: void wxDOMHTMLSelectElement::SetTabIndex(int index)
-//
-// Remarks:
-//
-// Returns:
-
-void wxDOMHTMLSelectElement::SetTabIndex(int index)
-{
-    if (!IsOk())
-        return;
-        
-    PRInt32 val = index;
-    m_data->select_ptr->SetTabIndex(val);
-}
 
 // (METHOD) wxDOMHTMLSelectElement::Add
 // Description:
@@ -4970,7 +4764,7 @@ void wxDOMHTMLSelectElement::Blur()
     if (!IsOk())
         return;
 
-    m_data->select_ptr->Blur();
+    m_data->htmlelement_ptr->Blur();
 }
 
 // (METHOD) wxDOMHTMLSelectElement::Focus
@@ -4987,7 +4781,7 @@ void wxDOMHTMLSelectElement::Focus()
     if (!IsOk())
         return;
 
-    m_data->select_ptr->Focus();
+    m_data->htmlelement_ptr->Focus();
 }
 
 
@@ -5094,7 +4888,7 @@ wxString wxDOMHTMLTextAreaElement::GetAccessKey()
         return wxEmptyString;
 
     nsEmbedString ns;
-    m_data->textarea_ptr->GetAccessKey(ns);
+    m_data->htmlelement_ptr->GetAccessKey(ns);
 
     return ns2wx(ns);
 }
@@ -5116,7 +4910,7 @@ void wxDOMHTMLTextAreaElement::SetAccessKey(const wxString& value)
     nsEmbedString nsvalue;
     wx2ns(value, nsvalue);
     
-    m_data->textarea_ptr->SetAccessKey(nsvalue);
+    m_data->htmlelement_ptr->SetAccessKey(nsvalue);
 }
 
 // (METHOD) wxDOMHTMLTextAreaElement::GetCols
@@ -5307,42 +5101,6 @@ void wxDOMHTMLTextAreaElement::SetRows(int value)
     m_data->textarea_ptr->SetRows(val);
 }
 
-// (METHOD) wxDOMHTMLTextAreaElement::GetTabIndex
-// Description:
-//
-// Syntax: int wxDOMHTMLTextAreaElement::GetTabIndex()
-//
-// Remarks:
-//
-// Returns:
-
-int wxDOMHTMLTextAreaElement::GetTabIndex()
-{
-    if (!IsOk())
-        return 0;
-
-    PRInt32 val = 0;
-    m_data->textarea_ptr->GetTabIndex(&val);
-    return val;
-}
-
-// (METHOD) wxDOMHTMLTextAreaElement::SetTabIndex
-// Description:
-//
-// Syntax: void wxDOMHTMLTextAreaElement::SetTabIndex(int value)
-//
-// Remarks:
-//
-// Returns:
-
-void wxDOMHTMLTextAreaElement::SetTabIndex(int value)
-{
-    if (!IsOk())
-        return;
-        
-    PRInt32 val = value;
-    m_data->textarea_ptr->SetTabIndex(val);
-}
 
 // (METHOD) wxDOMHTMLTextAreaElement::GetType
 // Description:
@@ -5378,7 +5136,7 @@ void wxDOMHTMLTextAreaElement::Blur()
     if (!IsOk())
         return;
         
-    m_data->textarea_ptr->Blur();
+    m_data->htmlelement_ptr->Blur();
 }
 
 // (METHOD) wxDOMHTMLTextAreaElement::Focus
@@ -5395,7 +5153,7 @@ void wxDOMHTMLTextAreaElement::Focus()
     if (!IsOk())
         return;
         
-    m_data->textarea_ptr->Focus();
+    m_data->htmlelement_ptr->Focus();
 }
 
 // (METHOD) wxDOMHTMLTextAreaElement::Select

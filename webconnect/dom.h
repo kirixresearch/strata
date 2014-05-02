@@ -752,46 +752,6 @@ public:
 
 
 
-///////////////////////////////////////////////////////////////////////////////
-//  wxDOMHTMLParamElement class
-///////////////////////////////////////////////////////////////////////////////
-
-
-// (CLASS) wxDOMHTMLParamElement
-// Category: DOM
-// Derives: wxDOMHTMLElement
-// Description: Encapsulates a DOM HTML param element.
-// Remarks: The wxDOMHTMLParamElement class encapsulates a DOM HTML 
-//     param element.
-
-class wxDOMHTMLParamElement : public wxDOMHTMLElement
-{
-public:
-
-    wxDOMHTMLParamElement();
-    wxDOMHTMLParamElement(const wxDOMNode& node);
-    wxDOMHTMLParamElement& operator=(const wxDOMNode& c);
-    
-    virtual bool IsOk() const;
-
-    // wxDOMHTMLParamElement interface
-
-    wxString GetName();
-    void SetName(const wxString& name);
-  
-    wxString GetType();
-    void SetType(const wxString& type);
-
-    // following interface items are on base class wxDOMHTMLElement
-    // NS_IMETHOD GetValue(nsAString& value);
-    // NS_IMETHOD SetValue(const nsAString& value);
-  
-    wxString GetValueType();
-    void SetValueType(const wxString& valuetype);
-};
-
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //  wxDOMHTMLSelectElement class
@@ -841,11 +801,8 @@ public:
     wxString GetName();
     void SetName(const wxString& value);
 
-    int GetSize();
-    void SetSize(int value);
-
-    int GetTabIndex();
-    void SetTabIndex(int index);
+    unsigned int GetSize();
+    void SetSize(unsigned int value);
  
     void Add(const wxDOMHTMLElement& element,
              const wxDOMHTMLElement& before);
@@ -903,9 +860,6 @@ public:
 
     int GetRows();
     void SetRows(int value);
-
-    int GetTabIndex();
-    void SetTabIndex(int value);
 
     wxString GetType();
 

@@ -3707,13 +3707,15 @@ class nsIInputStream; /* forward declaration */
 
 class nsIStreamListener; /* forward declaration */
 
+class nsIArray; /* forward declaration */
+
 
 /* starting interface:    nsIChannel */
-#define NS_ICHANNEL_IID_STR "06f6ada3-7729-4e72-8d3f-bf8ba630ff9b"
+#define NS_ICHANNEL_IID_STR "2a8a7237-c1e2-4de7-b669-2002af29e42d"
 
 #define NS_ICHANNEL_IID \
-  {0x06f6ada3, 0x7729, 0x4e72, \
-    { 0x8d, 0x3f, 0xbf, 0x8b, 0xa6, 0x30, 0xff, 0x9b }}
+  {0x2a8a7237, 0xc1e2, 0x4de7, \
+    { 0xb6, 0x69, 0x20, 0x02, 0xaf, 0x29, 0xe4, 0x2d }}
 
 class NS_NO_VTABLE nsIChannel : public nsIRequest {
  public: 
@@ -3725,7 +3727,11 @@ class NS_NO_VTABLE nsIChannel : public nsIRequest {
     LOAD_RETARGETED_DOCUMENT_URI = 131072U,
     LOAD_REPLACE = 262144U,
     LOAD_INITIAL_DOCUMENT_URI = 524288U,
-    LOAD_TARGETED = 1048576U
+    LOAD_TARGETED = 1048576U,
+    LOAD_CALL_CONTENT_SNIFFERS = 2097152U,
+    LOAD_CLASSIFY_URI = 4194304U,
+    LOAD_TREAT_APPLICATION_OCTET_STREAM_AS_UNKNOWN = 8388608U,
+    LOAD_EXPLICIT_CREDENTIALS = 16777216U
   };
 
   /* attribute nsIURI originalURI; */
@@ -3764,6 +3770,22 @@ class NS_NO_VTABLE nsIChannel : public nsIRequest {
   /* void asyncOpen (in nsIStreamListener listener, in nsISupports xcontext); */
   NS_IMETHOD AsyncOpen(nsIStreamListener *listener, nsISupports *xcontext) = 0;
 
+  /* attribute unsigned long contentDisposition; */
+  NS_IMETHOD GetContentDisposition(uint32_t *aContentDisposition) = 0;
+  NS_IMETHOD SetContentDisposition(uint32_t aContentDisposition) = 0;
+
+  enum {
+    DISPOSITION_INLINE = 0U,
+    DISPOSITION_ATTACHMENT = 1U
+  };
+
+  /* attribute AString contentDispositionFilename; */
+  NS_IMETHOD GetContentDispositionFilename(nsAString & aContentDispositionFilename) = 0;
+  NS_IMETHOD SetContentDispositionFilename(const nsAString & aContentDispositionFilename) = 0;
+
+  /* readonly attribute ACString contentDispositionHeader; */
+  NS_IMETHOD GetContentDispositionHeader(nsACString & aContentDispositionHeader) = 0;
+
 };
 
   NS_DEFINE_STATIC_IID_ACCESSOR(nsIChannel, NS_ICHANNEL_IID)
@@ -3785,7 +3807,12 @@ class NS_NO_VTABLE nsIChannel : public nsIRequest {
   NS_IMETHOD GetContentLength(int32_t *aContentLength); \
   NS_IMETHOD SetContentLength(int32_t aContentLength); \
   NS_IMETHOD Open(nsIInputStream * *_retval); \
-  NS_IMETHOD AsyncOpen(nsIStreamListener *listener, nsISupports *xcontext); 
+  NS_IMETHOD AsyncOpen(nsIStreamListener *listener, nsISupports *xcontext); \
+  NS_IMETHOD GetContentDisposition(uint32_t *aContentDisposition); \
+  NS_IMETHOD SetContentDisposition(uint32_t aContentDisposition); \
+  NS_IMETHOD GetContentDispositionFilename(nsAString & aContentDispositionFilename); \
+  NS_IMETHOD SetContentDispositionFilename(const nsAString & aContentDispositionFilename); \
+  NS_IMETHOD GetContentDispositionHeader(nsACString & aContentDispositionHeader); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSICHANNEL(_to) \
@@ -3804,7 +3831,12 @@ class NS_NO_VTABLE nsIChannel : public nsIRequest {
   NS_IMETHOD GetContentLength(int32_t *aContentLength) { return _to GetContentLength(aContentLength); } \
   NS_IMETHOD SetContentLength(int32_t aContentLength) { return _to SetContentLength(aContentLength); } \
   NS_IMETHOD Open(nsIInputStream * *_retval) { return _to Open(_retval); } \
-  NS_IMETHOD AsyncOpen(nsIStreamListener *listener, nsISupports *xcontext) { return _to AsyncOpen(listener, xcontext); } 
+  NS_IMETHOD AsyncOpen(nsIStreamListener *listener, nsISupports *xcontext) { return _to AsyncOpen(listener, xcontext); } \
+  NS_IMETHOD GetContentDisposition(uint32_t *aContentDisposition) { return _to GetContentDisposition(aContentDisposition); } \
+  NS_IMETHOD SetContentDisposition(uint32_t aContentDisposition) { return _to SetContentDisposition(aContentDisposition); } \
+  NS_IMETHOD GetContentDispositionFilename(nsAString & aContentDispositionFilename) { return _to GetContentDispositionFilename(aContentDispositionFilename); } \
+  NS_IMETHOD SetContentDispositionFilename(const nsAString & aContentDispositionFilename) { return _to SetContentDispositionFilename(aContentDispositionFilename); } \
+  NS_IMETHOD GetContentDispositionHeader(nsACString & aContentDispositionHeader) { return _to GetContentDispositionHeader(aContentDispositionHeader); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSICHANNEL(_to) \
@@ -3823,7 +3855,12 @@ class NS_NO_VTABLE nsIChannel : public nsIRequest {
   NS_IMETHOD GetContentLength(int32_t *aContentLength) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetContentLength(aContentLength); } \
   NS_IMETHOD SetContentLength(int32_t aContentLength) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetContentLength(aContentLength); } \
   NS_IMETHOD Open(nsIInputStream * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Open(_retval); } \
-  NS_IMETHOD AsyncOpen(nsIStreamListener *listener, nsISupports *xcontext) { return !_to ? NS_ERROR_NULL_POINTER : _to->AsyncOpen(listener, xcontext); } 
+  NS_IMETHOD AsyncOpen(nsIStreamListener *listener, nsISupports *xcontext) { return !_to ? NS_ERROR_NULL_POINTER : _to->AsyncOpen(listener, xcontext); } \
+  NS_IMETHOD GetContentDisposition(uint32_t *aContentDisposition) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetContentDisposition(aContentDisposition); } \
+  NS_IMETHOD SetContentDisposition(uint32_t aContentDisposition) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetContentDisposition(aContentDisposition); } \
+  NS_IMETHOD GetContentDispositionFilename(nsAString & aContentDispositionFilename) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetContentDispositionFilename(aContentDispositionFilename); } \
+  NS_IMETHOD SetContentDispositionFilename(const nsAString & aContentDispositionFilename) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetContentDispositionFilename(aContentDispositionFilename); } \
+  NS_IMETHOD GetContentDispositionHeader(nsACString & aContentDispositionHeader) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetContentDispositionHeader(aContentDispositionHeader); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -3937,6 +3974,32 @@ NS_IMETHODIMP nsChannel::Open(nsIInputStream * *_retval)
 
 /* void asyncOpen (in nsIStreamListener listener, in nsISupports xcontext); */
 NS_IMETHODIMP nsChannel::AsyncOpen(nsIStreamListener *listener, nsISupports *xcontext)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute unsigned long contentDisposition; */
+NS_IMETHODIMP nsChannel::GetContentDisposition(uint32_t *aContentDisposition)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsChannel::SetContentDisposition(uint32_t aContentDisposition)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute AString contentDispositionFilename; */
+NS_IMETHODIMP nsChannel::GetContentDispositionFilename(nsAString & aContentDispositionFilename)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsChannel::SetContentDispositionFilename(const nsAString & aContentDispositionFilename)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute ACString contentDispositionHeader; */
+NS_IMETHODIMP nsChannel::GetContentDispositionHeader(nsACString & aContentDispositionHeader)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -4175,11 +4238,11 @@ NS_IMETHODIMP nsClipboardCommands::SelectNone()
 
 
 /* starting interface:    nsIComponentManager */
-#define NS_ICOMPONENTMANAGER_IID_STR "a88e5a60-205a-4bb1-94e1-2628daf51eae"
+#define NS_ICOMPONENTMANAGER_IID_STR "d604ffc3-1ba3-4f6c-b65f-1ed4199364c3"
 
 #define NS_ICOMPONENTMANAGER_IID \
-  {0xa88e5a60, 0x205a, 0x4bb1, \
-    { 0x94, 0xe1, 0x26, 0x28, 0xda, 0xf5, 0x1e, 0xae }}
+  {0xd604ffc3, 0x1ba3, 0x4f6c, \
+    { 0xb6, 0x5f, 0x1e, 0xd4, 0x19, 0x93, 0x64, 0xc3 }}
 
 class NS_NO_VTABLE nsIComponentManager : public nsISupports {
  public: 
@@ -4198,6 +4261,15 @@ class NS_NO_VTABLE nsIComponentManager : public nsISupports {
   /* void createInstanceByContractID (in string contract_id, in nsISupports delegate, in nsIIDRef iid, [iid_is (iid), retval] out nsQIResult result); */
   NS_IMETHOD CreateInstanceByContractID(const char * contract_id, nsISupports *delegate, const nsIID & iid, void **result) = 0;
 
+  /* void addBootstrappedManifestLocation (in nsIFile location); */
+  NS_IMETHOD AddBootstrappedManifestLocation(nsIFile *location) = 0;
+
+  /* void removeBootstrappedManifestLocation (in nsIFile location); */
+  NS_IMETHOD RemoveBootstrappedManifestLocation(nsIFile *location) = 0;
+
+  /* nsIArray getManifestLocations (); */
+  NS_IMETHOD GetManifestLocations(nsIArray * *_retval) = 0;
+
 };
 
   NS_DEFINE_STATIC_IID_ACCESSOR(nsIComponentManager, NS_ICOMPONENTMANAGER_IID)
@@ -4207,21 +4279,30 @@ class NS_NO_VTABLE nsIComponentManager : public nsISupports {
   NS_IMETHOD GetClassObject(const nsCID & class_id, const nsIID & iid, void **result); \
   NS_IMETHOD GetClassObjectByContractID(const char * contract_id, const nsIID & iid, void **result); \
   NS_IMETHOD CreateInstance(const nsCID & class_id, nsISupports *delegate, const nsIID & iid, void **result); \
-  NS_IMETHOD CreateInstanceByContractID(const char * contract_id, nsISupports *delegate, const nsIID & iid, void **result); 
+  NS_IMETHOD CreateInstanceByContractID(const char * contract_id, nsISupports *delegate, const nsIID & iid, void **result); \
+  NS_IMETHOD AddBootstrappedManifestLocation(nsIFile *location); \
+  NS_IMETHOD RemoveBootstrappedManifestLocation(nsIFile *location); \
+  NS_IMETHOD GetManifestLocations(nsIArray * *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSICOMPONENTMANAGER(_to) \
   NS_IMETHOD GetClassObject(const nsCID & class_id, const nsIID & iid, void **result) { return _to GetClassObject(class_id, iid, result); } \
   NS_IMETHOD GetClassObjectByContractID(const char * contract_id, const nsIID & iid, void **result) { return _to GetClassObjectByContractID(contract_id, iid, result); } \
   NS_IMETHOD CreateInstance(const nsCID & class_id, nsISupports *delegate, const nsIID & iid, void **result) { return _to CreateInstance(class_id, delegate, iid, result); } \
-  NS_IMETHOD CreateInstanceByContractID(const char * contract_id, nsISupports *delegate, const nsIID & iid, void **result) { return _to CreateInstanceByContractID(contract_id, delegate, iid, result); } 
+  NS_IMETHOD CreateInstanceByContractID(const char * contract_id, nsISupports *delegate, const nsIID & iid, void **result) { return _to CreateInstanceByContractID(contract_id, delegate, iid, result); } \
+  NS_IMETHOD AddBootstrappedManifestLocation(nsIFile *location) { return _to AddBootstrappedManifestLocation(location); } \
+  NS_IMETHOD RemoveBootstrappedManifestLocation(nsIFile *location) { return _to RemoveBootstrappedManifestLocation(location); } \
+  NS_IMETHOD GetManifestLocations(nsIArray * *_retval) { return _to GetManifestLocations(_retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSICOMPONENTMANAGER(_to) \
   NS_IMETHOD GetClassObject(const nsCID & class_id, const nsIID & iid, void **result) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetClassObject(class_id, iid, result); } \
   NS_IMETHOD GetClassObjectByContractID(const char * contract_id, const nsIID & iid, void **result) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetClassObjectByContractID(contract_id, iid, result); } \
   NS_IMETHOD CreateInstance(const nsCID & class_id, nsISupports *delegate, const nsIID & iid, void **result) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateInstance(class_id, delegate, iid, result); } \
-  NS_IMETHOD CreateInstanceByContractID(const char * contract_id, nsISupports *delegate, const nsIID & iid, void **result) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateInstanceByContractID(contract_id, delegate, iid, result); } 
+  NS_IMETHOD CreateInstanceByContractID(const char * contract_id, nsISupports *delegate, const nsIID & iid, void **result) { return !_to ? NS_ERROR_NULL_POINTER : _to->CreateInstanceByContractID(contract_id, delegate, iid, result); } \
+  NS_IMETHOD AddBootstrappedManifestLocation(nsIFile *location) { return !_to ? NS_ERROR_NULL_POINTER : _to->AddBootstrappedManifestLocation(location); } \
+  NS_IMETHOD RemoveBootstrappedManifestLocation(nsIFile *location) { return !_to ? NS_ERROR_NULL_POINTER : _to->RemoveBootstrappedManifestLocation(location); } \
+  NS_IMETHOD GetManifestLocations(nsIArray * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetManifestLocations(_retval); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -4275,6 +4356,24 @@ NS_IMETHODIMP nsComponentManager::CreateInstance(const nsCID & class_id, nsISupp
 
 /* void createInstanceByContractID (in string contract_id, in nsISupports delegate, in nsIIDRef iid, [iid_is (iid), retval] out nsQIResult result); */
 NS_IMETHODIMP nsComponentManager::CreateInstanceByContractID(const char * contract_id, nsISupports *delegate, const nsIID & iid, void **result)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void addBootstrappedManifestLocation (in nsIFile location); */
+NS_IMETHODIMP nsComponentManager::AddBootstrappedManifestLocation(nsIFile *location)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void removeBootstrappedManifestLocation (in nsIFile location); */
+NS_IMETHODIMP nsComponentManager::RemoveBootstrappedManifestLocation(nsIFile *location)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIArray getManifestLocations (); */
+NS_IMETHODIMP nsComponentManager::GetManifestLocations(nsIArray * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -4491,86 +4590,11 @@ NS_IMETHODIMP nsComponentRegistrar::ContractIDToCID(const char * contract_id, ns
 /* End of implementation class template. */
 #endif
 
-class nsIContextMenuInfo; /* forward declaration */
-
 class nsIDOMEvent; /* forward declaration */
 
 class nsIDOMNode; /* forward declaration */
 
 class imgIContainer; /* forward declaration */
-
-
-/* starting interface:    nsIContextMenuListener2 */
-#define NS_ICONTEXTMENULISTENER2_IID_STR "7fb719b3-d804-4964-9596-77cf924ee314"
-
-#define NS_ICONTEXTMENULISTENER2_IID \
-  {0x7fb719b3, 0xd804, 0x4964, \
-    { 0x95, 0x96, 0x77, 0xcf, 0x92, 0x4e, 0xe3, 0x14 }}
-
-class NS_NO_VTABLE nsIContextMenuListener2 : public nsISupports {
- public: 
-
-  NS_DECLARE_STATIC_IID_ACCESSOR(NS_ICONTEXTMENULISTENER2_IID)
-
-  /* void onShowContextMenu (in unsigned long context_flags, in nsIContextMenuInfo utils); */
-  NS_IMETHOD OnShowContextMenu(uint32_t context_flags, nsIContextMenuInfo *utils) = 0;
-
-};
-
-  NS_DEFINE_STATIC_IID_ACCESSOR(nsIContextMenuListener2, NS_ICONTEXTMENULISTENER2_IID)
-
-/* Use this macro when declaring classes that implement this interface. */
-#define NS_DECL_NSICONTEXTMENULISTENER2 \
-  NS_IMETHOD OnShowContextMenu(uint32_t context_flags, nsIContextMenuInfo *utils); 
-
-/* Use this macro to declare functions that forward the behavior of this interface to another object. */
-#define NS_FORWARD_NSICONTEXTMENULISTENER2(_to) \
-  NS_IMETHOD OnShowContextMenu(uint32_t context_flags, nsIContextMenuInfo *utils) { return _to OnShowContextMenu(context_flags, utils); } 
-
-/* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
-#define NS_FORWARD_SAFE_NSICONTEXTMENULISTENER2(_to) \
-  NS_IMETHOD OnShowContextMenu(uint32_t context_flags, nsIContextMenuInfo *utils) { return !_to ? NS_ERROR_NULL_POINTER : _to->OnShowContextMenu(context_flags, utils); } 
-
-#if 0
-/* Use the code below as a template for the implementation class for this interface. */
-
-/* Header file */
-class nsContextMenuListener2 : public nsIContextMenuListener2
-{
-public:
-  NS_DECL_ISUPPORTS
-  NS_DECL_NSICONTEXTMENULISTENER2
-
-  nsContextMenuListener2();
-
-private:
-  ~nsContextMenuListener2();
-
-protected:
-  /* additional members */
-};
-
-/* Implementation file */
-NS_IMPL_ISUPPORTS1(nsContextMenuListener2, nsIContextMenuListener2)
-
-nsContextMenuListener2::nsContextMenuListener2()
-{
-  /* member initializers and constructor code */
-}
-
-nsContextMenuListener2::~nsContextMenuListener2()
-{
-  /* destructor code */
-}
-
-/* void onShowContextMenu (in unsigned long context_flags, in nsIContextMenuInfo utils); */
-NS_IMETHODIMP nsContextMenuListener2::OnShowContextMenu(uint32_t context_flags, nsIContextMenuInfo *utils)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* End of implementation class template. */
-#endif
 
 
 /* starting interface:    nsIContextMenuInfo */
@@ -5742,448 +5766,15 @@ NS_IMETHODIMP nsDOMNode::Contains(nsIDOMNode *other, bool *_retval)
 /* End of implementation class template. */
 #endif
 
-class nsIDOMNode; /* forward declaration */
-
-class DOMException; /* forward declaration */
-
-class nsIVariant; /* forward declaration */
-
-class nsIDOMUserDataHandler; /* forward declaration */
-
-
-/* starting interface:    nsIDOM3Node */
-#define NS_IDOM3NODE_IID_STR "29fb2a18-1dd2-11b2-8dd9-a6fd5d5ad12f"
-
-#define NS_IDOM3NODE_IID \
-  {0x29fb2a18, 0x1dd2, 0x11b2, \
-    { 0x8d, 0xd9, 0xa6, 0xfd, 0x5d, 0x5a, 0xd1, 0x2f }}
-
-class NS_NO_VTABLE nsIDOM3Node : public nsISupports {
- public: 
-
-  NS_DECLARE_STATIC_IID_ACCESSOR(NS_IDOM3NODE_IID)
-
-  enum {
-    DOCUMENT_POSITION_DISCONNECTED = 1U,
-    DOCUMENT_POSITION_PRECEDING = 2U,
-    DOCUMENT_POSITION_FOLLOWING = 4U,
-    DOCUMENT_POSITION_CONTAINS = 8U,
-    DOCUMENT_POSITION_CONTAINED_BY = 16U,
-    DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 32U
-  };
-
-  /* readonly attribute DOMString baseURI; */
-  NS_IMETHOD GetBaseURI(nsAString & aBaseURI) = 0;
-
-  /* unsigned short compareDocumentPosition (in nsIDOMNode other) raises (DOMException); */
-  NS_IMETHOD CompareDocumentPosition(nsIDOMNode *other, uint16_t *_retval) = 0;
-
-  /* attribute DOMString textContent; */
-  NS_IMETHOD GetTextContent(nsAString & aTextContent) = 0;
-  NS_IMETHOD SetTextContent(const nsAString & aTextContent) = 0;
-
-  /* boolean isSameNode (in nsIDOMNode other); */
-  NS_IMETHOD IsSameNode(nsIDOMNode *other, bool *_retval) = 0;
-
-  /* DOMString lookupPrefix (in DOMString namespace_uri); */
-  NS_IMETHOD LookupPrefix(const nsAString & namespace_uri, nsAString & _retval) = 0;
-
-  /* boolean isDefaultNamespace (in DOMString namespace_uri); */
-  NS_IMETHOD IsDefaultNamespace(const nsAString & namespace_uri, bool *_retval) = 0;
-
-  /* DOMString lookupNamespaceURI (in DOMString prefix); */
-  NS_IMETHOD LookupNamespaceURI(const nsAString & prefix, nsAString & _retval) = 0;
-
-  /* boolean isEqualNode (in nsIDOMNode arg); */
-  NS_IMETHOD IsEqualNode(nsIDOMNode *arg, bool *_retval) = 0;
-
-  /* nsISupports getFeature (in DOMString feature, in DOMString xversion); */
-  NS_IMETHOD GetFeature(const nsAString & feature, const nsAString & xversion, nsISupports * *_retval) = 0;
-
-  /* nsIVariant setUserData (in DOMString key, in nsIVariant data, in nsIDOMUserDataHandler handler); */
-  NS_IMETHOD SetUserData(const nsAString & key, nsIVariant *data, nsIDOMUserDataHandler *handler, nsIVariant * *_retval) = 0;
-
-  /* nsIVariant getUserData (in DOMString key); */
-  NS_IMETHOD GetUserData(const nsAString & key, nsIVariant * *_retval) = 0;
-
-};
-
-  NS_DEFINE_STATIC_IID_ACCESSOR(nsIDOM3Node, NS_IDOM3NODE_IID)
-
-/* Use this macro when declaring classes that implement this interface. */
-#define NS_DECL_NSIDOM3NODE \
-  NS_IMETHOD GetBaseURI(nsAString & aBaseURI); \
-  NS_IMETHOD CompareDocumentPosition(nsIDOMNode *other, uint16_t *_retval); \
-  NS_IMETHOD GetTextContent(nsAString & aTextContent); \
-  NS_IMETHOD SetTextContent(const nsAString & aTextContent); \
-  NS_IMETHOD IsSameNode(nsIDOMNode *other, bool *_retval); \
-  NS_IMETHOD LookupPrefix(const nsAString & namespace_uri, nsAString & _retval); \
-  NS_IMETHOD IsDefaultNamespace(const nsAString & namespace_uri, bool *_retval); \
-  NS_IMETHOD LookupNamespaceURI(const nsAString & prefix, nsAString & _retval); \
-  NS_IMETHOD IsEqualNode(nsIDOMNode *arg, bool *_retval); \
-  NS_IMETHOD GetFeature(const nsAString & feature, const nsAString & xversion, nsISupports * *_retval); \
-  NS_IMETHOD SetUserData(const nsAString & key, nsIVariant *data, nsIDOMUserDataHandler *handler, nsIVariant * *_retval); \
-  NS_IMETHOD GetUserData(const nsAString & key, nsIVariant * *_retval); 
-
-/* Use this macro to declare functions that forward the behavior of this interface to another object. */
-#define NS_FORWARD_NSIDOM3NODE(_to) \
-  NS_IMETHOD GetBaseURI(nsAString & aBaseURI) { return _to GetBaseURI(aBaseURI); } \
-  NS_IMETHOD CompareDocumentPosition(nsIDOMNode *other, uint16_t *_retval) { return _to CompareDocumentPosition(other, _retval); } \
-  NS_IMETHOD GetTextContent(nsAString & aTextContent) { return _to GetTextContent(aTextContent); } \
-  NS_IMETHOD SetTextContent(const nsAString & aTextContent) { return _to SetTextContent(aTextContent); } \
-  NS_IMETHOD IsSameNode(nsIDOMNode *other, bool *_retval) { return _to IsSameNode(other, _retval); } \
-  NS_IMETHOD LookupPrefix(const nsAString & namespace_uri, nsAString & _retval) { return _to LookupPrefix(namespace_uri, _retval); } \
-  NS_IMETHOD IsDefaultNamespace(const nsAString & namespace_uri, bool *_retval) { return _to IsDefaultNamespace(namespace_uri, _retval); } \
-  NS_IMETHOD LookupNamespaceURI(const nsAString & prefix, nsAString & _retval) { return _to LookupNamespaceURI(prefix, _retval); } \
-  NS_IMETHOD IsEqualNode(nsIDOMNode *arg, bool *_retval) { return _to IsEqualNode(arg, _retval); } \
-  NS_IMETHOD GetFeature(const nsAString & feature, const nsAString & xversion, nsISupports * *_retval) { return _to GetFeature(feature, xversion, _retval); } \
-  NS_IMETHOD SetUserData(const nsAString & key, nsIVariant *data, nsIDOMUserDataHandler *handler, nsIVariant * *_retval) { return _to SetUserData(key, data, handler, _retval); } \
-  NS_IMETHOD GetUserData(const nsAString & key, nsIVariant * *_retval) { return _to GetUserData(key, _retval); } 
-
-/* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
-#define NS_FORWARD_SAFE_NSIDOM3NODE(_to) \
-  NS_IMETHOD GetBaseURI(nsAString & aBaseURI) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetBaseURI(aBaseURI); } \
-  NS_IMETHOD CompareDocumentPosition(nsIDOMNode *other, uint16_t *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->CompareDocumentPosition(other, _retval); } \
-  NS_IMETHOD GetTextContent(nsAString & aTextContent) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTextContent(aTextContent); } \
-  NS_IMETHOD SetTextContent(const nsAString & aTextContent) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTextContent(aTextContent); } \
-  NS_IMETHOD IsSameNode(nsIDOMNode *other, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->IsSameNode(other, _retval); } \
-  NS_IMETHOD LookupPrefix(const nsAString & namespace_uri, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->LookupPrefix(namespace_uri, _retval); } \
-  NS_IMETHOD IsDefaultNamespace(const nsAString & namespace_uri, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->IsDefaultNamespace(namespace_uri, _retval); } \
-  NS_IMETHOD LookupNamespaceURI(const nsAString & prefix, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->LookupNamespaceURI(prefix, _retval); } \
-  NS_IMETHOD IsEqualNode(nsIDOMNode *arg, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->IsEqualNode(arg, _retval); } \
-  NS_IMETHOD GetFeature(const nsAString & feature, const nsAString & xversion, nsISupports * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFeature(feature, xversion, _retval); } \
-  NS_IMETHOD SetUserData(const nsAString & key, nsIVariant *data, nsIDOMUserDataHandler *handler, nsIVariant * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetUserData(key, data, handler, _retval); } \
-  NS_IMETHOD GetUserData(const nsAString & key, nsIVariant * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetUserData(key, _retval); } 
-
-#if 0
-/* Use the code below as a template for the implementation class for this interface. */
-
-/* Header file */
-class nsDOM3Node : public nsIDOM3Node
-{
-public:
-  NS_DECL_ISUPPORTS
-  NS_DECL_NSIDOM3NODE
-
-  nsDOM3Node();
-
-private:
-  ~nsDOM3Node();
-
-protected:
-  /* additional members */
-};
-
-/* Implementation file */
-NS_IMPL_ISUPPORTS1(nsDOM3Node, nsIDOM3Node)
-
-nsDOM3Node::nsDOM3Node()
-{
-  /* member initializers and constructor code */
-}
-
-nsDOM3Node::~nsDOM3Node()
-{
-  /* destructor code */
-}
-
-/* readonly attribute DOMString baseURI; */
-NS_IMETHODIMP nsDOM3Node::GetBaseURI(nsAString & aBaseURI)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* unsigned short compareDocumentPosition (in nsIDOMNode other) raises (DOMException); */
-NS_IMETHODIMP nsDOM3Node::CompareDocumentPosition(nsIDOMNode *other, uint16_t *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute DOMString textContent; */
-NS_IMETHODIMP nsDOM3Node::GetTextContent(nsAString & aTextContent)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsDOM3Node::SetTextContent(const nsAString & aTextContent)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* boolean isSameNode (in nsIDOMNode other); */
-NS_IMETHODIMP nsDOM3Node::IsSameNode(nsIDOMNode *other, bool *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* DOMString lookupPrefix (in DOMString namespace_uri); */
-NS_IMETHODIMP nsDOM3Node::LookupPrefix(const nsAString & namespace_uri, nsAString & _retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* boolean isDefaultNamespace (in DOMString namespace_uri); */
-NS_IMETHODIMP nsDOM3Node::IsDefaultNamespace(const nsAString & namespace_uri, bool *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* DOMString lookupNamespaceURI (in DOMString prefix); */
-NS_IMETHODIMP nsDOM3Node::LookupNamespaceURI(const nsAString & prefix, nsAString & _retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* boolean isEqualNode (in nsIDOMNode arg); */
-NS_IMETHODIMP nsDOM3Node::IsEqualNode(nsIDOMNode *arg, bool *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* nsISupports getFeature (in DOMString feature, in DOMString xversion); */
-NS_IMETHODIMP nsDOM3Node::GetFeature(const nsAString & feature, const nsAString & xversion, nsISupports * *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* nsIVariant setUserData (in DOMString key, in nsIVariant data, in nsIDOMUserDataHandler handler); */
-NS_IMETHODIMP nsDOM3Node::SetUserData(const nsAString & key, nsIVariant *data, nsIDOMUserDataHandler *handler, nsIVariant * *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* nsIVariant getUserData (in DOMString key); */
-NS_IMETHODIMP nsDOM3Node::GetUserData(const nsAString & key, nsIVariant * *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* End of implementation class template. */
-#endif
-
-class nsIDOMDOMConfiguration; /* forward declaration */
-
-
-/* starting interface:    nsIDOM3Document */
-#define NS_IDOM3DOCUMENT_IID_STR "2e0e9ea1-72ab-4d9e-bdeb-ca64e1abeba4"
-
-#define NS_IDOM3DOCUMENT_IID \
-  {0x2e0e9ea1, 0x72ab, 0x4d9e, \
-    { 0xbd, 0xeb, 0xca, 0x64, 0xe1, 0xab, 0xeb, 0xa4 }}
-
-class NS_NO_VTABLE nsIDOM3Document : public nsIDOM3Node {
- public: 
-
-  NS_DECLARE_STATIC_IID_ACCESSOR(NS_IDOM3DOCUMENT_IID)
-
-  /* readonly attribute DOMString inputEncoding; */
-  NS_IMETHOD GetInputEncoding(nsAString & aInputEncoding) = 0;
-
-  /* readonly attribute DOMString xmlEncoding; */
-  NS_IMETHOD GetXmlEncoding(nsAString & aXmlEncoding) = 0;
-
-  /* attribute boolean xmlStandalone; */
-  NS_IMETHOD GetXmlStandalone(bool *aXmlStandalone) = 0;
-  NS_IMETHOD SetXmlStandalone(bool aXmlStandalone) = 0;
-
-  /* attribute DOMString xmlVersion; */
-  NS_IMETHOD GetXmlVersion(nsAString & aXmlVersion) = 0;
-  NS_IMETHOD SetXmlVersion(const nsAString & aXmlVersion) = 0;
-
-  /* attribute boolean strictErrorChecking; */
-  NS_IMETHOD GetStrictErrorChecking(bool *aStrictErrorChecking) = 0;
-  NS_IMETHOD SetStrictErrorChecking(bool aStrictErrorChecking) = 0;
-
-  /* attribute DOMString documentURI; */
-  NS_IMETHOD GetDocumentURI(nsAString & aDocumentURI) = 0;
-  NS_IMETHOD SetDocumentURI(const nsAString & aDocumentURI) = 0;
-
-  /* nsIDOMNode adoptNode (in nsIDOMNode xsource) raises (DOMException); */
-  NS_IMETHOD AdoptNode(nsIDOMNode *xsource, nsIDOMNode * *_retval) = 0;
-
-  /* readonly attribute nsIDOMDOMConfiguration domConfig; */
-  NS_IMETHOD GetDomConfig(nsIDOMDOMConfiguration * *aDomConfig) = 0;
-
-  /* void normalizeDocument (); */
-  NS_IMETHOD NormalizeDocument(void) = 0;
-
-  /* nsIDOMNode renameNode (in nsIDOMNode node, in DOMString namespace_uri, in DOMString qualified_name) raises (DOMException); */
-  NS_IMETHOD RenameNode(nsIDOMNode *node, const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMNode * *_retval) = 0;
-
-};
-
-  NS_DEFINE_STATIC_IID_ACCESSOR(nsIDOM3Document, NS_IDOM3DOCUMENT_IID)
-
-/* Use this macro when declaring classes that implement this interface. */
-#define NS_DECL_NSIDOM3DOCUMENT \
-  NS_IMETHOD GetInputEncoding(nsAString & aInputEncoding); \
-  NS_IMETHOD GetXmlEncoding(nsAString & aXmlEncoding); \
-  NS_IMETHOD GetXmlStandalone(bool *aXmlStandalone); \
-  NS_IMETHOD SetXmlStandalone(bool aXmlStandalone); \
-  NS_IMETHOD GetXmlVersion(nsAString & aXmlVersion); \
-  NS_IMETHOD SetXmlVersion(const nsAString & aXmlVersion); \
-  NS_IMETHOD GetStrictErrorChecking(bool *aStrictErrorChecking); \
-  NS_IMETHOD SetStrictErrorChecking(bool aStrictErrorChecking); \
-  NS_IMETHOD GetDocumentURI(nsAString & aDocumentURI); \
-  NS_IMETHOD SetDocumentURI(const nsAString & aDocumentURI); \
-  NS_IMETHOD AdoptNode(nsIDOMNode *xsource, nsIDOMNode * *_retval); \
-  NS_IMETHOD GetDomConfig(nsIDOMDOMConfiguration * *aDomConfig); \
-  NS_IMETHOD NormalizeDocument(void); \
-  NS_IMETHOD RenameNode(nsIDOMNode *node, const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMNode * *_retval); 
-
-/* Use this macro to declare functions that forward the behavior of this interface to another object. */
-#define NS_FORWARD_NSIDOM3DOCUMENT(_to) \
-  NS_IMETHOD GetInputEncoding(nsAString & aInputEncoding) { return _to GetInputEncoding(aInputEncoding); } \
-  NS_IMETHOD GetXmlEncoding(nsAString & aXmlEncoding) { return _to GetXmlEncoding(aXmlEncoding); } \
-  NS_IMETHOD GetXmlStandalone(bool *aXmlStandalone) { return _to GetXmlStandalone(aXmlStandalone); } \
-  NS_IMETHOD SetXmlStandalone(bool aXmlStandalone) { return _to SetXmlStandalone(aXmlStandalone); } \
-  NS_IMETHOD GetXmlVersion(nsAString & aXmlVersion) { return _to GetXmlVersion(aXmlVersion); } \
-  NS_IMETHOD SetXmlVersion(const nsAString & aXmlVersion) { return _to SetXmlVersion(aXmlVersion); } \
-  NS_IMETHOD GetStrictErrorChecking(bool *aStrictErrorChecking) { return _to GetStrictErrorChecking(aStrictErrorChecking); } \
-  NS_IMETHOD SetStrictErrorChecking(bool aStrictErrorChecking) { return _to SetStrictErrorChecking(aStrictErrorChecking); } \
-  NS_IMETHOD GetDocumentURI(nsAString & aDocumentURI) { return _to GetDocumentURI(aDocumentURI); } \
-  NS_IMETHOD SetDocumentURI(const nsAString & aDocumentURI) { return _to SetDocumentURI(aDocumentURI); } \
-  NS_IMETHOD AdoptNode(nsIDOMNode *xsource, nsIDOMNode * *_retval) { return _to AdoptNode(xsource, _retval); } \
-  NS_IMETHOD GetDomConfig(nsIDOMDOMConfiguration * *aDomConfig) { return _to GetDomConfig(aDomConfig); } \
-  NS_IMETHOD NormalizeDocument(void) { return _to NormalizeDocument(); } \
-  NS_IMETHOD RenameNode(nsIDOMNode *node, const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMNode * *_retval) { return _to RenameNode(node, namespace_uri, qualified_name, _retval); } 
-
-/* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
-#define NS_FORWARD_SAFE_NSIDOM3DOCUMENT(_to) \
-  NS_IMETHOD GetInputEncoding(nsAString & aInputEncoding) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetInputEncoding(aInputEncoding); } \
-  NS_IMETHOD GetXmlEncoding(nsAString & aXmlEncoding) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetXmlEncoding(aXmlEncoding); } \
-  NS_IMETHOD GetXmlStandalone(bool *aXmlStandalone) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetXmlStandalone(aXmlStandalone); } \
-  NS_IMETHOD SetXmlStandalone(bool aXmlStandalone) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetXmlStandalone(aXmlStandalone); } \
-  NS_IMETHOD GetXmlVersion(nsAString & aXmlVersion) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetXmlVersion(aXmlVersion); } \
-  NS_IMETHOD SetXmlVersion(const nsAString & aXmlVersion) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetXmlVersion(aXmlVersion); } \
-  NS_IMETHOD GetStrictErrorChecking(bool *aStrictErrorChecking) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetStrictErrorChecking(aStrictErrorChecking); } \
-  NS_IMETHOD SetStrictErrorChecking(bool aStrictErrorChecking) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetStrictErrorChecking(aStrictErrorChecking); } \
-  NS_IMETHOD GetDocumentURI(nsAString & aDocumentURI) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDocumentURI(aDocumentURI); } \
-  NS_IMETHOD SetDocumentURI(const nsAString & aDocumentURI) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetDocumentURI(aDocumentURI); } \
-  NS_IMETHOD AdoptNode(nsIDOMNode *xsource, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->AdoptNode(xsource, _retval); } \
-  NS_IMETHOD GetDomConfig(nsIDOMDOMConfiguration * *aDomConfig) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDomConfig(aDomConfig); } \
-  NS_IMETHOD NormalizeDocument(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->NormalizeDocument(); } \
-  NS_IMETHOD RenameNode(nsIDOMNode *node, const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->RenameNode(node, namespace_uri, qualified_name, _retval); } 
-
-#if 0
-/* Use the code below as a template for the implementation class for this interface. */
-
-/* Header file */
-class nsDOM3Document : public nsIDOM3Document
-{
-public:
-  NS_DECL_ISUPPORTS
-  NS_DECL_NSIDOM3DOCUMENT
-
-  nsDOM3Document();
-
-private:
-  ~nsDOM3Document();
-
-protected:
-  /* additional members */
-};
-
-/* Implementation file */
-NS_IMPL_ISUPPORTS1(nsDOM3Document, nsIDOM3Document)
-
-nsDOM3Document::nsDOM3Document()
-{
-  /* member initializers and constructor code */
-}
-
-nsDOM3Document::~nsDOM3Document()
-{
-  /* destructor code */
-}
-
-/* readonly attribute DOMString inputEncoding; */
-NS_IMETHODIMP nsDOM3Document::GetInputEncoding(nsAString & aInputEncoding)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* readonly attribute DOMString xmlEncoding; */
-NS_IMETHODIMP nsDOM3Document::GetXmlEncoding(nsAString & aXmlEncoding)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute boolean xmlStandalone; */
-NS_IMETHODIMP nsDOM3Document::GetXmlStandalone(bool *aXmlStandalone)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsDOM3Document::SetXmlStandalone(bool aXmlStandalone)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute DOMString xmlVersion; */
-NS_IMETHODIMP nsDOM3Document::GetXmlVersion(nsAString & aXmlVersion)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsDOM3Document::SetXmlVersion(const nsAString & aXmlVersion)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute boolean strictErrorChecking; */
-NS_IMETHODIMP nsDOM3Document::GetStrictErrorChecking(bool *aStrictErrorChecking)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsDOM3Document::SetStrictErrorChecking(bool aStrictErrorChecking)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute DOMString documentURI; */
-NS_IMETHODIMP nsDOM3Document::GetDocumentURI(nsAString & aDocumentURI)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsDOM3Document::SetDocumentURI(const nsAString & aDocumentURI)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* nsIDOMNode adoptNode (in nsIDOMNode xsource) raises (DOMException); */
-NS_IMETHODIMP nsDOM3Document::AdoptNode(nsIDOMNode *xsource, nsIDOMNode * *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* readonly attribute nsIDOMDOMConfiguration domConfig; */
-NS_IMETHODIMP nsDOM3Document::GetDomConfig(nsIDOMDOMConfiguration * *aDomConfig)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void normalizeDocument (); */
-NS_IMETHODIMP nsDOM3Document::NormalizeDocument()
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* nsIDOMNode renameNode (in nsIDOMNode node, in DOMString namespace_uri, in DOMString qualified_name) raises (DOMException); */
-NS_IMETHODIMP nsDOM3Document::RenameNode(nsIDOMNode *node, const nsAString & namespace_uri, const nsAString & qualified_name, nsIDOMNode * *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* End of implementation class template. */
-#endif
-
 class nsIDOMElement; /* forward declaration */
 
 
 /* starting interface:    nsIDOMAttr */
-#define NS_IDOMATTR_IID_STR "03da4bc9-1b9a-41dc-a1a4-32414d48d704"
+#define NS_IDOMATTR_IID_STR "a974a4d3-2ff1-445b-8b8e-0aada5d4eedc"
 
 #define NS_IDOMATTR_IID \
-  {0x03da4bc9, 0x1b9a, 0x41dc, \
-    { 0xa1, 0xa4, 0x32, 0x41, 0x4d, 0x48, 0xd7, 0x04 }}
+  {0xa974a4d3, 0x2ff1, 0x445b, \
+    { 0x8b, 0x8e, 0x0a, 0xad, 0xa5, 0xd4, 0xee, 0xdc }}
 
 class NS_NO_VTABLE nsIDOMAttr : public nsIDOMNode {
  public: 
@@ -6937,11 +6528,11 @@ NS_IMETHODIMP nsDOMElement::QuerySelectorAll(const nsAString & selectors, nsIDOM
 
 
 /* starting interface:    nsIDOMCharacterData */
-#define NS_IDOMCHARACTERDATA_IID_STR "cb75c251-afc7-444f-b2d6-b9635555f3ed"
+#define NS_IDOMCHARACTERDATA_IID_STR "84f72a38-1873-46f8-937c-1df22d7e7cae"
 
 #define NS_IDOMCHARACTERDATA_IID \
-  {0xcb75c251, 0xafc7, 0x444f, \
-    { 0xb2, 0xd6, 0xb9, 0x63, 0x55, 0x55, 0xf3, 0xed }}
+  {0x84f72a38, 0x1873, 0x46f8, \
+    { 0x93, 0x7c, 0x1d, 0xf2, 0x2d, 0x7e, 0x7c, 0xae }}
 
 class NS_NO_VTABLE nsIDOMCharacterData : public nsIDOMNode {
  public: 
@@ -6970,6 +6561,9 @@ class NS_NO_VTABLE nsIDOMCharacterData : public nsIDOMNode {
   /* void replaceData (in unsigned long offset, in unsigned long count, in DOMString arg) raises (DOMException); */
   NS_IMETHOD ReplaceData(uint32_t offset, uint32_t count, const nsAString & arg) = 0;
 
+  /* void remove (); */
+  NS_IMETHOD Remove(void) = 0;
+
 };
 
   NS_DEFINE_STATIC_IID_ACCESSOR(nsIDOMCharacterData, NS_IDOMCHARACTERDATA_IID)
@@ -6983,7 +6577,8 @@ class NS_NO_VTABLE nsIDOMCharacterData : public nsIDOMNode {
   NS_IMETHOD AppendData(const nsAString & arg); \
   NS_IMETHOD InsertData(uint32_t offset, const nsAString & arg); \
   NS_IMETHOD DeleteData(uint32_t offset, uint32_t count); \
-  NS_IMETHOD ReplaceData(uint32_t offset, uint32_t count, const nsAString & arg); 
+  NS_IMETHOD ReplaceData(uint32_t offset, uint32_t count, const nsAString & arg); \
+  NS_IMETHOD Remove(void); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIDOMCHARACTERDATA(_to) \
@@ -6994,7 +6589,8 @@ class NS_NO_VTABLE nsIDOMCharacterData : public nsIDOMNode {
   NS_IMETHOD AppendData(const nsAString & arg) { return _to AppendData(arg); } \
   NS_IMETHOD InsertData(uint32_t offset, const nsAString & arg) { return _to InsertData(offset, arg); } \
   NS_IMETHOD DeleteData(uint32_t offset, uint32_t count) { return _to DeleteData(offset, count); } \
-  NS_IMETHOD ReplaceData(uint32_t offset, uint32_t count, const nsAString & arg) { return _to ReplaceData(offset, count, arg); } 
+  NS_IMETHOD ReplaceData(uint32_t offset, uint32_t count, const nsAString & arg) { return _to ReplaceData(offset, count, arg); } \
+  NS_IMETHOD Remove(void) { return _to Remove(); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIDOMCHARACTERDATA(_to) \
@@ -7005,7 +6601,8 @@ class NS_NO_VTABLE nsIDOMCharacterData : public nsIDOMNode {
   NS_IMETHOD AppendData(const nsAString & arg) { return !_to ? NS_ERROR_NULL_POINTER : _to->AppendData(arg); } \
   NS_IMETHOD InsertData(uint32_t offset, const nsAString & arg) { return !_to ? NS_ERROR_NULL_POINTER : _to->InsertData(offset, arg); } \
   NS_IMETHOD DeleteData(uint32_t offset, uint32_t count) { return !_to ? NS_ERROR_NULL_POINTER : _to->DeleteData(offset, count); } \
-  NS_IMETHOD ReplaceData(uint32_t offset, uint32_t count, const nsAString & arg) { return !_to ? NS_ERROR_NULL_POINTER : _to->ReplaceData(offset, count, arg); } 
+  NS_IMETHOD ReplaceData(uint32_t offset, uint32_t count, const nsAString & arg) { return !_to ? NS_ERROR_NULL_POINTER : _to->ReplaceData(offset, count, arg); } \
+  NS_IMETHOD Remove(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Remove(); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -7081,6 +6678,12 @@ NS_IMETHODIMP nsDOMCharacterData::DeleteData(uint32_t offset, uint32_t count)
 
 /* void replaceData (in unsigned long offset, in unsigned long count, in DOMString arg) raises (DOMException); */
 NS_IMETHODIMP nsDOMCharacterData::ReplaceData(uint32_t offset, uint32_t count, const nsAString & arg)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void remove (); */
+NS_IMETHODIMP nsDOMCharacterData::Remove()
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -7951,11 +7554,11 @@ class DOMTimeStamp; /* forward declaration */
 
 
 /* starting interface:    nsIDOMEvent */
-#define NS_IDOMEVENT_IID_STR "548137e8-fd2c-48c4-8635-3033f7db79e0"
+#define NS_IDOMEVENT_IID_STR "02d54f52-a1f5-4ad2-b560-36f14012935e"
 
 #define NS_IDOMEVENT_IID \
-  {0x548137e8, 0xfd2c, 0x48c4, \
-    { 0x86, 0x35, 0x30, 0x33, 0xf7, 0xdb, 0x79, 0xe0 }}
+  {0x02d54f52, 0xa1f5, 0x4ad2, \
+    { 0xb5, 0x60, 0x36, 0xf1, 0x40, 0x12, 0x93, 0x5e }}
 
 class NS_NO_VTABLE nsIDOMEvent : public nsISupports {
  public: 
@@ -7963,6 +7566,7 @@ class NS_NO_VTABLE nsIDOMEvent : public nsISupports {
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_IDOMEVENT_IID)
 
   enum {
+    NONE = 0U,
     CAPTURING_PHASE = 1U,
     AT_TARGET = 2U,
     BUBBLING_PHASE = 3U
@@ -8001,6 +7605,55 @@ class NS_NO_VTABLE nsIDOMEvent : public nsISupports {
   /* readonly attribute boolean defaultPrevented; */
   NS_IMETHOD GetDefaultPrevented(bool *aDefaultPrevented) = 0;
 
+  /* void stopImmediatePropagation (); */
+  NS_IMETHOD StopImmediatePropagation(void) = 0;
+
+  enum {
+    ALT_MASK = 1,
+    CONTROL_MASK = 2,
+    SHIFT_MASK = 4,
+    META_MASK = 8
+  };
+
+  /* readonly attribute nsIDOMEventTarget originalTarget; */
+  NS_IMETHOD GetOriginalTarget(nsIDOMEventTarget * *aOriginalTarget) = 0;
+
+  /* readonly attribute nsIDOMEventTarget explicitOriginalTarget; */
+  NS_IMETHOD GetExplicitOriginalTarget(nsIDOMEventTarget * *aExplicitOriginalTarget) = 0;
+
+  /* boolean getPreventDefault (); */
+  NS_IMETHOD GetPreventDefault(bool *_retval) = 0;
+
+  /* readonly attribute boolean isTrusted; */
+  NS_IMETHOD GetIsTrusted(bool *aIsTrusted) = 0;
+
+  /* [noscript] void duplicatePrivateData (); */
+  NS_IMETHOD DuplicatePrivateData(void) = 0;
+
+  /* [noscript] void setTarget (in nsIDOMEventTarget aTarget); */
+  NS_IMETHOD SetTarget(nsIDOMEventTarget *aTarget) = 0;
+
+  /* [notxpcom] boolean IsDispatchStopped (); */
+  NS_IMETHOD_(bool) IsDispatchStopped(void) = 0;
+
+  /* [notxpcom] WidgetEventPtr GetInternalNSEvent (); */
+  NS_IMETHOD_(mozilla::WidgetEvent *) GetInternalNSEvent(void) = 0;
+
+  /* [noscript,notxpcom] void SetTrusted (in boolean trusted); */
+  NS_IMETHOD_(void) SetTrusted(bool trusted) = 0;
+
+  /* [notxpcom] void Serialize (in IPCMessagePtr msg, in boolean aSerializeInterfaceType); */
+  NS_IMETHOD_(void) Serialize(IPC::Message *msg, bool aSerializeInterfaceType) = 0;
+
+  /* [notxpcom] boolean Deserialize (in ConstIPCMessagePtr msg, out voidPtr iter); */
+  NS_IMETHOD_(bool) Deserialize(const IPC::Message *msg, void **iter) = 0;
+
+  /* [noscript,notxpcom] void SetOwner (in EventTargetPtr owner); */
+  NS_IMETHOD_(void) SetOwner(mozilla::dom::EventTarget *owner) = 0;
+
+  /* [notxpcom] nsDOMEventPtr InternalDOMEvent (); */
+  NS_IMETHOD_(nsDOMEvent *) InternalDOMEvent(void) = 0;
+
 };
 
   NS_DEFINE_STATIC_IID_ACCESSOR(nsIDOMEvent, NS_IDOMEVENT_IID)
@@ -8017,7 +7670,21 @@ class NS_NO_VTABLE nsIDOMEvent : public nsISupports {
   NS_IMETHOD StopPropagation(void); \
   NS_IMETHOD PreventDefault(void); \
   NS_IMETHOD InitEvent(const nsAString & event_type_arg, bool can_bubble_arg, bool cancelable_arg); \
-  NS_IMETHOD GetDefaultPrevented(bool *aDefaultPrevented); 
+  NS_IMETHOD GetDefaultPrevented(bool *aDefaultPrevented); \
+  NS_IMETHOD StopImmediatePropagation(void); \
+  NS_IMETHOD GetOriginalTarget(nsIDOMEventTarget * *aOriginalTarget); \
+  NS_IMETHOD GetExplicitOriginalTarget(nsIDOMEventTarget * *aExplicitOriginalTarget); \
+  NS_IMETHOD GetPreventDefault(bool *_retval); \
+  NS_IMETHOD GetIsTrusted(bool *aIsTrusted); \
+  NS_IMETHOD DuplicatePrivateData(void); \
+  NS_IMETHOD SetTarget(nsIDOMEventTarget *aTarget); \
+  NS_IMETHOD_(bool) IsDispatchStopped(void); \
+  NS_IMETHOD_(mozilla::WidgetEvent *) GetInternalNSEvent(void); \
+  NS_IMETHOD_(void) SetTrusted(bool trusted); \
+  NS_IMETHOD_(void) Serialize(IPC::Message *msg, bool aSerializeInterfaceType); \
+  NS_IMETHOD_(bool) Deserialize(const IPC::Message *msg, void **iter); \
+  NS_IMETHOD_(void) SetOwner(mozilla::dom::EventTarget *owner); \
+  NS_IMETHOD_(nsDOMEvent *) InternalDOMEvent(void); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIDOMEVENT(_to) \
@@ -8031,7 +7698,21 @@ class NS_NO_VTABLE nsIDOMEvent : public nsISupports {
   NS_IMETHOD StopPropagation(void) { return _to StopPropagation(); } \
   NS_IMETHOD PreventDefault(void) { return _to PreventDefault(); } \
   NS_IMETHOD InitEvent(const nsAString & event_type_arg, bool can_bubble_arg, bool cancelable_arg) { return _to InitEvent(event_type_arg, can_bubble_arg, cancelable_arg); } \
-  NS_IMETHOD GetDefaultPrevented(bool *aDefaultPrevented) { return _to GetDefaultPrevented(aDefaultPrevented); } 
+  NS_IMETHOD GetDefaultPrevented(bool *aDefaultPrevented) { return _to GetDefaultPrevented(aDefaultPrevented); } \
+  NS_IMETHOD StopImmediatePropagation(void) { return _to StopImmediatePropagation(); } \
+  NS_IMETHOD GetOriginalTarget(nsIDOMEventTarget * *aOriginalTarget) { return _to GetOriginalTarget(aOriginalTarget); } \
+  NS_IMETHOD GetExplicitOriginalTarget(nsIDOMEventTarget * *aExplicitOriginalTarget) { return _to GetExplicitOriginalTarget(aExplicitOriginalTarget); } \
+  NS_IMETHOD GetPreventDefault(bool *_retval) { return _to GetPreventDefault(_retval); } \
+  NS_IMETHOD GetIsTrusted(bool *aIsTrusted) { return _to GetIsTrusted(aIsTrusted); } \
+  NS_IMETHOD DuplicatePrivateData(void) { return _to DuplicatePrivateData(); } \
+  NS_IMETHOD SetTarget(nsIDOMEventTarget *aTarget) { return _to SetTarget(aTarget); } \
+  NS_IMETHOD_(bool) IsDispatchStopped(void) { return _to IsDispatchStopped(); } \
+  NS_IMETHOD_(mozilla::WidgetEvent *) GetInternalNSEvent(void) { return _to GetInternalNSEvent(); } \
+  NS_IMETHOD_(void) SetTrusted(bool trusted) { return _to SetTrusted(trusted); } \
+  NS_IMETHOD_(void) Serialize(IPC::Message *msg, bool aSerializeInterfaceType) { return _to Serialize(msg, aSerializeInterfaceType); } \
+  NS_IMETHOD_(bool) Deserialize(const IPC::Message *msg, void **iter) { return _to Deserialize(msg, iter); } \
+  NS_IMETHOD_(void) SetOwner(mozilla::dom::EventTarget *owner) { return _to SetOwner(owner); } \
+  NS_IMETHOD_(nsDOMEvent *) InternalDOMEvent(void) { return _to InternalDOMEvent(); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIDOMEVENT(_to) \
@@ -8045,7 +7726,21 @@ class NS_NO_VTABLE nsIDOMEvent : public nsISupports {
   NS_IMETHOD StopPropagation(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->StopPropagation(); } \
   NS_IMETHOD PreventDefault(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->PreventDefault(); } \
   NS_IMETHOD InitEvent(const nsAString & event_type_arg, bool can_bubble_arg, bool cancelable_arg) { return !_to ? NS_ERROR_NULL_POINTER : _to->InitEvent(event_type_arg, can_bubble_arg, cancelable_arg); } \
-  NS_IMETHOD GetDefaultPrevented(bool *aDefaultPrevented) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDefaultPrevented(aDefaultPrevented); } 
+  NS_IMETHOD GetDefaultPrevented(bool *aDefaultPrevented) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDefaultPrevented(aDefaultPrevented); } \
+  NS_IMETHOD StopImmediatePropagation(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->StopImmediatePropagation(); } \
+  NS_IMETHOD GetOriginalTarget(nsIDOMEventTarget * *aOriginalTarget) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetOriginalTarget(aOriginalTarget); } \
+  NS_IMETHOD GetExplicitOriginalTarget(nsIDOMEventTarget * *aExplicitOriginalTarget) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetExplicitOriginalTarget(aExplicitOriginalTarget); } \
+  NS_IMETHOD GetPreventDefault(bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPreventDefault(_retval); } \
+  NS_IMETHOD GetIsTrusted(bool *aIsTrusted) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetIsTrusted(aIsTrusted); } \
+  NS_IMETHOD DuplicatePrivateData(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->DuplicatePrivateData(); } \
+  NS_IMETHOD SetTarget(nsIDOMEventTarget *aTarget) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTarget(aTarget); } \
+  NS_IMETHOD_(bool) IsDispatchStopped(void); \
+  NS_IMETHOD_(mozilla::WidgetEvent *) GetInternalNSEvent(void); \
+  NS_IMETHOD_(void) SetTrusted(bool trusted); \
+  NS_IMETHOD_(void) Serialize(IPC::Message *msg, bool aSerializeInterfaceType); \
+  NS_IMETHOD_(bool) Deserialize(const IPC::Message *msg, void **iter); \
+  NS_IMETHOD_(void) SetOwner(mozilla::dom::EventTarget *owner); \
+  NS_IMETHOD_(nsDOMEvent *) InternalDOMEvent(void); 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -8141,6 +7836,90 @@ NS_IMETHODIMP nsDOMEvent::InitEvent(const nsAString & event_type_arg, bool can_b
 
 /* readonly attribute boolean defaultPrevented; */
 NS_IMETHODIMP nsDOMEvent::GetDefaultPrevented(bool *aDefaultPrevented)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void stopImmediatePropagation (); */
+NS_IMETHODIMP nsDOMEvent::StopImmediatePropagation()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute nsIDOMEventTarget originalTarget; */
+NS_IMETHODIMP nsDOMEvent::GetOriginalTarget(nsIDOMEventTarget * *aOriginalTarget)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute nsIDOMEventTarget explicitOriginalTarget; */
+NS_IMETHODIMP nsDOMEvent::GetExplicitOriginalTarget(nsIDOMEventTarget * *aExplicitOriginalTarget)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* boolean getPreventDefault (); */
+NS_IMETHODIMP nsDOMEvent::GetPreventDefault(bool *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute boolean isTrusted; */
+NS_IMETHODIMP nsDOMEvent::GetIsTrusted(bool *aIsTrusted)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [noscript] void duplicatePrivateData (); */
+NS_IMETHODIMP nsDOMEvent::DuplicatePrivateData()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [noscript] void setTarget (in nsIDOMEventTarget aTarget); */
+NS_IMETHODIMP nsDOMEvent::SetTarget(nsIDOMEventTarget *aTarget)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [notxpcom] boolean IsDispatchStopped (); */
+NS_IMETHODIMP_(bool) nsDOMEvent::IsDispatchStopped()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [notxpcom] WidgetEventPtr GetInternalNSEvent (); */
+NS_IMETHODIMP_(mozilla::WidgetEvent *) nsDOMEvent::GetInternalNSEvent()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [noscript,notxpcom] void SetTrusted (in boolean trusted); */
+NS_IMETHODIMP_(void) nsDOMEvent::SetTrusted(bool trusted)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [notxpcom] void Serialize (in IPCMessagePtr msg, in boolean aSerializeInterfaceType); */
+NS_IMETHODIMP_(void) nsDOMEvent::Serialize(IPC::Message *msg, bool aSerializeInterfaceType)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [notxpcom] boolean Deserialize (in ConstIPCMessagePtr msg, out voidPtr iter); */
+NS_IMETHODIMP_(bool) nsDOMEvent::Deserialize(const IPC::Message *msg, void **iter)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [noscript,notxpcom] void SetOwner (in EventTargetPtr owner); */
+NS_IMETHODIMP_(void) nsDOMEvent::SetOwner(mozilla::dom::EventTarget *owner)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [notxpcom] nsDOMEventPtr InternalDOMEvent (); */
+NS_IMETHODIMP_(nsDOMEvent *) nsDOMEvent::InternalDOMEvent()
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -10913,13 +10692,13 @@ NS_IMETHODIMP nsDOMHTMLInputElement::MozIsTextField(bool exclude_password, bool 
 
 
 /* starting interface:    nsIDOMHTMLLinkElement */
-#define NS_IDOMHTMLLINKELEMENT_IID_STR "442dddcc-cdc3-4385-946d-9d6b8b4eb927"
+#define NS_IDOMHTMLLINKELEMENT_IID_STR "95d6ec66-2754-45bd-a068-49ac1fb45004"
 
 #define NS_IDOMHTMLLINKELEMENT_IID \
-  {0x442dddcc, 0xcdc3, 0x4385, \
-    { 0x94, 0x6d, 0x9d, 0x6b, 0x8b, 0x4e, 0xb9, 0x27 }}
+  {0x95d6ec66, 0x2754, 0x45bd, \
+    { 0xa0, 0x68, 0x49, 0xac, 0x1f, 0xb4, 0x50, 0x04 }}
 
-class NS_NO_VTABLE nsIDOMHTMLLinkElement : public nsIDOMHTMLElement {
+class NS_NO_VTABLE nsIDOMHTMLLinkElement : public nsISupports {
  public: 
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_IDOMHTMLLINKELEMENT_IID)
@@ -10960,6 +10739,10 @@ class NS_NO_VTABLE nsIDOMHTMLLinkElement : public nsIDOMHTMLElement {
   NS_IMETHOD GetType(nsAString & aType) = 0;
   NS_IMETHOD SetType(const nsAString & aType) = 0;
 
+  /* attribute DOMString crossOrigin; */
+  NS_IMETHOD GetCrossOrigin(nsAString & aCrossOrigin) = 0;
+  NS_IMETHOD SetCrossOrigin(const nsAString & aCrossOrigin) = 0;
+
 };
 
   NS_DEFINE_STATIC_IID_ACCESSOR(nsIDOMHTMLLinkElement, NS_IDOMHTMLLINKELEMENT_IID)
@@ -10983,7 +10766,9 @@ class NS_NO_VTABLE nsIDOMHTMLLinkElement : public nsIDOMHTMLElement {
   NS_IMETHOD GetTarget(nsAString & aTarget); \
   NS_IMETHOD SetTarget(const nsAString & aTarget); \
   NS_IMETHOD GetType(nsAString & aType); \
-  NS_IMETHOD SetType(const nsAString & aType); 
+  NS_IMETHOD SetType(const nsAString & aType); \
+  NS_IMETHOD GetCrossOrigin(nsAString & aCrossOrigin); \
+  NS_IMETHOD SetCrossOrigin(const nsAString & aCrossOrigin); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIDOMHTMLLINKELEMENT(_to) \
@@ -11004,7 +10789,9 @@ class NS_NO_VTABLE nsIDOMHTMLLinkElement : public nsIDOMHTMLElement {
   NS_IMETHOD GetTarget(nsAString & aTarget) { return _to GetTarget(aTarget); } \
   NS_IMETHOD SetTarget(const nsAString & aTarget) { return _to SetTarget(aTarget); } \
   NS_IMETHOD GetType(nsAString & aType) { return _to GetType(aType); } \
-  NS_IMETHOD SetType(const nsAString & aType) { return _to SetType(aType); } 
+  NS_IMETHOD SetType(const nsAString & aType) { return _to SetType(aType); } \
+  NS_IMETHOD GetCrossOrigin(nsAString & aCrossOrigin) { return _to GetCrossOrigin(aCrossOrigin); } \
+  NS_IMETHOD SetCrossOrigin(const nsAString & aCrossOrigin) { return _to SetCrossOrigin(aCrossOrigin); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIDOMHTMLLINKELEMENT(_to) \
@@ -11025,7 +10812,9 @@ class NS_NO_VTABLE nsIDOMHTMLLinkElement : public nsIDOMHTMLElement {
   NS_IMETHOD GetTarget(nsAString & aTarget) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTarget(aTarget); } \
   NS_IMETHOD SetTarget(const nsAString & aTarget) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTarget(aTarget); } \
   NS_IMETHOD GetType(nsAString & aType) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetType(aType); } \
-  NS_IMETHOD SetType(const nsAString & aType) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetType(aType); } 
+  NS_IMETHOD SetType(const nsAString & aType) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetType(aType); } \
+  NS_IMETHOD GetCrossOrigin(nsAString & aCrossOrigin) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetCrossOrigin(aCrossOrigin); } \
+  NS_IMETHOD SetCrossOrigin(const nsAString & aCrossOrigin) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetCrossOrigin(aCrossOrigin); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -11149,6 +10938,16 @@ NS_IMETHODIMP nsDOMHTMLLinkElement::SetType(const nsAString & aType)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
+/* attribute DOMString crossOrigin; */
+NS_IMETHODIMP nsDOMHTMLLinkElement::GetCrossOrigin(nsAString & aCrossOrigin)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLLinkElement::SetCrossOrigin(const nsAString & aCrossOrigin)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 /* End of implementation class template. */
 #endif
 
@@ -11156,13 +10955,13 @@ class nsIDOMHTMLFormElement; /* forward declaration */
 
 
 /* starting interface:    nsIDOMHTMLOptionElement */
-#define NS_IDOMHTMLOPTIONELEMENT_IID_STR "a36a1710-7684-4fb7-a401-ccbf442064c1"
+#define NS_IDOMHTMLOPTIONELEMENT_IID_STR "c2b3e9ff-6b36-4158-ace3-05a9c5b8e1c1"
 
 #define NS_IDOMHTMLOPTIONELEMENT_IID \
-  {0xa36a1710, 0x7684, 0x4fb7, \
-    { 0xa4, 0x01, 0xcc, 0xbf, 0x44, 0x20, 0x64, 0xc1 }}
+  {0xc2b3e9ff, 0x6b36, 0x4158, \
+    { 0xac, 0xe3, 0x05, 0xa9, 0xc5, 0xb8, 0xe1, 0xc1 }}
 
-class NS_NO_VTABLE nsIDOMHTMLOptionElement : public nsIDOMHTMLElement {
+class NS_NO_VTABLE nsIDOMHTMLOptionElement : public nsISupports {
  public: 
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_IDOMHTMLOPTIONELEMENT_IID)
@@ -11359,147 +11158,6 @@ NS_IMETHODIMP nsDOMHTMLOptionElement::GetIndex(int32_t *aIndex)
 /* End of implementation class template. */
 #endif
 
-
-/* starting interface:    nsIDOMHTMLParamElement */
-#define NS_IDOMHTMLPARAMELEMENT_IID_STR "e7e2ac93-7a44-4c9d-bf4a-4b7231b6e9a8"
-
-#define NS_IDOMHTMLPARAMELEMENT_IID \
-  {0xe7e2ac93, 0x7a44, 0x4c9d, \
-    { 0xbf, 0x4a, 0x4b, 0x72, 0x31, 0xb6, 0xe9, 0xa8 }}
-
-class NS_NO_VTABLE nsIDOMHTMLParamElement : public nsIDOMHTMLElement {
- public: 
-
-  NS_DECLARE_STATIC_IID_ACCESSOR(NS_IDOMHTMLPARAMELEMENT_IID)
-
-  /* attribute DOMString name; */
-  NS_IMETHOD GetName(nsAString & aName) = 0;
-  NS_IMETHOD SetName(const nsAString & aName) = 0;
-
-  /* attribute DOMString type; */
-  NS_IMETHOD GetType(nsAString & aType) = 0;
-  NS_IMETHOD SetType(const nsAString & aType) = 0;
-
-  /* attribute DOMString value; */
-  NS_IMETHOD GetValue(nsAString & aValue) = 0;
-  NS_IMETHOD SetValue(const nsAString & aValue) = 0;
-
-  /* attribute DOMString valueType; */
-  NS_IMETHOD GetValueType(nsAString & aValueType) = 0;
-  NS_IMETHOD SetValueType(const nsAString & aValueType) = 0;
-
-};
-
-  NS_DEFINE_STATIC_IID_ACCESSOR(nsIDOMHTMLParamElement, NS_IDOMHTMLPARAMELEMENT_IID)
-
-/* Use this macro when declaring classes that implement this interface. */
-#define NS_DECL_NSIDOMHTMLPARAMELEMENT \
-  NS_IMETHOD GetName(nsAString & aName); \
-  NS_IMETHOD SetName(const nsAString & aName); \
-  NS_IMETHOD GetType(nsAString & aType); \
-  NS_IMETHOD SetType(const nsAString & aType); \
-  NS_IMETHOD GetValue(nsAString & aValue); \
-  NS_IMETHOD SetValue(const nsAString & aValue); \
-  NS_IMETHOD GetValueType(nsAString & aValueType); \
-  NS_IMETHOD SetValueType(const nsAString & aValueType); 
-
-/* Use this macro to declare functions that forward the behavior of this interface to another object. */
-#define NS_FORWARD_NSIDOMHTMLPARAMELEMENT(_to) \
-  NS_IMETHOD GetName(nsAString & aName) { return _to GetName(aName); } \
-  NS_IMETHOD SetName(const nsAString & aName) { return _to SetName(aName); } \
-  NS_IMETHOD GetType(nsAString & aType) { return _to GetType(aType); } \
-  NS_IMETHOD SetType(const nsAString & aType) { return _to SetType(aType); } \
-  NS_IMETHOD GetValue(nsAString & aValue) { return _to GetValue(aValue); } \
-  NS_IMETHOD SetValue(const nsAString & aValue) { return _to SetValue(aValue); } \
-  NS_IMETHOD GetValueType(nsAString & aValueType) { return _to GetValueType(aValueType); } \
-  NS_IMETHOD SetValueType(const nsAString & aValueType) { return _to SetValueType(aValueType); } 
-
-/* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
-#define NS_FORWARD_SAFE_NSIDOMHTMLPARAMELEMENT(_to) \
-  NS_IMETHOD GetName(nsAString & aName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetName(aName); } \
-  NS_IMETHOD SetName(const nsAString & aName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetName(aName); } \
-  NS_IMETHOD GetType(nsAString & aType) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetType(aType); } \
-  NS_IMETHOD SetType(const nsAString & aType) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetType(aType); } \
-  NS_IMETHOD GetValue(nsAString & aValue) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetValue(aValue); } \
-  NS_IMETHOD SetValue(const nsAString & aValue) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetValue(aValue); } \
-  NS_IMETHOD GetValueType(nsAString & aValueType) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetValueType(aValueType); } \
-  NS_IMETHOD SetValueType(const nsAString & aValueType) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetValueType(aValueType); } 
-
-#if 0
-/* Use the code below as a template for the implementation class for this interface. */
-
-/* Header file */
-class nsDOMHTMLParamElement : public nsIDOMHTMLParamElement
-{
-public:
-  NS_DECL_ISUPPORTS
-  NS_DECL_NSIDOMHTMLPARAMELEMENT
-
-  nsDOMHTMLParamElement();
-
-private:
-  ~nsDOMHTMLParamElement();
-
-protected:
-  /* additional members */
-};
-
-/* Implementation file */
-NS_IMPL_ISUPPORTS1(nsDOMHTMLParamElement, nsIDOMHTMLParamElement)
-
-nsDOMHTMLParamElement::nsDOMHTMLParamElement()
-{
-  /* member initializers and constructor code */
-}
-
-nsDOMHTMLParamElement::~nsDOMHTMLParamElement()
-{
-  /* destructor code */
-}
-
-/* attribute DOMString name; */
-NS_IMETHODIMP nsDOMHTMLParamElement::GetName(nsAString & aName)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsDOMHTMLParamElement::SetName(const nsAString & aName)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute DOMString type; */
-NS_IMETHODIMP nsDOMHTMLParamElement::GetType(nsAString & aType)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsDOMHTMLParamElement::SetType(const nsAString & aType)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute DOMString value; */
-NS_IMETHODIMP nsDOMHTMLParamElement::GetValue(nsAString & aValue)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsDOMHTMLParamElement::SetValue(const nsAString & aValue)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute DOMString valueType; */
-NS_IMETHODIMP nsDOMHTMLParamElement::GetValueType(nsAString & aValueType)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsDOMHTMLParamElement::SetValueType(const nsAString & aValueType)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* End of implementation class template. */
-#endif
-
 class nsIDOMHTMLFormElement; /* forward declaration */
 
 class nsIDOMHTMLOptionsCollection; /* forward declaration */
@@ -11512,7 +11170,7 @@ class nsIDOMHTMLOptionsCollection; /* forward declaration */
   {0xf6e68b8c, 0x58cf, 0x49dd, \
     { 0x8d, 0x70, 0xde, 0x87, 0x68, 0xac, 0x5b, 0xac }}
 
-class NS_NO_VTABLE nsIDOMHTMLSelectElement : public nsIDOMHTMLElement {
+class NS_NO_VTABLE nsIDOMHTMLSelectElement : public nsISupports {
  public: 
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_IDOMHTMLSELECTELEMENT_IID)
@@ -11536,9 +11194,9 @@ class NS_NO_VTABLE nsIDOMHTMLSelectElement : public nsIDOMHTMLElement {
   NS_IMETHOD GetName(nsAString & aName) = 0;
   NS_IMETHOD SetName(const nsAString & aName) = 0;
 
-  /* attribute long size; */
-  NS_IMETHOD GetSize(int32_t *aSize) = 0;
-  NS_IMETHOD SetSize(int32_t aSize) = 0;
+  /* attribute unsigned long size; */
+  NS_IMETHOD GetSize(uint32_t *aSize) = 0;
+  NS_IMETHOD SetSize(uint32_t aSize) = 0;
 
   /* readonly attribute DOMString type; */
   NS_IMETHOD GetType(nsAString & aType) = 0;
@@ -11562,6 +11220,9 @@ class NS_NO_VTABLE nsIDOMHTMLSelectElement : public nsIDOMHTMLElement {
   /* void remove (in long index); */
   NS_IMETHOD Remove(int32_t index) = 0;
 
+  /* readonly attribute nsIDOMHTMLCollection selectedOptions; */
+  NS_IMETHOD GetSelectedOptions(nsIDOMHTMLCollection * *aSelectedOptions) = 0;
+
   /* attribute long selectedIndex; */
   NS_IMETHOD GetSelectedIndex(int32_t *aSelectedIndex) = 0;
   NS_IMETHOD SetSelectedIndex(int32_t aSelectedIndex) = 0;
@@ -11569,10 +11230,6 @@ class NS_NO_VTABLE nsIDOMHTMLSelectElement : public nsIDOMHTMLElement {
   /* attribute DOMString value; */
   NS_IMETHOD GetValue(nsAString & aValue) = 0;
   NS_IMETHOD SetValue(const nsAString & aValue) = 0;
-
-  /* attribute long tabIndex; */
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex) = 0;
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex) = 0;
 
   /* readonly attribute boolean willValidate; */
   NS_IMETHOD GetWillValidate(bool *aWillValidate) = 0;
@@ -11608,8 +11265,8 @@ class NS_NO_VTABLE nsIDOMHTMLSelectElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetMultiple(bool aMultiple); \
   NS_IMETHOD GetName(nsAString & aName); \
   NS_IMETHOD SetName(const nsAString & aName); \
-  NS_IMETHOD GetSize(int32_t *aSize); \
-  NS_IMETHOD SetSize(int32_t aSize); \
+  NS_IMETHOD GetSize(uint32_t *aSize); \
+  NS_IMETHOD SetSize(uint32_t aSize); \
   NS_IMETHOD GetType(nsAString & aType); \
   NS_IMETHOD GetOptions(nsIDOMHTMLOptionsCollection * *aOptions); \
   NS_IMETHOD GetLength(uint32_t *aLength); \
@@ -11618,12 +11275,11 @@ class NS_NO_VTABLE nsIDOMHTMLSelectElement : public nsIDOMHTMLElement {
   NS_IMETHOD NamedItem(const nsAString & name, nsIDOMNode * *_retval); \
   NS_IMETHOD Add(nsIDOMHTMLElement *element, nsIVariant *before); \
   NS_IMETHOD Remove(int32_t index); \
+  NS_IMETHOD GetSelectedOptions(nsIDOMHTMLCollection * *aSelectedOptions); \
   NS_IMETHOD GetSelectedIndex(int32_t *aSelectedIndex); \
   NS_IMETHOD SetSelectedIndex(int32_t aSelectedIndex); \
   NS_IMETHOD GetValue(nsAString & aValue); \
   NS_IMETHOD SetValue(const nsAString & aValue); \
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex); \
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex); \
   NS_IMETHOD GetWillValidate(bool *aWillValidate); \
   NS_IMETHOD GetValidity(nsIDOMValidityState * *aValidity); \
   NS_IMETHOD GetValidationMessage(nsAString & aValidationMessage); \
@@ -11643,8 +11299,8 @@ class NS_NO_VTABLE nsIDOMHTMLSelectElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetMultiple(bool aMultiple) { return _to SetMultiple(aMultiple); } \
   NS_IMETHOD GetName(nsAString & aName) { return _to GetName(aName); } \
   NS_IMETHOD SetName(const nsAString & aName) { return _to SetName(aName); } \
-  NS_IMETHOD GetSize(int32_t *aSize) { return _to GetSize(aSize); } \
-  NS_IMETHOD SetSize(int32_t aSize) { return _to SetSize(aSize); } \
+  NS_IMETHOD GetSize(uint32_t *aSize) { return _to GetSize(aSize); } \
+  NS_IMETHOD SetSize(uint32_t aSize) { return _to SetSize(aSize); } \
   NS_IMETHOD GetType(nsAString & aType) { return _to GetType(aType); } \
   NS_IMETHOD GetOptions(nsIDOMHTMLOptionsCollection * *aOptions) { return _to GetOptions(aOptions); } \
   NS_IMETHOD GetLength(uint32_t *aLength) { return _to GetLength(aLength); } \
@@ -11653,12 +11309,11 @@ class NS_NO_VTABLE nsIDOMHTMLSelectElement : public nsIDOMHTMLElement {
   NS_IMETHOD NamedItem(const nsAString & name, nsIDOMNode * *_retval) { return _to NamedItem(name, _retval); } \
   NS_IMETHOD Add(nsIDOMHTMLElement *element, nsIVariant *before) { return _to Add(element, before); } \
   NS_IMETHOD Remove(int32_t index) { return _to Remove(index); } \
+  NS_IMETHOD GetSelectedOptions(nsIDOMHTMLCollection * *aSelectedOptions) { return _to GetSelectedOptions(aSelectedOptions); } \
   NS_IMETHOD GetSelectedIndex(int32_t *aSelectedIndex) { return _to GetSelectedIndex(aSelectedIndex); } \
   NS_IMETHOD SetSelectedIndex(int32_t aSelectedIndex) { return _to SetSelectedIndex(aSelectedIndex); } \
   NS_IMETHOD GetValue(nsAString & aValue) { return _to GetValue(aValue); } \
   NS_IMETHOD SetValue(const nsAString & aValue) { return _to SetValue(aValue); } \
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex) { return _to GetTabIndex(aTabIndex); } \
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex) { return _to SetTabIndex(aTabIndex); } \
   NS_IMETHOD GetWillValidate(bool *aWillValidate) { return _to GetWillValidate(aWillValidate); } \
   NS_IMETHOD GetValidity(nsIDOMValidityState * *aValidity) { return _to GetValidity(aValidity); } \
   NS_IMETHOD GetValidationMessage(nsAString & aValidationMessage) { return _to GetValidationMessage(aValidationMessage); } \
@@ -11678,8 +11333,8 @@ class NS_NO_VTABLE nsIDOMHTMLSelectElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetMultiple(bool aMultiple) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetMultiple(aMultiple); } \
   NS_IMETHOD GetName(nsAString & aName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetName(aName); } \
   NS_IMETHOD SetName(const nsAString & aName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetName(aName); } \
-  NS_IMETHOD GetSize(int32_t *aSize) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSize(aSize); } \
-  NS_IMETHOD SetSize(int32_t aSize) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSize(aSize); } \
+  NS_IMETHOD GetSize(uint32_t *aSize) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSize(aSize); } \
+  NS_IMETHOD SetSize(uint32_t aSize) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSize(aSize); } \
   NS_IMETHOD GetType(nsAString & aType) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetType(aType); } \
   NS_IMETHOD GetOptions(nsIDOMHTMLOptionsCollection * *aOptions) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetOptions(aOptions); } \
   NS_IMETHOD GetLength(uint32_t *aLength) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetLength(aLength); } \
@@ -11688,12 +11343,11 @@ class NS_NO_VTABLE nsIDOMHTMLSelectElement : public nsIDOMHTMLElement {
   NS_IMETHOD NamedItem(const nsAString & name, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->NamedItem(name, _retval); } \
   NS_IMETHOD Add(nsIDOMHTMLElement *element, nsIVariant *before) { return !_to ? NS_ERROR_NULL_POINTER : _to->Add(element, before); } \
   NS_IMETHOD Remove(int32_t index) { return !_to ? NS_ERROR_NULL_POINTER : _to->Remove(index); } \
+  NS_IMETHOD GetSelectedOptions(nsIDOMHTMLCollection * *aSelectedOptions) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSelectedOptions(aSelectedOptions); } \
   NS_IMETHOD GetSelectedIndex(int32_t *aSelectedIndex) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSelectedIndex(aSelectedIndex); } \
   NS_IMETHOD SetSelectedIndex(int32_t aSelectedIndex) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSelectedIndex(aSelectedIndex); } \
   NS_IMETHOD GetValue(nsAString & aValue) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetValue(aValue); } \
   NS_IMETHOD SetValue(const nsAString & aValue) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetValue(aValue); } \
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTabIndex(aTabIndex); } \
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTabIndex(aTabIndex); } \
   NS_IMETHOD GetWillValidate(bool *aWillValidate) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetWillValidate(aWillValidate); } \
   NS_IMETHOD GetValidity(nsIDOMValidityState * *aValidity) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetValidity(aValidity); } \
   NS_IMETHOD GetValidationMessage(nsAString & aValidationMessage) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetValidationMessage(aValidationMessage); } \
@@ -11780,12 +11434,12 @@ NS_IMETHODIMP nsDOMHTMLSelectElement::SetName(const nsAString & aName)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* attribute long size; */
-NS_IMETHODIMP nsDOMHTMLSelectElement::GetSize(int32_t *aSize)
+/* attribute unsigned long size; */
+NS_IMETHODIMP nsDOMHTMLSelectElement::GetSize(uint32_t *aSize)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsDOMHTMLSelectElement::SetSize(int32_t aSize)
+NS_IMETHODIMP nsDOMHTMLSelectElement::SetSize(uint32_t aSize)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -11836,6 +11490,12 @@ NS_IMETHODIMP nsDOMHTMLSelectElement::Remove(int32_t index)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
+/* readonly attribute nsIDOMHTMLCollection selectedOptions; */
+NS_IMETHODIMP nsDOMHTMLSelectElement::GetSelectedOptions(nsIDOMHTMLCollection * *aSelectedOptions)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 /* attribute long selectedIndex; */
 NS_IMETHODIMP nsDOMHTMLSelectElement::GetSelectedIndex(int32_t *aSelectedIndex)
 {
@@ -11852,16 +11512,6 @@ NS_IMETHODIMP nsDOMHTMLSelectElement::GetValue(nsAString & aValue)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 NS_IMETHODIMP nsDOMHTMLSelectElement::SetValue(const nsAString & aValue)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute long tabIndex; */
-NS_IMETHODIMP nsDOMHTMLSelectElement::GetTabIndex(int32_t *aTabIndex)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsDOMHTMLSelectElement::SetTabIndex(int32_t aTabIndex)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -11919,7 +11569,7 @@ class nsIDOMHTMLFormElement; /* forward declaration */
   {0x3fa5ddd0, 0x060e, 0x4de7, \
     { 0x83, 0x5d, 0x0c, 0x02, 0xcb, 0x3f, 0x6e, 0x79 }}
 
-class NS_NO_VTABLE nsIDOMHTMLTextAreaElement : public nsIDOMHTMLElement {
+class NS_NO_VTABLE nsIDOMHTMLTextAreaElement : public nsISupports {
  public: 
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_IDOMHTMLTEXTAREAELEMENT_IID)
@@ -12014,10 +11664,6 @@ class NS_NO_VTABLE nsIDOMHTMLTextAreaElement : public nsIDOMHTMLElement {
   NS_IMETHOD GetSelectionDirection(nsAString & aSelectionDirection) = 0;
   NS_IMETHOD SetSelectionDirection(const nsAString & aSelectionDirection) = 0;
 
-  /* attribute long tabIndex; */
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex) = 0;
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex) = 0;
-
   /* readonly attribute nsIControllers controllers; */
   NS_IMETHOD GetControllers(nsIControllers * *aControllers) = 0;
 
@@ -12067,8 +11713,6 @@ class NS_NO_VTABLE nsIDOMHTMLTextAreaElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetSelectionRange(int32_t selection_start, int32_t selection_end, const nsAString & direction); \
   NS_IMETHOD GetSelectionDirection(nsAString & aSelectionDirection); \
   NS_IMETHOD SetSelectionDirection(const nsAString & aSelectionDirection); \
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex); \
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex); \
   NS_IMETHOD GetControllers(nsIControllers * *aControllers); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
@@ -12113,8 +11757,6 @@ class NS_NO_VTABLE nsIDOMHTMLTextAreaElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetSelectionRange(int32_t selection_start, int32_t selection_end, const nsAString & direction) { return _to SetSelectionRange(selection_start, selection_end, direction); } \
   NS_IMETHOD GetSelectionDirection(nsAString & aSelectionDirection) { return _to GetSelectionDirection(aSelectionDirection); } \
   NS_IMETHOD SetSelectionDirection(const nsAString & aSelectionDirection) { return _to SetSelectionDirection(aSelectionDirection); } \
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex) { return _to GetTabIndex(aTabIndex); } \
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex) { return _to SetTabIndex(aTabIndex); } \
   NS_IMETHOD GetControllers(nsIControllers * *aControllers) { return _to GetControllers(aControllers); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
@@ -12159,8 +11801,6 @@ class NS_NO_VTABLE nsIDOMHTMLTextAreaElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetSelectionRange(int32_t selection_start, int32_t selection_end, const nsAString & direction) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSelectionRange(selection_start, selection_end, direction); } \
   NS_IMETHOD GetSelectionDirection(nsAString & aSelectionDirection) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSelectionDirection(aSelectionDirection); } \
   NS_IMETHOD SetSelectionDirection(const nsAString & aSelectionDirection) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSelectionDirection(aSelectionDirection); } \
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTabIndex(aTabIndex); } \
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTabIndex(aTabIndex); } \
   NS_IMETHOD GetControllers(nsIControllers * *aControllers) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetControllers(aControllers); } 
 
 #if 0
@@ -12401,16 +12041,6 @@ NS_IMETHODIMP nsDOMHTMLTextAreaElement::GetSelectionDirection(nsAString & aSelec
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 NS_IMETHODIMP nsDOMHTMLTextAreaElement::SetSelectionDirection(const nsAString & aSelectionDirection)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute long tabIndex; */
-NS_IMETHODIMP nsDOMHTMLTextAreaElement::GetTabIndex(int32_t *aTabIndex)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsDOMHTMLTextAreaElement::SetTabIndex(int32_t aTabIndex)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -14471,11 +14101,11 @@ NS_IMETHODIMP nsDOMWindow::SetOnmouseleave(JSContext* cx, jsval aOnmouseleave)
 
 
 /* starting interface:    nsIDOMUIEvent */
-#define NS_IDOMUIEVENT_IID_STR "4f3032d1-bdc5-4f37-bece-af8056d71c5c"
+#define NS_IDOMUIEVENT_IID_STR "d73852f8-7bd6-477d-8233-117dbf83860b"
 
 #define NS_IDOMUIEVENT_IID \
-  {0x4f3032d1, 0xbdc5, 0x4f37, \
-    { 0xbe, 0xce, 0xaf, 0x80, 0x56, 0xd7, 0x1c, 0x5c }}
+  {0xd73852f8, 0x7bd6, 0x477d, \
+    { 0x82, 0x33, 0x11, 0x7d, 0xbf, 0x83, 0x86, 0x0b }}
 
 class NS_NO_VTABLE nsIDOMUIEvent : public nsIDOMEvent {
  public: 
@@ -14691,11 +14321,11 @@ class nsIDOMEventTarget; /* forward declaration */
 
 
 /* starting interface:    nsIDOMMouseEvent */
-#define NS_IDOMMOUSEEVENT_IID_STR "7e6cb6e1-d3ba-4e60-a6ff-96350187a1e3"
+#define NS_IDOMMOUSEEVENT_IID_STR "afb2e57b-2822-4969-b2a9-0cada6859534"
 
 #define NS_IDOMMOUSEEVENT_IID \
-  {0x7e6cb6e1, 0xd3ba, 0x4e60, \
-    { 0xa6, 0xff, 0x96, 0x35, 0x01, 0x87, 0xa1, 0xe3 }}
+  {0xafb2e57b, 0x2822, 0x4969, \
+    { 0xb2, 0xa9, 0x0c, 0xad, 0xa6, 0x85, 0x95, 0x34 }}
 
 class NS_NO_VTABLE nsIDOMMouseEvent : public nsIDOMUIEvent {
  public: 
@@ -14707,6 +14337,12 @@ class NS_NO_VTABLE nsIDOMMouseEvent : public nsIDOMUIEvent {
 
   /* readonly attribute long screenY; */
   NS_IMETHOD GetScreenY(int32_t *aScreenY) = 0;
+
+  /* readonly attribute long mozMovementX; */
+  NS_IMETHOD GetMozMovementX(int32_t *aMozMovementX) = 0;
+
+  /* readonly attribute long mozMovementY; */
+  NS_IMETHOD GetMozMovementY(int32_t *aMozMovementY) = 0;
 
   /* readonly attribute long clientX; */
   NS_IMETHOD GetClientX(int32_t *aClientX) = 0;
@@ -14728,6 +14364,9 @@ class NS_NO_VTABLE nsIDOMMouseEvent : public nsIDOMUIEvent {
 
   /* readonly attribute unsigned short button; */
   NS_IMETHOD GetButton(uint16_t *aButton) = 0;
+
+  /* readonly attribute unsigned short buttons; */
+  NS_IMETHOD GetButtons(uint16_t *aButtons) = 0;
 
   /* readonly attribute nsIDOMEventTarget relatedTarget; */
   NS_IMETHOD GetRelatedTarget(nsIDOMEventTarget * *aRelatedTarget) = 0;
@@ -14754,6 +14393,9 @@ class NS_NO_VTABLE nsIDOMMouseEvent : public nsIDOMUIEvent {
   /* void initNSMouseEvent (in DOMString typeArg, in boolean canBubbleArg, in boolean cancelableArg, in nsIDOMWindow viewArg, in long detailArg, in long screenXArg, in long screenYArg, in long clientXArg, in long clientYArg, in boolean ctrlKeyArg, in boolean altKeyArg, in boolean shiftKeyArg, in boolean metaKeyArg, in unsigned short buttonArg, in nsIDOMEventTarget relatedTargetArg, in float pressure, in unsigned short inputSourceArg); */
   NS_IMETHOD InitNSMouseEvent(const nsAString & typeArg, bool canBubbleArg, bool cancelableArg, nsIDOMWindow *viewArg, int32_t detailArg, int32_t screenXArg, int32_t screenYArg, int32_t clientXArg, int32_t clientYArg, bool ctrlKeyArg, bool altKeyArg, bool shiftKeyArg, bool metaKeyArg, uint16_t buttonArg, nsIDOMEventTarget *relatedTargetArg, float pressure, uint16_t inputSourceArg) = 0;
 
+  /* boolean getModifierState (in DOMString key_arg); */
+  NS_IMETHOD GetModifierState(const nsAString & key_arg, bool *_retval) = 0;
+
 };
 
   NS_DEFINE_STATIC_IID_ACCESSOR(nsIDOMMouseEvent, NS_IDOMMOUSEEVENT_IID)
@@ -14762,6 +14404,8 @@ class NS_NO_VTABLE nsIDOMMouseEvent : public nsIDOMUIEvent {
 #define NS_DECL_NSIDOMMOUSEEVENT \
   NS_IMETHOD GetScreenX(int32_t *aScreenX); \
   NS_IMETHOD GetScreenY(int32_t *aScreenY); \
+  NS_IMETHOD GetMozMovementX(int32_t *aMozMovementX); \
+  NS_IMETHOD GetMozMovementY(int32_t *aMozMovementY); \
   NS_IMETHOD GetClientX(int32_t *aClientX); \
   NS_IMETHOD GetClientY(int32_t *aClientY); \
   NS_IMETHOD GetCtrlKey(bool *aCtrlKey); \
@@ -14769,16 +14413,20 @@ class NS_NO_VTABLE nsIDOMMouseEvent : public nsIDOMUIEvent {
   NS_IMETHOD GetAltKey(bool *aAltKey); \
   NS_IMETHOD GetMetaKey(bool *aMetaKey); \
   NS_IMETHOD GetButton(uint16_t *aButton); \
+  NS_IMETHOD GetButtons(uint16_t *aButtons); \
   NS_IMETHOD GetRelatedTarget(nsIDOMEventTarget * *aRelatedTarget); \
   NS_IMETHOD InitMouseEvent(const nsAString & type_arg, bool can_bubble_arg, bool cancelable_arg, nsIDOMWindow *view_arg, int32_t detail_arg, int32_t screen_x_arg, int32_t screen_y_arg, int32_t client_x_arg, int32_t client_y_arg, bool ctrl_key_arg, bool alt_key_arg, bool shift_key_arg, bool meta_key_arg, uint16_t button_arg, nsIDOMEventTarget *related_target_arg); \
   NS_IMETHOD GetMozPressure(float *aMozPressure); \
   NS_IMETHOD GetMozInputSource(uint16_t *aMozInputSource); \
-  NS_IMETHOD InitNSMouseEvent(const nsAString & typeArg, bool canBubbleArg, bool cancelableArg, nsIDOMWindow *viewArg, int32_t detailArg, int32_t screenXArg, int32_t screenYArg, int32_t clientXArg, int32_t clientYArg, bool ctrlKeyArg, bool altKeyArg, bool shiftKeyArg, bool metaKeyArg, uint16_t buttonArg, nsIDOMEventTarget *relatedTargetArg, float pressure, uint16_t inputSourceArg); 
+  NS_IMETHOD InitNSMouseEvent(const nsAString & typeArg, bool canBubbleArg, bool cancelableArg, nsIDOMWindow *viewArg, int32_t detailArg, int32_t screenXArg, int32_t screenYArg, int32_t clientXArg, int32_t clientYArg, bool ctrlKeyArg, bool altKeyArg, bool shiftKeyArg, bool metaKeyArg, uint16_t buttonArg, nsIDOMEventTarget *relatedTargetArg, float pressure, uint16_t inputSourceArg); \
+  NS_IMETHOD GetModifierState(const nsAString & key_arg, bool *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIDOMMOUSEEVENT(_to) \
   NS_IMETHOD GetScreenX(int32_t *aScreenX) { return _to GetScreenX(aScreenX); } \
   NS_IMETHOD GetScreenY(int32_t *aScreenY) { return _to GetScreenY(aScreenY); } \
+  NS_IMETHOD GetMozMovementX(int32_t *aMozMovementX) { return _to GetMozMovementX(aMozMovementX); } \
+  NS_IMETHOD GetMozMovementY(int32_t *aMozMovementY) { return _to GetMozMovementY(aMozMovementY); } \
   NS_IMETHOD GetClientX(int32_t *aClientX) { return _to GetClientX(aClientX); } \
   NS_IMETHOD GetClientY(int32_t *aClientY) { return _to GetClientY(aClientY); } \
   NS_IMETHOD GetCtrlKey(bool *aCtrlKey) { return _to GetCtrlKey(aCtrlKey); } \
@@ -14786,16 +14434,20 @@ class NS_NO_VTABLE nsIDOMMouseEvent : public nsIDOMUIEvent {
   NS_IMETHOD GetAltKey(bool *aAltKey) { return _to GetAltKey(aAltKey); } \
   NS_IMETHOD GetMetaKey(bool *aMetaKey) { return _to GetMetaKey(aMetaKey); } \
   NS_IMETHOD GetButton(uint16_t *aButton) { return _to GetButton(aButton); } \
+  NS_IMETHOD GetButtons(uint16_t *aButtons) { return _to GetButtons(aButtons); } \
   NS_IMETHOD GetRelatedTarget(nsIDOMEventTarget * *aRelatedTarget) { return _to GetRelatedTarget(aRelatedTarget); } \
   NS_IMETHOD InitMouseEvent(const nsAString & type_arg, bool can_bubble_arg, bool cancelable_arg, nsIDOMWindow *view_arg, int32_t detail_arg, int32_t screen_x_arg, int32_t screen_y_arg, int32_t client_x_arg, int32_t client_y_arg, bool ctrl_key_arg, bool alt_key_arg, bool shift_key_arg, bool meta_key_arg, uint16_t button_arg, nsIDOMEventTarget *related_target_arg) { return _to InitMouseEvent(type_arg, can_bubble_arg, cancelable_arg, view_arg, detail_arg, screen_x_arg, screen_y_arg, client_x_arg, client_y_arg, ctrl_key_arg, alt_key_arg, shift_key_arg, meta_key_arg, button_arg, related_target_arg); } \
   NS_IMETHOD GetMozPressure(float *aMozPressure) { return _to GetMozPressure(aMozPressure); } \
   NS_IMETHOD GetMozInputSource(uint16_t *aMozInputSource) { return _to GetMozInputSource(aMozInputSource); } \
-  NS_IMETHOD InitNSMouseEvent(const nsAString & typeArg, bool canBubbleArg, bool cancelableArg, nsIDOMWindow *viewArg, int32_t detailArg, int32_t screenXArg, int32_t screenYArg, int32_t clientXArg, int32_t clientYArg, bool ctrlKeyArg, bool altKeyArg, bool shiftKeyArg, bool metaKeyArg, uint16_t buttonArg, nsIDOMEventTarget *relatedTargetArg, float pressure, uint16_t inputSourceArg) { return _to InitNSMouseEvent(typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, screenXArg, screenYArg, clientXArg, clientYArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, buttonArg, relatedTargetArg, pressure, inputSourceArg); } 
+  NS_IMETHOD InitNSMouseEvent(const nsAString & typeArg, bool canBubbleArg, bool cancelableArg, nsIDOMWindow *viewArg, int32_t detailArg, int32_t screenXArg, int32_t screenYArg, int32_t clientXArg, int32_t clientYArg, bool ctrlKeyArg, bool altKeyArg, bool shiftKeyArg, bool metaKeyArg, uint16_t buttonArg, nsIDOMEventTarget *relatedTargetArg, float pressure, uint16_t inputSourceArg) { return _to InitNSMouseEvent(typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, screenXArg, screenYArg, clientXArg, clientYArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, buttonArg, relatedTargetArg, pressure, inputSourceArg); } \
+  NS_IMETHOD GetModifierState(const nsAString & key_arg, bool *_retval) { return _to GetModifierState(key_arg, _retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIDOMMOUSEEVENT(_to) \
   NS_IMETHOD GetScreenX(int32_t *aScreenX) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetScreenX(aScreenX); } \
   NS_IMETHOD GetScreenY(int32_t *aScreenY) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetScreenY(aScreenY); } \
+  NS_IMETHOD GetMozMovementX(int32_t *aMozMovementX) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMozMovementX(aMozMovementX); } \
+  NS_IMETHOD GetMozMovementY(int32_t *aMozMovementY) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMozMovementY(aMozMovementY); } \
   NS_IMETHOD GetClientX(int32_t *aClientX) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetClientX(aClientX); } \
   NS_IMETHOD GetClientY(int32_t *aClientY) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetClientY(aClientY); } \
   NS_IMETHOD GetCtrlKey(bool *aCtrlKey) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetCtrlKey(aCtrlKey); } \
@@ -14803,11 +14455,13 @@ class NS_NO_VTABLE nsIDOMMouseEvent : public nsIDOMUIEvent {
   NS_IMETHOD GetAltKey(bool *aAltKey) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAltKey(aAltKey); } \
   NS_IMETHOD GetMetaKey(bool *aMetaKey) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMetaKey(aMetaKey); } \
   NS_IMETHOD GetButton(uint16_t *aButton) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetButton(aButton); } \
+  NS_IMETHOD GetButtons(uint16_t *aButtons) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetButtons(aButtons); } \
   NS_IMETHOD GetRelatedTarget(nsIDOMEventTarget * *aRelatedTarget) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetRelatedTarget(aRelatedTarget); } \
   NS_IMETHOD InitMouseEvent(const nsAString & type_arg, bool can_bubble_arg, bool cancelable_arg, nsIDOMWindow *view_arg, int32_t detail_arg, int32_t screen_x_arg, int32_t screen_y_arg, int32_t client_x_arg, int32_t client_y_arg, bool ctrl_key_arg, bool alt_key_arg, bool shift_key_arg, bool meta_key_arg, uint16_t button_arg, nsIDOMEventTarget *related_target_arg) { return !_to ? NS_ERROR_NULL_POINTER : _to->InitMouseEvent(type_arg, can_bubble_arg, cancelable_arg, view_arg, detail_arg, screen_x_arg, screen_y_arg, client_x_arg, client_y_arg, ctrl_key_arg, alt_key_arg, shift_key_arg, meta_key_arg, button_arg, related_target_arg); } \
   NS_IMETHOD GetMozPressure(float *aMozPressure) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMozPressure(aMozPressure); } \
   NS_IMETHOD GetMozInputSource(uint16_t *aMozInputSource) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMozInputSource(aMozInputSource); } \
-  NS_IMETHOD InitNSMouseEvent(const nsAString & typeArg, bool canBubbleArg, bool cancelableArg, nsIDOMWindow *viewArg, int32_t detailArg, int32_t screenXArg, int32_t screenYArg, int32_t clientXArg, int32_t clientYArg, bool ctrlKeyArg, bool altKeyArg, bool shiftKeyArg, bool metaKeyArg, uint16_t buttonArg, nsIDOMEventTarget *relatedTargetArg, float pressure, uint16_t inputSourceArg) { return !_to ? NS_ERROR_NULL_POINTER : _to->InitNSMouseEvent(typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, screenXArg, screenYArg, clientXArg, clientYArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, buttonArg, relatedTargetArg, pressure, inputSourceArg); } 
+  NS_IMETHOD InitNSMouseEvent(const nsAString & typeArg, bool canBubbleArg, bool cancelableArg, nsIDOMWindow *viewArg, int32_t detailArg, int32_t screenXArg, int32_t screenYArg, int32_t clientXArg, int32_t clientYArg, bool ctrlKeyArg, bool altKeyArg, bool shiftKeyArg, bool metaKeyArg, uint16_t buttonArg, nsIDOMEventTarget *relatedTargetArg, float pressure, uint16_t inputSourceArg) { return !_to ? NS_ERROR_NULL_POINTER : _to->InitNSMouseEvent(typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, screenXArg, screenYArg, clientXArg, clientYArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, buttonArg, relatedTargetArg, pressure, inputSourceArg); } \
+  NS_IMETHOD GetModifierState(const nsAString & key_arg, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetModifierState(key_arg, _retval); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -14849,6 +14503,18 @@ NS_IMETHODIMP nsDOMMouseEvent::GetScreenX(int32_t *aScreenX)
 
 /* readonly attribute long screenY; */
 NS_IMETHODIMP nsDOMMouseEvent::GetScreenY(int32_t *aScreenY)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute long mozMovementX; */
+NS_IMETHODIMP nsDOMMouseEvent::GetMozMovementX(int32_t *aMozMovementX)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute long mozMovementY; */
+NS_IMETHODIMP nsDOMMouseEvent::GetMozMovementY(int32_t *aMozMovementY)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -14895,6 +14561,12 @@ NS_IMETHODIMP nsDOMMouseEvent::GetButton(uint16_t *aButton)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
+/* readonly attribute unsigned short buttons; */
+NS_IMETHODIMP nsDOMMouseEvent::GetButtons(uint16_t *aButtons)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 /* readonly attribute nsIDOMEventTarget relatedTarget; */
 NS_IMETHODIMP nsDOMMouseEvent::GetRelatedTarget(nsIDOMEventTarget * *aRelatedTarget)
 {
@@ -14921,6 +14593,12 @@ NS_IMETHODIMP nsDOMMouseEvent::GetMozInputSource(uint16_t *aMozInputSource)
 
 /* void initNSMouseEvent (in DOMString typeArg, in boolean canBubbleArg, in boolean cancelableArg, in nsIDOMWindow viewArg, in long detailArg, in long screenXArg, in long screenYArg, in long clientXArg, in long clientYArg, in boolean ctrlKeyArg, in boolean altKeyArg, in boolean shiftKeyArg, in boolean metaKeyArg, in unsigned short buttonArg, in nsIDOMEventTarget relatedTargetArg, in float pressure, in unsigned short inputSourceArg); */
 NS_IMETHODIMP nsDOMMouseEvent::InitNSMouseEvent(const nsAString & typeArg, bool canBubbleArg, bool cancelableArg, nsIDOMWindow *viewArg, int32_t detailArg, int32_t screenXArg, int32_t screenYArg, int32_t clientXArg, int32_t clientYArg, bool ctrlKeyArg, bool altKeyArg, bool shiftKeyArg, bool metaKeyArg, uint16_t buttonArg, nsIDOMEventTarget *relatedTargetArg, float pressure, uint16_t inputSourceArg)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* boolean getModifierState (in DOMString key_arg); */
+NS_IMETHODIMP nsDOMMouseEvent::GetModifierState(const nsAString & key_arg, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -15101,11 +14779,11 @@ class nsIMIMEInfo; /* forward declaration */
 
 
 /* starting interface:    nsIHelperAppLauncher */
-#define NS_IHELPERAPPLAUNCHER_IID_STR "d9a19faf-497b-408c-b995-777d956b72c0"
+#define NS_IHELPERAPPLAUNCHER_IID_STR "acf2a516-7d7f-4771-8b22-6c4a559c088e"
 
 #define NS_IHELPERAPPLAUNCHER_IID \
-  {0xd9a19faf, 0x497b, 0x408c, \
-    { 0xb9, 0x95, 0x77, 0x7d, 0x95, 0x6b, 0x72, 0xc0 }}
+  {0xacf2a516, 0x7d7f, 0x4771, \
+    { 0x8b, 0x22, 0x6c, 0x4a, 0x55, 0x9c, 0x08, 0x8e }}
 
 class NS_NO_VTABLE nsIHelperAppLauncher : public nsICancelable {
  public: 
@@ -15127,11 +14805,11 @@ class NS_NO_VTABLE nsIHelperAppLauncher : public nsICancelable {
   /* void launchWithApplication (in nsIFile application, in boolean remember_this_preference); */
   NS_IMETHOD LaunchWithApplication(nsIFile *application, bool remember_this_preference) = 0;
 
+  /* void saveDestinationAvailable (in nsIFile file); */
+  NS_IMETHOD SaveDestinationAvailable(nsIFile *file) = 0;
+
   /* void setWebProgressListener (in nsIWebProgressListener2 web_progress_listener); */
   NS_IMETHOD SetWebProgressListener(nsIWebProgressListener2 *web_progress_listener) = 0;
-
-  /* void closeProgressWindow (); */
-  NS_IMETHOD CloseProgressWindow(void) = 0;
 
   /* readonly attribute nsIFile targetFile; */
   NS_IMETHOD GetTargetFile(nsIFile * *aTargetFile) = 0;
@@ -15156,8 +14834,8 @@ class NS_NO_VTABLE nsIHelperAppLauncher : public nsICancelable {
   NS_IMETHOD GetSuggestedFileName(nsAString & aSuggestedFileName); \
   NS_IMETHOD SaveToDisk(nsIFile *new_file_location, bool remember_this_preference); \
   NS_IMETHOD LaunchWithApplication(nsIFile *application, bool remember_this_preference); \
+  NS_IMETHOD SaveDestinationAvailable(nsIFile *file); \
   NS_IMETHOD SetWebProgressListener(nsIWebProgressListener2 *web_progress_listener); \
-  NS_IMETHOD CloseProgressWindow(void); \
   NS_IMETHOD GetTargetFile(nsIFile * *aTargetFile); \
   NS_IMETHOD GetTargetFileIsExecutable(bool *aTargetFileIsExecutable); \
   NS_IMETHOD GetTimeDownloadStarted(PRTime *aTimeDownloadStarted); \
@@ -15170,8 +14848,8 @@ class NS_NO_VTABLE nsIHelperAppLauncher : public nsICancelable {
   NS_IMETHOD GetSuggestedFileName(nsAString & aSuggestedFileName) { return _to GetSuggestedFileName(aSuggestedFileName); } \
   NS_IMETHOD SaveToDisk(nsIFile *new_file_location, bool remember_this_preference) { return _to SaveToDisk(new_file_location, remember_this_preference); } \
   NS_IMETHOD LaunchWithApplication(nsIFile *application, bool remember_this_preference) { return _to LaunchWithApplication(application, remember_this_preference); } \
+  NS_IMETHOD SaveDestinationAvailable(nsIFile *file) { return _to SaveDestinationAvailable(file); } \
   NS_IMETHOD SetWebProgressListener(nsIWebProgressListener2 *web_progress_listener) { return _to SetWebProgressListener(web_progress_listener); } \
-  NS_IMETHOD CloseProgressWindow(void) { return _to CloseProgressWindow(); } \
   NS_IMETHOD GetTargetFile(nsIFile * *aTargetFile) { return _to GetTargetFile(aTargetFile); } \
   NS_IMETHOD GetTargetFileIsExecutable(bool *aTargetFileIsExecutable) { return _to GetTargetFileIsExecutable(aTargetFileIsExecutable); } \
   NS_IMETHOD GetTimeDownloadStarted(PRTime *aTimeDownloadStarted) { return _to GetTimeDownloadStarted(aTimeDownloadStarted); } \
@@ -15184,8 +14862,8 @@ class NS_NO_VTABLE nsIHelperAppLauncher : public nsICancelable {
   NS_IMETHOD GetSuggestedFileName(nsAString & aSuggestedFileName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSuggestedFileName(aSuggestedFileName); } \
   NS_IMETHOD SaveToDisk(nsIFile *new_file_location, bool remember_this_preference) { return !_to ? NS_ERROR_NULL_POINTER : _to->SaveToDisk(new_file_location, remember_this_preference); } \
   NS_IMETHOD LaunchWithApplication(nsIFile *application, bool remember_this_preference) { return !_to ? NS_ERROR_NULL_POINTER : _to->LaunchWithApplication(application, remember_this_preference); } \
+  NS_IMETHOD SaveDestinationAvailable(nsIFile *file) { return !_to ? NS_ERROR_NULL_POINTER : _to->SaveDestinationAvailable(file); } \
   NS_IMETHOD SetWebProgressListener(nsIWebProgressListener2 *web_progress_listener) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetWebProgressListener(web_progress_listener); } \
-  NS_IMETHOD CloseProgressWindow(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->CloseProgressWindow(); } \
   NS_IMETHOD GetTargetFile(nsIFile * *aTargetFile) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTargetFile(aTargetFile); } \
   NS_IMETHOD GetTargetFileIsExecutable(bool *aTargetFileIsExecutable) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTargetFileIsExecutable(aTargetFileIsExecutable); } \
   NS_IMETHOD GetTimeDownloadStarted(PRTime *aTimeDownloadStarted) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTimeDownloadStarted(aTimeDownloadStarted); } \
@@ -15253,14 +14931,14 @@ NS_IMETHODIMP nsHelperAppLauncher::LaunchWithApplication(nsIFile *application, b
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void setWebProgressListener (in nsIWebProgressListener2 web_progress_listener); */
-NS_IMETHODIMP nsHelperAppLauncher::SetWebProgressListener(nsIWebProgressListener2 *web_progress_listener)
+/* void saveDestinationAvailable (in nsIFile file); */
+NS_IMETHODIMP nsHelperAppLauncher::SaveDestinationAvailable(nsIFile *file)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void closeProgressWindow (); */
-NS_IMETHODIMP nsHelperAppLauncher::CloseProgressWindow()
+/* void setWebProgressListener (in nsIWebProgressListener2 web_progress_listener); */
+NS_IMETHODIMP nsHelperAppLauncher::SetWebProgressListener(nsIWebProgressListener2 *web_progress_listener)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }

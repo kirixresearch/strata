@@ -693,15 +693,20 @@ interface nsIURIFixup : nsISupports
 interface nsIInterfaceRequestor;
 interface nsIInputStream;
 interface nsIStreamListener;
+interface nsIArray;
 
-[scriptable, uuid(06f6ada3-7729-4e72-8d3f-bf8ba630ff9b)]
+[scriptable, uuid(2a8a7237-c1e2-4de7-b669-2002af29e42d)]
 interface nsIChannel : nsIRequest
 {
-    const unsigned long LOAD_DOCUMENT_URI = 65536;
-    const unsigned long LOAD_RETARGETED_DOCUMENT_URI = 131072;
-    const unsigned long LOAD_REPLACE = 262144;
-    const unsigned long LOAD_INITIAL_DOCUMENT_URI = 524288;
-    const unsigned long LOAD_TARGETED = 1048576;
+    const unsigned long LOAD_DOCUMENT_URI = 1 << 16;
+    const unsigned long LOAD_RETARGETED_DOCUMENT_URI = 1 << 17;
+    const unsigned long LOAD_REPLACE = 1 << 18;
+    const unsigned long LOAD_INITIAL_DOCUMENT_URI = 1 << 19;
+    const unsigned long LOAD_TARGETED = 1 << 20;
+    const unsigned long LOAD_CALL_CONTENT_SNIFFERS = 1 << 21;
+    const unsigned long LOAD_CLASSIFY_URI = 1 << 22;
+    const unsigned long LOAD_TREAT_APPLICATION_OCTET_STREAM_AS_UNKNOWN = 1 << 23;
+    const unsigned long LOAD_EXPLICIT_CREDENTIALS = 1 << 24;
 
     attribute nsIURI originalURI;
     readonly attribute nsIURI URI;
@@ -712,9 +717,16 @@ interface nsIChannel : nsIRequest
     attribute ACString contentCharset;
     attribute long contentLength;
 
-
     nsIInputStream open();
     void asyncOpen(in nsIStreamListener listener, in nsISupports xcontext);
+
+    attribute unsigned long contentDisposition;
+
+    const unsigned long DISPOSITION_INLINE = 0;
+    const unsigned long DISPOSITION_ATTACHMENT = 1;
+
+    attribute AString contentDispositionFilename;
+    readonly attribute ACString contentDispositionHeader;
 };
 
 
@@ -752,7 +764,7 @@ interface nsIClipboardCommands : nsISupports
 ///////////////////////////////////////////////////////////////////////////////
 
 
-[scriptable, uuid(a88e5a60-205a-4bb1-94e1-2628daf51eae)]
+[scriptable, uuid(d604ffc3-1ba3-4f6c-b65f-1ed4199364c3)]
 interface nsIComponentManager : nsISupports
 {
     void getClassObject(in nsCIDRef class_id,
@@ -774,6 +786,10 @@ interface nsIComponentManager : nsISupports
                         in nsISupports delegate,
                         in nsIIDRef iid,
                         [iid_is(iid),retval] out nsQIResult result);
+
+    void addBootstrappedManifestLocation(in nsIFile location);
+    void removeBootstrappedManifestLocation(in nsIFile location);
+    nsIArray getManifestLocations();
 };
 
 
@@ -826,25 +842,16 @@ interface nsIComponentRegistrar : nsISupports
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//  nsIContextMenuListener2
+//  nsIContextMenuInfo
 ///////////////////////////////////////////////////////////////////////////////
 
 
-interface nsIContextMenuInfo;
+
 interface nsIDOMEvent;
 interface nsIDOMNode;
 interface imgIContainer;
 
 
-[scriptable, uuid(7fb719b3-d804-4964-9596-77cf924ee314)]
-interface nsIContextMenuListener2 : nsISupports
-{
-    void onShowContextMenu(in unsigned long context_flags,
-                           in nsIContextMenuInfo utils);
-};
-
-
- 
 [scriptable, uuid(2f977d56-5485-11d4-87e2-0010a4e75ef2)]
 interface nsIContextMenuInfo : nsISupports
 {
@@ -1034,73 +1041,6 @@ interface nsIDOMNode : nsISupports
 
 
 
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//  nsIDOM3Node
-///////////////////////////////////////////////////////////////////////////////
-
-
-interface nsIDOMNode;
-interface DOMException;
-interface nsIVariant;
-interface nsIDOMUserDataHandler;
-
-[scriptable, uuid(29fb2a18-1dd2-11b2-8dd9-a6fd5d5ad12f)]
-interface nsIDOM3Node : nsISupports
-{
-    const unsigned short DOCUMENT_POSITION_DISCONNECTED = 0x01;
-    const unsigned short DOCUMENT_POSITION_PRECEDING = 0x02;
-    const unsigned short DOCUMENT_POSITION_FOLLOWING = 0x04;
-    const unsigned short DOCUMENT_POSITION_CONTAINS = 0x08;
-    const unsigned short DOCUMENT_POSITION_CONTAINED_BY = 0x10;
-    const unsigned short DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20;
-    
-    readonly attribute DOMString baseURI;
-
-    unsigned short compareDocumentPosition(in nsIDOMNode other) raises(DOMException);
-
-    attribute DOMString textContent;
-
-    boolean isSameNode(in nsIDOMNode other);
-    DOMString lookupPrefix(in DOMString namespace_uri);
-    boolean isDefaultNamespace(in DOMString namespace_uri);
-    DOMString lookupNamespaceURI(in DOMString prefix);
-    boolean isEqualNode(in nsIDOMNode arg);
-    nsISupports getFeature(in DOMString feature, in DOMString xversion);
-    nsIVariant setUserData(in DOMString key, in nsIVariant data, in nsIDOMUserDataHandler handler);
-    nsIVariant getUserData(in DOMString key);
-};
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//  nsIDOM3Document
-///////////////////////////////////////////////////////////////////////////////
-
-
-interface nsIDOMDOMConfiguration;
-
-[scriptable, uuid(2e0e9ea1-72ab-4d9e-bdeb-ca64e1abeba4)]
-interface nsIDOM3Document : nsIDOM3Node
-{
-    readonly attribute DOMString inputEncoding;
-    readonly attribute DOMString xmlEncoding;
-    attribute boolean xmlStandalone;
-    attribute DOMString xmlVersion;
-    attribute boolean strictErrorChecking;
-    attribute DOMString documentURI;
-    nsIDOMNode adoptNode(in nsIDOMNode xsource) raises(DOMException);
-    readonly attribute nsIDOMDOMConfiguration domConfig;
-    void normalizeDocument();
-    nsIDOMNode renameNode(in nsIDOMNode node, in DOMString namespace_uri, in DOMString qualified_name) raises(DOMException);
-};
-
-
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //  nsIDOMAttr
 ///////////////////////////////////////////////////////////////////////////////
@@ -1108,7 +1048,7 @@ interface nsIDOM3Document : nsIDOM3Node
 
 interface nsIDOMElement;
 
-[scriptable, uuid(03da4bc9-1b9a-41dc-a1a4-32414d48d704)]
+[scriptable, builtinclass, uuid(a974a4d3-2ff1-445b-8b8e-0aada5d4eedc)]
 interface nsIDOMAttr : nsIDOMNode
 {
     readonly attribute DOMString name;
@@ -1224,7 +1164,7 @@ interface nsIDOMElement : nsIDOMNode
 ///////////////////////////////////////////////////////////////////////////////
 
 
-[scriptable, uuid(cb75c251-afc7-444f-b2d6-b9635555f3ed)]
+[scriptable, uuid(84f72a38-1873-46f8-937c-1df22d7e7cae)]
 interface nsIDOMCharacterData : nsIDOMNode
 {
     attribute DOMString data;
@@ -1249,6 +1189,8 @@ interface nsIDOMCharacterData : nsIDOMNode
                      in unsigned long count,
                      in DOMString arg)
                      raises(DOMException);
+
+    void remove();
 };
 
 
@@ -1390,10 +1332,16 @@ interface nsIDOMAbstractView;
 interface nsIDOMEventTarget;
 interface DOMTimeStamp;
 
+[ptr] native WidgetEventPtr(mozilla::WidgetEvent);
+[ptr] native IPCMessagePtr(IPC::Message);
+[ptr] native ConstIPCMessagePtr(const IPC::Message);
+[ptr] native EventTargetPtr(mozilla::dom::EventTarget);
+[ptr] native nsDOMEventPtr(nsDOMEvent);
 
-[scriptable, uuid(548137e8-fd2c-48c4-8635-3033f7db79e0)]
+[scriptable, builtinclass, uuid(02d54f52-a1f5-4ad2-b560-36f14012935e)]
 interface nsIDOMEvent : nsISupports
 {
+    const unsigned short NONE = 0;
     const unsigned short CAPTURING_PHASE = 1;
     const unsigned short AT_TARGET = 2;
     const unsigned short BUBBLING_PHASE = 3;
@@ -1415,6 +1363,39 @@ interface nsIDOMEvent : nsISupports
                    in boolean cancelable_arg);
                    
     readonly attribute boolean defaultPrevented;
+
+    void stopImmediatePropagation();
+
+    const long ALT_MASK = 0x01;
+    const long CONTROL_MASK = 0x02;
+    const long SHIFT_MASK = 0x04;
+    const long META_MASK = 0x08;
+
+    readonly attribute nsIDOMEventTarget originalTarget;
+    readonly attribute nsIDOMEventTarget explicitOriginalTarget;
+
+    boolean getPreventDefault();
+
+    readonly attribute boolean isTrusted;
+
+    [noscript] void duplicatePrivateData();
+
+    [noscript] void setTarget(in nsIDOMEventTarget aTarget);
+
+    [notxpcom] boolean IsDispatchStopped();
+
+    [notxpcom] WidgetEventPtr GetInternalNSEvent();
+
+    [noscript,notxpcom] void SetTrusted(in boolean trusted);
+
+    [notxpcom] void Serialize(in IPCMessagePtr msg,
+                              in boolean aSerializeInterfaceType);
+
+    [notxpcom] boolean Deserialize(in ConstIPCMessagePtr msg, out voidPtr iter);
+
+    [noscript,notxpcom] void SetOwner(in EventTargetPtr owner);
+
+    [notxpcom] nsDOMEventPtr InternalDOMEvent();
 };
 
 
@@ -1732,8 +1713,8 @@ interface nsIDOMHTMLInputElement : nsISupports
 ///////////////////////////////////////////////////////////////////////////////
 
 
-[scriptable, uuid(442dddcc-cdc3-4385-946d-9d6b8b4eb927)]
-interface nsIDOMHTMLLinkElement : nsIDOMHTMLElement
+[scriptable, uuid(95d6ec66-2754-45bd-a068-49ac1fb45004)]
+interface nsIDOMHTMLLinkElement : nsISupports
 {
     attribute boolean disabled;
     attribute DOMString charset;
@@ -1744,10 +1725,12 @@ interface nsIDOMHTMLLinkElement : nsIDOMHTMLElement
     attribute DOMString rev;
     attribute DOMString target;
     attribute DOMString type;
+    attribute DOMString crossOrigin;
 };
 
 
 
+           
 
 ///////////////////////////////////////////////////////////////////////////////
 //  nsIDOMHTMLInputElement
@@ -1757,8 +1740,8 @@ interface nsIDOMHTMLLinkElement : nsIDOMHTMLElement
 interface nsIDOMHTMLFormElement;
 
 
-[scriptable, uuid(a36a1710-7684-4fb7-a401-ccbf442064c1)]
-interface nsIDOMHTMLOptionElement : nsIDOMHTMLElement
+[scriptable, uuid(c2b3e9ff-6b36-4158-ace3-05a9c5b8e1c1)]
+interface nsIDOMHTMLOptionElement : nsISupports
 {
     attribute boolean disabled;
     readonly attribute nsIDOMHTMLFormElement form;
@@ -1772,24 +1755,6 @@ interface nsIDOMHTMLOptionElement : nsIDOMHTMLElement
 
 
 
-
-///////////////////////////////////////////////////////////////////////////////
-//  nsIDOMHTMLParamElement
-///////////////////////////////////////////////////////////////////////////////
-
-
-[scriptable, uuid(e7e2ac93-7a44-4c9d-bf4a-4b7231b6e9a8)]
-interface nsIDOMHTMLParamElement : nsIDOMHTMLElement
-{
-    attribute DOMString name;
-    attribute DOMString type;
-    attribute DOMString value;
-    attribute DOMString valueType;
-};
-
-
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //  nsIDOMHTMLSelectElement
 ///////////////////////////////////////////////////////////////////////////////
@@ -1799,14 +1764,14 @@ interface nsIDOMHTMLFormElement;
 interface nsIDOMHTMLOptionsCollection;
 
 [scriptable, uuid(f6e68b8c-58cf-49dd-8d70-de8768ac5bac)]
-interface nsIDOMHTMLSelectElement : nsIDOMHTMLElement
+interface nsIDOMHTMLSelectElement : nsISupports
 {
     attribute boolean autofocus;
     attribute boolean disabled;
     readonly attribute nsIDOMHTMLFormElement form;
     attribute boolean multiple;
     attribute DOMString name;
-    attribute long size;
+    attribute unsigned long size;
     readonly attribute DOMString type;
     readonly attribute nsIDOMHTMLOptionsCollection options;
     attribute unsigned long length;
@@ -1814,14 +1779,14 @@ interface nsIDOMHTMLSelectElement : nsIDOMHTMLElement
     nsIDOMNode item(in unsigned long index);
     nsIDOMNode namedItem(in DOMString name);
     
-    void add(in nsIDOMHTMLElement element, 
-             [optional] in nsIVariant before)
-                raises(DOMException); 
+    void add(in nsIDOMHTMLElement element, [optional] in nsIVariant before)
+             raises(DOMException); 
     void remove(in long index);
 
+    readonly attribute nsIDOMHTMLCollection selectedOptions;
     attribute long selectedIndex;
     attribute DOMString value;
-    attribute long tabIndex;
+
     readonly attribute boolean willValidate;
     readonly attribute nsIDOMValidityState validity;
     readonly attribute DOMString validationMessage;
@@ -1842,7 +1807,7 @@ interface nsIDOMHTMLSelectElement : nsIDOMHTMLElement
 interface nsIDOMHTMLFormElement;
 
 [scriptable, uuid(3fa5ddd0-060e-4de7-835d-0c02cb3f6e79)]
-interface nsIDOMHTMLTextAreaElement : nsIDOMHTMLElement
+interface nsIDOMHTMLTextAreaElement : nsISupports
 {
     attribute boolean autofocus;
     attribute unsigned long cols;
@@ -1875,7 +1840,7 @@ interface nsIDOMHTMLTextAreaElement : nsIDOMHTMLElement
                            [optional] in DOMString direction);
     
     attribute DOMString selectionDirection;
-    attribute long tabIndex;
+
     readonly attribute nsIControllers controllers;
 };
 
@@ -2184,7 +2149,7 @@ interface nsIDOMWindow : nsISupports
 ///////////////////////////////////////////////////////////////////////////////
 
 
-[scriptable, uuid(4f3032d1-bdc5-4f37-bece-af8056d71c5c)]
+[scriptable, builtinclass, uuid(d73852f8-7bd6-477d-8233-117dbf83860b)]
 interface nsIDOMUIEvent : nsIDOMEvent
 {
     readonly attribute nsIDOMWindow view;
@@ -2202,7 +2167,7 @@ interface nsIDOMUIEvent : nsIDOMEvent
     readonly attribute long layerX;
     readonly attribute long layerY;
     readonly attribute long pageX;
-    readonly attribute long  pageY;
+    readonly attribute long pageY;
     readonly attribute unsigned long which;
     readonly attribute nsIDOMNode rangeParent;
     readonly attribute long rangeOffset;
@@ -2225,11 +2190,13 @@ interface nsIDOMUIEvent : nsIDOMEvent
 interface nsIDOMEventTarget;
 
 
-[scriptable, uuid(7e6cb6e1-d3ba-4e60-a6ff-96350187a1e3)]
+[scriptable, builtinclass, uuid(afb2e57b-2822-4969-b2a9-0cada6859534)]
 interface nsIDOMMouseEvent : nsIDOMUIEvent
 {
     readonly attribute long screenX;
     readonly attribute long screenY;
+    readonly attribute long mozMovementX;
+    readonly attribute long mozMovementY;
     readonly attribute long clientX;
     readonly attribute long clientY;
     readonly attribute boolean ctrlKey;
@@ -2237,6 +2204,7 @@ interface nsIDOMMouseEvent : nsIDOMUIEvent
     readonly attribute boolean altKey;
     readonly attribute boolean metaKey;
     readonly attribute unsigned short button;
+    readonly attribute unsigned short buttons;
     readonly attribute nsIDOMEventTarget relatedTarget;
  
     void initMouseEvent(in DOMString type_arg,
@@ -2257,13 +2225,13 @@ interface nsIDOMMouseEvent : nsIDOMUIEvent
 
     readonly attribute float mozPressure;
 
-    const unsigned short MOZ_SOURCE_UNKNOWN    = 0;
-    const unsigned short MOZ_SOURCE_MOUSE      = 1;
-    const unsigned short MOZ_SOURCE_PEN        = 2;
-    const unsigned short MOZ_SOURCE_ERASER     = 3;
-    const unsigned short MOZ_SOURCE_CURSOR     = 4;
-    const unsigned short MOZ_SOURCE_TOUCH      = 5;
-    const unsigned short MOZ_SOURCE_KEYBOARD   = 6;
+    const unsigned short MOZ_SOURCE_UNKNOWN = 0;
+    const unsigned short MOZ_SOURCE_MOUSE = 1;
+    const unsigned short MOZ_SOURCE_PEN = 2;
+    const unsigned short MOZ_SOURCE_ERASER = 3;
+    const unsigned short MOZ_SOURCE_CURSOR = 4;
+    const unsigned short MOZ_SOURCE_TOUCH = 5;
+    const unsigned short MOZ_SOURCE_KEYBOARD = 6;
 
     readonly attribute unsigned short mozInputSource;
 
@@ -2284,6 +2252,8 @@ interface nsIDOMMouseEvent : nsIDOMUIEvent
                 in nsIDOMEventTarget relatedTargetArg,
                 in float pressure,
                 in unsigned short inputSourceArg);
+
+    boolean getModifierState(in DOMString key_arg);
 };
 
 
@@ -2334,7 +2304,7 @@ interface nsIWebProgressListener2;
 interface nsIMIMEInfo;
 
 
-[scriptable, object, uuid(d9a19faf-497b-408c-b995-777d956b72c0)]
+[scriptable, uuid(acf2a516-7d7f-4771-8b22-6c4a559c088e)]
 interface nsIHelperAppLauncher : nsICancelable
 {
     readonly attribute nsIMIMEInfo MIMEInfo;
@@ -2347,9 +2317,9 @@ interface nsIHelperAppLauncher : nsICancelable
     void launchWithApplication(in nsIFile application,
                                in boolean remember_this_preference);
 
-    void setWebProgressListener(in nsIWebProgressListener2 web_progress_listener);
+    void saveDestinationAvailable(in nsIFile file);
 
-    void closeProgressWindow();
+    void setWebProgressListener(in nsIWebProgressListener2 web_progress_listener);
 
     readonly attribute nsIFile targetFile;
     readonly attribute boolean targetFileIsExecutable;
