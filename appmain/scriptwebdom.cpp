@@ -1168,7 +1168,7 @@ void WebDOMElement::getElementsByTagName(kscript::ExprEnv* env, kscript::Value* 
     if (env->getParamCount() < 1)
         return;
 
-    wxDOMNodeList child_nodes;
+    wxDOMHTMLCollection child_nodes;
     wxString tag_name = env->getParam(0)->getString();
     child_nodes = element.GetElementsByTagName(tag_name);
 
