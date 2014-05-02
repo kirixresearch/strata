@@ -1995,6 +1995,102 @@ void WebDOMHTMLElement::setValue(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setBoolean(true);
 }
 
+
+
+// (METHOD) WebDOMHTMLElement.getTabIndex
+// Description:
+//
+// Syntax: WebDOMHTMLElement.getTabIndex() : Integer
+//
+// Remarks:
+//
+// Returns:
+
+void WebDOMHTMLElement::getTabIndex(kscript::ExprEnv* env, kscript::Value* retval)
+{
+    // TODO: fill out documentation
+    // int GetTabIndex();
+    
+    retval->setNull();
+
+    wxDOMHTMLElement e = m_node;
+    if (!e.IsOk())
+        return;
+
+    retval->setInteger(e.GetTabIndex());
+}
+
+// (METHOD) WebDOMHTMLElement.setTabIndex
+// Description:
+//
+// Syntax: WebDOMHTMLElement.setTabIndex(value : Integer)
+//
+// Remarks:
+// Param(value):
+
+void WebDOMHTMLElement::setTabIndex(kscript::ExprEnv* env, kscript::Value* retval)
+{
+    // TODO: fill out documentation
+    // void SetTabIndex(int index);
+    
+    wxDOMHTMLElement e = m_node;
+    if (!e.IsOk())
+        return;
+
+    if (env->getParamCount() < 1)
+        return;
+
+    e.SetTabIndex(env->getParam(0)->getInteger());
+}
+
+
+// (METHOD) WebDOMHTMLElement.getAccessKey
+// Description:
+//
+// Syntax: WebDOMHTMLElement.getAccessKey() : String
+//
+// Remarks:
+//
+// Returns:
+
+void WebDOMHTMLElement::getAccessKey(kscript::ExprEnv* env, kscript::Value* retval)
+{
+    // TODO: fill out documentation
+    // wxString GetAccessKey();
+    
+    retval->setNull();
+
+    wxDOMHTMLElement e = m_node;
+    if (!e.IsOk())
+        return;
+
+    retval->setString(e.GetAccessKey().wc_str());
+}
+
+// (METHOD) WebDOMHTMLElement.setAccessKey
+// Description:
+//
+// Syntax: WebDOMHTMLElement.setAccessKey(value : String)
+//
+// Remarks:
+// Param(value):
+
+void WebDOMHTMLElement::setAccessKey(kscript::ExprEnv* env, kscript::Value* retval)
+{
+    // TODO: fill out documentation
+    // void SetAccessKey(const wxString& value);
+    
+    wxDOMHTMLElement e = m_node;
+    if (!e.IsOk())
+        return;
+
+    if (env->getParamCount() < 1)
+        return;
+
+    e.SetAccessKey(env->getParam(0)->getString());
+}
+
+
 // (CLASS) WebDOMHTMLAnchorElement
 // Category: DOM
 // Derives: WebDOMHTMLElement
@@ -2021,51 +2117,6 @@ void WebDOMHTMLAnchorElement::constructor(kscript::ExprEnv* env, kscript::Value*
 {
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.getAccessKey
-// Description:
-//
-// Syntax: WebDOMHTMLAnchorElement.getAccessKey() : String
-//
-// Remarks:
-//
-// Returns:
-
-void WebDOMHTMLAnchorElement::getAccessKey(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // TODO: fill out documentation
-    // wxString GetAccessKey();
-    
-    retval->setNull();
-
-    wxDOMHTMLAnchorElement e = m_node;
-    if (!e.IsOk())
-        return;
-
-    retval->setString(e.GetAccessKey().wc_str());
-}
-
-// (METHOD) WebDOMHTMLAnchorElement.setAccessKey
-// Description:
-//
-// Syntax: WebDOMHTMLAnchorElement.setAccessKey(value : String)
-//
-// Remarks:
-// Param(value):
-
-void WebDOMHTMLAnchorElement::setAccessKey(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // TODO: fill out documentation
-    // void SetAccessKey(const wxString& value);
-    
-    wxDOMHTMLAnchorElement e = m_node;
-    if (!e.IsOk())
-        return;
-
-    if (env->getParamCount() < 1)
-        return;
-
-    e.SetAccessKey(env->getParam(0)->getString());
-}
 
 // (METHOD) WebDOMHTMLAnchorElement.getCharset
 // Description:
@@ -2435,51 +2486,6 @@ void WebDOMHTMLAnchorElement::setShape(kscript::ExprEnv* env, kscript::Value* re
     e.SetShape(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.getTabIndex
-// Description:
-//
-// Syntax: WebDOMHTMLAnchorElement.getTabIndex() : Integer
-//
-// Remarks:
-//
-// Returns:
-
-void WebDOMHTMLAnchorElement::getTabIndex(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // TODO: fill out documentation
-    // int GetTabIndex();
-    
-    retval->setNull();
-
-    wxDOMHTMLAnchorElement e = m_node;
-    if (!e.IsOk())
-        return;
-
-    retval->setInteger(e.GetTabIndex());
-}
-
-// (METHOD) WebDOMHTMLAnchorElement.setTabIndex
-// Description:
-//
-// Syntax: WebDOMHTMLAnchorElement.setTabIndex(value : Integer)
-//
-// Remarks:
-// Param(value):
-
-void WebDOMHTMLAnchorElement::setTabIndex(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // TODO: fill out documentation
-    // void SetTabIndex(int index);
-    
-    wxDOMHTMLAnchorElement e = m_node;
-    if (!e.IsOk())
-        return;
-
-    if (env->getParamCount() < 1)
-        return;
-
-    e.SetTabIndex(env->getParam(0)->getInteger());
-}
 
 // (METHOD) WebDOMHTMLAnchorElement.getTarget
 // Description:
@@ -2637,51 +2643,6 @@ void WebDOMHTMLButtonElement::constructor(kscript::ExprEnv* env, kscript::Value*
 {
 }
 
-// (METHOD) WebDOMHTMLButtonElement.getAccessKey
-// Description:
-//
-// Syntax: WebDOMHTMLButtonElement.getAccessKey() : String
-//
-// Remarks:
-//
-// Returns:
-
-void WebDOMHTMLButtonElement::getAccessKey(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // TODO: fill out documentation
-    // wxString GetAccessKey();
-
-    retval->setNull();
-
-    wxDOMHTMLButtonElement e = m_node;
-    if (!e.IsOk())
-        return;
-
-    retval->setString(e.GetAccessKey().wc_str());
-}
-
-// (METHOD) WebDOMHTMLButtonElement.setAccessKey
-// Description:
-//
-// Syntax: WebDOMHTMLButtonElement.setAccessKey(value : String)
-//
-// Remarks:
-// Param(value):
-
-void WebDOMHTMLButtonElement::setAccessKey(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // TODO: fill out documentation
-    // void SetAccessKey(const wxString& value);
-    
-    wxDOMHTMLButtonElement e = m_node;
-    if (!e.IsOk())
-        return;
-
-    if (env->getParamCount() < 1)
-        return;
-
-    e.SetAccessKey(env->getParam(0)->getString());
-}
 
 // (METHOD) WebDOMHTMLButtonElement.getDisabled
 // Description:
@@ -2775,51 +2736,6 @@ void WebDOMHTMLButtonElement::setName(kscript::ExprEnv* env, kscript::Value* ret
     e.SetName(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLButtonElement.getTabIndex
-// Description:
-//
-// Syntax: WebDOMHTMLButtonElement.getTabIndex() : Integer
-//
-// Remarks:
-//
-// Returns:
-
-void WebDOMHTMLButtonElement::getTabIndex(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // TODO: fill out documentation
-    // int GetTabIndex();
-    
-    retval->setNull();
-
-    wxDOMHTMLButtonElement e = m_node;
-    if (!e.IsOk())
-        return;
-
-    retval->setInteger(e.GetTabIndex());
-}
-
-// (METHOD) WebDOMHTMLButtonElement.setTabIndex
-// Description:
-//
-// Syntax: WebDOMHTMLButtonElement.setTabIndex(value : Integer)
-//
-// Remarks:
-// Param(value):
-
-void WebDOMHTMLButtonElement::setTabIndex(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // TODO: fill out documentation
-    // void SetTabIndex(int index);
-    
-    wxDOMHTMLButtonElement e = m_node;
-    if (!e.IsOk())
-        return;
-
-    if (env->getParamCount() < 1)
-        return;
-
-    e.SetTabIndex(env->getParam(0)->getInteger());
-}
 
 // (METHOD) WebDOMHTMLButtonElement.getType
 // Description:
@@ -3006,52 +2922,6 @@ void WebDOMHTMLInputElement::setAccept(kscript::ExprEnv* env, kscript::Value* re
         return;
 
     e.SetAccept(env->getParam(0)->getString());
-}
-
-// (METHOD) WebDOMHTMLInputElement.getAccessKey
-// Description:
-//
-// Syntax: WebDOMHTMLInputElement.getAccessKey() : String
-//
-// Remarks:
-//
-// Returns:
-
-void WebDOMHTMLInputElement::getAccessKey(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // TODO: fill out documentation
-    // wxString GetAccessKey();
-
-    retval->setNull();
-
-    wxDOMHTMLInputElement e = m_node;
-    if (!e.IsOk())
-        return;
-
-    retval->setString(e.GetAccessKey().wc_str());
-}
-
-// (METHOD) WebDOMHTMLInputElement.setAccessKey
-// Description:
-//
-// Syntax: WebDOMHTMLInputElement.setAccessKey(value : String)
-//
-// Remarks:
-// Param(value):
-
-void WebDOMHTMLInputElement::setAccessKey(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // TODO: fill out documentation
-    // void SetAccessKey(const wxString& value);
-    
-    wxDOMHTMLInputElement e = m_node;
-    if (!e.IsOk())
-        return;
-
-    if (env->getParamCount() < 1)
-        return;
-
-    e.SetAccessKey(env->getParam(0)->getString());
 }
 
 // (METHOD) WebDOMHTMLInputElement.getAlign
@@ -3468,51 +3338,6 @@ void WebDOMHTMLInputElement::setSrc(kscript::ExprEnv* env, kscript::Value* retva
     e.SetSrc(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLInputElement.getTabIndex
-// Description:
-//
-// Syntax: WebDOMHTMLInputElement.getTabIndex() : Integer
-//
-// Remarks:
-//
-// Returns:
-
-void WebDOMHTMLInputElement::getTabIndex(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // TODO: fill out documentation
-    // int GetTabIndex();
-
-    retval->setNull();
-
-    wxDOMHTMLInputElement e = m_node;
-    if (!e.IsOk())
-        return;
-
-    retval->setInteger(e.GetTabIndex());
-}
-
-// (METHOD) WebDOMHTMLInputElement.setTabIndex
-// Description:
-//
-// Syntax: WebDOMHTMLInputElement.setTabIndex(value : Integer)
-//
-// Remarks:
-// Param(value):
-
-void WebDOMHTMLInputElement::setTabIndex(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // TODO: fill out documentation
-    // void SetTabIndex(int value);
-
-    wxDOMHTMLInputElement e = m_node;
-    if (!e.IsOk())
-        return;
-
-    if (env->getParamCount() < 1)
-        return;
-
-    e.SetTabIndex(env->getParam(0)->getInteger());
-}
 
 // (METHOD) WebDOMHTMLInputElement.getType
 // Description:
@@ -4894,52 +4719,6 @@ void WebDOMHTMLTextAreaElement::setDefaultValue(kscript::ExprEnv* env, kscript::
         return;
 
     e.SetDefaultValue(env->getParam(0)->getString());
-}
-
-// (METHOD) WebDOMHTMLTextAreaElement.getAccessKey
-// Description:
-//
-// Syntax: WebDOMHTMLTextAreaElement.getAccessKey() : String
-//
-// Remarks:
-//
-// Returns:
-
-void WebDOMHTMLTextAreaElement::getAccessKey(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // TODO: fill out documentation
-    // wxString GetAccessKey();
-
-    retval->setNull();
-
-    wxDOMHTMLTextAreaElement e = m_node;
-    if (!e.IsOk())
-        return;
-
-    retval->setString(e.GetAccessKey().wc_str());
-}
-
-// (METHOD) WebDOMHTMLTextAreaElement.setAccessKey
-// Description:
-//
-// Syntax: WebDOMHTMLTextAreaElement.setAccessKey(value : String)
-//
-// Remarks:
-// Param(value):
-
-void WebDOMHTMLTextAreaElement::setAccessKey(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    // TODO: fill out documentation
-    // void SetAccessKey(const wxString& value);
-
-    wxDOMHTMLTextAreaElement e = m_node;
-    if (!e.IsOk())
-        return;
-
-    if (env->getParamCount() < 1)
-        return;
-
-    e.SetAccessKey(env->getParam(0)->getString());
 }
 
 // (METHOD) WebDOMHTMLTextAreaElement.getCols

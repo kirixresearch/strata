@@ -255,6 +255,10 @@ class WebDOMHTMLElement : public WebDOMElement
         KSCRIPT_GUI_METHOD("setClassName", WebDOMHTMLElement::setClassName)
         KSCRIPT_GUI_METHOD("getValue", WebDOMHTMLElement::getValue)
         KSCRIPT_GUI_METHOD("setValue", WebDOMHTMLElement::setValue)
+        KSCRIPT_GUI_METHOD("getTabIndex", WebDOMHTMLElement::getTabIndex)
+        KSCRIPT_GUI_METHOD("setTabIndex", WebDOMHTMLElement::setTabIndex)
+        KSCRIPT_GUI_METHOD("getAccessKey", WebDOMHTMLElement::getAccessKey)
+        KSCRIPT_GUI_METHOD("setAccessKey", WebDOMHTMLElement::setAccessKey)
     END_KSCRIPT_CLASS()
     
     
@@ -280,6 +284,10 @@ public:
     void setClassName(kscript::ExprEnv* env, kscript::Value* retval);
     void getValue(kscript::ExprEnv* env, kscript::Value* retval);
     void setValue(kscript::ExprEnv* env, kscript::Value* retval);
+    void getTabIndex(kscript::ExprEnv* env, kscript::Value* retval);
+    void setTabIndex(kscript::ExprEnv* env, kscript::Value* retval);
+    void getAccessKey(kscript::ExprEnv* env, kscript::Value* retval);
+    void setAccessKey(kscript::ExprEnv* env, kscript::Value* retval);
 };
 
 
@@ -288,8 +296,6 @@ class WebDOMHTMLAnchorElement: public WebDOMHTMLElement
 {
     BEGIN_KSCRIPT_DERIVED_CLASS("WebDOMHTMLAnchorElement", WebDOMHTMLAnchorElement, WebDOMHTMLElement)
         KSCRIPT_GUI_METHOD("constructor", WebDOMHTMLAnchorElement::constructor)
-        KSCRIPT_GUI_METHOD("getAccessKey", WebDOMHTMLAnchorElement::getAccessKey)
-        KSCRIPT_GUI_METHOD("setAccessKey", WebDOMHTMLAnchorElement::setAccessKey)
         KSCRIPT_GUI_METHOD("getCharset", WebDOMHTMLAnchorElement::getCharset)
         KSCRIPT_GUI_METHOD("setCharset", WebDOMHTMLAnchorElement::setCharset)
         KSCRIPT_GUI_METHOD("getCoords", WebDOMHTMLAnchorElement::getCoords);
@@ -306,8 +312,6 @@ class WebDOMHTMLAnchorElement: public WebDOMHTMLElement
         KSCRIPT_GUI_METHOD("setRev", WebDOMHTMLAnchorElement::setRev)
         KSCRIPT_GUI_METHOD("getShape", WebDOMHTMLAnchorElement::getShape)
         KSCRIPT_GUI_METHOD("setShape", WebDOMHTMLAnchorElement::setShape)
-        KSCRIPT_GUI_METHOD("getTabIndex", WebDOMHTMLAnchorElement::getTabIndex)
-        KSCRIPT_GUI_METHOD("setTabIndex", WebDOMHTMLAnchorElement::setTabIndex)
         KSCRIPT_GUI_METHOD("getTarget", WebDOMHTMLAnchorElement::getTarget)
         KSCRIPT_GUI_METHOD("setTarget", WebDOMHTMLAnchorElement::setTarget)
         KSCRIPT_GUI_METHOD("getType", WebDOMHTMLAnchorElement::getType)
@@ -322,8 +326,6 @@ public:
     ~WebDOMHTMLAnchorElement();
 
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
-    void getAccessKey(kscript::ExprEnv* env, kscript::Value* retval);
-    void setAccessKey(kscript::ExprEnv* env, kscript::Value* retval);
     void getCharset(kscript::ExprEnv* env, kscript::Value* retval);
     void setCharset(kscript::ExprEnv* env, kscript::Value* retval);
     void getCoords(kscript::ExprEnv* env, kscript::Value* retval);
@@ -340,8 +342,6 @@ public:
     void setRev(kscript::ExprEnv* env, kscript::Value* retval);
     void getShape(kscript::ExprEnv* env, kscript::Value* retval);
     void setShape(kscript::ExprEnv* env, kscript::Value* retval);
-    void getTabIndex(kscript::ExprEnv* env, kscript::Value* retval);
-    void setTabIndex(kscript::ExprEnv* env, kscript::Value* retval);
     void getTarget(kscript::ExprEnv* env, kscript::Value* retval);
     void setTarget(kscript::ExprEnv* env, kscript::Value* retval);
     void getType(kscript::ExprEnv* env, kscript::Value* retval);
@@ -357,14 +357,10 @@ class WebDOMHTMLButtonElement : public WebDOMHTMLElement
     BEGIN_KSCRIPT_DERIVED_CLASS("WebDOMHTMLButtonElement", WebDOMHTMLButtonElement, WebDOMHTMLElement)
         KSCRIPT_GUI_METHOD("constructor", WebDOMHTMLButtonElement::constructor)
         //KSCRIPT_GUI_METHOD("getForm", WebDOMHTMLButtonElement::getForm)
-        KSCRIPT_GUI_METHOD("getAccessKey", WebDOMHTMLButtonElement::getAccessKey)
-        KSCRIPT_GUI_METHOD("setAccessKey", WebDOMHTMLButtonElement::setAccessKey)
         KSCRIPT_GUI_METHOD("getDisabled", WebDOMHTMLButtonElement::getDisabled)
         KSCRIPT_GUI_METHOD("setDisabled", WebDOMHTMLButtonElement::setDisabled)
         KSCRIPT_GUI_METHOD("getName", WebDOMHTMLButtonElement::getName)
         KSCRIPT_GUI_METHOD("setName", WebDOMHTMLButtonElement::setName)
-        KSCRIPT_GUI_METHOD("getTabIndex", WebDOMHTMLButtonElement::getTabIndex)
-        KSCRIPT_GUI_METHOD("setTabIndex", WebDOMHTMLButtonElement::setTabIndex)
         KSCRIPT_GUI_METHOD("getType", WebDOMHTMLButtonElement::getType)
     END_KSCRIPT_CLASS()
     
@@ -375,14 +371,10 @@ public:
 
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
     //void getForm(kscript::ExprEnv* env, kscript::Value* retval);
-    void getAccessKey(kscript::ExprEnv* env, kscript::Value* retval);
-    void setAccessKey(kscript::ExprEnv* env, kscript::Value* retval);
     void getDisabled(kscript::ExprEnv* env, kscript::Value* retval);
     void setDisabled(kscript::ExprEnv* env, kscript::Value* retval);
     void getName(kscript::ExprEnv* env, kscript::Value* retval);
     void setName(kscript::ExprEnv* env, kscript::Value* retval);
-    void getTabIndex(kscript::ExprEnv* env, kscript::Value* retval);
-    void setTabIndex(kscript::ExprEnv* env, kscript::Value* retval);
     void getType(kscript::ExprEnv* env, kscript::Value* retval);
 };
 
@@ -399,8 +391,6 @@ class WebDOMHTMLInputElement : public WebDOMHTMLElement
         // KSCRIPT_GUI_METHOD("getForm", WebDOMHTMLInputElement::getForm)
         KSCRIPT_GUI_METHOD("getAccept", WebDOMHTMLInputElement::getAccept)
         KSCRIPT_GUI_METHOD("setAccept", WebDOMHTMLInputElement::setAccept)
-        KSCRIPT_GUI_METHOD("getAccessKey", WebDOMHTMLInputElement::getAccessKey)
-        KSCRIPT_GUI_METHOD("setAccessKey", WebDOMHTMLInputElement::setAccessKey)
         KSCRIPT_GUI_METHOD("getAlign", WebDOMHTMLInputElement::getAlign)
         KSCRIPT_GUI_METHOD("setAlign", WebDOMHTMLInputElement::setAlign)
         KSCRIPT_GUI_METHOD("getAlt", WebDOMHTMLInputElement::getAlt)
@@ -419,8 +409,6 @@ class WebDOMHTMLInputElement : public WebDOMHTMLElement
         KSCRIPT_GUI_METHOD("setSize", WebDOMHTMLInputElement::setSize)
         KSCRIPT_GUI_METHOD("getSrc", WebDOMHTMLInputElement::getSrc)
         KSCRIPT_GUI_METHOD("setSrc", WebDOMHTMLInputElement::setSrc)
-        KSCRIPT_GUI_METHOD("getTabIndex", WebDOMHTMLInputElement::getTabIndex)
-        KSCRIPT_GUI_METHOD("setTabIndex", WebDOMHTMLInputElement::setTabIndex)
         KSCRIPT_GUI_METHOD("getType", WebDOMHTMLInputElement::getType)
         KSCRIPT_GUI_METHOD("setType", WebDOMHTMLInputElement::setType)
         KSCRIPT_GUI_METHOD("getUseMap", WebDOMHTMLInputElement::getUseMap)
@@ -444,8 +432,6 @@ public:
     // void getForm(kscript::ExprEnv* env, kscript::Value* retval);
     void getAccept(kscript::ExprEnv* env, kscript::Value* retval);
     void setAccept(kscript::ExprEnv* env, kscript::Value* retval);
-    void getAccessKey(kscript::ExprEnv* env, kscript::Value* retval);
-    void setAccessKey(kscript::ExprEnv* env, kscript::Value* retval);
     void getAlign(kscript::ExprEnv* env, kscript::Value* retval);
     void setAlign(kscript::ExprEnv* env, kscript::Value* retval);
     void getAlt(kscript::ExprEnv* env, kscript::Value* retval);
@@ -464,8 +450,6 @@ public:
     void setSize(kscript::ExprEnv* env, kscript::Value* retval);
     void getSrc(kscript::ExprEnv* env, kscript::Value* retval);
     void setSrc(kscript::ExprEnv* env, kscript::Value* retval);
-    void getTabIndex(kscript::ExprEnv* env, kscript::Value* retval);
-    void setTabIndex(kscript::ExprEnv* env, kscript::Value* retval);
     void getType(kscript::ExprEnv* env, kscript::Value* retval);
     void setType(kscript::ExprEnv* env, kscript::Value* retval);
     void getUseMap(kscript::ExprEnv* env, kscript::Value* retval);
@@ -627,8 +611,6 @@ class WebDOMHTMLTextAreaElement : public WebDOMHTMLElement
         KSCRIPT_GUI_METHOD("getDefaultValue", WebDOMHTMLTextAreaElement::getDefaultValue)
         KSCRIPT_GUI_METHOD("setDefaultValue", WebDOMHTMLTextAreaElement::setDefaultValue)
         // KSCRIPT_GUI_METHOD("getForm", WebDOMHTMLTextAreaElement::getForm)
-        KSCRIPT_GUI_METHOD("getAccessKey", WebDOMHTMLTextAreaElement::getAccessKey)
-        KSCRIPT_GUI_METHOD("setAccessKey", WebDOMHTMLTextAreaElement::setAccessKey)
         KSCRIPT_GUI_METHOD("getCols", WebDOMHTMLTextAreaElement::getCols)
         KSCRIPT_GUI_METHOD("setCols", WebDOMHTMLTextAreaElement::setCols)
         KSCRIPT_GUI_METHOD("getDisabled", WebDOMHTMLTextAreaElement::getDisabled)
@@ -654,8 +636,6 @@ public:
     void getDefaultValue(kscript::ExprEnv* env, kscript::Value* retval);
     void setDefaultValue(kscript::ExprEnv* env, kscript::Value* retval);
     // void getForm(kscript::ExprEnv* env, kscript::Value* retval);
-    void getAccessKey(kscript::ExprEnv* env, kscript::Value* retval);
-    void setAccessKey(kscript::ExprEnv* env, kscript::Value* retval);
     void getCols(kscript::ExprEnv* env, kscript::Value* retval);
     void setCols(kscript::ExprEnv* env, kscript::Value* retval);
     void getDisabled(kscript::ExprEnv* env, kscript::Value* retval);
