@@ -58,7 +58,7 @@ public:
         NS_StringContainerInit(*this);
     }
     
-    nsString(const PRUnichar* data, size_t len, PRUint32 flags)
+    nsString(const char16_t* data, size_t len, PRUint32 flags)
     {
         NS_StringContainerInit2(*this, data, len, flags);
     }
@@ -68,7 +68,7 @@ public:
         NS_StringContainerFinish(*this);
     }
     
-    void Assign(const PRUnichar* str, int len = PR_UINT32_MAX)
+    void Assign(const char16_t* str, int len = PR_UINT32_MAX)
     {
         NS_StringSetData(*this, str, len);
     }
@@ -112,12 +112,19 @@ public:
 class nsDependentString : public nsString
 {
 public:
-    nsDependentString(const PRUnichar* data, size_t len = PR_UINT32_MAX)
+    nsDependentString(const char16_t* data, size_t len = PR_UINT32_MAX)
            : nsString(data, len, 0x02/*NS_STRING_CONTAINER_INIT_DEPEND*/)
     {
     }
-    
-#ifndef _MSC_VER
+
+#ifdef _MSC_VER
+
+    nsDependentString(const wchar_t* data, size_t len = PR_UINT32_MAX)
+           : nsString((const char16_t*)data, len, 0x02/*NS_STRING_CONTAINER_INIT_DEPEND*/)
+    {
+    }
+
+#else
     // for platforms with 4-byte wchar_t
     nsDependentString(const wchar_t* wdata, size_t specified_len = PR_UINT32_MAX)
            : nsString()
@@ -128,7 +135,7 @@ public:
             len++;
         if (specified_len != PR_UINT32_MAX && specified_len < len)
             len = specified_len;
-        PRUnichar* data = new PRUnichar[len+1];
+        char16_t* data = new char16_t[len+1];
         for (i = 0; i < len; ++i)
             data[i] = wdata[i];
         Assign(data, len);

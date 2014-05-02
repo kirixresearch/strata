@@ -416,47 +416,47 @@ public:
     NS_DECL_NSIAUTHPROMPT2
     
     
-    NS_IMETHOD Alert(const PRUnichar* dialog_title, const PRUnichar *text)
+    NS_IMETHOD Alert(const char16_t* dialog_title, const char16_t *text)
     {
         return this->Alert(m_parent, dialog_title, text);
     }
 
-    NS_IMETHOD AlertCheck(const PRUnichar* dialog_title, const PRUnichar* text, const PRUnichar* check_msg, bool* check_state)
+    NS_IMETHOD AlertCheck(const char16_t* dialog_title, const char16_t* text, const char16_t* check_msg, bool* check_state)
     {
         return this->AlertCheck(m_parent, dialog_title, text, check_msg, check_state);
     }
 
-    NS_IMETHOD Confirm(const PRUnichar* dialog_title, const PRUnichar* text, bool* _retval)
+    NS_IMETHOD Confirm(const char16_t* dialog_title, const char16_t* text, bool* _retval)
     {
         return this->Confirm(m_parent, dialog_title, text, _retval);
     }
 
-    NS_IMETHOD ConfirmCheck(const PRUnichar* dialog_title, const PRUnichar* text, const PRUnichar* check_msg, bool* check_state, bool* _retval)
+    NS_IMETHOD ConfirmCheck(const char16_t* dialog_title, const char16_t* text, const char16_t* check_msg, bool* check_state, bool* _retval)
     {
         return this->ConfirmCheck(m_parent, dialog_title, text, check_msg, check_state, _retval);
     }
 
-    NS_IMETHOD ConfirmEx(const PRUnichar* dialog_title, const PRUnichar* text, PRUint32 button_flags, const PRUnichar* button0_title, const PRUnichar* button1_title, const PRUnichar* button2_title, const PRUnichar* check_msg, bool* check_state, PRInt32* _retval)
+    NS_IMETHOD ConfirmEx(const char16_t* dialog_title, const char16_t* text, PRUint32 button_flags, const char16_t* button0_title, const char16_t* button1_title, const char16_t* button2_title, const char16_t* check_msg, bool* check_state, PRInt32* _retval)
     {
         return this->ConfirmEx(m_parent, dialog_title, text, button_flags, button0_title, button1_title, button2_title, check_msg, check_state, _retval);
     }
 
-    NS_IMETHOD Prompt(const PRUnichar* dialog_title, const PRUnichar* text, PRUnichar** value, const PRUnichar* check_msg, bool* check_state, bool* _retval)
+    NS_IMETHOD Prompt(const char16_t* dialog_title, const char16_t* text, char16_t** value, const char16_t* check_msg, bool* check_state, bool* _retval)
     {
         return this->Prompt(m_parent, dialog_title, text, value, check_msg, check_state, _retval);
     }
 
-    NS_IMETHOD PromptPassword(const PRUnichar* dialog_title, const PRUnichar* text, PRUnichar** password, const PRUnichar* check_msg, bool* check_state, bool* _retval)
+    NS_IMETHOD PromptPassword(const char16_t* dialog_title, const char16_t* text, char16_t** password, const char16_t* check_msg, bool* check_state, bool* _retval)
     {
         return this->PromptPassword(m_parent, dialog_title, text, password, check_msg, check_state, _retval);
     }
 
-    NS_IMETHOD PromptUsernameAndPassword(const PRUnichar* dialog_title, const PRUnichar* text, PRUnichar** username, PRUnichar** password, const PRUnichar* check_msg, bool* check_state, bool *_retval)
+    NS_IMETHOD PromptUsernameAndPassword(const char16_t* dialog_title, const char16_t* text, char16_t** username, char16_t** password, const char16_t* check_msg, bool* check_state, bool *_retval)
     {
         return this->PromptUsernameAndPassword(m_parent, dialog_title, text, username, password, check_msg, check_state, _retval);
     }
 
-    NS_IMETHOD Select(const PRUnichar* dialog_title, const PRUnichar* text, PRUint32 count, const PRUnichar** select_list, PRInt32 *out_selection, bool *_retval)
+    NS_IMETHOD Select(const char16_t* dialog_title, const char16_t* text, PRUint32 count, const char16_t** select_list, PRInt32 *out_selection, bool *_retval)
     {
         return this->Select(m_parent, dialog_title, text, count, select_list, out_selection, _retval);
     }
@@ -489,8 +489,8 @@ PromptService::~PromptService()
 }
 
 NS_IMETHODIMP PromptService::Alert(nsIDOMWindow* parent,
-                                   const PRUnichar* ns_dialog_title,
-                                   const PRUnichar* ns_text)
+                                   const char16_t* ns_dialog_title,
+                                   const char16_t* ns_text)
 {
     wxString title = ns2wx(ns_dialog_title);
     wxString text = ns2wx(ns_text);
@@ -514,9 +514,9 @@ NS_IMETHODIMP PromptService::Alert(nsIDOMWindow* parent,
 
 NS_IMETHODIMP PromptService::AlertCheck(
                                     nsIDOMWindow* parent,
-                                    const PRUnichar* ns_dialog_title,
-                                    const PRUnichar* ns_text,
-                                    const PRUnichar* ns_check_msg,
+                                    const char16_t* ns_dialog_title,
+                                    const char16_t* ns_text,
+                                    const char16_t* ns_check_msg,
                                     bool* checkValue)
 {
     wxString dialog_title = ns2wx(ns_dialog_title);
@@ -528,8 +528,8 @@ NS_IMETHODIMP PromptService::AlertCheck(
 
 NS_IMETHODIMP PromptService::Confirm(
                                     nsIDOMWindow* parent,
-                                    const PRUnichar* ns_dialog_title,
-                                    const PRUnichar* ns_text,
+                                    const char16_t* ns_dialog_title,
+                                    const char16_t* ns_text,
                                     bool* retval)
 {
     wxString dialog_title = ns2wx(ns_dialog_title);
@@ -553,9 +553,9 @@ NS_IMETHODIMP PromptService::Confirm(
 
 NS_IMETHODIMP PromptService::ConfirmCheck(
                                     nsIDOMWindow* parent,
-                                    const PRUnichar* dialog_title,
-                                    const PRUnichar* text,
-                                    const PRUnichar* check_msg,
+                                    const char16_t* dialog_title,
+                                    const char16_t* text,
+                                    const char16_t* check_msg,
                                     bool* check_value,
                                     bool* retval)
 {
@@ -564,13 +564,13 @@ NS_IMETHODIMP PromptService::ConfirmCheck(
 
 NS_IMETHODIMP PromptService::ConfirmEx(
                                     nsIDOMWindow* parent,
-                                    const PRUnichar* dialog_title,
-                                    const PRUnichar* text,
+                                    const char16_t* dialog_title,
+                                    const char16_t* text,
                                     PRUint32 buttonFlags,
-                                    const PRUnichar* button0_title,
-                                    const PRUnichar* button1_title,
-                                    const PRUnichar* button2_title,
-                                    const PRUnichar* check_msg,
+                                    const char16_t* button0_title,
+                                    const char16_t* button1_title,
+                                    const char16_t* button2_title,
+                                    const char16_t* check_msg,
                                     bool* check_value,
                                     PRInt32* button_pressed)
 {
@@ -579,10 +579,10 @@ NS_IMETHODIMP PromptService::ConfirmEx(
 
 NS_IMETHODIMP PromptService::Prompt(
                                     nsIDOMWindow* parent,
-                                    const PRUnichar* _dialog_title,
-                                    const PRUnichar* _text,
-                                    PRUnichar** _value,
-                                    const PRUnichar* check_msg,
+                                    const char16_t* _dialog_title,
+                                    const char16_t* _text,
+                                    char16_t** _value,
+                                    const char16_t* check_msg,
                                     bool* check_value,
                                     bool* retval)
 {
@@ -614,11 +614,11 @@ NS_IMETHODIMP PromptService::Prompt(
 
 NS_IMETHODIMP PromptService::PromptUsernameAndPassword(
                                     nsIDOMWindow* parent,
-                                    const PRUnichar* dialog_title,
-                                    const PRUnichar* text,
-                                    PRUnichar** username,
-                                    PRUnichar** password,
-                                    const PRUnichar* check_msg,
+                                    const char16_t* dialog_title,
+                                    const char16_t* text,
+                                    char16_t** username,
+                                    char16_t** password,
+                                    const char16_t* check_msg,
                                     bool* check_value,
                                     bool* retval)
 {
@@ -645,10 +645,10 @@ NS_IMETHODIMP PromptService::PromptUsernameAndPassword(
 
 NS_IMETHODIMP PromptService::PromptPassword(
                                     nsIDOMWindow* parent,
-                                    const PRUnichar* dialog_title,
-                                    const PRUnichar* text,
-                                    PRUnichar** password,
-                                    const PRUnichar* check_msg,
+                                    const char16_t* dialog_title,
+                                    const char16_t* text,
+                                    char16_t** password,
+                                    const char16_t* check_msg,
                                     bool* check_value,
                                     bool* retval)
 {
@@ -656,10 +656,10 @@ NS_IMETHODIMP PromptService::PromptPassword(
 }
 
 NS_IMETHODIMP PromptService::Select(nsIDOMWindow* parent,
-                                    const PRUnichar* dialog_title,
-                                    const PRUnichar* text,
+                                    const char16_t* dialog_title,
+                                    const char16_t* text,
                                     PRUint32 count,
-                                    const PRUnichar** select_list,
+                                    const char16_t** select_list,
                                     PRInt32* out_selection,
                                     bool* retval)
 {
@@ -700,7 +700,7 @@ NS_IMETHODIMP PromptService::PromptAuth(nsIDOMWindow* parent,
                                         nsIChannel* channel,
                                         PRUint32 level,
                                         nsIAuthInformation* auth_info,
-                                        const PRUnichar* checkbox_label,
+                                        const char16_t* checkbox_label,
                                         bool* check_value,
                                         bool* retval)
 {
@@ -738,7 +738,7 @@ NS_IMETHODIMP PromptService::AsyncPromptAuth(nsIDOMWindow* parent,
                                         nsISupports* contxt,
                                         PRUint32 level,
                                         nsIAuthInformation* auth_info,
-                                        const PRUnichar* checkbox_label,
+                                        const char16_t* checkbox_label,
                                         bool* check_value,
                                         nsICancelable** retval)
 {
@@ -1143,7 +1143,7 @@ NS_IMETHODIMP PrintingPromptService::ShowPageSetup(nsIDOMWindow* parent,
 }
 
 NS_IMETHODIMP PrintingPromptService::ShowPrinterProperties(nsIDOMWindow* parent,
-                                                           const PRUnichar* printerName,
+                                                           const char16_t* printerName,
                                                            nsIPrintSettings* printSettings)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
@@ -1285,7 +1285,7 @@ public:
                              nsIWebProgress* web_progress,
                              nsIRequest* request,
                              nsresult status,
-                             const PRUnichar* message)
+                             const char16_t* message)
     {
         return NS_OK;
     }
@@ -1525,8 +1525,8 @@ public:
     
     NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher* launcher,
                                    nsISupports* window_context,
-                                   const PRUnichar* default_file,
-                                   const PRUnichar* suggested_file_extension,
+                                   const char16_t* default_file,
+                                   const char16_t* suggested_file_extension,
                                    bool force_prompt,
                                    nsILocalFile** new_file)
     {
@@ -1698,7 +1698,7 @@ public:
     }
 
     NS_IMETHOD GetAllOverrideHostsWithPorts(PRUint32* count,
-                                            PRUnichar*** hosts_with_ports_array)
+                                            char16_t*** hosts_with_ports_array)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }

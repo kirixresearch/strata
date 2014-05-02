@@ -5,7 +5,7 @@
 #ifndef __gen_nsall_h__
 #define __gen_nsall_h__
 
-#include "jspubtd.h"
+//#include "js/Value.h"
 
 /* For IDL files that don't want to include root IDL files. */
 #ifndef NS_NO_VTABLE
@@ -2033,7 +2033,7 @@ class NS_NO_VTABLE nsICertOverrideService : public nsISupports {
   NS_IMETHOD ClearValidityOverride(const nsACString & host_name, PRInt32 port) = 0;
 
   /* void getAllOverrideHostsWithPorts (out PRUint32 count, [array, size_is (count)] out wstring hosts_with_ports_array); */
-  NS_IMETHOD GetAllOverrideHostsWithPorts(PRUint32 *count, PRUnichar * **hosts_with_ports_array) = 0;
+  NS_IMETHOD GetAllOverrideHostsWithPorts(PRUint32 *count, char16_t * **hosts_with_ports_array) = 0;
 
   /* PRUint32 isCertUsedForOverrides (in nsIX509Cert cert, in boolean check_temporaries, in boolean check_permanents); */
   NS_IMETHOD IsCertUsedForOverrides(nsIX509Cert *cert, bool check_temporaries, bool check_permanents, PRUint32 *_retval) = 0;
@@ -2048,7 +2048,7 @@ class NS_NO_VTABLE nsICertOverrideService : public nsISupports {
   NS_IMETHOD HasMatchingOverride(const nsACString & host_name, PRInt32 port, nsIX509Cert *cert, PRUint32 *override_bits, bool *is_temporary, bool *_retval); \
   NS_IMETHOD GetValidityOverride(const nsACString & host_name, PRInt32 port, nsACString & hash_alg, nsACString & fingerprint, PRUint32 *override_bits, bool *is_temporary, bool *_retval); \
   NS_IMETHOD ClearValidityOverride(const nsACString & host_name, PRInt32 port); \
-  NS_IMETHOD GetAllOverrideHostsWithPorts(PRUint32 *count, PRUnichar * **hosts_with_ports_array); \
+  NS_IMETHOD GetAllOverrideHostsWithPorts(PRUint32 *count, char16_t * **hosts_with_ports_array); \
   NS_IMETHOD IsCertUsedForOverrides(nsIX509Cert *cert, bool check_temporaries, bool check_permanents, PRUint32 *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
@@ -2057,7 +2057,7 @@ class NS_NO_VTABLE nsICertOverrideService : public nsISupports {
   NS_IMETHOD HasMatchingOverride(const nsACString & host_name, PRInt32 port, nsIX509Cert *cert, PRUint32 *override_bits, bool *is_temporary, bool *_retval) { return _to HasMatchingOverride(host_name, port, cert, override_bits, is_temporary, _retval); } \
   NS_IMETHOD GetValidityOverride(const nsACString & host_name, PRInt32 port, nsACString & hash_alg, nsACString & fingerprint, PRUint32 *override_bits, bool *is_temporary, bool *_retval) { return _to GetValidityOverride(host_name, port, hash_alg, fingerprint, override_bits, is_temporary, _retval); } \
   NS_IMETHOD ClearValidityOverride(const nsACString & host_name, PRInt32 port) { return _to ClearValidityOverride(host_name, port); } \
-  NS_IMETHOD GetAllOverrideHostsWithPorts(PRUint32 *count, PRUnichar * **hosts_with_ports_array) { return _to GetAllOverrideHostsWithPorts(count, hosts_with_ports_array); } \
+  NS_IMETHOD GetAllOverrideHostsWithPorts(PRUint32 *count, char16_t * **hosts_with_ports_array) { return _to GetAllOverrideHostsWithPorts(count, hosts_with_ports_array); } \
   NS_IMETHOD IsCertUsedForOverrides(nsIX509Cert *cert, bool check_temporaries, bool check_permanents, PRUint32 *_retval) { return _to IsCertUsedForOverrides(cert, check_temporaries, check_permanents, _retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
@@ -2066,7 +2066,7 @@ class NS_NO_VTABLE nsICertOverrideService : public nsISupports {
   NS_IMETHOD HasMatchingOverride(const nsACString & host_name, PRInt32 port, nsIX509Cert *cert, PRUint32 *override_bits, bool *is_temporary, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->HasMatchingOverride(host_name, port, cert, override_bits, is_temporary, _retval); } \
   NS_IMETHOD GetValidityOverride(const nsACString & host_name, PRInt32 port, nsACString & hash_alg, nsACString & fingerprint, PRUint32 *override_bits, bool *is_temporary, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetValidityOverride(host_name, port, hash_alg, fingerprint, override_bits, is_temporary, _retval); } \
   NS_IMETHOD ClearValidityOverride(const nsACString & host_name, PRInt32 port) { return !_to ? NS_ERROR_NULL_POINTER : _to->ClearValidityOverride(host_name, port); } \
-  NS_IMETHOD GetAllOverrideHostsWithPorts(PRUint32 *count, PRUnichar * **hosts_with_ports_array) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAllOverrideHostsWithPorts(count, hosts_with_ports_array); } \
+  NS_IMETHOD GetAllOverrideHostsWithPorts(PRUint32 *count, char16_t * **hosts_with_ports_array) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAllOverrideHostsWithPorts(count, hosts_with_ports_array); } \
   NS_IMETHOD IsCertUsedForOverrides(nsIX509Cert *cert, bool check_temporaries, bool check_permanents, PRUint32 *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->IsCertUsedForOverrides(cert, check_temporaries, check_permanents, _retval); } 
 
 #if 0
@@ -2126,7 +2126,7 @@ NS_IMETHODIMP nsCertOverrideService::ClearValidityOverride(const nsACString & ho
 }
 
 /* void getAllOverrideHostsWithPorts (out PRUint32 count, [array, size_is (count)] out wstring hosts_with_ports_array); */
-NS_IMETHODIMP nsCertOverrideService::GetAllOverrideHostsWithPorts(PRUint32 *count, PRUnichar * **hosts_with_ports_array)
+NS_IMETHODIMP nsCertOverrideService::GetAllOverrideHostsWithPorts(PRUint32 *count, char16_t * **hosts_with_ports_array)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -2169,7 +2169,7 @@ class NS_NO_VTABLE nsIX509CertDB : public nsISupports {
   NS_IMETHOD FindCertByDBKey(const char * db_key, nsISupports *token, nsIX509Cert * *_retval) = 0;
 
   /* void findCertNicknames (in nsISupports token, in unsigned long type, out unsigned long count, [array, size_is (count)] out wstring cert_name_list); */
-  NS_IMETHOD FindCertNicknames(nsISupports *token, uint32_t type, uint32_t *count, PRUnichar * **cert_name_list) = 0;
+  NS_IMETHOD FindCertNicknames(nsISupports *token, uint32_t type, uint32_t *count, char16_t * **cert_name_list) = 0;
 
   /* nsIX509Cert findEmailEncryptionCert (in AString nickname); */
   NS_IMETHOD FindEmailEncryptionCert(const nsAString & nickname, nsIX509Cert * *_retval) = 0;
@@ -2235,7 +2235,7 @@ class NS_NO_VTABLE nsIX509CertDB : public nsISupports {
 #define NS_DECL_NSIX509CERTDB \
   NS_IMETHOD FindCertByNickname(nsISupports *token, const nsAString & nickname, nsIX509Cert * *_retval); \
   NS_IMETHOD FindCertByDBKey(const char * db_key, nsISupports *token, nsIX509Cert * *_retval); \
-  NS_IMETHOD FindCertNicknames(nsISupports *token, uint32_t type, uint32_t *count, PRUnichar * **cert_name_list); \
+  NS_IMETHOD FindCertNicknames(nsISupports *token, uint32_t type, uint32_t *count, char16_t * **cert_name_list); \
   NS_IMETHOD FindEmailEncryptionCert(const nsAString & nickname, nsIX509Cert * *_retval); \
   NS_IMETHOD FindEmailSigningCert(const nsAString & nickname, nsIX509Cert * *_retval); \
   NS_IMETHOD FindCertByEmailAddress(nsISupports *token, const char * email_address, nsIX509Cert * *_retval); \
@@ -2258,7 +2258,7 @@ class NS_NO_VTABLE nsIX509CertDB : public nsISupports {
 #define NS_FORWARD_NSIX509CERTDB(_to) \
   NS_IMETHOD FindCertByNickname(nsISupports *token, const nsAString & nickname, nsIX509Cert * *_retval) { return _to FindCertByNickname(token, nickname, _retval); } \
   NS_IMETHOD FindCertByDBKey(const char * db_key, nsISupports *token, nsIX509Cert * *_retval) { return _to FindCertByDBKey(db_key, token, _retval); } \
-  NS_IMETHOD FindCertNicknames(nsISupports *token, uint32_t type, uint32_t *count, PRUnichar * **cert_name_list) { return _to FindCertNicknames(token, type, count, cert_name_list); } \
+  NS_IMETHOD FindCertNicknames(nsISupports *token, uint32_t type, uint32_t *count, char16_t * **cert_name_list) { return _to FindCertNicknames(token, type, count, cert_name_list); } \
   NS_IMETHOD FindEmailEncryptionCert(const nsAString & nickname, nsIX509Cert * *_retval) { return _to FindEmailEncryptionCert(nickname, _retval); } \
   NS_IMETHOD FindEmailSigningCert(const nsAString & nickname, nsIX509Cert * *_retval) { return _to FindEmailSigningCert(nickname, _retval); } \
   NS_IMETHOD FindCertByEmailAddress(nsISupports *token, const char * email_address, nsIX509Cert * *_retval) { return _to FindCertByEmailAddress(token, email_address, _retval); } \
@@ -2281,7 +2281,7 @@ class NS_NO_VTABLE nsIX509CertDB : public nsISupports {
 #define NS_FORWARD_SAFE_NSIX509CERTDB(_to) \
   NS_IMETHOD FindCertByNickname(nsISupports *token, const nsAString & nickname, nsIX509Cert * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindCertByNickname(token, nickname, _retval); } \
   NS_IMETHOD FindCertByDBKey(const char * db_key, nsISupports *token, nsIX509Cert * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindCertByDBKey(db_key, token, _retval); } \
-  NS_IMETHOD FindCertNicknames(nsISupports *token, uint32_t type, uint32_t *count, PRUnichar * **cert_name_list) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindCertNicknames(token, type, count, cert_name_list); } \
+  NS_IMETHOD FindCertNicknames(nsISupports *token, uint32_t type, uint32_t *count, char16_t * **cert_name_list) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindCertNicknames(token, type, count, cert_name_list); } \
   NS_IMETHOD FindEmailEncryptionCert(const nsAString & nickname, nsIX509Cert * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindEmailEncryptionCert(nickname, _retval); } \
   NS_IMETHOD FindEmailSigningCert(const nsAString & nickname, nsIX509Cert * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindEmailSigningCert(nickname, _retval); } \
   NS_IMETHOD FindCertByEmailAddress(nsISupports *token, const char * email_address, nsIX509Cert * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindCertByEmailAddress(token, email_address, _retval); } \
@@ -2345,7 +2345,7 @@ NS_IMETHODIMP nsX509CertDB::FindCertByDBKey(const char * db_key, nsISupports *to
 }
 
 /* void findCertNicknames (in nsISupports token, in unsigned long type, out unsigned long count, [array, size_is (count)] out wstring cert_name_list); */
-NS_IMETHODIMP nsX509CertDB::FindCertNicknames(nsISupports *token, uint32_t type, uint32_t *count, PRUnichar * **cert_name_list)
+NS_IMETHODIMP nsX509CertDB::FindCertNicknames(nsISupports *token, uint32_t type, uint32_t *count, char16_t * **cert_name_list)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -2530,8 +2530,8 @@ class NS_NO_VTABLE nsIBaseWindow : public nsISupports {
   NS_IMETHOD SetFocus(void) = 0;
 
   /* attribute wstring title; */
-  NS_IMETHOD GetTitle(PRUnichar * *aTitle) = 0;
-  NS_IMETHOD SetTitle(const PRUnichar * aTitle) = 0;
+  NS_IMETHOD GetTitle(char16_t * *aTitle) = 0;
+  NS_IMETHOD SetTitle(const char16_t * aTitle) = 0;
 
 };
 
@@ -2561,8 +2561,8 @@ class NS_NO_VTABLE nsIBaseWindow : public nsISupports {
   NS_IMETHOD GetMainWidget(nsIWidget **aMainWidget); \
   NS_IMETHOD GetUnscaledDevicePixelsPerCSSPixel(double *aUnscaledDevicePixelsPerCSSPixel); \
   NS_IMETHOD SetFocus(void); \
-  NS_IMETHOD GetTitle(PRUnichar * *aTitle); \
-  NS_IMETHOD SetTitle(const PRUnichar * aTitle); 
+  NS_IMETHOD GetTitle(char16_t * *aTitle); \
+  NS_IMETHOD SetTitle(const char16_t * aTitle); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIBASEWINDOW(_to) \
@@ -2588,8 +2588,8 @@ class NS_NO_VTABLE nsIBaseWindow : public nsISupports {
   NS_IMETHOD GetMainWidget(nsIWidget **aMainWidget) { return _to GetMainWidget(aMainWidget); } \
   NS_IMETHOD GetUnscaledDevicePixelsPerCSSPixel(double *aUnscaledDevicePixelsPerCSSPixel) { return _to GetUnscaledDevicePixelsPerCSSPixel(aUnscaledDevicePixelsPerCSSPixel); } \
   NS_IMETHOD SetFocus(void) { return _to SetFocus(); } \
-  NS_IMETHOD GetTitle(PRUnichar * *aTitle) { return _to GetTitle(aTitle); } \
-  NS_IMETHOD SetTitle(const PRUnichar * aTitle) { return _to SetTitle(aTitle); } 
+  NS_IMETHOD GetTitle(char16_t * *aTitle) { return _to GetTitle(aTitle); } \
+  NS_IMETHOD SetTitle(const char16_t * aTitle) { return _to SetTitle(aTitle); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIBASEWINDOW(_to) \
@@ -2615,8 +2615,8 @@ class NS_NO_VTABLE nsIBaseWindow : public nsISupports {
   NS_IMETHOD GetMainWidget(nsIWidget **aMainWidget) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMainWidget(aMainWidget); } \
   NS_IMETHOD GetUnscaledDevicePixelsPerCSSPixel(double *aUnscaledDevicePixelsPerCSSPixel) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetUnscaledDevicePixelsPerCSSPixel(aUnscaledDevicePixelsPerCSSPixel); } \
   NS_IMETHOD SetFocus(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFocus(); } \
-  NS_IMETHOD GetTitle(PRUnichar * *aTitle) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTitle(aTitle); } \
-  NS_IMETHOD SetTitle(const PRUnichar * aTitle) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTitle(aTitle); } 
+  NS_IMETHOD GetTitle(char16_t * *aTitle) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTitle(aTitle); } \
+  NS_IMETHOD SetTitle(const char16_t * aTitle) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTitle(aTitle); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -2775,11 +2775,11 @@ NS_IMETHODIMP nsBaseWindow::SetFocus()
 }
 
 /* attribute wstring title; */
-NS_IMETHODIMP nsBaseWindow::GetTitle(PRUnichar * *aTitle)
+NS_IMETHODIMP nsBaseWindow::GetTitle(char16_t * *aTitle)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsBaseWindow::SetTitle(const PRUnichar * aTitle)
+NS_IMETHODIMP nsBaseWindow::SetTitle(const char16_t * aTitle)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -4929,145 +4929,24 @@ class nsIDocShellTreeOwner; /* forward declaration */
 class nsIDocShellTreeItem; /* forward declaration */
 
 
-/* starting interface:    nsIDocShellTreeNode */
-#define NS_IDOCSHELLTREENODE_IID_STR "37f1ab73-f224-44b1-82f0-d2834ab1cec0"
-
-#define NS_IDOCSHELLTREENODE_IID \
-  {0x37f1ab73, 0xf224, 0x44b1, \
-    { 0x82, 0xf0, 0xd2, 0x83, 0x4a, 0xb1, 0xce, 0xc0 }}
-
-class NS_NO_VTABLE nsIDocShellTreeNode : public nsISupports {
- public: 
-
-  NS_DECLARE_STATIC_IID_ACCESSOR(NS_IDOCSHELLTREENODE_IID)
-
-  /* readonly attribute long childCount; */
-  NS_IMETHOD GetChildCount(int32_t *aChildCount) = 0;
-
-  /* void addChild (in nsIDocShellTreeItem child); */
-  NS_IMETHOD AddChild(nsIDocShellTreeItem *child) = 0;
-
-  /* void removeChild (in nsIDocShellTreeItem child); */
-  NS_IMETHOD RemoveChild(nsIDocShellTreeItem *child) = 0;
-
-  /* nsIDocShellTreeItem getChildAt (in long index); */
-  NS_IMETHOD GetChildAt(int32_t index, nsIDocShellTreeItem * *_retval) = 0;
-
-  /* nsIDocShellTreeItem findChildWithName (in wstring name, in boolean recurse, in boolean same_type, in nsIDocShellTreeItem requestor, in nsIDocShellTreeItem original_requestor); */
-  NS_IMETHOD FindChildWithName(const PRUnichar * name, bool recurse, bool same_type, nsIDocShellTreeItem *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval) = 0;
-
-};
-
-  NS_DEFINE_STATIC_IID_ACCESSOR(nsIDocShellTreeNode, NS_IDOCSHELLTREENODE_IID)
-
-/* Use this macro when declaring classes that implement this interface. */
-#define NS_DECL_NSIDOCSHELLTREENODE \
-  NS_IMETHOD GetChildCount(int32_t *aChildCount); \
-  NS_IMETHOD AddChild(nsIDocShellTreeItem *child); \
-  NS_IMETHOD RemoveChild(nsIDocShellTreeItem *child); \
-  NS_IMETHOD GetChildAt(int32_t index, nsIDocShellTreeItem * *_retval); \
-  NS_IMETHOD FindChildWithName(const PRUnichar * name, bool recurse, bool same_type, nsIDocShellTreeItem *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval); 
-
-/* Use this macro to declare functions that forward the behavior of this interface to another object. */
-#define NS_FORWARD_NSIDOCSHELLTREENODE(_to) \
-  NS_IMETHOD GetChildCount(int32_t *aChildCount) { return _to GetChildCount(aChildCount); } \
-  NS_IMETHOD AddChild(nsIDocShellTreeItem *child) { return _to AddChild(child); } \
-  NS_IMETHOD RemoveChild(nsIDocShellTreeItem *child) { return _to RemoveChild(child); } \
-  NS_IMETHOD GetChildAt(int32_t index, nsIDocShellTreeItem * *_retval) { return _to GetChildAt(index, _retval); } \
-  NS_IMETHOD FindChildWithName(const PRUnichar * name, bool recurse, bool same_type, nsIDocShellTreeItem *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval) { return _to FindChildWithName(name, recurse, same_type, requestor, original_requestor, _retval); } 
-
-/* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
-#define NS_FORWARD_SAFE_NSIDOCSHELLTREENODE(_to) \
-  NS_IMETHOD GetChildCount(int32_t *aChildCount) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetChildCount(aChildCount); } \
-  NS_IMETHOD AddChild(nsIDocShellTreeItem *child) { return !_to ? NS_ERROR_NULL_POINTER : _to->AddChild(child); } \
-  NS_IMETHOD RemoveChild(nsIDocShellTreeItem *child) { return !_to ? NS_ERROR_NULL_POINTER : _to->RemoveChild(child); } \
-  NS_IMETHOD GetChildAt(int32_t index, nsIDocShellTreeItem * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetChildAt(index, _retval); } \
-  NS_IMETHOD FindChildWithName(const PRUnichar * name, bool recurse, bool same_type, nsIDocShellTreeItem *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindChildWithName(name, recurse, same_type, requestor, original_requestor, _retval); } 
-
-#if 0
-/* Use the code below as a template for the implementation class for this interface. */
-
-/* Header file */
-class nsDocShellTreeNode : public nsIDocShellTreeNode
-{
-public:
-  NS_DECL_ISUPPORTS
-  NS_DECL_NSIDOCSHELLTREENODE
-
-  nsDocShellTreeNode();
-
-private:
-  ~nsDocShellTreeNode();
-
-protected:
-  /* additional members */
-};
-
-/* Implementation file */
-NS_IMPL_ISUPPORTS1(nsDocShellTreeNode, nsIDocShellTreeNode)
-
-nsDocShellTreeNode::nsDocShellTreeNode()
-{
-  /* member initializers and constructor code */
-}
-
-nsDocShellTreeNode::~nsDocShellTreeNode()
-{
-  /* destructor code */
-}
-
-/* readonly attribute long childCount; */
-NS_IMETHODIMP nsDocShellTreeNode::GetChildCount(int32_t *aChildCount)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void addChild (in nsIDocShellTreeItem child); */
-NS_IMETHODIMP nsDocShellTreeNode::AddChild(nsIDocShellTreeItem *child)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void removeChild (in nsIDocShellTreeItem child); */
-NS_IMETHODIMP nsDocShellTreeNode::RemoveChild(nsIDocShellTreeItem *child)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* nsIDocShellTreeItem getChildAt (in long index); */
-NS_IMETHODIMP nsDocShellTreeNode::GetChildAt(int32_t index, nsIDocShellTreeItem * *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* nsIDocShellTreeItem findChildWithName (in wstring name, in boolean recurse, in boolean same_type, in nsIDocShellTreeItem requestor, in nsIDocShellTreeItem original_requestor); */
-NS_IMETHODIMP nsDocShellTreeNode::FindChildWithName(const PRUnichar * name, bool recurse, bool same_type, nsIDocShellTreeItem *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* End of implementation class template. */
-#endif
-
-
 /* starting interface:    nsIDocShellTreeItem */
-#define NS_IDOCSHELLTREEITEM_IID_STR "e35bbb39-985b-4d62-81da-73c330222e5f"
+#define NS_IDOCSHELLTREEITEM_IID_STR "f897f4af-f67e-4115-9d37-ce09f71122e2"
 
 #define NS_IDOCSHELLTREEITEM_IID \
-  {0xe35bbb39, 0x985b, 0x4d62, \
-    { 0x81, 0xda, 0x73, 0xc3, 0x30, 0x22, 0x2e, 0x5f }}
+  {0xf897f4af, 0xf67e, 0x4115, \
+    { 0x9d, 0x37, 0xce, 0x09, 0xf7, 0x11, 0x22, 0xe2 }}
 
-class NS_NO_VTABLE nsIDocShellTreeItem : public nsIDocShellTreeNode {
+class NS_NO_VTABLE nsIDocShellTreeItem : public nsISupports {
  public: 
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_IDOCSHELLTREEITEM_IID)
 
-  /* attribute wstring name; */
-  NS_IMETHOD GetName(PRUnichar * *aName) = 0;
-  NS_IMETHOD SetName(const PRUnichar * aName) = 0;
+  /* attribute AString name; */
+  NS_IMETHOD GetName(nsAString & aName) = 0;
+  NS_IMETHOD SetName(const nsAString & aName) = 0;
 
   /* boolean nameEquals (in wstring name); */
-  NS_IMETHOD NameEquals(const PRUnichar * name, bool *_retval) = 0;
+  NS_IMETHOD NameEquals(const char16_t * name, bool *_retval) = 0;
 
   enum {
     typeChrome = 0,
@@ -5080,6 +4959,9 @@ class NS_NO_VTABLE nsIDocShellTreeItem : public nsIDocShellTreeNode {
   /* attribute long itemType; */
   NS_IMETHOD GetItemType(int32_t *aItemType) = 0;
   NS_IMETHOD SetItemType(int32_t aItemType) = 0;
+
+  /* [noscript,nostdcall,notxpcom] long ItemType (); */
+  virtual int32_t ItemType(void) = 0;
 
   /* readonly attribute nsIDocShellTreeItem parent; */
   NS_IMETHOD GetParent(nsIDocShellTreeItem * *aParent) = 0;
@@ -5094,7 +4976,7 @@ class NS_NO_VTABLE nsIDocShellTreeItem : public nsIDocShellTreeNode {
   NS_IMETHOD GetSameTypeRootTreeItem(nsIDocShellTreeItem * *aSameTypeRootTreeItem) = 0;
 
   /* nsIDocShellTreeItem findItemWithName (in wstring name, in nsISupports requestor, in nsIDocShellTreeItem original_requestor); */
-  NS_IMETHOD FindItemWithName(const PRUnichar * name, nsISupports *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval) = 0;
+  NS_IMETHOD FindItemWithName(const char16_t * name, nsISupports *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval) = 0;
 
   /* readonly attribute nsIDocShellTreeOwner treeOwner; */
   NS_IMETHOD GetTreeOwner(nsIDocShellTreeOwner * *aTreeOwner) = 0;
@@ -5102,54 +4984,87 @@ class NS_NO_VTABLE nsIDocShellTreeItem : public nsIDocShellTreeNode {
   /* [noscript] void setTreeOwner (in nsIDocShellTreeOwner tree_owner); */
   NS_IMETHOD SetTreeOwner(nsIDocShellTreeOwner *tree_owner) = 0;
 
+  /* readonly attribute long childCount; */
+  NS_IMETHOD GetChildCount(int32_t *aChildCount) = 0;
+
+  /* void addChild (in nsIDocShellTreeItem child); */
+  NS_IMETHOD AddChild(nsIDocShellTreeItem *child) = 0;
+
+  /* void removeChild (in nsIDocShellTreeItem child); */
+  NS_IMETHOD RemoveChild(nsIDocShellTreeItem *child) = 0;
+
+  /* nsIDocShellTreeItem getChildAt (in long index); */
+  NS_IMETHOD GetChildAt(int32_t index, nsIDocShellTreeItem * *_retval) = 0;
+
+  /* nsIDocShellTreeItem findChildWithName (in wstring name, in boolean recurse, in boolean same_type, in nsIDocShellTreeItem requestor, in nsIDocShellTreeItem original_requestor); */
+  NS_IMETHOD FindChildWithName(const char16_t * name, bool recurse, bool same_type, nsIDocShellTreeItem *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval) = 0;
+
 };
 
   NS_DEFINE_STATIC_IID_ACCESSOR(nsIDocShellTreeItem, NS_IDOCSHELLTREEITEM_IID)
 
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSIDOCSHELLTREEITEM \
-  NS_IMETHOD GetName(PRUnichar * *aName); \
-  NS_IMETHOD SetName(const PRUnichar * aName); \
-  NS_IMETHOD NameEquals(const PRUnichar * name, bool *_retval); \
+  NS_IMETHOD GetName(nsAString & aName); \
+  NS_IMETHOD SetName(const nsAString & aName); \
+  NS_IMETHOD NameEquals(const char16_t * name, bool *_retval); \
   NS_IMETHOD GetItemType(int32_t *aItemType); \
   NS_IMETHOD SetItemType(int32_t aItemType); \
+  virtual int32_t ItemType(void); \
   NS_IMETHOD GetParent(nsIDocShellTreeItem * *aParent); \
   NS_IMETHOD GetSameTypeParent(nsIDocShellTreeItem * *aSameTypeParent); \
   NS_IMETHOD GetRootTreeItem(nsIDocShellTreeItem * *aRootTreeItem); \
   NS_IMETHOD GetSameTypeRootTreeItem(nsIDocShellTreeItem * *aSameTypeRootTreeItem); \
-  NS_IMETHOD FindItemWithName(const PRUnichar * name, nsISupports *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval); \
+  NS_IMETHOD FindItemWithName(const char16_t * name, nsISupports *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval); \
   NS_IMETHOD GetTreeOwner(nsIDocShellTreeOwner * *aTreeOwner); \
-  NS_IMETHOD SetTreeOwner(nsIDocShellTreeOwner *tree_owner); 
+  NS_IMETHOD SetTreeOwner(nsIDocShellTreeOwner *tree_owner); \
+  NS_IMETHOD GetChildCount(int32_t *aChildCount); \
+  NS_IMETHOD AddChild(nsIDocShellTreeItem *child); \
+  NS_IMETHOD RemoveChild(nsIDocShellTreeItem *child); \
+  NS_IMETHOD GetChildAt(int32_t index, nsIDocShellTreeItem * *_retval); \
+  NS_IMETHOD FindChildWithName(const char16_t * name, bool recurse, bool same_type, nsIDocShellTreeItem *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIDOCSHELLTREEITEM(_to) \
-  NS_IMETHOD GetName(PRUnichar * *aName) { return _to GetName(aName); } \
-  NS_IMETHOD SetName(const PRUnichar * aName) { return _to SetName(aName); } \
-  NS_IMETHOD NameEquals(const PRUnichar * name, bool *_retval) { return _to NameEquals(name, _retval); } \
+  NS_IMETHOD GetName(nsAString & aName) { return _to GetName(aName); } \
+  NS_IMETHOD SetName(const nsAString & aName) { return _to SetName(aName); } \
+  NS_IMETHOD NameEquals(const char16_t * name, bool *_retval) { return _to NameEquals(name, _retval); } \
   NS_IMETHOD GetItemType(int32_t *aItemType) { return _to GetItemType(aItemType); } \
   NS_IMETHOD SetItemType(int32_t aItemType) { return _to SetItemType(aItemType); } \
+  virtual int32_t ItemType(void) { return _to ItemType(); } \
   NS_IMETHOD GetParent(nsIDocShellTreeItem * *aParent) { return _to GetParent(aParent); } \
   NS_IMETHOD GetSameTypeParent(nsIDocShellTreeItem * *aSameTypeParent) { return _to GetSameTypeParent(aSameTypeParent); } \
   NS_IMETHOD GetRootTreeItem(nsIDocShellTreeItem * *aRootTreeItem) { return _to GetRootTreeItem(aRootTreeItem); } \
   NS_IMETHOD GetSameTypeRootTreeItem(nsIDocShellTreeItem * *aSameTypeRootTreeItem) { return _to GetSameTypeRootTreeItem(aSameTypeRootTreeItem); } \
-  NS_IMETHOD FindItemWithName(const PRUnichar * name, nsISupports *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval) { return _to FindItemWithName(name, requestor, original_requestor, _retval); } \
+  NS_IMETHOD FindItemWithName(const char16_t * name, nsISupports *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval) { return _to FindItemWithName(name, requestor, original_requestor, _retval); } \
   NS_IMETHOD GetTreeOwner(nsIDocShellTreeOwner * *aTreeOwner) { return _to GetTreeOwner(aTreeOwner); } \
-  NS_IMETHOD SetTreeOwner(nsIDocShellTreeOwner *tree_owner) { return _to SetTreeOwner(tree_owner); } 
+  NS_IMETHOD SetTreeOwner(nsIDocShellTreeOwner *tree_owner) { return _to SetTreeOwner(tree_owner); } \
+  NS_IMETHOD GetChildCount(int32_t *aChildCount) { return _to GetChildCount(aChildCount); } \
+  NS_IMETHOD AddChild(nsIDocShellTreeItem *child) { return _to AddChild(child); } \
+  NS_IMETHOD RemoveChild(nsIDocShellTreeItem *child) { return _to RemoveChild(child); } \
+  NS_IMETHOD GetChildAt(int32_t index, nsIDocShellTreeItem * *_retval) { return _to GetChildAt(index, _retval); } \
+  NS_IMETHOD FindChildWithName(const char16_t * name, bool recurse, bool same_type, nsIDocShellTreeItem *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval) { return _to FindChildWithName(name, recurse, same_type, requestor, original_requestor, _retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIDOCSHELLTREEITEM(_to) \
-  NS_IMETHOD GetName(PRUnichar * *aName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetName(aName); } \
-  NS_IMETHOD SetName(const PRUnichar * aName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetName(aName); } \
-  NS_IMETHOD NameEquals(const PRUnichar * name, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->NameEquals(name, _retval); } \
+  NS_IMETHOD GetName(nsAString & aName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetName(aName); } \
+  NS_IMETHOD SetName(const nsAString & aName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetName(aName); } \
+  NS_IMETHOD NameEquals(const char16_t * name, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->NameEquals(name, _retval); } \
   NS_IMETHOD GetItemType(int32_t *aItemType) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetItemType(aItemType); } \
   NS_IMETHOD SetItemType(int32_t aItemType) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetItemType(aItemType); } \
+  virtual int32_t ItemType(void); \
   NS_IMETHOD GetParent(nsIDocShellTreeItem * *aParent) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetParent(aParent); } \
   NS_IMETHOD GetSameTypeParent(nsIDocShellTreeItem * *aSameTypeParent) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSameTypeParent(aSameTypeParent); } \
   NS_IMETHOD GetRootTreeItem(nsIDocShellTreeItem * *aRootTreeItem) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetRootTreeItem(aRootTreeItem); } \
   NS_IMETHOD GetSameTypeRootTreeItem(nsIDocShellTreeItem * *aSameTypeRootTreeItem) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSameTypeRootTreeItem(aSameTypeRootTreeItem); } \
-  NS_IMETHOD FindItemWithName(const PRUnichar * name, nsISupports *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindItemWithName(name, requestor, original_requestor, _retval); } \
+  NS_IMETHOD FindItemWithName(const char16_t * name, nsISupports *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindItemWithName(name, requestor, original_requestor, _retval); } \
   NS_IMETHOD GetTreeOwner(nsIDocShellTreeOwner * *aTreeOwner) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTreeOwner(aTreeOwner); } \
-  NS_IMETHOD SetTreeOwner(nsIDocShellTreeOwner *tree_owner) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTreeOwner(tree_owner); } 
+  NS_IMETHOD SetTreeOwner(nsIDocShellTreeOwner *tree_owner) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTreeOwner(tree_owner); } \
+  NS_IMETHOD GetChildCount(int32_t *aChildCount) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetChildCount(aChildCount); } \
+  NS_IMETHOD AddChild(nsIDocShellTreeItem *child) { return !_to ? NS_ERROR_NULL_POINTER : _to->AddChild(child); } \
+  NS_IMETHOD RemoveChild(nsIDocShellTreeItem *child) { return !_to ? NS_ERROR_NULL_POINTER : _to->RemoveChild(child); } \
+  NS_IMETHOD GetChildAt(int32_t index, nsIDocShellTreeItem * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetChildAt(index, _retval); } \
+  NS_IMETHOD FindChildWithName(const char16_t * name, bool recurse, bool same_type, nsIDocShellTreeItem *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindChildWithName(name, recurse, same_type, requestor, original_requestor, _retval); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -5183,18 +5098,18 @@ nsDocShellTreeItem::~nsDocShellTreeItem()
   /* destructor code */
 }
 
-/* attribute wstring name; */
-NS_IMETHODIMP nsDocShellTreeItem::GetName(PRUnichar * *aName)
+/* attribute AString name; */
+NS_IMETHODIMP nsDocShellTreeItem::GetName(nsAString & aName)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsDocShellTreeItem::SetName(const PRUnichar * aName)
+NS_IMETHODIMP nsDocShellTreeItem::SetName(const nsAString & aName)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* boolean nameEquals (in wstring name); */
-NS_IMETHODIMP nsDocShellTreeItem::NameEquals(const PRUnichar * name, bool *_retval)
+NS_IMETHODIMP nsDocShellTreeItem::NameEquals(const char16_t * name, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -5205,6 +5120,12 @@ NS_IMETHODIMP nsDocShellTreeItem::GetItemType(int32_t *aItemType)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 NS_IMETHODIMP nsDocShellTreeItem::SetItemType(int32_t aItemType)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [noscript,nostdcall,notxpcom] long ItemType (); */
+int32_t nsDocShellTreeItem::ItemType()
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -5234,7 +5155,7 @@ NS_IMETHODIMP nsDocShellTreeItem::GetSameTypeRootTreeItem(nsIDocShellTreeItem * 
 }
 
 /* nsIDocShellTreeItem findItemWithName (in wstring name, in nsISupports requestor, in nsIDocShellTreeItem original_requestor); */
-NS_IMETHODIMP nsDocShellTreeItem::FindItemWithName(const PRUnichar * name, nsISupports *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval)
+NS_IMETHODIMP nsDocShellTreeItem::FindItemWithName(const char16_t * name, nsISupports *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -5247,6 +5168,36 @@ NS_IMETHODIMP nsDocShellTreeItem::GetTreeOwner(nsIDocShellTreeOwner * *aTreeOwne
 
 /* [noscript] void setTreeOwner (in nsIDocShellTreeOwner tree_owner); */
 NS_IMETHODIMP nsDocShellTreeItem::SetTreeOwner(nsIDocShellTreeOwner *tree_owner)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute long childCount; */
+NS_IMETHODIMP nsDocShellTreeItem::GetChildCount(int32_t *aChildCount)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void addChild (in nsIDocShellTreeItem child); */
+NS_IMETHODIMP nsDocShellTreeItem::AddChild(nsIDocShellTreeItem *child)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void removeChild (in nsIDocShellTreeItem child); */
+NS_IMETHODIMP nsDocShellTreeItem::RemoveChild(nsIDocShellTreeItem *child)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIDocShellTreeItem getChildAt (in long index); */
+NS_IMETHODIMP nsDocShellTreeItem::GetChildAt(int32_t index, nsIDocShellTreeItem * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIDocShellTreeItem findChildWithName (in wstring name, in boolean recurse, in boolean same_type, in nsIDocShellTreeItem requestor, in nsIDocShellTreeItem original_requestor); */
+NS_IMETHODIMP nsDocShellTreeItem::FindChildWithName(const char16_t * name, bool recurse, bool same_type, nsIDocShellTreeItem *requestor, nsIDocShellTreeItem *original_requestor, nsIDocShellTreeItem * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -10121,10 +10072,10 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsISupports {
   NS_IMETHOD GetTextLength(int32_t *aTextLength) = 0;
 
   /* void mozGetFileNameArray ([optional] out unsigned long aLength, [array, size_is (aLength), retval] out wstring aFileNames); */
-  NS_IMETHOD MozGetFileNameArray(uint32_t *aLength, PRUnichar * **aFileNames) = 0;
+  NS_IMETHOD MozGetFileNameArray(uint32_t *aLength, char16_t * **aFileNames) = 0;
 
   /* void mozSetFileNameArray ([array, size_is (aLength)] in wstring aFileNames, in unsigned long aLength); */
-  NS_IMETHOD MozSetFileNameArray(const PRUnichar * *aFileNames, uint32_t aLength) = 0;
+  NS_IMETHOD MozSetFileNameArray(const char16_t * *aFileNames, uint32_t aLength) = 0;
 
   /* boolean mozIsTextField (in boolean exclude_password); */
   NS_IMETHOD MozIsTextField(bool exclude_password, bool *_retval) = 0;
@@ -10223,8 +10174,8 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsISupports {
   NS_IMETHOD SetUseMap(const nsAString & aUseMap); \
   NS_IMETHOD GetControllers(nsIControllers * *aControllers); \
   NS_IMETHOD GetTextLength(int32_t *aTextLength); \
-  NS_IMETHOD MozGetFileNameArray(uint32_t *aLength, PRUnichar * **aFileNames); \
-  NS_IMETHOD MozSetFileNameArray(const PRUnichar * *aFileNames, uint32_t aLength); \
+  NS_IMETHOD MozGetFileNameArray(uint32_t *aLength, char16_t * **aFileNames); \
+  NS_IMETHOD MozSetFileNameArray(const char16_t * *aFileNames, uint32_t aLength); \
   NS_IMETHOD MozIsTextField(bool exclude_password, bool *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
@@ -10317,8 +10268,8 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsISupports {
   NS_IMETHOD SetUseMap(const nsAString & aUseMap) { return _to SetUseMap(aUseMap); } \
   NS_IMETHOD GetControllers(nsIControllers * *aControllers) { return _to GetControllers(aControllers); } \
   NS_IMETHOD GetTextLength(int32_t *aTextLength) { return _to GetTextLength(aTextLength); } \
-  NS_IMETHOD MozGetFileNameArray(uint32_t *aLength, PRUnichar * **aFileNames) { return _to MozGetFileNameArray(aLength, aFileNames); } \
-  NS_IMETHOD MozSetFileNameArray(const PRUnichar * *aFileNames, uint32_t aLength) { return _to MozSetFileNameArray(aFileNames, aLength); } \
+  NS_IMETHOD MozGetFileNameArray(uint32_t *aLength, char16_t * **aFileNames) { return _to MozGetFileNameArray(aLength, aFileNames); } \
+  NS_IMETHOD MozSetFileNameArray(const char16_t * *aFileNames, uint32_t aLength) { return _to MozSetFileNameArray(aFileNames, aLength); } \
   NS_IMETHOD MozIsTextField(bool exclude_password, bool *_retval) { return _to MozIsTextField(exclude_password, _retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
@@ -10411,8 +10362,8 @@ class NS_NO_VTABLE nsIDOMHTMLInputElement : public nsISupports {
   NS_IMETHOD SetUseMap(const nsAString & aUseMap) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetUseMap(aUseMap); } \
   NS_IMETHOD GetControllers(nsIControllers * *aControllers) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetControllers(aControllers); } \
   NS_IMETHOD GetTextLength(int32_t *aTextLength) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTextLength(aTextLength); } \
-  NS_IMETHOD MozGetFileNameArray(uint32_t *aLength, PRUnichar * **aFileNames) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozGetFileNameArray(aLength, aFileNames); } \
-  NS_IMETHOD MozSetFileNameArray(const PRUnichar * *aFileNames, uint32_t aLength) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozSetFileNameArray(aFileNames, aLength); } \
+  NS_IMETHOD MozGetFileNameArray(uint32_t *aLength, char16_t * **aFileNames) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozGetFileNameArray(aLength, aFileNames); } \
+  NS_IMETHOD MozSetFileNameArray(const char16_t * *aFileNames, uint32_t aLength) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozSetFileNameArray(aFileNames, aLength); } \
   NS_IMETHOD MozIsTextField(bool exclude_password, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->MozIsTextField(exclude_password, _retval); } 
 
 #if 0
@@ -10902,13 +10853,13 @@ NS_IMETHODIMP nsDOMHTMLInputElement::GetTextLength(int32_t *aTextLength)
 }
 
 /* void mozGetFileNameArray ([optional] out unsigned long aLength, [array, size_is (aLength), retval] out wstring aFileNames); */
-NS_IMETHODIMP nsDOMHTMLInputElement::MozGetFileNameArray(uint32_t *aLength, PRUnichar * **aFileNames)
+NS_IMETHODIMP nsDOMHTMLInputElement::MozGetFileNameArray(uint32_t *aLength, char16_t * **aFileNames)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* void mozSetFileNameArray ([array, size_is (aLength)] in wstring aFileNames, in unsigned long aLength); */
-NS_IMETHODIMP nsDOMHTMLInputElement::MozSetFileNameArray(const PRUnichar * *aFileNames, uint32_t aLength)
+NS_IMETHODIMP nsDOMHTMLInputElement::MozSetFileNameArray(const char16_t * *aFileNames, uint32_t aLength)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -14972,8 +14923,8 @@ class NS_NO_VTABLE nsIEmbeddingSiteWindow : public nsISupports {
   NS_IMETHOD SetVisibility(bool aVisibility) = 0;
 
   /* attribute wstring title; */
-  NS_IMETHOD GetTitle(PRUnichar * *aTitle) = 0;
-  NS_IMETHOD SetTitle(const PRUnichar * aTitle) = 0;
+  NS_IMETHOD GetTitle(char16_t * *aTitle) = 0;
+  NS_IMETHOD SetTitle(const char16_t * aTitle) = 0;
 
   /* [noscript] readonly attribute voidPtr siteWindow; */
   NS_IMETHOD GetSiteWindow(void **aSiteWindow) = 0;
@@ -14992,8 +14943,8 @@ class NS_NO_VTABLE nsIEmbeddingSiteWindow : public nsISupports {
   NS_IMETHOD SetFocus(void); \
   NS_IMETHOD GetVisibility(bool *aVisibility); \
   NS_IMETHOD SetVisibility(bool aVisibility); \
-  NS_IMETHOD GetTitle(PRUnichar * *aTitle); \
-  NS_IMETHOD SetTitle(const PRUnichar * aTitle); \
+  NS_IMETHOD GetTitle(char16_t * *aTitle); \
+  NS_IMETHOD SetTitle(const char16_t * aTitle); \
   NS_IMETHOD GetSiteWindow(void **aSiteWindow); \
   NS_IMETHOD Blur(void); 
 
@@ -15004,8 +14955,8 @@ class NS_NO_VTABLE nsIEmbeddingSiteWindow : public nsISupports {
   NS_IMETHOD SetFocus(void) { return _to SetFocus(); } \
   NS_IMETHOD GetVisibility(bool *aVisibility) { return _to GetVisibility(aVisibility); } \
   NS_IMETHOD SetVisibility(bool aVisibility) { return _to SetVisibility(aVisibility); } \
-  NS_IMETHOD GetTitle(PRUnichar * *aTitle) { return _to GetTitle(aTitle); } \
-  NS_IMETHOD SetTitle(const PRUnichar * aTitle) { return _to SetTitle(aTitle); } \
+  NS_IMETHOD GetTitle(char16_t * *aTitle) { return _to GetTitle(aTitle); } \
+  NS_IMETHOD SetTitle(const char16_t * aTitle) { return _to SetTitle(aTitle); } \
   NS_IMETHOD GetSiteWindow(void **aSiteWindow) { return _to GetSiteWindow(aSiteWindow); } \
   NS_IMETHOD Blur(void) { return _to Blur(); } 
 
@@ -15016,8 +14967,8 @@ class NS_NO_VTABLE nsIEmbeddingSiteWindow : public nsISupports {
   NS_IMETHOD SetFocus(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFocus(); } \
   NS_IMETHOD GetVisibility(bool *aVisibility) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetVisibility(aVisibility); } \
   NS_IMETHOD SetVisibility(bool aVisibility) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetVisibility(aVisibility); } \
-  NS_IMETHOD GetTitle(PRUnichar * *aTitle) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTitle(aTitle); } \
-  NS_IMETHOD SetTitle(const PRUnichar * aTitle) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTitle(aTitle); } \
+  NS_IMETHOD GetTitle(char16_t * *aTitle) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTitle(aTitle); } \
+  NS_IMETHOD SetTitle(const char16_t * aTitle) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTitle(aTitle); } \
   NS_IMETHOD GetSiteWindow(void **aSiteWindow) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSiteWindow(aSiteWindow); } \
   NS_IMETHOD Blur(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Blur(); } 
 
@@ -15082,11 +15033,11 @@ NS_IMETHODIMP nsEmbeddingSiteWindow::SetVisibility(bool aVisibility)
 }
 
 /* attribute wstring title; */
-NS_IMETHODIMP nsEmbeddingSiteWindow::GetTitle(PRUnichar * *aTitle)
+NS_IMETHODIMP nsEmbeddingSiteWindow::GetTitle(char16_t * *aTitle)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsEmbeddingSiteWindow::SetTitle(const PRUnichar * aTitle)
+NS_IMETHODIMP nsEmbeddingSiteWindow::SetTitle(const char16_t * aTitle)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -15330,7 +15281,7 @@ class NS_NO_VTABLE nsIHelperAppLauncherDialog : public nsISupports {
   NS_IMETHOD Show(nsIHelperAppLauncher *launcher, nsISupports *windowContext, uint32_t reason) = 0;
 
   /* nsILocalFile promptForSaveToFile (in nsIHelperAppLauncher launcher, in nsISupports windowContext, in wstring defaultFile, in wstring suggestedFileExtension, in boolean force_prompt); */
-  NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const PRUnichar * defaultFile, const PRUnichar * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval) = 0;
+  NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval) = 0;
 
 };
 
@@ -15339,17 +15290,17 @@ class NS_NO_VTABLE nsIHelperAppLauncherDialog : public nsISupports {
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSIHELPERAPPLAUNCHERDIALOG \
   NS_IMETHOD Show(nsIHelperAppLauncher *launcher, nsISupports *windowContext, uint32_t reason); \
-  NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const PRUnichar * defaultFile, const PRUnichar * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval); 
+  NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIHELPERAPPLAUNCHERDIALOG(_to) \
   NS_IMETHOD Show(nsIHelperAppLauncher *launcher, nsISupports *windowContext, uint32_t reason) { return _to Show(launcher, windowContext, reason); } \
-  NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const PRUnichar * defaultFile, const PRUnichar * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval) { return _to PromptForSaveToFile(launcher, windowContext, defaultFile, suggestedFileExtension, force_prompt, _retval); } 
+  NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval) { return _to PromptForSaveToFile(launcher, windowContext, defaultFile, suggestedFileExtension, force_prompt, _retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIHELPERAPPLAUNCHERDIALOG(_to) \
   NS_IMETHOD Show(nsIHelperAppLauncher *launcher, nsISupports *windowContext, uint32_t reason) { return !_to ? NS_ERROR_NULL_POINTER : _to->Show(launcher, windowContext, reason); } \
-  NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const PRUnichar * defaultFile, const PRUnichar * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->PromptForSaveToFile(launcher, windowContext, defaultFile, suggestedFileExtension, force_prompt, _retval); } 
+  NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->PromptForSaveToFile(launcher, windowContext, defaultFile, suggestedFileExtension, force_prompt, _retval); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -15390,7 +15341,7 @@ NS_IMETHODIMP nsHelperAppLauncherDialog::Show(nsIHelperAppLauncher *launcher, ns
 }
 
 /* nsILocalFile promptForSaveToFile (in nsIHelperAppLauncher launcher, in nsISupports windowContext, in wstring defaultFile, in wstring suggestedFileExtension, in boolean force_prompt); */
-NS_IMETHODIMP nsHelperAppLauncherDialog::PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const PRUnichar * defaultFile, const PRUnichar * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval)
+NS_IMETHODIMP nsHelperAppLauncherDialog::PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -16716,7 +16667,7 @@ class NS_NO_VTABLE nsIWebBrowserPrint : public nsISupports {
   NS_IMETHOD Cancel(void) = 0;
 
   /* void enumerateDocumentNames (out PRUint32 count, [array, size_is (count), retval] out wstring result); */
-  NS_IMETHOD EnumerateDocumentNames(PRUint32 *count, PRUnichar * **result) = 0;
+  NS_IMETHOD EnumerateDocumentNames(PRUint32 *count, char16_t * **result) = 0;
 
   /* void exitPrintPreview (); */
   NS_IMETHOD ExitPrintPreview(void) = 0;
@@ -16741,7 +16692,7 @@ class NS_NO_VTABLE nsIWebBrowserPrint : public nsISupports {
   NS_IMETHOD PrintPreview(nsIPrintSettings *thePrintSettings, nsIDOMWindow *childDOMWin, nsIWebProgressListener *WPListener); \
   NS_IMETHOD PrintPreviewNavigate(int16_t navType, int32_t pageNum); \
   NS_IMETHOD Cancel(void); \
-  NS_IMETHOD EnumerateDocumentNames(PRUint32 *count, PRUnichar * **result); \
+  NS_IMETHOD EnumerateDocumentNames(PRUint32 *count, char16_t * **result); \
   NS_IMETHOD ExitPrintPreview(void); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
@@ -16760,7 +16711,7 @@ class NS_NO_VTABLE nsIWebBrowserPrint : public nsISupports {
   NS_IMETHOD PrintPreview(nsIPrintSettings *thePrintSettings, nsIDOMWindow *childDOMWin, nsIWebProgressListener *WPListener) { return _to PrintPreview(thePrintSettings, childDOMWin, WPListener); } \
   NS_IMETHOD PrintPreviewNavigate(int16_t navType, int32_t pageNum) { return _to PrintPreviewNavigate(navType, pageNum); } \
   NS_IMETHOD Cancel(void) { return _to Cancel(); } \
-  NS_IMETHOD EnumerateDocumentNames(PRUint32 *count, PRUnichar * **result) { return _to EnumerateDocumentNames(count, result); } \
+  NS_IMETHOD EnumerateDocumentNames(PRUint32 *count, char16_t * **result) { return _to EnumerateDocumentNames(count, result); } \
   NS_IMETHOD ExitPrintPreview(void) { return _to ExitPrintPreview(); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
@@ -16779,7 +16730,7 @@ class NS_NO_VTABLE nsIWebBrowserPrint : public nsISupports {
   NS_IMETHOD PrintPreview(nsIPrintSettings *thePrintSettings, nsIDOMWindow *childDOMWin, nsIWebProgressListener *WPListener) { return !_to ? NS_ERROR_NULL_POINTER : _to->PrintPreview(thePrintSettings, childDOMWin, WPListener); } \
   NS_IMETHOD PrintPreviewNavigate(int16_t navType, int32_t pageNum) { return !_to ? NS_ERROR_NULL_POINTER : _to->PrintPreviewNavigate(navType, pageNum); } \
   NS_IMETHOD Cancel(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Cancel(); } \
-  NS_IMETHOD EnumerateDocumentNames(PRUint32 *count, PRUnichar * **result) { return !_to ? NS_ERROR_NULL_POINTER : _to->EnumerateDocumentNames(count, result); } \
+  NS_IMETHOD EnumerateDocumentNames(PRUint32 *count, char16_t * **result) { return !_to ? NS_ERROR_NULL_POINTER : _to->EnumerateDocumentNames(count, result); } \
   NS_IMETHOD ExitPrintPreview(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->ExitPrintPreview(); } 
 
 #if 0
@@ -16899,7 +16850,7 @@ NS_IMETHODIMP nsWebBrowserPrint::Cancel()
 }
 
 /* void enumerateDocumentNames (out PRUint32 count, [array, size_is (count), retval] out wstring result); */
-NS_IMETHODIMP nsWebBrowserPrint::EnumerateDocumentNames(PRUint32 *count, PRUnichar * **result)
+NS_IMETHODIMP nsWebBrowserPrint::EnumerateDocumentNames(PRUint32 *count, char16_t * **result)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -16933,10 +16884,10 @@ class NS_NO_VTABLE nsIPrintSettingsService : public nsISupports {
   NS_IMETHOD GetNewPrintSettings(nsIPrintSettings * *aNewPrintSettings) = 0;
 
   /* readonly attribute wstring defaultPrinterName; */
-  NS_IMETHOD GetDefaultPrinterName(PRUnichar * *aDefaultPrinterName) = 0;
+  NS_IMETHOD GetDefaultPrinterName(char16_t * *aDefaultPrinterName) = 0;
 
   /* void initPrintSettingsFromPrinter (in wstring printer_name, in nsIPrintSettings print_settings); */
-  NS_IMETHOD InitPrintSettingsFromPrinter(const PRUnichar * printer_name, nsIPrintSettings *print_settings) = 0;
+  NS_IMETHOD InitPrintSettingsFromPrinter(const char16_t * printer_name, nsIPrintSettings *print_settings) = 0;
 
   /* void initPrintSettingsFromPrefs (in nsIPrintSettings print_settings, in boolean use_printer_name_prefix, in unsigned long flags); */
   NS_IMETHOD InitPrintSettingsFromPrefs(nsIPrintSettings *print_settings, bool use_printer_name_prefix, uint32_t flags) = 0;
@@ -16952,8 +16903,8 @@ class NS_NO_VTABLE nsIPrintSettingsService : public nsISupports {
 #define NS_DECL_NSIPRINTSETTINGSSERVICE \
   NS_IMETHOD GetGlobalPrintSettings(nsIPrintSettings * *aGlobalPrintSettings); \
   NS_IMETHOD GetNewPrintSettings(nsIPrintSettings * *aNewPrintSettings); \
-  NS_IMETHOD GetDefaultPrinterName(PRUnichar * *aDefaultPrinterName); \
-  NS_IMETHOD InitPrintSettingsFromPrinter(const PRUnichar * printer_name, nsIPrintSettings *print_settings); \
+  NS_IMETHOD GetDefaultPrinterName(char16_t * *aDefaultPrinterName); \
+  NS_IMETHOD InitPrintSettingsFromPrinter(const char16_t * printer_name, nsIPrintSettings *print_settings); \
   NS_IMETHOD InitPrintSettingsFromPrefs(nsIPrintSettings *print_settings, bool use_printer_name_prefix, uint32_t flags); \
   NS_IMETHOD SavePrintSettingsToPrefs(nsIPrintSettings *print_settings, bool user_printer_name_prefix, uint32_t flags); 
 
@@ -16961,8 +16912,8 @@ class NS_NO_VTABLE nsIPrintSettingsService : public nsISupports {
 #define NS_FORWARD_NSIPRINTSETTINGSSERVICE(_to) \
   NS_IMETHOD GetGlobalPrintSettings(nsIPrintSettings * *aGlobalPrintSettings) { return _to GetGlobalPrintSettings(aGlobalPrintSettings); } \
   NS_IMETHOD GetNewPrintSettings(nsIPrintSettings * *aNewPrintSettings) { return _to GetNewPrintSettings(aNewPrintSettings); } \
-  NS_IMETHOD GetDefaultPrinterName(PRUnichar * *aDefaultPrinterName) { return _to GetDefaultPrinterName(aDefaultPrinterName); } \
-  NS_IMETHOD InitPrintSettingsFromPrinter(const PRUnichar * printer_name, nsIPrintSettings *print_settings) { return _to InitPrintSettingsFromPrinter(printer_name, print_settings); } \
+  NS_IMETHOD GetDefaultPrinterName(char16_t * *aDefaultPrinterName) { return _to GetDefaultPrinterName(aDefaultPrinterName); } \
+  NS_IMETHOD InitPrintSettingsFromPrinter(const char16_t * printer_name, nsIPrintSettings *print_settings) { return _to InitPrintSettingsFromPrinter(printer_name, print_settings); } \
   NS_IMETHOD InitPrintSettingsFromPrefs(nsIPrintSettings *print_settings, bool use_printer_name_prefix, uint32_t flags) { return _to InitPrintSettingsFromPrefs(print_settings, use_printer_name_prefix, flags); } \
   NS_IMETHOD SavePrintSettingsToPrefs(nsIPrintSettings *print_settings, bool user_printer_name_prefix, uint32_t flags) { return _to SavePrintSettingsToPrefs(print_settings, user_printer_name_prefix, flags); } 
 
@@ -16970,8 +16921,8 @@ class NS_NO_VTABLE nsIPrintSettingsService : public nsISupports {
 #define NS_FORWARD_SAFE_NSIPRINTSETTINGSSERVICE(_to) \
   NS_IMETHOD GetGlobalPrintSettings(nsIPrintSettings * *aGlobalPrintSettings) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetGlobalPrintSettings(aGlobalPrintSettings); } \
   NS_IMETHOD GetNewPrintSettings(nsIPrintSettings * *aNewPrintSettings) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetNewPrintSettings(aNewPrintSettings); } \
-  NS_IMETHOD GetDefaultPrinterName(PRUnichar * *aDefaultPrinterName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDefaultPrinterName(aDefaultPrinterName); } \
-  NS_IMETHOD InitPrintSettingsFromPrinter(const PRUnichar * printer_name, nsIPrintSettings *print_settings) { return !_to ? NS_ERROR_NULL_POINTER : _to->InitPrintSettingsFromPrinter(printer_name, print_settings); } \
+  NS_IMETHOD GetDefaultPrinterName(char16_t * *aDefaultPrinterName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDefaultPrinterName(aDefaultPrinterName); } \
+  NS_IMETHOD InitPrintSettingsFromPrinter(const char16_t * printer_name, nsIPrintSettings *print_settings) { return !_to ? NS_ERROR_NULL_POINTER : _to->InitPrintSettingsFromPrinter(printer_name, print_settings); } \
   NS_IMETHOD InitPrintSettingsFromPrefs(nsIPrintSettings *print_settings, bool use_printer_name_prefix, uint32_t flags) { return !_to ? NS_ERROR_NULL_POINTER : _to->InitPrintSettingsFromPrefs(print_settings, use_printer_name_prefix, flags); } \
   NS_IMETHOD SavePrintSettingsToPrefs(nsIPrintSettings *print_settings, bool user_printer_name_prefix, uint32_t flags) { return !_to ? NS_ERROR_NULL_POINTER : _to->SavePrintSettingsToPrefs(print_settings, user_printer_name_prefix, flags); } 
 
@@ -17020,13 +16971,13 @@ NS_IMETHODIMP nsPrintSettingsService::GetNewPrintSettings(nsIPrintSettings * *aN
 }
 
 /* readonly attribute wstring defaultPrinterName; */
-NS_IMETHODIMP nsPrintSettingsService::GetDefaultPrinterName(PRUnichar * *aDefaultPrinterName)
+NS_IMETHODIMP nsPrintSettingsService::GetDefaultPrinterName(char16_t * *aDefaultPrinterName)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* void initPrintSettingsFromPrinter (in wstring printer_name, in nsIPrintSettings print_settings); */
-NS_IMETHODIMP nsPrintSettingsService::InitPrintSettingsFromPrinter(const PRUnichar * printer_name, nsIPrintSettings *print_settings)
+NS_IMETHODIMP nsPrintSettingsService::InitPrintSettingsFromPrinter(const char16_t * printer_name, nsIPrintSettings *print_settings)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -17217,36 +17168,36 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetPrintRange(int16_t aPrintRange) = 0;
 
   /* attribute wstring title; */
-  NS_IMETHOD GetTitle(PRUnichar * *aTitle) = 0;
-  NS_IMETHOD SetTitle(const PRUnichar * aTitle) = 0;
+  NS_IMETHOD GetTitle(char16_t * *aTitle) = 0;
+  NS_IMETHOD SetTitle(const char16_t * aTitle) = 0;
 
   /* attribute wstring docURL; */
-  NS_IMETHOD GetDocURL(PRUnichar * *aDocURL) = 0;
-  NS_IMETHOD SetDocURL(const PRUnichar * aDocURL) = 0;
+  NS_IMETHOD GetDocURL(char16_t * *aDocURL) = 0;
+  NS_IMETHOD SetDocURL(const char16_t * aDocURL) = 0;
 
   /* attribute wstring headerStrLeft; */
-  NS_IMETHOD GetHeaderStrLeft(PRUnichar * *aHeaderStrLeft) = 0;
-  NS_IMETHOD SetHeaderStrLeft(const PRUnichar * aHeaderStrLeft) = 0;
+  NS_IMETHOD GetHeaderStrLeft(char16_t * *aHeaderStrLeft) = 0;
+  NS_IMETHOD SetHeaderStrLeft(const char16_t * aHeaderStrLeft) = 0;
 
   /* attribute wstring headerStrCenter; */
-  NS_IMETHOD GetHeaderStrCenter(PRUnichar * *aHeaderStrCenter) = 0;
-  NS_IMETHOD SetHeaderStrCenter(const PRUnichar * aHeaderStrCenter) = 0;
+  NS_IMETHOD GetHeaderStrCenter(char16_t * *aHeaderStrCenter) = 0;
+  NS_IMETHOD SetHeaderStrCenter(const char16_t * aHeaderStrCenter) = 0;
 
   /* attribute wstring headerStrRight; */
-  NS_IMETHOD GetHeaderStrRight(PRUnichar * *aHeaderStrRight) = 0;
-  NS_IMETHOD SetHeaderStrRight(const PRUnichar * aHeaderStrRight) = 0;
+  NS_IMETHOD GetHeaderStrRight(char16_t * *aHeaderStrRight) = 0;
+  NS_IMETHOD SetHeaderStrRight(const char16_t * aHeaderStrRight) = 0;
 
   /* attribute wstring footerStrLeft; */
-  NS_IMETHOD GetFooterStrLeft(PRUnichar * *aFooterStrLeft) = 0;
-  NS_IMETHOD SetFooterStrLeft(const PRUnichar * aFooterStrLeft) = 0;
+  NS_IMETHOD GetFooterStrLeft(char16_t * *aFooterStrLeft) = 0;
+  NS_IMETHOD SetFooterStrLeft(const char16_t * aFooterStrLeft) = 0;
 
   /* attribute wstring footerStrCenter; */
-  NS_IMETHOD GetFooterStrCenter(PRUnichar * *aFooterStrCenter) = 0;
-  NS_IMETHOD SetFooterStrCenter(const PRUnichar * aFooterStrCenter) = 0;
+  NS_IMETHOD GetFooterStrCenter(char16_t * *aFooterStrCenter) = 0;
+  NS_IMETHOD SetFooterStrCenter(const char16_t * aFooterStrCenter) = 0;
 
   /* attribute wstring footerStrRight; */
-  NS_IMETHOD GetFooterStrRight(PRUnichar * *aFooterStrRight) = 0;
-  NS_IMETHOD SetFooterStrRight(const PRUnichar * aFooterStrRight) = 0;
+  NS_IMETHOD GetFooterStrRight(char16_t * *aFooterStrRight) = 0;
+  NS_IMETHOD SetFooterStrRight(const char16_t * aFooterStrRight) = 0;
 
   /* attribute short howToEnableFrameUI; */
   NS_IMETHOD GetHowToEnableFrameUI(int16_t *aHowToEnableFrameUI) = 0;
@@ -17277,8 +17228,8 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetShowPrintProgress(bool aShowPrintProgress) = 0;
 
   /* attribute wstring paperName; */
-  NS_IMETHOD GetPaperName(PRUnichar * *aPaperName) = 0;
-  NS_IMETHOD SetPaperName(const PRUnichar * aPaperName) = 0;
+  NS_IMETHOD GetPaperName(char16_t * *aPaperName) = 0;
+  NS_IMETHOD SetPaperName(const char16_t * aPaperName) = 0;
 
   /* attribute short paperSizeType; */
   NS_IMETHOD GetPaperSizeType(int16_t *aPaperSizeType) = 0;
@@ -17301,16 +17252,16 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetPaperSizeUnit(int16_t aPaperSizeUnit) = 0;
 
   /* attribute wstring plexName; */
-  NS_IMETHOD GetPlexName(PRUnichar * *aPlexName) = 0;
-  NS_IMETHOD SetPlexName(const PRUnichar * aPlexName) = 0;
+  NS_IMETHOD GetPlexName(char16_t * *aPlexName) = 0;
+  NS_IMETHOD SetPlexName(const char16_t * aPlexName) = 0;
 
   /* attribute wstring colorspace; */
-  NS_IMETHOD GetColorspace(PRUnichar * *aColorspace) = 0;
-  NS_IMETHOD SetColorspace(const PRUnichar * aColorspace) = 0;
+  NS_IMETHOD GetColorspace(char16_t * *aColorspace) = 0;
+  NS_IMETHOD SetColorspace(const char16_t * aColorspace) = 0;
 
   /* attribute wstring resolutionName; */
-  NS_IMETHOD GetResolutionName(PRUnichar * *aResolutionName) = 0;
-  NS_IMETHOD SetResolutionName(const PRUnichar * aResolutionName) = 0;
+  NS_IMETHOD GetResolutionName(char16_t * *aResolutionName) = 0;
+  NS_IMETHOD SetResolutionName(const char16_t * aResolutionName) = 0;
 
   /* attribute boolean downloadFonts; */
   NS_IMETHOD GetDownloadFonts(bool *aDownloadFonts) = 0;
@@ -17329,24 +17280,24 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetOrientation(int32_t aOrientation) = 0;
 
   /* attribute wstring printCommand; */
-  NS_IMETHOD GetPrintCommand(PRUnichar * *aPrintCommand) = 0;
-  NS_IMETHOD SetPrintCommand(const PRUnichar * aPrintCommand) = 0;
+  NS_IMETHOD GetPrintCommand(char16_t * *aPrintCommand) = 0;
+  NS_IMETHOD SetPrintCommand(const char16_t * aPrintCommand) = 0;
 
   /* attribute long numCopies; */
   NS_IMETHOD GetNumCopies(int32_t *aNumCopies) = 0;
   NS_IMETHOD SetNumCopies(int32_t aNumCopies) = 0;
 
   /* attribute wstring printerName; */
-  NS_IMETHOD GetPrinterName(PRUnichar * *aPrinterName) = 0;
-  NS_IMETHOD SetPrinterName(const PRUnichar * aPrinterName) = 0;
+  NS_IMETHOD GetPrinterName(char16_t * *aPrinterName) = 0;
+  NS_IMETHOD SetPrinterName(const char16_t * aPrinterName) = 0;
 
   /* attribute boolean printToFile; */
   NS_IMETHOD GetPrintToFile(bool *aPrintToFile) = 0;
   NS_IMETHOD SetPrintToFile(bool aPrintToFile) = 0;
 
   /* attribute wstring toFileName; */
-  NS_IMETHOD GetToFileName(PRUnichar * *aToFileName) = 0;
-  NS_IMETHOD SetToFileName(const PRUnichar * aToFileName) = 0;
+  NS_IMETHOD GetToFileName(char16_t * *aToFileName) = 0;
+  NS_IMETHOD SetToFileName(const char16_t * aToFileName) = 0;
 
   /* attribute short outputFormat; */
   NS_IMETHOD GetOutputFormat(int16_t *aOutputFormat) = 0;
@@ -17426,22 +17377,22 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetPrintBGImages(bool aPrintBGImages); \
   NS_IMETHOD GetPrintRange(int16_t *aPrintRange); \
   NS_IMETHOD SetPrintRange(int16_t aPrintRange); \
-  NS_IMETHOD GetTitle(PRUnichar * *aTitle); \
-  NS_IMETHOD SetTitle(const PRUnichar * aTitle); \
-  NS_IMETHOD GetDocURL(PRUnichar * *aDocURL); \
-  NS_IMETHOD SetDocURL(const PRUnichar * aDocURL); \
-  NS_IMETHOD GetHeaderStrLeft(PRUnichar * *aHeaderStrLeft); \
-  NS_IMETHOD SetHeaderStrLeft(const PRUnichar * aHeaderStrLeft); \
-  NS_IMETHOD GetHeaderStrCenter(PRUnichar * *aHeaderStrCenter); \
-  NS_IMETHOD SetHeaderStrCenter(const PRUnichar * aHeaderStrCenter); \
-  NS_IMETHOD GetHeaderStrRight(PRUnichar * *aHeaderStrRight); \
-  NS_IMETHOD SetHeaderStrRight(const PRUnichar * aHeaderStrRight); \
-  NS_IMETHOD GetFooterStrLeft(PRUnichar * *aFooterStrLeft); \
-  NS_IMETHOD SetFooterStrLeft(const PRUnichar * aFooterStrLeft); \
-  NS_IMETHOD GetFooterStrCenter(PRUnichar * *aFooterStrCenter); \
-  NS_IMETHOD SetFooterStrCenter(const PRUnichar * aFooterStrCenter); \
-  NS_IMETHOD GetFooterStrRight(PRUnichar * *aFooterStrRight); \
-  NS_IMETHOD SetFooterStrRight(const PRUnichar * aFooterStrRight); \
+  NS_IMETHOD GetTitle(char16_t * *aTitle); \
+  NS_IMETHOD SetTitle(const char16_t * aTitle); \
+  NS_IMETHOD GetDocURL(char16_t * *aDocURL); \
+  NS_IMETHOD SetDocURL(const char16_t * aDocURL); \
+  NS_IMETHOD GetHeaderStrLeft(char16_t * *aHeaderStrLeft); \
+  NS_IMETHOD SetHeaderStrLeft(const char16_t * aHeaderStrLeft); \
+  NS_IMETHOD GetHeaderStrCenter(char16_t * *aHeaderStrCenter); \
+  NS_IMETHOD SetHeaderStrCenter(const char16_t * aHeaderStrCenter); \
+  NS_IMETHOD GetHeaderStrRight(char16_t * *aHeaderStrRight); \
+  NS_IMETHOD SetHeaderStrRight(const char16_t * aHeaderStrRight); \
+  NS_IMETHOD GetFooterStrLeft(char16_t * *aFooterStrLeft); \
+  NS_IMETHOD SetFooterStrLeft(const char16_t * aFooterStrLeft); \
+  NS_IMETHOD GetFooterStrCenter(char16_t * *aFooterStrCenter); \
+  NS_IMETHOD SetFooterStrCenter(const char16_t * aFooterStrCenter); \
+  NS_IMETHOD GetFooterStrRight(char16_t * *aFooterStrRight); \
+  NS_IMETHOD SetFooterStrRight(const char16_t * aFooterStrRight); \
   NS_IMETHOD GetHowToEnableFrameUI(int16_t *aHowToEnableFrameUI); \
   NS_IMETHOD SetHowToEnableFrameUI(int16_t aHowToEnableFrameUI); \
   NS_IMETHOD GetIsCancelled(bool *aIsCancelled); \
@@ -17456,8 +17407,8 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetShrinkToFit(bool aShrinkToFit); \
   NS_IMETHOD GetShowPrintProgress(bool *aShowPrintProgress); \
   NS_IMETHOD SetShowPrintProgress(bool aShowPrintProgress); \
-  NS_IMETHOD GetPaperName(PRUnichar * *aPaperName); \
-  NS_IMETHOD SetPaperName(const PRUnichar * aPaperName); \
+  NS_IMETHOD GetPaperName(char16_t * *aPaperName); \
+  NS_IMETHOD SetPaperName(const char16_t * aPaperName); \
   NS_IMETHOD GetPaperSizeType(int16_t *aPaperSizeType); \
   NS_IMETHOD SetPaperSizeType(int16_t aPaperSizeType); \
   NS_IMETHOD GetPaperData(int16_t *aPaperData); \
@@ -17468,12 +17419,12 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetPaperHeight(double aPaperHeight); \
   NS_IMETHOD GetPaperSizeUnit(int16_t *aPaperSizeUnit); \
   NS_IMETHOD SetPaperSizeUnit(int16_t aPaperSizeUnit); \
-  NS_IMETHOD GetPlexName(PRUnichar * *aPlexName); \
-  NS_IMETHOD SetPlexName(const PRUnichar * aPlexName); \
-  NS_IMETHOD GetColorspace(PRUnichar * *aColorspace); \
-  NS_IMETHOD SetColorspace(const PRUnichar * aColorspace); \
-  NS_IMETHOD GetResolutionName(PRUnichar * *aResolutionName); \
-  NS_IMETHOD SetResolutionName(const PRUnichar * aResolutionName); \
+  NS_IMETHOD GetPlexName(char16_t * *aPlexName); \
+  NS_IMETHOD SetPlexName(const char16_t * aPlexName); \
+  NS_IMETHOD GetColorspace(char16_t * *aColorspace); \
+  NS_IMETHOD SetColorspace(const char16_t * aColorspace); \
+  NS_IMETHOD GetResolutionName(char16_t * *aResolutionName); \
+  NS_IMETHOD SetResolutionName(const char16_t * aResolutionName); \
   NS_IMETHOD GetDownloadFonts(bool *aDownloadFonts); \
   NS_IMETHOD SetDownloadFonts(bool aDownloadFonts); \
   NS_IMETHOD GetPrintReversed(bool *aPrintReversed); \
@@ -17482,16 +17433,16 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetPrintInColor(bool aPrintInColor); \
   NS_IMETHOD GetOrientation(int32_t *aOrientation); \
   NS_IMETHOD SetOrientation(int32_t aOrientation); \
-  NS_IMETHOD GetPrintCommand(PRUnichar * *aPrintCommand); \
-  NS_IMETHOD SetPrintCommand(const PRUnichar * aPrintCommand); \
+  NS_IMETHOD GetPrintCommand(char16_t * *aPrintCommand); \
+  NS_IMETHOD SetPrintCommand(const char16_t * aPrintCommand); \
   NS_IMETHOD GetNumCopies(int32_t *aNumCopies); \
   NS_IMETHOD SetNumCopies(int32_t aNumCopies); \
-  NS_IMETHOD GetPrinterName(PRUnichar * *aPrinterName); \
-  NS_IMETHOD SetPrinterName(const PRUnichar * aPrinterName); \
+  NS_IMETHOD GetPrinterName(char16_t * *aPrinterName); \
+  NS_IMETHOD SetPrinterName(const char16_t * aPrinterName); \
   NS_IMETHOD GetPrintToFile(bool *aPrintToFile); \
   NS_IMETHOD SetPrintToFile(bool aPrintToFile); \
-  NS_IMETHOD GetToFileName(PRUnichar * *aToFileName); \
-  NS_IMETHOD SetToFileName(const PRUnichar * aToFileName); \
+  NS_IMETHOD GetToFileName(char16_t * *aToFileName); \
+  NS_IMETHOD SetToFileName(const char16_t * aToFileName); \
   NS_IMETHOD GetOutputFormat(int16_t *aOutputFormat); \
   NS_IMETHOD SetOutputFormat(int16_t aOutputFormat); \
   NS_IMETHOD GetPrintPageDelay(int32_t *aPrintPageDelay); \
@@ -17553,22 +17504,22 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetPrintBGImages(bool aPrintBGImages) { return _to SetPrintBGImages(aPrintBGImages); } \
   NS_IMETHOD GetPrintRange(int16_t *aPrintRange) { return _to GetPrintRange(aPrintRange); } \
   NS_IMETHOD SetPrintRange(int16_t aPrintRange) { return _to SetPrintRange(aPrintRange); } \
-  NS_IMETHOD GetTitle(PRUnichar * *aTitle) { return _to GetTitle(aTitle); } \
-  NS_IMETHOD SetTitle(const PRUnichar * aTitle) { return _to SetTitle(aTitle); } \
-  NS_IMETHOD GetDocURL(PRUnichar * *aDocURL) { return _to GetDocURL(aDocURL); } \
-  NS_IMETHOD SetDocURL(const PRUnichar * aDocURL) { return _to SetDocURL(aDocURL); } \
-  NS_IMETHOD GetHeaderStrLeft(PRUnichar * *aHeaderStrLeft) { return _to GetHeaderStrLeft(aHeaderStrLeft); } \
-  NS_IMETHOD SetHeaderStrLeft(const PRUnichar * aHeaderStrLeft) { return _to SetHeaderStrLeft(aHeaderStrLeft); } \
-  NS_IMETHOD GetHeaderStrCenter(PRUnichar * *aHeaderStrCenter) { return _to GetHeaderStrCenter(aHeaderStrCenter); } \
-  NS_IMETHOD SetHeaderStrCenter(const PRUnichar * aHeaderStrCenter) { return _to SetHeaderStrCenter(aHeaderStrCenter); } \
-  NS_IMETHOD GetHeaderStrRight(PRUnichar * *aHeaderStrRight) { return _to GetHeaderStrRight(aHeaderStrRight); } \
-  NS_IMETHOD SetHeaderStrRight(const PRUnichar * aHeaderStrRight) { return _to SetHeaderStrRight(aHeaderStrRight); } \
-  NS_IMETHOD GetFooterStrLeft(PRUnichar * *aFooterStrLeft) { return _to GetFooterStrLeft(aFooterStrLeft); } \
-  NS_IMETHOD SetFooterStrLeft(const PRUnichar * aFooterStrLeft) { return _to SetFooterStrLeft(aFooterStrLeft); } \
-  NS_IMETHOD GetFooterStrCenter(PRUnichar * *aFooterStrCenter) { return _to GetFooterStrCenter(aFooterStrCenter); } \
-  NS_IMETHOD SetFooterStrCenter(const PRUnichar * aFooterStrCenter) { return _to SetFooterStrCenter(aFooterStrCenter); } \
-  NS_IMETHOD GetFooterStrRight(PRUnichar * *aFooterStrRight) { return _to GetFooterStrRight(aFooterStrRight); } \
-  NS_IMETHOD SetFooterStrRight(const PRUnichar * aFooterStrRight) { return _to SetFooterStrRight(aFooterStrRight); } \
+  NS_IMETHOD GetTitle(char16_t * *aTitle) { return _to GetTitle(aTitle); } \
+  NS_IMETHOD SetTitle(const char16_t * aTitle) { return _to SetTitle(aTitle); } \
+  NS_IMETHOD GetDocURL(char16_t * *aDocURL) { return _to GetDocURL(aDocURL); } \
+  NS_IMETHOD SetDocURL(const char16_t * aDocURL) { return _to SetDocURL(aDocURL); } \
+  NS_IMETHOD GetHeaderStrLeft(char16_t * *aHeaderStrLeft) { return _to GetHeaderStrLeft(aHeaderStrLeft); } \
+  NS_IMETHOD SetHeaderStrLeft(const char16_t * aHeaderStrLeft) { return _to SetHeaderStrLeft(aHeaderStrLeft); } \
+  NS_IMETHOD GetHeaderStrCenter(char16_t * *aHeaderStrCenter) { return _to GetHeaderStrCenter(aHeaderStrCenter); } \
+  NS_IMETHOD SetHeaderStrCenter(const char16_t * aHeaderStrCenter) { return _to SetHeaderStrCenter(aHeaderStrCenter); } \
+  NS_IMETHOD GetHeaderStrRight(char16_t * *aHeaderStrRight) { return _to GetHeaderStrRight(aHeaderStrRight); } \
+  NS_IMETHOD SetHeaderStrRight(const char16_t * aHeaderStrRight) { return _to SetHeaderStrRight(aHeaderStrRight); } \
+  NS_IMETHOD GetFooterStrLeft(char16_t * *aFooterStrLeft) { return _to GetFooterStrLeft(aFooterStrLeft); } \
+  NS_IMETHOD SetFooterStrLeft(const char16_t * aFooterStrLeft) { return _to SetFooterStrLeft(aFooterStrLeft); } \
+  NS_IMETHOD GetFooterStrCenter(char16_t * *aFooterStrCenter) { return _to GetFooterStrCenter(aFooterStrCenter); } \
+  NS_IMETHOD SetFooterStrCenter(const char16_t * aFooterStrCenter) { return _to SetFooterStrCenter(aFooterStrCenter); } \
+  NS_IMETHOD GetFooterStrRight(char16_t * *aFooterStrRight) { return _to GetFooterStrRight(aFooterStrRight); } \
+  NS_IMETHOD SetFooterStrRight(const char16_t * aFooterStrRight) { return _to SetFooterStrRight(aFooterStrRight); } \
   NS_IMETHOD GetHowToEnableFrameUI(int16_t *aHowToEnableFrameUI) { return _to GetHowToEnableFrameUI(aHowToEnableFrameUI); } \
   NS_IMETHOD SetHowToEnableFrameUI(int16_t aHowToEnableFrameUI) { return _to SetHowToEnableFrameUI(aHowToEnableFrameUI); } \
   NS_IMETHOD GetIsCancelled(bool *aIsCancelled) { return _to GetIsCancelled(aIsCancelled); } \
@@ -17583,8 +17534,8 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetShrinkToFit(bool aShrinkToFit) { return _to SetShrinkToFit(aShrinkToFit); } \
   NS_IMETHOD GetShowPrintProgress(bool *aShowPrintProgress) { return _to GetShowPrintProgress(aShowPrintProgress); } \
   NS_IMETHOD SetShowPrintProgress(bool aShowPrintProgress) { return _to SetShowPrintProgress(aShowPrintProgress); } \
-  NS_IMETHOD GetPaperName(PRUnichar * *aPaperName) { return _to GetPaperName(aPaperName); } \
-  NS_IMETHOD SetPaperName(const PRUnichar * aPaperName) { return _to SetPaperName(aPaperName); } \
+  NS_IMETHOD GetPaperName(char16_t * *aPaperName) { return _to GetPaperName(aPaperName); } \
+  NS_IMETHOD SetPaperName(const char16_t * aPaperName) { return _to SetPaperName(aPaperName); } \
   NS_IMETHOD GetPaperSizeType(int16_t *aPaperSizeType) { return _to GetPaperSizeType(aPaperSizeType); } \
   NS_IMETHOD SetPaperSizeType(int16_t aPaperSizeType) { return _to SetPaperSizeType(aPaperSizeType); } \
   NS_IMETHOD GetPaperData(int16_t *aPaperData) { return _to GetPaperData(aPaperData); } \
@@ -17595,12 +17546,12 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetPaperHeight(double aPaperHeight) { return _to SetPaperHeight(aPaperHeight); } \
   NS_IMETHOD GetPaperSizeUnit(int16_t *aPaperSizeUnit) { return _to GetPaperSizeUnit(aPaperSizeUnit); } \
   NS_IMETHOD SetPaperSizeUnit(int16_t aPaperSizeUnit) { return _to SetPaperSizeUnit(aPaperSizeUnit); } \
-  NS_IMETHOD GetPlexName(PRUnichar * *aPlexName) { return _to GetPlexName(aPlexName); } \
-  NS_IMETHOD SetPlexName(const PRUnichar * aPlexName) { return _to SetPlexName(aPlexName); } \
-  NS_IMETHOD GetColorspace(PRUnichar * *aColorspace) { return _to GetColorspace(aColorspace); } \
-  NS_IMETHOD SetColorspace(const PRUnichar * aColorspace) { return _to SetColorspace(aColorspace); } \
-  NS_IMETHOD GetResolutionName(PRUnichar * *aResolutionName) { return _to GetResolutionName(aResolutionName); } \
-  NS_IMETHOD SetResolutionName(const PRUnichar * aResolutionName) { return _to SetResolutionName(aResolutionName); } \
+  NS_IMETHOD GetPlexName(char16_t * *aPlexName) { return _to GetPlexName(aPlexName); } \
+  NS_IMETHOD SetPlexName(const char16_t * aPlexName) { return _to SetPlexName(aPlexName); } \
+  NS_IMETHOD GetColorspace(char16_t * *aColorspace) { return _to GetColorspace(aColorspace); } \
+  NS_IMETHOD SetColorspace(const char16_t * aColorspace) { return _to SetColorspace(aColorspace); } \
+  NS_IMETHOD GetResolutionName(char16_t * *aResolutionName) { return _to GetResolutionName(aResolutionName); } \
+  NS_IMETHOD SetResolutionName(const char16_t * aResolutionName) { return _to SetResolutionName(aResolutionName); } \
   NS_IMETHOD GetDownloadFonts(bool *aDownloadFonts) { return _to GetDownloadFonts(aDownloadFonts); } \
   NS_IMETHOD SetDownloadFonts(bool aDownloadFonts) { return _to SetDownloadFonts(aDownloadFonts); } \
   NS_IMETHOD GetPrintReversed(bool *aPrintReversed) { return _to GetPrintReversed(aPrintReversed); } \
@@ -17609,16 +17560,16 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetPrintInColor(bool aPrintInColor) { return _to SetPrintInColor(aPrintInColor); } \
   NS_IMETHOD GetOrientation(int32_t *aOrientation) { return _to GetOrientation(aOrientation); } \
   NS_IMETHOD SetOrientation(int32_t aOrientation) { return _to SetOrientation(aOrientation); } \
-  NS_IMETHOD GetPrintCommand(PRUnichar * *aPrintCommand) { return _to GetPrintCommand(aPrintCommand); } \
-  NS_IMETHOD SetPrintCommand(const PRUnichar * aPrintCommand) { return _to SetPrintCommand(aPrintCommand); } \
+  NS_IMETHOD GetPrintCommand(char16_t * *aPrintCommand) { return _to GetPrintCommand(aPrintCommand); } \
+  NS_IMETHOD SetPrintCommand(const char16_t * aPrintCommand) { return _to SetPrintCommand(aPrintCommand); } \
   NS_IMETHOD GetNumCopies(int32_t *aNumCopies) { return _to GetNumCopies(aNumCopies); } \
   NS_IMETHOD SetNumCopies(int32_t aNumCopies) { return _to SetNumCopies(aNumCopies); } \
-  NS_IMETHOD GetPrinterName(PRUnichar * *aPrinterName) { return _to GetPrinterName(aPrinterName); } \
-  NS_IMETHOD SetPrinterName(const PRUnichar * aPrinterName) { return _to SetPrinterName(aPrinterName); } \
+  NS_IMETHOD GetPrinterName(char16_t * *aPrinterName) { return _to GetPrinterName(aPrinterName); } \
+  NS_IMETHOD SetPrinterName(const char16_t * aPrinterName) { return _to SetPrinterName(aPrinterName); } \
   NS_IMETHOD GetPrintToFile(bool *aPrintToFile) { return _to GetPrintToFile(aPrintToFile); } \
   NS_IMETHOD SetPrintToFile(bool aPrintToFile) { return _to SetPrintToFile(aPrintToFile); } \
-  NS_IMETHOD GetToFileName(PRUnichar * *aToFileName) { return _to GetToFileName(aToFileName); } \
-  NS_IMETHOD SetToFileName(const PRUnichar * aToFileName) { return _to SetToFileName(aToFileName); } \
+  NS_IMETHOD GetToFileName(char16_t * *aToFileName) { return _to GetToFileName(aToFileName); } \
+  NS_IMETHOD SetToFileName(const char16_t * aToFileName) { return _to SetToFileName(aToFileName); } \
   NS_IMETHOD GetOutputFormat(int16_t *aOutputFormat) { return _to GetOutputFormat(aOutputFormat); } \
   NS_IMETHOD SetOutputFormat(int16_t aOutputFormat) { return _to SetOutputFormat(aOutputFormat); } \
   NS_IMETHOD GetPrintPageDelay(int32_t *aPrintPageDelay) { return _to GetPrintPageDelay(aPrintPageDelay); } \
@@ -17680,22 +17631,22 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetPrintBGImages(bool aPrintBGImages) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPrintBGImages(aPrintBGImages); } \
   NS_IMETHOD GetPrintRange(int16_t *aPrintRange) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPrintRange(aPrintRange); } \
   NS_IMETHOD SetPrintRange(int16_t aPrintRange) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPrintRange(aPrintRange); } \
-  NS_IMETHOD GetTitle(PRUnichar * *aTitle) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTitle(aTitle); } \
-  NS_IMETHOD SetTitle(const PRUnichar * aTitle) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTitle(aTitle); } \
-  NS_IMETHOD GetDocURL(PRUnichar * *aDocURL) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDocURL(aDocURL); } \
-  NS_IMETHOD SetDocURL(const PRUnichar * aDocURL) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetDocURL(aDocURL); } \
-  NS_IMETHOD GetHeaderStrLeft(PRUnichar * *aHeaderStrLeft) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetHeaderStrLeft(aHeaderStrLeft); } \
-  NS_IMETHOD SetHeaderStrLeft(const PRUnichar * aHeaderStrLeft) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetHeaderStrLeft(aHeaderStrLeft); } \
-  NS_IMETHOD GetHeaderStrCenter(PRUnichar * *aHeaderStrCenter) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetHeaderStrCenter(aHeaderStrCenter); } \
-  NS_IMETHOD SetHeaderStrCenter(const PRUnichar * aHeaderStrCenter) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetHeaderStrCenter(aHeaderStrCenter); } \
-  NS_IMETHOD GetHeaderStrRight(PRUnichar * *aHeaderStrRight) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetHeaderStrRight(aHeaderStrRight); } \
-  NS_IMETHOD SetHeaderStrRight(const PRUnichar * aHeaderStrRight) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetHeaderStrRight(aHeaderStrRight); } \
-  NS_IMETHOD GetFooterStrLeft(PRUnichar * *aFooterStrLeft) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFooterStrLeft(aFooterStrLeft); } \
-  NS_IMETHOD SetFooterStrLeft(const PRUnichar * aFooterStrLeft) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFooterStrLeft(aFooterStrLeft); } \
-  NS_IMETHOD GetFooterStrCenter(PRUnichar * *aFooterStrCenter) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFooterStrCenter(aFooterStrCenter); } \
-  NS_IMETHOD SetFooterStrCenter(const PRUnichar * aFooterStrCenter) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFooterStrCenter(aFooterStrCenter); } \
-  NS_IMETHOD GetFooterStrRight(PRUnichar * *aFooterStrRight) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFooterStrRight(aFooterStrRight); } \
-  NS_IMETHOD SetFooterStrRight(const PRUnichar * aFooterStrRight) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFooterStrRight(aFooterStrRight); } \
+  NS_IMETHOD GetTitle(char16_t * *aTitle) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTitle(aTitle); } \
+  NS_IMETHOD SetTitle(const char16_t * aTitle) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTitle(aTitle); } \
+  NS_IMETHOD GetDocURL(char16_t * *aDocURL) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDocURL(aDocURL); } \
+  NS_IMETHOD SetDocURL(const char16_t * aDocURL) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetDocURL(aDocURL); } \
+  NS_IMETHOD GetHeaderStrLeft(char16_t * *aHeaderStrLeft) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetHeaderStrLeft(aHeaderStrLeft); } \
+  NS_IMETHOD SetHeaderStrLeft(const char16_t * aHeaderStrLeft) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetHeaderStrLeft(aHeaderStrLeft); } \
+  NS_IMETHOD GetHeaderStrCenter(char16_t * *aHeaderStrCenter) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetHeaderStrCenter(aHeaderStrCenter); } \
+  NS_IMETHOD SetHeaderStrCenter(const char16_t * aHeaderStrCenter) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetHeaderStrCenter(aHeaderStrCenter); } \
+  NS_IMETHOD GetHeaderStrRight(char16_t * *aHeaderStrRight) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetHeaderStrRight(aHeaderStrRight); } \
+  NS_IMETHOD SetHeaderStrRight(const char16_t * aHeaderStrRight) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetHeaderStrRight(aHeaderStrRight); } \
+  NS_IMETHOD GetFooterStrLeft(char16_t * *aFooterStrLeft) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFooterStrLeft(aFooterStrLeft); } \
+  NS_IMETHOD SetFooterStrLeft(const char16_t * aFooterStrLeft) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFooterStrLeft(aFooterStrLeft); } \
+  NS_IMETHOD GetFooterStrCenter(char16_t * *aFooterStrCenter) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFooterStrCenter(aFooterStrCenter); } \
+  NS_IMETHOD SetFooterStrCenter(const char16_t * aFooterStrCenter) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFooterStrCenter(aFooterStrCenter); } \
+  NS_IMETHOD GetFooterStrRight(char16_t * *aFooterStrRight) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFooterStrRight(aFooterStrRight); } \
+  NS_IMETHOD SetFooterStrRight(const char16_t * aFooterStrRight) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFooterStrRight(aFooterStrRight); } \
   NS_IMETHOD GetHowToEnableFrameUI(int16_t *aHowToEnableFrameUI) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetHowToEnableFrameUI(aHowToEnableFrameUI); } \
   NS_IMETHOD SetHowToEnableFrameUI(int16_t aHowToEnableFrameUI) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetHowToEnableFrameUI(aHowToEnableFrameUI); } \
   NS_IMETHOD GetIsCancelled(bool *aIsCancelled) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetIsCancelled(aIsCancelled); } \
@@ -17710,8 +17661,8 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetShrinkToFit(bool aShrinkToFit) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetShrinkToFit(aShrinkToFit); } \
   NS_IMETHOD GetShowPrintProgress(bool *aShowPrintProgress) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetShowPrintProgress(aShowPrintProgress); } \
   NS_IMETHOD SetShowPrintProgress(bool aShowPrintProgress) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetShowPrintProgress(aShowPrintProgress); } \
-  NS_IMETHOD GetPaperName(PRUnichar * *aPaperName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPaperName(aPaperName); } \
-  NS_IMETHOD SetPaperName(const PRUnichar * aPaperName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPaperName(aPaperName); } \
+  NS_IMETHOD GetPaperName(char16_t * *aPaperName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPaperName(aPaperName); } \
+  NS_IMETHOD SetPaperName(const char16_t * aPaperName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPaperName(aPaperName); } \
   NS_IMETHOD GetPaperSizeType(int16_t *aPaperSizeType) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPaperSizeType(aPaperSizeType); } \
   NS_IMETHOD SetPaperSizeType(int16_t aPaperSizeType) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPaperSizeType(aPaperSizeType); } \
   NS_IMETHOD GetPaperData(int16_t *aPaperData) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPaperData(aPaperData); } \
@@ -17722,12 +17673,12 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetPaperHeight(double aPaperHeight) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPaperHeight(aPaperHeight); } \
   NS_IMETHOD GetPaperSizeUnit(int16_t *aPaperSizeUnit) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPaperSizeUnit(aPaperSizeUnit); } \
   NS_IMETHOD SetPaperSizeUnit(int16_t aPaperSizeUnit) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPaperSizeUnit(aPaperSizeUnit); } \
-  NS_IMETHOD GetPlexName(PRUnichar * *aPlexName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPlexName(aPlexName); } \
-  NS_IMETHOD SetPlexName(const PRUnichar * aPlexName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPlexName(aPlexName); } \
-  NS_IMETHOD GetColorspace(PRUnichar * *aColorspace) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetColorspace(aColorspace); } \
-  NS_IMETHOD SetColorspace(const PRUnichar * aColorspace) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetColorspace(aColorspace); } \
-  NS_IMETHOD GetResolutionName(PRUnichar * *aResolutionName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetResolutionName(aResolutionName); } \
-  NS_IMETHOD SetResolutionName(const PRUnichar * aResolutionName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetResolutionName(aResolutionName); } \
+  NS_IMETHOD GetPlexName(char16_t * *aPlexName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPlexName(aPlexName); } \
+  NS_IMETHOD SetPlexName(const char16_t * aPlexName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPlexName(aPlexName); } \
+  NS_IMETHOD GetColorspace(char16_t * *aColorspace) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetColorspace(aColorspace); } \
+  NS_IMETHOD SetColorspace(const char16_t * aColorspace) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetColorspace(aColorspace); } \
+  NS_IMETHOD GetResolutionName(char16_t * *aResolutionName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetResolutionName(aResolutionName); } \
+  NS_IMETHOD SetResolutionName(const char16_t * aResolutionName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetResolutionName(aResolutionName); } \
   NS_IMETHOD GetDownloadFonts(bool *aDownloadFonts) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDownloadFonts(aDownloadFonts); } \
   NS_IMETHOD SetDownloadFonts(bool aDownloadFonts) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetDownloadFonts(aDownloadFonts); } \
   NS_IMETHOD GetPrintReversed(bool *aPrintReversed) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPrintReversed(aPrintReversed); } \
@@ -17736,16 +17687,16 @@ class NS_NO_VTABLE nsIPrintSettings : public nsISupports {
   NS_IMETHOD SetPrintInColor(bool aPrintInColor) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPrintInColor(aPrintInColor); } \
   NS_IMETHOD GetOrientation(int32_t *aOrientation) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetOrientation(aOrientation); } \
   NS_IMETHOD SetOrientation(int32_t aOrientation) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetOrientation(aOrientation); } \
-  NS_IMETHOD GetPrintCommand(PRUnichar * *aPrintCommand) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPrintCommand(aPrintCommand); } \
-  NS_IMETHOD SetPrintCommand(const PRUnichar * aPrintCommand) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPrintCommand(aPrintCommand); } \
+  NS_IMETHOD GetPrintCommand(char16_t * *aPrintCommand) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPrintCommand(aPrintCommand); } \
+  NS_IMETHOD SetPrintCommand(const char16_t * aPrintCommand) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPrintCommand(aPrintCommand); } \
   NS_IMETHOD GetNumCopies(int32_t *aNumCopies) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetNumCopies(aNumCopies); } \
   NS_IMETHOD SetNumCopies(int32_t aNumCopies) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetNumCopies(aNumCopies); } \
-  NS_IMETHOD GetPrinterName(PRUnichar * *aPrinterName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPrinterName(aPrinterName); } \
-  NS_IMETHOD SetPrinterName(const PRUnichar * aPrinterName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPrinterName(aPrinterName); } \
+  NS_IMETHOD GetPrinterName(char16_t * *aPrinterName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPrinterName(aPrinterName); } \
+  NS_IMETHOD SetPrinterName(const char16_t * aPrinterName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPrinterName(aPrinterName); } \
   NS_IMETHOD GetPrintToFile(bool *aPrintToFile) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPrintToFile(aPrintToFile); } \
   NS_IMETHOD SetPrintToFile(bool aPrintToFile) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPrintToFile(aPrintToFile); } \
-  NS_IMETHOD GetToFileName(PRUnichar * *aToFileName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetToFileName(aToFileName); } \
-  NS_IMETHOD SetToFileName(const PRUnichar * aToFileName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetToFileName(aToFileName); } \
+  NS_IMETHOD GetToFileName(char16_t * *aToFileName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetToFileName(aToFileName); } \
+  NS_IMETHOD SetToFileName(const char16_t * aToFileName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetToFileName(aToFileName); } \
   NS_IMETHOD GetOutputFormat(int16_t *aOutputFormat) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetOutputFormat(aOutputFormat); } \
   NS_IMETHOD SetOutputFormat(int16_t aOutputFormat) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetOutputFormat(aOutputFormat); } \
   NS_IMETHOD GetPrintPageDelay(int32_t *aPrintPageDelay) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPrintPageDelay(aPrintPageDelay); } \
@@ -18020,81 +17971,81 @@ NS_IMETHODIMP nsPrintSettings::SetPrintRange(int16_t aPrintRange)
 }
 
 /* attribute wstring title; */
-NS_IMETHODIMP nsPrintSettings::GetTitle(PRUnichar * *aTitle)
+NS_IMETHODIMP nsPrintSettings::GetTitle(char16_t * *aTitle)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsPrintSettings::SetTitle(const PRUnichar * aTitle)
+NS_IMETHODIMP nsPrintSettings::SetTitle(const char16_t * aTitle)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* attribute wstring docURL; */
-NS_IMETHODIMP nsPrintSettings::GetDocURL(PRUnichar * *aDocURL)
+NS_IMETHODIMP nsPrintSettings::GetDocURL(char16_t * *aDocURL)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsPrintSettings::SetDocURL(const PRUnichar * aDocURL)
+NS_IMETHODIMP nsPrintSettings::SetDocURL(const char16_t * aDocURL)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* attribute wstring headerStrLeft; */
-NS_IMETHODIMP nsPrintSettings::GetHeaderStrLeft(PRUnichar * *aHeaderStrLeft)
+NS_IMETHODIMP nsPrintSettings::GetHeaderStrLeft(char16_t * *aHeaderStrLeft)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsPrintSettings::SetHeaderStrLeft(const PRUnichar * aHeaderStrLeft)
+NS_IMETHODIMP nsPrintSettings::SetHeaderStrLeft(const char16_t * aHeaderStrLeft)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* attribute wstring headerStrCenter; */
-NS_IMETHODIMP nsPrintSettings::GetHeaderStrCenter(PRUnichar * *aHeaderStrCenter)
+NS_IMETHODIMP nsPrintSettings::GetHeaderStrCenter(char16_t * *aHeaderStrCenter)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsPrintSettings::SetHeaderStrCenter(const PRUnichar * aHeaderStrCenter)
+NS_IMETHODIMP nsPrintSettings::SetHeaderStrCenter(const char16_t * aHeaderStrCenter)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* attribute wstring headerStrRight; */
-NS_IMETHODIMP nsPrintSettings::GetHeaderStrRight(PRUnichar * *aHeaderStrRight)
+NS_IMETHODIMP nsPrintSettings::GetHeaderStrRight(char16_t * *aHeaderStrRight)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsPrintSettings::SetHeaderStrRight(const PRUnichar * aHeaderStrRight)
+NS_IMETHODIMP nsPrintSettings::SetHeaderStrRight(const char16_t * aHeaderStrRight)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* attribute wstring footerStrLeft; */
-NS_IMETHODIMP nsPrintSettings::GetFooterStrLeft(PRUnichar * *aFooterStrLeft)
+NS_IMETHODIMP nsPrintSettings::GetFooterStrLeft(char16_t * *aFooterStrLeft)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsPrintSettings::SetFooterStrLeft(const PRUnichar * aFooterStrLeft)
+NS_IMETHODIMP nsPrintSettings::SetFooterStrLeft(const char16_t * aFooterStrLeft)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* attribute wstring footerStrCenter; */
-NS_IMETHODIMP nsPrintSettings::GetFooterStrCenter(PRUnichar * *aFooterStrCenter)
+NS_IMETHODIMP nsPrintSettings::GetFooterStrCenter(char16_t * *aFooterStrCenter)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsPrintSettings::SetFooterStrCenter(const PRUnichar * aFooterStrCenter)
+NS_IMETHODIMP nsPrintSettings::SetFooterStrCenter(const char16_t * aFooterStrCenter)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* attribute wstring footerStrRight; */
-NS_IMETHODIMP nsPrintSettings::GetFooterStrRight(PRUnichar * *aFooterStrRight)
+NS_IMETHODIMP nsPrintSettings::GetFooterStrRight(char16_t * *aFooterStrRight)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsPrintSettings::SetFooterStrRight(const PRUnichar * aFooterStrRight)
+NS_IMETHODIMP nsPrintSettings::SetFooterStrRight(const char16_t * aFooterStrRight)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -18170,11 +18121,11 @@ NS_IMETHODIMP nsPrintSettings::SetShowPrintProgress(bool aShowPrintProgress)
 }
 
 /* attribute wstring paperName; */
-NS_IMETHODIMP nsPrintSettings::GetPaperName(PRUnichar * *aPaperName)
+NS_IMETHODIMP nsPrintSettings::GetPaperName(char16_t * *aPaperName)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsPrintSettings::SetPaperName(const PRUnichar * aPaperName)
+NS_IMETHODIMP nsPrintSettings::SetPaperName(const char16_t * aPaperName)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -18230,31 +18181,31 @@ NS_IMETHODIMP nsPrintSettings::SetPaperSizeUnit(int16_t aPaperSizeUnit)
 }
 
 /* attribute wstring plexName; */
-NS_IMETHODIMP nsPrintSettings::GetPlexName(PRUnichar * *aPlexName)
+NS_IMETHODIMP nsPrintSettings::GetPlexName(char16_t * *aPlexName)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsPrintSettings::SetPlexName(const PRUnichar * aPlexName)
+NS_IMETHODIMP nsPrintSettings::SetPlexName(const char16_t * aPlexName)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* attribute wstring colorspace; */
-NS_IMETHODIMP nsPrintSettings::GetColorspace(PRUnichar * *aColorspace)
+NS_IMETHODIMP nsPrintSettings::GetColorspace(char16_t * *aColorspace)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsPrintSettings::SetColorspace(const PRUnichar * aColorspace)
+NS_IMETHODIMP nsPrintSettings::SetColorspace(const char16_t * aColorspace)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* attribute wstring resolutionName; */
-NS_IMETHODIMP nsPrintSettings::GetResolutionName(PRUnichar * *aResolutionName)
+NS_IMETHODIMP nsPrintSettings::GetResolutionName(char16_t * *aResolutionName)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsPrintSettings::SetResolutionName(const PRUnichar * aResolutionName)
+NS_IMETHODIMP nsPrintSettings::SetResolutionName(const char16_t * aResolutionName)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -18300,11 +18251,11 @@ NS_IMETHODIMP nsPrintSettings::SetOrientation(int32_t aOrientation)
 }
 
 /* attribute wstring printCommand; */
-NS_IMETHODIMP nsPrintSettings::GetPrintCommand(PRUnichar * *aPrintCommand)
+NS_IMETHODIMP nsPrintSettings::GetPrintCommand(char16_t * *aPrintCommand)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsPrintSettings::SetPrintCommand(const PRUnichar * aPrintCommand)
+NS_IMETHODIMP nsPrintSettings::SetPrintCommand(const char16_t * aPrintCommand)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -18320,11 +18271,11 @@ NS_IMETHODIMP nsPrintSettings::SetNumCopies(int32_t aNumCopies)
 }
 
 /* attribute wstring printerName; */
-NS_IMETHODIMP nsPrintSettings::GetPrinterName(PRUnichar * *aPrinterName)
+NS_IMETHODIMP nsPrintSettings::GetPrinterName(char16_t * *aPrinterName)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsPrintSettings::SetPrinterName(const PRUnichar * aPrinterName)
+NS_IMETHODIMP nsPrintSettings::SetPrinterName(const char16_t * aPrinterName)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -18340,11 +18291,11 @@ NS_IMETHODIMP nsPrintSettings::SetPrintToFile(bool aPrintToFile)
 }
 
 /* attribute wstring toFileName; */
-NS_IMETHODIMP nsPrintSettings::GetToFileName(PRUnichar * *aToFileName)
+NS_IMETHODIMP nsPrintSettings::GetToFileName(char16_t * *aToFileName)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsPrintSettings::SetToFileName(const PRUnichar * aToFileName)
+NS_IMETHODIMP nsPrintSettings::SetToFileName(const char16_t * aToFileName)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -18449,7 +18400,7 @@ class NS_NO_VTABLE nsIPrintingPromptService : public nsISupports {
   NS_IMETHOD ShowPageSetup(nsIDOMWindow *parent, nsIPrintSettings *printSettings, nsIObserver *aObs) = 0;
 
   /* void showPrinterProperties (in nsIDOMWindow parent, in wstring printerName, in nsIPrintSettings printSettings); */
-  NS_IMETHOD ShowPrinterProperties(nsIDOMWindow *parent, const PRUnichar * printerName, nsIPrintSettings *printSettings) = 0;
+  NS_IMETHOD ShowPrinterProperties(nsIDOMWindow *parent, const char16_t * printerName, nsIPrintSettings *printSettings) = 0;
 
 };
 
@@ -18460,21 +18411,21 @@ class NS_NO_VTABLE nsIPrintingPromptService : public nsISupports {
   NS_IMETHOD ShowPrintDialog(nsIDOMWindow *parent, nsIWebBrowserPrint *webBrowserPrint, nsIPrintSettings *printSettings); \
   NS_IMETHOD ShowProgress(nsIDOMWindow *parent, nsIWebBrowserPrint *webBrowserPrint, nsIPrintSettings *printSettings, nsIObserver *openDialogObserver, bool isForPrinting, nsIWebProgressListener * *webProgressListener, nsIPrintProgressParams * *printProgressParams, bool *notifyOnOpen); \
   NS_IMETHOD ShowPageSetup(nsIDOMWindow *parent, nsIPrintSettings *printSettings, nsIObserver *aObs); \
-  NS_IMETHOD ShowPrinterProperties(nsIDOMWindow *parent, const PRUnichar * printerName, nsIPrintSettings *printSettings); 
+  NS_IMETHOD ShowPrinterProperties(nsIDOMWindow *parent, const char16_t * printerName, nsIPrintSettings *printSettings); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIPRINTINGPROMPTSERVICE(_to) \
   NS_IMETHOD ShowPrintDialog(nsIDOMWindow *parent, nsIWebBrowserPrint *webBrowserPrint, nsIPrintSettings *printSettings) { return _to ShowPrintDialog(parent, webBrowserPrint, printSettings); } \
   NS_IMETHOD ShowProgress(nsIDOMWindow *parent, nsIWebBrowserPrint *webBrowserPrint, nsIPrintSettings *printSettings, nsIObserver *openDialogObserver, bool isForPrinting, nsIWebProgressListener * *webProgressListener, nsIPrintProgressParams * *printProgressParams, bool *notifyOnOpen) { return _to ShowProgress(parent, webBrowserPrint, printSettings, openDialogObserver, isForPrinting, webProgressListener, printProgressParams, notifyOnOpen); } \
   NS_IMETHOD ShowPageSetup(nsIDOMWindow *parent, nsIPrintSettings *printSettings, nsIObserver *aObs) { return _to ShowPageSetup(parent, printSettings, aObs); } \
-  NS_IMETHOD ShowPrinterProperties(nsIDOMWindow *parent, const PRUnichar * printerName, nsIPrintSettings *printSettings) { return _to ShowPrinterProperties(parent, printerName, printSettings); } 
+  NS_IMETHOD ShowPrinterProperties(nsIDOMWindow *parent, const char16_t * printerName, nsIPrintSettings *printSettings) { return _to ShowPrinterProperties(parent, printerName, printSettings); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIPRINTINGPROMPTSERVICE(_to) \
   NS_IMETHOD ShowPrintDialog(nsIDOMWindow *parent, nsIWebBrowserPrint *webBrowserPrint, nsIPrintSettings *printSettings) { return !_to ? NS_ERROR_NULL_POINTER : _to->ShowPrintDialog(parent, webBrowserPrint, printSettings); } \
   NS_IMETHOD ShowProgress(nsIDOMWindow *parent, nsIWebBrowserPrint *webBrowserPrint, nsIPrintSettings *printSettings, nsIObserver *openDialogObserver, bool isForPrinting, nsIWebProgressListener * *webProgressListener, nsIPrintProgressParams * *printProgressParams, bool *notifyOnOpen) { return !_to ? NS_ERROR_NULL_POINTER : _to->ShowProgress(parent, webBrowserPrint, printSettings, openDialogObserver, isForPrinting, webProgressListener, printProgressParams, notifyOnOpen); } \
   NS_IMETHOD ShowPageSetup(nsIDOMWindow *parent, nsIPrintSettings *printSettings, nsIObserver *aObs) { return !_to ? NS_ERROR_NULL_POINTER : _to->ShowPageSetup(parent, printSettings, aObs); } \
-  NS_IMETHOD ShowPrinterProperties(nsIDOMWindow *parent, const PRUnichar * printerName, nsIPrintSettings *printSettings) { return !_to ? NS_ERROR_NULL_POINTER : _to->ShowPrinterProperties(parent, printerName, printSettings); } 
+  NS_IMETHOD ShowPrinterProperties(nsIDOMWindow *parent, const char16_t * printerName, nsIPrintSettings *printSettings) { return !_to ? NS_ERROR_NULL_POINTER : _to->ShowPrinterProperties(parent, printerName, printSettings); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -18527,7 +18478,7 @@ NS_IMETHODIMP nsPrintingPromptService::ShowPageSetup(nsIDOMWindow *parent, nsIPr
 }
 
 /* void showPrinterProperties (in nsIDOMWindow parent, in wstring printerName, in nsIPrintSettings printSettings); */
-NS_IMETHODIMP nsPrintingPromptService::ShowPrinterProperties(nsIDOMWindow *parent, const PRUnichar * printerName, nsIPrintSettings *printSettings)
+NS_IMETHODIMP nsPrintingPromptService::ShowPrinterProperties(nsIDOMWindow *parent, const char16_t * printerName, nsIPrintSettings *printSettings)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -18642,31 +18593,31 @@ class NS_NO_VTABLE nsIPrompt : public nsISupports {
   };
 
   /* void alert (in wstring dialogTitle, in wstring text); */
-  NS_IMETHOD Alert(const PRUnichar * dialogTitle, const PRUnichar * text) = 0;
+  NS_IMETHOD Alert(const char16_t * dialogTitle, const char16_t * text) = 0;
 
   /* void alertCheck (in wstring dialogTitle, in wstring text, in wstring checkMsg, inout boolean checkValue); */
-  NS_IMETHOD AlertCheck(const PRUnichar * dialogTitle, const PRUnichar * text, const PRUnichar * checkMsg, bool *checkValue) = 0;
+  NS_IMETHOD AlertCheck(const char16_t * dialogTitle, const char16_t * text, const char16_t * checkMsg, bool *checkValue) = 0;
 
   /* boolean confirm (in wstring dialogTitle, in wstring text); */
-  NS_IMETHOD Confirm(const PRUnichar * dialogTitle, const PRUnichar * text, bool *_retval) = 0;
+  NS_IMETHOD Confirm(const char16_t * dialogTitle, const char16_t * text, bool *_retval) = 0;
 
   /* boolean confirmCheck (in wstring dialogTitle, in wstring text, in wstring checkMsg, inout boolean checkValue); */
-  NS_IMETHOD ConfirmCheck(const PRUnichar * dialogTitle, const PRUnichar * text, const PRUnichar * checkMsg, bool *checkValue, bool *_retval) = 0;
+  NS_IMETHOD ConfirmCheck(const char16_t * dialogTitle, const char16_t * text, const char16_t * checkMsg, bool *checkValue, bool *_retval) = 0;
 
   /* PRInt32 confirmEx (in wstring dialogTitle, in wstring text, in unsigned long buttonFlags, in wstring button0Title, in wstring button1Title, in wstring button2Title, in wstring checkMsg, inout boolean checkValue); */
-  NS_IMETHOD ConfirmEx(const PRUnichar * dialogTitle, const PRUnichar * text, uint32_t buttonFlags, const PRUnichar * button0Title, const PRUnichar * button1Title, const PRUnichar * button2Title, const PRUnichar * checkMsg, bool *checkValue, PRInt32 *_retval) = 0;
+  NS_IMETHOD ConfirmEx(const char16_t * dialogTitle, const char16_t * text, uint32_t buttonFlags, const char16_t * button0Title, const char16_t * button1Title, const char16_t * button2Title, const char16_t * checkMsg, bool *checkValue, PRInt32 *_retval) = 0;
 
   /* boolean prompt (in wstring dialogTitle, in wstring text, inout wstring value, in wstring checkMsg, inout boolean checkValue); */
-  NS_IMETHOD Prompt(const PRUnichar * dialogTitle, const PRUnichar * text, PRUnichar * *value, const PRUnichar * checkMsg, bool *checkValue, bool *_retval) = 0;
+  NS_IMETHOD Prompt(const char16_t * dialogTitle, const char16_t * text, char16_t * *value, const char16_t * checkMsg, bool *checkValue, bool *_retval) = 0;
 
   /* boolean promptPassword (in wstring dialogTitle, in wstring text, inout wstring password, in wstring checkMsg, inout boolean checkValue); */
-  NS_IMETHOD PromptPassword(const PRUnichar * dialogTitle, const PRUnichar * text, PRUnichar * *password, const PRUnichar * checkMsg, bool *checkValue, bool *_retval) = 0;
+  NS_IMETHOD PromptPassword(const char16_t * dialogTitle, const char16_t * text, char16_t * *password, const char16_t * checkMsg, bool *checkValue, bool *_retval) = 0;
 
   /* boolean promptUsernameAndPassword (in wstring dialogTitle, in wstring text, inout wstring username, inout wstring password, in wstring checkMsg, inout boolean checkValue); */
-  NS_IMETHOD PromptUsernameAndPassword(const PRUnichar * dialogTitle, const PRUnichar * text, PRUnichar * *username, PRUnichar * *password, const PRUnichar * checkMsg, bool *checkValue, bool *_retval) = 0;
+  NS_IMETHOD PromptUsernameAndPassword(const char16_t * dialogTitle, const char16_t * text, char16_t * *username, char16_t * *password, const char16_t * checkMsg, bool *checkValue, bool *_retval) = 0;
 
   /* boolean select (in wstring dialogTitle, in wstring text, in PRUint32 count, [array, size_is (count)] in wstring selectList, out long outSelection); */
-  NS_IMETHOD Select(const PRUnichar * dialogTitle, const PRUnichar * text, PRUint32 count, const PRUnichar * *selectList, int32_t *outSelection, bool *_retval) = 0;
+  NS_IMETHOD Select(const char16_t * dialogTitle, const char16_t * text, PRUint32 count, const char16_t * *selectList, int32_t *outSelection, bool *_retval) = 0;
 
 };
 
@@ -18674,39 +18625,39 @@ class NS_NO_VTABLE nsIPrompt : public nsISupports {
 
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSIPROMPT \
-  NS_IMETHOD Alert(const PRUnichar * dialogTitle, const PRUnichar * text); \
-  NS_IMETHOD AlertCheck(const PRUnichar * dialogTitle, const PRUnichar * text, const PRUnichar * checkMsg, bool *checkValue); \
-  NS_IMETHOD Confirm(const PRUnichar * dialogTitle, const PRUnichar * text, bool *_retval); \
-  NS_IMETHOD ConfirmCheck(const PRUnichar * dialogTitle, const PRUnichar * text, const PRUnichar * checkMsg, bool *checkValue, bool *_retval); \
-  NS_IMETHOD ConfirmEx(const PRUnichar * dialogTitle, const PRUnichar * text, uint32_t buttonFlags, const PRUnichar * button0Title, const PRUnichar * button1Title, const PRUnichar * button2Title, const PRUnichar * checkMsg, bool *checkValue, PRInt32 *_retval); \
-  NS_IMETHOD Prompt(const PRUnichar * dialogTitle, const PRUnichar * text, PRUnichar * *value, const PRUnichar * checkMsg, bool *checkValue, bool *_retval); \
-  NS_IMETHOD PromptPassword(const PRUnichar * dialogTitle, const PRUnichar * text, PRUnichar * *password, const PRUnichar * checkMsg, bool *checkValue, bool *_retval); \
-  NS_IMETHOD PromptUsernameAndPassword(const PRUnichar * dialogTitle, const PRUnichar * text, PRUnichar * *username, PRUnichar * *password, const PRUnichar * checkMsg, bool *checkValue, bool *_retval); \
-  NS_IMETHOD Select(const PRUnichar * dialogTitle, const PRUnichar * text, PRUint32 count, const PRUnichar * *selectList, int32_t *outSelection, bool *_retval); 
+  NS_IMETHOD Alert(const char16_t * dialogTitle, const char16_t * text); \
+  NS_IMETHOD AlertCheck(const char16_t * dialogTitle, const char16_t * text, const char16_t * checkMsg, bool *checkValue); \
+  NS_IMETHOD Confirm(const char16_t * dialogTitle, const char16_t * text, bool *_retval); \
+  NS_IMETHOD ConfirmCheck(const char16_t * dialogTitle, const char16_t * text, const char16_t * checkMsg, bool *checkValue, bool *_retval); \
+  NS_IMETHOD ConfirmEx(const char16_t * dialogTitle, const char16_t * text, uint32_t buttonFlags, const char16_t * button0Title, const char16_t * button1Title, const char16_t * button2Title, const char16_t * checkMsg, bool *checkValue, PRInt32 *_retval); \
+  NS_IMETHOD Prompt(const char16_t * dialogTitle, const char16_t * text, char16_t * *value, const char16_t * checkMsg, bool *checkValue, bool *_retval); \
+  NS_IMETHOD PromptPassword(const char16_t * dialogTitle, const char16_t * text, char16_t * *password, const char16_t * checkMsg, bool *checkValue, bool *_retval); \
+  NS_IMETHOD PromptUsernameAndPassword(const char16_t * dialogTitle, const char16_t * text, char16_t * *username, char16_t * *password, const char16_t * checkMsg, bool *checkValue, bool *_retval); \
+  NS_IMETHOD Select(const char16_t * dialogTitle, const char16_t * text, PRUint32 count, const char16_t * *selectList, int32_t *outSelection, bool *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIPROMPT(_to) \
-  NS_IMETHOD Alert(const PRUnichar * dialogTitle, const PRUnichar * text) { return _to Alert(dialogTitle, text); } \
-  NS_IMETHOD AlertCheck(const PRUnichar * dialogTitle, const PRUnichar * text, const PRUnichar * checkMsg, bool *checkValue) { return _to AlertCheck(dialogTitle, text, checkMsg, checkValue); } \
-  NS_IMETHOD Confirm(const PRUnichar * dialogTitle, const PRUnichar * text, bool *_retval) { return _to Confirm(dialogTitle, text, _retval); } \
-  NS_IMETHOD ConfirmCheck(const PRUnichar * dialogTitle, const PRUnichar * text, const PRUnichar * checkMsg, bool *checkValue, bool *_retval) { return _to ConfirmCheck(dialogTitle, text, checkMsg, checkValue, _retval); } \
-  NS_IMETHOD ConfirmEx(const PRUnichar * dialogTitle, const PRUnichar * text, uint32_t buttonFlags, const PRUnichar * button0Title, const PRUnichar * button1Title, const PRUnichar * button2Title, const PRUnichar * checkMsg, bool *checkValue, PRInt32 *_retval) { return _to ConfirmEx(dialogTitle, text, buttonFlags, button0Title, button1Title, button2Title, checkMsg, checkValue, _retval); } \
-  NS_IMETHOD Prompt(const PRUnichar * dialogTitle, const PRUnichar * text, PRUnichar * *value, const PRUnichar * checkMsg, bool *checkValue, bool *_retval) { return _to Prompt(dialogTitle, text, value, checkMsg, checkValue, _retval); } \
-  NS_IMETHOD PromptPassword(const PRUnichar * dialogTitle, const PRUnichar * text, PRUnichar * *password, const PRUnichar * checkMsg, bool *checkValue, bool *_retval) { return _to PromptPassword(dialogTitle, text, password, checkMsg, checkValue, _retval); } \
-  NS_IMETHOD PromptUsernameAndPassword(const PRUnichar * dialogTitle, const PRUnichar * text, PRUnichar * *username, PRUnichar * *password, const PRUnichar * checkMsg, bool *checkValue, bool *_retval) { return _to PromptUsernameAndPassword(dialogTitle, text, username, password, checkMsg, checkValue, _retval); } \
-  NS_IMETHOD Select(const PRUnichar * dialogTitle, const PRUnichar * text, PRUint32 count, const PRUnichar * *selectList, int32_t *outSelection, bool *_retval) { return _to Select(dialogTitle, text, count, selectList, outSelection, _retval); } 
+  NS_IMETHOD Alert(const char16_t * dialogTitle, const char16_t * text) { return _to Alert(dialogTitle, text); } \
+  NS_IMETHOD AlertCheck(const char16_t * dialogTitle, const char16_t * text, const char16_t * checkMsg, bool *checkValue) { return _to AlertCheck(dialogTitle, text, checkMsg, checkValue); } \
+  NS_IMETHOD Confirm(const char16_t * dialogTitle, const char16_t * text, bool *_retval) { return _to Confirm(dialogTitle, text, _retval); } \
+  NS_IMETHOD ConfirmCheck(const char16_t * dialogTitle, const char16_t * text, const char16_t * checkMsg, bool *checkValue, bool *_retval) { return _to ConfirmCheck(dialogTitle, text, checkMsg, checkValue, _retval); } \
+  NS_IMETHOD ConfirmEx(const char16_t * dialogTitle, const char16_t * text, uint32_t buttonFlags, const char16_t * button0Title, const char16_t * button1Title, const char16_t * button2Title, const char16_t * checkMsg, bool *checkValue, PRInt32 *_retval) { return _to ConfirmEx(dialogTitle, text, buttonFlags, button0Title, button1Title, button2Title, checkMsg, checkValue, _retval); } \
+  NS_IMETHOD Prompt(const char16_t * dialogTitle, const char16_t * text, char16_t * *value, const char16_t * checkMsg, bool *checkValue, bool *_retval) { return _to Prompt(dialogTitle, text, value, checkMsg, checkValue, _retval); } \
+  NS_IMETHOD PromptPassword(const char16_t * dialogTitle, const char16_t * text, char16_t * *password, const char16_t * checkMsg, bool *checkValue, bool *_retval) { return _to PromptPassword(dialogTitle, text, password, checkMsg, checkValue, _retval); } \
+  NS_IMETHOD PromptUsernameAndPassword(const char16_t * dialogTitle, const char16_t * text, char16_t * *username, char16_t * *password, const char16_t * checkMsg, bool *checkValue, bool *_retval) { return _to PromptUsernameAndPassword(dialogTitle, text, username, password, checkMsg, checkValue, _retval); } \
+  NS_IMETHOD Select(const char16_t * dialogTitle, const char16_t * text, PRUint32 count, const char16_t * *selectList, int32_t *outSelection, bool *_retval) { return _to Select(dialogTitle, text, count, selectList, outSelection, _retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIPROMPT(_to) \
-  NS_IMETHOD Alert(const PRUnichar * dialogTitle, const PRUnichar * text) { return !_to ? NS_ERROR_NULL_POINTER : _to->Alert(dialogTitle, text); } \
-  NS_IMETHOD AlertCheck(const PRUnichar * dialogTitle, const PRUnichar * text, const PRUnichar * checkMsg, bool *checkValue) { return !_to ? NS_ERROR_NULL_POINTER : _to->AlertCheck(dialogTitle, text, checkMsg, checkValue); } \
-  NS_IMETHOD Confirm(const PRUnichar * dialogTitle, const PRUnichar * text, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Confirm(dialogTitle, text, _retval); } \
-  NS_IMETHOD ConfirmCheck(const PRUnichar * dialogTitle, const PRUnichar * text, const PRUnichar * checkMsg, bool *checkValue, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ConfirmCheck(dialogTitle, text, checkMsg, checkValue, _retval); } \
-  NS_IMETHOD ConfirmEx(const PRUnichar * dialogTitle, const PRUnichar * text, uint32_t buttonFlags, const PRUnichar * button0Title, const PRUnichar * button1Title, const PRUnichar * button2Title, const PRUnichar * checkMsg, bool *checkValue, PRInt32 *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ConfirmEx(dialogTitle, text, buttonFlags, button0Title, button1Title, button2Title, checkMsg, checkValue, _retval); } \
-  NS_IMETHOD Prompt(const PRUnichar * dialogTitle, const PRUnichar * text, PRUnichar * *value, const PRUnichar * checkMsg, bool *checkValue, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Prompt(dialogTitle, text, value, checkMsg, checkValue, _retval); } \
-  NS_IMETHOD PromptPassword(const PRUnichar * dialogTitle, const PRUnichar * text, PRUnichar * *password, const PRUnichar * checkMsg, bool *checkValue, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->PromptPassword(dialogTitle, text, password, checkMsg, checkValue, _retval); } \
-  NS_IMETHOD PromptUsernameAndPassword(const PRUnichar * dialogTitle, const PRUnichar * text, PRUnichar * *username, PRUnichar * *password, const PRUnichar * checkMsg, bool *checkValue, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->PromptUsernameAndPassword(dialogTitle, text, username, password, checkMsg, checkValue, _retval); } \
-  NS_IMETHOD Select(const PRUnichar * dialogTitle, const PRUnichar * text, PRUint32 count, const PRUnichar * *selectList, int32_t *outSelection, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Select(dialogTitle, text, count, selectList, outSelection, _retval); } 
+  NS_IMETHOD Alert(const char16_t * dialogTitle, const char16_t * text) { return !_to ? NS_ERROR_NULL_POINTER : _to->Alert(dialogTitle, text); } \
+  NS_IMETHOD AlertCheck(const char16_t * dialogTitle, const char16_t * text, const char16_t * checkMsg, bool *checkValue) { return !_to ? NS_ERROR_NULL_POINTER : _to->AlertCheck(dialogTitle, text, checkMsg, checkValue); } \
+  NS_IMETHOD Confirm(const char16_t * dialogTitle, const char16_t * text, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Confirm(dialogTitle, text, _retval); } \
+  NS_IMETHOD ConfirmCheck(const char16_t * dialogTitle, const char16_t * text, const char16_t * checkMsg, bool *checkValue, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ConfirmCheck(dialogTitle, text, checkMsg, checkValue, _retval); } \
+  NS_IMETHOD ConfirmEx(const char16_t * dialogTitle, const char16_t * text, uint32_t buttonFlags, const char16_t * button0Title, const char16_t * button1Title, const char16_t * button2Title, const char16_t * checkMsg, bool *checkValue, PRInt32 *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ConfirmEx(dialogTitle, text, buttonFlags, button0Title, button1Title, button2Title, checkMsg, checkValue, _retval); } \
+  NS_IMETHOD Prompt(const char16_t * dialogTitle, const char16_t * text, char16_t * *value, const char16_t * checkMsg, bool *checkValue, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Prompt(dialogTitle, text, value, checkMsg, checkValue, _retval); } \
+  NS_IMETHOD PromptPassword(const char16_t * dialogTitle, const char16_t * text, char16_t * *password, const char16_t * checkMsg, bool *checkValue, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->PromptPassword(dialogTitle, text, password, checkMsg, checkValue, _retval); } \
+  NS_IMETHOD PromptUsernameAndPassword(const char16_t * dialogTitle, const char16_t * text, char16_t * *username, char16_t * *password, const char16_t * checkMsg, bool *checkValue, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->PromptUsernameAndPassword(dialogTitle, text, username, password, checkMsg, checkValue, _retval); } \
+  NS_IMETHOD Select(const char16_t * dialogTitle, const char16_t * text, PRUint32 count, const char16_t * *selectList, int32_t *outSelection, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Select(dialogTitle, text, count, selectList, outSelection, _retval); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -18741,55 +18692,55 @@ nsPrompt::~nsPrompt()
 }
 
 /* void alert (in wstring dialogTitle, in wstring text); */
-NS_IMETHODIMP nsPrompt::Alert(const PRUnichar * dialogTitle, const PRUnichar * text)
+NS_IMETHODIMP nsPrompt::Alert(const char16_t * dialogTitle, const char16_t * text)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* void alertCheck (in wstring dialogTitle, in wstring text, in wstring checkMsg, inout boolean checkValue); */
-NS_IMETHODIMP nsPrompt::AlertCheck(const PRUnichar * dialogTitle, const PRUnichar * text, const PRUnichar * checkMsg, bool *checkValue)
+NS_IMETHODIMP nsPrompt::AlertCheck(const char16_t * dialogTitle, const char16_t * text, const char16_t * checkMsg, bool *checkValue)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* boolean confirm (in wstring dialogTitle, in wstring text); */
-NS_IMETHODIMP nsPrompt::Confirm(const PRUnichar * dialogTitle, const PRUnichar * text, bool *_retval)
+NS_IMETHODIMP nsPrompt::Confirm(const char16_t * dialogTitle, const char16_t * text, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* boolean confirmCheck (in wstring dialogTitle, in wstring text, in wstring checkMsg, inout boolean checkValue); */
-NS_IMETHODIMP nsPrompt::ConfirmCheck(const PRUnichar * dialogTitle, const PRUnichar * text, const PRUnichar * checkMsg, bool *checkValue, bool *_retval)
+NS_IMETHODIMP nsPrompt::ConfirmCheck(const char16_t * dialogTitle, const char16_t * text, const char16_t * checkMsg, bool *checkValue, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* PRInt32 confirmEx (in wstring dialogTitle, in wstring text, in unsigned long buttonFlags, in wstring button0Title, in wstring button1Title, in wstring button2Title, in wstring checkMsg, inout boolean checkValue); */
-NS_IMETHODIMP nsPrompt::ConfirmEx(const PRUnichar * dialogTitle, const PRUnichar * text, uint32_t buttonFlags, const PRUnichar * button0Title, const PRUnichar * button1Title, const PRUnichar * button2Title, const PRUnichar * checkMsg, bool *checkValue, PRInt32 *_retval)
+NS_IMETHODIMP nsPrompt::ConfirmEx(const char16_t * dialogTitle, const char16_t * text, uint32_t buttonFlags, const char16_t * button0Title, const char16_t * button1Title, const char16_t * button2Title, const char16_t * checkMsg, bool *checkValue, PRInt32 *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* boolean prompt (in wstring dialogTitle, in wstring text, inout wstring value, in wstring checkMsg, inout boolean checkValue); */
-NS_IMETHODIMP nsPrompt::Prompt(const PRUnichar * dialogTitle, const PRUnichar * text, PRUnichar * *value, const PRUnichar * checkMsg, bool *checkValue, bool *_retval)
+NS_IMETHODIMP nsPrompt::Prompt(const char16_t * dialogTitle, const char16_t * text, char16_t * *value, const char16_t * checkMsg, bool *checkValue, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* boolean promptPassword (in wstring dialogTitle, in wstring text, inout wstring password, in wstring checkMsg, inout boolean checkValue); */
-NS_IMETHODIMP nsPrompt::PromptPassword(const PRUnichar * dialogTitle, const PRUnichar * text, PRUnichar * *password, const PRUnichar * checkMsg, bool *checkValue, bool *_retval)
+NS_IMETHODIMP nsPrompt::PromptPassword(const char16_t * dialogTitle, const char16_t * text, char16_t * *password, const char16_t * checkMsg, bool *checkValue, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* boolean promptUsernameAndPassword (in wstring dialogTitle, in wstring text, inout wstring username, inout wstring password, in wstring checkMsg, inout boolean checkValue); */
-NS_IMETHODIMP nsPrompt::PromptUsernameAndPassword(const PRUnichar * dialogTitle, const PRUnichar * text, PRUnichar * *username, PRUnichar * *password, const PRUnichar * checkMsg, bool *checkValue, bool *_retval)
+NS_IMETHODIMP nsPrompt::PromptUsernameAndPassword(const char16_t * dialogTitle, const char16_t * text, char16_t * *username, char16_t * *password, const char16_t * checkMsg, bool *checkValue, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* boolean select (in wstring dialogTitle, in wstring text, in PRUint32 count, [array, size_is (count)] in wstring selectList, out long outSelection); */
-NS_IMETHODIMP nsPrompt::Select(const PRUnichar * dialogTitle, const PRUnichar * text, PRUint32 count, const PRUnichar * *selectList, int32_t *outSelection, bool *_retval)
+NS_IMETHODIMP nsPrompt::Select(const char16_t * dialogTitle, const char16_t * text, PRUint32 count, const char16_t * *selectList, int32_t *outSelection, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -19070,16 +19021,16 @@ class NS_NO_VTABLE nsIPromptService : public nsISupports {
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_IPROMPTSERVICE_IID)
 
   /* void alert (in nsIDOMWindow parent, in wstring dialog_title, in wstring text); */
-  NS_IMETHOD Alert(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text) = 0;
+  NS_IMETHOD Alert(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text) = 0;
 
   /* void alertCheck (in nsIDOMWindow parent, in wstring dialog_title, in wstring text, in wstring check_msg, inout boolean check_state); */
-  NS_IMETHOD AlertCheck(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, const PRUnichar * check_msg, bool *check_state) = 0;
+  NS_IMETHOD AlertCheck(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, const char16_t * check_msg, bool *check_state) = 0;
 
   /* boolean confirm (in nsIDOMWindow parent, in wstring dialog_title, in wstring text); */
-  NS_IMETHOD Confirm(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, bool *_retval) = 0;
+  NS_IMETHOD Confirm(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, bool *_retval) = 0;
 
   /* boolean confirmCheck (in nsIDOMWindow parent, in wstring dialog_title, in wstring text, in wstring check_msg, inout boolean check_state); */
-  NS_IMETHOD ConfirmCheck(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, const PRUnichar * check_msg, bool *check_state, bool *_retval) = 0;
+  NS_IMETHOD ConfirmCheck(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, const char16_t * check_msg, bool *check_state, bool *_retval) = 0;
 
   enum {
     BUTTON_POS_0 = 1U,
@@ -19102,19 +19053,19 @@ class NS_NO_VTABLE nsIPromptService : public nsISupports {
   };
 
   /* PRInt32 confirmEx (in nsIDOMWindow parent, in wstring dialog_title, in wstring text, in unsigned long button_flags, in wstring button0_title, in wstring button1_title, in wstring button2_title, in wstring check_msg, inout boolean check_state); */
-  NS_IMETHOD ConfirmEx(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, uint32_t button_flags, const PRUnichar * button0_title, const PRUnichar * button1_title, const PRUnichar * button2_title, const PRUnichar * check_msg, bool *check_state, PRInt32 *_retval) = 0;
+  NS_IMETHOD ConfirmEx(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, uint32_t button_flags, const char16_t * button0_title, const char16_t * button1_title, const char16_t * button2_title, const char16_t * check_msg, bool *check_state, PRInt32 *_retval) = 0;
 
   /* boolean prompt (in nsIDOMWindow parent, in wstring dialog_title, in wstring text, inout wstring value, in wstring check_msg, inout boolean check_state); */
-  NS_IMETHOD Prompt(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUnichar * *value, const PRUnichar * check_msg, bool *check_state, bool *_retval) = 0;
+  NS_IMETHOD Prompt(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, char16_t * *value, const char16_t * check_msg, bool *check_state, bool *_retval) = 0;
 
   /* boolean promptUsernameAndPassword (in nsIDOMWindow parent, in wstring dialog_title, in wstring text, inout wstring username, inout wstring password, in wstring check_msg, inout boolean check_state); */
-  NS_IMETHOD PromptUsernameAndPassword(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUnichar * *username, PRUnichar * *password, const PRUnichar * check_msg, bool *check_state, bool *_retval) = 0;
+  NS_IMETHOD PromptUsernameAndPassword(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, char16_t * *username, char16_t * *password, const char16_t * check_msg, bool *check_state, bool *_retval) = 0;
 
   /* boolean promptPassword (in nsIDOMWindow parent, in wstring dialog_title, in wstring text, inout wstring password, in wstring check_msg, inout boolean check_state); */
-  NS_IMETHOD PromptPassword(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUnichar * *password, const PRUnichar * check_msg, bool *check_state, bool *_retval) = 0;
+  NS_IMETHOD PromptPassword(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, char16_t * *password, const char16_t * check_msg, bool *check_state, bool *_retval) = 0;
 
   /* boolean select (in nsIDOMWindow parent, in wstring dialog_title, in wstring text, in PRUint32 count, [array, size_is (count)] in wstring select_list, out long out_selection); */
-  NS_IMETHOD Select(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUint32 count, const PRUnichar * *select_list, int32_t *out_selection, bool *_retval) = 0;
+  NS_IMETHOD Select(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, PRUint32 count, const char16_t * *select_list, int32_t *out_selection, bool *_retval) = 0;
 
 };
 
@@ -19122,39 +19073,39 @@ class NS_NO_VTABLE nsIPromptService : public nsISupports {
 
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSIPROMPTSERVICE \
-  NS_IMETHOD Alert(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text); \
-  NS_IMETHOD AlertCheck(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, const PRUnichar * check_msg, bool *check_state); \
-  NS_IMETHOD Confirm(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, bool *_retval); \
-  NS_IMETHOD ConfirmCheck(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, const PRUnichar * check_msg, bool *check_state, bool *_retval); \
-  NS_IMETHOD ConfirmEx(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, uint32_t button_flags, const PRUnichar * button0_title, const PRUnichar * button1_title, const PRUnichar * button2_title, const PRUnichar * check_msg, bool *check_state, PRInt32 *_retval); \
-  NS_IMETHOD Prompt(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUnichar * *value, const PRUnichar * check_msg, bool *check_state, bool *_retval); \
-  NS_IMETHOD PromptUsernameAndPassword(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUnichar * *username, PRUnichar * *password, const PRUnichar * check_msg, bool *check_state, bool *_retval); \
-  NS_IMETHOD PromptPassword(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUnichar * *password, const PRUnichar * check_msg, bool *check_state, bool *_retval); \
-  NS_IMETHOD Select(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUint32 count, const PRUnichar * *select_list, int32_t *out_selection, bool *_retval); 
+  NS_IMETHOD Alert(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text); \
+  NS_IMETHOD AlertCheck(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, const char16_t * check_msg, bool *check_state); \
+  NS_IMETHOD Confirm(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, bool *_retval); \
+  NS_IMETHOD ConfirmCheck(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, const char16_t * check_msg, bool *check_state, bool *_retval); \
+  NS_IMETHOD ConfirmEx(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, uint32_t button_flags, const char16_t * button0_title, const char16_t * button1_title, const char16_t * button2_title, const char16_t * check_msg, bool *check_state, PRInt32 *_retval); \
+  NS_IMETHOD Prompt(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, char16_t * *value, const char16_t * check_msg, bool *check_state, bool *_retval); \
+  NS_IMETHOD PromptUsernameAndPassword(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, char16_t * *username, char16_t * *password, const char16_t * check_msg, bool *check_state, bool *_retval); \
+  NS_IMETHOD PromptPassword(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, char16_t * *password, const char16_t * check_msg, bool *check_state, bool *_retval); \
+  NS_IMETHOD Select(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, PRUint32 count, const char16_t * *select_list, int32_t *out_selection, bool *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIPROMPTSERVICE(_to) \
-  NS_IMETHOD Alert(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text) { return _to Alert(parent, dialog_title, text); } \
-  NS_IMETHOD AlertCheck(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, const PRUnichar * check_msg, bool *check_state) { return _to AlertCheck(parent, dialog_title, text, check_msg, check_state); } \
-  NS_IMETHOD Confirm(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, bool *_retval) { return _to Confirm(parent, dialog_title, text, _retval); } \
-  NS_IMETHOD ConfirmCheck(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, const PRUnichar * check_msg, bool *check_state, bool *_retval) { return _to ConfirmCheck(parent, dialog_title, text, check_msg, check_state, _retval); } \
-  NS_IMETHOD ConfirmEx(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, uint32_t button_flags, const PRUnichar * button0_title, const PRUnichar * button1_title, const PRUnichar * button2_title, const PRUnichar * check_msg, bool *check_state, PRInt32 *_retval) { return _to ConfirmEx(parent, dialog_title, text, button_flags, button0_title, button1_title, button2_title, check_msg, check_state, _retval); } \
-  NS_IMETHOD Prompt(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUnichar * *value, const PRUnichar * check_msg, bool *check_state, bool *_retval) { return _to Prompt(parent, dialog_title, text, value, check_msg, check_state, _retval); } \
-  NS_IMETHOD PromptUsernameAndPassword(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUnichar * *username, PRUnichar * *password, const PRUnichar * check_msg, bool *check_state, bool *_retval) { return _to PromptUsernameAndPassword(parent, dialog_title, text, username, password, check_msg, check_state, _retval); } \
-  NS_IMETHOD PromptPassword(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUnichar * *password, const PRUnichar * check_msg, bool *check_state, bool *_retval) { return _to PromptPassword(parent, dialog_title, text, password, check_msg, check_state, _retval); } \
-  NS_IMETHOD Select(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUint32 count, const PRUnichar * *select_list, int32_t *out_selection, bool *_retval) { return _to Select(parent, dialog_title, text, count, select_list, out_selection, _retval); } 
+  NS_IMETHOD Alert(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text) { return _to Alert(parent, dialog_title, text); } \
+  NS_IMETHOD AlertCheck(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, const char16_t * check_msg, bool *check_state) { return _to AlertCheck(parent, dialog_title, text, check_msg, check_state); } \
+  NS_IMETHOD Confirm(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, bool *_retval) { return _to Confirm(parent, dialog_title, text, _retval); } \
+  NS_IMETHOD ConfirmCheck(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, const char16_t * check_msg, bool *check_state, bool *_retval) { return _to ConfirmCheck(parent, dialog_title, text, check_msg, check_state, _retval); } \
+  NS_IMETHOD ConfirmEx(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, uint32_t button_flags, const char16_t * button0_title, const char16_t * button1_title, const char16_t * button2_title, const char16_t * check_msg, bool *check_state, PRInt32 *_retval) { return _to ConfirmEx(parent, dialog_title, text, button_flags, button0_title, button1_title, button2_title, check_msg, check_state, _retval); } \
+  NS_IMETHOD Prompt(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, char16_t * *value, const char16_t * check_msg, bool *check_state, bool *_retval) { return _to Prompt(parent, dialog_title, text, value, check_msg, check_state, _retval); } \
+  NS_IMETHOD PromptUsernameAndPassword(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, char16_t * *username, char16_t * *password, const char16_t * check_msg, bool *check_state, bool *_retval) { return _to PromptUsernameAndPassword(parent, dialog_title, text, username, password, check_msg, check_state, _retval); } \
+  NS_IMETHOD PromptPassword(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, char16_t * *password, const char16_t * check_msg, bool *check_state, bool *_retval) { return _to PromptPassword(parent, dialog_title, text, password, check_msg, check_state, _retval); } \
+  NS_IMETHOD Select(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, PRUint32 count, const char16_t * *select_list, int32_t *out_selection, bool *_retval) { return _to Select(parent, dialog_title, text, count, select_list, out_selection, _retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIPROMPTSERVICE(_to) \
-  NS_IMETHOD Alert(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text) { return !_to ? NS_ERROR_NULL_POINTER : _to->Alert(parent, dialog_title, text); } \
-  NS_IMETHOD AlertCheck(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, const PRUnichar * check_msg, bool *check_state) { return !_to ? NS_ERROR_NULL_POINTER : _to->AlertCheck(parent, dialog_title, text, check_msg, check_state); } \
-  NS_IMETHOD Confirm(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Confirm(parent, dialog_title, text, _retval); } \
-  NS_IMETHOD ConfirmCheck(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, const PRUnichar * check_msg, bool *check_state, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ConfirmCheck(parent, dialog_title, text, check_msg, check_state, _retval); } \
-  NS_IMETHOD ConfirmEx(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, uint32_t button_flags, const PRUnichar * button0_title, const PRUnichar * button1_title, const PRUnichar * button2_title, const PRUnichar * check_msg, bool *check_state, PRInt32 *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ConfirmEx(parent, dialog_title, text, button_flags, button0_title, button1_title, button2_title, check_msg, check_state, _retval); } \
-  NS_IMETHOD Prompt(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUnichar * *value, const PRUnichar * check_msg, bool *check_state, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Prompt(parent, dialog_title, text, value, check_msg, check_state, _retval); } \
-  NS_IMETHOD PromptUsernameAndPassword(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUnichar * *username, PRUnichar * *password, const PRUnichar * check_msg, bool *check_state, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->PromptUsernameAndPassword(parent, dialog_title, text, username, password, check_msg, check_state, _retval); } \
-  NS_IMETHOD PromptPassword(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUnichar * *password, const PRUnichar * check_msg, bool *check_state, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->PromptPassword(parent, dialog_title, text, password, check_msg, check_state, _retval); } \
-  NS_IMETHOD Select(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUint32 count, const PRUnichar * *select_list, int32_t *out_selection, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Select(parent, dialog_title, text, count, select_list, out_selection, _retval); } 
+  NS_IMETHOD Alert(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text) { return !_to ? NS_ERROR_NULL_POINTER : _to->Alert(parent, dialog_title, text); } \
+  NS_IMETHOD AlertCheck(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, const char16_t * check_msg, bool *check_state) { return !_to ? NS_ERROR_NULL_POINTER : _to->AlertCheck(parent, dialog_title, text, check_msg, check_state); } \
+  NS_IMETHOD Confirm(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Confirm(parent, dialog_title, text, _retval); } \
+  NS_IMETHOD ConfirmCheck(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, const char16_t * check_msg, bool *check_state, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ConfirmCheck(parent, dialog_title, text, check_msg, check_state, _retval); } \
+  NS_IMETHOD ConfirmEx(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, uint32_t button_flags, const char16_t * button0_title, const char16_t * button1_title, const char16_t * button2_title, const char16_t * check_msg, bool *check_state, PRInt32 *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ConfirmEx(parent, dialog_title, text, button_flags, button0_title, button1_title, button2_title, check_msg, check_state, _retval); } \
+  NS_IMETHOD Prompt(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, char16_t * *value, const char16_t * check_msg, bool *check_state, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Prompt(parent, dialog_title, text, value, check_msg, check_state, _retval); } \
+  NS_IMETHOD PromptUsernameAndPassword(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, char16_t * *username, char16_t * *password, const char16_t * check_msg, bool *check_state, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->PromptUsernameAndPassword(parent, dialog_title, text, username, password, check_msg, check_state, _retval); } \
+  NS_IMETHOD PromptPassword(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, char16_t * *password, const char16_t * check_msg, bool *check_state, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->PromptPassword(parent, dialog_title, text, password, check_msg, check_state, _retval); } \
+  NS_IMETHOD Select(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, PRUint32 count, const char16_t * *select_list, int32_t *out_selection, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Select(parent, dialog_title, text, count, select_list, out_selection, _retval); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -19189,55 +19140,55 @@ nsPromptService::~nsPromptService()
 }
 
 /* void alert (in nsIDOMWindow parent, in wstring dialog_title, in wstring text); */
-NS_IMETHODIMP nsPromptService::Alert(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text)
+NS_IMETHODIMP nsPromptService::Alert(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* void alertCheck (in nsIDOMWindow parent, in wstring dialog_title, in wstring text, in wstring check_msg, inout boolean check_state); */
-NS_IMETHODIMP nsPromptService::AlertCheck(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, const PRUnichar * check_msg, bool *check_state)
+NS_IMETHODIMP nsPromptService::AlertCheck(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, const char16_t * check_msg, bool *check_state)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* boolean confirm (in nsIDOMWindow parent, in wstring dialog_title, in wstring text); */
-NS_IMETHODIMP nsPromptService::Confirm(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, bool *_retval)
+NS_IMETHODIMP nsPromptService::Confirm(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* boolean confirmCheck (in nsIDOMWindow parent, in wstring dialog_title, in wstring text, in wstring check_msg, inout boolean check_state); */
-NS_IMETHODIMP nsPromptService::ConfirmCheck(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, const PRUnichar * check_msg, bool *check_state, bool *_retval)
+NS_IMETHODIMP nsPromptService::ConfirmCheck(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, const char16_t * check_msg, bool *check_state, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* PRInt32 confirmEx (in nsIDOMWindow parent, in wstring dialog_title, in wstring text, in unsigned long button_flags, in wstring button0_title, in wstring button1_title, in wstring button2_title, in wstring check_msg, inout boolean check_state); */
-NS_IMETHODIMP nsPromptService::ConfirmEx(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, uint32_t button_flags, const PRUnichar * button0_title, const PRUnichar * button1_title, const PRUnichar * button2_title, const PRUnichar * check_msg, bool *check_state, PRInt32 *_retval)
+NS_IMETHODIMP nsPromptService::ConfirmEx(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, uint32_t button_flags, const char16_t * button0_title, const char16_t * button1_title, const char16_t * button2_title, const char16_t * check_msg, bool *check_state, PRInt32 *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* boolean prompt (in nsIDOMWindow parent, in wstring dialog_title, in wstring text, inout wstring value, in wstring check_msg, inout boolean check_state); */
-NS_IMETHODIMP nsPromptService::Prompt(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUnichar * *value, const PRUnichar * check_msg, bool *check_state, bool *_retval)
+NS_IMETHODIMP nsPromptService::Prompt(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, char16_t * *value, const char16_t * check_msg, bool *check_state, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* boolean promptUsernameAndPassword (in nsIDOMWindow parent, in wstring dialog_title, in wstring text, inout wstring username, inout wstring password, in wstring check_msg, inout boolean check_state); */
-NS_IMETHODIMP nsPromptService::PromptUsernameAndPassword(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUnichar * *username, PRUnichar * *password, const PRUnichar * check_msg, bool *check_state, bool *_retval)
+NS_IMETHODIMP nsPromptService::PromptUsernameAndPassword(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, char16_t * *username, char16_t * *password, const char16_t * check_msg, bool *check_state, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* boolean promptPassword (in nsIDOMWindow parent, in wstring dialog_title, in wstring text, inout wstring password, in wstring check_msg, inout boolean check_state); */
-NS_IMETHODIMP nsPromptService::PromptPassword(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUnichar * *password, const PRUnichar * check_msg, bool *check_state, bool *_retval)
+NS_IMETHODIMP nsPromptService::PromptPassword(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, char16_t * *password, const char16_t * check_msg, bool *check_state, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* boolean select (in nsIDOMWindow parent, in wstring dialog_title, in wstring text, in PRUint32 count, [array, size_is (count)] in wstring select_list, out long out_selection); */
-NS_IMETHODIMP nsPromptService::Select(nsIDOMWindow *parent, const PRUnichar * dialog_title, const PRUnichar * text, PRUint32 count, const PRUnichar * *select_list, int32_t *out_selection, bool *_retval)
+NS_IMETHODIMP nsPromptService::Select(nsIDOMWindow *parent, const char16_t * dialog_title, const char16_t * text, PRUint32 count, const char16_t * *select_list, int32_t *out_selection, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -19263,10 +19214,10 @@ class NS_NO_VTABLE nsIPromptService2 : public nsIPromptService {
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_IPROMPTSERVICE2_IID)
 
   /* boolean promptAuth (in nsIDOMWindow parent, in nsIChannel channel, in PRUint32 level, in nsIAuthInformation auth_info, in wstring checkbox_label, inout boolean check_value); */
-  NS_IMETHOD PromptAuth(nsIDOMWindow *parent, nsIChannel *channel, PRUint32 level, nsIAuthInformation *auth_info, const PRUnichar * checkbox_label, bool *check_value, bool *_retval) = 0;
+  NS_IMETHOD PromptAuth(nsIDOMWindow *parent, nsIChannel *channel, PRUint32 level, nsIAuthInformation *auth_info, const char16_t * checkbox_label, bool *check_value, bool *_retval) = 0;
 
   /* nsICancelable asyncPromptAuth (in nsIDOMWindow parent, in nsIChannel channel, in nsIAuthPromptCallback callbck, in nsISupports contxt, in PRUint32 level, in nsIAuthInformation auth_info, in wstring checkbox_label, inout boolean check_value); */
-  NS_IMETHOD AsyncPromptAuth(nsIDOMWindow *parent, nsIChannel *channel, nsIAuthPromptCallback *callbck, nsISupports *contxt, PRUint32 level, nsIAuthInformation *auth_info, const PRUnichar * checkbox_label, bool *check_value, nsICancelable * *_retval) = 0;
+  NS_IMETHOD AsyncPromptAuth(nsIDOMWindow *parent, nsIChannel *channel, nsIAuthPromptCallback *callbck, nsISupports *contxt, PRUint32 level, nsIAuthInformation *auth_info, const char16_t * checkbox_label, bool *check_value, nsICancelable * *_retval) = 0;
 
 };
 
@@ -19274,18 +19225,18 @@ class NS_NO_VTABLE nsIPromptService2 : public nsIPromptService {
 
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSIPROMPTSERVICE2 \
-  NS_IMETHOD PromptAuth(nsIDOMWindow *parent, nsIChannel *channel, PRUint32 level, nsIAuthInformation *auth_info, const PRUnichar * checkbox_label, bool *check_value, bool *_retval); \
-  NS_IMETHOD AsyncPromptAuth(nsIDOMWindow *parent, nsIChannel *channel, nsIAuthPromptCallback *callbck, nsISupports *contxt, PRUint32 level, nsIAuthInformation *auth_info, const PRUnichar * checkbox_label, bool *check_value, nsICancelable * *_retval); 
+  NS_IMETHOD PromptAuth(nsIDOMWindow *parent, nsIChannel *channel, PRUint32 level, nsIAuthInformation *auth_info, const char16_t * checkbox_label, bool *check_value, bool *_retval); \
+  NS_IMETHOD AsyncPromptAuth(nsIDOMWindow *parent, nsIChannel *channel, nsIAuthPromptCallback *callbck, nsISupports *contxt, PRUint32 level, nsIAuthInformation *auth_info, const char16_t * checkbox_label, bool *check_value, nsICancelable * *_retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIPROMPTSERVICE2(_to) \
-  NS_IMETHOD PromptAuth(nsIDOMWindow *parent, nsIChannel *channel, PRUint32 level, nsIAuthInformation *auth_info, const PRUnichar * checkbox_label, bool *check_value, bool *_retval) { return _to PromptAuth(parent, channel, level, auth_info, checkbox_label, check_value, _retval); } \
-  NS_IMETHOD AsyncPromptAuth(nsIDOMWindow *parent, nsIChannel *channel, nsIAuthPromptCallback *callbck, nsISupports *contxt, PRUint32 level, nsIAuthInformation *auth_info, const PRUnichar * checkbox_label, bool *check_value, nsICancelable * *_retval) { return _to AsyncPromptAuth(parent, channel, callbck, contxt, level, auth_info, checkbox_label, check_value, _retval); } 
+  NS_IMETHOD PromptAuth(nsIDOMWindow *parent, nsIChannel *channel, PRUint32 level, nsIAuthInformation *auth_info, const char16_t * checkbox_label, bool *check_value, bool *_retval) { return _to PromptAuth(parent, channel, level, auth_info, checkbox_label, check_value, _retval); } \
+  NS_IMETHOD AsyncPromptAuth(nsIDOMWindow *parent, nsIChannel *channel, nsIAuthPromptCallback *callbck, nsISupports *contxt, PRUint32 level, nsIAuthInformation *auth_info, const char16_t * checkbox_label, bool *check_value, nsICancelable * *_retval) { return _to AsyncPromptAuth(parent, channel, callbck, contxt, level, auth_info, checkbox_label, check_value, _retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIPROMPTSERVICE2(_to) \
-  NS_IMETHOD PromptAuth(nsIDOMWindow *parent, nsIChannel *channel, PRUint32 level, nsIAuthInformation *auth_info, const PRUnichar * checkbox_label, bool *check_value, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->PromptAuth(parent, channel, level, auth_info, checkbox_label, check_value, _retval); } \
-  NS_IMETHOD AsyncPromptAuth(nsIDOMWindow *parent, nsIChannel *channel, nsIAuthPromptCallback *callbck, nsISupports *contxt, PRUint32 level, nsIAuthInformation *auth_info, const PRUnichar * checkbox_label, bool *check_value, nsICancelable * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->AsyncPromptAuth(parent, channel, callbck, contxt, level, auth_info, checkbox_label, check_value, _retval); } 
+  NS_IMETHOD PromptAuth(nsIDOMWindow *parent, nsIChannel *channel, PRUint32 level, nsIAuthInformation *auth_info, const char16_t * checkbox_label, bool *check_value, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->PromptAuth(parent, channel, level, auth_info, checkbox_label, check_value, _retval); } \
+  NS_IMETHOD AsyncPromptAuth(nsIDOMWindow *parent, nsIChannel *channel, nsIAuthPromptCallback *callbck, nsISupports *contxt, PRUint32 level, nsIAuthInformation *auth_info, const char16_t * checkbox_label, bool *check_value, nsICancelable * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->AsyncPromptAuth(parent, channel, callbck, contxt, level, auth_info, checkbox_label, check_value, _retval); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -19320,13 +19271,13 @@ nsPromptService2::~nsPromptService2()
 }
 
 /* boolean promptAuth (in nsIDOMWindow parent, in nsIChannel channel, in PRUint32 level, in nsIAuthInformation auth_info, in wstring checkbox_label, inout boolean check_value); */
-NS_IMETHODIMP nsPromptService2::PromptAuth(nsIDOMWindow *parent, nsIChannel *channel, PRUint32 level, nsIAuthInformation *auth_info, const PRUnichar * checkbox_label, bool *check_value, bool *_retval)
+NS_IMETHODIMP nsPromptService2::PromptAuth(nsIDOMWindow *parent, nsIChannel *channel, PRUint32 level, nsIAuthInformation *auth_info, const char16_t * checkbox_label, bool *check_value, bool *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* nsICancelable asyncPromptAuth (in nsIDOMWindow parent, in nsIChannel channel, in nsIAuthPromptCallback callbck, in nsISupports contxt, in PRUint32 level, in nsIAuthInformation auth_info, in wstring checkbox_label, inout boolean check_value); */
-NS_IMETHODIMP nsPromptService2::AsyncPromptAuth(nsIDOMWindow *parent, nsIChannel *channel, nsIAuthPromptCallback *callbck, nsISupports *contxt, PRUint32 level, nsIAuthInformation *auth_info, const PRUnichar * checkbox_label, bool *check_value, nsICancelable * *_retval)
+NS_IMETHODIMP nsPromptService2::AsyncPromptAuth(nsIDOMWindow *parent, nsIChannel *channel, nsIAuthPromptCallback *callbck, nsISupports *contxt, PRUint32 level, nsIAuthInformation *auth_info, const char16_t * checkbox_label, bool *check_value, nsICancelable * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -19839,7 +19790,7 @@ class NS_NO_VTABLE nsITooltipListener : public nsISupports {
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_ITOOLTIPLISTENER_IID)
 
   /* void onShowTooltip (in long x_coords, in long y_coords, in wstring tip_text); */
-  NS_IMETHOD OnShowTooltip(int32_t x_coords, int32_t y_coords, const PRUnichar * tip_text) = 0;
+  NS_IMETHOD OnShowTooltip(int32_t x_coords, int32_t y_coords, const char16_t * tip_text) = 0;
 
   /* void onHideTooltip (); */
   NS_IMETHOD OnHideTooltip(void) = 0;
@@ -19850,17 +19801,17 @@ class NS_NO_VTABLE nsITooltipListener : public nsISupports {
 
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSITOOLTIPLISTENER \
-  NS_IMETHOD OnShowTooltip(int32_t x_coords, int32_t y_coords, const PRUnichar * tip_text); \
+  NS_IMETHOD OnShowTooltip(int32_t x_coords, int32_t y_coords, const char16_t * tip_text); \
   NS_IMETHOD OnHideTooltip(void); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSITOOLTIPLISTENER(_to) \
-  NS_IMETHOD OnShowTooltip(int32_t x_coords, int32_t y_coords, const PRUnichar * tip_text) { return _to OnShowTooltip(x_coords, y_coords, tip_text); } \
+  NS_IMETHOD OnShowTooltip(int32_t x_coords, int32_t y_coords, const char16_t * tip_text) { return _to OnShowTooltip(x_coords, y_coords, tip_text); } \
   NS_IMETHOD OnHideTooltip(void) { return _to OnHideTooltip(); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSITOOLTIPLISTENER(_to) \
-  NS_IMETHOD OnShowTooltip(int32_t x_coords, int32_t y_coords, const PRUnichar * tip_text) { return !_to ? NS_ERROR_NULL_POINTER : _to->OnShowTooltip(x_coords, y_coords, tip_text); } \
+  NS_IMETHOD OnShowTooltip(int32_t x_coords, int32_t y_coords, const char16_t * tip_text) { return !_to ? NS_ERROR_NULL_POINTER : _to->OnShowTooltip(x_coords, y_coords, tip_text); } \
   NS_IMETHOD OnHideTooltip(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->OnHideTooltip(); } 
 
 #if 0
@@ -19896,7 +19847,7 @@ nsTooltipListener::~nsTooltipListener()
 }
 
 /* void onShowTooltip (in long x_coords, in long y_coords, in wstring tip_text); */
-NS_IMETHODIMP nsTooltipListener::OnShowTooltip(int32_t x_coords, int32_t y_coords, const PRUnichar * tip_text)
+NS_IMETHODIMP nsTooltipListener::OnShowTooltip(int32_t x_coords, int32_t y_coords, const char16_t * tip_text)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -19958,7 +19909,7 @@ class NS_NO_VTABLE nsIWebProgressListener : public nsISupports {
   NS_IMETHOD OnLocationChange(nsIWebProgress *web_progress, nsIRequest *request, nsIURI *location, uint32_t flags) = 0;
 
   /* void onStatusChange (in nsIWebProgress web_progress, in nsIRequest request, in nsresult status, in wstring message); */
-  NS_IMETHOD OnStatusChange(nsIWebProgress *web_progress, nsIRequest *request, nsresult status, const PRUnichar * message) = 0;
+  NS_IMETHOD OnStatusChange(nsIWebProgress *web_progress, nsIRequest *request, nsresult status, const char16_t * message) = 0;
 
   /* void onSecurityChange (in nsIWebProgress web_progress, in nsIRequest request, in unsigned long state); */
   NS_IMETHOD OnSecurityChange(nsIWebProgress *web_progress, nsIRequest *request, uint32_t state) = 0;
@@ -19972,7 +19923,7 @@ class NS_NO_VTABLE nsIWebProgressListener : public nsISupports {
   NS_IMETHOD OnStateChange(nsIWebProgress *web_progress, nsIRequest *request, uint32_t state_flags, nsresult status); \
   NS_IMETHOD OnProgressChange(nsIWebProgress *web_progress, nsIRequest *request, int32_t cur_self_progress, int32_t max_self_progress, int32_t cur_total_progress, int32_t max_total_progress); \
   NS_IMETHOD OnLocationChange(nsIWebProgress *web_progress, nsIRequest *request, nsIURI *location, uint32_t flags); \
-  NS_IMETHOD OnStatusChange(nsIWebProgress *web_progress, nsIRequest *request, nsresult status, const PRUnichar * message); \
+  NS_IMETHOD OnStatusChange(nsIWebProgress *web_progress, nsIRequest *request, nsresult status, const char16_t * message); \
   NS_IMETHOD OnSecurityChange(nsIWebProgress *web_progress, nsIRequest *request, uint32_t state); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
@@ -19980,7 +19931,7 @@ class NS_NO_VTABLE nsIWebProgressListener : public nsISupports {
   NS_IMETHOD OnStateChange(nsIWebProgress *web_progress, nsIRequest *request, uint32_t state_flags, nsresult status) { return _to OnStateChange(web_progress, request, state_flags, status); } \
   NS_IMETHOD OnProgressChange(nsIWebProgress *web_progress, nsIRequest *request, int32_t cur_self_progress, int32_t max_self_progress, int32_t cur_total_progress, int32_t max_total_progress) { return _to OnProgressChange(web_progress, request, cur_self_progress, max_self_progress, cur_total_progress, max_total_progress); } \
   NS_IMETHOD OnLocationChange(nsIWebProgress *web_progress, nsIRequest *request, nsIURI *location, uint32_t flags) { return _to OnLocationChange(web_progress, request, location, flags); } \
-  NS_IMETHOD OnStatusChange(nsIWebProgress *web_progress, nsIRequest *request, nsresult status, const PRUnichar * message) { return _to OnStatusChange(web_progress, request, status, message); } \
+  NS_IMETHOD OnStatusChange(nsIWebProgress *web_progress, nsIRequest *request, nsresult status, const char16_t * message) { return _to OnStatusChange(web_progress, request, status, message); } \
   NS_IMETHOD OnSecurityChange(nsIWebProgress *web_progress, nsIRequest *request, uint32_t state) { return _to OnSecurityChange(web_progress, request, state); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
@@ -19988,7 +19939,7 @@ class NS_NO_VTABLE nsIWebProgressListener : public nsISupports {
   NS_IMETHOD OnStateChange(nsIWebProgress *web_progress, nsIRequest *request, uint32_t state_flags, nsresult status) { return !_to ? NS_ERROR_NULL_POINTER : _to->OnStateChange(web_progress, request, state_flags, status); } \
   NS_IMETHOD OnProgressChange(nsIWebProgress *web_progress, nsIRequest *request, int32_t cur_self_progress, int32_t max_self_progress, int32_t cur_total_progress, int32_t max_total_progress) { return !_to ? NS_ERROR_NULL_POINTER : _to->OnProgressChange(web_progress, request, cur_self_progress, max_self_progress, cur_total_progress, max_total_progress); } \
   NS_IMETHOD OnLocationChange(nsIWebProgress *web_progress, nsIRequest *request, nsIURI *location, uint32_t flags) { return !_to ? NS_ERROR_NULL_POINTER : _to->OnLocationChange(web_progress, request, location, flags); } \
-  NS_IMETHOD OnStatusChange(nsIWebProgress *web_progress, nsIRequest *request, nsresult status, const PRUnichar * message) { return !_to ? NS_ERROR_NULL_POINTER : _to->OnStatusChange(web_progress, request, status, message); } \
+  NS_IMETHOD OnStatusChange(nsIWebProgress *web_progress, nsIRequest *request, nsresult status, const char16_t * message) { return !_to ? NS_ERROR_NULL_POINTER : _to->OnStatusChange(web_progress, request, status, message); } \
   NS_IMETHOD OnSecurityChange(nsIWebProgress *web_progress, nsIRequest *request, uint32_t state) { return !_to ? NS_ERROR_NULL_POINTER : _to->OnSecurityChange(web_progress, request, state); } 
 
 #if 0
@@ -20042,7 +19993,7 @@ NS_IMETHODIMP nsWebProgressListener::OnLocationChange(nsIWebProgress *web_progre
 }
 
 /* void onStatusChange (in nsIWebProgress web_progress, in nsIRequest request, in nsresult status, in wstring message); */
-NS_IMETHODIMP nsWebProgressListener::OnStatusChange(nsIWebProgress *web_progress, nsIRequest *request, nsresult status, const PRUnichar * message)
+NS_IMETHODIMP nsWebProgressListener::OnStatusChange(nsIWebProgress *web_progress, nsIRequest *request, nsresult status, const char16_t * message)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -20723,7 +20674,7 @@ class NS_NO_VTABLE nsIWebBrowserChrome : public nsISupports {
   };
 
   /* void setStatus (in unsigned long status_type, in wstring status); */
-  NS_IMETHOD SetStatus(uint32_t status_type, const PRUnichar * status) = 0;
+  NS_IMETHOD SetStatus(uint32_t status_type, const char16_t * status) = 0;
 
   /* attribute nsIWebBrowser webBrowser; */
   NS_IMETHOD GetWebBrowser(nsIWebBrowser * *aWebBrowser) = 0;
@@ -20754,7 +20705,7 @@ class NS_NO_VTABLE nsIWebBrowserChrome : public nsISupports {
 
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSIWEBBROWSERCHROME \
-  NS_IMETHOD SetStatus(uint32_t status_type, const PRUnichar * status); \
+  NS_IMETHOD SetStatus(uint32_t status_type, const char16_t * status); \
   NS_IMETHOD GetWebBrowser(nsIWebBrowser * *aWebBrowser); \
   NS_IMETHOD SetWebBrowser(nsIWebBrowser *aWebBrowser); \
   NS_IMETHOD GetChromeFlags(uint32_t *aChromeFlags); \
@@ -20767,7 +20718,7 @@ class NS_NO_VTABLE nsIWebBrowserChrome : public nsISupports {
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIWEBBROWSERCHROME(_to) \
-  NS_IMETHOD SetStatus(uint32_t status_type, const PRUnichar * status) { return _to SetStatus(status_type, status); } \
+  NS_IMETHOD SetStatus(uint32_t status_type, const char16_t * status) { return _to SetStatus(status_type, status); } \
   NS_IMETHOD GetWebBrowser(nsIWebBrowser * *aWebBrowser) { return _to GetWebBrowser(aWebBrowser); } \
   NS_IMETHOD SetWebBrowser(nsIWebBrowser *aWebBrowser) { return _to SetWebBrowser(aWebBrowser); } \
   NS_IMETHOD GetChromeFlags(uint32_t *aChromeFlags) { return _to GetChromeFlags(aChromeFlags); } \
@@ -20780,7 +20731,7 @@ class NS_NO_VTABLE nsIWebBrowserChrome : public nsISupports {
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIWEBBROWSERCHROME(_to) \
-  NS_IMETHOD SetStatus(uint32_t status_type, const PRUnichar * status) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetStatus(status_type, status); } \
+  NS_IMETHOD SetStatus(uint32_t status_type, const char16_t * status) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetStatus(status_type, status); } \
   NS_IMETHOD GetWebBrowser(nsIWebBrowser * *aWebBrowser) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetWebBrowser(aWebBrowser); } \
   NS_IMETHOD SetWebBrowser(nsIWebBrowser *aWebBrowser) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetWebBrowser(aWebBrowser); } \
   NS_IMETHOD GetChromeFlags(uint32_t *aChromeFlags) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetChromeFlags(aChromeFlags); } \
@@ -20824,7 +20775,7 @@ nsWebBrowserChrome::~nsWebBrowserChrome()
 }
 
 /* void setStatus (in unsigned long status_type, in wstring status); */
-NS_IMETHODIMP nsWebBrowserChrome::SetStatus(uint32_t status_type, const PRUnichar * status)
+NS_IMETHODIMP nsWebBrowserChrome::SetStatus(uint32_t status_type, const char16_t * status)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -20984,8 +20935,8 @@ class NS_NO_VTABLE nsIWebBrowserFind : public nsISupports {
   NS_IMETHOD FindNext(bool *_retval) = 0;
 
   /* attribute wstring searchString; */
-  NS_IMETHOD GetSearchString(PRUnichar * *aSearchString) = 0;
-  NS_IMETHOD SetSearchString(const PRUnichar * aSearchString) = 0;
+  NS_IMETHOD GetSearchString(char16_t * *aSearchString) = 0;
+  NS_IMETHOD SetSearchString(const char16_t * aSearchString) = 0;
 
   /* attribute boolean findBackwards; */
   NS_IMETHOD GetFindBackwards(bool *aFindBackwards) = 0;
@@ -21014,8 +20965,8 @@ class NS_NO_VTABLE nsIWebBrowserFind : public nsISupports {
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSIWEBBROWSERFIND \
   NS_IMETHOD FindNext(bool *_retval); \
-  NS_IMETHOD GetSearchString(PRUnichar * *aSearchString); \
-  NS_IMETHOD SetSearchString(const PRUnichar * aSearchString); \
+  NS_IMETHOD GetSearchString(char16_t * *aSearchString); \
+  NS_IMETHOD SetSearchString(const char16_t * aSearchString); \
   NS_IMETHOD GetFindBackwards(bool *aFindBackwards); \
   NS_IMETHOD SetFindBackwards(bool aFindBackwards); \
   NS_IMETHOD GetWrapFind(bool *aWrapFind); \
@@ -21030,8 +20981,8 @@ class NS_NO_VTABLE nsIWebBrowserFind : public nsISupports {
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIWEBBROWSERFIND(_to) \
   NS_IMETHOD FindNext(bool *_retval) { return _to FindNext(_retval); } \
-  NS_IMETHOD GetSearchString(PRUnichar * *aSearchString) { return _to GetSearchString(aSearchString); } \
-  NS_IMETHOD SetSearchString(const PRUnichar * aSearchString) { return _to SetSearchString(aSearchString); } \
+  NS_IMETHOD GetSearchString(char16_t * *aSearchString) { return _to GetSearchString(aSearchString); } \
+  NS_IMETHOD SetSearchString(const char16_t * aSearchString) { return _to SetSearchString(aSearchString); } \
   NS_IMETHOD GetFindBackwards(bool *aFindBackwards) { return _to GetFindBackwards(aFindBackwards); } \
   NS_IMETHOD SetFindBackwards(bool aFindBackwards) { return _to SetFindBackwards(aFindBackwards); } \
   NS_IMETHOD GetWrapFind(bool *aWrapFind) { return _to GetWrapFind(aWrapFind); } \
@@ -21046,8 +20997,8 @@ class NS_NO_VTABLE nsIWebBrowserFind : public nsISupports {
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIWEBBROWSERFIND(_to) \
   NS_IMETHOD FindNext(bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->FindNext(_retval); } \
-  NS_IMETHOD GetSearchString(PRUnichar * *aSearchString) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSearchString(aSearchString); } \
-  NS_IMETHOD SetSearchString(const PRUnichar * aSearchString) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSearchString(aSearchString); } \
+  NS_IMETHOD GetSearchString(char16_t * *aSearchString) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSearchString(aSearchString); } \
+  NS_IMETHOD SetSearchString(const char16_t * aSearchString) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSearchString(aSearchString); } \
   NS_IMETHOD GetFindBackwards(bool *aFindBackwards) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFindBackwards(aFindBackwards); } \
   NS_IMETHOD SetFindBackwards(bool aFindBackwards) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFindBackwards(aFindBackwards); } \
   NS_IMETHOD GetWrapFind(bool *aWrapFind) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetWrapFind(aWrapFind); } \
@@ -21098,11 +21049,11 @@ NS_IMETHODIMP nsWebBrowserFind::FindNext(bool *_retval)
 }
 
 /* attribute wstring searchString; */
-NS_IMETHODIMP nsWebBrowserFind::GetSearchString(PRUnichar * *aSearchString)
+NS_IMETHODIMP nsWebBrowserFind::GetSearchString(char16_t * *aSearchString)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
-NS_IMETHODIMP nsWebBrowserFind::SetSearchString(const PRUnichar * aSearchString)
+NS_IMETHODIMP nsWebBrowserFind::SetSearchString(const char16_t * aSearchString)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -21554,11 +21505,11 @@ class nsISHistory; /* forward declaration */
 
 
 /* starting interface:    nsIWebNavigation */
-#define NS_IWEBNAVIGATION_IID_STR "28404f7e-0f17-4dc3-a21a-2074d8659b02"
+#define NS_IWEBNAVIGATION_IID_STR "dbd6241d-c76e-42c0-9410-930589d803a2"
 
 #define NS_IWEBNAVIGATION_IID \
-  {0x28404f7e, 0x0f17, 0x4dc3, \
-    { 0xa2, 0x1a, 0x20, 0x74, 0xd8, 0x65, 0x9b, 0x02 }}
+  {0xdbd6241d, 0xc76e, 0x42c0, \
+    { 0x94, 0x10, 0x93, 0x05, 0x89, 0xd8, 0x03, 0xa2 }}
 
 class NS_NO_VTABLE nsIWebNavigation : public nsISupports {
  public: 
@@ -21605,7 +21556,7 @@ class NS_NO_VTABLE nsIWebNavigation : public nsISupports {
   };
 
   /* void loadURI (in wstring uri, in unsigned long load_flags, in nsIURI referrer, in nsIInputStream post_data, in nsIInputStream headers); */
-  NS_IMETHOD LoadURI(const PRUnichar * uri, uint32_t load_flags, nsIURI *referrer, nsIInputStream *post_data, nsIInputStream *headers) = 0;
+  NS_IMETHOD LoadURI(const char16_t * uri, uint32_t load_flags, nsIURI *referrer, nsIInputStream *post_data, nsIInputStream *headers) = 0;
 
   /* void reload (in unsigned long reload_flags); */
   NS_IMETHOD Reload(uint32_t reload_flags) = 0;
@@ -21637,7 +21588,7 @@ class NS_NO_VTABLE nsIWebNavigation : public nsISupports {
   NS_IMETHOD GoBack(void); \
   NS_IMETHOD GoForward(void); \
   NS_IMETHOD GotoIndex(int32_t index); \
-  NS_IMETHOD LoadURI(const PRUnichar * uri, uint32_t load_flags, nsIURI *referrer, nsIInputStream *post_data, nsIInputStream *headers); \
+  NS_IMETHOD LoadURI(const char16_t * uri, uint32_t load_flags, nsIURI *referrer, nsIInputStream *post_data, nsIInputStream *headers); \
   NS_IMETHOD Reload(uint32_t reload_flags); \
   NS_IMETHOD Stop(uint32_t stop_flags); \
   NS_IMETHOD GetDocument(nsIDOMDocument * *aDocument); \
@@ -21653,7 +21604,7 @@ class NS_NO_VTABLE nsIWebNavigation : public nsISupports {
   NS_IMETHOD GoBack(void) { return _to GoBack(); } \
   NS_IMETHOD GoForward(void) { return _to GoForward(); } \
   NS_IMETHOD GotoIndex(int32_t index) { return _to GotoIndex(index); } \
-  NS_IMETHOD LoadURI(const PRUnichar * uri, uint32_t load_flags, nsIURI *referrer, nsIInputStream *post_data, nsIInputStream *headers) { return _to LoadURI(uri, load_flags, referrer, post_data, headers); } \
+  NS_IMETHOD LoadURI(const char16_t * uri, uint32_t load_flags, nsIURI *referrer, nsIInputStream *post_data, nsIInputStream *headers) { return _to LoadURI(uri, load_flags, referrer, post_data, headers); } \
   NS_IMETHOD Reload(uint32_t reload_flags) { return _to Reload(reload_flags); } \
   NS_IMETHOD Stop(uint32_t stop_flags) { return _to Stop(stop_flags); } \
   NS_IMETHOD GetDocument(nsIDOMDocument * *aDocument) { return _to GetDocument(aDocument); } \
@@ -21669,7 +21620,7 @@ class NS_NO_VTABLE nsIWebNavigation : public nsISupports {
   NS_IMETHOD GoBack(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->GoBack(); } \
   NS_IMETHOD GoForward(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->GoForward(); } \
   NS_IMETHOD GotoIndex(int32_t index) { return !_to ? NS_ERROR_NULL_POINTER : _to->GotoIndex(index); } \
-  NS_IMETHOD LoadURI(const PRUnichar * uri, uint32_t load_flags, nsIURI *referrer, nsIInputStream *post_data, nsIInputStream *headers) { return !_to ? NS_ERROR_NULL_POINTER : _to->LoadURI(uri, load_flags, referrer, post_data, headers); } \
+  NS_IMETHOD LoadURI(const char16_t * uri, uint32_t load_flags, nsIURI *referrer, nsIInputStream *post_data, nsIInputStream *headers) { return !_to ? NS_ERROR_NULL_POINTER : _to->LoadURI(uri, load_flags, referrer, post_data, headers); } \
   NS_IMETHOD Reload(uint32_t reload_flags) { return !_to ? NS_ERROR_NULL_POINTER : _to->Reload(reload_flags); } \
   NS_IMETHOD Stop(uint32_t stop_flags) { return !_to ? NS_ERROR_NULL_POINTER : _to->Stop(stop_flags); } \
   NS_IMETHOD GetDocument(nsIDOMDocument * *aDocument) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDocument(aDocument); } \
@@ -21741,7 +21692,7 @@ NS_IMETHODIMP nsWebNavigation::GotoIndex(int32_t index)
 }
 
 /* void loadURI (in wstring uri, in unsigned long load_flags, in nsIURI referrer, in nsIInputStream post_data, in nsIInputStream headers); */
-NS_IMETHODIMP nsWebNavigation::LoadURI(const PRUnichar * uri, uint32_t load_flags, nsIURI *referrer, nsIInputStream *post_data, nsIInputStream *headers)
+NS_IMETHODIMP nsWebNavigation::LoadURI(const char16_t * uri, uint32_t load_flags, nsIURI *referrer, nsIInputStream *post_data, nsIInputStream *headers)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -21919,7 +21870,7 @@ class NS_NO_VTABLE nsIWindowWatcher : public nsISupports {
   NS_IMETHOD GetChromeForWindow(nsIDOMWindow *window, nsIWebBrowserChrome * *_retval) = 0;
 
   /* nsIDOMWindow getWindowByName (in wstring target_name, in nsIDOMWindow current_window); */
-  NS_IMETHOD GetWindowByName(const PRUnichar * target_name, nsIDOMWindow *current_window, nsIDOMWindow * *_retval) = 0;
+  NS_IMETHOD GetWindowByName(const char16_t * target_name, nsIDOMWindow *current_window, nsIDOMWindow * *_retval) = 0;
 
   /* attribute nsIDOMWindow activeWindow; */
   NS_IMETHOD GetActiveWindow(nsIDOMWindow * *aActiveWindow) = 0;
@@ -21940,7 +21891,7 @@ class NS_NO_VTABLE nsIWindowWatcher : public nsISupports {
   NS_IMETHOD SetWindowCreator(nsIWindowCreator *creator); \
   NS_IMETHOD HasWindowCreator(bool *_retval); \
   NS_IMETHOD GetChromeForWindow(nsIDOMWindow *window, nsIWebBrowserChrome * *_retval); \
-  NS_IMETHOD GetWindowByName(const PRUnichar * target_name, nsIDOMWindow *current_window, nsIDOMWindow * *_retval); \
+  NS_IMETHOD GetWindowByName(const char16_t * target_name, nsIDOMWindow *current_window, nsIDOMWindow * *_retval); \
   NS_IMETHOD GetActiveWindow(nsIDOMWindow * *aActiveWindow); \
   NS_IMETHOD SetActiveWindow(nsIDOMWindow *aActiveWindow); 
 
@@ -21955,7 +21906,7 @@ class NS_NO_VTABLE nsIWindowWatcher : public nsISupports {
   NS_IMETHOD SetWindowCreator(nsIWindowCreator *creator) { return _to SetWindowCreator(creator); } \
   NS_IMETHOD HasWindowCreator(bool *_retval) { return _to HasWindowCreator(_retval); } \
   NS_IMETHOD GetChromeForWindow(nsIDOMWindow *window, nsIWebBrowserChrome * *_retval) { return _to GetChromeForWindow(window, _retval); } \
-  NS_IMETHOD GetWindowByName(const PRUnichar * target_name, nsIDOMWindow *current_window, nsIDOMWindow * *_retval) { return _to GetWindowByName(target_name, current_window, _retval); } \
+  NS_IMETHOD GetWindowByName(const char16_t * target_name, nsIDOMWindow *current_window, nsIDOMWindow * *_retval) { return _to GetWindowByName(target_name, current_window, _retval); } \
   NS_IMETHOD GetActiveWindow(nsIDOMWindow * *aActiveWindow) { return _to GetActiveWindow(aActiveWindow); } \
   NS_IMETHOD SetActiveWindow(nsIDOMWindow *aActiveWindow) { return _to SetActiveWindow(aActiveWindow); } 
 
@@ -21970,7 +21921,7 @@ class NS_NO_VTABLE nsIWindowWatcher : public nsISupports {
   NS_IMETHOD SetWindowCreator(nsIWindowCreator *creator) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetWindowCreator(creator); } \
   NS_IMETHOD HasWindowCreator(bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->HasWindowCreator(_retval); } \
   NS_IMETHOD GetChromeForWindow(nsIDOMWindow *window, nsIWebBrowserChrome * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetChromeForWindow(window, _retval); } \
-  NS_IMETHOD GetWindowByName(const PRUnichar * target_name, nsIDOMWindow *current_window, nsIDOMWindow * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetWindowByName(target_name, current_window, _retval); } \
+  NS_IMETHOD GetWindowByName(const char16_t * target_name, nsIDOMWindow *current_window, nsIDOMWindow * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetWindowByName(target_name, current_window, _retval); } \
   NS_IMETHOD GetActiveWindow(nsIDOMWindow * *aActiveWindow) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetActiveWindow(aActiveWindow); } \
   NS_IMETHOD SetActiveWindow(nsIDOMWindow *aActiveWindow) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetActiveWindow(aActiveWindow); } 
 
@@ -22061,7 +22012,7 @@ NS_IMETHODIMP nsWindowWatcher::GetChromeForWindow(nsIDOMWindow *window, nsIWebBr
 }
 
 /* nsIDOMWindow getWindowByName (in wstring target_name, in nsIDOMWindow current_window); */
-NS_IMETHODIMP nsWindowWatcher::GetWindowByName(const PRUnichar * target_name, nsIDOMWindow *current_window, nsIDOMWindow * *_retval)
+NS_IMETHODIMP nsWindowWatcher::GetWindowByName(const char16_t * target_name, nsIDOMWindow *current_window, nsIDOMWindow * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }

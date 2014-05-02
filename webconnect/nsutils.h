@@ -15,11 +15,11 @@
 
 wxString ns2wx(nsEmbedCString& str);
 wxString ns2wx(nsEmbedString& str);
-wxString ns2wx(const PRUnichar* str);
+wxString ns2wx(const char16_t* str);
 void wx2ns(const wxString& wxstr, nsEmbedString& nsstr);
 void wx2ns(const wxString& wxstr, nsEmbedCString& nsstr);
-PRUnichar* wxToUnichar(const wxString& wxstr);
-void freeUnichar(PRUnichar* p);
+char16_t* wxToUnichar(const wxString& wxstr);
+void freeUnichar(char16_t* p);
 
 
 ns_smartptr<nsIWindowWatcher> nsGetWindowWatcherService();
@@ -90,7 +90,7 @@ public:
                              nsIWebProgress* web_progress,
                              nsIRequest* request,
                              nsresult status,
-                             const PRUnichar* message);
+                             const char16_t* message);
 
     NS_IMETHOD OnSecurityChange(
                              nsIWebProgress* web_progress,

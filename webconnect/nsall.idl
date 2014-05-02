@@ -888,25 +888,12 @@ interface nsIDocShellTreeOwner;
 interface nsIDocShellTreeItem;
 
 
-[scriptable, uuid(37f1ab73-f224-44b1-82f0-d2834ab1cec0)]
-interface nsIDocShellTreeNode : nsISupports
-{
-    readonly attribute long childCount;
-    void addChild(in nsIDocShellTreeItem child);
-    void removeChild(in nsIDocShellTreeItem child);
-    nsIDocShellTreeItem getChildAt(in long index);
-    nsIDocShellTreeItem findChildWithName(in wstring name,
-                                          in boolean recurse,
-                                          in boolean same_type,
-                                          in nsIDocShellTreeItem requestor,
-                                          in nsIDocShellTreeItem original_requestor);
-};
 
 
-[scriptable, uuid(e35bbb39-985b-4d62-81da-73c330222e5f)]
-interface nsIDocShellTreeItem : nsIDocShellTreeNode
+[scriptable, uuid(f897f4af-f67e-4115-9d37-ce09f71122e2)]
+interface nsIDocShellTreeItem : nsISupports
 {
-    attribute wstring name;
+    attribute AString name;
 
     boolean nameEquals(in wstring name);
 
@@ -914,9 +901,10 @@ interface nsIDocShellTreeItem : nsIDocShellTreeNode
     const long typeContent = 1;
     const long typeContentWrapper = 2;
     const long typeChromeWrapper = 3;
-    const long typeAll = 2147483647;
+    const long typeAll = 0x7fffffff;
 
     attribute long itemType;
+    [noscript,notxpcom,nostdcall] long ItemType();
 
     readonly attribute nsIDocShellTreeItem parent;
     readonly attribute nsIDocShellTreeItem sameTypeParent;
@@ -926,10 +914,23 @@ interface nsIDocShellTreeItem : nsIDocShellTreeNode
     nsIDocShellTreeItem findItemWithName(in wstring name,
                                          in nsISupports requestor,
                                          in nsIDocShellTreeItem original_requestor);
-                                         
-    readonly attribute nsIDocShellTreeOwner treeOwner;
+    
+	readonly attribute nsIDocShellTreeOwner treeOwner;
+	[noscript] void setTreeOwner(in nsIDocShellTreeOwner tree_owner);
+    
+	readonly attribute long childCount;
 
-    [noscript] void setTreeOwner(in nsIDocShellTreeOwner tree_owner);
+	void addChild(in nsIDocShellTreeItem child);
+
+	void removeChild(in nsIDocShellTreeItem child);
+
+	nsIDocShellTreeItem getChildAt(in long index);
+
+	nsIDocShellTreeItem findChildWithName(in wstring name,
+	                                      in boolean recurse,
+	                                      in boolean same_type,
+	                                      in nsIDocShellTreeItem requestor,
+	                                      in nsIDocShellTreeItem original_requestor);
 };
 
 
@@ -3699,7 +3700,7 @@ interface nsIInputStream;
 interface nsIDOMDocument;
 interface nsISHistory;
 
-[scriptable, uuid(28404f7e-0f17-4dc3-a21a-2074d8659b02)]
+[scriptable, uuid(dbd6241d-c76e-42c0-9410-930589d803a2)]
 interface nsIWebNavigation : nsISupports
 {
     readonly attribute boolean canGoBack;

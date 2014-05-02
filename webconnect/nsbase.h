@@ -35,28 +35,21 @@ class nsILocalFile;
 struct nsStringContainer;
 struct nsCStringContainer;
 
-typedef size_t PRSize;
+
+typedef int PRBool;
 typedef unsigned char PRUint8;
 typedef unsigned short int PRUint16;
+typedef char16_t PRUnichar;
 typedef short int PRInt16;
 typedef unsigned int PRUint32;
 typedef int PRInt32;
-typedef int PRBool;
-typedef PRUint32 nsresult;
-typedef unsigned long nsrefcnt;
-
-
-#ifdef _MSC_VER
-typedef wchar_t PRUnichar;
-typedef __int64 PRInt64;
-typedef unsigned __int64 PRUint64;
-#else
-typedef PRUint16 PRUnichar;
+typedef size_t PRSize;
 typedef long long PRInt64;
 typedef unsigned long long PRUint64;
-#endif
-
 typedef PRUint64 PRTime;
+
+typedef PRUint32 nsresult;
+typedef unsigned long nsrefcnt;
 
 
 #ifdef _MSC_VER
@@ -101,11 +94,11 @@ nsresult NS_GetServiceManager(nsIServiceManager** result);
 nsresult NS_GetComponentManager(nsIComponentManager** result);
 nsresult NS_GetComponentRegistrar(nsIComponentRegistrar** result);
 nsresult NS_StringContainerInit(nsStringContainer& str);
-nsresult NS_StringContainerInit2(nsStringContainer& str, const PRUnichar* str_data, PRUint32 len = PR_UINT32_MAX, PRUint32 flags = 0);
+nsresult NS_StringContainerInit2(nsStringContainer& str, const char16_t* str_data, PRUint32 len = PR_UINT32_MAX, PRUint32 flags = 0);
 void     NS_StringContainerFinish(nsStringContainer& str);
 nsresult NS_NewNativeLocalFile(const nsACString& path, PRBool follow_links, nsILocalFile** result);
-nsresult NS_StringSetData(nsAString& str, const PRUnichar* str_data, PRUint32 len);
-PRUint32 NS_StringGetData(const nsAString& str, const PRUnichar** str_data, PRBool* terminated = NULL);
+nsresult NS_StringSetData(nsAString& str, const char16_t* str_data, PRUint32 len);
+PRUint32 NS_StringGetData(const nsAString& str, const char16_t** str_data, PRBool* terminated = NULL);
 nsresult NS_CStringContainerInit(nsCStringContainer& str);
 nsresult NS_CStringContainerInit2(nsCStringContainer& str, const char* str_data, PRUint32 len = PR_UINT32_MAX, PRUint32 flags = 0);
 void     NS_CStringContainerFinish(nsCStringContainer& str);

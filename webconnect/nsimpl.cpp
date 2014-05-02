@@ -38,11 +38,11 @@ typedef nsresult (*GetServiceManagerFunc)(nsIServiceManager** result);
 typedef nsresult (*GetComponentManagerFunc)(nsIComponentManager** result);
 typedef nsresult (*GetComponentRegistrarFunc)(nsIComponentRegistrar** result);
 typedef nsresult (*StringContainerInitFunc)(nsStringContainer& str);
-typedef nsresult (*StringContainerInit2Func)(nsStringContainer& str, const PRUnichar* str_data, PRUint32 len, PRUint32 flags);
+typedef nsresult (*StringContainerInit2Func)(nsStringContainer& str, const char16_t* str_data, PRUint32 len, PRUint32 flags);
 typedef void     (*StringContainerFinishFunc)(nsStringContainer& str);
 typedef nsresult (*NewNativeLocalFileFunc)(const nsACString& path, PRBool follow_links, nsILocalFile** result);
-typedef nsresult (*StringSetDataFunc)(nsAString& str, const PRUnichar* str_data, PRUint32 len);
-typedef PRUint32 (*StringGetDataFunc)(const nsAString& str, const PRUnichar** str_data, PRBool* terminated);
+typedef nsresult (*StringSetDataFunc)(nsAString& str, const char16_t* str_data, PRUint32 len);
+typedef PRUint32 (*StringGetDataFunc)(const nsAString& str, const char16_t** str_data, PRBool* terminated);
 typedef nsresult (*CStringContainerInitFunc)(nsCStringContainer& str);
 typedef nsresult (*CStringContainerInit2Func)(nsCStringContainer& str, const char* str_data, PRUint32 len, PRUint32 flags);
 typedef void     (*CStringContainerFinishFunc)(nsCStringContainer& str);
@@ -301,7 +301,7 @@ nsresult NS_StringContainerInit(nsStringContainer& str)
 }
 
 nsresult NS_StringContainerInit2(nsStringContainer& str,
-                                 const PRUnichar* str_data,
+                                 const char16_t* str_data,
                                  PRUint32 len,
                                  PRUint32 flags)
 {
@@ -330,7 +330,7 @@ nsresult NS_NewNativeLocalFile(const nsACString& path,
 }
 
 nsresult NS_StringSetData(nsAString& str,
-                          const PRUnichar* str_data,
+                          const char16_t* str_data,
                           PRUint32 len)
 {
     if (!funcs.StringSetData)
@@ -340,7 +340,7 @@ nsresult NS_StringSetData(nsAString& str,
 }
 
 PRUint32 NS_StringGetData(const nsAString& str,
-                          const PRUnichar** str_data,
+                          const char16_t** str_data,
                           PRBool* terminated)
 {
     if (!funcs.StringGetData)
@@ -405,8 +405,8 @@ wxString ns2wx(nsEmbedCString& str)
 wxString ns2wx(nsEmbedString& str)
 {
     wxString res;
-    const PRUnichar* begin;
-    const PRUnichar* end;
+    const char16_t* begin;
+    const char16_t* end;
     
     PRUint32 i, len = NS_StringGetData(str, &begin);
     end = begin + len;
@@ -418,7 +418,7 @@ wxString ns2wx(nsEmbedString& str)
     return res;
 }
 
-wxString ns2wx(const PRUnichar* str)
+wxString ns2wx(const char16_t* str)
 {
     if (!str)
         return wxT("");
@@ -436,7 +436,7 @@ wxString ns2wx(const PRUnichar* str)
 void wx2ns(const wxString& wxstr, nsEmbedString& nsstr)
 {
     size_t i, len = wxstr.Length();
-    PRUnichar* buf = new PRUnichar[len+1];
+    char16_t* buf = new char16_t[len+1];
     for (i = 0; i < len; ++i)
         buf[i] = wxstr.GetChar(i);
     nsstr.Assign(buf, len);
@@ -448,17 +448,17 @@ void wx2ns(const wxString& wxstr, nsEmbedCString& nsstr)
     nsstr.Assign(wxstr.mbc_str());
 }
 
-PRUnichar* wxToUnichar(const wxString& wxstr)
+char16_t* wxToUnichar(const wxString& wxstr)
 {
     size_t i,len = wxstr.Length();
-    PRUnichar* ret = (PRUnichar*)NS_Alloc((len+1) * sizeof(PRUnichar));
+    char16_t* ret = (char16_t*)NS_Alloc((len+1) * sizeof(char16_t));
     for (i = 0; i < len; ++i)
-        *(ret+i) = (PRUnichar)wxstr.GetChar(i);
+        *(ret+i) = (char16_t)wxstr.GetChar(i);
     *(ret+len) = 0;
     return ret;
 }
 
-void freeUnichar(PRUnichar* p)
+void freeUnichar(char16_t* p)
 {
     NS_Free((void*)p);
 }
@@ -721,7 +721,7 @@ NS_IMETHODIMP ProgressListenerAdaptor::OnStatusChange(
                      nsIWebProgress* web_progress,
                      nsIRequest* request,
                      nsresult status,
-                     const PRUnichar* message)
+                     const char16_t* message)
 {
     if (NS_FAILED(status))
     {

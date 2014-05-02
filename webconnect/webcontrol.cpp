@@ -424,13 +424,13 @@ NS_IMETHODIMP BrowserChrome::SetFocus()
     return NS_OK;
 }
 
-NS_IMETHODIMP BrowserChrome::GetTitle(PRUnichar** title)
+NS_IMETHODIMP BrowserChrome::GetTitle(char16_t** title)
 {
     *title = wxToUnichar(m_title);
     return NS_OK;
 }
 
-NS_IMETHODIMP BrowserChrome::SetTitle(const PRUnichar* title)
+NS_IMETHODIMP BrowserChrome::SetTitle(const char16_t* title)
 {
     if (!m_wnd)
         return NS_OK;
@@ -468,7 +468,7 @@ NS_IMETHODIMP BrowserChrome::DestroyBrowserWindow()
     return NS_OK;
 }
 
-NS_IMETHODIMP BrowserChrome::SetStatus(PRUint32 type, const PRUnichar* status)
+NS_IMETHODIMP BrowserChrome::SetStatus(PRUint32 type, const char16_t* status)
 {
     if (!m_wnd)
         return NS_OK;
@@ -655,7 +655,7 @@ NS_IMETHODIMP BrowserChrome::OnLocationChange(nsIWebProgress* progress,
 NS_IMETHODIMP BrowserChrome::OnStatusChange(nsIWebProgress* progress,
                                             nsIRequest* request,
                                             nsresult status,
-                                            const PRUnichar* message)
+                                            const char16_t* message)
 {
     if (!m_wnd)
         return NS_OK;
@@ -724,7 +724,7 @@ NS_IMETHODIMP BrowserChrome::OnShowContextMenu(PRUint32 context_flags,
 
 NS_IMETHODIMP BrowserChrome::OnShowTooltip(PRInt32 x,
                                            PRInt32 y,
-                                           const PRUnichar* tip_text)
+                                           const char16_t* tip_text)
 {
     return NS_OK;
 }
@@ -2282,7 +2282,7 @@ wxWebControl::wxWebControl(wxWindow* parent,
     m_ok = true;
     
     /*
-    PRUnichar* ns_uri = wxToUnichar(L"about:blank");
+    char16_t* ns_uri = wxToUnichar(L"about:blank");
     m_ptrs->m_web_navigation->LoadURI(ns_uri,
                                       nsIWebNavigation::LOAD_FLAGS_NONE,
                                       NULL,
@@ -2357,7 +2357,7 @@ bool wxWebControl::Find(const wxString& text,
     if (m_ptrs->m_web_browser_find.empty())
         return false;
 
-    PRUnichar* find_text = wxToUnichar(text);
+    char16_t* find_text = wxToUnichar(text);
     m_ptrs->m_web_browser_find->SetSearchString(find_text);
     freeUnichar(find_text);
         
@@ -2821,7 +2821,7 @@ void wxWebControl::OpenURI(const wxString& uri,
     if (!m_ptrs || m_ptrs->m_web_navigation.empty())
         return;
     
-    PRUnichar* ns_uri = wxToUnichar(uri);
+    char16_t* ns_uri = wxToUnichar(uri);
 
     nsresult res;
     res = m_ptrs->m_web_navigation->LoadURI(ns_uri,
@@ -2964,7 +2964,7 @@ void wxWebControl::InitPrintSettings()
             
             print_settings_service->GetGlobalPrintSettings(&print_settings.p);
 
-            PRUnichar* printer_name = NULL;
+            char16_t* printer_name = NULL;
             print_settings_service->GetDefaultPrinterName(&printer_name);
             if (printer_name)
                 print_settings_service->InitPrintSettingsFromPrinter(printer_name, print_settings);
