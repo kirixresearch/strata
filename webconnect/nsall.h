@@ -8851,13 +8851,13 @@ NS_IMETHODIMP nsDOMHTMLElement::GetOffsetHeight(int32_t *aOffsetHeight)
 
 
 /* starting interface:    nsIDOMHTMLAnchorElement */
-#define NS_IDOMHTMLANCHORELEMENT_IID_STR "dfcf9a0b-2bc4-465b-b007-9c0e26aabc17"
+#define NS_IDOMHTMLANCHORELEMENT_IID_STR "339c01c8-2d41-4626-b231-eec63f0241b6"
 
 #define NS_IDOMHTMLANCHORELEMENT_IID \
-  {0xdfcf9a0b, 0x2bc4, 0x465b, \
-    { 0xb0, 0x07, 0x9c, 0x0e, 0x26, 0xaa, 0xbc, 0x17 }}
+  {0x339c01c8, 0x2d41, 0x4626, \
+    { 0xb2, 0x31, 0xee, 0xc6, 0x3f, 0x02, 0x41, 0xb6 }}
 
-class NS_NO_VTABLE nsIDOMHTMLAnchorElement : public nsIDOMHTMLElement {
+class NS_NO_VTABLE nsIDOMHTMLAnchorElement : public nsISupports {
  public: 
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_IDOMHTMLANCHORELEMENT_IID)
@@ -8873,6 +8873,10 @@ class NS_NO_VTABLE nsIDOMHTMLAnchorElement : public nsIDOMHTMLElement {
   /* attribute DOMString ping; */
   NS_IMETHOD GetPing(nsAString & aPing) = 0;
   NS_IMETHOD SetPing(const nsAString & aPing) = 0;
+
+  /* attribute DOMString download; */
+  NS_IMETHOD GetDownload(nsAString & aDownload) = 0;
+  NS_IMETHOD SetDownload(const nsAString & aDownload) = 0;
 
   /* attribute DOMString rel; */
   NS_IMETHOD GetRel(nsAString & aRel) = 0;
@@ -8938,10 +8942,6 @@ class NS_NO_VTABLE nsIDOMHTMLAnchorElement : public nsIDOMHTMLElement {
   NS_IMETHOD GetShape(nsAString & aShape) = 0;
   NS_IMETHOD SetShape(const nsAString & aShape) = 0;
 
-  /* attribute long tabIndex; */
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex) = 0;
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex) = 0;
-
   /* DOMString toString (); */
   NS_IMETHOD ToString(nsAString & _retval) = 0;
 
@@ -8957,6 +8957,8 @@ class NS_NO_VTABLE nsIDOMHTMLAnchorElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetTarget(const nsAString & aTarget); \
   NS_IMETHOD GetPing(nsAString & aPing); \
   NS_IMETHOD SetPing(const nsAString & aPing); \
+  NS_IMETHOD GetDownload(nsAString & aDownload); \
+  NS_IMETHOD SetDownload(const nsAString & aDownload); \
   NS_IMETHOD GetRel(nsAString & aRel); \
   NS_IMETHOD SetRel(const nsAString & aRel); \
   NS_IMETHOD GetHreflang(nsAString & aHreflang); \
@@ -8989,8 +8991,6 @@ class NS_NO_VTABLE nsIDOMHTMLAnchorElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetRev(const nsAString & aRev); \
   NS_IMETHOD GetShape(nsAString & aShape); \
   NS_IMETHOD SetShape(const nsAString & aShape); \
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex); \
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex); \
   NS_IMETHOD ToString(nsAString & _retval); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
@@ -9001,6 +9001,8 @@ class NS_NO_VTABLE nsIDOMHTMLAnchorElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetTarget(const nsAString & aTarget) { return _to SetTarget(aTarget); } \
   NS_IMETHOD GetPing(nsAString & aPing) { return _to GetPing(aPing); } \
   NS_IMETHOD SetPing(const nsAString & aPing) { return _to SetPing(aPing); } \
+  NS_IMETHOD GetDownload(nsAString & aDownload) { return _to GetDownload(aDownload); } \
+  NS_IMETHOD SetDownload(const nsAString & aDownload) { return _to SetDownload(aDownload); } \
   NS_IMETHOD GetRel(nsAString & aRel) { return _to GetRel(aRel); } \
   NS_IMETHOD SetRel(const nsAString & aRel) { return _to SetRel(aRel); } \
   NS_IMETHOD GetHreflang(nsAString & aHreflang) { return _to GetHreflang(aHreflang); } \
@@ -9033,8 +9035,6 @@ class NS_NO_VTABLE nsIDOMHTMLAnchorElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetRev(const nsAString & aRev) { return _to SetRev(aRev); } \
   NS_IMETHOD GetShape(nsAString & aShape) { return _to GetShape(aShape); } \
   NS_IMETHOD SetShape(const nsAString & aShape) { return _to SetShape(aShape); } \
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex) { return _to GetTabIndex(aTabIndex); } \
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex) { return _to SetTabIndex(aTabIndex); } \
   NS_IMETHOD ToString(nsAString & _retval) { return _to ToString(_retval); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
@@ -9045,6 +9045,8 @@ class NS_NO_VTABLE nsIDOMHTMLAnchorElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetTarget(const nsAString & aTarget) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTarget(aTarget); } \
   NS_IMETHOD GetPing(nsAString & aPing) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPing(aPing); } \
   NS_IMETHOD SetPing(const nsAString & aPing) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPing(aPing); } \
+  NS_IMETHOD GetDownload(nsAString & aDownload) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDownload(aDownload); } \
+  NS_IMETHOD SetDownload(const nsAString & aDownload) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetDownload(aDownload); } \
   NS_IMETHOD GetRel(nsAString & aRel) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetRel(aRel); } \
   NS_IMETHOD SetRel(const nsAString & aRel) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetRel(aRel); } \
   NS_IMETHOD GetHreflang(nsAString & aHreflang) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetHreflang(aHreflang); } \
@@ -9077,8 +9079,6 @@ class NS_NO_VTABLE nsIDOMHTMLAnchorElement : public nsIDOMHTMLElement {
   NS_IMETHOD SetRev(const nsAString & aRev) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetRev(aRev); } \
   NS_IMETHOD GetShape(nsAString & aShape) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetShape(aShape); } \
   NS_IMETHOD SetShape(const nsAString & aShape) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetShape(aShape); } \
-  NS_IMETHOD GetTabIndex(int32_t *aTabIndex) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetTabIndex(aTabIndex); } \
-  NS_IMETHOD SetTabIndex(int32_t aTabIndex) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetTabIndex(aTabIndex); } \
   NS_IMETHOD ToString(nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ToString(_retval); } 
 
 #if 0
@@ -9139,6 +9139,16 @@ NS_IMETHODIMP nsDOMHTMLAnchorElement::GetPing(nsAString & aPing)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 NS_IMETHODIMP nsDOMHTMLAnchorElement::SetPing(const nsAString & aPing)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute DOMString download; */
+NS_IMETHODIMP nsDOMHTMLAnchorElement::GetDownload(nsAString & aDownload)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsDOMHTMLAnchorElement::SetDownload(const nsAString & aDownload)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -9299,16 +9309,6 @@ NS_IMETHODIMP nsDOMHTMLAnchorElement::GetShape(nsAString & aShape)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 NS_IMETHODIMP nsDOMHTMLAnchorElement::SetShape(const nsAString & aShape)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute long tabIndex; */
-NS_IMETHODIMP nsDOMHTMLAnchorElement::GetTabIndex(int32_t *aTabIndex)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsDOMHTMLAnchorElement::SetTabIndex(int32_t aTabIndex)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }

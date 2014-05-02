@@ -1556,12 +1556,13 @@ interface nsIDOMHTMLElement : nsIDOMElement
 ///////////////////////////////////////////////////////////////////////////////
 
 
-[scriptable, uuid(dfcf9a0b-2bc4-465b-b007-9c0e26aabc17)]
-interface nsIDOMHTMLAnchorElement : nsIDOMHTMLElement
+[scriptable, uuid(339c01c8-2d41-4626-b231-eec63f0241b6)]
+interface nsIDOMHTMLAnchorElement : nsISupports
 {
     attribute DOMString href;
     attribute DOMString target;
     attribute DOMString ping;
+    attribute DOMString download;
     attribute DOMString rel;
     attribute DOMString hreflang;
     attribute DOMString type;
@@ -1581,7 +1582,6 @@ interface nsIDOMHTMLAnchorElement : nsIDOMHTMLElement
     attribute DOMString name;
     attribute DOMString rev;
     attribute DOMString shape;
-    attribute long tabIndex;
 
     DOMString toString();
 };

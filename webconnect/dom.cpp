@@ -2256,6 +2256,84 @@ bool wxDOMHTMLElement::HasValueProperty() const
 }
 
 
+// (METHOD) wxDOMHTMLElement::GetTabIndex
+// Description:
+//
+// Syntax: int wxDOMHTMLElement::GetTabIndex()
+//
+// Remarks:
+//
+// Returns:
+
+int wxDOMHTMLElement::GetTabIndex()
+{
+    if (!IsOk())
+        return 0;
+
+    PRInt32 val = 0;
+    m_data->htmlelement_ptr->GetTabIndex(&val);
+    return val;
+}
+
+// (METHOD) wxDOMHTMLElement::SetTabIndex
+// Description:
+//
+// Syntax: void wxDOMHTMLElement::SetTabIndex(int index)
+//
+// Remarks:
+//
+// Returns:
+
+void wxDOMHTMLElement::SetTabIndex(int index)
+{
+    if (!IsOk())
+        return;
+        
+    PRInt32 val = index;
+    m_data->htmlelement_ptr->SetTabIndex(val);
+}
+
+
+
+// (METHOD) wxDOMHTMLAnchorElement::GetAccessKey
+// Description:
+//
+// Syntax: wxString wxDOMHTMLElement::GetAccessKey()
+//
+// Remarks:
+//
+// Returns:
+
+wxString wxDOMHTMLElement::GetAccessKey()
+{
+    if (!IsOk())
+        return wxEmptyString;
+
+    nsEmbedString ns;
+    m_data->htmlelement_ptr->GetAccessKey(ns);
+
+    return ns2wx(ns);
+}
+
+// (METHOD) wxDOMHTMLElement::SetAccessKey
+// Description:
+//
+// Syntax: void wxDOMHTMLElement::SetAccessKey(const wxString& value)
+//
+// Remarks:
+//
+// Returns:
+
+void wxDOMHTMLElement::SetAccessKey(const wxString& value)
+{
+    if (!IsOk())
+        return;
+
+    nsEmbedString nsvalue;
+    wx2ns(value, nsvalue);
+    
+    m_data->htmlelement_ptr->SetAccessKey(nsvalue);
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2304,45 +2382,7 @@ bool wxDOMHTMLAnchorElement::IsOk() const
     return (m_data->anchor_ptr ? true : false);
 }
 
-// (METHOD) wxDOMHTMLAnchorElement::GetAccessKey
-// Description:
-//
-// Syntax: wxString wxDOMHTMLAnchorElement::GetAccessKey()
-//
-// Remarks:
-//
-// Returns:
 
-wxString wxDOMHTMLAnchorElement::GetAccessKey()
-{
-    if (!IsOk())
-        return wxEmptyString;
-
-    nsEmbedString ns;
-    m_data->anchor_ptr->GetAccessKey(ns);
-
-    return ns2wx(ns);
-}
-
-// (METHOD) wxDOMHTMLAnchorElement::SetAccessKey
-// Description:
-//
-// Syntax: void wxDOMHTMLAnchorElement::SetAccessKey(const wxString& value)
-//
-// Remarks:
-//
-// Returns:
-
-void wxDOMHTMLAnchorElement::SetAccessKey(const wxString& value)
-{
-    if (!IsOk())
-        return;
-
-    nsEmbedString nsvalue;
-    wx2ns(value, nsvalue);
-    
-    m_data->anchor_ptr->SetAccessKey(nsvalue);
-}
 
 // (METHOD) wxDOMHTMLAnchorElement::GetCharset
 // Description:
@@ -2664,42 +2704,6 @@ void wxDOMHTMLAnchorElement::SetShape(const wxString& value)
     m_data->anchor_ptr->SetShape(nsvalue);
 }
 
-// (METHOD) wxDOMHTMLAnchorElement::GetTabIndex
-// Description:
-//
-// Syntax: int wxDOMHTMLAnchorElement::GetTabIndex()
-//
-// Remarks:
-//
-// Returns:
-
-int wxDOMHTMLAnchorElement::GetTabIndex()
-{
-    if (!IsOk())
-        return 0;
-
-    PRInt32 val = 0;
-    m_data->anchor_ptr->GetTabIndex(&val);
-    return val;
-}
-
-// (METHOD) wxDOMHTMLAnchorElement::SetTabIndex
-// Description:
-//
-// Syntax: void wxDOMHTMLAnchorElement::SetTabIndex(int index)
-//
-// Remarks:
-//
-// Returns:
-
-void wxDOMHTMLAnchorElement::SetTabIndex(int index)
-{
-    if (!IsOk())
-        return;
-        
-    PRInt32 val = index;
-    m_data->anchor_ptr->SetTabIndex(val);
-}
 
 // (METHOD) wxDOMHTMLAnchorElement::GetTarget
 // Description:
@@ -2795,7 +2799,7 @@ void wxDOMHTMLAnchorElement::Blur()
     if (!IsOk())
         return;
         
-    m_data->anchor_ptr->Blur();
+    m_data->htmlelement_ptr->Blur();
 }
 
 // (METHOD) wxDOMHTMLAnchorElement::Focus
@@ -2812,7 +2816,7 @@ void wxDOMHTMLAnchorElement::Focus()
     if (!IsOk())
         return;
         
-    m_data->anchor_ptr->Focus();
+    m_data->htmlelement_ptr->Focus();
 }
 
 

@@ -433,6 +433,12 @@ public:
     wxString GetClassName();
     void SetClassName(const wxString& value);
 
+    int GetTabIndex();
+    void SetTabIndex(int index);
+
+    wxString GetAccessKey();
+    void SetAccessKey(const wxString& value);
+
 public:
 
     // these are shortcut accessors to those DOM elements
@@ -496,9 +502,6 @@ public:
 
     wxString GetShape();
     void SetShape(const wxString& value);
-
-    int GetTabIndex();
-    void SetTabIndex(int index);
 
     wxString GetTarget();
     void SetTarget(const wxString& value);
