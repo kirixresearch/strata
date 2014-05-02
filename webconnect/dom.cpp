@@ -1129,9 +1129,9 @@ wxDOMAttr wxDOMElement::RemoveAttributeNode(wxDOMAttr& old_attr)
 //
 // Returns:
 
-wxDOMNodeList wxDOMElement::GetElementsByTagName(const wxString& name)
+wxDOMHTMLCollection wxDOMElement::GetElementsByTagName(const wxString& name)
 {
-    wxDOMNodeList node_list;
+    wxDOMHTMLCollection node_list;
 
     if (!IsOk())
         return node_list;
@@ -1143,6 +1143,36 @@ wxDOMNodeList wxDOMElement::GetElementsByTagName(const wxString& name)
                                               &node_list.m_data->ptr.p);
     return node_list;
 }
+
+
+// (METHOD) wxDOMElement::GetElementsByTagNameNS
+// Description:
+//
+// Syntax: wxDOMNodeList wxDOMElement::GetElementsByTagNameNS(const wxString& namespace_uri,
+//                                                            const wxString& local_name)
+//
+// Remarks:
+//
+// Returns:
+
+wxDOMHTMLCollection wxDOMElement::GetElementsByTagNameNS(const wxString& namespace_uri,
+                                                         const wxString& local_name)
+{
+    wxDOMHTMLCollection node_list;
+
+    if (!IsOk())
+        return node_list;
+
+    nsEmbedString nsnamespace_uri, nslocal_name;
+    wx2ns(namespace_uri, nsnamespace_uri);
+    wx2ns(local_name, nslocal_name);
+
+    m_data->element_ptr->GetElementsByTagNameNS(nsnamespace_uri,
+                                                nslocal_name,
+                                                &node_list.m_data->ptr.p);
+    return node_list;
+}
+
 
 // (METHOD) wxDOMElement::GetAttributeNS
 // Description:
@@ -1287,33 +1317,7 @@ wxDOMAttr wxDOMElement::SetAttributeNodeNS(wxDOMAttr& new_attr)
     return node;
 }
 
-// (METHOD) wxDOMElement::GetElementsByTagNameNS
-// Description:
-//
-// Syntax: wxDOMNodeList wxDOMElement::GetElementsByTagNameNS(const wxString& namespace_uri,
-//                                                            const wxString& local_name)
-//
-// Remarks:
-//
-// Returns:
 
-wxDOMNodeList wxDOMElement::GetElementsByTagNameNS(const wxString& namespace_uri,
-                                                   const wxString& local_name)
-{
-    wxDOMNodeList node_list;
-
-    if (!IsOk())
-        return node_list;
-
-    nsEmbedString nsnamespace_uri, nslocal_name;
-    wx2ns(namespace_uri, nsnamespace_uri);
-    wx2ns(local_name, nslocal_name);
-
-    m_data->doc_ptr->GetElementsByTagNameNS(nsnamespace_uri,
-                                            nslocal_name,
-                                            &node_list.m_data->ptr.p);
-    return node_list;
-}
 
 // (METHOD) wxDOMElement::HasAttribute
 // Description:
@@ -5409,6 +5413,118 @@ void wxDOMHTMLTextAreaElement::Select()
         return;
         
     m_data->textarea_ptr->Select();
+}
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//  wxDOMHTMLCollection class implementation
+///////////////////////////////////////////////////////////////////////////////
+
+
+// (CONSTRUCTOR) wxDOMHTMLCollection::wxDOMHTMLCollection
+// Description: Creates a new wxDOMHTMLCollection object.
+//
+// Syntax: wxDOMHTMLCollection::wxDOMHTMLCollection()
+//
+// Remarks: Creates a new wxDOMHTMLCollection object.
+
+wxDOMHTMLCollection::wxDOMHTMLCollection()
+{
+    m_data = new wxDOMHTMLCollectionData;
+}
+
+wxDOMHTMLCollection::~wxDOMHTMLCollection()
+{
+    delete m_data;
+}
+
+wxDOMHTMLCollection::wxDOMHTMLCollection(const wxDOMHTMLCollection& c)
+{
+    m_data = new wxDOMHTMLCollectionData;
+    m_data->ptr = c.m_data->ptr;
+}
+
+wxDOMHTMLCollection& wxDOMHTMLCollection::operator=(const wxDOMHTMLCollection& c)
+{
+    m_data->ptr = c.m_data->ptr;
+    return *this;
+}
+
+// (METHOD) wxDOMHTMLCollection::IsOk
+// Description:
+//
+// Syntax: bool wxDOMHTMLCollection::IsOk() const
+//
+// Remarks:
+//
+// Returns: Returns true if the DOM Node List is valid, and false otherwise.
+
+bool wxDOMHTMLCollection::IsOk() const
+{
+    return (m_data->ptr ? true : false);
+}
+
+// (METHOD) wxDOMHTMLCollection::Item
+// Description:
+//
+// Syntax: wxDOMNode wxDOMHTMLCollection::Item(size_t idx)
+//
+// Remarks:
+//
+// Returns:
+
+wxDOMNode wxDOMHTMLCollection::Item(size_t idx)
+{
+    wxDOMNode node;
+    if (!IsOk())
+        return node;
+    m_data->ptr->Item(idx, &node.m_data->node_ptr.p);
+    return node;
+}
+
+
+// (METHOD) wxDOMHTMLCollection::NamedItem
+// Description:
+//
+// Syntax: wxDOMNode wxDOMHTMLCollection::NamedItem(const wxString& name)
+//
+// Remarks:
+//
+// Returns:
+
+wxDOMNode wxDOMHTMLCollection::NamedItem(const wxString& name)
+{
+    wxDOMNode node;
+    if (!IsOk())
+        return node;
+
+    nsEmbedString nsstr;
+    wx2ns(name, nsstr);
+
+    m_data->ptr->NamedItem(nsstr, &node.m_data->node_ptr.p);
+    return node;
+}
+
+
+// (METHOD) wxDOMHTMLCollection::GetLength
+// Description:
+//
+// Syntax: size_t wxDOMHTMLCollection::GetLength()
+//
+// Remarks:
+//
+// Returns:
+
+size_t wxDOMHTMLCollection::GetLength()
+{
+    if (!IsOk())
+        return 0;
+        
+    PRUint32 res;
+    m_data->ptr->GetLength(&res);
+    return res;
 }
 
 

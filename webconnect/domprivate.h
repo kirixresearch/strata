@@ -51,6 +51,12 @@ struct wxDOMNodeData
 };
 
 
+struct wxDOMHTMLCollectionData
+{
+    ns_smartptr<nsIDOMHTMLCollection> ptr;
+};
+
+
 struct wxDOMNodeListData
 {
     ns_smartptr<nsIDOMNodeList> ptr;

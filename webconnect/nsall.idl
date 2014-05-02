@@ -992,9 +992,9 @@ interface nsIDOMNode : nsISupports
     [binaryname(DOMBaseURI)] readonly attribute DOMString baseURI;
 
     const unsigned short DOCUMENT_POSITION_DISCONNECTED = 0x01;
-    const unsigned short DOCUMENT_POSITION_PRECEDING    = 0x02;
-    const unsigned short DOCUMENT_POSITION_FOLLOWING    = 0x04;
-    const unsigned short DOCUMENT_POSITION_CONTAINS     = 0x08;
+    const unsigned short DOCUMENT_POSITION_PRECEDING  = 0x02;
+    const unsigned short DOCUMENT_POSITION_FOLLOWING = 0x04;
+    const unsigned short DOCUMENT_POSITION_CONTAINS  = 0x08;
     const unsigned short DOCUMENT_POSITION_CONTAINED_BY = 0x10;
     const unsigned short DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20;
 
@@ -1159,10 +1159,10 @@ interface nsIDOMElement : nsIDOMNode
          
     nsIDOMAttr setAttributeNodeNS(in nsIDOMAttr newAttr) raises(DOMException);
     
-    nsIDOMNodeList getElementsByTagName(in DOMString name);
+    nsIDOMHTMLCollection getElementsByTagName(in DOMString name);
 
-    nsIDOMNodeList getElementsByTagNameNS(in DOMString namespace_uri,
-                                          in DOMString local_name);
+    nsIDOMHTMLCollection getElementsByTagNameNS(in DOMString namespace_uri,
+                                                in DOMString local_name);
 
     nsIDOMHTMLCollection getElementsByClassName(in DOMString classes);
 
@@ -1481,6 +1481,21 @@ interface nsIDOMEventTarget : nsISupports
 */
 };
 
+
+
+///////////////////////////////////////////////////////////////////////////////
+//  nsIDOMHTMLCollection
+///////////////////////////////////////////////////////////////////////////////
+
+
+[scriptable, uuid(bb07f567-5b37-4172-92aa-7d00ceed4809)]
+interface nsIDOMHTMLCollection : nsISupports
+{
+    readonly attribute unsigned long length;
+
+    nsIDOMNode item(in unsigned long index);
+    nsIDOMNode namedItem(in DOMString name);
+};
 
 
 

@@ -6390,11 +6390,11 @@ class NS_NO_VTABLE nsIDOMElement : public nsIDOMNode {
   /* nsIDOMAttr setAttributeNodeNS (in nsIDOMAttr newAttr) raises (DOMException); */
   NS_IMETHOD SetAttributeNodeNS(nsIDOMAttr *newAttr, nsIDOMAttr * *_retval) = 0;
 
-  /* nsIDOMNodeList getElementsByTagName (in DOMString name); */
-  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMNodeList * *_retval) = 0;
+  /* nsIDOMHTMLCollection getElementsByTagName (in DOMString name); */
+  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMHTMLCollection * *_retval) = 0;
 
-  /* nsIDOMNodeList getElementsByTagNameNS (in DOMString namespace_uri, in DOMString local_name); */
-  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNodeList * *_retval) = 0;
+  /* nsIDOMHTMLCollection getElementsByTagNameNS (in DOMString namespace_uri, in DOMString local_name); */
+  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMHTMLCollection * *_retval) = 0;
 
   /* nsIDOMHTMLCollection getElementsByClassName (in DOMString classes); */
   NS_IMETHOD GetElementsByClassName(const nsAString & classes, nsIDOMHTMLCollection * *_retval) = 0;
@@ -6501,8 +6501,8 @@ class NS_NO_VTABLE nsIDOMElement : public nsIDOMNode {
   NS_IMETHOD RemoveAttributeNode(nsIDOMAttr *old_attr, nsIDOMAttr * *_retval); \
   NS_IMETHOD GetAttributeNodeNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMAttr * *_retval); \
   NS_IMETHOD SetAttributeNodeNS(nsIDOMAttr *newAttr, nsIDOMAttr * *_retval); \
-  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMNodeList * *_retval); \
-  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNodeList * *_retval); \
+  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMHTMLCollection * *_retval); \
+  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMHTMLCollection * *_retval); \
   NS_IMETHOD GetElementsByClassName(const nsAString & classes, nsIDOMHTMLCollection * *_retval); \
   NS_IMETHOD GetChildElements(nsIDOMNodeList * *aChildren); \
   NS_IMETHOD GetFirstElementChild(nsIDOMElement * *aFirstElementChild); \
@@ -6551,8 +6551,8 @@ class NS_NO_VTABLE nsIDOMElement : public nsIDOMNode {
   NS_IMETHOD RemoveAttributeNode(nsIDOMAttr *old_attr, nsIDOMAttr * *_retval) { return _to RemoveAttributeNode(old_attr, _retval); } \
   NS_IMETHOD GetAttributeNodeNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMAttr * *_retval) { return _to GetAttributeNodeNS(namespace_uri, local_name, _retval); } \
   NS_IMETHOD SetAttributeNodeNS(nsIDOMAttr *newAttr, nsIDOMAttr * *_retval) { return _to SetAttributeNodeNS(newAttr, _retval); } \
-  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMNodeList * *_retval) { return _to GetElementsByTagName(name, _retval); } \
-  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNodeList * *_retval) { return _to GetElementsByTagNameNS(namespace_uri, local_name, _retval); } \
+  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMHTMLCollection * *_retval) { return _to GetElementsByTagName(name, _retval); } \
+  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMHTMLCollection * *_retval) { return _to GetElementsByTagNameNS(namespace_uri, local_name, _retval); } \
   NS_IMETHOD GetElementsByClassName(const nsAString & classes, nsIDOMHTMLCollection * *_retval) { return _to GetElementsByClassName(classes, _retval); } \
   NS_IMETHOD GetChildElements(nsIDOMNodeList * *aChildren) { return _to GetChildElements(aChildren); } \
   NS_IMETHOD GetFirstElementChild(nsIDOMElement * *aFirstElementChild) { return _to GetFirstElementChild(aFirstElementChild); } \
@@ -6601,8 +6601,8 @@ class NS_NO_VTABLE nsIDOMElement : public nsIDOMNode {
   NS_IMETHOD RemoveAttributeNode(nsIDOMAttr *old_attr, nsIDOMAttr * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->RemoveAttributeNode(old_attr, _retval); } \
   NS_IMETHOD GetAttributeNodeNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMAttr * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetAttributeNodeNS(namespace_uri, local_name, _retval); } \
   NS_IMETHOD SetAttributeNodeNS(nsIDOMAttr *newAttr, nsIDOMAttr * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetAttributeNodeNS(newAttr, _retval); } \
-  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMNodeList * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementsByTagName(name, _retval); } \
-  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNodeList * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementsByTagNameNS(namespace_uri, local_name, _retval); } \
+  NS_IMETHOD GetElementsByTagName(const nsAString & name, nsIDOMHTMLCollection * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementsByTagName(name, _retval); } \
+  NS_IMETHOD GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMHTMLCollection * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementsByTagNameNS(namespace_uri, local_name, _retval); } \
   NS_IMETHOD GetElementsByClassName(const nsAString & classes, nsIDOMHTMLCollection * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetElementsByClassName(classes, _retval); } \
   NS_IMETHOD GetChildElements(nsIDOMNodeList * *aChildren) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetChildElements(aChildren); } \
   NS_IMETHOD GetFirstElementChild(nsIDOMElement * *aFirstElementChild) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFirstElementChild(aFirstElementChild); } \
@@ -6761,14 +6761,14 @@ NS_IMETHODIMP nsDOMElement::SetAttributeNodeNS(nsIDOMAttr *newAttr, nsIDOMAttr *
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIDOMNodeList getElementsByTagName (in DOMString name); */
-NS_IMETHODIMP nsDOMElement::GetElementsByTagName(const nsAString & name, nsIDOMNodeList * *_retval)
+/* nsIDOMHTMLCollection getElementsByTagName (in DOMString name); */
+NS_IMETHODIMP nsDOMElement::GetElementsByTagName(const nsAString & name, nsIDOMHTMLCollection * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* nsIDOMNodeList getElementsByTagNameNS (in DOMString namespace_uri, in DOMString local_name); */
-NS_IMETHODIMP nsDOMElement::GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMNodeList * *_retval)
+/* nsIDOMHTMLCollection getElementsByTagNameNS (in DOMString namespace_uri, in DOMString local_name); */
+NS_IMETHODIMP nsDOMElement::GetElementsByTagNameNS(const nsAString & namespace_uri, const nsAString & local_name, nsIDOMHTMLCollection * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -8354,6 +8354,103 @@ NS_IMETHODIMP nsDOMEventTarget::RemoveSystemEventListener(const nsAString & type
 
 /* boolean dispatchEvent (in nsIDOMEvent evt) raises (DOMException); */
 NS_IMETHODIMP nsDOMEventTarget::DispatchEvent(nsIDOMEvent *evt, bool *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* End of implementation class template. */
+#endif
+
+
+/* starting interface:    nsIDOMHTMLCollection */
+#define NS_IDOMHTMLCOLLECTION_IID_STR "bb07f567-5b37-4172-92aa-7d00ceed4809"
+
+#define NS_IDOMHTMLCOLLECTION_IID \
+  {0xbb07f567, 0x5b37, 0x4172, \
+    { 0x92, 0xaa, 0x7d, 0x00, 0xce, 0xed, 0x48, 0x09 }}
+
+class NS_NO_VTABLE nsIDOMHTMLCollection : public nsISupports {
+ public: 
+
+  NS_DECLARE_STATIC_IID_ACCESSOR(NS_IDOMHTMLCOLLECTION_IID)
+
+  /* readonly attribute unsigned long length; */
+  NS_IMETHOD GetLength(uint32_t *aLength) = 0;
+
+  /* nsIDOMNode item (in unsigned long index); */
+  NS_IMETHOD Item(uint32_t index, nsIDOMNode * *_retval) = 0;
+
+  /* nsIDOMNode namedItem (in DOMString name); */
+  NS_IMETHOD NamedItem(const nsAString & name, nsIDOMNode * *_retval) = 0;
+
+};
+
+  NS_DEFINE_STATIC_IID_ACCESSOR(nsIDOMHTMLCollection, NS_IDOMHTMLCOLLECTION_IID)
+
+/* Use this macro when declaring classes that implement this interface. */
+#define NS_DECL_NSIDOMHTMLCOLLECTION \
+  NS_IMETHOD GetLength(uint32_t *aLength); \
+  NS_IMETHOD Item(uint32_t index, nsIDOMNode * *_retval); \
+  NS_IMETHOD NamedItem(const nsAString & name, nsIDOMNode * *_retval); 
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object. */
+#define NS_FORWARD_NSIDOMHTMLCOLLECTION(_to) \
+  NS_IMETHOD GetLength(uint32_t *aLength) { return _to GetLength(aLength); } \
+  NS_IMETHOD Item(uint32_t index, nsIDOMNode * *_retval) { return _to Item(index, _retval); } \
+  NS_IMETHOD NamedItem(const nsAString & name, nsIDOMNode * *_retval) { return _to NamedItem(name, _retval); } 
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
+#define NS_FORWARD_SAFE_NSIDOMHTMLCOLLECTION(_to) \
+  NS_IMETHOD GetLength(uint32_t *aLength) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetLength(aLength); } \
+  NS_IMETHOD Item(uint32_t index, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Item(index, _retval); } \
+  NS_IMETHOD NamedItem(const nsAString & name, nsIDOMNode * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->NamedItem(name, _retval); } 
+
+#if 0
+/* Use the code below as a template for the implementation class for this interface. */
+
+/* Header file */
+class nsDOMHTMLCollection : public nsIDOMHTMLCollection
+{
+public:
+  NS_DECL_ISUPPORTS
+  NS_DECL_NSIDOMHTMLCOLLECTION
+
+  nsDOMHTMLCollection();
+
+private:
+  ~nsDOMHTMLCollection();
+
+protected:
+  /* additional members */
+};
+
+/* Implementation file */
+NS_IMPL_ISUPPORTS1(nsDOMHTMLCollection, nsIDOMHTMLCollection)
+
+nsDOMHTMLCollection::nsDOMHTMLCollection()
+{
+  /* member initializers and constructor code */
+}
+
+nsDOMHTMLCollection::~nsDOMHTMLCollection()
+{
+  /* destructor code */
+}
+
+/* readonly attribute unsigned long length; */
+NS_IMETHODIMP nsDOMHTMLCollection::GetLength(uint32_t *aLength)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIDOMNode item (in unsigned long index); */
+NS_IMETHODIMP nsDOMHTMLCollection::Item(uint32_t index, nsIDOMNode * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* nsIDOMNode namedItem (in DOMString name); */
+NS_IMETHODIMP nsDOMHTMLCollection::NamedItem(const nsAString & name, nsIDOMNode * *_retval)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }

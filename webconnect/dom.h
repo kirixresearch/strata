@@ -17,11 +17,14 @@ class wxDOMNode;
 class wxDOMElement;
 class wxDOMDocument;
 class wxDOMNodeList;
+class wxDOMHTMLCollection;
 class wxDOMNamedAttrMap;
 struct wxDOMNodeData;
+struct wxDOMHTMLCollectionData;
 struct wxDOMNodeListData;
 struct wxDOMNamedAttrMapData;
 struct wxDOMEventData;
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -44,6 +47,7 @@ friend class wxDOMDocument;
 friend class wxDOMNodeList;
 friend class wxDOMNamedAttrMap;
 friend class wxDOMHTMLSelectElement;
+friend class wxDOMHTMLCollection;
 
 public:
 
@@ -142,6 +146,42 @@ private:
     wxDOMNodeListData* m_data;
 };
 
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//  wxDOMHTMLCollection class
+///////////////////////////////////////////////////////////////////////////////
+
+
+// (CLASS) wxDOMHTMLCollection
+// Category: DOM
+// Description: Encapsulates a DOM HTML Collection
+// Remarks: The wxDOMHTMLCollection class encapsulates a DOM HTML Collection
+
+class wxDOMHTMLCollection
+{
+friend class wxDOMNode;
+friend class wxDOMElement;
+
+public:
+
+    wxDOMHTMLCollection();
+    ~wxDOMHTMLCollection();
+    wxDOMHTMLCollection(const wxDOMHTMLCollection& c);
+    wxDOMHTMLCollection& operator=(const wxDOMHTMLCollection& c);
+
+    bool IsOk() const;
+
+    wxDOMNode Item(size_t idx);
+    wxDOMNode NamedItem(const wxString& name);
+    size_t GetLength();
+        
+private:
+
+    wxDOMHTMLCollectionData* m_data;
+};
 
 
 
@@ -258,7 +298,8 @@ public:
     wxDOMAttr SetAttributeNode(wxDOMAttr& new_attr);
     wxDOMAttr RemoveAttributeNode(wxDOMAttr& old_attr);
 
-    wxDOMNodeList GetElementsByTagName(const wxString& name);
+    wxDOMHTMLCollection GetElementsByTagName(const wxString& name);
+    wxDOMHTMLCollection GetElementsByTagNameNS(const wxString& namespace_uri, const wxString& local_name);
 
     wxString GetAttributeNS(const wxString& namespace_uri, const wxString& local_name);
     void SetAttributeNS(const wxString& namespace_uri, const wxString& qualified_name, const wxString& value);
@@ -267,7 +308,6 @@ public:
     wxDOMAttr GetAttributeNodeNS(const wxString& namespace_uri, const wxString& local_name);
     wxDOMAttr SetAttributeNodeNS(wxDOMAttr& new_attr);
 
-    wxDOMNodeList GetElementsByTagNameNS(const wxString& namespace_uri, const wxString& local_name);
 
     bool HasAttribute(const wxString& name);
     bool HasAttributeNS(const wxString& namespace_uri, const wxString& local_name);
