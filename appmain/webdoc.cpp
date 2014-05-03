@@ -1930,15 +1930,22 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
         
     xd::IRowInserterPtr row_inserter = dest_db->bulkInsert(output_path);
     if (row_inserter.isNull())
+    {
+        dest_db->deleteFile(output_path);
         return false;
-        
+    }
+       
     row_inserter->startInsert(L"");
                                        
     for (field_it = fields.begin(); field_it != fields.end(); ++field_it)
     {
         field_it->handle = row_inserter->getHandle(towstr(field_it->name));
         if (!field_it->handle)
+        {
+            row_inserter.clear();
+            dest_db->deleteFile(output_path);
             return false;
+        }
     }
     
     // populate the data table rows from the html table
@@ -2071,7 +2078,7 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
     
     row_inserter->finishInsert();
     
-    return false;
+    return true;
 }
 
 
