@@ -21825,19 +21825,19 @@ class nsIXPCNativeCallContext; /* forward declaration */
 
 
 /* starting interface:    nsIXPCSecurityManager */
-#define NS_IXPCSECURITYMANAGER_IID_STR "31431440-f1ce-11d2-985a-006008962422"
+#define NS_IXPCSECURITYMANAGER_IID_STR "d4d21714-116b-4851-a785-098c5dfea523"
 
 #define NS_IXPCSECURITYMANAGER_IID \
-  {0x31431440, 0xf1ce, 0x11d2, \
-    { 0x98, 0x5a, 0x00, 0x60, 0x08, 0x96, 0x24, 0x22 }}
+  {0xd4d21714, 0x116b, 0x4851, \
+    { 0xa7, 0x85, 0x09, 0x8c, 0x5d, 0xfe, 0xa5, 0x23 }}
 
 class NS_NO_VTABLE nsIXPCSecurityManager : public nsISupports {
  public: 
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_IXPCSECURITYMANAGER_IID)
 
-  /* void CanCreateWrapper (in JSContextPtr js_context, in nsIIDRef iid, in nsISupports obj, in nsIClassInfo class_info, inout voidPtr policy); */
-  NS_IMETHOD CanCreateWrapper(JSContext *js_context, const nsIID & iid, nsISupports *obj, nsIClassInfo *class_info, void **policy) = 0;
+  /* void CanCreateWrapper (in JSContextPtr js_context, in nsIIDRef iid, in nsISupports obj, in nsIClassInfo class_info); */
+  NS_IMETHOD CanCreateWrapper(JSContext *js_context, const nsIID & iid, nsISupports *obj, nsIClassInfo *class_info) = 0;
 
   /* void CanCreateInstance (in JSContextPtr js_context, in nsCIDRef cid); */
   NS_IMETHOD CanCreateInstance(JSContext *js_context, const nsCID & cid) = 0;
@@ -21845,33 +21845,27 @@ class NS_NO_VTABLE nsIXPCSecurityManager : public nsISupports {
   /* void CanGetService (in JSContextPtr js_context, in nsCIDRef cid); */
   NS_IMETHOD CanGetService(JSContext *js_context, const nsCID & cid) = 0;
 
-  /* void CanAccess (in PRUint32 action, in nsIXPCNativeCallContext call_context, in JSContextPtr js_context, in JSObjectPtr js_object, in nsISupports obj, in nsIClassInfo class_info, in JSVal name, inout voidPtr policy); */
-  NS_IMETHOD CanAccess(PRUint32 action, nsIXPCNativeCallContext *call_context, JSContext *js_context, JSObject *js_object, nsISupports *obj, nsIClassInfo *class_info, jsval name, void **policy) = 0;
-
 };
 
   NS_DEFINE_STATIC_IID_ACCESSOR(nsIXPCSecurityManager, NS_IXPCSECURITYMANAGER_IID)
 
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSIXPCSECURITYMANAGER \
-  NS_IMETHOD CanCreateWrapper(JSContext *js_context, const nsIID & iid, nsISupports *obj, nsIClassInfo *class_info, void **policy); \
+  NS_IMETHOD CanCreateWrapper(JSContext *js_context, const nsIID & iid, nsISupports *obj, nsIClassInfo *class_info); \
   NS_IMETHOD CanCreateInstance(JSContext *js_context, const nsCID & cid); \
-  NS_IMETHOD CanGetService(JSContext *js_context, const nsCID & cid); \
-  NS_IMETHOD CanAccess(PRUint32 action, nsIXPCNativeCallContext *call_context, JSContext *js_context, JSObject *js_object, nsISupports *obj, nsIClassInfo *class_info, jsval name, void **policy); 
+  NS_IMETHOD CanGetService(JSContext *js_context, const nsCID & cid); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIXPCSECURITYMANAGER(_to) \
-  NS_IMETHOD CanCreateWrapper(JSContext *js_context, const nsIID & iid, nsISupports *obj, nsIClassInfo *class_info, void **policy) { return _to CanCreateWrapper(js_context, iid, obj, class_info, policy); } \
+  NS_IMETHOD CanCreateWrapper(JSContext *js_context, const nsIID & iid, nsISupports *obj, nsIClassInfo *class_info) { return _to CanCreateWrapper(js_context, iid, obj, class_info); } \
   NS_IMETHOD CanCreateInstance(JSContext *js_context, const nsCID & cid) { return _to CanCreateInstance(js_context, cid); } \
-  NS_IMETHOD CanGetService(JSContext *js_context, const nsCID & cid) { return _to CanGetService(js_context, cid); } \
-  NS_IMETHOD CanAccess(PRUint32 action, nsIXPCNativeCallContext *call_context, JSContext *js_context, JSObject *js_object, nsISupports *obj, nsIClassInfo *class_info, jsval name, void **policy) { return _to CanAccess(action, call_context, js_context, js_object, obj, class_info, name, policy); } 
+  NS_IMETHOD CanGetService(JSContext *js_context, const nsCID & cid) { return _to CanGetService(js_context, cid); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIXPCSECURITYMANAGER(_to) \
-  NS_IMETHOD CanCreateWrapper(JSContext *js_context, const nsIID & iid, nsISupports *obj, nsIClassInfo *class_info, void **policy) { return !_to ? NS_ERROR_NULL_POINTER : _to->CanCreateWrapper(js_context, iid, obj, class_info, policy); } \
+  NS_IMETHOD CanCreateWrapper(JSContext *js_context, const nsIID & iid, nsISupports *obj, nsIClassInfo *class_info) { return !_to ? NS_ERROR_NULL_POINTER : _to->CanCreateWrapper(js_context, iid, obj, class_info); } \
   NS_IMETHOD CanCreateInstance(JSContext *js_context, const nsCID & cid) { return !_to ? NS_ERROR_NULL_POINTER : _to->CanCreateInstance(js_context, cid); } \
-  NS_IMETHOD CanGetService(JSContext *js_context, const nsCID & cid) { return !_to ? NS_ERROR_NULL_POINTER : _to->CanGetService(js_context, cid); } \
-  NS_IMETHOD CanAccess(PRUint32 action, nsIXPCNativeCallContext *call_context, JSContext *js_context, JSObject *js_object, nsISupports *obj, nsIClassInfo *class_info, jsval name, void **policy) { return !_to ? NS_ERROR_NULL_POINTER : _to->CanAccess(action, call_context, js_context, js_object, obj, class_info, name, policy); } 
+  NS_IMETHOD CanGetService(JSContext *js_context, const nsCID & cid) { return !_to ? NS_ERROR_NULL_POINTER : _to->CanGetService(js_context, cid); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -21905,8 +21899,8 @@ nsXPCSecurityManager::~nsXPCSecurityManager()
   /* destructor code */
 }
 
-/* void CanCreateWrapper (in JSContextPtr js_context, in nsIIDRef iid, in nsISupports obj, in nsIClassInfo class_info, inout voidPtr policy); */
-NS_IMETHODIMP nsXPCSecurityManager::CanCreateWrapper(JSContext *js_context, const nsIID & iid, nsISupports *obj, nsIClassInfo *class_info, void **policy)
+/* void CanCreateWrapper (in JSContextPtr js_context, in nsIIDRef iid, in nsISupports obj, in nsIClassInfo class_info); */
+NS_IMETHODIMP nsXPCSecurityManager::CanCreateWrapper(JSContext *js_context, const nsIID & iid, nsISupports *obj, nsIClassInfo *class_info)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -21923,22 +21917,16 @@ NS_IMETHODIMP nsXPCSecurityManager::CanGetService(JSContext *js_context, const n
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void CanAccess (in PRUint32 action, in nsIXPCNativeCallContext call_context, in JSContextPtr js_context, in JSObjectPtr js_object, in nsISupports obj, in nsIClassInfo class_info, in JSVal name, inout voidPtr policy); */
-NS_IMETHODIMP nsXPCSecurityManager::CanAccess(PRUint32 action, nsIXPCNativeCallContext *call_context, JSContext *js_context, JSObject *js_object, nsISupports *obj, nsIClassInfo *class_info, jsval name, void **policy)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
 /* End of implementation class template. */
 #endif
 
 
 /* starting interface:    nsIPrincipal */
-#define NS_IPRINCIPAL_IID_STR "0575ea96-4561-4dc6-a818-3c4c97c2430d"
+#define NS_IPRINCIPAL_IID_STR "f09d8a53-a6c8-4f68-b329-9a76a709d24e"
 
 #define NS_IPRINCIPAL_IID \
-  {0x0575ea96, 0x4561, 0x4dc6, \
-    { 0xa8, 0x18, 0x3c, 0x4c, 0x97, 0xc2, 0x43, 0x0d }}
+  {0xf09d8a53, 0xa6c8, 0x4f68, \
+    { 0xb3, 0x29, 0x9a, 0x76, 0xa7, 0x09, 0xd2, 0x4e }}
 
 class NS_NO_VTABLE nsIPrincipal : public nsISupports {
  public: 
@@ -22011,19 +21999,16 @@ class nsIDomainPolicy; /* forward declaration */
 
 
 /* starting interface:    nsIScriptSecurityManager */
-#define NS_ISCRIPTSECURITYMANAGER_IID_STR "2911ae60-1b5f-47e6-941e-1bb7b53a167d"
+#define NS_ISCRIPTSECURITYMANAGER_IID_STR "3b6e408b-e774-4612-89e8-3ef303564392"
 
 #define NS_ISCRIPTSECURITYMANAGER_IID \
-  {0x2911ae60, 0x1b5f, 0x47e6, \
-    { 0x94, 0x1e, 0x1b, 0xb7, 0xb5, 0x3a, 0x16, 0x7d }}
+  {0x3b6e408b, 0xe774, 0x4612, \
+    { 0x89, 0xe8, 0x3e, 0xf3, 0x03, 0x56, 0x43, 0x92 }}
 
 class NS_NO_VTABLE nsIScriptSecurityManager : public nsIXPCSecurityManager {
  public: 
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_ISCRIPTSECURITYMANAGER_IID)
-
-  /* [noscript] void checkPropertyAccess (in JSContextPtr js_context, in JSObjectPtr js_object, in string class_name, in JSVal property, in PRUint32 action); */
-  NS_IMETHOD CheckPropertyAccess(JSContext *js_context, JSObject *js_object, const char * class_name, jsval property, PRUint32 action) = 0;
 
   /* [noscript] void checkLoadURIFromScript (in JSContextPtr cx, in nsIURI uri); */
   NS_IMETHOD CheckLoadURIFromScript(JSContext *cx, nsIURI *uri) = 0;
@@ -22077,8 +22062,8 @@ class NS_NO_VTABLE nsIScriptSecurityManager : public nsIXPCSecurityManager {
   /* [noscript] void checkSameOrigin (in JSContextPtr js_context, in nsIURI target_uri); */
   NS_IMETHOD CheckSameOrigin(JSContext *js_context, nsIURI *target_uri) = 0;
 
-  /* void checkSameOriginURI (in nsIURI source_uri, in nsIURI target_uri); */
-  NS_IMETHOD CheckSameOriginURI(nsIURI *source_uri, nsIURI *target_uri) = 0;
+  /* void checkSameOriginURI (in nsIURI source_uri, in nsIURI target_uri, in boolean report_error); */
+  NS_IMETHOD CheckSameOriginURI(nsIURI *source_uri, nsIURI *target_uri, bool report_error) = 0;
 
   /* nsIPrincipal getChannelPrincipal (in nsIChannel channel); */
   NS_IMETHOD GetChannelPrincipal(nsIChannel *channel, nsIPrincipal * *_retval) = 0;
@@ -22107,7 +22092,6 @@ class NS_NO_VTABLE nsIScriptSecurityManager : public nsIXPCSecurityManager {
 
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSISCRIPTSECURITYMANAGER \
-  NS_IMETHOD CheckPropertyAccess(JSContext *js_context, JSObject *js_object, const char * class_name, jsval property, PRUint32 action); \
   NS_IMETHOD CheckLoadURIFromScript(JSContext *cx, nsIURI *uri); \
   NS_IMETHOD CheckLoadURIWithPrincipal(nsIPrincipal *principal, nsIURI *uri, uint32_t flags); \
   NS_IMETHOD CheckLoadURIStrWithPrincipal(nsIPrincipal *principal, const nsACString & uri, uint32_t flags); \
@@ -22122,7 +22106,7 @@ class NS_NO_VTABLE nsIScriptSecurityManager : public nsIXPCSecurityManager {
   NS_IMETHOD GetObjectPrincipal(JSContext *cx, JSObject *obj, nsIPrincipal * *_retval); \
   NS_IMETHOD SubjectPrincipalIsSystem(bool *_retval); \
   NS_IMETHOD CheckSameOrigin(JSContext *js_context, nsIURI *target_uri); \
-  NS_IMETHOD CheckSameOriginURI(nsIURI *source_uri, nsIURI *target_uri); \
+  NS_IMETHOD CheckSameOriginURI(nsIURI *source_uri, nsIURI *target_uri, bool report_error); \
   NS_IMETHOD GetChannelPrincipal(nsIChannel *channel, nsIPrincipal * *_retval); \
   NS_IMETHOD IsSystemPrincipal(nsIPrincipal *principal, bool *_retval); \
   NS_IMETHOD_(nsIPrincipal *) GetCxSubjectPrincipal(JSContext *cx); \
@@ -22133,7 +22117,6 @@ class NS_NO_VTABLE nsIScriptSecurityManager : public nsIXPCSecurityManager {
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSISCRIPTSECURITYMANAGER(_to) \
-  NS_IMETHOD CheckPropertyAccess(JSContext *js_context, JSObject *js_object, const char * class_name, jsval property, PRUint32 action) { return _to CheckPropertyAccess(js_context, js_object, class_name, property, action); } \
   NS_IMETHOD CheckLoadURIFromScript(JSContext *cx, nsIURI *uri) { return _to CheckLoadURIFromScript(cx, uri); } \
   NS_IMETHOD CheckLoadURIWithPrincipal(nsIPrincipal *principal, nsIURI *uri, uint32_t flags) { return _to CheckLoadURIWithPrincipal(principal, uri, flags); } \
   NS_IMETHOD CheckLoadURIStrWithPrincipal(nsIPrincipal *principal, const nsACString & uri, uint32_t flags) { return _to CheckLoadURIStrWithPrincipal(principal, uri, flags); } \
@@ -22148,7 +22131,7 @@ class NS_NO_VTABLE nsIScriptSecurityManager : public nsIXPCSecurityManager {
   NS_IMETHOD GetObjectPrincipal(JSContext *cx, JSObject *obj, nsIPrincipal * *_retval) { return _to GetObjectPrincipal(cx, obj, _retval); } \
   NS_IMETHOD SubjectPrincipalIsSystem(bool *_retval) { return _to SubjectPrincipalIsSystem(_retval); } \
   NS_IMETHOD CheckSameOrigin(JSContext *js_context, nsIURI *target_uri) { return _to CheckSameOrigin(js_context, target_uri); } \
-  NS_IMETHOD CheckSameOriginURI(nsIURI *source_uri, nsIURI *target_uri) { return _to CheckSameOriginURI(source_uri, target_uri); } \
+  NS_IMETHOD CheckSameOriginURI(nsIURI *source_uri, nsIURI *target_uri, bool report_error) { return _to CheckSameOriginURI(source_uri, target_uri, report_error); } \
   NS_IMETHOD GetChannelPrincipal(nsIChannel *channel, nsIPrincipal * *_retval) { return _to GetChannelPrincipal(channel, _retval); } \
   NS_IMETHOD IsSystemPrincipal(nsIPrincipal *principal, bool *_retval) { return _to IsSystemPrincipal(principal, _retval); } \
   NS_IMETHOD_(nsIPrincipal *) GetCxSubjectPrincipal(JSContext *cx) { return _to GetCxSubjectPrincipal(cx); } \
@@ -22159,7 +22142,6 @@ class NS_NO_VTABLE nsIScriptSecurityManager : public nsIXPCSecurityManager {
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSISCRIPTSECURITYMANAGER(_to) \
-  NS_IMETHOD CheckPropertyAccess(JSContext *js_context, JSObject *js_object, const char * class_name, jsval property, PRUint32 action) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckPropertyAccess(js_context, js_object, class_name, property, action); } \
   NS_IMETHOD CheckLoadURIFromScript(JSContext *cx, nsIURI *uri) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckLoadURIFromScript(cx, uri); } \
   NS_IMETHOD CheckLoadURIWithPrincipal(nsIPrincipal *principal, nsIURI *uri, uint32_t flags) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckLoadURIWithPrincipal(principal, uri, flags); } \
   NS_IMETHOD CheckLoadURIStrWithPrincipal(nsIPrincipal *principal, const nsACString & uri, uint32_t flags) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckLoadURIStrWithPrincipal(principal, uri, flags); } \
@@ -22174,7 +22156,7 @@ class NS_NO_VTABLE nsIScriptSecurityManager : public nsIXPCSecurityManager {
   NS_IMETHOD GetObjectPrincipal(JSContext *cx, JSObject *obj, nsIPrincipal * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetObjectPrincipal(cx, obj, _retval); } \
   NS_IMETHOD SubjectPrincipalIsSystem(bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->SubjectPrincipalIsSystem(_retval); } \
   NS_IMETHOD CheckSameOrigin(JSContext *js_context, nsIURI *target_uri) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckSameOrigin(js_context, target_uri); } \
-  NS_IMETHOD CheckSameOriginURI(nsIURI *source_uri, nsIURI *target_uri) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckSameOriginURI(source_uri, target_uri); } \
+  NS_IMETHOD CheckSameOriginURI(nsIURI *source_uri, nsIURI *target_uri, bool report_error) { return !_to ? NS_ERROR_NULL_POINTER : _to->CheckSameOriginURI(source_uri, target_uri, report_error); } \
   NS_IMETHOD GetChannelPrincipal(nsIChannel *channel, nsIPrincipal * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetChannelPrincipal(channel, _retval); } \
   NS_IMETHOD IsSystemPrincipal(nsIPrincipal *principal, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->IsSystemPrincipal(principal, _retval); } \
   NS_IMETHOD_(nsIPrincipal *) GetCxSubjectPrincipal(JSContext *cx); \
@@ -22213,12 +22195,6 @@ nsScriptSecurityManager::nsScriptSecurityManager()
 nsScriptSecurityManager::~nsScriptSecurityManager()
 {
   /* destructor code */
-}
-
-/* [noscript] void checkPropertyAccess (in JSContextPtr js_context, in JSObjectPtr js_object, in string class_name, in JSVal property, in PRUint32 action); */
-NS_IMETHODIMP nsScriptSecurityManager::CheckPropertyAccess(JSContext *js_context, JSObject *js_object, const char * class_name, jsval property, PRUint32 action)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* [noscript] void checkLoadURIFromScript (in JSContextPtr cx, in nsIURI uri); */
@@ -22305,8 +22281,8 @@ NS_IMETHODIMP nsScriptSecurityManager::CheckSameOrigin(JSContext *js_context, ns
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void checkSameOriginURI (in nsIURI source_uri, in nsIURI target_uri); */
-NS_IMETHODIMP nsScriptSecurityManager::CheckSameOriginURI(nsIURI *source_uri, nsIURI *target_uri)
+/* void checkSameOriginURI (in nsIURI source_uri, in nsIURI target_uri, in boolean report_error); */
+NS_IMETHODIMP nsScriptSecurityManager::CheckSameOriginURI(nsIURI *source_uri, nsIURI *target_uri, bool report_error)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }

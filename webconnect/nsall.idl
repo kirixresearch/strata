@@ -3818,15 +3818,14 @@ interface nsIWindowWatcher : nsISupports
 interface nsIClassInfo;
 interface nsIXPCNativeCallContext;
 
-[uuid(31431440-f1ce-11d2-985a-006008962422)]
+[uuid(d4d21714-116b-4851-a785-098c5dfea523)]
 interface nsIXPCSecurityManager : nsISupports
 {
     void CanCreateWrapper(
                    in JSContextPtr js_context,
                    in nsIIDRef iid,
                    in nsISupports obj,
-                   in nsIClassInfo class_info,
-                   inout voidPtr policy);
+                   in nsIClassInfo class_info);
 
     void CanCreateInstance(
                    in JSContextPtr js_context,
@@ -3835,15 +3834,6 @@ interface nsIXPCSecurityManager : nsISupports
     void CanGetService(
                    in JSContextPtr js_context,
                    in nsCIDRef cid);
-
-    void CanAccess(in PRUint32 action,
-                   in nsIXPCNativeCallContext call_context,
-                   in JSContextPtr js_context,
-                   in JSObjectPtr js_object,
-                   in nsISupports obj,
-                   in nsIClassInfo class_info,
-                   in JSVal name,
-                   inout voidPtr policy);
 };
 
 
@@ -3852,7 +3842,7 @@ interface nsIXPCSecurityManager : nsISupports
 //  nsIPrincipal
 ///////////////////////////////////////////////////////////////////////////////
 
-[uuid(0575ea96-4561-4dc6-a818-3c4c97c2430d)]
+[scriptable, builtinclass, uuid(f09d8a53-a6c8-4f68-b329-9a76a709d24e)]
 interface nsIPrincipal : nsISupports //nsISerializable
 {
     // TODO: fill out (if necessary)
@@ -3869,16 +3859,9 @@ interface nsIDocShell;
 interface nsIDomainPolicy;
 
 
-[uuid(2911ae60-1b5f-47e6-941e-1bb7b53a167d)]
+[uuid(3b6e408b-e774-4612-89e8-3ef303564392)]
 interface nsIScriptSecurityManager : nsIXPCSecurityManager
 {
-    [noscript] void checkPropertyAccess(
-                      in JSContextPtr js_context,
-                      in JSObjectPtr js_object,
-                      in string class_name,
-                      in JSVal property,
-                      in PRUint32 action);
-
     [noscript] void checkLoadURIFromScript(in JSContextPtr cx, in nsIURI uri);
 
     const unsigned long STANDARD = 0;
@@ -3929,7 +3912,8 @@ interface nsIScriptSecurityManager : nsIXPCSecurityManager
 
     void checkSameOriginURI(
                       in nsIURI source_uri,
-                      in nsIURI target_uri);
+                      in nsIURI target_uri,
+                      in boolean report_error);
 
     nsIPrincipal getChannelPrincipal(in nsIChannel channel);
 

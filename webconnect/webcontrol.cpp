@@ -3664,6 +3664,15 @@ bool wxWebControl::RemoveAllCookies()
 
 
 
+
+
+
+bool wxWebControl::Execute(const wxString& js_code)
+{
+    // TODO: implement
+    return false;
+}
+
 /*
 namespace JS
 {
@@ -3675,9 +3684,16 @@ public:
     T ptr;
 };
 
+class Value
+{
+    unsigned char val[256];
+};
 
 class CompileOptions
 {
+public:
+    CompileOptions() { memset(val, 0, sizeof(val)); }
+    unsigned char val[256];
 };
 
 };
@@ -3688,12 +3704,12 @@ class nsIScriptContext : public nsISupports
 public:
     NS_DECLARE_STATIC_IID_ACCESSOR(NS_ISCRIPTCONTEXT_IID)
 
-    virtual nsresult EvaluateString(const nsAString& aScript,
-                                    JS::Handle<JSObject*> aScopeObject,
-                                    JS::CompileOptions &aOptions,
-                                    bool aCoerceToString,
-                                    JS::Value* aRetValue,
-                                    void **aOffThreadToken = nullptr) = 0;
+    virtual nsresult EvaluateString(const nsAString& script,
+                                    JS::Handle<JSObject*> scope_object,
+                                    JS::CompileOptions& compile_options,
+                                    bool coerce_to_string,
+                                    JS::Value* retval,
+                                    void** off_thread_token = nullptr) = 0;
 };
 NS_DEFINE_STATIC_IID_ACCESSOR(nsIScriptContext, NS_ISCRIPTCONTEXT_IID)
 
@@ -3713,15 +3729,12 @@ public:
   virtual nsIScriptContext* GetScriptContext() = 0;
 };
 NS_DEFINE_STATIC_IID_ACCESSOR(nsIScriptGlobalObject, NS_ISCRIPTGLOBALOBJECT_IID)
-*/
 
 
 
 
 bool wxWebControl::Execute(const wxString& js_code)
 {
-    return false;
-/*
     ns_smartptr<nsIScriptSecurityManager> security_manager;
     security_manager = nsGetService("@mozilla.org/scriptsecuritymanager;1");
     if (security_manager.empty())
@@ -3740,7 +3753,6 @@ bool wxWebControl::Execute(const wxString& js_code)
         return false;
 
     nsresult rv;
-    jsval out;
     nsEmbedString str;
     wx2ns(js_code, str);
 
@@ -3762,5 +3774,6 @@ bool wxWebControl::Execute(const wxString& js_code)
         nullptr);
         
     return true;
-*/
 }
+*/
+
