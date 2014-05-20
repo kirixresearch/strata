@@ -347,6 +347,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="xlsx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="baseset.h" />
@@ -366,6 +367,7 @@
     <ClInclude Include="xbaseiterator.h" />
     <ClInclude Include="xbaseset.h" />
     <ClInclude Include="xdfs.h" />
+    <ClInclude Include="xlsx.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="xdfs.rc">
