@@ -380,7 +380,7 @@ static bool isTextFileExtension(const std::wstring& _ext)
     std::string aext = kl::tostring(ext);
     
     static const char* text_types[] = { "ASP", "C", "CC", "CPP", "CS", "CXX",
-                                        "H", "HPP", "JAVA", "JS", "JSP", "PL", "PHP", "RC",
+                                        "H", "HPP", "JAVA", "JS", "JSP", "PL", "PHP", "RC", "SQL",
                                         (const char*)0 };
     
     for (size_t i = 0; text_types[i] != NULL; ++i)
