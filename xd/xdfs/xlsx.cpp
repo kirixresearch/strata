@@ -37,23 +37,26 @@ XlsxFile::~XlsxFile()
 
 bool XlsxFile::openFile(const std::wstring& filename)
 {
+    if (!m_file.openFile(filename))
+        return false;
+
     return true;
 }
 
 bool XlsxFile::createFile(const std::wstring& filename,
-                           const std::vector<XlsxField>& fields)
+                          const std::vector<XlsxField>& fields)
 {
     return true;
 }
 
 bool XlsxFile::isOpen()
 {
-    return m_file ? true : false;
+    return m_file.isOpen();
 }
 
 void XlsxFile::closeFile()
 {
-
+    m_file.closeFile();
 }
 
 const std::wstring& XlsxFile::getFilename()

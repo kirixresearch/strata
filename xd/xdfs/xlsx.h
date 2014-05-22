@@ -14,6 +14,7 @@
 
 
 #include <kl/klib.h>
+#include "zipfile.h"
 
 
 // -- XlsxDateTime struct declaration --
@@ -200,7 +201,7 @@ private:
 
 private:
 
-    xf_file_t m_file;
+    ZipFile m_file;
     std::wstring m_filename;
 
     size_t m_currow_num;            // current row number (starting at 1)
@@ -208,7 +209,7 @@ private:
     bool m_inserting;               // flag showing startInsert() was called
     
     std::string m_str_result;       // return value for getString() function
-    XlsxDateTime m_date_result;        // return value for getDate() function
+    XlsxDateTime m_date_result;     // return value for getDate() function
 
     std::vector<XlsxField> m_fields;
 };

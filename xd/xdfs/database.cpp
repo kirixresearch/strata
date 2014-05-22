@@ -21,7 +21,7 @@
 #include "ttbset.h"
 #include "delimitedtextset.h"
 #include "fixedlengthtextset.h"
-#include "xbase.h"
+#include "xlsxset.h"
 #include "delimitedtext.h"
 #include "rawtext.h"
 #include "../xdcommon/xdcommon.h"
@@ -380,7 +380,7 @@ static bool isTextFileExtension(const std::wstring& _ext)
     std::string aext = kl::tostring(ext);
     
     static const char* text_types[] = { "ASP", "C", "CC", "CPP", "CS", "CXX",
-                                        "H", "HPP", "JAVA", "JS", "JSP", "PL", "PHP", "RC", "SQL",
+                                        "H", "HPP", "JAVA", "JS", "JSP", "PL", "PHP", "PHTML", "RC", "SQL",
                                         (const char*)0 };
     
     for (size_t i = 0; text_types[i] != NULL; ++i)
@@ -425,6 +425,11 @@ bool FsDatabase::getFileFormat(const std::wstring& phys_path,
      else if (ext == L"icsv")
     {
         info->format = xd::formatTypedDelimitedText;
+        return true;
+    }
+     else if (ext == L"xlsx")
+    {
+        info->format = xd::formatXLSX;
         return true;
     }
      else if (ext == L"ebc")
@@ -1929,6 +1934,20 @@ IXdsqlTablePtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatD
         rawset->ref();
         rawset->setObjectPath(path);
         if (!rawset->init(phys_path, *fi))
+        {
+            rawset->unref();
+            return xcm::null;
+        }
+
+        set = static_cast<IXdfsSet*>(rawset);
+        rawset->unref();
+    }
+     else if (format == xd::formatXLSX) // XLSX spreadsheet
+    {
+        XlsxSet* rawset = new XlsxSet(this);
+        rawset->setObjectPath(path);
+        rawset->ref();
+        if (!rawset->init(phys_path))
         {
             rawset->unref();
             return xcm::null;

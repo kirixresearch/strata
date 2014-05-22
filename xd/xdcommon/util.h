@@ -211,10 +211,14 @@ inline int getDayOfWeek(int year, int month, int day)
 
 inline void int2buf(unsigned char* buf, unsigned int i)
 {
+#ifdef WIN32
+    *((unsigned int*)buf) = i;
+#else
     *(buf)   = (i & 0x000000ff);
     *(buf+1) = (i & 0x0000ff00) >> 8;
     *(buf+2) = (i & 0x00ff0000) >> 16;
     *(buf+3) = (i & 0xff000000) >> 24;
+#endif
 }
 
 inline unsigned int buf2int(const unsigned char* buf)
@@ -253,19 +257,21 @@ inline long long bufToInt64(unsigned char* buf)
 #endif
 }
 
-inline void int64ToBuf(unsigned char* bytes,
-                       long long i)
+inline void int64ToBuf(unsigned char* buf, long long i)
 {
-    bytes[0] = (unsigned char)((i) & 0xff);
-    bytes[1] = (unsigned char)((i >> 8) & 0xff);
-    bytes[2] = (unsigned char)((i >> 16) & 0xff);
-    bytes[3] = (unsigned char)((i >> 24) & 0xff);
-    bytes[4] = (unsigned char)((i >> 32) & 0xff);
-    bytes[5] = (unsigned char)((i >> 40) & 0xff);
-    bytes[6] = (unsigned char)((i >> 48) & 0xff);
-    bytes[7] = (unsigned char)((i >> 56) & 0xff);
+#ifdef WIN32
+    *((long long*)buf) = i;
+#else
+    buf[0] = (unsigned char)((i) & 0xff);
+    buf[1] = (unsigned char)((i >> 8) & 0xff);
+    buf[2] = (unsigned char)((i >> 16) & 0xff);
+    buf[3] = (unsigned char)((i >> 24) & 0xff);
+    buf[4] = (unsigned char)((i >> 32) & 0xff);
+    buf[5] = (unsigned char)((i >> 40) & 0xff);
+    buf[6] = (unsigned char)((i >> 48) & 0xff);
+    buf[7] = (unsigned char)((i >> 56) & 0xff);
+#endif
 }
-
 
 inline void invert_rowid_endianness(unsigned char* out, const unsigned char* in)
 {

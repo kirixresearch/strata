@@ -1,10 +1,10 @@
 /*!
  *
- * Copyright (c) 2003-2013, Kirix Research, LLC.  All rights reserved.
+ * Copyright (c) 2014, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  XD Database Library
- * Author:   David Z. Williams
- * Created:  2003-12-28
+ * Author:   Benjamin I. Williams
+ * Created:  2014-05-22
  *
  */
 
