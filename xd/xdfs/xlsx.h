@@ -14,7 +14,8 @@
 
 
 #include <kl/klib.h>
-#include "zipfile.h"
+#include <map>
+#include <string>
 
 
 // -- XlsxDateTime struct declaration --
@@ -149,6 +150,9 @@ struct XlsxField
 
 // XlsxFile class declaration
 
+struct zip;
+struct zip_file;
+
 class XlsxFile
 {
 public:
@@ -196,12 +200,15 @@ public:
 
 private:
 
+    bool readSharedStrings();
     bool flush();
-                            
 
 private:
 
-    ZipFile m_file;
+    struct zip* m_zip;
+    struct zip_file* m_sheet;
+    std::map<int, std::wstring> m_shared_strings;
+
     std::wstring m_filename;
 
     size_t m_currow_num;            // current row number (starting at 1)

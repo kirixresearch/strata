@@ -15,19 +15,26 @@
 
 
 #include <ctime>
+#include <kl/utf8.h>
 #include "xlsx.h"
 #include "../xdcommon/util.h"
+#include "zip.h"
+#define XML_STATIC
+#include "expat.h"
+
 
 
 static XlsxField EMPTY_XLSX_FIELD = XlsxField();
 static XlsxDateTime EMPTY_XLSX_DATE = XlsxDateTime();
+
+#define READ_BUFFER_SIZE 16384
 
 
 // -- XlsxFile class implementation --
 
 XlsxFile::XlsxFile()
 {
-
+    m_zip = NULL;
 }
 
 XlsxFile::~XlsxFile()
@@ -37,11 +44,106 @@ XlsxFile::~XlsxFile()
 
 bool XlsxFile::openFile(const std::wstring& filename)
 {
-    if (!m_file.openFile(filename))
+    //if (!m_file.openFile(filename))
+    //    return false;
+
+    m_zip = zip_open(kl::toUtf8(filename), 0, NULL);
+    if (!m_zip)
         return false;
+
+    if (!readSharedStrings())
+    {
+        zip_close(m_zip);
+        return false;
+    }
+
 
     return true;
 }
+
+
+
+struct SharedStringData
+{
+    SharedStringData() { idx = 0; }
+
+    int idx;
+    std::wstring chardata;
+    std::map<int, std::wstring>* map;
+};
+
+static void sharedStringStart(void* user_data, const char* el, const char** attr)
+{
+}
+
+static void sharedStringEnd(void* user_data, const char* el)
+{
+    SharedStringData* data = (SharedStringData*)user_data;
+
+    if (el[0] == 't' && el[1] == 0)
+    {
+        (*data->map)[data->idx] = data->chardata;
+        data->idx++;
+    }
+}
+
+static void sharedStringCharData(void* user_data, const XML_Char* s, int len)
+{
+    SharedStringData* data = (SharedStringData*)user_data;
+    std::wstring str;
+
+    if (len >= 0)
+        data->chardata = kl::utf8_utf8towstr(s, (size_t)len);
+}
+
+
+
+bool XlsxFile::readSharedStrings()
+{
+    // read in shared strings file
+
+    struct zip_file* sf = zip_fopen(m_zip, "xl/sharedStrings.xml", 0);
+    if (!sf)
+        return false;
+
+    SharedStringData data;
+    data.map = &m_shared_strings;
+
+    XML_Parser parser = XML_ParserCreate(NULL);
+
+    XML_SetElementHandler(parser, sharedStringStart, sharedStringEnd);
+    XML_SetCharacterDataHandler(parser, sharedStringCharData);
+    XML_SetUserData(parser, &data);
+
+    bool success = false;
+    int bytes_read;
+    void* buf;
+    while (1)
+    {
+        buf = XML_GetBuffer(parser, READ_BUFFER_SIZE);
+        if (!buf)
+            break;
+
+        bytes_read = (int)zip_fread(sf, buf, READ_BUFFER_SIZE);
+        if (bytes_read < 0)
+            break;
+
+        if (!XML_ParseBuffer(parser, bytes_read, (bytes_read != READ_BUFFER_SIZE)))
+            break;
+
+        if (bytes_read != READ_BUFFER_SIZE)
+        {
+            success = true;
+            break;
+        }
+    }
+
+    XML_ParserFree(parser);
+    zip_fclose(sf);
+
+    return success;
+}
+
 
 bool XlsxFile::createFile(const std::wstring& filename,
                           const std::vector<XlsxField>& fields)
@@ -51,12 +153,13 @@ bool XlsxFile::createFile(const std::wstring& filename,
 
 bool XlsxFile::isOpen()
 {
-    return m_file.isOpen();
+    return (m_zip ? true : false);
 }
 
 void XlsxFile::closeFile()
 {
-    m_file.closeFile();
+    zip_close(m_zip);
+    m_zip = NULL;
 }
 
 const std::wstring& XlsxFile::getFilename()

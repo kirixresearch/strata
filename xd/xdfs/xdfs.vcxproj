@@ -96,7 +96,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../kl/include;../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../kl/include;../include;../../supp/libzip;../../supp/libzip/lib;../../supp/expat/lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;UNICODE;_USRDLL;XDFS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -114,7 +114,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonud.lib;../xdcommonsql/lib/xdcommonsqlud.lib;../../kl/lib/klud.lib;../../kscript/lib/kscriptud.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonud.lib;../xdcommonsql/lib/xdcommonsqlud.lib;../../kl/lib/klud.lib;../../kscript/lib/kscriptud.lib;../../supp/libzip/lib/Debug/zipstatic.lib;../../supp/zlib/zlibd.lib;../../supp/expat/Debug/expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\DebugUnicode/xdfs.pdb</ProgramDatabaseFile>
@@ -184,7 +184,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>../../kl/include;../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../kl/include;../include;../../supp/libzip;../../supp/libzip/lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;UNICODE;_USRDLL;XDFS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -201,7 +201,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonu.lib;../xdcommonsql/lib/xdcommonsqlu.lib;../../kl/lib/klu.lib;../../kscript/lib/kscriptu.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonu.lib;../xdcommonsql/lib/xdcommonsqlu.lib;../../kl/lib/klu.lib;../../kscript/lib/kscriptu.lib;../../supp/libzip/lib/Release/zipstatic.lib;../../supp/zlib/zlib.lib;../../supp/expat/Release/expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\ReleaseUnicode/xdfs.pdb</ProgramDatabaseFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
