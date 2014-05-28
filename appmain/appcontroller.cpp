@@ -4594,10 +4594,7 @@ bool AppController::openTable(const wxString& _location, int* site_id)
         // open all normal table docs
         ITableDocPtr doc = TableDocMgr::createTableDoc();
         if (!doc->open(location, xcm::null, fileinfo))
-        {
-            appMessageBox(_("The specified table cannot be opened.  The data resource cannot be accessed or does not exist."));
             return false;
-        }
 
         if (doc->getCaption().Length() == 0)
             doc->setCaption(location, wxEmptyString);

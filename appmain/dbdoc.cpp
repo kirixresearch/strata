@@ -1164,7 +1164,7 @@ void DbDoc::actionActivate(IFsItemPtr item, int open_mask)
 
     if (!app_cont->openAny(obj_path, open_mask))
     {
-        appMessageBox(_("The file cannot be opened.  Please check to make sure that the file\nexists, that you have the necessary permissions to access it, and \nit is not currently being modified."),
+        appMessageBox(_("The file cannot be opened.  Please check to make sure that the file exists,\nthat you have the necessary permissions to access it, and it is not currently being modified."),
                        APPLICATION_NAME,
                        wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
