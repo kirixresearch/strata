@@ -57,15 +57,22 @@ bool XlsxFile::openFile(const std::wstring& filename)
         return false;
     }
 
+    if (!readSheet())
+    {
+        zip_close(m_zip);
+        return false;
+    }
 
     return true;
 }
 
 
 
-struct SharedStringData
+
+
+struct SharedStringParseData
 {
-    SharedStringData() { idx = 0; }
+    SharedStringParseData() { idx = 0; }
 
     int idx;
     std::wstring chardata;
@@ -78,7 +85,7 @@ static void sharedStringStart(void* user_data, const char* el, const char** attr
 
 static void sharedStringEnd(void* user_data, const char* el)
 {
-    SharedStringData* data = (SharedStringData*)user_data;
+    SharedStringParseData* data = (SharedStringParseData*)user_data;
 
     if (el[0] == 't' && el[1] == 0)
     {
@@ -89,7 +96,7 @@ static void sharedStringEnd(void* user_data, const char* el)
 
 static void sharedStringCharData(void* user_data, const XML_Char* s, int len)
 {
-    SharedStringData* data = (SharedStringData*)user_data;
+    SharedStringParseData* data = (SharedStringParseData*)user_data;
     std::wstring str;
 
     if (len >= 0)
@@ -106,7 +113,7 @@ bool XlsxFile::readSharedStrings()
     if (!sf)
         return false;
 
-    SharedStringData data;
+    SharedStringParseData data;
     data.map = &m_shared_strings;
 
     XML_Parser parser = XML_ParserCreate(NULL);
@@ -143,6 +150,104 @@ bool XlsxFile::readSharedStrings()
 
     return success;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+struct SheetParseData
+{
+    SheetParseData() { idx = 0; }
+
+    int idx;
+    std::wstring chardata;
+    std::map<int, std::wstring>* map;
+};
+
+static void sheetStart(void* user_data, const char* el, const char** attr)
+{
+}
+
+static void sheetEnd(void* user_data, const char* el)
+{
+    SheetParseData* data = (SheetParseData*)user_data;
+
+    if (el[0] == 't' && el[1] == 0)
+    {
+        (*data->map)[data->idx] = data->chardata;
+        data->idx++;
+    }
+}
+
+static void sheetCharData(void* user_data, const XML_Char* s, int len)
+{
+    SheetParseData* data = (SheetParseData*)user_data;
+    std::wstring str;
+
+    if (len >= 0)
+        data->chardata = kl::utf8_utf8towstr(s, (size_t)len);
+}
+
+
+
+bool XlsxFile::readSheet()
+{
+    // read in sheet file
+
+    struct zip_file* sf = zip_fopen(m_zip, "xl/worksheets/sheet1.xml", 0);
+    if (!sf)
+        return false;
+    
+    SheetParseData data;
+    data.map = &m_shared_strings;
+
+    XML_Parser parser = XML_ParserCreate(NULL);
+
+    XML_SetElementHandler(parser, sheetStart, sheetEnd);
+    XML_SetCharacterDataHandler(parser, sheetCharData);
+    XML_SetUserData(parser, &data);
+
+    bool success = false;
+    int bytes_read;
+    void* buf;
+    while (1)
+    {
+        buf = XML_GetBuffer(parser, READ_BUFFER_SIZE);
+        if (!buf)
+            break;
+
+        bytes_read = (int)zip_fread(sf, buf, READ_BUFFER_SIZE);
+        if (bytes_read < 0)
+            break;
+
+        if (!XML_ParseBuffer(parser, bytes_read, (bytes_read != READ_BUFFER_SIZE)))
+            break;
+
+        if (bytes_read != READ_BUFFER_SIZE)
+        {
+            success = true;
+            break;
+        }
+    }
+
+    XML_ParserFree(parser);
+    zip_fclose(sf);
+
+    return success;
+}
+
+
+
+
+
+
 
 
 bool XlsxFile::createFile(const std::wstring& filename,

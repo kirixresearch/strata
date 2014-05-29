@@ -201,6 +201,7 @@ public:
 private:
 
     bool readSharedStrings();
+    bool readSheet();
     bool flush();
 
 private:
