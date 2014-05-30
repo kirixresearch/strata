@@ -215,6 +215,8 @@ private:
 
     std::wstring m_filename;
 
+    int m_col_count;
+
     size_t m_currow_num;            // current row number (starting at 1)
     size_t m_row_count;             // number of rows in this row set
     bool m_inserting;               // flag showing startInsert() was called

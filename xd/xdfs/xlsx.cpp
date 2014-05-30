@@ -91,6 +91,7 @@ public:
     XlsxStore()
     {
         db = NULL;
+        col_count = 0;
     }
 
     ~XlsxStore()
@@ -139,6 +140,14 @@ public:
         if (0 != sqlite3_exec(db, sql.c_str(), NULL, NULL, &errmsg))
             return false;
 
+
+        int row_column_count = 0;
+        if (row.values.size() > 0)
+        {
+            row_column_count = row.values.rbegin()->first;
+            col_count = std::max(col_count, row_column_count);
+        }
+
         return true;
     }
 
@@ -152,6 +161,7 @@ public:
 public:
 
     sqlite3* db;
+    int col_count;
 };
 
 
@@ -176,6 +186,7 @@ XlsxFile::XlsxFile()
 {
     m_zip = NULL;
     m_store = new XlsxStore;
+    m_col_count = 0;
 }
 
 XlsxFile::~XlsxFile()
