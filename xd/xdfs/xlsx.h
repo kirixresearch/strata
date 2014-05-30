@@ -150,6 +150,7 @@ struct XlsxField
 
 // XlsxFile class declaration
 
+class XlsxStore;
 struct zip;
 struct zip_file;
 
@@ -208,6 +209,8 @@ private:
 
     struct zip* m_zip;
     struct zip_file* m_sheet;
+
+    XlsxStore* m_store;
     std::map<int, std::wstring> m_shared_strings;
 
     std::wstring m_filename;

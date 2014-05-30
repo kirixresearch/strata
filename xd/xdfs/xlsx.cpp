@@ -16,11 +16,151 @@
 
 #include <ctime>
 #include <kl/utf8.h>
+#include <kl/json.h>
 #include "xlsx.h"
 #include "../xdcommon/util.h"
 #include "zip.h"
+#include "sqlite3.h"
 #define XML_STATIC
 #include "expat.h"
+
+
+
+
+
+static int getColumnIdxFromCoord(const char* col)
+{
+
+    const char* p = col;
+    char c;
+
+    while (*p)
+    {
+        if (!*p || isdigit(*p))
+            break;
+        c = toupper(*p);
+        if (c < 'A' || c > 'Z')
+            return -1;    
+        ++p;
+    }
+
+    if (p == col)
+        return -1;
+
+    int res = 0;
+    int multiplier = 1;
+    --p;
+    while (p >= col)
+    {
+        c = toupper(*p);
+        res = ((int)(c - 'A')) * multiplier;
+
+        --p;
+        multiplier *= 26;
+    }
+
+    return res+1;
+}
+
+
+
+
+
+
+
+
+
+struct XlsxStoreCol
+{
+    XlsxStoreCol() { }
+
+    std::wstring type;
+    std::wstring value;
+};
+
+struct XlsxStoreRow
+{
+    std::map<int, XlsxStoreCol> values;
+};
+
+
+class XlsxStore
+{
+public:
+
+    XlsxStore()
+    {
+        db = NULL;
+    }
+
+    ~XlsxStore()
+    {
+        if (db)
+            sqlite3_close(db);
+    }
+
+    bool checkInit()
+    {
+        if (db)
+            return true;
+        if (0 != sqlite3_open(NULL, &db))
+            return false;
+        char* errmsg = NULL;
+        if (0 != sqlite3_exec(db, "CREATE TABLE store (rownum, data TEXT)", NULL, NULL, &errmsg))
+            return false;
+        return (db ? true : false);
+    }
+
+    bool addRow(int rownum, const XlsxStoreRow& row)
+    {
+        if (!checkInit())
+            return false;
+
+        kl::JsonNode node;
+        node.setArray();
+
+        std::map<int, XlsxStoreCol>::const_iterator it;
+        for (it = row.values.begin(); it != row.values.end(); ++it)
+        {
+            kl::JsonNode element = node.appendElement();
+            element.setObject();
+
+            element["type"] = it->second.type;
+            element["value"] = it->second.value;
+        }
+
+
+        std::wstring str = node.toString();
+        kl::replaceStr(str, L"'", L"\\'");
+
+        std::string sql = "INSERT INTO store (rownum, data) VALUES (" + kl::itostring(rownum) + ", '" + kl::tostring(str) + "')";
+
+        char* errmsg = NULL;
+        if (0 != sqlite3_exec(db, sql.c_str(), NULL, NULL, &errmsg))
+            return false;
+
+        return true;
+    }
+
+    bool getRow(int rownum, XlsxStoreRow& row)
+    {
+        if (!checkInit())
+            return false;
+
+    }
+
+public:
+
+    sqlite3* db;
+};
+
+
+
+
+
+
+
+
 
 
 
@@ -35,11 +175,13 @@ static XlsxDateTime EMPTY_XLSX_DATE = XlsxDateTime();
 XlsxFile::XlsxFile()
 {
     m_zip = NULL;
+    m_store = new XlsxStore;
 }
 
 XlsxFile::~XlsxFile()
 {
     closeFile();
+    delete m_store;
 }
 
 bool XlsxFile::openFile(const std::wstring& filename)
@@ -164,35 +306,80 @@ bool XlsxFile::readSharedStrings()
 
 struct SheetParseData
 {
-    SheetParseData() { idx = 0; }
+    SheetParseData() { store = NULL; }
 
-    int idx;
-    std::wstring chardata;
-    std::map<int, std::wstring>* map;
+    XlsxStore* store;
+    std::string curtag;
+    int currow;
+    int curcol;
+
+    XlsxStoreCol storecol;
+    XlsxStoreRow row;
 };
 
 static void sheetStart(void* user_data, const char* el, const char** attr)
 {
+    SheetParseData* data = (SheetParseData*)user_data;
+    data->curtag = el;
+
+    if (0 == strcmp(el, "row"))
+    {
+        data->row.values.clear();
+        data->currow = -1;
+
+        while (*attr)
+        {
+            if (0 == strcmp(*attr, "r"))
+                data->currow = atoi(*(attr+1));
+            attr += 2;
+        }
+    }
+     else if (0 == strcmp(el, "c"))
+    {
+        data->curcol = -1;
+        data->storecol = XlsxStoreCol();
+        while (*attr)
+        {
+            if (0 == strcmp(*attr, "r"))
+                data->curcol = getColumnIdxFromCoord(*(attr+1));
+            else if (0 == strcmp(*attr, "t"))
+                data->storecol.type = kl::towstring(*(attr+1));
+            attr += 2;
+        }
+    }
+
 }
 
 static void sheetEnd(void* user_data, const char* el)
 {
     SheetParseData* data = (SheetParseData*)user_data;
 
-    if (el[0] == 't' && el[1] == 0)
+    if (0 == strcmp(el, "row"))
     {
-        (*data->map)[data->idx] = data->chardata;
-        data->idx++;
+        if (data->currow != -1)
+        {
+            // append new row
+            data->store->addRow(data->currow, data->row);
+        }
+
+        data->row.values.clear();
     }
 }
 
 static void sheetCharData(void* user_data, const XML_Char* s, int len)
 {
     SheetParseData* data = (SheetParseData*)user_data;
-    std::wstring str;
 
-    if (len >= 0)
-        data->chardata = kl::utf8_utf8towstr(s, (size_t)len);
+    if (data->curtag == "v")
+    {
+        
+        if (data->curcol != -1)
+        {
+            data->storecol.value = kl::utf8_utf8towstr(s, (size_t)len);
+            data->row.values[data->curcol] = data->storecol;
+        }
+
+    }
 }
 
 
@@ -206,7 +393,7 @@ bool XlsxFile::readSheet()
         return false;
     
     SheetParseData data;
-    data.map = &m_shared_strings;
+    data.store = m_store;
 
     XML_Parser parser = XML_ParserCreate(NULL);
 
