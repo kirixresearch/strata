@@ -70,18 +70,6 @@ static int getColumnIdxFromCoord(const char* col)
 
 
 
-struct XlsxStoreCol
-{
-    XlsxStoreCol() { }
-
-    std::wstring type;
-    std::wstring value;
-};
-
-struct XlsxStoreRow
-{
-    std::map<int, XlsxStoreCol> values;
-};
 
 
 class XlsxStore
@@ -92,6 +80,7 @@ public:
     {
         db = NULL;
         col_count = 0;
+        row_count = 0;
     }
 
     ~XlsxStore()
@@ -148,6 +137,8 @@ public:
             col_count = std::max(col_count, row_column_count);
         }
 
+        row_count = std::max(row_count, rownum);
+
         return true;
     }
 
@@ -155,13 +146,13 @@ public:
     {
         if (!checkInit())
             return false;
-
     }
 
 public:
 
     sqlite3* db;
     int col_count;
+    int row_count;
 };
 
 
@@ -187,6 +178,7 @@ XlsxFile::XlsxFile()
     m_zip = NULL;
     m_store = new XlsxStore;
     m_col_count = 0;
+    m_row_count = 0;
 }
 
 XlsxFile::~XlsxFile()
@@ -215,6 +207,8 @@ bool XlsxFile::openFile(const std::wstring& filename)
         zip_close(m_zip);
         return false;
     }
+
+    goRow(1);
 
     return true;
 }
@@ -438,6 +432,9 @@ bool XlsxFile::readSheet()
     XML_ParserFree(parser);
     zip_fclose(sf);
 
+    m_col_count = m_store->col_count;
+    m_row_count = m_store->row_count;
+
     return success;
 }
 
@@ -611,6 +608,9 @@ bool XlsxFile::flush()
 
 void XlsxFile::goRow(size_t row)
 {
-
+    if (!m_store->getRow((int)row, m_currow))
+    {
+        m_currow = XlsxStoreRow();
+    }
 }
 

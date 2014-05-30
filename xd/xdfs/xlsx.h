@@ -148,9 +148,26 @@ struct XlsxField
 };
 
 
-// XlsxFile class declaration
+
 
 class XlsxStore;
+struct XlsxStoreCol
+{
+    XlsxStoreCol() { }
+
+    std::wstring type;
+    std::wstring value;
+};
+
+struct XlsxStoreRow
+{
+    std::map<int, XlsxStoreCol> values;
+};
+
+
+
+// XlsxFile class declaration
+
 struct zip;
 struct zip_file;
 
@@ -211,14 +228,16 @@ private:
     struct zip_file* m_sheet;
 
     XlsxStore* m_store;
+    XlsxStoreRow m_currow;
     std::map<int, std::wstring> m_shared_strings;
 
     std::wstring m_filename;
 
     int m_col_count;
+    int m_row_count;
+    int m_currow_num;               // current row number (starting at 1)
 
-    size_t m_currow_num;            // current row number (starting at 1)
-    size_t m_row_count;             // number of rows in this row set
+
     bool m_inserting;               // flag showing startInsert() was called
     
     std::string m_str_result;       // return value for getString() function
