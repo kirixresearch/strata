@@ -3,7 +3,7 @@
  * Copyright (c) 2003-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  XD Database Library
- * Author:   David Z. Williams
+ * Author:   Benjamin I. Williams
  * Created:  2003-12-28
  *
  */
@@ -62,6 +62,7 @@ class XlsxSet : public XdfsBaseSet,
                  public IXdsqlTable
 {
 friend class FsDatabase;
+friend class XlsxIterator;
 friend class XlsxRowInserter;
 
     XCM_CLASS_NAME("xdfs.XlsxSet")

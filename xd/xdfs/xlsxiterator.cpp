@@ -3,7 +3,7 @@
  * Copyright (c) 2003-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  XD Database Library
- * Author:   David Z. Williams
+ * Author:   Benjamin I. Williams
  * Created:  2003-12-28
  *
  */
@@ -37,6 +37,7 @@ XlsxIterator::XlsxIterator(FsDatabase* database)
     m_bof = false;
     m_eof = false;
     m_set = NULL;
+    m_file = NULL;
 }
 
 XlsxIterator::~XlsxIterator()
@@ -47,27 +48,20 @@ XlsxIterator::~XlsxIterator()
         delete (*it);
     }
 
-    if (m_file.isOpen())
-    {
-        m_file.closeFile();
-    }
-
     if (m_set)
         m_set->unref();
 
     m_database->unref();
 }
 
-bool XlsxIterator::init(XlsxSet* set, const std::wstring& filename)
+bool XlsxIterator::init(XlsxSet* set)
 {
-    if (!m_file.openFile(filename))
-        return false;
-
     m_set = set;
     m_set->ref();
 
-    m_current_row = 1;
+    m_file = &m_set->m_file;
 
+    m_current_row = 1;
     refreshStructure();
 
     return true;
@@ -86,7 +80,7 @@ std::wstring XlsxIterator::getTable()
 
 xd::rowpos_t XlsxIterator::getRowCount()
 {
-    return m_file.getRowCount();
+    return m_file->getRowCount();
 }
 
 xd::IDatabasePtr XlsxIterator::getDatabase()
@@ -98,7 +92,7 @@ xd::IIteratorPtr XlsxIterator::clone()
 {
     XlsxIterator* iter = new XlsxIterator(m_database);
     
-    if (!iter->init(m_set, m_file.getFilename()))
+    if (!iter->init(m_set))
     {
         return xcm::null;
     }
@@ -124,9 +118,9 @@ void XlsxIterator::skip(int delta)
         return;
     }
 
-    if ((unsigned int)m_current_row > m_file.getRowCount())
+    if ((unsigned int)m_current_row > m_file->getRowCount())
     {
-        m_current_row = m_file.getRowCount();
+        m_current_row = m_file->getRowCount();
         m_eof = true;
         return;
     }
@@ -146,7 +140,7 @@ void XlsxIterator::goLast()
 {
     m_bof = false;
     m_eof = false;
-    m_current_row = m_file.getRowCount();
+    m_current_row = m_file->getRowCount();
     goRow(m_current_row);
 }
 
@@ -188,7 +182,7 @@ double XlsxIterator::getPos()
 void XlsxIterator::goRow(const xd::rowid_t& rowid)
 {
     m_current_row = (unsigned int)rowid;
-    m_file.goRow(m_current_row);
+    m_file->goRow(m_current_row);
 }
 
 xd::IStructurePtr XlsxIterator::getStructure()
@@ -209,7 +203,7 @@ xd::IStructurePtr XlsxIterator::getStructure()
         col->setColumnOrdinal((*it)->ordinal);
         col->setExpression((*it)->expr_text);
         
-        if ((*it)->xbase_type == 'Y')    // currency
+        if ((*it)->xlsx_type == 'Y')    // currency
             col->setWidth(18);
         if (col->getType() == xd::typeDouble)
             col->setWidth(8);
@@ -225,6 +219,26 @@ xd::IStructurePtr XlsxIterator::getStructure()
     return s;
 }
 
+
+static std::wstring getSpreadsheetColumnName(int idx)
+{
+    std::wstring res;
+    int n;
+
+    while (true)
+    {
+        n = idx % 26;
+        res.insert(res.begin(), ('A' + n));
+        idx -= n;
+        idx /= 26;
+        if (idx == 0)
+            break;
+    }
+
+    return res;
+}
+
+
 bool XlsxIterator::refreshStructure()
 {
     // clear out any existing structure
@@ -237,40 +251,19 @@ bool XlsxIterator::refreshStructure()
     m_fields.clear();
 
 
-    xd::IStructurePtr s = m_set->getStructure();
-    int col_count = s->getColumnCount();
-    int i;
-
-    // get structure from xbase file
-    std::vector<XlsxField> fields = m_file.getFields();
-    
+    size_t i, col_count = m_file->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
-        
         XlsxDataAccessInfo* dai = new XlsxDataAccessInfo;
-        dai->xbase_type = xd2xlsxType(colinfo->getType());
-        dai->name = colinfo->getName();
-        dai->type = colinfo->getType();
-        dai->width = colinfo->getWidth();
-        dai->scale = colinfo->getScale();
-        dai->ordinal = colinfo->getColumnOrdinal();
-        dai->expr_text = colinfo->getExpression();
+        dai->name = getSpreadsheetColumnName((int)i);
+        dai->type = xd::typeWideCharacter;
+        dai->width = 255;
+        dai->scale = 0;
+        dai->ordinal = (int)i;
+        dai->expr_text = L"";
         m_fields.push_back(dai);
         
-        // -- look up the precise source type --
-        std::vector<XlsxField>::iterator it;
-        for (it = fields.begin(); it != fields.end(); ++it)
-        {
-            std::wstring xbase_name = kl::towstring(it->name);
-            if (0 == wcscasecmp(xbase_name.c_str(), dai->name.c_str()))
-            {
-                dai->xbase_type = it->type;
-                break;
-            }
-        }
-        
-        //  parse any expression, if necessary
+        // parse any expression, if necessary
         if (dai->expr_text.length() > 0)
             dai->expr = parse(dai->expr_text);
     }
@@ -554,7 +547,7 @@ const std::string& XlsxIterator::getString(xd::objhandle_t data_handle)
         return empty_string;
     }
 
-    dai->str_result = m_file.getString(dai->ordinal);
+    dai->str_result = kl::tostring(m_file->getString(dai->ordinal));
     return dai->str_result;
 }
 
@@ -586,7 +579,7 @@ const std::wstring& XlsxIterator::getWideString(xd::objhandle_t data_handle)
             return empty_wstring;
         }
 
-        dai->wstr_result = kl::towstring(m_file.getString(dai->ordinal));
+        dai->wstr_result = m_file->getString(dai->ordinal);
         return dai->wstr_result;
     }
 
@@ -623,7 +616,7 @@ xd::datetime_t XlsxIterator::getDateTime(xd::objhandle_t data_handle)
         return 0;
     }
 
-    XlsxDateTime xbase_date = m_file.getDateTime(dai->ordinal);
+    XlsxDateTime xbase_date = m_file->getDateTime(dai->ordinal);
     if (xbase_date.isNull())
         return 0;
     
@@ -657,7 +650,7 @@ double XlsxIterator::getDouble(xd::objhandle_t data_handle)
         return 0.0;
     }
 
-    return m_file.getDouble(dai->ordinal);
+    return m_file->getDouble(dai->ordinal);
 }
 
 int XlsxIterator::getInteger(xd::objhandle_t data_handle)
@@ -680,7 +673,7 @@ int XlsxIterator::getInteger(xd::objhandle_t data_handle)
         return 0;
     }
 
-    return m_file.getInteger(dai->ordinal);
+    return m_file->getInteger(dai->ordinal);
 }
 
 bool XlsxIterator::getBoolean(xd::objhandle_t data_handle)
@@ -703,7 +696,7 @@ bool XlsxIterator::getBoolean(xd::objhandle_t data_handle)
         return false;
     }
 
-    return m_file.getBoolean(dai->ordinal);
+    return m_file->getBoolean(dai->ordinal);
 }
 
 bool XlsxIterator::isNull(xd::objhandle_t data_handle)
@@ -726,7 +719,7 @@ bool XlsxIterator::isNull(xd::objhandle_t data_handle)
         return true;
     }
             
-    return m_file.isNull(dai->ordinal);
+    return m_file->isNull(dai->ordinal);
 }
 
 

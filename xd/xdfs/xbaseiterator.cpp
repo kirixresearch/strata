@@ -242,7 +242,7 @@ bool XbaseIterator::refreshStructure()
     int col_count = s->getColumnCount();
     int i;
 
-    // get structure from xbase file
+    // get structure from table
     std::vector<XbaseField> fields = m_file.getFields();
     
     for (i = 0; i < col_count; ++i)
@@ -259,7 +259,7 @@ bool XbaseIterator::refreshStructure()
         dai->expr_text = colinfo->getExpression();
         m_fields.push_back(dai);
         
-        // -- look up the precise source type --
+        // look up the precise source type
         std::vector<XbaseField>::iterator it;
         for (it = fields.begin(); it != fields.end(); ++it)
         {
@@ -271,7 +271,7 @@ bool XbaseIterator::refreshStructure()
             }
         }
         
-        //  parse any expression, if necessary
+        // parse any expression, if necessary
         if (dai->expr_text.length() > 0)
             dai->expr = parse(dai->expr_text);
     }

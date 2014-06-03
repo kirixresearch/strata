@@ -3,7 +3,7 @@
  * Copyright (c) 2003-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  XD Database Library
- * Author:   David Z. Williams
+ * Author:   Benjamin I. Williams
  * Created:  2003-12-28
  *
  */
@@ -24,7 +24,7 @@
 struct XlsxDataAccessInfo
 {
     // metadata
-    char xbase_type;
+    char xlsx_type;
 
     std::wstring name;
     int type;
@@ -43,7 +43,7 @@ struct XlsxDataAccessInfo
 
     XlsxDataAccessInfo()
     {
-        xbase_type = 0;
+        xlsx_type = 0;
 
         name = L"";
         type = xd::typeUndefined;
@@ -91,7 +91,7 @@ public:
     XlsxIterator(FsDatabase* database);
     ~XlsxIterator();
 
-    bool init(XlsxSet* set, const std::wstring& filename);
+    bool init(XlsxSet* set);
 
     // xd::IIterator
 
@@ -138,8 +138,7 @@ private:
 
     FsDatabase* m_database;
     XlsxSet* m_set;
-
-    XlsxFile m_file;
+    XlsxFile* m_file;
 
     std::vector<XlsxDataAccessInfo*> m_fields;
     std::vector<XlsxDataAccessInfo*> m_exprs;

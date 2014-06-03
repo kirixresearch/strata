@@ -83,7 +83,7 @@ xd::IStructurePtr XbaseSet::getStructure()
     if (!m_file.isOpen())
         return s;
 
-    // get structure from xbase file
+    // get structure from table
     std::vector<XbaseField> fields = m_file.getFields();
     
     // fill out xd structure from xbase structure

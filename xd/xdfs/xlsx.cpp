@@ -30,7 +30,6 @@
 
 static int getColumnIdxFromCoord(const char* col)
 {
-
     const char* p = col;
     char c;
 
@@ -59,7 +58,7 @@ static int getColumnIdxFromCoord(const char* col)
         multiplier *= 26;
     }
 
-    return res+1;
+    return res;
 }
 
 
@@ -115,6 +114,7 @@ public:
             kl::JsonNode element = node.appendElement();
             element.setObject();
 
+            element["column"] = it->first;
             element["type"] = it->second.type;
             element["value"] = it->second.value;
         }
@@ -133,7 +133,7 @@ public:
         int row_column_count = 0;
         if (row.values.size() > 0)
         {
-            row_column_count = row.values.rbegin()->first;
+            row_column_count = row.values.rbegin()->first + 1;
             col_count = std::max(col_count, row_column_count);
         }
 
@@ -146,6 +146,47 @@ public:
     {
         if (!checkInit())
             return false;
+
+        std::string query = "SELECT data FROM store WHERE rownum=";
+        query += kl::itostring(rownum);
+
+        sqlite3_stmt* stmt;
+        int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
+        if (rc != SQLITE_OK)
+            return false;
+
+        if (sqlite3_step(stmt) != SQLITE_ROW)
+        {
+            sqlite3_finalize(stmt);
+            return false;
+        }
+
+
+        
+        std::wstring json = kl::towstring((char*)sqlite3_column_text(stmt, 0));
+
+        sqlite3_finalize(stmt);
+
+        kl::JsonNode node;
+        if (!node.fromString(json))
+            return false;
+
+        int i, cnt = node.getChildCount();
+        for (i = 0; i < cnt; ++i)
+        {
+            kl::JsonNode element = node[i];
+            if (element.childExists("column") && element.childExists("type") && element.childExists("value"))
+            {
+                XlsxStoreCol col;
+                int colidx = element["column"].getInteger();
+                col.type = kl::tostring(element["type"].getString());
+                col.value = element["value"].getString();
+                row.values[colidx] = col;
+            }
+        }
+
+
+        return true;
     }
 
 public:
@@ -348,7 +389,7 @@ static void sheetStart(void* user_data, const char* el, const char** attr)
             if (0 == strcmp(*attr, "r"))
                 data->curcol = getColumnIdxFromCoord(*(attr+1));
             else if (0 == strcmp(*attr, "t"))
-                data->storecol.type = kl::towstring(*(attr+1));
+                data->storecol.type = *(attr+1);
             attr += 2;
         }
     }
@@ -472,6 +513,7 @@ size_t XlsxFile::getRowCount()
     return m_row_count;
 }
 
+/*
 std::vector<XlsxField>& XlsxFile::getFields()
 {
     return m_fields;
@@ -504,14 +546,44 @@ size_t XlsxFile::getFieldIdx(const std::string& name)
     
     return -1;
 }
+*/
 
-size_t XlsxFile::getFieldCount()
+size_t XlsxFile::getColumnCount()
 {
-    return m_fields.size();
+    return (size_t)m_col_count;
 }
 
-const std::string& XlsxFile::getString(size_t col_idx)
+void XlsxFile::goRow(size_t row)
 {
+    m_currow = XlsxStoreRow();
+    m_store->getRow((int)row, m_currow);
+}
+
+
+const std::wstring& XlsxFile::getString(size_t col_idx)
+{
+    std::map<int, XlsxStoreCol>::iterator it;
+    it = m_currow.values.find((int)col_idx);
+    if (it == m_currow.values.end())
+    {
+        m_str_result.clear();
+        return m_str_result;
+    }
+
+    if (it->second.type == "s")
+    {
+        int shared_string_offset = kl::wtoi(it->second.value);
+        std::map<int, std::wstring>::iterator ssit = m_shared_strings.find(shared_string_offset);
+        if (ssit != m_shared_strings.end())
+            m_str_result = ssit->second;
+             else
+            m_str_result = L"";
+    }
+     else
+    {
+        m_str_result = it->second.value;
+    }
+
     return m_str_result;
 }
 
@@ -604,13 +676,5 @@ bool XlsxFile::insertRow()
 bool XlsxFile::flush()
 {
     return true;
-}
-
-void XlsxFile::goRow(size_t row)
-{
-    if (!m_store->getRow((int)row, m_currow))
-    {
-        m_currow = XlsxStoreRow();
-    }
 }
 

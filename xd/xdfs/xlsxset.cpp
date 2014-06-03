@@ -1,10 +1,10 @@
 /*!
  *
- * Copyright (c) 2014, Kirix Research, LLC.  All rights reserved.
+ * Copyright (c) 2003-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  XD Database Library
  * Author:   Benjamin I. Williams
- * Created:  2014-05-22
+ * Created:  2003-12-28
  *
  */
 
@@ -73,6 +73,23 @@ std::wstring XlsxSet::getSetId()
     return kl::md5str(set_id);
 }
 
+
+static std::wstring getSpreadsheetColumnName(int idx)
+{
+    std::wstring res;
+    int n;
+
+    while (idx)
+    {
+        n = idx % 26;
+        res.insert(res.begin(), ('A' + n));
+        idx -= n;
+        idx /= 26;
+    }
+
+    return res;
+}
+
 xd::IStructurePtr XlsxSet::getStructure()
 {
     // create new xd::IStructure
@@ -83,32 +100,24 @@ xd::IStructurePtr XlsxSet::getStructure()
     if (!m_file.isOpen())
         return s;
 
-    // get structure from xbase file
-    std::vector<XlsxField> fields = m_file.getFields();
+    // get structure from table
+    //std::vector<XlsxField> fields = m_file.getFields();
     
     // fill out xd structure from xbase structure
-    std::vector<XlsxField>::iterator it;
-    for (it = fields.begin(); it != fields.end(); ++it)
+    //std::vector<XlsxField>::iterator it;
+    //for (it = fields.begin(); it != fields.end(); ++it)
+
+    size_t i, col_count = m_file.getColumnCount();
+    for (i = 0; i < col_count; ++i)
     {
         xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         struct_int->addColumn(col);
 
-        col->setName(kl::towstring(it->name));
-        col->setType(xlsx2xdType(it->type));
-        col->setWidth(it->width);
-        col->setScale(it->scale);
-        col->setColumnOrdinal(it->ordinal);
-        
-        // handle column information for specific types (currency, etc.)
-        if (it->type == 'Y')    // xbase currency type
-            col->setWidth(18);
-        if (col->getType() == xd::typeDouble)
-            col->setWidth(8);
-        if (col->getType() == xd::typeNumeric &&
-            col->getWidth() > xd::max_numeric_width)
-        {
-            col->setWidth(xd::max_numeric_width);
-        }
+        col->setName(getSpreadsheetColumnName((int)i));
+        col->setType(xd::typeWideCharacter);
+        col->setWidth(255);
+        col->setScale(0);
+        col->setColumnOrdinal(i);
     }
 
     XdfsBaseSet::appendCalcFields(s);
@@ -137,13 +146,13 @@ bool XlsxSet::getFormatDefinition(xd::FormatDefinition* def)
 
 
 xd::IIteratorPtr XlsxSet::createIterator(const std::wstring& columns,
-                                          const std::wstring& order,
-                                          xd::IJob* job)
+                                         const std::wstring& order,
+                                         xd::IJob* job)
 {
     if (order.empty())
     {
         XlsxIterator* iter = new XlsxIterator(m_database);
-        if (!iter->init(this, m_file.getFilename()))
+        if (!iter->init(this))
         {
             delete iter;
             return xcm::null;
@@ -382,6 +391,9 @@ bool XlsxRowInserter::putNull(xd::objhandle_t column_handle)
 
 bool XlsxRowInserter::startInsert(const std::wstring& col_list)
 {
+    return false;
+
+/*
     std::vector<XlsxField>::iterator it;
     std::vector<XlsxField> fields = m_file->getFields();
     
@@ -399,6 +411,7 @@ bool XlsxRowInserter::startInsert(const std::wstring& col_list)
     
     m_inserting = true;
     return m_file->startInsert();
+*/
 }
 
 bool XlsxRowInserter::insertRow()

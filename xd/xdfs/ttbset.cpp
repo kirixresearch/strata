@@ -84,7 +84,7 @@ xd::IStructurePtr TtbSet::getStructure()
     if (!m_file.isOpen())
         return xcm::null;
 
-    // get structure from ttb file
+    // get structure from table
     xd::IStructurePtr s = m_file.getStructure();
 
     XdfsBaseSet::appendCalcFields(s);

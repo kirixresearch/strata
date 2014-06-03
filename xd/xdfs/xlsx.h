@@ -155,7 +155,7 @@ struct XlsxStoreCol
 {
     XlsxStoreCol() { }
 
-    std::wstring type;
+    std::string type;
     std::wstring value;
 };
 
@@ -187,13 +187,13 @@ public:
     const std::wstring& getFilename();
     
     size_t getRowCount();
+    size_t getColumnCount();
     
-    std::vector<XlsxField>& getFields();
-    const XlsxField& getFieldInfo(const std::string& name);
-    size_t getFieldIdx(const std::string& name);
-    size_t getFieldCount();
+    //std::vector<XlsxField>& getFields();
+    //const XlsxField& getFieldInfo(const std::string& name);
+    //size_t getFieldIdx(const std::string& name);
     
-    const std::string& getString(size_t col_idx);
+    const std::wstring& getString(size_t col_idx);
     const XlsxDateTime& getDateTime(size_t col_idx);
     double getDouble(size_t col_idx);
     int getInteger(size_t col_idx);
@@ -237,10 +237,9 @@ private:
     int m_row_count;
     int m_currow_num;               // current row number (starting at 1)
 
-
     bool m_inserting;               // flag showing startInsert() was called
     
-    std::string m_str_result;       // return value for getString() function
+    std::wstring m_str_result;      // return value for getString() function
     XlsxDateTime m_date_result;     // return value for getDate() function
 
     std::vector<XlsxField> m_fields;
