@@ -95,7 +95,7 @@ public:
         if (0 != sqlite3_open(NULL, &db))
             return false;
         char* errmsg = NULL;
-        if (0 != sqlite3_exec(db, "CREATE TABLE store (rownum, data TEXT)", NULL, NULL, &errmsg))
+        if (0 != sqlite3_exec(db, "CREATE TABLE store (rownum INTEGER PRIMARY KEY, data TEXT)", NULL, NULL, &errmsg))
             return false;
         return (db ? true : false);
     }
@@ -105,6 +105,7 @@ public:
         if (!checkInit())
             return false;
 
+/*
         kl::JsonNode node;
         node.setArray();
 
@@ -118,17 +119,35 @@ public:
             element["type"] = it->second.type;
             element["value"] = it->second.value;
         }
+        */
 
+        std::wstring rowstr = L"", esc;
 
-        std::wstring str = node.toString();
-        kl::replaceStr(str, L"'", L"\\'");
+        std::map<int, XlsxStoreCol>::const_iterator it;
+        for (it = row.values.begin(); it != row.values.end(); ++it)
+        {
+            rowstr.append(kl::itowstring(it->first));
+            rowstr.append(L"\t");
+            rowstr.append(kl::towstring(it->second.type));
+            rowstr.append(L"\t");
 
-        std::string sql = "INSERT INTO store (rownum, data) VALUES (" + kl::itostring(rownum) + ", '" + kl::tostring(str) + "')";
+            esc = it->second.value;
+            kl::replaceStr(esc, L"\t", L"`@tab#`");
+            rowstr.append(esc);
 
-        char* errmsg = NULL;
-        if (0 != sqlite3_exec(db, sql.c_str(), NULL, NULL, &errmsg))
+            rowstr.append(L"\t");
+        }
+
+        sqlite3_stmt* stmt;
+        if (0 != sqlite3_prepare_v2(db, "INSERT INTO store (rownum, data) VALUES (?1, ?2)", -1, &stmt, NULL))
             return false;
 
+        sqlite3_bind_int(stmt, 1, rownum);
+        sqlite3_bind_blob(stmt, 2, (const void*)(const wchar_t*)rowstr.c_str(), (rowstr.length()+1) * sizeof(wchar_t), SQLITE_STATIC);
+
+        sqlite3_step(stmt);
+        sqlite3_reset(stmt);
+        sqlite3_finalize(stmt);
 
         int row_column_count = 0;
         if (row.values.size() > 0)
@@ -162,29 +181,38 @@ public:
         }
 
 
-        
-        std::wstring json = kl::towstring((char*)sqlite3_column_text(stmt, 0));
+        std::wstring data = (const wchar_t*)sqlite3_column_blob(stmt, 0);
+        kl::replaceStr(data, L"`@tab#`", L"\t");
 
         sqlite3_finalize(stmt);
 
-        kl::JsonNode node;
-        if (!node.fromString(json))
-            return false;
+        size_t start = 0, tabpos;
+        int colnum;
 
-        int i, cnt = node.getChildCount();
-        for (i = 0; i < cnt; ++i)
+        while (true)
         {
-            kl::JsonNode element = node[i];
-            if (element.childExists("column") && element.childExists("type") && element.childExists("value"))
-            {
-                XlsxStoreCol col;
-                int colidx = element["column"].getInteger();
-                col.type = kl::tostring(element["type"].getString());
-                col.value = element["value"].getString();
-                row.values[colidx] = col;
-            }
-        }
+            XlsxStoreCol col;
 
+            tabpos = data.find('\t', start);
+            if (tabpos == data.npos)
+                break; // all done
+            colnum = kl::wtoi(data.substr(start, tabpos-start));
+            start = tabpos+1;
+
+            tabpos = data.find('\t', start);
+            if (tabpos == data.npos)
+                return false;
+            col.type = kl::tostring(data.substr(start, tabpos-start));
+            start = tabpos+1;
+        
+            tabpos = data.find('\t', start);
+            if (tabpos == data.npos)
+                return false;
+            col.value = data.substr(start, tabpos-start);
+            start = tabpos+1;
+
+            row.values[colnum] = col;
+        }
 
         return true;
     }
