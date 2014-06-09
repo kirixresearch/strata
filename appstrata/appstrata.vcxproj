@@ -692,7 +692,6 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\appmain\tangogridmodel.cpp" />
     <ClCompile Include="..\appmain\textdoc.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -728,6 +727,7 @@
     <ClCompile Include="..\appmain\util.cpp" />
     <ClCompile Include="..\appmain\webdoc.cpp" />
     <ClCompile Include="..\appmain\mongoose.cpp" />
+    <ClCompile Include="..\appmain\xdgridmodel.cpp" />
     <ClCompile Include="appstrata.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -854,7 +854,6 @@
     <ClInclude Include="..\appmain\tabledoc.h" />
     <ClInclude Include="..\appmain\tabledoc_private.h" />
     <ClInclude Include="..\appmain\tabledocmodel.h" />
-    <ClInclude Include="..\appmain\tangogridmodel.h" />
     <ClInclude Include="..\appmain\tangojobbase.h" />
     <ClInclude Include="..\appmain\textdoc.h" />
     <ClInclude Include="..\appmain\textview.h" />
@@ -864,6 +863,7 @@
     <ClInclude Include="..\appmain\util.h" />
     <ClInclude Include="..\appmain\webdoc.h" />
     <ClInclude Include="..\appmain\mongoose.h" />
+    <ClInclude Include="..\appmain\xdgridmodel.h" />
     <ClInclude Include="config\appversion.h" />
   </ItemGroup>
   <ItemGroup>
