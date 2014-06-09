@@ -1184,9 +1184,9 @@ void Controller::apiRead(RequestInfo& req)
     str = L"";
 
     if (handle.empty())
-        str += L"{ \"success\": true,";
+        str += L"{\"success\": true,";
          else
-        str += L"{ \"success\": true,\"handle\": \"" + handle + L"\",";
+        str += L"{\"success\": true,\"handle\": \"" + handle + L"\",";
 
     if (so->rowcount != -1)
         str += L"\"total_count\": \"" +  kl::itowstring((int)so->rowcount) + L"\", ";
