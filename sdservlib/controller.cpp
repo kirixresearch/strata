@@ -1041,12 +1041,14 @@ void Controller::apiRead(RequestInfo& req)
     int start = kl::wtoi(req.getValue(L"start", L"-1"));
     int limit = kl::wtoi(req.getValue(L"limit", L"-1"));
     bool metadata = (req.getValue(L"metadata") == L"true" ? true : false);
+    bool create_handle = (handle == L"create" ? true : false);
+    bool use_handle = ((!create_handle && !handle.empty()) ? true : false);
     SessionQueryResult* so = NULL;
 
     if (limit < 0)
         limit = 0;
 
-    if (handle.empty())
+    if (handle.empty() || create_handle)
     {
         xd::IDatabasePtr db = getSessionDatabase(req);
         if (db.isNull())
@@ -1104,7 +1106,8 @@ void Controller::apiRead(RequestInfo& req)
         
 
         // add object to session
-        handle = createHandle();
+        if (create_handle)
+            handle = createHandle();
         so = new SessionQueryResult;
         so->iter = iter;
         so->rowpos = 0;
@@ -1112,7 +1115,6 @@ void Controller::apiRead(RequestInfo& req)
             so->rowcount = iter->getRowCount();
              else
             so->rowcount = -1;
-        addServerSessionObject(handle, so);
     }
      else
     {
@@ -1126,7 +1128,7 @@ void Controller::apiRead(RequestInfo& req)
     }
     
 
-    KL_AUTO_LOCK(so->mutex);
+    so->mutex.lock();
 
 
 
@@ -1180,7 +1182,11 @@ void Controller::apiRead(RequestInfo& req)
     }
 
     str = L"";
-    str += L"{ \"success\": true, \"handle\": \"" + handle + L"\", ";
+
+    if (handle.empty())
+        str += L"{ \"success\": true,";
+         else
+        str += L"{ \"success\": true,\"handle\": \"" + handle + L"\",";
 
     if (so->rowcount != -1)
         str += L"\"total_count\": \"" +  kl::itowstring((int)so->rowcount) + L"\", ";
@@ -1193,7 +1199,7 @@ void Controller::apiRead(RequestInfo& req)
             int idx, count = structure->getColumnCount();
     
             // set the items
-            str += L"\"columns\": [";
+            str += L"\"columns\":[";
 
             for (idx = 0; idx < count; ++idx)
             {  
@@ -1217,7 +1223,7 @@ void Controller::apiRead(RequestInfo& req)
     }
 
 
-    str += L"\"rows\": [ ";
+    str += L"\"rows\":[";
     std::wstring cell;
     
     int row = 0, col, rowcnt = 0;
@@ -1296,10 +1302,23 @@ void Controller::apiRead(RequestInfo& req)
     }
     
     if (rowcnt == 0)
-        str += L"] }";
+        str += L"]}";
          else
-        str += L"} ] }";
+        str += L"}]}";
     
+    so->mutex.unlock();
+
+
+    if (create_handle)
+    {
+        addServerSessionObject(handle, so);
+    }
+     else
+    {
+        if (!use_handle)
+            delete so;
+    }
+
     req.write(kl::tostring(str));
 }
 
