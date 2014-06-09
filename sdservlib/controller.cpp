@@ -1038,6 +1038,7 @@ static void quotedAppend(std::wstring& str, const std::wstring& cell)
 void Controller::apiRead(RequestInfo& req)
 {
     std::wstring handle = req.getValue(L"handle");
+    std::vector<SessionQueryResultColumn>* evalvec = NULL;
     int start = kl::wtoi(req.getValue(L"start", L"-1"));
     int limit = kl::wtoi(req.getValue(L"limit", L"-1"));
     bool metadata = (req.getValue(L"metadata") == L"true" ? true : false);
@@ -1056,7 +1057,6 @@ void Controller::apiRead(RequestInfo& req)
             returnApiError(req, "Could not connect to database");
             return;
         }
-
 
         xd::IFileInfoPtr finfo = db->getFileInfo(req.getURI());
         if (finfo.isNull())
@@ -1093,7 +1093,7 @@ void Controller::apiRead(RequestInfo& req)
 
         xd::QueryParams qp;
         qp.from = req.getURI();
-        qp.columns = L"";
+        qp.columns = req.getValue(L"columns");
         qp.where = req.getValue(L"where");
         qp.order = req.getValue(L"order");
 
@@ -1223,8 +1223,30 @@ void Controller::apiRead(RequestInfo& req)
     }
 
 
+
+    std::vector<SessionQueryResultColumn>* columns = &so->columns;
+    SessionQueryResultColumn* column;
+
+    if (req.getValueExists(L"eval"))
+    {
+        SessionQueryResultColumn col;
+        col.handle = so->iter->getHandle(req.getValue(L"eval"));
+        col.name = L"expr";
+        if (!col.handle)
+        {
+            so->mutex.unlock();
+            returnApiError(req, "Invalid expression");
+            return;
+        }
+        col.type = so->iter->getType(col.handle);
+
+        evalvec = new std::vector<SessionQueryResultColumn>;
+        evalvec->push_back(col);
+        columns = evalvec;
+    }
+
+
     str += L"\"rows\":[";
-    std::wstring cell;
     
     int row = 0, col, rowcnt = 0;
     for (row = 0; (limit >= 0 ? row < limit : true); ++row)
@@ -1239,34 +1261,36 @@ void Controller::apiRead(RequestInfo& req)
         
         rowcnt++;
         
-        for (col = 0; col < (int)so->columns.size(); ++col)
+        for (col = 0; col < (int)columns->size(); ++col)
         {
+            column = &(*columns)[col];
+
             if (col > 0)
                 str += L",";
             
-            quotedAppend(str, so->columns[col].name);
+            quotedAppend(str, column->name);
             str += L":";
 
-            switch (so->columns[col].type)
+            switch (column->type)
             {
                 default:
-                    cell = iter->getWideString(so->columns[col].handle);
+                    quotedAppend(str, iter->getWideString(column->handle));
                     break;
                 
                 case xd::typeInteger:
-                    cell = kl::itowstring(iter->getInteger(so->columns[col].handle));
+                    quotedAppend(str, kl::itowstring(iter->getInteger(column->handle)));
                     break;
                 
                 case xd::typeBoolean:
-                    cell = iter->getBoolean(so->columns[col].handle) ? L"true" : L"false";
+                    quotedAppend(str, iter->getBoolean(column->handle) ? L"true" : L"false");
                     break;
                 
                 case xd::typeNumeric:
                 case xd::typeDouble:
                 {
                     wchar_t buf[64];
-                    swprintf(buf, 64, L"%.*f", so->columns[col].scale, iter->getDouble(so->columns[col].handle));
-                    cell = buf;
+                    swprintf(buf, 64, L"%.*f", column->scale, iter->getDouble(column->handle));
+                    quotedAppend(str, buf);
                 }
                 break;
                 
@@ -1274,10 +1298,10 @@ void Controller::apiRead(RequestInfo& req)
                 {
                     wchar_t buf[16];
                     buf[0] = 0;
-                    xd::DateTime dt = iter->getDateTime(so->columns[col].handle);
+                    xd::DateTime dt = iter->getDateTime(column->handle);
                     if (!dt.isNull())
                         swprintf(buf, 16, L"%04d-%02d-%02d", dt.getYear(), dt.getMonth(), dt.getDay());
-                    cell = buf;
+                    quotedAppend(str, buf);
                 }
                 break;
                 
@@ -1285,16 +1309,13 @@ void Controller::apiRead(RequestInfo& req)
                 {
                     wchar_t buf[32];
                     buf[0] = 0;
-                    xd::DateTime dt = iter->getDateTime(so->columns[col].handle);
+                    xd::DateTime dt = iter->getDateTime(column->handle);
                     if (!dt.isNull())
                         swprintf(buf, 32, L"%04d-%02d-%02d %02d:%02d:%02d", dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
-                    cell = buf;
+                    quotedAppend(str, buf);
                 }
                 break;
             }
-            
-			quotedAppend(str, cell);
-
         }
         
         iter->skip(1);
@@ -1306,6 +1327,12 @@ void Controller::apiRead(RequestInfo& req)
          else
         str += L"}]}";
     
+    if (evalvec)
+    {
+        so->iter->releaseHandle((*evalvec)[0].handle);
+        delete evalvec;
+    }
+
     so->mutex.unlock();
 
 
