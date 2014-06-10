@@ -291,19 +291,26 @@ struct SharedStringParseData
     SharedStringParseData() { idx = 0; }
 
     int idx;
+    std::string curtag;
     std::wstring chardata;
     std::map<int, std::wstring>* map;
 };
 
 static void sharedStringStart(void* user_data, const char* el, const char** attr)
 {
+    SharedStringParseData* data = (SharedStringParseData*)user_data;
+
+    data->curtag = el;
+
+    if (data->curtag == "si")
+        data->chardata = L"";
 }
 
 static void sharedStringEnd(void* user_data, const char* el)
 {
     SharedStringParseData* data = (SharedStringParseData*)user_data;
 
-    if (el[0] == 't' && el[1] == 0)
+    if (el[0] == 's' && el[1] == 'i' && el[2] == 0)
     {
         (*data->map)[data->idx] = data->chardata;
         data->idx++;
@@ -315,8 +322,8 @@ static void sharedStringCharData(void* user_data, const XML_Char* s, int len)
     SharedStringParseData* data = (SharedStringParseData*)user_data;
     std::wstring str;
 
-    if (len >= 0)
-        data->chardata = kl::utf8_utf8towstr(s, (size_t)len);
+    if (data->curtag == "t" && len >= 0)
+        data->chardata += kl::utf8_utf8towstr(s, (size_t)len);
 }
 
 
@@ -421,7 +428,6 @@ static void sheetStart(void* user_data, const char* el, const char** attr)
             attr += 2;
         }
     }
-
 }
 
 static void sheetEnd(void* user_data, const char* el)
@@ -446,13 +452,11 @@ static void sheetCharData(void* user_data, const XML_Char* s, int len)
 
     if (data->curtag == "v")
     {
-        
         if (data->curcol != -1)
         {
             data->storecol.value = kl::utf8_utf8towstr(s, (size_t)len);
             data->row.values[data->curcol] = data->storecol;
         }
-
     }
 }
 
