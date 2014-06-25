@@ -432,7 +432,7 @@ void WebSocketsClient::send(const std::string& msg)
 }
 
 
-bool WebSocketsClient::run(const std::string& server, int port, bool ssl)
+bool WebSocketsClient::run(const std::string& server, int port, bool ssl, const std::string& path)
 {
     struct lws_context_creation_info info;
 
@@ -479,7 +479,7 @@ bool WebSocketsClient::run(const std::string& server, int port, bool ssl)
         try_count = 0;
         while (true)
         {
-            m_wsi = libwebsocket_client_connect(m_context, server.c_str(), port, ssl ? 2 : 0, "/", server.c_str(), "origin", NULL, -1);
+            m_wsi = libwebsocket_client_connect(m_context, server.c_str(), port, ssl ? 2 : 0, path.c_str(), server.c_str(), "origin", NULL, -1);
             if (m_wsi)
                 break;
 

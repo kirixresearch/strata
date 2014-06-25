@@ -226,11 +226,14 @@ int Sdserv::runServer()
             ssl = true;
 
         std::string server = kl::tostring(getOption(L"websockets.server"));
+        std::string path = kl::tostring(getOption(L"websockets.path"));
+        if (path.empty())
+            path = "/";
 
         int port = ssl  ? 443 :  80;
         WebSocketsClient ws(this);
         m_ws_client = &ws;
-        ws.run(server, port, ssl);
+        ws.run(server, port, ssl, path);
         m_ws_client = NULL;
     }
      else

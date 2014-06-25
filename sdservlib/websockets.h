@@ -68,7 +68,7 @@ public:
         m_write_flag = 0;
     }
 
-    bool run(const std::string& server, int port = 80, bool ssl = false);
+    bool run(const std::string& server, int port = 80, bool ssl = false, const std::string& path = "/");
 
 public:
 
