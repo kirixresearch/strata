@@ -32,7 +32,7 @@ namespace jobs
 {
 
 
-IJobPtr createJob(const std::wstring job_class)
+IJobPtr createJob(const std::wstring& job_class)
 {
     if (job_class == L"application/vnd.kx.aggregate-job")
         return static_cast<IJob*>(new AggregateJob);

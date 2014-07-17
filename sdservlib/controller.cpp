@@ -122,6 +122,7 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
     else if (method == L"load")                  apiLoad(req);
     else if (method == L"importupload")          apiImportUpload(req);
     else if (method == L"importload")            apiImportLoad(req);
+    else if (method == L"runjob")                apiRunJob(req);
     else if (method == L"jobinfo")               apiJobInfo(req);
     else if (method == L"initdb")                apiInitDb(req);
 
@@ -1871,7 +1872,6 @@ void Controller::apiImportUpload(RequestInfo& req)
 
 
 
-
 class ImportJobThread : public kl::thread
 {
 public:
@@ -2004,6 +2004,99 @@ void Controller::apiImportLoad(RequestInfo& req)
     req.write(response.toString());
 }
 
+
+
+
+
+
+
+class JobThread : public kl::thread
+{
+public:
+
+    JobThread() : kl::thread()
+    {
+    }
+
+    bool init(const std::wstring& job_type)
+    {
+        m_job = jobs::createJob(job_type);
+        return m_job.isOk();
+    }
+
+    jobs::IJobInfoPtr getJobInfo()
+    {
+        return m_job->getJobInfo();
+    }
+
+    unsigned int entry()
+    {
+        // configure the job parameters
+        kl::JsonNode params;
+
+        params["objects"].setArray();
+        kl::JsonNode objects = params["objects"];
+
+
+
+        m_job->setParameters(params.toString());
+        m_job->runJob();
+        m_job->runPostJob();
+
+        m_job->getJobInfo()->setState(jobs::jobStateFinished);
+
+        return 0;
+    }
+
+public:
+
+    jobs::IJobPtr m_job;
+};
+
+
+
+void Controller::apiRunJob(RequestInfo& req)
+{
+    std::wstring json = req.getValue(L"parameters");
+    kl::JsonNode root;
+    if (json.empty() || !root.fromString(json))
+    {
+        returnApiError(req, "Could not parse parameters");
+        return;
+    }
+
+    std::wstring job_type = root["metadata"]["type"];
+    if (!(job_type == L"application/vnd.kx.group-job"))
+    {
+        returnApiError(req, "Invalid job type");
+        return;        
+    }
+
+
+
+    JobThread* job = new JobThread;
+    if (!job->init(job_type))
+    {
+        returnApiError(req, "Invalid job type (2)");
+        return;
+    }
+
+    job->m_job->setParameters(root["params"].toString());
+
+    jobs::IJobInfoPtr job_info = job->m_job->getJobInfo();
+
+    m_job_info_mutex.lock();
+    int job_id = (int)m_job_info_vec.size();
+    m_job_info_vec.push_back(job_info);
+    m_job_info_mutex.unlock();
+
+    // return success/failure to caller
+    kl::JsonNode response;
+    response["success"].setBoolean(true);
+    response["job_id"].setInteger(job_id);
+    
+    req.write(response.toString());
+}
 
 
 void Controller::apiJobInfo(RequestInfo& req)

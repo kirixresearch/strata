@@ -181,7 +181,7 @@ public:
 
 
 IJobPtr createAggregateJob(std::vector<IJobPtr>& jobs);
-IJobPtr createJob(const std::wstring job_class);
+IJobPtr createJob(const std::wstring& job_class);
 IJobInfoPtr createJobInfoObject();
 IJobQueuePtr createJobQueueObject();
 
