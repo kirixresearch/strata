@@ -2031,15 +2031,6 @@ public:
 
     unsigned int entry()
     {
-        // configure the job parameters
-        kl::JsonNode params;
-
-        params["objects"].setArray();
-        kl::JsonNode objects = params["objects"];
-
-
-
-        m_job->setParameters(params.toString());
         m_job->runJob();
         m_job->runPostJob();
 
@@ -2081,14 +2072,25 @@ void Controller::apiRunJob(RequestInfo& req)
         return;
     }
 
-    job->m_job->setParameters(root["params"].toString());
+    xd::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+    {
+        returnApiError(req, "Database not available");
+        return;
+    }
 
+    std::wstring json_params = root["params"].toString();
+
+    job->m_job->setParameters(json_params);
+    job->m_job->setDatabase(db);
     jobs::IJobInfoPtr job_info = job->m_job->getJobInfo();
 
     m_job_info_mutex.lock();
     int job_id = (int)m_job_info_vec.size();
     m_job_info_vec.push_back(job_info);
     m_job_info_mutex.unlock();
+
+    job->create();
 
     // return success/failure to caller
     kl::JsonNode response;

@@ -114,7 +114,27 @@ int GroupJob::runJob()
 
     column_values.reserve(column_nodes.size());
     for (it_node = column_nodes.begin(); it_node != column_nodes.end(); ++it_node)
-        column_values.push_back(it_node->getString());
+    {
+        if (it_node->isObject())
+        {
+            if (!it_node->childExists(L"name") || !it_node->childExists(L"expression"))
+            {
+                m_job_info->setState(jobStateFailed);
+                m_job_info->setError(jobserrInvalidParameter, L"");
+                return 0;
+            }
+
+            std::wstring s = (*it_node)["name"].getString();
+            s += L"=";
+            s += (*it_node)["expression"].getString();
+
+            column_values.push_back(s);
+        }
+         else
+        {
+            column_values.push_back(it_node->getString());
+        }
+    }
 
     // TODO: anyway to make sure format is properly quoted?
     // following is a possibility, except that column values
