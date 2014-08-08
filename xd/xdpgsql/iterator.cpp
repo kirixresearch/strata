@@ -215,9 +215,17 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res)
 
         if (col_xd_type == xd::typeNumeric || col_xd_type == xd::typeDouble)
         {
-            fmod -= 4;
-            col_width = (fmod >> 16);
-            col_scale = (fmod & 0xffff);
+            if (fmod == -1)
+            {
+                col_width = 12;
+                col_scale = 4;
+            }
+             else
+            {
+                fmod -= 4;
+                col_width = (fmod >> 16);
+                col_scale = (fmod & 0xffff);
+            }
         }
          else if (col_xd_type == xd::typeCharacter || col_xd_type == xd::typeWideCharacter)
         {
