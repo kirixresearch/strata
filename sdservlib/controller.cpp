@@ -1279,7 +1279,7 @@ void Controller::apiRead(RequestInfo& req)
                     break;
                 
                 case xd::typeInteger:
-                    quotedAppend(str, kl::itowstring(iter->getInteger(column->handle)));
+                    str += kl::itowstring(iter->getInteger(column->handle));
                     break;
                 
                 case xd::typeBoolean:
@@ -1291,7 +1291,7 @@ void Controller::apiRead(RequestInfo& req)
                 {
                     wchar_t buf[64];
                     swprintf(buf, 64, L"%.*f", column->scale, iter->getDouble(column->handle));
-                    quotedAppend(str, buf);
+                    str += buf;
                 }
                 break;
                 
