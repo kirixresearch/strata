@@ -110,7 +110,7 @@ public:
         }
 
 
-        pgcmd = L"CREATE DATABASE " + pgsqlQuoteIdentifierIfNecessary(database);
+        pgcmd = L"CREATE DATABASE " + pgsqlQuoteIdentifierIfNecessary(database) + L" ENCODING 'UTF8'";
         PGresult* res = PQexec(conn, kl::toUtf8(pgcmd));
         if (!res)
             return false;
