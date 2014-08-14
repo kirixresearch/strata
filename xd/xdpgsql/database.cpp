@@ -540,6 +540,10 @@ PGconn* PgsqlDatabase::createConnection()
         return NULL;
     }
 
+    if (0 != PQsetClientEncoding(conn, "UTF-8"))
+    {
+        return NULL;
+    }
 
     return conn;
 }

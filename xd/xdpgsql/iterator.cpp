@@ -875,7 +875,8 @@ const std::string& PgsqlIterator::getString(xd::objhandle_t data_handle)
     if (PQgetisnull(m_res, m_block_row, dai->ordinal))
         return empty_string;
 
-    dai->str_result = PQgetvalue(m_res, m_block_row, dai->ordinal);
+    dai->wstr_result = kl::fromUtf8((PQgetvalue(m_res, m_block_row, dai->ordinal)));
+    dai->str_result = kl::tostring(dai->wstr_result);
     return dai->str_result;
 }
 
