@@ -1025,11 +1025,27 @@ static void quotedAppend(std::wstring& str, const std::wstring& cell)
     str += '"';
 
     const wchar_t* ch = cell.c_str();
+    unsigned int i;
+
     while (*ch)
     {
         if (*ch == '"' || *ch == '\\')
             str += L'\\';
-        str += *ch;
+
+        i = *ch;
+        if (i > 65535)
+        {
+            // omit high unicode
+        }
+         else if (i > 127)
+        {
+            str += kl::stdswprintf(L"\\u%04x", i);
+        }
+         else
+        {
+            str += *ch;
+        }
+
         ch++;
     }
 
