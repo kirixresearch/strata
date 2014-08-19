@@ -10,32 +10,45 @@ var g_next_port = 9000;
 
 function fetchPort(group, callback)
 {
+    var info;
+    
     if (g_map.hasOwnProperty(group))
     {
-        var o = g_map[group];
-        
-        if (o.status == 'r' /* ready */)
-        {
-            callback(o.port);
-        }
-         else
-        {
-            var flagCheck = setInterval(function() {
-                if (o.status == 'r') {
-                    clearInterval(flagCheck);
-                    callback(o.port);
-                }
-            }, 100); // interval set at 100 milliseconds
-        }
+        info = g_map[group];
     }
      else
     {
-        var port = g_next_port;
-        g_next_port++;
+        info = { "status": "x", "port": g_next_port };
+        ++g_next_port;
+        g_map[group] = info;
+    }
         
+    if (info.status == 'r' /* ready */)
+    {
+        callback(o.port);
+        return;
+    }
+     else if (info.status == 'l')
+    {
+        var flagCheck = setInterval(function() {
+            if (info.status == 'r') {
+                clearInterval(flagCheck);
+                callback(info.port);
+                return;
+            }
+        }, 100); // interval set at 100 milliseconds
+        return;
+    }
+     else
+    {
         // --win32evt-ready xxx --win32evt-notready xxx 
         
-        var cmdline = g_sdserv_cmd + " -d " + group + " -p " + port + " --idle-quit 3000 ";
+        var cmdline = g_sdserv_cmd + " -d " + group + " -p " + info.port + " --idle-quit 3000 ";
+        
+        var cmd = "sdserv.exe";
+        var args = [ "-d", group, "-p", info.port, "--idle-quit", "3000" ];
+
+        
         var cmd = "c:\\Program Files\\nodejs\\node.exe";
         var args = [ "C:\\appsrc\\trunk\\strata\\sdsvc\\nodejs\\test.js", port ];
 
