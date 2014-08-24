@@ -4,7 +4,7 @@ var http = require('http');
 var http_proxy = require('http-proxy');
 var url = require('url');
 var process = require('child_process');
-var g_sdserv_cmd = "c:\\appsrc\\trunk\\debugu\\sdserv.exe";
+var g_sdserv_cmd = "D:\\build32\\src\\trunk\\releaseu\\sdserv.exe";
 var g_map = {};
 var g_next_port = 9000;
 
@@ -25,7 +25,7 @@ function fetchPort(group, callback)
         
     if (info.status == 'r' /* ready */)
     {
-        callback(o.port);
+        callback(info.port);
         return;
     }
      else if (info.status == 'l')
@@ -45,15 +45,15 @@ function fetchPort(group, callback)
         
         var cmdline = g_sdserv_cmd + " -d " + group + " -p " + info.port + " --idle-quit 3000 ";
         
-        var cmd = "sdserv.exe";
+        var cmd = "D:\\build32\\src\\trunk\\releaseu\\sdserv.exe";
         var args = [ "-d", group, "-p", info.port, "--idle-quit", "3000" ];
 
         
-        var cmd = "c:\\Program Files\\nodejs\\node.exe";
-        var args = [ "C:\\appsrc\\trunk\\strata\\sdsvc\\nodejs\\test.js", port ];
+        //var cmd = "c:\\Program Files\\nodejs\\node.exe";
+        //var args = [ "D:\\build32\\src\\trunk\\sdsvcnodejs\\test.js", info.port ];
 
         
-        console.log("running " + cmdline);
+        console.log("running " + cmd + args.join(' '));
         
         var ls = process.spawn(cmd, args);
         
@@ -68,8 +68,8 @@ function fetchPort(group, callback)
             delete g_map[group];
         });
         
-        g_map[group] = { status: 'r', port: port };
-        callback(port);
+        info.status = 'r';
+        callback(info.port);
     }
 
 }
@@ -98,6 +98,12 @@ var http_callback = function (request, response) {
             return;
         }
         
+		var slash = request.url.indexOf('/',1);
+		if (slash == -1)
+			request.url = '/';
+			 else
+			request.url = request.url.substr(slash);
+			
         fetchPort(group, function(port) {
             console.log("forwarding to http://localhost:" + port);
             proxy.web(request, response, { target: 'http://localhost:' + port });
