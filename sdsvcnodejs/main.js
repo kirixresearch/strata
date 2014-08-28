@@ -98,12 +98,26 @@ var http_callback = function (request, response) {
             return;
         }
         
-		var slash = request.url.indexOf('/',1);
+		console.log(request.url);
+		
+		var question = request.url.indexOf('?');
+		
+		var new_url;
+		if (question == -1)
+			new_url = request.url;
+		     else
+			new_url = request.url.substr(0, question);
+		
+		var slash = new_url.indexOf('/',1);
 		if (slash == -1)
-			request.url = '/';
+			new_url = '/';
 			 else
-			request.url = request.url.substr(slash);
-			
+			new_url = new_url.substr(slash);
+		if (question != -1)
+			new_url += request.url.substr(question);
+		request.url = new_url;
+		console.log(request.url);
+		
         fetchPort(group, function(port) {
             console.log("forwarding to http://localhost:" + port);
             proxy.web(request, response, { target: 'http://localhost:' + port });
