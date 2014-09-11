@@ -41,6 +41,9 @@ function fetchPort(group, callback)
     }
      else
     {
+		// set status to loading
+		info.status = 'l';
+		
         // --win32evt-ready xxx --win32evt-notready xxx 
         
         var cmdline = g_sdserv_cmd + " -d " + group + " -p " + info.port + " --idle-quit 3000 ";
@@ -58,6 +61,12 @@ function fetchPort(group, callback)
         var ls = process.spawn(cmd, args);
         
         ls.stdout.on('data', function (data) {
+			if ((''+data).indexOf("*** sdserv ready") != -1)
+			{
+				// set status to running
+			    info.status = 'r';
+				callback(info.port);
+			}
             console.log('stdout: ' + data);
         });
         ls.stderr.on('data', function (data) {
@@ -65,11 +74,11 @@ function fetchPort(group, callback)
         });
         ls.on('close', function (code) {
             console.log('child process exited with code ' + code);
-            g_map[group].status = 'x';
+			console.log('child process was serving on port ' + info.port);
+            info.status = 'x';
         });
         
-        info.status = 'r';
-        callback(info.port);
+
     }
 
 }

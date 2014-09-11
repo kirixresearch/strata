@@ -148,6 +148,7 @@ void Sdserv::signalServerReady()
     }
 
     printf("*** sdserv ready\n");
+    fflush(stdout);
 }
 
 
