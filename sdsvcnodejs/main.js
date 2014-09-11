@@ -53,7 +53,7 @@ function fetchPort(group, callback)
         //var args = [ "D:\\build32\\src\\trunk\\sdsvcnodejs\\test.js", info.port ];
 
         
-        console.log("running " + cmd + args.join(' '));
+        console.log("running " + cmd + " " + args.join(' '));
         
         var ls = process.spawn(cmd, args);
         
@@ -65,7 +65,7 @@ function fetchPort(group, callback)
         });
         ls.on('close', function (code) {
             console.log('child process exited with code ' + code);
-            delete g_map[group];
+            g_map[group].status = 'x';
         });
         
         info.status = 'r';
@@ -116,7 +116,6 @@ var http_callback = function (request, response) {
         if (question != -1)
             new_url += request.url.substr(question);
         request.url = new_url;
-        console.log(request.url);
         
         fetchPort(group, function(port) {
             console.log("forwarding to http://localhost:" + port);
@@ -126,7 +125,7 @@ var http_callback = function (request, response) {
 };
 
 var server = http.createServer(http_callback);
-server.listen(8080);
+server.listen(80);
 
 
 

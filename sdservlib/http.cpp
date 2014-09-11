@@ -648,7 +648,7 @@ void HttpRequestInfo::sendNotFoundError()
 {
     setStatusCode(404);
     setContentType("text/html");
-    write("<html><body><h2>Not found</h2></body></html>");
+    write("{ \"success\": false, \"msg\": \"Not found\" }");
 }
 
 

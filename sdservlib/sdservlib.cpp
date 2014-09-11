@@ -146,6 +146,8 @@ void Sdserv::signalServerReady()
             CloseHandle(evt_ready);
         }
     }
+
+    printf("*** sdserv ready\n");
 }
 
 
