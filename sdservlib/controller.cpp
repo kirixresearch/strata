@@ -257,6 +257,39 @@ xd::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
 
 
 
+void Controller::apiInitDb(RequestInfo& req)
+{
+    xd::IDatabasePtr db = getSessionDatabase(req);
+
+    if (db.isNull())
+    {
+        xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
+        if (dbmgr.isOk())
+        {
+            dbmgr->createDatabase(m_connection_string);
+            db = dbmgr->open(m_connection_string);
+            
+            if (db.isOk())
+            {
+                KL_AUTO_LOCK(m_databases_object_mutex);
+                m_sdserv->m_database = db;
+                m_database = db;
+            }
+
+            printf("creating database: %ls\n", m_connection_string.c_str());
+            if (db.isNull())
+                printf("...but couldn't open database right away...\n");
+        }
+    }
+
+    // return success/failure to caller
+    kl::JsonNode response;
+    response["success"].setBoolean(db.isOk());
+
+    req.write(response.toString());
+}
+
+
 
 void Controller::apiFolderInfo(RequestInfo& req)
 {
@@ -1958,6 +1991,7 @@ void Controller::apiImportLoad(RequestInfo& req)
 
     std::wstring handle = req.getValue(L"handle");
     std::wstring target_path = req.getValue(L"target_path");
+    std::wstring target_format = req.getValue(L"target_format");
 
 #ifdef WIN32
     std::wstring path_separator = L"\\";
@@ -1998,6 +2032,50 @@ void Controller::apiImportLoad(RequestInfo& req)
     }
 
 
+
+    // configure the job parameters
+    kl::JsonNode params;
+
+    params["objects"].setArray();
+    kl::JsonNode objects = params["objects"];
+
+    // add our table to the import object
+    kl::JsonNode object = objects.appendElement();
+
+    object["source_connection"] = L"Xdprovider=xdfs";
+    object["destination_connection"] = m_connection_string;
+    object["source_path"] = datafile;
+    object["destination_path"] = target_path;
+    object["overwrite"] = true;
+
+
+    JobThread* job = new JobThread;
+    if (!job->init(L"application/vnd.kx.load-job"))
+    {
+        delete job;
+        returnApiError(req, "Invalid job type (2)");
+        return;
+    }
+
+
+    job->m_job->setParameters(params.toString());
+    job->m_job->setDatabase(db);
+    jobs::IJobInfoPtr job_info = job->m_job->getJobInfo();
+
+    m_job_info_mutex.lock();
+    int job_id = (int)m_job_info_vec.size();
+    m_job_info_vec.push_back(job_info);
+    m_job_info_mutex.unlock();
+
+    job->create();
+
+    // return success/failure to caller
+    kl::JsonNode response;
+    response["success"].setBoolean(true);
+    response["job_id"].setInteger(job_id);
+    
+    req.write(response.toString());
+/*
     ImportJobThread* import_job = new ImportJobThread;
     import_job->m_source_connection = L"Xdprovider=xdfs";
     import_job->m_target_connection = m_connection_string;
@@ -2018,6 +2096,8 @@ void Controller::apiImportLoad(RequestInfo& req)
     response["job_id"].setInteger(job_id);
     
     req.write(response.toString());
+*/
+
 }
 
 
@@ -2079,19 +2159,19 @@ void Controller::apiRunJob(RequestInfo& req)
         return;        
     }
 
+    xd::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+    {
+        returnApiError(req, "Database not available");
+        return;
+    }
 
 
     JobThread* job = new JobThread;
     if (!job->init(job_type))
     {
+        delete job;
         returnApiError(req, "Invalid job type (2)");
-        return;
-    }
-
-    xd::IDatabasePtr db = getSessionDatabase(req);
-    if (db.isNull())
-    {
-        returnApiError(req, "Database not available");
         return;
     }
 
@@ -2155,39 +2235,6 @@ void Controller::apiJobInfo(RequestInfo& req)
     response["current_count"].setInteger((int)job_info->getCurrentCount());
     response["status"] = status_string;
     
-    req.write(response.toString());
-}
-
-
-void Controller::apiInitDb(RequestInfo& req)
-{
-    xd::IDatabasePtr db = getSessionDatabase(req);
-
-    if (db.isNull())
-    {
-        xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
-        if (dbmgr.isOk())
-        {
-            dbmgr->createDatabase(m_connection_string);
-            db = dbmgr->open(m_connection_string);
-            
-            if (db.isOk())
-            {
-                KL_AUTO_LOCK(m_databases_object_mutex);
-                m_sdserv->m_database = db;
-                m_database = db;
-            }
-
-            printf("creating database: %ls\n", m_connection_string.c_str());
-            if (db.isNull())
-                printf("...but couldn't open database right away...\n");
-        }
-    }
-
-    // return success/failure to caller
-    kl::JsonNode response;
-    response["success"].setBoolean(db.isOk());
-
     req.write(response.toString());
 }
 
