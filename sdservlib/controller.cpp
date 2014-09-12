@@ -1920,61 +1920,6 @@ void Controller::apiImportUpload(RequestInfo& req)
 
 
 
-
-class ImportJobThread : public kl::thread
-{
-public:
-
-    ImportJobThread() : kl::thread()
-    {
-        m_job = jobs::createJob(L"application/vnd.kx.load-job");
-    }
-
-    jobs::IJobInfoPtr getJobInfo()
-    {
-        return m_job->getJobInfo();
-    }
-
-    unsigned int entry()
-    {
-        // configure the job parameters
-        kl::JsonNode params;
-
-        params["objects"].setArray();
-        kl::JsonNode objects = params["objects"];
-
-
-        // add our table to the import object
-        kl::JsonNode object = objects.appendElement();
-
-        object["source_connection"] = m_source_connection;
-        object["destination_connection"] = m_target_connection;
-
-        object["source_path"] = m_source_table;
-        object["destination_path"] = m_target_table;
-
-        object["overwrite"] = true;
-
-
-        m_job->setParameters(params.toString());
-        m_job->runJob();
-        m_job->runPostJob();
-
-        m_job->getJobInfo()->setState(jobs::jobStateFinished);
-
-        return 0;
-    }
-
-public:
-
-    jobs::IJobPtr m_job;
-    std::wstring m_source_connection;
-    std::wstring m_target_connection;
-    std::wstring m_target_table;
-    std::wstring m_source_table;
-};
-
-
 class JobThread : public kl::thread
 {
 public:
@@ -2110,29 +2055,6 @@ void Controller::apiImportLoad(RequestInfo& req)
     response["job_id"].setInteger(job_id);
     
     req.write(response.toString());
-/*
-    ImportJobThread* import_job = new ImportJobThread;
-    import_job->m_source_connection = L"Xdprovider=xdfs";
-    import_job->m_target_connection = m_connection_string;
-    import_job->m_source_table = datafile;
-    import_job->m_target_table = target_path;
-
-    jobs::IJobInfoPtr job_info = import_job->getJobInfo();
-    m_job_info_mutex.lock();
-    int job_id = (int)m_job_info_vec.size();
-    m_job_info_vec.push_back(job_info);
-    m_job_info_mutex.unlock();
-
-    import_job->create();
-
-    // return success/failure to caller
-    kl::JsonNode response;
-    response["success"].setBoolean(true);
-    response["job_id"].setInteger(job_id);
-    
-    req.write(response.toString());
-*/
-
 }
 
 
