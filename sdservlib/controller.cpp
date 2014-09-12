@@ -1975,6 +1975,41 @@ public:
 };
 
 
+class JobThread : public kl::thread
+{
+public:
+
+    JobThread() : kl::thread()
+    {
+    }
+
+    bool init(const std::wstring& job_type)
+    {
+        m_job = jobs::createJob(job_type);
+        return m_job.isOk();
+    }
+
+    jobs::IJobInfoPtr getJobInfo()
+    {
+        return m_job->getJobInfo();
+    }
+
+    unsigned int entry()
+    {
+        m_job->runJob();
+        m_job->runPostJob();
+
+        m_job->getJobInfo()->setState(jobs::jobStateFinished);
+
+        return 0;
+    }
+
+public:
+
+    jobs::IJobPtr m_job;
+};
+
+
 void Controller::apiImportLoad(RequestInfo& req)
 {
     if (!req.getValueExists(L"handle") || !req.getValueExists(L"target_path"))
@@ -2105,40 +2140,6 @@ void Controller::apiImportLoad(RequestInfo& req)
 
 
 
-
-class JobThread : public kl::thread
-{
-public:
-
-    JobThread() : kl::thread()
-    {
-    }
-
-    bool init(const std::wstring& job_type)
-    {
-        m_job = jobs::createJob(job_type);
-        return m_job.isOk();
-    }
-
-    jobs::IJobInfoPtr getJobInfo()
-    {
-        return m_job->getJobInfo();
-    }
-
-    unsigned int entry()
-    {
-        m_job->runJob();
-        m_job->runPostJob();
-
-        m_job->getJobInfo()->setState(jobs::jobStateFinished);
-
-        return 0;
-    }
-
-public:
-
-    jobs::IJobPtr m_job;
-};
 
 
 
