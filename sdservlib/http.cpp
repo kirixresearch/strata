@@ -919,7 +919,7 @@ int HttpServer::request_callback(struct mg_connection* conn)
     {
         req.setStatusCode(404);
         req.setContentType("text/html");
-        req.write("<html><body><h2>Not found</h2></body></html>");
+        req.write("{ \"success\": false, \"msg\": \"Not found\" }");
     }
 
     return 1;
