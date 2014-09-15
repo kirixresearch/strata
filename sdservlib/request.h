@@ -17,21 +17,29 @@ class PostValueBase
 {
 public:
 
-    virtual void setName(const std::wstring& value) = 0;
-    virtual const std::wstring& getName() = 0;
+    virtual ~PostValueBase() { }
 
-    virtual void setFilename(const std::wstring& value) = 0;
-    virtual const std::wstring& getFilename() = 0;
+    virtual void setName(const std::wstring& value) { m_name = value; }
+    virtual const std::wstring& getName() { return m_name; }
 
-    virtual void setTempFilename(const std::wstring& value) = 0;
-    virtual const std::wstring& getTempFilename() = 0;
+    virtual void setFilename(const std::wstring& value) { m_filename = value; }
+    virtual const std::wstring& getFilename() { return m_filename; }
 
-    virtual unsigned char* getData() = 0;
-    virtual size_t getDataSize() = 0;
+    virtual void setTempFilename(const std::wstring& value) { m_temp_filename = value; }
+    virtual const std::wstring& getTempFilename() { return m_temp_filename; }
+
+    virtual unsigned char* getData() { return NULL; } // not implemented by PostValueFile
+    virtual size_t getDataSize() { return 0; }
 
     virtual void start() = 0;
     virtual void append(const unsigned char* buf, size_t len) = 0;
     virtual void finish() = 0;
+
+protected:
+
+    std::wstring m_name;
+    std::wstring m_filename;
+    std::wstring m_temp_filename;
 };
 
 
@@ -46,15 +54,29 @@ public:
 };
 
 
+
+class PostHookBase
+{
+public:
+
+    virtual ~PostHookBase() { }
+
+    virtual PostValueBase* onPostValue(const std::wstring& key, const std::wstring& filename) = 0;
+};
+
+
 class RequestInfo
 {
 public:
 
     virtual std::wstring getURI() = 0;
+    virtual std::wstring getGetValue(const std::wstring& key) = 0;
     virtual std::wstring getValue(const std::wstring& key, const std::wstring& def = L"") = 0;
     virtual bool getValueExists(const std::wstring& key) = 0;
     virtual RequestFileInfo getPostFileInfo(const std::wstring& key) = 0;
     virtual int getContentLength() = 0;
+    virtual void setPostHook(PostHookBase* hook) = 0;
+    virtual bool isMultipart() = 0;
 
     virtual void setValue(const std::wstring& key, const std::wstring& value) = 0;
     virtual void setContentType(const char* content_type) = 0;

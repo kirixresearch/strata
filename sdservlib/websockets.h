@@ -28,11 +28,14 @@ public:
     WebSocketsRequestInfo(WebSocketsClient* client);
 
     std::wstring getURI();
+    std::wstring getGetValue(const std::wstring& key) { return getValue(key); }
     std::wstring getValue(const std::wstring& key, const std::wstring& def = L"");
     bool getValueExists(const std::wstring& key);
     void setValue(const std::wstring& key, const std::wstring& value);
-
     int getContentLength();
+
+    void setPostHook(PostHookBase* hook) { }
+    bool isMultipart() { return false; }
 
     RequestFileInfo getPostFileInfo(const std::wstring& key);
     

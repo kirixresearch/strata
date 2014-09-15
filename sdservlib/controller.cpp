@@ -42,7 +42,9 @@ bool Controller::onRequest(RequestInfo& req)
     if (uri.length() > 0 && uri[uri.length()-1] == '/')
        uri = uri.substr(0, uri.length()-1);
 
-    std::wstring method = req.getValue(L"m");
+    std::wstring method = req.getGetValue(L"m");
+    if (method.empty())
+        return false;
     
     invokeApi(uri, method, req);
     return true;
@@ -62,13 +64,16 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
     last_time = t;
     
 
-    std::wstring str;
+    std::wstring str = uri;
+
+    /*
     if (req.getValueExists(L"path"))
         str = req.getValue(L"path");
     else if (req.getValueExists(L"handle"))
         str = req.getValue(L"handle");
     else str = uri;
-        
+    */
+
     if (str.length() > 43)
     {
         int ending_start = (int)str.length();
@@ -1874,11 +1879,49 @@ void Controller::apiLoad(RequestInfo& req)
 }
 
 
+
+
+
+class ImportUploadPostValue : public PostValueBase
+{
+public:
+
+    void start()
+    {
+    }
+
+    void append(const unsigned char* buf, size_t len)
+    {
+    }
+
+    virtual void finish()
+    {
+    }
+
+};
+
+
+class ImportUploadPostHook : public PostHookBase
+{
+public:
+
+    PostValueBase* onPostValue(const std::wstring& key, const std::wstring& filename)
+    {
+        if (filename.length() > 0)
+            return new ImportUploadPostValue;
+
+        return NULL;
+    }
+};
+
+
+
 void Controller::apiImportUpload(RequestInfo& req)
 {
+    req.setPostHook(new ImportUploadPostHook);
+
     // create handle to file
     std::wstring handle = createHandle();
-
 
     RequestFileInfo fileinfo = req.getPostFileInfo(L"file");
     if (!fileinfo.isOk())
@@ -1917,6 +1960,10 @@ void Controller::apiImportUpload(RequestInfo& req)
     response["handle"].setString(handle);
     req.write(response.toString());
 }
+
+
+
+
 
 
 

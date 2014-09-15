@@ -117,6 +117,8 @@ HttpRequestInfo::HttpRequestInfo(struct mg_connection* conn, const struct mg_req
     m_boundary = NULL;
     m_boundary_length = 0;
     m_request_content_length = 0;
+    m_request_bytes_read = 0;
+    m_post_hook = NULL;
 }
 
 HttpRequestInfo::~HttpRequestInfo()
@@ -129,6 +131,7 @@ HttpRequestInfo::~HttpRequestInfo()
     checkHeaderSent();
 
     delete[] m_boundary;
+    delete m_post_hook;
 }
 
 
@@ -188,7 +191,6 @@ void HttpRequestInfo::read()
     m_accept_compressed = false;
 
 
-
     if (m_req->query_string && *m_req->query_string)
     {
         // get method
@@ -198,9 +200,6 @@ void HttpRequestInfo::read()
         for (it = parts.begin(); it != parts.end(); ++it)
             m_get[it->key] = it->value;
     }
-
-    if (*m_req->request_method == 'P')
-        readPost();
 }
 
 void HttpRequestInfo::readPost()
@@ -213,53 +212,58 @@ void HttpRequestInfo::readPost()
         readMultipart();
         return;
     }
-
-    #define BUFFERSIZE 4096
-
-    char buf[BUFFERSIZE];
-    int buf_len;
-    int wanted_bytes;
-    int bytes_left = m_request_content_length;
-
-    while (true)
+     else
     {
-        if (bytes_left != -1)
-            wanted_bytes = std::min(BUFFERSIZE, bytes_left);
-                else
-            wanted_bytes = BUFFERSIZE;
+        kl::membuf post_data_buf;
 
-        if (wanted_bytes == 0)
-            break;
+        #define BUFFERSIZE 4096
 
-        buf_len = mg_read(m_conn, buf, wanted_bytes);
-        if (buf_len == -1)
-            break;
+        char buf[BUFFERSIZE];
+        int buf_len;
+        int wanted_bytes;
+        int bytes_left = m_request_content_length;
+
+        while (true)
+        {
+            if (bytes_left != -1)
+                wanted_bytes = std::min(BUFFERSIZE, bytes_left);
+                    else
+                wanted_bytes = BUFFERSIZE;
+
+            if (wanted_bytes == 0)
+                break;
+
+            buf_len = mg_read(m_conn, buf, wanted_bytes);
+            if (buf_len == -1)
+                break;
+            m_request_bytes_read += buf_len;
             
-        if (bytes_left != -1)
-            bytes_left -= buf_len;
+            if (bytes_left != -1)
+                bytes_left -= buf_len;
 
-        m_post_data_buf.append((unsigned char*)buf, buf_len);
+            post_data_buf.append((unsigned char*)buf, buf_len);
             
-        if (bytes_left == 0)
-            break;
-        if (buf_len != wanted_bytes)
-            break;
-    }
+            if (bytes_left == 0)
+                break;
+            if (buf_len != wanted_bytes)
+                break;
+        }
 
-    char* post_data = (char*)m_post_data_buf.getData();
-    size_t post_data_len = m_post_data_buf.getDataSize();
+        char* post_data = (char*)post_data_buf.getData();
+        size_t post_data_len = post_data_buf.getDataSize();
         
 
-    // post method -- regular
-    std::vector<request_member> parts;
-    std::vector<request_member>::iterator it;
-    std::string s_post_data(post_data, post_data_len);
-    extractPairs(kl::towstring(s_post_data), parts);
-    for (it = parts.begin(); it != parts.end(); ++it)
-    {
-        RequestPostInfo& info = m_post[it->key];
+        // post method -- regular
+        std::vector<request_member> parts;
+        std::vector<request_member>::iterator it;
+        std::string s_post_data(post_data, post_data_len);
+        extractPairs(kl::towstring(s_post_data), parts);
+        for (it = parts.begin(); it != parts.end(); ++it)
+        {
+            RequestPostInfo& info = m_post[it->key];
 
-        info.value = it->value;
+            info.value = it->value;
+        }
     }
 }
 
@@ -270,21 +274,9 @@ bool HttpRequestInfo::isHTTP_1_1() const
 
 
 
-
-
-
 class PostValueMemory : public PostValueBase
 {
 public:
-
-    virtual void setName(const std::wstring& value) { m_name = value; }
-    virtual const std::wstring& getName() { return m_name; }
-
-    virtual void setFilename(const std::wstring& value) { m_filename = value; }
-    virtual const std::wstring& getFilename() { return m_filename; }
-
-    virtual void setTempFilename(const std::wstring& value) { m_temp_filename = value; }
-    virtual const std::wstring& getTempFilename() { return m_temp_filename; }
 
     virtual unsigned char* getData() { return m_membuf.getData(); }
     virtual size_t getDataSize() { return m_membuf.getDataSize(); }
@@ -295,9 +287,6 @@ public:
 
 private:
 
-    std::wstring m_name;
-    std::wstring m_filename;
-    std::wstring m_temp_filename;
     kl::membuf m_membuf;
 };
 
@@ -305,17 +294,10 @@ class PostValueFile : public PostValueBase
 {
 public:
 
-    virtual void setName(const std::wstring& value) { m_name = value; }
-    virtual const std::wstring& getName() { return m_name; }
-
-    virtual void setFilename(const std::wstring& value) { m_filename = value; }
-    virtual const std::wstring& getFilename() { return m_filename; }
-
-    virtual void setTempFilename(const std::wstring& value) { m_temp_filename = value; }
-    virtual const std::wstring& getTempFilename() { return m_temp_filename; }
-
-    virtual unsigned char* getData() { return NULL; } // not implemented by PostValueFile
-    virtual size_t getDataSize() { return 0; }
+    PostValueFile()
+    {
+        m_f = (xf_file_t)0;
+    }
 
     virtual void start()
     {
@@ -330,15 +312,14 @@ public:
 
     virtual void finish()
     {
-        xf_close(m_f);
+        if (m_f)
+            xf_close(m_f);
+        m_f = (xf_file_t)0;
     }
 
 public:
 
     xf_file_t m_f;
-    std::wstring m_name;
-    std::wstring m_filename;
-    std::wstring m_temp_filename;
 };
 
 
@@ -450,6 +431,9 @@ void HttpRequestInfo::readMultipart()
 
     // inital read
     r = mg_read(m_conn, buf, MULTIPART_BUFFER_SIZE);
+    if (r == -1)
+        return;
+    m_request_bytes_read += r;
     //dump(buf, r, "initial");
 
     buf_len = r;
@@ -493,6 +477,9 @@ void HttpRequestInfo::readMultipart()
                 curpos = buf;
 
                 r = mg_read(m_conn, buf + buf_len, MULTIPART_BUFFER_SIZE - buf_len);
+                if (r == -1)
+                    return;
+                m_request_bytes_read += r;
                 //dump(buf+buf_len, r, "needed more");
                 buf_len += r;
 
@@ -509,10 +496,19 @@ void HttpRequestInfo::readMultipart()
 
             curpos = data_begin;
 
-            if (hdrinfo.filename.length() > 0)
-                curpart = new PostValueFile;
-                 else
-                curpart = new PostValueMemory;
+            curpart = NULL;
+            if (m_post_hook)
+            {
+                curpart = m_post_hook->onPostValue(hdrinfo.name, hdrinfo.filename);
+            }
+            
+            if (!curpart)
+            {
+                if (hdrinfo.filename.length() > 0)
+                    curpart = new PostValueFile;
+                     else
+                    curpart = new PostValueMemory;
+            }
 
             curpart->setName(hdrinfo.name);
             curpart->setFilename(hdrinfo.filename);
@@ -538,6 +534,10 @@ void HttpRequestInfo::readMultipart()
             // fill up buffer with more data
 
             r = mg_read(m_conn, buf + buf_len, MULTIPART_BUFFER_SIZE - buf_len);
+            if (r == -1)
+                return;
+            m_request_bytes_read += r;
+
             //dump(buf+buf_len, r, "last");
             buf_len += r;
 
@@ -581,8 +581,19 @@ void HttpRequestInfo::readMultipart()
 }
 
 
+void HttpRequestInfo::checkReadRequestBody()
+{
+    if (*m_req->request_method != 'P')
+        return;
+
+    if (m_request_bytes_read < m_request_content_length)
+        readPost();
+}
+
 std::wstring HttpRequestInfo::getValue(const std::wstring& key, const std::wstring& def)
 {
+    checkReadRequestBody();
+
     std::map<std::wstring, RequestPostInfo>::iterator p_it;
     p_it = m_post.find(key);
     if (p_it != m_post.end())
@@ -600,6 +611,8 @@ std::wstring HttpRequestInfo::getValue(const std::wstring& key, const std::wstri
 
 bool HttpRequestInfo::getValueExists(const std::wstring& key)
 {
+    checkReadRequestBody();
+
     std::map<std::wstring, RequestPostInfo>::const_iterator p_it;
     p_it = m_post.find(key);
     if (p_it != m_post.end())
@@ -624,6 +637,8 @@ std::wstring HttpRequestInfo::getGetValue(const std::wstring& key)
 
 std::wstring HttpRequestInfo::getPostValue(const std::wstring& key)
 {
+    checkReadRequestBody();
+
     std::map<std::wstring, RequestPostInfo>::iterator p_it;
     p_it = m_post.find(key);
     if (p_it != m_post.end())
@@ -637,6 +652,8 @@ std::wstring HttpRequestInfo::getPostValue(const std::wstring& key)
 
 RequestFileInfo HttpRequestInfo::getPostFileInfo(const std::wstring& key)
 {
+    checkReadRequestBody();
+
     std::map<std::wstring, RequestFileInfo>::iterator it;
 
     it = m_files.find(key);

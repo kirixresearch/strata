@@ -37,6 +37,7 @@ public:
 
 
 
+
 class HttpRequestInfo : public RequestInfo
 {
 public:
@@ -59,7 +60,9 @@ public:
     void setValue(const std::wstring& key, const std::wstring& value) { m_get[key] = value; }
     bool getValueExists(const std::wstring& key);
     bool acceptCompressed();
-    
+    void setPostHook(PostHookBase* hook) { m_post_hook = hook; } // will take ownership of hook object
+    bool isMultipart() { return (m_boundary_length > 0) ? true : false; }
+
     void sendNotFoundError();
     void setStatusCode(int code, const char* msg = NULL);
     void setContentType(const char* content_type);
@@ -87,6 +90,7 @@ protected:
     void readPost();
     void readMultipart();
     void checkHeaderSent();
+    void checkReadRequestBody();
 
 private:
 
@@ -103,14 +107,15 @@ private:
       
     int m_status_code;
     int m_content_length;
-    int m_request_content_length;
     bool m_header_sent;
     bool m_accept_compressed;
 
+    PostHookBase* m_post_hook;
+    int m_request_content_length;
+    int m_request_bytes_read;
+
     char* m_boundary;
     size_t m_boundary_length;
-    
-    kl::membuf m_post_data_buf;
 };
 
 
