@@ -84,7 +84,8 @@ public:
 
 protected:
 
-    void readMultipart(const char* boundary, size_t boundary_length);
+    void readPost();
+    void readMultipart();
     void checkHeaderSent();
 
 private:
@@ -102,8 +103,12 @@ private:
       
     int m_status_code;
     int m_content_length;
+    int m_request_content_length;
     bool m_header_sent;
     bool m_accept_compressed;
+
+    char* m_boundary;
+    size_t m_boundary_length;
     
     kl::membuf m_post_data_buf;
 };
