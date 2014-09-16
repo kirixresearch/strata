@@ -442,6 +442,7 @@ void HttpRequestInfo::readMultipart()
 
 
     bool cancelled = false;
+    bool custom = false;
 
     while (true)
     {
@@ -464,23 +465,25 @@ void HttpRequestInfo::readMultipart()
                 // finish out the part and commit it
                 curpart->finish();
 
-                if (curpart->getFilename().length() > 0)
+                if (!custom)
                 {
-                    // a multipart file post
+                    if (curpart->getFilename().length() > 0)
+                    {
+                        // a multipart file post
 
-                    RequestFileInfo& info = m_files[curpart->getName()];
-                    info.temp_filename = curpart->getTempFilename();
-                    info.post_filename = curpart->getFilename();
+                        RequestFileInfo& info = m_files[curpart->getName()];
+                        info.temp_filename = curpart->getTempFilename();
+                        info.post_filename = curpart->getFilename();
+                    }
+                     else
+                    {
+                        // normal multipart post value
+
+                        std::string data((const char*)curpart->getData(), curpart->getDataSize());
+                        RequestPostInfo& info = m_post[curpart->getName()];
+                        info.value = kl::url_decodeURI(kl::towstring(data));
+                    }
                 }
-                 else
-                {
-                    // normal multipart post value
-
-                    std::string data((const char*)curpart->getData(), curpart->getDataSize());
-                    RequestPostInfo& info = m_post[curpart->getName()];
-                    info.value = kl::url_decodeURI(kl::towstring(data));
-                }
-
 
                 delete curpart;
                 curpart = NULL;
@@ -537,12 +540,15 @@ void HttpRequestInfo::readMultipart()
             curpos = data_begin;
 
             curpart = NULL;
+            custom = false;
             if (m_post_hook)
             {
                 curpart = m_post_hook->onPostValue(hdrinfo.name, hdrinfo.filename);
+                if (curpart)
+                    custom = true;
             }
             
-            if (!curpart)
+            if (!custom)
             {
                 if (hdrinfo.filename.length() > 0)
                     curpart = new PostValueFile;
