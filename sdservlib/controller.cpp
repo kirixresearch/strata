@@ -1886,18 +1886,48 @@ class ImportUploadPostValue : public PostValueBase
 {
 public:
 
+    ImportUploadPostValue(xd::IDatabasePtr db, RequestInfo& req) : m_database(db), m_req(req)
+    {
+    }
+
     void start()
     {
     }
 
-    void append(const unsigned char* buf, size_t len)
+    bool append(const unsigned char* buf, size_t len)
     {
+        if (m_stream.isNull())
+        {
+            std::wstring target_path = m_req.getValue(L"target_path");
+            if (target_path.empty())
+                return false;
+            if (m_database.isNull())
+                return false;
+            if (!m_database->createStream(target_path, L"application/octet-stream"))
+                return false;
+            m_stream = m_database->openStream(target_path);
+            if (m_stream.isNull())
+                return false;
+        }
+
+        unsigned long written = 0;
+        if (!m_stream->write(buf, len, &written))
+            return false;
+
+        return (written == len);
     }
 
     virtual void finish()
     {
+        m_stream.clear();
+        m_database.clear();
     }
 
+private:
+
+    xd::IDatabasePtr m_database;
+    xd::IStreamPtr m_stream;
+    RequestInfo& m_req;
 };
 
 
@@ -1905,20 +1935,29 @@ class ImportUploadPostHook : public PostHookBase
 {
 public:
 
+    ImportUploadPostHook(Controller* controller, RequestInfo& req) : m_controller(controller), m_req(req)
+    {
+    }
+    
     PostValueBase* onPostValue(const std::wstring& key, const std::wstring& filename)
     {
         if (filename.length() > 0)
-            return new ImportUploadPostValue;
+            return new ImportUploadPostValue(m_controller->getSessionDatabase(m_req), m_req);
 
         return NULL;
     }
+
+private:
+
+    Controller* m_controller;
+    RequestInfo& m_req;
 };
 
 
 
 void Controller::apiImportUpload(RequestInfo& req)
 {
-    req.setPostHook(new ImportUploadPostHook);
+    req.setPostHook(new ImportUploadPostHook(this, req));
 
     // create handle to file
     std::wstring handle = createHandle();

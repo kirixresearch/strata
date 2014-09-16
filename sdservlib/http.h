@@ -111,6 +111,7 @@ private:
     bool m_accept_compressed;
 
     PostHookBase* m_post_hook;
+    bool m_request_post_read_invoked;
     int m_request_content_length;
     int m_request_bytes_read;
 

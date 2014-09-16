@@ -32,7 +32,7 @@ public:
     virtual size_t getDataSize() { return 0; }
 
     virtual void start() = 0;
-    virtual void append(const unsigned char* buf, size_t len) = 0;
+    virtual bool append(const unsigned char* buf, size_t len) = 0;
     virtual void finish() = 0;
 
 protected:

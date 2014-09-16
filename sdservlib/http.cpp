@@ -119,6 +119,7 @@ HttpRequestInfo::HttpRequestInfo(struct mg_connection* conn, const struct mg_req
     m_request_content_length = 0;
     m_request_bytes_read = 0;
     m_post_hook = NULL;
+    m_request_post_read_invoked = false;
 }
 
 HttpRequestInfo::~HttpRequestInfo()
@@ -282,7 +283,7 @@ public:
     virtual size_t getDataSize() { return m_membuf.getDataSize(); }
 
     virtual void start() { }
-    void append(const unsigned char* buf, size_t len) { m_membuf.append(buf, len); }
+    bool append(const unsigned char* buf, size_t len) { m_membuf.append(buf, len); return true; }
     virtual void finish() { }
 
 private:
@@ -305,9 +306,10 @@ public:
         m_f = xf_open(m_temp_filename, xfCreate, xfReadWrite, xfShareNone);
     }
 
-    void append(const unsigned char* buf, size_t len)
+    bool append(const unsigned char* buf, size_t len)
     {
         xf_write(m_f, buf, 1, len);
+        return true;
     }
 
     virtual void finish()
@@ -418,7 +420,6 @@ void dump(char* buf, int len, const char* comment)
 
 void HttpRequestInfo::readMultipart()
 {
-    std::vector<PostValueBase*> parts;
     PostValueBase* curpart = NULL;
     MultipartHeaderInfo hdrinfo;
 
@@ -433,11 +434,14 @@ void HttpRequestInfo::readMultipart()
     r = mg_read(m_conn, buf, MULTIPART_BUFFER_SIZE);
     if (r == -1)
         return;
-    m_request_bytes_read += r;
     //dump(buf, r, "initial");
-
+    m_request_bytes_read += r;
     buf_len = r;
     curpos = buf;
+
+
+
+    bool cancelled = false;
 
     while (true)
     {
@@ -450,7 +454,36 @@ void HttpRequestInfo::readMultipart()
             {
                 // -2: we don't want the \r\n before the boundary
                 int data_len = boundary_pos - curpos - 2;
-                curpart->append((unsigned char*)curpos, data_len);
+                if (!curpart->append((unsigned char*)curpos, data_len))
+                {
+                    cancelled = true;
+                    break;
+                }
+
+
+                // finish out the part and commit it
+                curpart->finish();
+
+                if (curpart->getFilename().length() > 0)
+                {
+                    // a multipart file post
+
+                    RequestFileInfo& info = m_files[curpart->getName()];
+                    info.temp_filename = curpart->getTempFilename();
+                    info.post_filename = curpart->getFilename();
+                }
+                 else
+                {
+                    // normal multipart post value
+
+                    std::string data((const char*)curpart->getData(), curpart->getDataSize());
+                    RequestPostInfo& info = m_post[curpart->getName()];
+                    info.value = kl::url_decodeURI(kl::towstring(data));
+                }
+
+
+                delete curpart;
+                curpart = NULL;
             }
 
             curpos = boundary_pos + m_boundary_length;
@@ -463,6 +496,7 @@ void HttpRequestInfo::readMultipart()
             if (*curpos != 0x0d || *(curpos+1) != 0x0a)
             {
                 // malformed
+                cancelled = true;
                 return;
             }
 
@@ -478,7 +512,12 @@ void HttpRequestInfo::readMultipart()
 
                 r = mg_read(m_conn, buf + buf_len, MULTIPART_BUFFER_SIZE - buf_len);
                 if (r == -1)
-                    return;
+                {
+                    // read error
+                    cancelled = true;
+                    break;
+                }
+
                 m_request_bytes_read += r;
                 //dump(buf+buf_len, r, "needed more");
                 buf_len += r;
@@ -487,7 +526,8 @@ void HttpRequestInfo::readMultipart()
                 if (!data_begin)
                 {
                     // still couldn't find data begin -- malformed post
-                    return;
+                    cancelled = true;
+                    break;
                 }
             }
             data_begin += 4;
@@ -513,7 +553,6 @@ void HttpRequestInfo::readMultipart()
             curpart->setName(hdrinfo.name);
             curpart->setFilename(hdrinfo.filename);
             curpart->start();
-            parts.push_back(curpart);
         }
          else
         {
@@ -522,7 +561,11 @@ void HttpRequestInfo::readMultipart()
             commit_len -= MULTIPART_OVERLAP_SIZE;
             if (commit_len > 0)
             {
-                curpart->append((unsigned char*)curpos, commit_len);
+                if (!curpart->append((unsigned char*)curpos, commit_len))
+                {
+                    cancelled = true;
+                    break;
+                }
                 curpos += commit_len;
             }
 
@@ -535,7 +578,12 @@ void HttpRequestInfo::readMultipart()
 
             r = mg_read(m_conn, buf + buf_len, MULTIPART_BUFFER_SIZE - buf_len);
             if (r == -1)
-                return;
+            {
+                // read error
+                cancelled = true;
+                break;
+            }
+
             m_request_bytes_read += r;
 
             //dump(buf+buf_len, r, "last");
@@ -544,40 +592,14 @@ void HttpRequestInfo::readMultipart()
             if (buf_len == 0)
             {
                 // unterminated part
-                return;
+                cancelled = true;
+                break;
             }
         }
     }
 
 
-
-    std::vector<PostValueBase*>::iterator it;
-    for (it = parts.begin(); it != parts.end(); ++it)
-    {
-        curpart = *it;
-        curpart->finish();
-
-        if (curpart->getFilename().length() > 0)
-        {
-            // a multipart file post
-
-            RequestFileInfo& info = m_files[curpart->getName()];
-            info.temp_filename = curpart->getTempFilename();
-            info.post_filename = curpart->getFilename();
-        }
-         else
-        {
-            // normal multipart post value
-
-            std::string data((const char*)curpart->getData(), curpart->getDataSize());
-            RequestPostInfo& info = m_post[curpart->getName()];
-            info.value = kl::url_decodeURI(kl::towstring(data));
-        }
-
-
-        delete curpart;
-    }
-
+    delete curpart;
 }
 
 
@@ -586,8 +608,11 @@ void HttpRequestInfo::checkReadRequestBody()
     if (*m_req->request_method != 'P')
         return;
 
-    if (m_request_bytes_read < m_request_content_length)
+    if (!m_request_post_read_invoked)
+    {
+        m_request_post_read_invoked = true;
         readPost();
+    }
 }
 
 std::wstring HttpRequestInfo::getValue(const std::wstring& key, const std::wstring& def)

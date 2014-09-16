@@ -85,6 +85,8 @@ struct SessionRowInserter : public ServerSessionObject
 
 class Controller
 {
+friend class ImportUploadPostHook;
+
 public:
 
     Controller(Sdserv* sdserv);
