@@ -35,6 +35,7 @@ public:
     int getContentLength();
 
     void setPostHook(PostHookBase* hook) { }
+    void readPost() { }
     bool isMultipart() { return false; }
 
     RequestFileInfo getPostFileInfo(const std::wstring& key);

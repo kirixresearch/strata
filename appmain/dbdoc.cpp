@@ -1959,8 +1959,8 @@ void DbDoc::doPaste()
             if (target == *it)
             {
                 appMessageBox(_("One or more source and/or destination files are the same."),
-                                   APPLICATION_NAME,
-                                   wxOK | wxICON_EXCLAMATION | wxCENTER);
+                              APPLICATION_NAME,
+                              wxOK | wxICON_EXCLAMATION | wxCENTER);
                 return;
             }
         }
@@ -2019,94 +2019,70 @@ void DbDoc::doPaste()
     }
      else if (g_cutcopy_action == actionCopy)
     {
-        bool external_copy = false;
-
-        std::vector<IFsItemPtr>::iterator it;
+        std::vector<jobs::IJobPtr> jobs;
         for (it = g_cutcopy_items.begin(); it != g_cutcopy_items.end(); ++it)
         {
-            IFsItemPtr item = *it;
+            std::wstring input = towstr(getFsItemPath(*it));
+            std::wstring fname = stripExtension(kl::afterLast(input, '/'));
+            std::wstring output;
 
-            if (isFsItemExternal(item))
+            int counter = 0;
+            do
             {
-                external_copy = true;
-                break;
-            }
-        }
+                output = towstr(target_location);
+                if (output.empty() || output[output.length()-1] != '/')
+                    output += L"/";
 
-
-        if (!external_copy)
-        {
-
-            std::vector<jobs::IJobPtr> jobs;
-            for (it = g_cutcopy_items.begin(); it != g_cutcopy_items.end(); ++it)
-            {
-                std::wstring input = towstr(getFsItemPath(*it));
-                std::wstring fname = stripExtension(kl::afterLast(input, '/'));
-                std::wstring output;
-
-                int counter = 0;
-                do
+                output += fname;
+                if (counter > 0)
                 {
-                    output = towstr(target_location);
-                    if (output.empty() || output[output.length()-1] != '/')
-                        output += L"/";
+                    output += kl::stdswprintf(L"_%d", counter+1);
+                }
 
-                    output += fname;
-                    if (counter > 0)
-                    {
-                        output += kl::stdswprintf(L"_%d", counter+1);
-                    }
+                // if we're saving the file to a filesystem mount and no
+                // extension is specified, then automatically add a 'csv'
+                // or 'js' extension; this is a usability issue since without 
+                // the extension, the user usually ends up adding this as the 
+                // first item of business after saving
+                IDbObjectFsItemPtr dbobject_item = *it;
+                if (dbobject_item.isOk())
+                {
+                    if (dbobject_item->getType() == dbobjtypeSet)
+                        output = addExtensionIfExternalFsDatabase(output, L".csv");
+                    if (dbobject_item->getType() == dbobjtypeScript)
+                        output = addExtensionIfExternalFsDatabase(output, L".js");
+                }
 
-                    // if we're saving the file to a filesystem mount and no
-                    // extension is specified, then automatically add a 'csv'
-                    // or 'js' extension; this is a usability issue since without 
-                    // the extension, the user usually ends up adding this as the 
-                    // first item of business after saving
-                    IDbObjectFsItemPtr dbobject_item = *it;
-                    if (dbobject_item.isOk())
-                    {
-                        if (dbobject_item->getType() == dbobjtypeSet)
-                            output = addExtensionIfExternalFsDatabase(output, L".csv");
-                        if (dbobject_item->getType() == dbobjtypeScript)
-                            output = addExtensionIfExternalFsDatabase(output, L".js");
-                    }
-
-                    counter++;
-                } while (db->getFileExist(output));
+                counter++;
+            } while (db->getFileExist(output));
 
 
-                jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
+            jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
 
-                kl::JsonNode params;
-                params["input"] = input;
-                params["output"] = output;
+            kl::JsonNode params;
+            params["input"] = input;
+            params["output"] = output;
 
-                job->setParameters(params.toString());
-                jobs.push_back(job);
-            }
-
-
-
-            if (g_cutcopy_items.size() > jobs.size())
-            {
-                m_fspanel->refreshItem(target);
-            }
-
-            if (jobs.size() > 0)
-            {
-                jobs::IJobPtr aggregate_job = jobs::createAggregateJob(jobs);
-                aggregate_job->getJobInfo()->setTitle(towstr(_("Copying Records")));
-                aggregate_job->setDatabase(g_app->getDatabase());
-                aggregate_job->setExtraValue(L"refresh-folder", towstr(target_location));
-                aggregate_job->sigJobFinished().connect(this, &DbDoc::onCopyJobFinished);
-                g_app->getJobQueue()->addJob(aggregate_job, jobs::jobStateRunning);
-            }
-
+            job->setParameters(params.toString());
+            jobs.push_back(job);
         }
 
 
 
+        if (g_cutcopy_items.size() > jobs.size())
+        {
+            m_fspanel->refreshItem(target);
+        }
 
+        if (jobs.size() > 0)
+        {
+            jobs::IJobPtr aggregate_job = jobs::createAggregateJob(jobs);
+            aggregate_job->getJobInfo()->setTitle(towstr(_("Copying Records")));
+            aggregate_job->setDatabase(g_app->getDatabase());
+            aggregate_job->setExtraValue(L"refresh-folder", towstr(target_location));
+            aggregate_job->sigJobFinished().connect(this, &DbDoc::onCopyJobFinished);
+            g_app->getJobQueue()->addJob(aggregate_job, jobs::jobStateRunning);
+        }
     }
 }
 

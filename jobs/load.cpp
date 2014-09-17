@@ -128,6 +128,73 @@ int LoadJob::runJob()
         }
 
 
+        xd::IFileInfoPtr finfo = source_db->getFileInfo(source_path);
+        if (finfo.isNull())
+        {
+            m_job_info->setState(jobStateFailed);
+            return 0;
+        }
+
+
+        if (finfo->getType() == xd::filetypeStream)
+        {
+            xd::IStreamPtr instream = source_db->openStream(source_path);
+            if (instream.isNull())
+            {
+                m_job_info->setState(jobStateFailed);
+                return 0;
+            }
+
+            if (!destination_db->createStream(destination_path, finfo->getMimeType()))
+            {
+                m_job_info->setState(jobStateFailed);
+                return 0;
+            }
+
+            xd::IStreamPtr outstream = destination_db->openStream(destination_path);
+            if (outstream.isNull())
+            {
+                m_job_info->setState(jobStateFailed);
+                return 0;
+            }
+
+            unsigned char* buf = new unsigned char[65536];
+
+            unsigned long read, written;
+            bool done = false;
+            bool error = false;
+            while (!done)
+            {
+                if (!instream->read(buf, 65536, &read))
+                    break;
+                if (read != 65536)
+                    done = true;
+                if (read > 0)
+                {
+                    if (!outstream->write(buf, read, &written))
+                        error = true;
+                    if (!error && written != read)
+                        error = true;
+                    if (error)
+                    {
+                        // write error / disk space
+                        delete[] buf;
+                        instream.clear();
+                        outstream.clear();
+                        destination_db->deleteFile(destination_path);
+                        m_job_info->setState(jobStateFailed);
+                        return 0;
+                    }
+                }
+            }
+
+            delete[] buf;
+            return 0;
+        }
+
+
+
+
         xd::QueryParams qp;
         qp.from = source_path;
         qp.format.determine_structure = true; // for csvs where we don't know the structure, perform a full scan to get correct metrics

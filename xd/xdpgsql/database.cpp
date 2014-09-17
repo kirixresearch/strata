@@ -849,6 +849,71 @@ bool PgsqlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
     }
 
 
+    xd::IFileInfoPtr finfo = this->getFileInfo(info->input);
+    if (finfo.isNull())
+        return false;
+
+    // handle stream copying
+    xd::IStreamPtr instream;
+
+    if (instream.isNull())
+    {
+        if (finfo->getType() == xd::filetypeStream)
+        {
+            instream = this->openStream(info->input);
+            if (instream.isNull())
+            {
+                return false;
+            }
+        }
+    }
+
+    if (instream.isOk())
+    {
+        if (!this->createStream(info->output, finfo->getMimeType()))
+        {
+            return false;
+        }
+
+        xd::IStreamPtr outstream = this->openStream(info->output);
+        if (outstream.isNull())
+        {
+            return false;
+        }
+
+        unsigned char* buf = new unsigned char[65536];
+
+        unsigned long read, written;
+        bool done = false;
+        bool error = false;
+        while (!done)
+        {
+            if (!instream->read(buf, 65536, &read))
+                break;
+            if (read != 65536)
+                done = true;
+            if (read > 0)
+            {
+                if (!outstream->write(buf, read, &written))
+                    error = true;
+                if (!error && written != read)
+                    error = true;
+                if (error)
+                {
+                    // write error / disk space
+                    delete[] buf;
+                    instream.clear();
+                    outstream.clear();
+                    this->deleteFile(info->output);
+                    return false;
+                }
+            }
+        }
+
+        delete[] buf;
+        return true;
+    }
+
 
 
     PGconn* conn = createConnection();

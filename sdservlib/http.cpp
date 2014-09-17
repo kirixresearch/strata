@@ -205,6 +205,8 @@ void HttpRequestInfo::read()
 
 void HttpRequestInfo::readPost()
 {
+    m_request_post_read_invoked = true;
+
     if (*m_req->request_method != 'P')
         return;
 
@@ -614,11 +616,8 @@ void HttpRequestInfo::checkReadRequestBody()
     if (*m_req->request_method != 'P')
         return;
 
-    if (!m_request_post_read_invoked)
-    {
-        m_request_post_read_invoked = true;
+    if (!m_request_post_read_invoked)      
         readPost();
-    }
 }
 
 std::wstring HttpRequestInfo::getValue(const std::wstring& key, const std::wstring& def)

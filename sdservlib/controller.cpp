@@ -1958,40 +1958,14 @@ private:
 void Controller::apiImportUpload(RequestInfo& req)
 {
     req.setPostHook(new ImportUploadPostHook(this, req));
+    req.readPost();
 
-    // create handle to file
-    std::wstring handle = createHandle();
-
-    RequestFileInfo fileinfo = req.getPostFileInfo(L"file");
-    if (!fileinfo.isOk())
+    std::wstring handle = req.getValue(L"target_path");
+    if (handle.empty())
     {
-        returnApiError(req, "Missing file parameter");
+        returnApiError(req, "Missing target_path parameter");
         return;
     }
-
-#ifdef WIN32
-    std::wstring path_separator = L"\\";
-#else
-    std::wstring path_separator = L"/";
-#endif
-
-    std::wstring ext = kl::afterLast(fileinfo.post_filename, '.');
-    std::wstring data_temp = xf_get_temp_path() + path_separator + handle + L"." + ext;
-    if (!xf_move(fileinfo.temp_filename, data_temp))
-    {
-        returnApiError(req, "Could not access uploaded file");
-        return;
-    }
-
-
-    // store information about the file to import
-    kl::JsonNode infonode;
-    infonode["handle"].setString(handle);
-    infonode["datafile"].setString(data_temp);
-    std::wstring info = infonode.toString();
-    xf_put_file_contents(xf_get_temp_path() + path_separator + handle + L".load_info", info);
-
-
 
     // return success/failure to caller
     kl::JsonNode response;
@@ -2043,7 +2017,7 @@ public:
 
 void Controller::apiImportLoad(RequestInfo& req)
 {
-    if (!req.getValueExists(L"handle") || !req.getValueExists(L"target_path"))
+    if (!req.getValueExists(L"handle"))
     {
         returnApiError(req, "Missing handle parameter");
         return;
@@ -2058,36 +2032,6 @@ void Controller::apiImportLoad(RequestInfo& req)
     std::wstring handle = req.getValue(L"handle");
     std::wstring target_path = req.getValue(L"target_path");
     std::wstring target_format = req.getValue(L"target_format");
-
-#ifdef WIN32
-    std::wstring path_separator = L"\\";
-#else
-    std::wstring path_separator = L"/";
-#endif
-
-
-    std::wstring info_file_path = xf_get_temp_path() + path_separator + handle + L".load_info";
-    if (!xf_get_file_exist(info_file_path))
-    {
-        returnApiError(req, "Invalid handle parameter");
-        return;
-    }
-
-
-    std::wstring info = xf_get_file_contents(info_file_path);
-    kl::JsonNode infonode;
-    if (!infonode.fromString(info))
-    {
-        returnApiError(req, "Invalid file information");
-        return;
-    }
-
-    std::wstring datafile = infonode["datafile"];
-    if (!xf_get_file_exist(datafile))
-    {
-        returnApiError(req, "Data file does not exist");
-        return;
-    }
 
 
     xd::IDatabasePtr db = getSessionDatabase(req);

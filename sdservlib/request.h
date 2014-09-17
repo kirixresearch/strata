@@ -76,6 +76,7 @@ public:
     virtual RequestFileInfo getPostFileInfo(const std::wstring& key) = 0;
     virtual int getContentLength() = 0;
     virtual void setPostHook(PostHookBase* hook) = 0;
+    virtual void readPost() = 0;
     virtual bool isMultipart() = 0;
 
     virtual void setValue(const std::wstring& key, const std::wstring& value) = 0;
