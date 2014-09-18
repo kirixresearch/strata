@@ -84,7 +84,11 @@ bool PgsqlRowInserter::putString(xd::objhandle_t column_handle,
         return false;
     }
 
-    f->m_value = kl::towstring(value);
+    if (value.length() > f->m_width)
+        f->m_value = kl::towstring(value.substr(0,f->m_width));
+         else
+        f->m_value = kl::towstring(value);
+
     return true;
 }
 
@@ -97,7 +101,10 @@ bool PgsqlRowInserter::putWideString(xd::objhandle_t column_handle,
         return false;
     }
 
-    f->m_value = value;
+    if (value.length() > f->m_width)
+        f->m_value = value.substr(0,f->m_width);
+         else
+        f->m_value = value;
 
     return true;
 }
