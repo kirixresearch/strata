@@ -1905,7 +1905,9 @@ public:
                 return false;
             if (m_database.isNull())
                 return false;
-            std::wstring mime_type = xf_get_mimetype_from_extension(target_path);
+            std::wstring mime_type = xf_get_mimetype_from_extension(this->getFilename());
+            if (!m_database->deleteFile(target_path))
+                return false;
             if (!m_database->createStream(target_path, mime_type))
                 return false;
             m_stream = m_database->openStream(target_path);
@@ -2076,11 +2078,25 @@ void Controller::apiImportLoad(RequestInfo& req)
     }
 
 
+    xd::IFileInfoPtr finfo = db->getFileInfo(handle);
+    if (finfo.isNull() || finfo->getType() != xd::filetypeStream)
+    {
+        returnApiError(req, "Invalid handle");
+        return;
+    }
+
+    std::wstring mime_type = finfo->getMimeType();
+    std::wstring extension = xf_get_extension_from_mimetype(mime_type);
+    if (extension == L"")
+        extension = L"bin";
+    std::wstring datafile = xf_get_temp_filename(L"impload", extension);
+
+
+
     JobThread* job_thread = new JobThread;
     jobs::IJobPtr job;
 
 
-    std::wstring datafile = xf_get_temp_filename(L"impload", L"icsv");
 
 
     // add a job to export the stream
