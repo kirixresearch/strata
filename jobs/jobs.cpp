@@ -103,6 +103,14 @@ IJobInfoPtr createJobInfoObject()
     return static_cast<IJobInfo*>(new JobInfo);
 }
 
+
+
+IAggregateJobInfoPtr createAggregateJobInfoObject()
+{
+    return static_cast<IAggregateJobInfo*>(new AggregateJobInfo);
+}
+
+
 IJobQueuePtr createJobQueueObject()
 {
     return static_cast<jobs::IJobQueue*>(new JobQueue);

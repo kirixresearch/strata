@@ -35,11 +35,13 @@ enum
 
 xcm_interface IJob;
 xcm_interface IJobInfo;
+xcm_interface IAggregateJobInfo;
 xcm_interface IJobQueue;
 
 
 XCM_DECLARE_SMARTPTR(IJob)
 XCM_DECLARE_SMARTPTR(IJobInfo)
+XCM_DECLARE_SMARTPTR(IAggregateJobInfo)
 XCM_DECLARE_SMARTPTR(IJobQueue)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IJobInfoPtr>, IJobInfoEnumPtr)
 
@@ -105,6 +107,7 @@ public:
 };
 
 
+
 xcm_interface IJobInfo : public xcm::IObject
 {
     XCM_INTERFACE_NAME("jobs.IJobInfo")
@@ -159,6 +162,17 @@ public:
     XCM_DECLARE_SIGNAL1(sigStateChanged, IJobInfoPtr)
 };
 
+xcm_interface IAggregateJobInfo : public xcm::IObject
+{
+
+public:
+
+    virtual void setCurrentJobInfo(IJobInfoPtr j) = 0;
+    virtual void setCurrentJobIndex(size_t job_index) = 0;
+    virtual void setJobCount(size_t job_count) = 0;
+};
+
+
 
 xcm_interface IJobQueue : public xcm::IObject
 {
@@ -183,6 +197,7 @@ public:
 IJobPtr createAggregateJob(std::vector<IJobPtr>& jobs);
 IJobPtr createJob(const std::wstring& job_class);
 IJobInfoPtr createJobInfoObject();
+IAggregateJobInfoPtr createAggregateJobInfoObject();
 IJobQueuePtr createJobQueueObject();
 
 

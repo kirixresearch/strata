@@ -20,12 +20,32 @@ namespace jobs
 
 
 
-class AggregateJobInfo : public JobInfo
+class AggregateJobInfo : public JobInfo, public IAggregateJobInfo
 {
 public:
 
+    XCM_CLASS_NAME("jobs.AggregateJobInfo")
+    XCM_BEGIN_INTERFACE_MAP(AggregateJobInfo)
+        XCM_INTERFACE_ENTRY(IJobInfo)
+        XCM_INTERFACE_ENTRY(IAggregateJobInfo)
+    XCM_END_INTERFACE_MAP()
+
     AggregateJobInfo() : JobInfo()
     {
+        m_job_count = 1;
+        m_job_idx = 0;
+    }
+
+    void setJobCount(size_t job_count)
+    {
+        KL_AUTO_LOCK(m_obj_mutex);
+        m_job_count = (int)job_count;
+    }
+
+    void setCurrentJobIndex(size_t job_idx)
+    {
+        KL_AUTO_LOCK(m_obj_mutex);
+        m_job_idx = (int)job_idx;
     }
 
     void setCurrentJobInfo(IJobInfoPtr j)
@@ -73,12 +93,17 @@ public:
     {
         KL_AUTO_LOCK(m_obj_mutex);
         if (curjob.isNull()) return 0.0;
-        return curjob->getPercentage();
+        double pct = curjob->getPercentage();
+        if (m_job_count == 1)
+            return pct;
+        return (((double)(m_job_count*100)) / ((double)m_job_count)) + (pct/((double)m_job_count));
     }
 
 public:
 
     IJobInfoPtr curjob;
+    int m_job_count;
+    int m_job_idx;
 };
 
 

@@ -20,6 +20,8 @@
 #include <kl/base64.h>
 #include <kl/file.h>
 #include <kl/json.h>
+#include <kl/url.h>
+
 
 
 Controller::Controller(Sdserv* sdserv)
@@ -1980,6 +1982,11 @@ void Controller::apiImportUpload(RequestInfo& req)
 
 
 
+
+
+
+
+
 class JobThread : public kl::thread
 {
 public:
@@ -1988,30 +1995,56 @@ public:
     {
     }
 
-    bool init(const std::wstring& job_type)
+    jobs::IJobPtr addJob(const std::wstring& job_type)
     {
-        m_job = jobs::createJob(job_type);
-        return m_job.isOk();
+        jobs::IJobPtr job = jobs::createJob(job_type);
+        if (job.isOk())
+            m_jobs.push_back(job);
+        return job;
     }
 
     jobs::IJobInfoPtr getJobInfo()
     {
-        return m_job->getJobInfo();
+        if (m_jobs.size() == 1)
+        {
+            return m_jobs[0]->getJobInfo();
+        }
+         else
+        {
+            if (m_agg_jobinfo.isNull())
+                m_agg_jobinfo = jobs::createAggregateJobInfoObject();
+            m_agg_jobinfo->setCurrentJobIndex(0);
+            m_agg_jobinfo->setJobCount(m_jobs.size());
+            return m_agg_jobinfo;
+        }
     }
 
     unsigned int entry()
     {
-        m_job->runJob();
-        m_job->runPostJob();
+        std::vector<jobs::IJobPtr>::iterator it;
 
-        m_job->getJobInfo()->setState(jobs::jobStateFinished);
+        size_t job_idx = 0;
+
+        for (it = m_jobs.begin(); it != m_jobs.end(); ++it, ++job_idx)
+        {
+            if (m_agg_jobinfo.isOk())
+            {
+                m_agg_jobinfo->setCurrentJobIndex(job_idx);
+                m_agg_jobinfo->setJobCount(m_jobs.size());
+            }
+
+            (*it)->runJob();
+            (*it)->runPostJob();
+            (*it)->getJobInfo()->setState(jobs::jobStateFinished);
+        }
 
         return 0;
     }
 
 public:
 
-    jobs::IJobPtr m_job;
+    std::vector<jobs::IJobPtr> m_jobs;
+    jobs::IAggregateJobInfoPtr m_agg_jobinfo;
 };
 
 
@@ -2042,42 +2075,76 @@ void Controller::apiImportLoad(RequestInfo& req)
     }
 
 
-
-    // configure the job parameters
-    kl::JsonNode params;
-
-    params["objects"].setArray();
-    kl::JsonNode objects = params["objects"];
-
-    // add our table to the import object
-    kl::JsonNode object = objects.appendElement();
-
-    object["source_connection"] = L"Xdprovider=xdfs";
-    object["destination_connection"] = m_connection_string;
-    object["source_path"] = datafile;
-    object["destination_path"] = target_path;
-    object["overwrite"] = true;
+    JobThread* job_thread = new JobThread;
+    jobs::IJobPtr job;
 
 
-    JobThread* job = new JobThread;
-    if (!job->init(L"application/vnd.kx.load-job"))
+    std::wstring datafile = xf_get_temp_filename(L"impload", L"icsv");
+
+
+    // add a job to export the stream
+    job = job_thread->addJob(L"application/vnd.kx.load-job");
+    if (job.isNull())
     {
-        delete job;
+        delete job_thread;
         returnApiError(req, "Invalid job type (2)");
         return;
     }
 
+    // configure the job parameters
+    {
+        kl::JsonNode params;
+        params["objects"].setArray();
+        kl::JsonNode objects = params["objects"];
 
-    job->m_job->setParameters(params.toString());
-    job->m_job->setDatabase(db);
-    jobs::IJobInfoPtr job_info = job->m_job->getJobInfo();
+        // add our table to the import object
+        kl::JsonNode object = objects.appendElement();
+        object["source_connection"] = m_connection_string;
+        object["destination_connection"] = L"Xdprovider=xdfs";
+        object["source_path"] = handle;
+        object["destination_path"] = kl::filenameToUrl(datafile);
+        object["overwrite"] = true;
 
+        job->setParameters(params.toString());
+        job->setDatabase(db);
+    }
+
+
+
+    // add an import job
+    job = job_thread->addJob(L"application/vnd.kx.load-job");
+    if (job.isNull())
+    {
+        delete job_thread;
+        returnApiError(req, "Invalid job type (2)");
+        return;
+    }
+
+    // configure the job parameters
+    {
+        kl::JsonNode params;
+        params["objects"].setArray();
+        kl::JsonNode objects = params["objects"];
+
+        // add our table to the import object
+        kl::JsonNode object = objects.appendElement();
+        object["source_connection"] = L"Xdprovider=xdfs";
+        object["destination_connection"] = m_connection_string;
+        object["source_path"] = datafile;
+        object["destination_path"] = target_path;
+        object["overwrite"] = true;
+
+        job->setParameters(params.toString());
+        job->setDatabase(db);
+    }
+
+    // register job info and start the job
     m_job_info_mutex.lock();
     int job_id = (int)m_job_info_vec.size();
-    m_job_info_vec.push_back(job_info);
+    m_job_info_vec.push_back(job_thread->getJobInfo());
     m_job_info_mutex.unlock();
 
-    job->create();
+    job_thread->create();
 
     // return success/failure to caller
     kl::JsonNode response;
@@ -2120,26 +2187,27 @@ void Controller::apiRunJob(RequestInfo& req)
     }
 
 
-    JobThread* job = new JobThread;
-    if (!job->init(job_type))
+    JobThread* job_thread = new JobThread;
+    jobs::IJobPtr job = job_thread->addJob(job_type);
+    if (job.isNull())
     {
-        delete job;
+        delete job_thread;
         returnApiError(req, "Invalid job type (2)");
         return;
     }
 
     std::wstring json_params = root["params"].toString();
 
-    job->m_job->setParameters(json_params);
-    job->m_job->setDatabase(db);
-    jobs::IJobInfoPtr job_info = job->m_job->getJobInfo();
+    job->setParameters(json_params);
+    job->setDatabase(db);
+    jobs::IJobInfoPtr job_info = job_thread->getJobInfo();
 
     m_job_info_mutex.lock();
     int job_id = (int)m_job_info_vec.size();
     m_job_info_vec.push_back(job_info);
     m_job_info_mutex.unlock();
 
-    job->create();
+    job_thread->create();
 
     // return success/failure to caller
     kl::JsonNode response;
