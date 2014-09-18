@@ -1000,33 +1000,6 @@ std::wstring getExtensionFromPath(const std::wstring& path)
     return kl::afterLast(path, '.');
 }
 
-std::wstring getMimeTypeFromExtension(const std::wstring& path)
-{
-    std::wstring ext = getExtensionFromPath(path);
-    if (ext.length() == 0)
-        ext = path;
-    kl::makeLower(ext);
-    
-         if (ext == L"bmp")                        return L"image/x-ms-bmp";
-    else if (ext == L"css")                        return L"text/css";
-    else if (ext == L"icsv")                       return L"application/vnd.interchange-csv";
-    else if (ext == L"gif")                        return L"image/gif";
-    else if (ext == L"gz")                         return L"application/x-gzip";
-    else if (ext == L"htm" || ext == L"html")      return L"text/html";
-    else if (ext == L"hta")                        return L"application/hta";
-    else if (ext == L"jpg" || ext == L"jpeg")      return L"image/jpeg";
-    else if (ext == L"js")                         return L"application/javascript";
-    else if (ext == L"json")                       return L"application/json";
-    else if (ext == L"pdf")                        return L"application/pdf";
-    else if (ext == L"png")                        return L"image/png";
-    else if (ext == L"svg")                        return L"image/svg+xml";
-    else if (ext == L"tif" || ext == L"tiff")      return L"image/tiff";
-    else if (ext == L"txt")                        return L"text/plain";
-    else if (ext == L"xls")                        return L"application/vnd.ms-excel";
-    else if (ext == L"xml")                        return L"application/xml";
-    else if (ext == L"zip")                        return L"application/zip";
-    else                                           return L"application/octet-stream";
-}
 
 std::wstring determineMimeType(const std::wstring& path)
 {
@@ -1037,7 +1010,7 @@ std::wstring determineMimeType(const std::wstring& path)
     unsigned char* buf = new unsigned char[520];
     int buf_len = xf_read(f, buf, 1, 512);
     if (buf_len < 16)
-        return getMimeTypeFromExtension(path);
+        return xf_get_mimetype_from_extension(path);
     buf[buf_len] = 0;
 
     
@@ -1066,7 +1039,7 @@ std::wstring determineMimeType(const std::wstring& path)
 
     klregex::wmatch matchres;
     if (!regex.search(result_text, matchres))
-        return getMimeTypeFromExtension(path);
+        return xf_get_mimetype_from_extension(path);
 
     const klregex::wsubmatch& res_match = matchres[L"res"];
     

@@ -149,6 +149,47 @@ std::wstring xf_concat_path(const std::wstring& path, const std::wstring& append
 
 
 
+static std::wstring getExtensionFromPath(const std::wstring& path)
+{
+    if (path.find('.') == path.npos)
+        return L"";
+
+    return kl::afterLast(path, '.');
+}
+
+std::wstring xf_get_mimetype_from_extension(const std::wstring& filename)
+{
+    std::wstring ext = getExtensionFromPath(filename);
+    if (ext.length() == 0)
+        ext = filename;
+    kl::makeLower(ext);
+    
+         if (ext == L"bmp")                        return L"image/x-ms-bmp";
+    else if (ext == L"css")                        return L"text/css";
+    else if (ext == L"icsv")                       return L"application/vnd.interchange-csv";
+    else if (ext == L"gif")                        return L"image/gif";
+    else if (ext == L"gz")                         return L"application/x-gzip";
+    else if (ext == L"htm" || ext == L"html")      return L"text/html";
+    else if (ext == L"hta")                        return L"application/hta";
+    else if (ext == L"jpg" || ext == L"jpeg")      return L"image/jpeg";
+    else if (ext == L"js")                         return L"application/javascript";
+    else if (ext == L"json")                       return L"application/json";
+    else if (ext == L"pdf")                        return L"application/pdf";
+    else if (ext == L"png")                        return L"image/png";
+    else if (ext == L"svg")                        return L"image/svg+xml";
+    else if (ext == L"tif" || ext == L"tiff")      return L"image/tiff";
+    else if (ext == L"txt")                        return L"text/plain";
+    else if (ext == L"xls")                        return L"application/vnd.ms-excel";
+    else if (ext == L"xlsx")                       return L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    else if (ext == L"doc")                        return L"application/msword";
+    else if (ext == L"docx")                       return L"application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    else if (ext == L"ppt")                        return L"application/vnd.ms-powerpoint";
+    else if (ext == L"pptx")                       return L"application/vnd.openxmlformats-officedocument.presentationml.presentation";
+    else if (ext == L"xml")                        return L"application/xml";
+    else if (ext == L"zip")                        return L"application/zip";
+    else                                           return L"application/octet-stream";
+}
+
 
 
 
@@ -258,6 +299,7 @@ bool exclusive_file::putContents(const std::wstring& contents)
     }
 
 }
+
 
 
 };

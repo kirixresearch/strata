@@ -222,7 +222,6 @@ bool xd::isTemporaryPath(const std::wstring& path);
 wxString getFilenameFromPath(const wxString& path, bool include_extension = true);
 wxString getDirectoryFromPath(const wxString& path);
 std::wstring getExtensionFromPath(const std::wstring& path);
-std::wstring getMimeTypeFromExtension(const std::wstring& path);
 std::wstring determineMimeType(const std::wstring& path);
 
 // utility for adding a filesystem extension to a path if the path is a

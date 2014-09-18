@@ -1905,7 +1905,8 @@ public:
                 return false;
             if (m_database.isNull())
                 return false;
-            if (!m_database->createStream(target_path, L"application/octet-stream"))
+            std::wstring mime_type = xf_get_mimetype_from_extension(target_path);
+            if (!m_database->createStream(target_path, mime_type))
                 return false;
             m_stream = m_database->openStream(target_path);
             if (m_stream.isNull())
