@@ -192,7 +192,33 @@ std::wstring xf_get_mimetype_from_extension(const std::wstring& filename)
 
 
 
-
+std::wstring xf_get_extension_from_mimetype(const std::wstring& mime_type)
+{
+         if (mime_type == L"image/x-ms-bmp")                                                               return L"bmp";
+    else if (mime_type == L"text/css")                                                                     return L"css";
+    else if (mime_type == L"application/vnd.interchange-csv")                                              return L"icsv";
+    else if (mime_type == L"image/gif")                                                                    return L"gif";
+    else if (mime_type == L"application/x-gzip")                                                           return L"gz";
+    else if (mime_type == L"text/html")                                                                    return L"html";
+    else if (mime_type == L"application/hta")                                                              return L"hta";
+    else if (mime_type == L"image/jpeg")                                                                   return L"jpg";
+    else if (mime_type == L"application/javascript")                                                       return L"js";
+    else if (mime_type == L"application/json")                                                             return L"json";
+    else if (mime_type == L"application/pdf")                                                              return L"pdf";
+    else if (mime_type == L"image/png")                                                                    return L"png";
+    else if (mime_type == L"image/svg+xml")                                                                return L"svg";
+    else if (mime_type == L"image/tiff")                                                                   return L"tiff";
+    else if (mime_type == L"text/plain")                                                                   return L"txt";
+    else if (mime_type == L"application/vnd.ms-excel")                                                     return L"xls";
+    else if (mime_type == L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")            return L"xlsx";
+    else if (mime_type == L"application/msword")                                                           return L"doc";
+    else if (mime_type == L"application/vnd.openxmlformats-officedocument.wordprocessingml.document")      return L"docx";
+    else if (mime_type == L"application/vnd.ms-powerpoint")                                                return L"ppt";
+    else if (mime_type == L"application/vnd.openxmlformats-officedocument.presentationml.presentation")    return L"pptx";
+    else if (mime_type == L"application/xml")                                                              return L"xml";
+    else if (mime_type == L"application/zip")                                                              return L"zip";
+    else                                                                                                   return L"";
+}
 
 
 namespace kl

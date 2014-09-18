@@ -139,6 +139,7 @@ std::wstring xf_get_network_path(const std::wstring& filename);
 std::wstring xf_get_file_contents(const std::wstring& filename, bool* success = NULL);
 bool xf_put_file_contents(const std::wstring& filename, const std::wstring& contents);
 std::wstring xf_get_mimetype_from_extension(const std::wstring& filename);
+std::wstring xf_get_extension_from_mimetype(const std::wstring& mime_type);
 
 
 namespace kl
