@@ -1902,12 +1902,14 @@ public:
         {
             std::wstring target_path = m_req.getValue(L"target_path");
             if (target_path.empty())
-                return false;
+			{
+				target_path = kl::getUniqueString();
+				m_req.setValue(L"target_path", target_path);
+			}
             if (m_database.isNull())
                 return false;
             std::wstring mime_type = xf_get_mimetype_from_extension(this->getFilename());
-            if (!m_database->deleteFile(target_path))
-                return false;
+            m_database->deleteFile(target_path);
             if (!m_database->createStream(target_path, mime_type))
                 return false;
             m_stream = m_database->openStream(target_path);
