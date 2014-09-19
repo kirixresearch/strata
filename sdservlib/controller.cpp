@@ -45,8 +45,6 @@ bool Controller::onRequest(RequestInfo& req)
        uri = uri.substr(0, uri.length()-1);
 
     std::wstring method = req.getGetValue(L"m");
-    if (method.empty())
-        return false;
     
     invokeApi(uri, method, req);
     return true;
@@ -108,6 +106,7 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
     //else if (method == L"selectdb")              apiSelectDb(req);
          if (method == L"folderinfo")            apiFolderInfo(req);
     else if (method == L"fileinfo")              apiFileInfo(req);
+    else if (method == L"read" || method == L"") apiRead(req);
     else if (method == L"createstream")          apiCreateStream(req);
     else if (method == L"createtable")           apiCreateTable(req);
     else if (method == L"createfolder")          apiCreateFolder(req);
@@ -121,7 +120,7 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
     else if (method == L"query")                 apiQuery(req);
     else if (method == L"groupquery")            apiGroupQuery(req);
     else if (method == L"describetable")         apiDescribeTable(req);
-    else if (method == L"read" || method == L"") apiRead(req);
+
     else if (method == L"insertrows")            apiInsertRows(req);
     else if (method == L"clone")                 apiClone(req);
     else if (method == L"close")                 apiClose(req);
@@ -2032,15 +2031,26 @@ public:
 
         for (it = m_jobs.begin(); it != m_jobs.end(); ++it, ++job_idx)
         {
+			jobs::IJobInfoPtr jobinfo = (*it)->getJobInfo();
+
             if (m_agg_jobinfo.isOk())
             {
                 m_agg_jobinfo->setCurrentJobIndex(job_idx);
                 m_agg_jobinfo->setJobCount(m_jobs.size());
+				m_agg_jobinfo->setCurrentJobInfo(jobinfo);
             }
 
             (*it)->runJob();
             (*it)->runPostJob();
-            (*it)->getJobInfo()->setState(jobs::jobStateFinished);
+            jobinfo->setState(jobs::jobStateFinished);
+        }
+
+
+		if (m_agg_jobinfo.isOk())
+        {
+			jobs::IJobInfoPtr j = m_agg_jobinfo;
+            j->setState(jobs::jobStateFinished);
+			j->setFinishTime(time(NULL));
         }
 
         return 0;

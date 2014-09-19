@@ -48,7 +48,7 @@ function fetchPort(group, callback)
         
         var cmdline = g_sdserv_cmd + " -d " + group + " -p " + info.port + " --idle-quit 3000 ";
         
-        var cmd = "D:\\build32\\src\\trunk\\releaseu\\sdserv.exe";
+        var cmd = "D:\\build32\\src\\trunk\\debugu\\sdserv.exe";
         var args = [ "-d", group, "-p", info.port, "--idle-quit", "3000" ];
 
         
