@@ -1023,7 +1023,12 @@ bool PgsqlDatabase::deleteFile(const std::wstring& path)
         PQclear(res);
 
         int r = lo_unlink(conn, oid);
-        
+        if (!r)
+        {
+            closeConnection(conn);
+            return false;
+        }
+
         sql = L"drop table if exists %tbl%";
         kl::replaceStr(sql, L"%tbl%", tbl);
 
