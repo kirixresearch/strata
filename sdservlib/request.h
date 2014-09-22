@@ -33,6 +33,7 @@ public:
 
     virtual void start() = 0;
     virtual bool append(const unsigned char* buf, size_t len) = 0;
+    virtual void cancelled() = 0;
     virtual void finish() = 0;
 
 protected:

@@ -286,6 +286,7 @@ public:
 
     virtual void start() { }
     bool append(const unsigned char* buf, size_t len) { m_membuf.append(buf, len); return true; }
+    virtual void cancelled() { m_membuf.setDataSize(0); }
     virtual void finish() { }
 
 private:
@@ -312,6 +313,15 @@ public:
     {
         xf_write(m_f, buf, 1, len);
         return true;
+    }
+
+    virtual void cancelled()
+    {
+        if (m_f)
+            xf_close(m_f);
+        m_f = (xf_file_t)0;
+        xf_remove(m_temp_filename);
+        m_temp_filename = L"";
     }
 
     virtual void finish()
@@ -606,6 +616,11 @@ void HttpRequestInfo::readMultipart()
         }
     }
 
+    if (cancelled)
+    {
+        if (curpart)
+            curpart->cancelled();
+    }
 
     delete curpart;
 }

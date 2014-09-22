@@ -1899,19 +1899,19 @@ public:
     {
         if (m_stream.isNull())
         {
-            std::wstring target_path = m_req.getValue(L"target_path");
-            if (target_path.empty())
+            m_target_path = m_req.getValue(L"target_path");
+            if (m_target_path.empty())
 			{
-				target_path = kl::getUniqueString();
-				m_req.setValue(L"target_path", target_path);
+				m_target_path = kl::getUniqueString();
+				m_req.setValue(L"target_path", m_target_path);
 			}
             if (m_database.isNull())
                 return false;
             std::wstring mime_type = xf_get_mimetype_from_extension(this->getFilename());
-            m_database->deleteFile(target_path);
-            if (!m_database->createStream(target_path, mime_type))
+            m_database->deleteFile(m_target_path);
+            if (!m_database->createStream(m_target_path, mime_type))
                 return false;
-            m_stream = m_database->openStream(target_path);
+            m_stream = m_database->openStream(m_target_path);
             if (m_stream.isNull())
                 return false;
         }
@@ -1921,6 +1921,13 @@ public:
             return false;
 
         return (written == len);
+    }
+
+    virtual void cancelled()
+    {
+        m_stream.clear();
+        m_database->deleteFile(m_target_path);
+        m_database.clear();
     }
 
     virtual void finish()
@@ -1934,6 +1941,7 @@ private:
     xd::IDatabasePtr m_database;
     xd::IStreamPtr m_stream;
     RequestInfo& m_req;
+    std::wstring m_target_path;
 };
 
 
