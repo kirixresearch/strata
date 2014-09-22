@@ -1999,12 +1999,26 @@ public:
     {
     }
 
+    virtual ~JobThread()
+    {
+        std::vector<std::wstring>::iterator it;
+        for (it = m_to_delete.begin(); it != m_to_delete.end(); ++it)
+        {
+            xf_remove(*it);
+        }
+    }
+
     jobs::IJobPtr addJob(const std::wstring& job_type)
     {
         jobs::IJobPtr job = jobs::createJob(job_type);
         if (job.isOk())
             m_jobs.push_back(job);
         return job;
+    }
+
+    void addFileToDelete(const std::wstring& filename)
+    {
+        m_to_delete.push_back(filename);
     }
 
     jobs::IJobInfoPtr getJobInfo()
@@ -2060,6 +2074,7 @@ public:
 
     std::vector<jobs::IJobPtr> m_jobs;
     jobs::IAggregateJobInfoPtr m_agg_jobinfo;
+    std::vector<std::wstring> m_to_delete;
 };
 
 
@@ -2173,6 +2188,7 @@ void Controller::apiImportLoad(RequestInfo& req)
     m_job_info_vec.push_back(job_thread->getJobInfo());
     m_job_info_mutex.unlock();
 
+    job_thread->addFileToDelete(datafile);
     job_thread->create();
 
     // return success/failure to caller
