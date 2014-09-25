@@ -120,6 +120,7 @@ HttpRequestInfo::HttpRequestInfo(struct mg_connection* conn, const struct mg_req
     m_request_bytes_read = 0;
     m_post_hook = NULL;
     m_request_post_read_invoked = false;
+    m_error = false;
 }
 
 HttpRequestInfo::~HttpRequestInfo()
@@ -445,7 +446,11 @@ void HttpRequestInfo::readMultipart()
     // inital read
     r = mg_read(m_conn, buf, MULTIPART_BUFFER_SIZE);
     if (r == -1)
+    {
+        this->setError(true);
         return;
+    }
+
     //dump(buf, r, "initial");
     m_request_bytes_read += r;
     buf_len = r;
@@ -618,6 +623,7 @@ void HttpRequestInfo::readMultipart()
 
     if (cancelled)
     {
+        this->setError(true);
         if (curpart)
             curpart->cancelled();
     }

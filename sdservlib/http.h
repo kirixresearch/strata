@@ -85,6 +85,9 @@ public:
     bool isMethodGet() const;
     bool isMethodPost() const;
 
+    void setError(bool error) { m_error = true; }
+    bool getError() { return m_error; }
+
 protected:
 
     void readPost();
@@ -117,6 +120,8 @@ private:
 
     char* m_boundary;
     size_t m_boundary_length;
+
+    bool m_error;
 };
 
 

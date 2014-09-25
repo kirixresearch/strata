@@ -28,6 +28,7 @@ WebSocketsRequestInfo::WebSocketsRequestInfo(WebSocketsClient* client)
 {
     m_content_length = 0;
     m_client = client;
+    m_error = false;
 }
 
 

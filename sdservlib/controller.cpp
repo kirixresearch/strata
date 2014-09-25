@@ -1974,6 +1974,12 @@ void Controller::apiImportUpload(RequestInfo& req)
     req.setPostHook(new ImportUploadPostHook(this, req));
     req.readPost();
 
+    if (req.getError())
+    {
+        returnApiError(req, "Request cancelled");
+        return;
+    }
+
     std::wstring handle = req.getValue(L"target_path");
     if (handle.empty())
     {

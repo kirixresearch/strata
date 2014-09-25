@@ -88,6 +88,9 @@ public:
     virtual size_t write(const std::string& str) = 0;
     virtual size_t write(const std::wstring& str) = 0;
 
+    virtual void setError(bool error) = 0;
+    virtual bool getError() = 0;
+
     virtual void sendNotFoundError() = 0;
 };
 

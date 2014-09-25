@@ -49,6 +49,9 @@ public:
 
     void sendNotFoundError();
 
+    void setError(bool error) { m_error = true; }
+    bool getError() { return m_error; }
+
 private:
 
     WebSocketsClient* m_client;
@@ -57,6 +60,7 @@ private:
     std::string m_token;
     std::string m_content_type;
     int m_content_length;
+    bool m_error;
 };
 
 
