@@ -966,26 +966,30 @@ void DlgConnection::populateDataSourceGrid()
         return;
     }
 
-    xd::IDatabaseEntryEnumPtr odbc_databases;
-    odbc_databases = dbmgr->getDatabaseList(L"", 0, L"", L"");
 
-    m_datasource_grid->deleteAllRows();
-
-    int i, count = odbc_databases->size();
-
-    for (i = 0; i < count; ++i)
+    // populate the grid with the odbc data sources
     {
-        m_datasource_grid->insertRow(-1);
+        xd::DatabaseEntryEnum odbc_databases;
+        odbc_databases = dbmgr->getDatabaseList(L"", 0, L"", L"");
 
-        xd::IDatabaseEntryPtr item = odbc_databases->getItem(i);
-        m_datasource_grid->setCellString(i, 0, item->getName());
-        m_datasource_grid->setCellString(i, 1, item->getDescription());
+        m_datasource_grid->deleteAllRows();
+
+        size_t i, count = odbc_databases.size();
+
+        for (i = 0; i < count; ++i)
+        {
+            m_datasource_grid->insertRow(-1);
+
+            m_datasource_grid->setCellString(i, 0, odbc_databases[i].name);
+            m_datasource_grid->setCellString(i, 1, odbc_databases[i].description);
+        }
     }
+
 
     // if we already have a server name, move the cursor
     // to the corresponding grid row
 
-    int row_count = m_datasource_grid->getRowCount();
+    int i, row_count = m_datasource_grid->getRowCount();
     std::wstring cell_str;
 
     for (i = 0; i < row_count; ++i)

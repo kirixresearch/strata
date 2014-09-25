@@ -113,12 +113,12 @@ public:
     }
     
 
-    xd::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host, int port,
-                                                 const std::wstring& uid,
-                                                 const std::wstring& password)
+    xd::DatabaseEntryEnum getDatabaseList(const std::wstring& host,
+                                          int port,
+                                          const std::wstring& uid,
+                                          const std::wstring& password)
     {
-        xcm::IVectorImpl<xd::IDatabaseEntryPtr>* vec = new xcm::IVectorImpl<xd::IDatabaseEntryPtr>;
-        return vec;
+        return xd::DatabaseEntryEnum();
     }
 
     std::wstring getErrorString()

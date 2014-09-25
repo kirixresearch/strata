@@ -125,13 +125,12 @@ xd::IDatabasePtr DatabaseMgr::open(const std::wstring& _connection_str)
     return xd::IDatabasePtr(db, false);
 }
 
-xd::IDatabaseEntryEnumPtr DatabaseMgr::getDatabaseList(const std::wstring& host,
+xd::DatabaseEntryEnum DatabaseMgr::getDatabaseList(const std::wstring& host,
                                                           int port,
                                                           const std::wstring& uid,
                                                           const std::wstring& password)
 {
-    xcm::IVectorImpl<xd::IDatabaseEntryPtr>* vec = new xcm::IVectorImpl<xd::IDatabaseEntryPtr>;
-    return vec;
+    return xd::DatabaseEntryEnum();
 }
 
 

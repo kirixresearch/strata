@@ -16,7 +16,6 @@
 #include <kl/string.h>
 #include <kl/file.h>
 #include "database.h"
-#include "../xdcommon/dbentry.h"
 #include "../xdcommon/connectionstr.h"
 
 
@@ -287,10 +286,10 @@ public:
         return xcm::null;
     }
 
-    xd::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host,
-                                                 int port,
-                                                 const std::wstring& uid,
-                                                 const std::wstring& password)
+    xd::DatabaseEntryEnum getDatabaseList(const std::wstring& host,
+                                          int port,
+                                          const std::wstring& uid,
+                                          const std::wstring& password)
     {
         // start a connection
         SQLAllocEnv(&m_env);
@@ -298,8 +297,8 @@ public:
         SQLSetConnectOption(m_conn, SQL_ODBC_CURSORS, SQL_CUR_USE_ODBC);
 
 
-        xcm::IVectorImpl<xd::IDatabaseEntryPtr>* db_list;
-        db_list = new xcm::IVectorImpl<xd::IDatabaseEntryPtr>;
+        xd::DatabaseEntryEnum db_list;
+
 
         SQLRETURN r;
 
@@ -314,12 +313,6 @@ public:
 
         short name_length;
         short desc_length;
-
-        std::wstring db_name;
-        std::wstring db_desc;
-
-
-
 
         if (SQLDataSources(m_env,
                            SQL_FETCH_FIRST,
@@ -340,17 +333,13 @@ public:
         }
 
 
-        while (1)
+        while (true)
         {
-            db_name = kl::towstring(name_buf);
-            db_desc = kl::towstring(desc_buf);
+            xd::DatabaseEntry db_entry;
+            db_entry.name =  kl::towstring(name_buf);
+            db_entry.description = kl::towstring(desc_buf);
 
-            DatabaseEntry* db_entry = new DatabaseEntry;
-            db_entry->setName(db_name);
-            db_entry->setDescription(db_desc);
-
-            db_list->append(db_entry);
-            
+            db_list.push_back(db_entry);
             
             r = SQLDataSources(m_env,
                                SQL_FETCH_NEXT,

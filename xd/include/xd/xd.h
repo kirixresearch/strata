@@ -46,7 +46,6 @@ const int max_numeric_scale = 12;
 xcm_interface IAttributes;
 xcm_interface IColumnInfo;
 xcm_interface IDatabase;
-xcm_interface IDatabaseEntry;
 xcm_interface IDatabaseMgr;
 xcm_interface IFileInfo;
 xcm_interface IIndexInfo;
@@ -69,7 +68,6 @@ XCM_DECLARE_SMARTPTR(IAttributes)
 XCM_DECLARE_SMARTPTR(IFileInfo)
 XCM_DECLARE_SMARTPTR(IColumnInfo)
 XCM_DECLARE_SMARTPTR(IDatabase)
-XCM_DECLARE_SMARTPTR(IDatabaseEntry)
 XCM_DECLARE_SMARTPTR(IDatabaseMgr)
 XCM_DECLARE_SMARTPTR(IIndexInfo)
 XCM_DECLARE_SMARTPTR(IJob)
@@ -84,9 +82,6 @@ XCM_DECLARE_SMARTPTR(IRelationSchema)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IIndexInfoPtr>, IIndexInfoEnumPtr)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IRelationPtr>, IRelationEnumPtr)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IFileInfoPtr>, IFileInfoEnumPtr)
-XCM_DECLARE_SMARTPTR2(xcm::IVector<IDatabaseEntryPtr>, IDatabaseEntryEnumPtr)
-
-
 
 // common connection string parameters
 
@@ -587,6 +582,17 @@ struct ColumnInfo
 };
 
 
+
+struct DatabaseEntry
+{
+    std::wstring name;
+    std::wstring description;
+};
+
+typedef std::vector<DatabaseEntry> DatabaseEntryEnum;
+
+
+
 struct FormatDefinition
 {
     FormatDefinition()
@@ -746,17 +752,6 @@ public:
 };
 
 
-xcm_interface IDatabaseEntry : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("xd.IDatabaseEntry")
-
-public:
-
-    virtual std::wstring getName() = 0;
-    virtual std::wstring getDescription() = 0;
-};
-
-
 xcm_interface IDatabaseMgr : public xcm::IObject
 {
     XCM_INTERFACE_NAME("xd.IDatabaseMgr")
@@ -766,11 +761,10 @@ public:
     virtual IDatabasePtr open(const std::wstring& connection_str) = 0;      
     virtual bool createDatabase(const std::wstring& connection_str) = 0;
 
-    virtual IDatabaseEntryEnumPtr getDatabaseList(
-                                        const std::wstring& host,
-                                        int port,
-                                        const std::wstring& uid,
-                                        const std::wstring& password) = 0;
+    virtual DatabaseEntryEnum getDatabaseList(const std::wstring& host,
+                                              int port,
+                                              const std::wstring& uid,
+                                              const std::wstring& password) = 0;
 
     virtual std::wstring getErrorString() = 0;
     virtual int getErrorCode() = 0;

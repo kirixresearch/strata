@@ -32,10 +32,10 @@ public:
 
     xd::IDatabasePtr open(const std::wstring& connection_str);
 
-    xd::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host,
-                                                int port,
-                                                const std::wstring& uid,
-                                                const std::wstring& password);
+    xd::DatabaseEntryEnum getDatabaseList(const std::wstring& host,
+                                          int port,
+                                          const std::wstring& uid,
+                                          const std::wstring& password);
 
     std::wstring getErrorString();
     int getErrorCode();

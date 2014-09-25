@@ -123,12 +123,12 @@ public:
         return (result_status == PGRES_COMMAND_OK ? true : false);
     }
 
-    xd::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host,
-                                                 int port,
-                                                 const std::wstring& uid,
-                                                 const std::wstring& password)
+    xd::DatabaseEntryEnum getDatabaseList(const std::wstring& host,
+                                          int port,
+                                          const std::wstring& uid,
+                                          const std::wstring& password)
     {
-        return xcm::null;
+        return xd::DatabaseEntryEnum();
     }
 
     std::wstring getErrorString()

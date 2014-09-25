@@ -849,26 +849,30 @@ void DataSourceSelectionPage::populate()
         return;
     }
 
-    xd::IDatabaseEntryEnumPtr odbc_databases;
-    odbc_databases = dbmgr->getDatabaseList(L"", 0, L"", L"");
 
-    m_grid->deleteAllRows();
-
-    int i, count = odbc_databases->size();
-
-    for (i = 0; i < count; ++i)
+    // populate the grid with the odbc data sources
     {
-        m_grid->insertRow(-1);
+        xd::DatabaseEntryEnum odbc_databases;
+        odbc_databases = dbmgr->getDatabaseList(L"", 0, L"", L"");
 
-        xd::IDatabaseEntryPtr item = odbc_databases->getItem(i);
-        m_grid->setCellString(i, 0, item->getName());
-        m_grid->setCellString(i, 1, item->getDescription());
+        m_grid->deleteAllRows();
+
+        size_t i, count = odbc_databases.size();
+
+        for (i = 0; i < count; ++i)
+        {
+            m_grid->insertRow(-1);
+
+            m_grid->setCellString(i, 0, odbc_databases[i].name);
+            m_grid->setCellString(i, 1, odbc_databases[i].description);
+        }
     }
+
 
     // if we already have a server name, move the cursor
     // to the corresponding grid row
 
-    int row_count = m_grid->getRowCount();
+    int i, row_count = m_grid->getRowCount();
     std::wstring cell_str;
 
     for (i = 0; i < row_count; ++i)
