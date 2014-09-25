@@ -1017,7 +1017,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     }
 
 
-    xd::IIndexInfoEnumPtr old_indexes;
+    xd::IndexInfoEnum old_indexes;
     old_indexes = db->getIndexEnum(m_tabledoc->getPath());
 
     if (!db->modifyStructure(m_path, structure, NULL))
@@ -1061,22 +1061,22 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     // some of the indexes may have been deleted during
     // the modifyStructure() operation
 
-    xd::IIndexInfoEnumPtr new_indexes = db->getIndexEnum(m_tabledoc->getPath());
+    xd::IndexInfoEnum new_indexes = db->getIndexEnum(m_tabledoc->getPath());
 
-    std::vector<xd::IIndexInfoPtr> to_recreate;
+    std::vector<xd::IndexInfo> to_recreate;
     int i, j, old_cnt, new_cnt;
-    old_cnt = old_indexes->size();
-    new_cnt = new_indexes->size();
+    old_cnt = old_indexes.size();
+    new_cnt = new_indexes.size();
     for (i = 0; i < old_cnt; ++i)
     {
-        xd::IIndexInfoPtr oldidx = old_indexes->getItem(i);
+        xd::IndexInfo oldidx = old_indexes[i];
         bool found = false;
 
         for (j = 0; j < new_cnt; ++j)
         {
-            xd::IIndexInfoPtr newidx = new_indexes->getItem(j);
+            xd::IndexInfo newidx = new_indexes[j];
 
-            if (kl::iequals(oldidx->getName(), newidx->getName()))
+            if (kl::iequals(oldidx.name, newidx.name))
             {
                 found = true;
                 break;
@@ -1115,16 +1115,14 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
             kl::JsonNode params;
             kl::JsonNode indexes = params["indexes"];
 
-            std::vector<xd::IIndexInfoPtr>::iterator it;
-            for (it = to_recreate.begin();
-                 it != to_recreate.end();
-                 ++it)
+            std::vector<xd::IndexInfo>::iterator it;
+            for (it = to_recreate.begin(); it != to_recreate.end(); ++it)
             {
                 kl::JsonNode index_item = indexes.appendElement();
 
                 index_item["input"].setString(m_path);
-                index_item["name"].setString((*it)->getName());
-                index_item["expression"].setString((*it)->getExpression());
+                index_item["name"].setString(it->name);
+                index_item["expression"].setString(it->expression);
             }
 
             job->getJobInfo()->setTitle(towstr(_("Creating Index")));

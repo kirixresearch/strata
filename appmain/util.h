@@ -258,8 +258,9 @@ double getProjectSize(const wxString& project_path);
 // returns the default location where projects are created
 wxString getDefaultProjectsPath();
 
-xd::IIndexInfoPtr lookupIndex(xd::IIndexInfoEnumPtr indexes, 
-                                 const std::wstring& fields, bool order_matters);
+xd::IndexInfo lookupIndex(const xd::IndexInfoEnum& indexes, 
+                          const std::wstring& fields,
+                          bool order_matters);
 
 
 // creates the job parameters for a sort/filter job

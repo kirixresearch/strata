@@ -844,25 +844,23 @@ bool getIndexExpressionMatch(const std::wstring& expr1, const std::wstring& expr
     return true;
 }
 
-xd::IIndexInfoPtr xdLookupIndex(xd::IIndexInfoEnumPtr idx_enum,
-                                 const std::wstring& expr,
-                                 bool exact_column_order)
+xd::IndexInfo xdLookupIndex(const xd::IndexInfoEnum& idx_enum,
+                            const std::wstring& expr,
+                            bool exact_column_order)
 {
-    if (idx_enum.isNull())
-        return xcm::null;
+    if (idx_enum.empty())
+        return xd::IndexInfo();
 
     std::vector<std::wstring> expr_cols;
-    size_t i, idx_count = idx_enum->size();
-    xd::IIndexInfoPtr result;
+    size_t i, idx_count = idx_enum.size();
+    xd::IndexInfo result;
 
     kl::parseDelimitedList(expr, expr_cols, L',', true);
     
     for (i = 0; i < idx_count; ++i)
     {
         std::vector<std::wstring> idx_cols;
-        xd::IIndexInfoPtr idx = idx_enum->getItem(i);
-
-        kl::parseDelimitedList(idx->getExpression(), idx_cols, L',', true);
+        kl::parseDelimitedList(idx_enum[i].expression, idx_cols, L',', true);
 
         if (idx_cols.size() != expr_cols.size())
             continue;
@@ -875,8 +873,7 @@ xd::IIndexInfoPtr xdLookupIndex(xd::IIndexInfoEnumPtr idx_enum,
 
             for (j = 0; j < col_count; ++j)
             {
-                if (0 != wcscasecmp(idx_cols[j].c_str(),
-                                    expr_cols[j].c_str()))
+                if (0 != wcscasecmp(idx_cols[j].c_str(), expr_cols[j].c_str()))
                 {
                     match = false;
                     break;
@@ -885,7 +882,7 @@ xd::IIndexInfoPtr xdLookupIndex(xd::IIndexInfoEnumPtr idx_enum,
 
             if (match)
             {
-                return idx;
+                return idx_enum[i];
             }
         }
          else
@@ -919,7 +916,7 @@ xd::IIndexInfoPtr xdLookupIndex(xd::IIndexInfoEnumPtr idx_enum,
 
             if (match)
             {
-                return idx;
+                return idx_enum[i];
             }
 
         }

@@ -658,10 +658,10 @@ void RelationshipPanel::loadRelationships()
 
             if (right_set_path.length() > 0)
             {
-                xd::IIndexInfoEnumPtr right_set_indexes = db->getIndexEnum(right_set_path);
-                xd::IIndexInfoPtr idx = lookupIndex(right_set_indexes, rel->getRightExpression(), false);
+                xd::IndexInfoEnum right_set_indexes = db->getIndexEnum(right_set_path);
+                xd::IndexInfo idx = lookupIndex(right_set_indexes, rel->getRightExpression(), false);
 
-                if (idx.isNull())
+                if (!idx.isOk())
                 {
                     valid = false;
                     update_button = true;

@@ -178,16 +178,16 @@ public:
     xd::IRelationPtr getRelation(const std::wstring& relation_id);
     xd::IRelationEnumPtr getRelationEnum(const std::wstring& path);
 
-    xd::IIndexInfoPtr createIndex(const std::wstring& path,
-                                     const std::wstring& name,
-                                     const std::wstring& expr,
-                                     xd::IJob* job);
+    xd::IndexInfo createIndex(const std::wstring& path,
+                              const std::wstring& name,
+                              const std::wstring& expr,
+                              xd::IJob* job);
     bool renameIndex(const std::wstring& path,
                      const std::wstring& name,
                      const std::wstring& new_name);
     bool deleteIndex(const std::wstring& path,
                      const std::wstring& name);
-    xd::IIndexInfoEnumPtr getIndexEnum(const std::wstring& path);
+    xd::IndexInfoEnum getIndexEnum(const std::wstring& path);
 
     xd::IRowInserterPtr bulkInsert(const std::wstring& path);
 

@@ -100,9 +100,9 @@ bool findFieldInExpr(const std::wstring& field,
 int kscript2xdType(int type);
 int xd2kscriptType(int type);
 
-xd::IIndexInfoPtr xdLookupIndex(xd::IIndexInfoEnumPtr enums,
-                                   const std::wstring& expr,
-                                   bool exact_column_order);
+xd::IndexInfo xdLookupIndex(const xd::IndexInfoEnum& index_enum,
+                            const std::wstring& expr,
+                            bool exact_column_order);
 
 bool getIndexExpressionMatch(const std::wstring& expr1, const std::wstring& expr2);
 

@@ -23,7 +23,7 @@ struct IndexColumnInfo
 };
 
 
-struct IndexInfo
+struct IndexPanelEntry
 {
     wxString orig_name;
     wxString name;
@@ -50,7 +50,7 @@ public:
 
     bool setPath(const std::wstring& path);
 
-    std::vector<IndexInfo*> getAllIndexes();
+    std::vector<IndexPanelEntry*> getAllIndexes();
     
     xcm::signal1<IndexPanel*> sigOkPressed;
 
@@ -107,7 +107,7 @@ private:
     wxButton* m_ok_button;
     wxButton* m_delete_index_button;
     
-    IndexInfo* m_selected_index_info;
+    IndexPanelEntry* m_selected_index_entry;
 
     std::wstring m_path;
     xd::IStructurePtr m_structure;

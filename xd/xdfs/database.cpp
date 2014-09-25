@@ -38,7 +38,6 @@
 #include "../xdcommon/groupquery.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/idxutil.h"
-#include "../xdcommon/indexinfo.h"
 #include "../xdcommon/relationinfo.h"
 #include "ttbfile.h"
 #include <kl/url.h>
@@ -2607,15 +2606,15 @@ bool FsDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 
 
 
-xd::IIndexInfoPtr FsDatabase::createIndex(const std::wstring& path,
-                                          const std::wstring& name,
-                                          const std::wstring& expr,
-                                          xd::IJob* job)
+xd::IndexInfo FsDatabase::createIndex(const std::wstring& path,
+                                      const std::wstring& name,
+                                      const std::wstring& expr,
+                                      xd::IJob* job)
 {
     // get object id from path
     xd::IFileInfoPtr info = getFileInfo(path);
     if (info.isNull())
-        return xcm::null;
+        return xd::IndexInfo();
 
     std::wstring object_id = info->getObjectId();
     std::wstring idx_filename = kl::getUniqueString() + L".idx1";
@@ -2637,7 +2636,7 @@ xd::IIndexInfoPtr FsDatabase::createIndex(const std::wstring& path,
                                       job);
 
     if (!idx)
-        return xcm::null;
+        return xd::IndexInfo();
     
     idx->unref();
 
@@ -2645,7 +2644,7 @@ xd::IIndexInfoPtr FsDatabase::createIndex(const std::wstring& path,
     if (!file.isOk())
     {
         xf_remove(idx_filename);
-        return xcm::null;
+        return xd::IndexInfo();
     }
 
     std::wstring json = file.getContents();
@@ -2654,7 +2653,7 @@ xd::IIndexInfoPtr FsDatabase::createIndex(const std::wstring& path,
     if (!json.empty() && !root.fromString(json))
     {
         xf_remove(idx_filename);
-        return xcm::null;
+        return xd::IndexInfo();
     }
 
     kl::JsonNode indexes = root["indexes"];
@@ -2672,11 +2671,10 @@ xd::IIndexInfoPtr FsDatabase::createIndex(const std::wstring& path,
 
 
     // return info about the new index
-    IndexInfo* ii = new IndexInfo;
-    ii->setName(name);
-    ii->setExpression(expr);
-
-    return static_cast<xd::IIndexInfo*>(ii);
+    xd::IndexInfo ii;
+    ii.name = name;
+    ii.expression = expr;
+    return ii;
 }
 
 
@@ -2764,18 +2762,16 @@ bool FsDatabase::deleteIndex(const std::wstring& path, const std::wstring& name)
 }
 
 
-xd::IIndexInfoEnumPtr FsDatabase::getIndexEnum(const std::wstring& path)
+xd::IndexInfoEnum FsDatabase::getIndexEnum(const std::wstring& path)
 {
+    xd::IndexInfoEnum vec;
+
     // get object id from path
     xd::IFileInfoPtr info = getFileInfo(path);
     if (info.isNull())
-        return xcm::null;
+        return vec;
 
     std::wstring object_id = info->getObjectId();
-
-
-    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
 
     std::wstring idx_info_filename = m_ctrl_path + xf_path_separator_wchar + L"indexes" + xf_path_separator_wchar + object_id + L".info";
 
@@ -2797,17 +2793,13 @@ xd::IIndexInfoEnumPtr FsDatabase::getIndexEnum(const std::wstring& path)
 
     std::wstring name, expr, filename;
 
+    xd::IndexInfo ii;
     std::vector<kl::JsonNode>::iterator it, it_end = index_nodes.end();
     for (it = index_nodes.begin(); it != it_end; ++it)
     {
-        name = (*it)["name"];
-        expr = (*it)["expression"];
-
-        IndexInfo* e = new IndexInfo;
-        e->setName(name);
-        e->setExpression(expr);
-
-        vec->append(static_cast<xd::IIndexInfo*>(e));
+        ii.name = (*it)["name"];
+        ii.expression = (*it)["expression"];
+        vec.push_back(ii);
     }
 
     return vec;

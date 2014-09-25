@@ -1156,12 +1156,12 @@ xd::IIteratorPtr OracleDatabase::query(const xd::QueryParams& qp)
 
 
 
-xd::IIndexInfoPtr OracleDatabase::createIndex(const std::wstring& path,
-                                                 const std::wstring& name,
-                                                 const std::wstring& expr,
-                                                 xd::IJob* job)
+xd::IndexInfo OracleDatabase::createIndex(const std::wstring& path,
+                                          const std::wstring& name,
+                                          const std::wstring& expr,
+                                          xd::IJob* job)
 {
-    return xcm::null;
+    return xd::IndexInfo();
 }
 
 
@@ -1180,12 +1180,9 @@ bool OracleDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-xd::IIndexInfoEnumPtr OracleDatabase::getIndexEnum(const std::wstring& path)
+xd::IndexInfoEnum OracleDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
-
-    return vec;
+    return xd::IndexInfoEnum();
 }
 
 

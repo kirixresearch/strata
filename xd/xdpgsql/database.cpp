@@ -22,7 +22,6 @@
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/columninfo.h"
-#include "../xdcommon/indexinfo.h"
 #include "../xdcommon/jobinfo.h"
 #include "../xdcommon/util.h"
 #include "database.h"
@@ -1519,16 +1518,16 @@ xd::IIteratorPtr PgsqlDatabase::query(const xd::QueryParams& qp)
 
 
 
-xd::IIndexInfoPtr PgsqlDatabase::createIndex(const std::wstring& path,
-                                                const std::wstring& name,
-                                                const std::wstring& expr,
-                                                xd::IJob* job)
+xd::IndexInfo PgsqlDatabase::createIndex(const std::wstring& path,
+                                         const std::wstring& name,
+                                         const std::wstring& expr,
+                                         xd::IJob* job)
 {
     std::wstring tbl = pgsqlGetTablenameFromPath(path);
 
     PGconn* conn = createConnection();
     if (!conn)
-        return xcm::null;
+        return xd::IndexInfo();
 
     std::wstring query = L"CREATE INDEX %idx% ON %tbl% (%expr%)";
     kl::replaceStr(query, L"%idx%", pgsqlQuoteIdentifierIfNecessary(name));
@@ -1541,13 +1540,12 @@ xd::IIndexInfoPtr PgsqlDatabase::createIndex(const std::wstring& path,
     closeConnection(conn);
 
     if (!success)
-        return xcm::null;
+        return xd::IndexInfo();
 
-    IndexInfo* ii = new IndexInfo;
-    ii->setName(name);
-    ii->setExpression(expr);
-
-    return static_cast<xd::IIndexInfo*>(ii);
+    xd::IndexInfo ii;
+    ii.name = name;
+    ii.expression = expr;
+    return ii;
 }
 
 
@@ -1580,11 +1578,9 @@ bool PgsqlDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-xd::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
+xd::IndexInfoEnum PgsqlDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
-
+    xd::IndexInfoEnum vec;
 
     std::wstring tbl = pgsqlGetTablenameFromPath(path);
 
@@ -1633,14 +1629,13 @@ xd::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
 
     closeConnection(conn);
 
+    xd::IndexInfo ii;
     std::map<std::wstring, std::wstring>::iterator it;
     for (it = indexes.begin(); it != indexes.end(); ++it)
     {
-        IndexInfo* ii = new IndexInfo;
-        ii->setName(it->first);
-        ii->setExpression(it->second);
-
-        vec->append(static_cast<xd::IIndexInfo*>(ii));
+        ii.name = it->first;
+        ii.expression = it->second;
+        vec.push_back(ii);
     }
 
     return vec;

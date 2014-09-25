@@ -792,12 +792,12 @@ xd::IIteratorPtr ClientDatabase::query(const xd::QueryParams& qp)
 
 
 
-xd::IIndexInfoPtr ClientDatabase::createIndex(const std::wstring& path,
-                                                 const std::wstring& name,
-                                                 const std::wstring& expr,
-                                                 xd::IJob* job)
+xd::IndexInfo ClientDatabase::createIndex(const std::wstring& path,
+                                          const std::wstring& name,
+                                          const std::wstring& expr,
+                                          xd::IJob* job)
 {
-    return xcm::null;
+    return xd::IndexInfo();
 }
 
 
@@ -816,12 +816,9 @@ bool ClientDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-xd::IIndexInfoEnumPtr ClientDatabase::getIndexEnum(const std::wstring& path)
+xd::IndexInfoEnum ClientDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<xd::IIndexInfoEnumPtr>* vec;
-    vec = new xcm::IVectorImpl<xd::IIndexInfoEnumPtr>;
-
-    return vec;
+    return xd::IndexInfoEnum();
 }
 
 

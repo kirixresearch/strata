@@ -53,11 +53,11 @@ public:
     bool removeEventHandler(IXdnativeSetEvents* handler);
 
 
-    xd::IIndexInfoPtr createIndex(const std::wstring& name,
+    xd::IndexInfo createIndex(const std::wstring& name,
                                      const std::wstring& expr,
                                      xd::IJob* job)
     {
-        return xcm::null;
+        return xd::IndexInfo();
     }
 
     bool renameIndex(const std::wstring& name,
@@ -71,11 +71,9 @@ public:
         return false;
     }
 
-    xd::IIndexInfoEnumPtr getIndexEnum()
+    xd::IndexInfoEnum getIndexEnum()
     {
-        xcm::IVectorImpl<xd::IIndexInfoEnumPtr>* vec;
-        vec = new xcm::IVectorImpl<xd::IIndexInfoEnumPtr>;
-        return vec;
+        return xd::IndexInfoEnum();
     }
 
 

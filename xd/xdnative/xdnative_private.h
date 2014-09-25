@@ -232,8 +232,8 @@ public:
     virtual bool modifyStructure(xd::IStructurePtr struct_config, xd::IJob* job) = 0;
     virtual xd::IRowInserterPtr getRowInserter() = 0;
 
-    virtual xd::IIndexInfoEnumPtr getIndexEnum() = 0;
-    virtual xd::IIndexInfoPtr createIndex(const std::wstring& name,
+    virtual xd::IndexInfoEnum getIndexEnum() = 0;
+    virtual xd::IndexInfo createIndex(const std::wstring& name,
                                              const std::wstring& expr,
                                              xd::IJob* job) = 0;
     virtual bool renameIndex(const std::wstring& name,

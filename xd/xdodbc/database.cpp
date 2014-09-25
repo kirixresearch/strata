@@ -2258,12 +2258,12 @@ xd::IIteratorPtr OdbcDatabase::query(const xd::QueryParams& qp)
 
 
 
-xd::IIndexInfoPtr OdbcDatabase::createIndex(const std::wstring& path,
-                                               const std::wstring& name,
-                                               const std::wstring& expr,
-                                               xd::IJob* job)
+xd::IndexInfo OdbcDatabase::createIndex(const std::wstring& path,
+                                        const std::wstring& name,
+                                        const std::wstring& expr,
+                                        xd::IJob* job)
 {
-    return xcm::null;
+    return xd::IndexInfo();
 }
 
 
@@ -2282,13 +2282,11 @@ bool OdbcDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-xd::IIndexInfoEnumPtr OdbcDatabase::getIndexEnum(const std::wstring& path)
+xd::IndexInfoEnum OdbcDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
-
-    return vec;
+    return xd::IndexInfoEnum();
 }
+
 
 xd::IRowInserterPtr OdbcDatabase::bulkInsert(const std::wstring& path)
 {

@@ -3795,10 +3795,10 @@ bool XdnativeDatabase::deleteRelation(const std::wstring& relation_id)
 
 
 
-xd::IIndexInfoPtr XdnativeDatabase::createIndex(const std::wstring& path,
-                                                const std::wstring& name,
-                                                const std::wstring& expr,
-                                                xd::IJob* job)
+xd::IndexInfo XdnativeDatabase::createIndex(const std::wstring& path,
+                                            const std::wstring& name,
+                                            const std::wstring& expr,
+                                            xd::IJob* job)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
@@ -3806,7 +3806,7 @@ xd::IIndexInfoPtr XdnativeDatabase::createIndex(const std::wstring& path,
         // action takes place in a mount
         xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
-            return xcm::null;
+            return xd::IndexInfo();
 
         std::vector<std::wstring> cols;
         std::vector<std::wstring>::iterator it;
@@ -3826,7 +3826,7 @@ xd::IIndexInfoPtr XdnativeDatabase::createIndex(const std::wstring& path,
 
     IXdnativeSetPtr set_int = openTable(path);
     if (set_int.isNull())
-        return xcm::null;
+        return xd::IndexInfo();
 
     return set_int->createIndex(name, expr, job);
 }
@@ -3877,7 +3877,7 @@ bool XdnativeDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-xd::IIndexInfoEnumPtr XdnativeDatabase::getIndexEnum(const std::wstring& path)
+xd::IndexInfoEnum XdnativeDatabase::getIndexEnum(const std::wstring& path)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
@@ -3885,7 +3885,7 @@ xd::IIndexInfoEnumPtr XdnativeDatabase::getIndexEnum(const std::wstring& path)
         // action takes place in a mount
         xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
-            return xcm::null;
+            return xd::IndexInfoEnum();
 
         return db->getIndexEnum(rpath);
     }
@@ -3894,9 +3894,7 @@ xd::IIndexInfoEnumPtr XdnativeDatabase::getIndexEnum(const std::wstring& path)
     if (set_int.isNull())
     {
         // IXdnativeSet not supported -- return no indexes
-        xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
-        vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
-        return vec;
+        return xd::IndexInfoEnum();
     }
     
     return set_int->getIndexEnum();

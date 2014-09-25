@@ -19,7 +19,6 @@
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/columninfo.h"
-#include "../xdcommon/indexinfo.h"
 #include "../xdcommon/jobinfo.h"
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/util.h"
@@ -655,12 +654,12 @@ xd::IIteratorPtr KpgDatabase::query(const xd::QueryParams& qp)
 
 
 
-xd::IIndexInfoPtr KpgDatabase::createIndex(const std::wstring& path,
-                                              const std::wstring& name,
-                                              const std::wstring& expr,
-                                              xd::IJob* job)
+xd::IndexInfo KpgDatabase::createIndex(const std::wstring& path,
+                                       const std::wstring& name,
+                                       const std::wstring& expr,
+                                       xd::IJob* job)
 {
-    return xcm::null;
+    return xd::IndexInfo();
 }
 
 
@@ -679,14 +678,10 @@ bool KpgDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-xd::IIndexInfoEnumPtr KpgDatabase::getIndexEnum(const std::wstring& path)
+xd::IndexInfoEnum KpgDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
-
-    return vec;
+    return xd::IndexInfoEnum();
 }
-
 
 
 xd::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)

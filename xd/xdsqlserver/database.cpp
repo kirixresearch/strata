@@ -610,12 +610,12 @@ xd::IIteratorPtr SqlServerDatabase::query(const xd::QueryParams& qp)
 
 
 
-xd::IIndexInfoPtr SqlServerDatabase::createIndex(const std::wstring& path,
-                                                    const std::wstring& name,
-                                                    const std::wstring& expr,
-                                                    xd::IJob* job)
+xd::IndexInfo SqlServerDatabase::createIndex(const std::wstring& path,
+                                             const std::wstring& name,
+                                             const std::wstring& expr,
+                                             xd::IJob* job)
 {
-    return xcm::null;
+    return xd::IndexInfo();
 }
 
 
@@ -634,13 +634,11 @@ bool SqlServerDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-xd::IIndexInfoEnumPtr SqlServerDatabase::getIndexEnum(const std::wstring& path)
+xd::IndexInfoEnum SqlServerDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
-
-    return vec;
+    return xd::IndexInfoEnum();
 }
+
 
 xd::IRowInserterPtr SqlServerDatabase::bulkInsert(const std::wstring& path)
 {

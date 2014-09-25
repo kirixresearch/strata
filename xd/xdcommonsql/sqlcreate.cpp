@@ -301,11 +301,11 @@ bool sqlCreate(xd::IDatabasePtr db,
         
         
 
-        xd::IIndexInfoPtr index;
+        xd::IndexInfo index;
         
         index = db->createIndex(table, name, col_list, job);
         
-        if (index.isNull())
+        if (!index.isOk())
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to create index [%ls] on table [%ls]", name.c_str(), table.c_str()); 

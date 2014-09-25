@@ -908,12 +908,12 @@ xd::IIteratorPtr MysqlDatabase::query(const xd::QueryParams& qp)
 }
 
 
-xd::IIndexInfoPtr MysqlDatabase::createIndex(const std::wstring& path,
-                                                const std::wstring& name,
-                                                const std::wstring& expr,
-                                                xd::IJob* job)
+xd::IndexInfo MysqlDatabase::createIndex(const std::wstring& path,
+                                         const std::wstring& name,
+                                         const std::wstring& expr,
+                                         xd::IJob* job)
 {
-    return xcm::null;
+    return xd::IndexInfo();
 }
 
 
@@ -931,15 +931,10 @@ bool MysqlDatabase::deleteIndex(const std::wstring& path,
     return false;
 }
 
-
-xd::IIndexInfoEnumPtr MysqlDatabase::getIndexEnum(const std::wstring& path)
+xd::IndexInfoEnum MysqlDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
-
-    return vec;
+    return xd::IndexInfoEnum();
 }
-
 
 
 xd::IRowInserterPtr MysqlDatabase::bulkInsert(const std::wstring& path)

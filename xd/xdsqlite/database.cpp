@@ -610,12 +610,12 @@ xd::IIteratorPtr SlDatabase::query(const xd::QueryParams& qp)
 }
 
 
-xd::IIndexInfoPtr SlDatabase::createIndex(const std::wstring& path,
-                                             const std::wstring& name,
-                                             const std::wstring& expr,
-                                             xd::IJob* job)
+xd::IndexInfo SlDatabase::createIndex(const std::wstring& path,
+                                      const std::wstring& name,
+                                      const std::wstring& expr,
+                                      xd::IJob* job)
 {
-    return xcm::null;
+    return xd::IndexInfo();
 }
 
 
@@ -672,14 +672,10 @@ bool SlDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr str
 }
 
 
-xd::IIndexInfoEnumPtr SlDatabase::getIndexEnum(const std::wstring& path)
+xd::IndexInfoEnum SlDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
-
-    return vec;
+    return xd::IndexInfoEnum();
 }
-
 
 
 xd::IDatabasePtr SlDatabase::getMountDatabase(const std::wstring& path)

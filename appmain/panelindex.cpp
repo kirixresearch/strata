@@ -123,7 +123,7 @@ END_EVENT_TABLE()
 
 IndexPanel::IndexPanel()
 {
-    m_selected_index_info = NULL;
+    m_selected_index_entry = NULL;
     m_available_fields = NULL;
     m_index_fields = NULL;
     m_indexes_list_validator = NULL;
@@ -378,7 +378,7 @@ void IndexPanel::setDocumentFocus()
 
 }
 
-static void expr2vec(IndexInfo* info)
+static void expr2vec(IndexPanelEntry* info)
 {
     // parse the index expression into a vector of IndexColumnInfo
     wxArrayString arr;
@@ -407,7 +407,7 @@ static void expr2vec(IndexInfo* info)
     }
 }
 
-static void vec2expr(IndexInfo* info)
+static void vec2expr(IndexPanelEntry* info)
 {
     wxString expr;
     
@@ -428,14 +428,14 @@ static void vec2expr(IndexInfo* info)
     info->expr = expr;
 }
 
-std::vector<IndexInfo*> IndexPanel::getAllIndexes()
+std::vector<IndexPanelEntry*> IndexPanel::getAllIndexes()
 {
-    std::vector<IndexInfo*> retval;
+    std::vector<IndexPanelEntry*> retval;
     
     int row, row_count = m_indexes_list->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        IndexInfo* info = (IndexInfo*)m_indexes_list->getRowData(row);
+        IndexPanelEntry* info = (IndexPanelEntry*)m_indexes_list->getRowData(row);
         info->name = m_indexes_list->getCellString(row, 0);
         
         // create the index expression from the vector of IndexColumnInfo
@@ -449,26 +449,20 @@ std::vector<IndexInfo*> IndexPanel::getAllIndexes()
 
 void IndexPanel::populateIndexesList()
 {
-    xd::IIndexInfoPtr index;
-    xd::IIndexInfoEnumPtr indexes;
+    xd::IndexInfoEnum indexes;
     indexes = g_app->getDatabase()->getIndexEnum(m_path);
-    if (indexes.isNull())
-        return;
-    
+
     // temporary vector for sorting
-    std::vector<IndexInfo*> info_vec;
+    std::vector<IndexPanelEntry*> info_vec;
     
-    int i, count = indexes->size();
+    size_t i, count = indexes.size();
     for (i = 0; i < count; ++i)
     {
-        // get the index we're going to store
-        index = indexes->getItem(i);
-        
         // create the index info to be stored as row data
-        IndexInfo* info = new IndexInfo;
-        info->orig_name = index->getName();
-        info->name = index->getName();
-        info->expr = index->getExpression();
+        IndexPanelEntry* info = new IndexPanelEntry;
+        info->orig_name = indexes[i].name;
+        info->name = indexes[i].name;
+        info->expr = indexes[i].expression;
         
         // parse the index expression into a vector of IndexColumnInfo
         expr2vec(info);
@@ -487,7 +481,7 @@ void IndexPanel::populateIndexFieldsList()
     // clear out the index fields list
     m_index_fields->deleteAllRows();
     
-    IndexInfo* info = m_selected_index_info;
+    IndexPanelEntry* info = m_selected_index_entry;
     if (!info)
     {
         // refresh the index fields list
@@ -581,9 +575,9 @@ void IndexPanel::insertIndexColumn(int row,
 void IndexPanel::refreshIndexInfo()
 {
     // save the selected index info before we move to a different index
-    if (m_selected_index_info)
+    if (m_selected_index_entry)
     {
-        IndexInfo* info = m_selected_index_info;
+        IndexPanelEntry* info = m_selected_index_entry;
         
         info->cols.clear();
         
@@ -602,12 +596,12 @@ void IndexPanel::refreshIndexInfo()
     if (m_indexes_list->getRowCount() > 0)
     {
         int row = m_indexes_list->getCursorRow();
-        m_selected_index_info = (IndexInfo*)m_indexes_list->getRowData(row);
+        m_selected_index_entry = (IndexPanelEntry*)m_indexes_list->getRowData(row);
     }
      else
     {
         // no rows in indexes list means no selected index info
-        m_selected_index_info = NULL;
+        m_selected_index_entry = NULL;
     }
     
     // populate the index fields list
@@ -687,7 +681,7 @@ void IndexPanel::onAddIndex(wxCommandEvent& evt)
     m_indexes_list->Freeze();
     
     // create the new index's row data
-    IndexInfo* info = new IndexInfo;
+    IndexPanelEntry* info = new IndexPanelEntry;
     info->name = getUniqueIndexName();
     
     // add a new row to the indexes list
@@ -700,7 +694,7 @@ void IndexPanel::onAddIndex(wxCommandEvent& evt)
     m_indexes_list->moveCursor(row, 0);
     
     // save the selected index info
-    m_selected_index_info = info;
+    m_selected_index_entry = info;
     
     // update the delete index button and the index fields list
     checkEnabled();

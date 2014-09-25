@@ -169,9 +169,9 @@ public:
     bool modifyStructure(xd::IStructurePtr struct_config,
                          xd::IJob* job);
 
-    xd::IIndexInfoEnumPtr getIndexEnum();
+    xd::IndexInfoEnum getIndexEnum();
 
-    xd::IIndexInfoPtr createIndex(const std::wstring& tag,
+    xd::IndexInfo createIndex(const std::wstring& tag,
                                      const std::wstring& expr,
                                      xd::IJob* job);
     bool deleteIndex(const std::wstring& name);

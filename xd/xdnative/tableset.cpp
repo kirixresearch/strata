@@ -28,7 +28,6 @@
 #include "../xdcommon/keylayout.h"
 #include "../xdcommon/idxutil.h"
 #include "../xdcommon/rowidarray.h"
-#include "../xdcommon/indexinfo.h"
 
 const int tableiterator_read_ahead_buffer_size = 2097152;
 
@@ -947,12 +946,11 @@ void TableSet::refreshIndexEntries()
     }
 }
 
-xd::IIndexInfoEnumPtr TableSet::getIndexEnum()
+xd::IndexInfoEnum TableSet::getIndexEnum()
 {
     KL_AUTO_LOCK(m_update_mutex);
 
-    xcm::IVectorImpl<xd::IIndexInfoPtr>* indexes;
-    indexes = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
+    xd::IndexInfoEnum indexes;
 
     if (!m_table)
     {
@@ -968,15 +966,14 @@ xd::IIndexInfoEnumPtr TableSet::getIndexEnum()
 
 
     std::vector<IndexEntry>::iterator it;
+    xd::IndexInfo ii;
     for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
     {
         if (it->name.length() > 0 && it->index)
         {
-            IndexInfo* ii = new IndexInfo;
-            ii->setName(it->name);
-            ii->setExpression(it->expr);
-
-            indexes->append(static_cast<xd::IIndexInfo*>(ii));
+            ii.name = it->name;
+            ii.expression = it->expr;
+            indexes.push_back(ii);
         }
     }
 
@@ -984,14 +981,14 @@ xd::IIndexInfoEnumPtr TableSet::getIndexEnum()
 }
 
 
-xd::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
-                                        const std::wstring& expr,
-                                        xd::IJob* job)
+xd::IndexInfo TableSet::createIndex(const std::wstring& tag,
+                                    const std::wstring& expr,
+                                    xd::IJob* job)
 {
     KL_AUTO_LOCK(m_update_mutex);
 
     if (tag.length() == 0)
-        return xcm::null;
+        return xd::IndexInfo();
 
     std::wstring lower_tag = tag;
     kl::makeLower(lower_tag);
@@ -1006,7 +1003,7 @@ xd::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
             IJobInternalPtr ijob = job;
             ijob->setStatus(xd::jobFailed);
         }
-        return xcm::null;
+        return xd::IndexInfo();
     }
 
     INodeValuePtr indexes_node = set_file->getChild(L"indexes", false);
@@ -1046,7 +1043,7 @@ xd::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
                     ijob->setStatus(xd::jobFailed);
                 }
 
-                return xcm::null;
+                return xd::IndexInfo();
             }
         }
 
@@ -1099,7 +1096,7 @@ xd::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
             ijob->setStatus(xd::jobFailed);
         }
 
-        return xcm::null;
+        return xd::IndexInfo();
     }
 
 
@@ -1139,11 +1136,11 @@ xd::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
     m_table->setStructureModified();
 
 
-    IndexInfo* ii = new IndexInfo;
-    ii->setName(tag);
-    ii->setExpression(expr);
+    xd::IndexInfo ii;
+    ii.name = tag;
+    ii.expression = expr;
 
-    return static_cast<xd::IIndexInfo*>(ii);
+    return ii;
 }
 
 

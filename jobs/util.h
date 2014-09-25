@@ -23,7 +23,7 @@ namespace jobs
 void vectorToDelimitedString(const std::vector<std::wstring>& vec, std::wstring& str, wchar_t delimiter = ',');
 
 std::wstring getMountRoot(xd::IDatabasePtr db, const std::wstring _path);
-xd::IIndexInfoPtr lookupIndex(xd::IIndexInfoEnumPtr idx_enum, const std::wstring& expr, bool exact_column_order);
+xd::IndexInfo lookupIndex(const xd::IndexInfoEnum& idx_enum, const std::wstring& expr, bool exact_column_order);
 
 kl::JsonNode createJsonNodeSchema(const std::wstring& schema_definition);
 

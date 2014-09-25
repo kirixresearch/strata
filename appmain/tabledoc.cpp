@@ -3561,7 +3561,7 @@ static wxMenu* createViewsMenu(ITableDocViewEnumPtr views,
     return menu;
 }
 
-static wxMenu* createIndexesMenu(xd::IIndexInfoEnumPtr indexes,
+static wxMenu* createIndexesMenu(const xd::IndexInfoEnum& indexes,
                                  const wxString sort_order_expr,
                                  int base_id)
 {
@@ -3574,18 +3574,16 @@ static wxMenu* createIndexesMenu(xd::IIndexInfoEnumPtr indexes,
     
     base_id++;
     
-    int i, count = indexes->size();
+    size_t i, count = indexes.size();
     for (i = 0; i < count; ++i)
     {
-        xd::IIndexInfoPtr index = indexes->getItem(i);
-        wxString index_tag = index->getName();
-        wxString index_expr = index->getExpression();
+        wxString index_tag = indexes[i].name;
+        wxString index_expr = indexes[i].expression;
         
         menu->AppendCheckItem(base_id, index_tag);
         
         // check the current sort order in the menu
-        if (index_expr.Length() > 0 &&
-            index_expr.CmpNoCase(sort_order_expr) == 0)
+        if (index_expr.length() > 0 && index_expr.CmpNoCase(sort_order_expr) == 0)
         {
             menu->Check(base_id, true);
         }
@@ -4000,7 +3998,7 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
     }
     
     xd::IDatabasePtr db = g_app->getDatabase();
-    xd::IIndexInfoEnumPtr index_enum = db->getIndexEnum(m_path);
+    xd::IndexInfoEnum index_enum = db->getIndexEnum(m_path);
 
     wxMenu menuPopup;
 
@@ -4066,10 +4064,10 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
         }
 
 
-        xd::IIndexInfoEnumPtr indexes;
+        xd::IndexInfoEnum indexes;
         indexes = db->getIndexEnum(m_path);
         
-        if (i >= (int)(indexes->size()+1))
+        if (i >= (int)(indexes.size()+1))
         {
             // user clicked the "Edit..." menu item
             showIndexPanel();
@@ -4078,8 +4076,8 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
         {
             // user clicked on one of the indexes;
             // set that index as the sort order
-            xd::IIndexInfoPtr index = indexes->getItem(i-1);
-            setSortOrder(index->getExpression());
+            xd::IndexInfo index = indexes[i-1];
+            setSortOrder(index.expression);
         }
     }
      else if (command != 0)
@@ -8095,21 +8093,21 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     xd::IDatabasePtr db = g_app->getDatabase();
 
     // get the original indexes that exist on this set
-    xd::IIndexInfoEnumPtr orig_indexes = db->getIndexEnum(m_path);
+    xd::IndexInfoEnum orig_indexes = db->getIndexEnum(m_path);
     bool found;
     
     // get all of the indexes that were created/updated in the IndexPanel
-    std::vector<IndexInfo*> vec = panel->getAllIndexes();
-    std::vector<IndexInfo*>::iterator it;
-    IndexInfo* info;
+    std::vector<IndexPanelEntry*> vec = panel->getAllIndexes();
+    std::vector<IndexPanelEntry*>::iterator it;
+    IndexPanelEntry* info;
     
     // first, delete any of the original indexes that were
     // not found in the list of indexes in the IndexPanel
-    int i, count = (int)orig_indexes->size();
+    int i, count = (int)orig_indexes.size();
     for (i = count-1; i >= 0; --i)
     {
-        xd::IIndexInfoPtr index = orig_indexes->getItem(i);
-        wxString index_tag = index->getName();
+        xd::IndexInfo index = orig_indexes[i];
+        wxString index_tag = index.name;
         found = false;
         
         // try to find the original index
@@ -8127,7 +8125,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         // delete the index if it's not found
         if (!found)
         {
-            db->deleteIndex(m_path, index->getName());
+            db->deleteIndex(m_path, index.name);
         }
     }
     
@@ -8135,13 +8133,13 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     // we may have deleted some of the original indexes;
     // get the list of indexes again
     orig_indexes = db->getIndexEnum(m_path);
-    count = (int)orig_indexes->size();
+    count = (int)orig_indexes.size();
     
     // rename indexes
     for (i = count-1; i >= 0; --i)
     {
-        xd::IIndexInfoPtr index = orig_indexes->getItem(i);
-        wxString index_tag = index->getName();
+        xd::IndexInfo index = orig_indexes[i];
+        wxString index_tag = index.name;
         
         // find the original index and rename if
         // its name was changed in the IndexPanel
@@ -8164,7 +8162,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
                                     towstr(index_tag),
                                     towstr(info->name));
                     
-                    // we also need to update the IndexInfo structure
+                    // we also need to update the IndexPanelEntry structure
                     info->orig_name = info->name;
                     break;
                 }
@@ -8188,7 +8186,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     // we may have deleted some of the original indexes;
     // get the list of indexes again
     orig_indexes = db->getIndexEnum(m_path);
-    count = (int)orig_indexes->size();
+    count = (int)orig_indexes.size();
     bool index_deleted = false;
     
     // now, create new indexes or update existing indexes based
@@ -8208,7 +8206,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
             continue;
         }
         
-        xd::IIndexInfoPtr index;
+        xd::IndexInfo index;
         wxString index_tag, index_expr;
         
         // we may have deleted some of the original indexes;
@@ -8216,15 +8214,15 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         if (index_deleted)
         {
             orig_indexes = db->getIndexEnum(m_path);
-            count = (int)orig_indexes->size();
+            count = (int)orig_indexes.size();
             index_deleted = false;
         }
         
         // try to find the original index
         for (i = 0; i < count; ++i)
         {
-            index = orig_indexes->getItem(i);
-            index_tag = index->getName();
+            index = orig_indexes[i];
+            index_tag = index.name;
             
             if (info->orig_name.CmpNoCase(index_tag) == 0)
             {
@@ -8247,7 +8245,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         // we found the index; there are a couple of options...
         
         // 1) the expression hasn't changed; do nothing
-        if (isKeyExpressionSame(index->getExpression(), towstr(info->expr)))
+        if (isKeyExpressionSame(index.expression, towstr(info->expr)))
             continue;
 
         // 2) the expression has changed; delete the old index
@@ -8259,7 +8257,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         
         if (index.isOk())
         {
-            db->deleteIndex(m_path, index->getName());
+            db->deleteIndex(m_path, index.name);
             index_deleted = true;
         }
     }

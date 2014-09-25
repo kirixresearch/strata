@@ -79,7 +79,6 @@ XCM_DECLARE_SMARTPTR(ICacheRowUpdate)
 XCM_DECLARE_SMARTPTR(IStream)
 XCM_DECLARE_SMARTPTR(IIteratorRelation)
 XCM_DECLARE_SMARTPTR(IRelationSchema)
-XCM_DECLARE_SMARTPTR2(xcm::IVector<IIndexInfoPtr>, IIndexInfoEnumPtr)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IRelationPtr>, IRelationEnumPtr)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IFileInfoPtr>, IFileInfoEnumPtr)
 
@@ -409,18 +408,6 @@ public:
     virtual bool isValid() = 0;
 };
 
-
-xcm_interface IIndexInfo : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("xd.IIndexInfo")
-
-public:
-
-    virtual const std::wstring& getName() = 0;
-    virtual const std::wstring& getExpression() = 0;
-};
-
-
 xcm_interface IIterator : public xcm::IObject
 {
     XCM_INTERFACE_NAME("xd.IIterator")
@@ -593,6 +580,20 @@ typedef std::vector<DatabaseEntry> DatabaseEntryEnum;
 
 
 
+
+struct IndexInfo
+{
+    std::wstring name;
+    std::wstring expression;
+
+    bool isOk() const { return name.length() > 0 ? true : false; }
+};
+
+typedef std::vector<IndexInfo> IndexInfoEnum;
+
+
+
+
 struct FormatDefinition
 {
     FormatDefinition()
@@ -717,7 +718,7 @@ public:
     virtual IFileInfoEnumPtr getFolderInfo(const std::wstring& path) = 0;
     
 
-    virtual IIndexInfoPtr createIndex(const std::wstring& path,
+    virtual xd::IndexInfo createIndex(const std::wstring& path,
                                       const std::wstring& name,
                                       const std::wstring& expr,
                                       IJob* job) = 0;
@@ -726,7 +727,7 @@ public:
                              const std::wstring& new_name) = 0;
     virtual bool deleteIndex(const std::wstring& path,
                              const std::wstring& name) = 0;
-    virtual IIndexInfoEnumPtr getIndexEnum(const std::wstring& path) = 0;
+    virtual IndexInfoEnum getIndexEnum(const std::wstring& path) = 0;
 
     virtual IStructurePtr describeTable(const std::wstring& path) = 0;
 

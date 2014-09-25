@@ -212,9 +212,9 @@ bool CommonBaseIterator::refreshRelInfo(CommonBaseIteratorRelInfo& info)
         return false;
 
     // lookup the index on the right set
-    xd::IIndexInfoEnumPtr idx_enum = database->getIndexEnum(rel->getRightTable());
-    xd::IIndexInfoPtr idx = xdLookupIndex(idx_enum, rel->getRightExpression(), false);
-    if (!idx)
+    xd::IndexInfoEnum idx_enum = database->getIndexEnum(rel->getRightTable());
+    xd::IndexInfo idx = xdLookupIndex(idx_enum, rel->getRightExpression(), false);
+    if (!idx.isOk())
         return false;
 
     // construct final left expression.  This will be based off of the order
@@ -226,7 +226,7 @@ bool CommonBaseIterator::refreshRelInfo(CommonBaseIteratorRelInfo& info)
 
     kl::parseDelimitedList(rel->getLeftExpression(), left_list, L',');
     kl::parseDelimitedList(rel->getRightExpression(), right_list, L',');
-    kl::parseDelimitedList(idx->getExpression(), idx_list, L',');
+    kl::parseDelimitedList(idx.expression, idx_list, L',');
 
     if (left_list.size() != right_list.size() ||
         right_list.size() != idx_list.size())
@@ -268,7 +268,7 @@ bool CommonBaseIterator::refreshRelInfo(CommonBaseIteratorRelInfo& info)
 
     if (info.right_iter.isNull())
     {
-        info.right_iter = database->query(rel->getRightTable(), L"", L"", idx->getExpression(), NULL);
+        info.right_iter = database->query(rel->getRightTable(), L"", L"", idx.expression, NULL);
         info.right_iter_int = info.right_iter;
     }
 
