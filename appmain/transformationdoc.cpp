@@ -1379,12 +1379,15 @@ xd::IStructurePtr TransformationDoc::createStructureFromGrid()
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        xd::IColumnInfoPtr col = s->createColumn();
-        col->setName(towstr(m_grid->getCellString(row, colFieldName)));
-        col->setType(choice2xd(m_grid->getCellComboSel(row, colFieldType)));
-        col->setWidth(m_grid->getCellInteger(row, colFieldWidth));
-        col->setScale(m_grid->getCellInteger(row, colFieldScale));
-        col->setCalculated(isFieldCalculated(m_grid, row));
+        xd::ColumnInfo col;
+
+        col.name = towstr(m_grid->getCellString(row, colFieldName));
+        col.type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+        col.width = m_grid->getCellInteger(row, colFieldWidth);
+        col.scale = m_grid->getCellInteger(row, colFieldScale);
+        col.calculated = isFieldCalculated(m_grid, row);
+
+        s->createColumn(col);
     }
     
     return s;

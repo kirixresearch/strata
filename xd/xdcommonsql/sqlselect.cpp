@@ -2063,11 +2063,14 @@ static bool doJoin(xd::IDatabasePtr db,
 
     for (jf_it = jfields.begin(); jf_it != jfields.end(); ++jf_it)
     {
-        xd::IColumnInfoPtr colinfo = output_structure->createColumn();
-        colinfo->setName(jf_it->name);
-        colinfo->setType(jf_it->type);
-        colinfo->setWidth(jf_it->width);
-        colinfo->setScale(jf_it->scale);
+        xd::ColumnInfo colinfo;
+
+        colinfo.name = jf_it->name;
+        colinfo.type = jf_it->type;
+        colinfo.width = jf_it->width;
+        colinfo.scale = jf_it->scale;
+
+        output_structure->createColumn(colinfo);
     }
 
     if (!db->createTable(output_path, output_structure, NULL))
@@ -3430,19 +3433,18 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
     for (f_it = fields.begin(); f_it != fields.end(); ++f_it)
     {
         xd::IColumnInfoPtr itercol;
-        xd::IColumnInfoPtr colinfo;
+        xd::ColumnInfo colinfo;
 
         itercol = iter_structure->getColumnInfo(f_it->name);
-
         if (itercol.isNull())
             continue;
 
-        colinfo = output_structure->createColumn();
+        colinfo.name = itercol->getName();
+        colinfo.type = itercol->getType();
+        colinfo.width = itercol->getWidth();
+        colinfo.scale = itercol->getScale();
 
-        colinfo->setName(itercol->getName());
-        colinfo->setType(itercol->getType());
-        colinfo->setWidth(itercol->getWidth());
-        colinfo->setScale(itercol->getScale());
+        output_structure->createColumn(colinfo);
     }
 
 

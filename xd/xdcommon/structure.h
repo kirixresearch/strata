@@ -120,8 +120,7 @@ public:
     bool deleteColumn(const std::wstring& column_name);
     bool moveColumn(const std::wstring& column_name, int new_idx);
     xd::IColumnInfoPtr modifyColumn(const std::wstring& column_name);
-    xd::IColumnInfoPtr createColumn();
-    xd::IColumnInfoPtr insertColumn(int idx);
+    void createColumn(const xd::ColumnInfo& col);
 
     int getExprType(const std::wstring& expression);
     bool isValid();

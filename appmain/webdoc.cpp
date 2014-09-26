@@ -1918,11 +1918,14 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
     std::vector<HtmlTableFieldInfo>::iterator field_it;
     for (field_it = fields.begin(); field_it != fields.end(); ++field_it)
     {
-        xd::IColumnInfoPtr col_info = dest_struct->createColumn();
-        col_info->setName(towstr(field_it->name));
-        col_info->setType(field_it->type);
-        col_info->setWidth(field_it->max_len);
-        col_info->setScale(field_it->type == xd::typeNumeric ? field_it->max_dec : 0);
+        xd::ColumnInfo col_info;
+
+        col_info.name = towstr(field_it->name);
+        col_info.type = field_it->type;
+        col_info.width = field_it->max_len;
+        col_info.scale = field_it->type == xd::typeNumeric ? field_it->max_dec : 0;
+
+        dest_struct->createColumn(col_info);
     }
 
     if (!dest_db->createTable(output_path, dest_struct, NULL))

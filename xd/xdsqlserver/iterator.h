@@ -24,14 +24,14 @@
 
 struct SqlServerDataAccessInfo
 {
-    // -- metadata --
+    // metadata
     std::wstring m_name;
     int m_type;
     int m_width;
     int m_scale;
     int m_ordinal;
 
-    // -- expression stuff --
+    // expression stuff
     kscript::ExprParser* m_expr;
     kscript::Value m_expr_result;
     std::wstring m_wstr_result;

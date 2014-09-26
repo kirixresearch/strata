@@ -295,37 +295,42 @@ bool FeedParser::convertToTable(const std::wstring& output_path)
 
     // create the output file
     xd::IStructurePtr structure = g_app->getDatabase()->createStructure();
-    xd::IColumnInfoPtr colinfo;
+    xd::ColumnInfo colinfo;
     
-    colinfo = structure->createColumn();
-    colinfo->setName(L"link");
-    colinfo->setType(xd::typeWideCharacter);
-    colinfo->setWidth(max_link_len);
-    colinfo->setScale(0);
+    colinfo = xd::ColumnInfo();
+    colinfo.name = L"link";
+    colinfo.type = xd::typeWideCharacter;
+    colinfo.width = max_link_len;
+    colinfo.scale = 0;
+    structure->createColumn(colinfo);
     
-    colinfo = structure->createColumn();
-    colinfo->setName(L"title");
-    colinfo->setType(xd::typeWideCharacter);
-    colinfo->setWidth(max_title_len);
-    colinfo->setScale(0);
+    colinfo = xd::ColumnInfo();
+    colinfo.name = L"title";
+    colinfo.type = xd::typeWideCharacter;
+    colinfo.width = max_title_len;
+    colinfo.scale = 0;
+    structure->createColumn(colinfo);
     
-    colinfo = structure->createColumn();
-    colinfo->setName(L"description");
-    colinfo->setType(xd::typeWideCharacter);
-    colinfo->setWidth(max_description_len);
-    colinfo->setScale(0);
+    colinfo = xd::ColumnInfo();
+    colinfo.name = L"description";
+    colinfo.type = xd::typeWideCharacter;
+    colinfo.width = max_description_len;
+    colinfo.scale = 0;
+    structure->createColumn(colinfo);
     
-    colinfo = structure->createColumn();
-    colinfo->setName(L"publication_date");
-    colinfo->setType(xd::typeDateTime);
-    colinfo->setWidth(8);
-    colinfo->setScale(0);
+    colinfo = xd::ColumnInfo();
+    colinfo.name = L"publication_date";
+    colinfo.type = xd::typeDateTime;
+    colinfo.width = 8;
+    colinfo.scale = 0;
+    structure->createColumn(colinfo);
     
-    colinfo = structure->createColumn();
-    colinfo->setName(L"id");
-    colinfo->setType(xd::typeWideCharacter);
-    colinfo->setWidth(max_id_len);
-    colinfo->setScale(0);
+    colinfo = xd::ColumnInfo();
+    colinfo.name = L"id";
+    colinfo.type = xd::typeWideCharacter;
+    colinfo.width = max_id_len;
+    colinfo.scale = 0;
+    structure->createColumn(colinfo);
 
 
     if (!db->createTable(output_path, structure, NULL))

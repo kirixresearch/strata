@@ -516,13 +516,10 @@ xd::IColumnInfoPtr Structure::modifyColumn(const std::wstring& column_name)
     return action_params;
 }
 
-xd::IColumnInfoPtr Structure::createColumn()
+void Structure::createColumn(const xd::ColumnInfo& col)
 {
     ColumnInfo* action_params = new ColumnInfo;
-    action_params->setName(L"");
-    action_params->setType(xd::typeInvalid);
-    action_params->setWidth(0);
-    action_params->setScale(0);
+    action_params->fromColumnInfo(col);
 
     StructureAction action;
     action.m_action = StructureAction::actionCreate;
@@ -532,38 +529,7 @@ xd::IColumnInfoPtr Structure::createColumn()
     m_actions.push_back(action);
 
     m_cols.push_back(action_params);
-
-    return action_params;
 }
-
-xd::IColumnInfoPtr Structure::insertColumn(int idx)
-{
-    // both of these options are the same as calling createColumn()
-    if (idx == -1 || idx == (int)m_cols.size())
-        return createColumn();
-
-    if (idx < 0 || idx > (int)m_cols.size())
-        return xcm::null;
-
-    ColumnInfo* action_params = new ColumnInfo;
-    action_params->setName(L"");
-    action_params->setType(xd::typeInvalid);
-    action_params->setWidth(0);
-    action_params->setScale(0);
-
-    StructureAction action;
-    action.m_action = StructureAction::actionInsert;
-    action.m_params = action_params;
-    action.m_colname = L"";
-    action.m_pos = idx;
-    m_actions.push_back(action);
-
-    m_cols.insert(m_cols.begin()+idx, action_params);
-
-    return action_params;
-}
-
-
 
 static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
 {

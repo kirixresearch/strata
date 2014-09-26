@@ -197,3 +197,40 @@ void ColumnInfo::copyTo(xd::IColumnInfoPtr dest)
         dest->setExpression(L"");
 }
 
+
+void ColumnInfo::fromColumnInfo(const xd::ColumnInfo& col)
+{
+    wcscpy(m_name, col.name.c_str());
+    m_type = col.type;
+    m_width = col.width;
+    m_scale = col.scale;
+    m_offset = col.source_offset;
+    m_col_ord = col.column_ordinal;
+    m_table_ord = col.table_ordinal;
+    m_encoding = col.source_encoding;
+    m_calculated = col.calculated;
+    m_nulls_allowed = col.nulls_allowed;
+    if (m_expression) free(m_expression);
+    m_expression = NULL;
+    if (col.expression.length() > 0)
+    {
+        m_expression = wcsdup(col.expression.c_str());
+    }
+}
+
+xd::ColumnInfo ColumnInfo::toColumnInfo()
+{
+    xd::ColumnInfo res;
+    res.name = m_name;
+    res.width = m_width;
+    res.scale = m_scale;
+    res.source_offset = m_offset;
+    res.column_ordinal = m_col_ord;
+    res.table_ordinal = m_table_ord;
+    res.source_encoding = m_encoding;
+    res.calculated = m_calculated;
+    res.nulls_allowed = m_nulls_allowed;
+    if (m_expression)
+        res.expression = m_expression;
+    return res;
+}

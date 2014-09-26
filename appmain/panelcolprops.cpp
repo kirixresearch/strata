@@ -1002,18 +1002,15 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     }
      else
     {
-        xd::IColumnInfoPtr colinfo = structure->createColumn();
-        if (!colinfo)
-        {
-            closeSite();
-            return;
-        }
+        xd::ColumnInfo colinfo;
 
-        colinfo->setName(towstr(m_last_name));
-        colinfo->setType(new_type);
-        colinfo->setWidth(new_width);
-        colinfo->setScale(new_scale);
-        colinfo->setExpression(towstr(m_last_expr));
+        colinfo.name = towstr(m_last_name);
+        colinfo.type = new_type;
+        colinfo.width = new_width;
+        colinfo.scale = new_scale;
+        colinfo.expression = towstr(m_last_expr);
+
+        structure->createColumn(colinfo);
     }
 
 

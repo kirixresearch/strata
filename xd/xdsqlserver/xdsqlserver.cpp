@@ -41,7 +41,7 @@ public:
         SqlServerDatabase* db = new SqlServerDatabase;
         db->ref();
 
-        // -- remove leading '\\', if necessary --
+        // remove leading '\\', if necessary
 
         std::wstring host_fixed;
         if (wcsncmp(host.c_str(), L"\\\\", 2) == 0)
@@ -53,7 +53,7 @@ public:
             host_fixed = host;
         }
 
-        // -- attempt to open the database --
+        // attempt to open the database
 
         if (!db->open(host_fixed, port, database, uid, password))
         {
@@ -90,7 +90,7 @@ public:
 
 
 
-// -- these are the publicly creatable classes --
+// these are the publicly creatable classes
 
 XCM_BEGIN_DYNAMIC_MODULE(xdsqlserver)
     XCM_BEGIN_CLASS_MAP()

@@ -491,32 +491,36 @@ void MultiFileInfoPanel::onSave(wxCommandEvent& event)
         return;
 
     xd::IStructurePtr output_structure;
-    xd::IColumnInfoPtr colinfo;
+    xd::ColumnInfo colinfo;
     output_structure = db->createStructure();
 
-    colinfo = output_structure->createColumn();
-    colinfo->setName(L"Filename");
-    colinfo->setType(xd::typeWideCharacter);
-    colinfo->setWidth(255);
-    colinfo->setScale(0);
+    colinfo = xd::ColumnInfo();
+    colinfo.name = L"Filename";
+    colinfo.type = xd::typeWideCharacter;
+    colinfo.width = 255;
+    colinfo.scale = 0;
+    output_structure->createColumn(colinfo);
 
-    colinfo = output_structure->createColumn();
-    colinfo->setName(L"Type");
-    colinfo->setType(xd::typeWideCharacter);
-    colinfo->setWidth(30);
-    colinfo->setScale(0);
+    colinfo = xd::ColumnInfo();
+    colinfo.name = L"Type";
+    colinfo.type = xd::typeWideCharacter;
+    colinfo.width = 30;
+    colinfo.scale = 0;
+    output_structure->createColumn(colinfo);
 
-    colinfo = output_structure->createColumn();
-    colinfo->setName(L"Size");
-    colinfo->setType(xd::typeDouble);
-    colinfo->setWidth(8);
-    colinfo->setScale(0);
+    colinfo = xd::ColumnInfo();
+    colinfo.name = L"Size";
+    colinfo.type = xd::typeDouble;
+    colinfo.width = 8;
+    colinfo.scale = 0;
+    output_structure->createColumn(colinfo);
 
-    colinfo = output_structure->createColumn();
-    colinfo->setName(L"Records");
-    colinfo->setType(xd::typeDouble);
-    colinfo->setWidth(8);
-    colinfo->setScale(0);
+    colinfo = xd::ColumnInfo();
+    colinfo.name = L"Records";
+    colinfo.type = xd::typeDouble;
+    colinfo.width = 8;
+    colinfo.scale = 0;
+    output_structure->createColumn(colinfo);
 
     std::wstring output_path = xd::getTemporaryPath();
 

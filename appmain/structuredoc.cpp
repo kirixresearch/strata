@@ -1375,8 +1375,7 @@ bool StructureDoc::createTable()
 
     // create the structure
     xd::IStructurePtr structure = g_app->getDatabase()->createStructure();
-    xd::IColumnInfoPtr col;
-
+    
     wxString name;
     int type;
     int width;
@@ -1393,13 +1392,14 @@ bool StructureDoc::createTable()
         scale = m_grid->getCellInteger(row, colFieldScale);
         expr = m_grid->getCellString(row, colFieldFormula);
         
-        col = structure->createColumn();
-        col->setName(towstr(name));
-        col->setType(choice2xd(type));
-        col->setWidth(width);
-        col->setScale(scale);
-        col->setExpression(towstr(expr));
-        col->setCalculated(isCalculatedField(m_grid, row));
+        xd::ColumnInfo col;
+        col.name = towstr(name);
+        col.type = choice2xd(type);
+        col.width = width;
+        col.scale = scale;
+        col.expression = towstr(expr);
+        col.calculated = isCalculatedField(m_grid, row);
+        structure->createColumn(col);
     }
     
     // get the path from the dialog and create the new set
@@ -1442,13 +1442,14 @@ xd::IStructurePtr StructureDoc::createStructureFromGrid()
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        xd::IColumnInfoPtr col = s->createColumn();
-        col->setName(towstr(m_grid->getCellString(row, colFieldName)));
-        col->setType(choice2xd(m_grid->getCellComboSel(row, colFieldType)));
-        col->setWidth(m_grid->getCellInteger(row, colFieldWidth));
-        col->setScale(m_grid->getCellInteger(row, colFieldScale));
-        col->setExpression(towstr(m_grid->getCellString(row, colFieldFormula)));
-        col->setCalculated(isCalculatedField(m_grid, row));
+        xd::ColumnInfo col;
+        col.name = towstr(m_grid->getCellString(row, colFieldName));
+        col.type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+        col.width = m_grid->getCellInteger(row, colFieldWidth);
+        col.scale = m_grid->getCellInteger(row, colFieldScale);
+        col.expression = towstr(m_grid->getCellString(row, colFieldFormula));
+        col.calculated = isCalculatedField(m_grid, row);
+        s->createColumn(col);
     }
     
     return s;

@@ -61,6 +61,8 @@ public:
     xd::IColumnInfoPtr clone();
     void copyTo(xd::IColumnInfoPtr dest);
 
+    void fromColumnInfo(const xd::ColumnInfo& col);
+    xd::ColumnInfo toColumnInfo();
 
 private:
 

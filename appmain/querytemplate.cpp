@@ -967,38 +967,40 @@ void QueryTemplate::updateValidationStructure()
             
 
 
-            xd::IColumnInfoPtr newcol = m_validation_struct->createColumn();
-            newcol->setName(alias + L"." + column);
-            newcol->setType(colinfo->getType());
-            newcol->setWidth(colinfo->getWidth());
-            newcol->setScale(colinfo->getScale());
-            newcol->setCalculated(colinfo->getCalculated());
-            newcol->setExpression(colinfo->getExpression());
+            xd::ColumnInfo newcol;
 
-            xd::IColumnInfoPtr newcol1 = m_validation_struct->createColumn();
-            newcol->copyTo(newcol1);
-            newcol1->setName(L"[" + alias + L"]." + column);
+            newcol.name = alias + L"." + column;
+            newcol.type = colinfo->getType();
+            newcol.width = colinfo->getWidth();
+            newcol.scale = colinfo->getScale();
+            newcol.calculated = colinfo->getCalculated();
+            newcol.expression = colinfo->getExpression();
+            m_validation_struct->createColumn(newcol);
 
-            xd::IColumnInfoPtr newcol2 = m_validation_struct->createColumn();
-            newcol->copyTo(newcol2);
-            newcol1->setName(alias + L".[" + column + L"]");
+            newcol.name = L"[" + alias + L"]." + column;
+            m_validation_struct->createColumn(newcol);
 
-            xd::IColumnInfoPtr newcol3 = m_validation_struct->createColumn();
-            newcol->copyTo(newcol3);
-            newcol1->setName(L"[" + alias + L"].[" + column + L"]");
+            newcol.name = alias + L".[" + column + L"]";
+            m_validation_struct->createColumn(newcol);
+
+            newcol.name = L"[" + alias + L"].[" + column + L"]";
+            m_validation_struct->createColumn(newcol);
 
             // if the field name is unique, then represent it also in our validation structure
             std::wstring fname = colinfo->getName();
             kl::makeLower(fname);
             if (non_unique_field_names.find(fname) == non_unique_field_names.end())
             {
-                xd::IColumnInfoPtr newcol = m_validation_struct->createColumn();
-                newcol->setName(colinfo->getName());
-                newcol->setType(colinfo->getType());
-                newcol->setWidth(colinfo->getWidth());
-                newcol->setScale(colinfo->getScale());
-                newcol->setCalculated(colinfo->getCalculated());
-                newcol->setExpression(colinfo->getExpression());
+                xd::ColumnInfo newcol;
+
+                newcol.name = colinfo->getName();
+                newcol.type = colinfo->getType();
+                newcol.width = colinfo->getWidth();
+                newcol.scale = colinfo->getScale();
+                newcol.calculated = colinfo->getCalculated();
+                newcol.expression = colinfo->getExpression();
+
+                m_validation_struct->createColumn(newcol);
             }
 
         }
@@ -1016,13 +1018,16 @@ void QueryTemplate::updateValidationStructure()
 
         if (colinfo.isOk() && param_iter->output_field.length() > 0)
         {
-            xd::IColumnInfoPtr newcol = m_validation_struct->createColumn();
-            newcol->setName(towstr(param_iter->output_field));
-            newcol->setType(colinfo->getType());
-            newcol->setWidth(colinfo->getWidth());
-            newcol->setScale(colinfo->getScale());
-            newcol->setCalculated(colinfo->getCalculated());
-            newcol->setExpression(colinfo->getExpression());
+            xd::ColumnInfo newcol;
+
+            newcol.name = towstr(param_iter->output_field);
+            newcol.type = colinfo->getType();
+            newcol.width = colinfo->getWidth();
+            newcol.scale = colinfo->getScale();
+            newcol.calculated = colinfo->getCalculated();
+            newcol.expression = colinfo->getExpression();
+
+            m_validation_struct->createColumn(newcol);
         }
     }
 }

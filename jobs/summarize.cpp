@@ -214,7 +214,7 @@ int SummarizeJob::runJob()
     // STEP 3: pivot the output
 
     xd::IStructurePtr output_structure = m_db->createStructure();
-    xd::IColumnInfoPtr output_colinfo;
+    
 
     const wchar_t* fields[] = { L"Field",
                                 L"Minimum",
@@ -234,18 +234,19 @@ int SummarizeJob::runJob()
     i = 0;
     while (fields[i])
     {
-        output_colinfo = output_structure->createColumn();
-        output_colinfo->setName(fields[i]);
-        output_colinfo->setType(xd::typeWideCharacter);
-        output_colinfo->setWidth(255);
-        output_colinfo->setScale(0);
+        xd::ColumnInfo output_colinfo;
+
+        output_colinfo.name = fields[i];
+        output_colinfo.type = xd::typeWideCharacter;
+        output_colinfo.width = 255;
+        output_colinfo.scale = 0;
 
         if (0 == wcscasecmp(fields[i], L"Sum_Amount") ||
             0 == wcscasecmp(fields[i], L"Average"))
         {
-            output_colinfo->setType(xd::typeNumeric);
-            output_colinfo->setWidth(15);
-            output_colinfo->setScale(output_max_scale);
+            output_colinfo.type = xd::typeNumeric;
+            output_colinfo.width = 15;
+            output_colinfo.scale = output_max_scale;
         }
         
         if (0 == wcscasecmp(fields[i], L"Min_Length") ||
@@ -253,9 +254,12 @@ int SummarizeJob::runJob()
             0 == wcscasecmp(fields[i], L"Total_Count") ||
             0 == wcscasecmp(fields[i], L"Empty_Count"))
         {
-            output_colinfo->setType(xd::typeNumeric);
-            output_colinfo->setWidth(12);
+            output_colinfo.type = xd::typeNumeric;
+            output_colinfo.width = 12;
         }
+
+
+        output_structure->createColumn(output_colinfo);
 
         ++i;
     }
@@ -314,7 +318,7 @@ int SummarizeJob::runJob()
     int result_field_count = group_result_structure->getColumnCount();
     for (i = 0; i < result_field_count; ++i)
     {
-        output_colinfo = group_result_structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr output_colinfo = group_result_structure->getColumnInfoByIdx(i);
 
         col_name = output_colinfo->getName();
         kl::makeUpper(col_name);

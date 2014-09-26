@@ -193,21 +193,24 @@ int AlterJob::runJob()
 
         if (action == L"add")
         {
-            xd::IColumnInfoPtr col = structure->createColumn();
-            col->setName(name);
-            col->setType(type);
-            col->setWidth(width);
-            col->setScale(scale);
-            col->setCalculated(false);
+            xd::ColumnInfo col;
+
+            col.name = name;
+            col.type = type;
+            col.width = width;
+            col.scale = scale;
+            col.calculated = false;
 
             if (expression_exists && !expression_isexplicitnull)
             {
-                col->setCalculated(true);
-                col->setExpression(expression);
+                col.calculated = true;
+                col.expression = expression;
             }
 
             if (position_exists)
-                col->setColumnOrdinal(position);
+                col.column_ordinal = position;
+ 
+            structure->createColumn(col);
 
             continue;
         }

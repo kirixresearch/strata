@@ -1086,11 +1086,14 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
 
 
         // create the output column
-        xd::IColumnInfoPtr info = output_struct->createColumn();
-        info->setName(out_it->m_name);
-        info->setType(out_it->m_type);
-        info->setWidth(out_it->m_width);
-        info->setScale(out_it->m_scale);
+        xd::ColumnInfo info;
+        
+        info.name = out_it->m_name;
+        info.type = out_it->m_type;
+        info.width = out_it->m_width;
+        info.scale = out_it->m_scale;
+
+        output_struct->createColumn(info);
     }
 
     if (!db->createTable(info->output, output_struct, NULL))

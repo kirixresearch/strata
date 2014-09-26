@@ -386,27 +386,6 @@ public:
 };
 
 
-xcm_interface IStructure : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("xd.IStructure")
-
-public:
-
-    virtual IStructurePtr clone() = 0;
-    virtual int getColumnCount() = 0;
-    virtual std::wstring getColumnName(int idx) = 0;
-    virtual IColumnInfoPtr getColumnInfoByIdx(int idx) = 0;
-    virtual IColumnInfoPtr getColumnInfo(const std::wstring& column_name) = 0;
-    virtual bool getColumnExist(const std::wstring& column_name) = 0;
-
-    virtual bool deleteColumn(const std::wstring& column_name) = 0;
-    virtual IColumnInfoPtr modifyColumn(const std::wstring& column_name) = 0;
-    virtual IColumnInfoPtr createColumn() = 0;
-    virtual IColumnInfoPtr insertColumn(int idx) = 0;
-
-    virtual int getExprType(const std::wstring& expression) = 0;
-    virtual bool isValid() = 0;
-};
 
 xcm_interface IIterator : public xcm::IObject
 {
@@ -676,6 +655,28 @@ struct GroupQueryParams
     std::wstring having;
     std::wstring order;
 };
+
+xcm_interface IStructure : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("xd.IStructure")
+
+public:
+
+    virtual IStructurePtr clone() = 0;
+    virtual int getColumnCount() = 0;
+    virtual std::wstring getColumnName(int idx) = 0;
+    virtual IColumnInfoPtr getColumnInfoByIdx(int idx) = 0;
+    virtual IColumnInfoPtr getColumnInfo(const std::wstring& column_name) = 0;
+    virtual bool getColumnExist(const std::wstring& column_name) = 0;
+
+    virtual bool deleteColumn(const std::wstring& column_name) = 0;
+    virtual IColumnInfoPtr modifyColumn(const std::wstring& column_name) = 0;
+    virtual void createColumn(const xd::ColumnInfo& col) = 0;
+
+    virtual int getExprType(const std::wstring& expression) = 0;
+    virtual bool isValid() = 0;
+};
+
 
 xcm_interface IDatabase : public xcm::IObject
 {

@@ -460,19 +460,20 @@ void Controller::apiCreateTable(RequestInfo& req)
     int i, cnt = columns.getChildCount();
     for (i = 0; i < cnt; ++i)
     {
-        xd::IColumnInfoPtr col = structure->createColumn();
-        
         kl::JsonNode column = columns[i];
         std::wstring type = column["type"];
         int ntype = xd::stringToDbtype(type);
 
-        col->setName(column["name"]);
-        col->setType(ntype);
-        col->setWidth(column["width"].getInteger());
-        col->setScale(column["scale"].getInteger());
-        col->setColumnOrdinal(i);
-        col->setExpression(column["expression"]);
-        col->setCalculated(column["expression"].getString().length() > 0 ? true : false);
+        xd::ColumnInfo col;
+        col.name = column["name"];
+        col.type = ntype;
+        col.width = column["width"].getInteger();
+        col.scale = column["scale"].getInteger();
+        col.column_ordinal = i;
+        col.expression = column["expression"];
+        col.calculated = (col.expression.length() > 0) ? true : false;
+
+        structure->createColumn(col);
     }
 
     if (!db->createTable(path, structure, NULL))

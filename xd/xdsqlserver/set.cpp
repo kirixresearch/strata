@@ -30,15 +30,15 @@ int tds2xdType(TDSCOLUMN* tds_col);
 
 // utility function to convert xd dates to FreeTDS dates
 
-/* -- NOTE: This function is reverse engineering the tds_datecrack
-      function and currently only handles dates, not datetimes -- */
+/* NOTE: This function is reverse engineering the tds_datecrack
+   function and currently only handles dates, not datetimes */
 
 void xd2tdsdate(const xd::datetime_t& src, TDS_DATETIME* res)
 {
     xd::datetime_t julian_days = (src >> 32);
     xd::datetime_t time_ms = (src & 0xffffffff);
 
-    // -- make julian days based off of 1-1-1900 --
+    //  make julian days based off of 1-1-1900
     julian_days -= 2415021;
 
     res->dtdays = julian_days;
@@ -51,7 +51,7 @@ std::wstring SqlServerSet::getSetId()
 
 xd::IStructurePtr SqlServerSet::getStructure()
 {
-    // -- create new xd::IStructure --
+    // create new xd::IStructure
     xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
 
     if (!m_connect_info)
@@ -59,12 +59,12 @@ xd::IStructurePtr SqlServerSet::getStructure()
         return xcm::null;
     }
 
-    // -- allocate socket --
+    // allocate socket
     TDSSOCKET* tds;
     tds = tds_alloc_socket(m_context, 512);
     tds_set_parent(tds, NULL);
 
-    // -- attempt to connect to the sql server --
+    // attempt to connect to the sql server
     if (!m_connect_info || tds_connect(tds, m_connect_info) == TDS_FAIL)
     {
         fprintf(stderr, "There was a problem connecting to the server\n");
@@ -79,20 +79,20 @@ xd::IStructurePtr SqlServerSet::getStructure()
     int sql_type;
     int col_count = 0;
 
-    // -- create select statement --
+    // create select statement
     char query[1024];
     sprintf(query, "SELECT * FROM %s WHERE 1=0", kl::tostring(m_tablename).c_str());
 
-    // -- submit the query to the sql server --
+    // submit the query to the sql server
     res = tds_submit_query(tds, query);
 
     if (res != TDS_SUCCEED)
     {
-        // -- tds_submit_query() failed --
+        // tds_submit_query() failed
         return xcm::null;
     }
 
-    // -- add columns to the table's structure --
+    // add columns to the table's structure
     res = tds_process_tokens(tds, &res_type, NULL, TDS_HANDLE_ALL);
     col_count = tds->res_info->num_cols;
 
@@ -105,42 +105,45 @@ xd::IStructurePtr SqlServerSet::getStructure()
 
         if (xd_type == xd::typeInvalid)
         {
-            // -- certain complex types are not supported --
+            // certain complex types are not supported
             continue;
         }
 
-        xd::IColumnInfoPtr col = s->createColumn();
-        col->setName(kl::towstring(colinfo->column_name));
-        col->setType(xd_type);
+
+        xd::ColumnInfo col;
+        col.name = kl::towstring(colinfo->column_name);
+        col.type = xd_type;
 
         if (xd_type == xd::typeNumeric)
         {
-            col->setWidth(colinfo->column_prec);
+            col.width = colinfo->column_prec;
         }
          else
         {
-            col->setWidth(colinfo->column_size);
+            col.width = colinfo->column_size;
         }
 
         if (sql_type == SYBMONEYN ||
             sql_type == SYBMONEY ||
             sql_type == SYBMONEY4)
         {
-            col->setWidth(18);
-            col->setScale(4);
+            col.width = 18;
+            col.scale = 4;
         }
 
         if (sql_type == SYBTEXT ||
             sql_type == SYBNTEXT)
         {
-            // -- we cannot determine the length of
-            //    this field, so set it to a default for now --
-            col->setWidth(512);
+            // we cannot determine the length of
+            // this field, so set it to a default for now
+            col.width = 512;
         }
 
 
-        col->setScale(colinfo->column_scale);
-        col->setColumnOrdinal(i);
+        col.scale = colinfo->column_scale;
+        col.column_ordinal = i;
+
+        s->createColumn(col);
     }
 
     tds_free_socket(tds);
@@ -294,7 +297,7 @@ xd::rowpos_t SqlServerSet::getRowCount()
 
 
 
-// -- SqlServerRowInserter class implementation --
+
 
 SqlServerRowInserter::SqlServerRowInserter(SqlServerSet* set)
 {
@@ -303,11 +306,11 @@ SqlServerRowInserter::SqlServerRowInserter(SqlServerSet* set)
 
     m_inserting = false;
 
-    // -- allocate socket --
+    // allocate socket
     m_tds = tds_alloc_socket(m_set->m_context, 512);
     tds_set_parent(m_tds, NULL);
 
-    // -- attempt to connect to the sql server --
+    // attempt to connect to the sql server
     if (!m_set->m_connect_info || tds_connect(m_tds, m_set->m_connect_info) == TDS_FAIL)
     {
         fprintf(stderr, "There was a problem connecting to the server\n");
@@ -316,7 +319,7 @@ SqlServerRowInserter::SqlServerRowInserter(SqlServerSet* set)
 
 SqlServerRowInserter::~SqlServerRowInserter()
 {
-    // -- clean up --
+    // clean up
     tds_free_socket(m_tds);
 
     m_set->unref();
@@ -356,7 +359,7 @@ bool SqlServerRowInserter::putRawPtr(xd::objhandle_t column_handle,
 }
 
 
-// -- this is temporary until we figure out what is going on with Unicode and FreeTDS --
+// this is temporary until we figure out what is going on with Unicode and FreeTDS
 
 void doubleQuoteCopy(std::string& output, const std::string& input)
 {
@@ -426,7 +429,7 @@ bool SqlServerRowInserter::putDouble(xd::objhandle_t column_handle,
     char buf[64];
     sprintf(buf, "%.*f", data->m_xd_scale, value);
 
-    // -- convert a euro decimal character to a decimal point --
+    // convert a euro decimal character to a decimal point
     char* p = buf;
     while (*p)
     {
@@ -597,7 +600,7 @@ bool SqlServerRowInserter::insertRow()
     }
 
 
-    // -- make the insert statement --
+    // make the insert statement
     std::vector<SqlServerInsertData>::iterator it;
     std::vector<SqlServerInsertData>::iterator begin_it = m_insert_data.begin();
     std::vector<SqlServerInsertData>::iterator end_it = m_insert_data.end();
@@ -628,7 +631,7 @@ bool SqlServerRowInserter::insertRow()
     *(insert_ptr+1) = 0;
 
 
-    // -- execute the insert statement --
+    // execute the insert statement
 
     if (tds_submit_query(m_tds, m_insert_stmt) == TDS_FAIL)
     {
@@ -664,7 +667,7 @@ bool SqlServerRowInserter::insertRow()
     m_insert_stmt += ')';
 
 
-    // -- execute the insert statement --
+    // execute the insert statement
     if (tds_submit_query(m_tds, m_insert_stmt.c_str()) == TDS_FAIL)
     {
         return false;

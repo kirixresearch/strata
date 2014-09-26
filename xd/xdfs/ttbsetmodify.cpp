@@ -890,12 +890,14 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
 
     for (it_mf = modfields.begin(); it_mf != modfields.end(); ++it_mf)
     {
-        col_info = output_structure->createColumn();
+        xd::ColumnInfo col_info;
+        
+        col_info.name = it_mf->dest_name;
+        col_info.type = it_mf->dest_type;
+        col_info.width = it_mf->dest_width;
+        col_info.scale = it_mf->dest_scale;
 
-        col_info->setName(it_mf->dest_name);
-        col_info->setType(it_mf->dest_type);
-        col_info->setWidth(it_mf->dest_width);
-        col_info->setScale(it_mf->dest_scale);
+        output_structure->createColumn(col_info);
     }
 
 

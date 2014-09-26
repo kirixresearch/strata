@@ -154,10 +154,10 @@ SqlServerIterator::SqlServerIterator()
 
 SqlServerIterator::~SqlServerIterator()
 {
-    // -- clean up --
+    // clean up
     tds_free_socket(m_tds);
 
-    // -- clean up field vector and expression vector --
+    // clean up field vector and expression vector
 
     std::vector<SqlServerDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -178,11 +178,11 @@ bool SqlServerIterator::init(const std::wstring& query)
         return false;
     }
 
-    // -- allocate socket --
+    // allocate socket
     m_tds = tds_alloc_socket(m_context, 512);
     tds_set_parent(m_tds, NULL);
 
-    // -- attempt to connect to the sql server --
+    // attempt to connect to the sql server
     if (!m_connect_info || tds_connect(m_tds, m_connect_info) == TDS_FAIL)
     {
         fprintf(stderr, "There was a problem connecting to the server\n");
@@ -198,17 +198,17 @@ bool SqlServerIterator::init(const std::wstring& query)
     int row_count = 0;
     int col_count = 0;
 
-    // -- submit the query to the sql server --
+    // submit the query to the sql server
     std::string asc_query = kl::tostring(query);
     res = tds_submit_query(m_tds, asc_query.c_str());
 
     if (res != TDS_SUCCEED)
     {
-        // -- tds_submit_query() failed --
+        // tds_submit_query() failed
         return false;
     }
 
-    // -- add columns to the table's structure --
+    // add columns to the table's structure
     res = tds_process_tokens(m_tds, &res_type, NULL, TDS_HANDLE_ALL);
 
     if (res != TDS_SUCCEED)
@@ -229,7 +229,7 @@ bool SqlServerIterator::init(const std::wstring& query)
 
         if (xd_type == xd::typeInvalid)
         {
-            // -- certain complex types are not supported --
+            // certain complex types are not supported
             continue;
         }
 
@@ -260,8 +260,8 @@ bool SqlServerIterator::init(const std::wstring& query)
         if (sql_type == SYBTEXT ||
             sql_type == SYBNTEXT)
         {
-            // -- we cannot determine the length of
-            //    this field, so set it to a default for now --
+            // we cannot determine the length of
+            // this field, so set it to a default for now
 
             dai->m_width = 512;
         }
@@ -269,7 +269,7 @@ bool SqlServerIterator::init(const std::wstring& query)
         m_fields.push_back(dai);
     }
 
-    // -- position cursor at the beginning of the table --
+    // position cursor at the beginning of the table
     res = tds_process_tokens(m_tds, &row_type, &compute_id, TDS_HANDLE_ALL);
     if (res == TDS_NO_MORE_RESULTS)
     {
@@ -400,12 +400,14 @@ xd::IStructurePtr SqlServerIterator::getStructure()
     std::vector<SqlServerDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        xd::IColumnInfoPtr col = s->createColumn();
-        col->setName((*it)->m_name);
-        col->setType((*it)->m_type);
-        col->setWidth((*it)->m_width);
-        col->setScale((*it)->m_scale);
-        col->setColumnOrdinal((*it)->m_ordinal);
+        xd::ColumnInfo col;
+        col.name = (*it)->m_name;
+        col.type = (*it)->m_type;
+        col.width = (*it)->m_width;
+        col.scale = (*it)->m_scale;
+        col.column_ordinal = (*it)->m_ordinal;
+
+        s->createColumn(col);
     }
     
     return static_cast<xd::IStructure*>(s);
@@ -559,7 +561,7 @@ const std::string& SqlServerIterator::getString(xd::objhandle_t data_handle)
     }
 
 
-    // -- is the column's value null? --
+    // is the column's value null?
 /*
     if (tds_get_null(m_tds->res_info->current_row, dai->m_ordinal))
     {
@@ -607,7 +609,7 @@ const std::wstring& SqlServerIterator::getWideString(xd::objhandle_t data_handle
     }
 
 
-    // -- is the column's value null? --
+    // is the column's value null?
 /*
     if (tds_get_null(m_tds->res_info->current_row, dai->m_ordinal))
     {
@@ -703,7 +705,7 @@ xd::datetime_t SqlServerIterator::getDateTime(xd::objhandle_t data_handle)
     }
 
 
-    // -- is the column's value null? --
+    // is the column's value null?
 
 /*
     if (tds_get_null(m_tds->res_info->current_row, dai->m_ordinal))
@@ -763,7 +765,7 @@ xd::datetime_t SqlServerIterator::getDateTime(xd::objhandle_t data_handle)
     return dt;
 }
 
-// -- this is declared in tds/numeric.c --
+// this is declared in tds/numeric.c
 extern const int tds_numeric_bytes_per_prec[];
 
 inline double tdsnum2double(unsigned char* src)

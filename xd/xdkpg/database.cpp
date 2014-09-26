@@ -136,13 +136,16 @@ xd::IStructurePtr xdkpgXmlToStructure(kl::xmlnode& node)
             return xcm::null;
         }
 
-        xd::IColumnInfoPtr colinfo = s->createColumn();
-        colinfo->setName(colname.getNodeValue());
-        colinfo->setType(kl::wtoi(coltype.getNodeValue()));
-        colinfo->setWidth(kl::wtoi(colwidth.getNodeValue()));
-        colinfo->setScale(kl::wtoi(colscale.getNodeValue()));
-        colinfo->setCalculated(kl::wtoi(colcalculated.getNodeValue()) != 0 ? true : false);
-        colinfo->setExpression(colexpression.getNodeValue());
+        
+        xd::ColumnInfo colinfo;
+        colinfo.name = colname.getNodeValue();
+        colinfo.type = kl::wtoi(coltype.getNodeValue());
+        colinfo.width = kl::wtoi(colwidth.getNodeValue());
+        colinfo.scale = kl::wtoi(colscale.getNodeValue());
+        colinfo.calculated = kl::wtoi(colcalculated.getNodeValue()) != 0 ? true : false;
+        colinfo.expression = colexpression.getNodeValue();
+        
+        s->createColumn(colinfo);
     }
 
     return s;

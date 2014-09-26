@@ -5353,14 +5353,13 @@ bool TableDoc::createDynamicField(const wxString& col_name,
         
     xd::IStructurePtr structure = m_iter->getStructure();
 
-    xd::IColumnInfoPtr col;
-    col = structure->createColumn();
-
-    col->setName(towstr(col_name));
-    col->setType(type);
-    col->setWidth(width);
-    col->setScale(scale);
-    col->setExpression(towstr(expr));
+    xd::ColumnInfo col;
+    col.name = towstr(col_name);
+    col.type = type;
+    col.width = width;
+    col.scale = scale;
+    col.expression = towstr(expr);
+    structure->createColumn(col);
 
     if (m_iter->modifyStructure(structure, NULL))
     {
@@ -5380,13 +5379,13 @@ bool TableDoc::createDynamicField(const wxString& col_name,
         if (structure.isNull())
             return false;
 
-        xd::IColumnInfoPtr col = structure->createColumn();
-
-        col->setName(towstr(col_name));
-        col->setType(type);
-        col->setWidth(width);
-        col->setScale(scale);
-        col->setExpression(towstr(expr));
+        xd::ColumnInfo col;
+        col.name = towstr(col_name);
+        col.type = type;
+        col.width = width;
+        col.scale = scale;
+        col.expression = towstr(expr);
+        structure->createColumn(col);
 
         if (!db->modifyStructure(m_path, structure, NULL))
         {

@@ -116,25 +116,19 @@ bool sqlAlter(xd::IDatabasePtr db,
             }
             
 
-            xd::IColumnInfoPtr colinfo = structure->createColumn();
-            if (colinfo.isNull())
-            {
-                // can't add column
-                error.setError(xd::errorGeneral, L"Unable to add column in ALTER statement");
-                return false;
-            }
-        
-            colinfo->setName(new_params->getName());
-            colinfo->setType(new_params->getType());
-            colinfo->setWidth(new_params->getWidth());
-            colinfo->setScale(new_params->getScale());
-            colinfo->setExpression(new_params->getExpression());
-            colinfo->setCalculated(new_params->getCalculated());
+            xd::ColumnInfo colinfo;
+
+            colinfo.name = new_params->getName();
+            colinfo.type = new_params->getType();
+            colinfo.width = new_params->getWidth();
+            colinfo.scale = new_params->getScale();
+            colinfo.expression = new_params->getExpression();
+            colinfo.calculated = new_params->getCalculated();
             
             if (stmt.getKeywordExists(L"FIRST"))
-                colinfo->setColumnOrdinal(0);
+                colinfo.column_ordinal = 0;
                  else
-                colinfo->setColumnOrdinal(structure->getColumnCount());
+                colinfo.column_ordinal = structure->getColumnCount();
 
 
             if (stmt.getKeywordExists(L"BEFORE"))
@@ -148,7 +142,7 @@ bool sqlAlter(xd::IDatabasePtr db,
                     msg += L"' specified in BEFORE clause does not exist";
                 }
                 
-                colinfo->setColumnOrdinal(col->getColumnOrdinal());
+                colinfo.column_ordinal = col->getColumnOrdinal();
             }
             
             if (stmt.getKeywordExists(L"AFTER"))
@@ -162,8 +156,11 @@ bool sqlAlter(xd::IDatabasePtr db,
                     msg += L"' specified in AFTER clause does not exist";
                 }
                 
-                colinfo->setColumnOrdinal(col->getColumnOrdinal()+1);
+                colinfo.column_ordinal = col->getColumnOrdinal()+1;
             }
+
+
+            structure->createColumn(colinfo);
         }
          else if (verb == L"DROP")
         {
