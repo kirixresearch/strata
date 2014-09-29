@@ -319,24 +319,6 @@ xd::objhandle_t XbaseRowInserter::getHandle(const std::wstring& column_name)
     return (xd::objhandle_t)0;
 }
 
-xd::IColumnInfoPtr XbaseRowInserter::getInfo(xd::objhandle_t column_handle)
-{
-    XbaseField* f = (XbaseField*)column_handle;
-    if (!f)
-    {
-        return xcm::null;
-    }
-
-    // create new xd::IColumnInfoPtr
-    xd::IColumnInfoPtr col_info = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-    col_info->setName(kl::towstring(f->name));
-    col_info->setType(xbase2xdType(f->type));
-    col_info->setWidth(f->width);
-    col_info->setScale(f->scale);
-    col_info->setColumnOrdinal(f->ordinal);
-    return col_info;
-}
-
 bool XbaseRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                  const unsigned char* value,
                                  int length)

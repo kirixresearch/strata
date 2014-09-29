@@ -612,8 +612,6 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
     std::vector<ModifyField>::iterator it_mf;
     ModifyField mf;
 
-    xd::IColumnInfoPtr col_info;
-
     int i,col_count = src_structure->getColumnCount();
 
     for (i = 0; i < col_count; ++i)

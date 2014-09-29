@@ -110,8 +110,6 @@ int AlterJob::runJob()
     }
 
 
-    xd::IColumnInfoPtr col;
-
     std::vector<kl::JsonNode>::iterator it, it_end;
     it_end = action_nodes.end();
 

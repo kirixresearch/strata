@@ -481,38 +481,34 @@ void ColPropsPanel::onTypeChanged(wxCommandEvent& evt)
         xd::IColumnInfoPtr colinfo;
         
         colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
+        colinfo->setType(type);
 
-        if (colinfo.isOk())
+        if (type == xd::typeCharacter ||
+            type == xd::typeWideCharacter ||
+            type == xd::typeDate ||
+            type == xd::typeDateTime ||
+            type == xd::typeInteger ||
+            type == xd::typeBoolean)
         {
-            colinfo->setType(type);
-
-            if (type == xd::typeCharacter ||
-                type == xd::typeWideCharacter ||
-                type == xd::typeDate ||
-                type == xd::typeDateTime ||
-                type == xd::typeInteger ||
-                type == xd::typeBoolean)
-            {
-                colinfo->setScale(0);
-            }
+            colinfo->setScale(0);
+        }
 
 
-            // limit numeric width, if necessary
-            if (type == xd::typeNumeric &&
-                m_last_width > xd::max_numeric_width)
-            {
-                colinfo->setWidth(xd::max_numeric_width);
-                setWidth(xd::max_numeric_width);
-            }
+        // limit numeric width, if necessary
+        if (type == xd::typeNumeric &&
+            m_last_width > xd::max_numeric_width)
+        {
+            colinfo->setWidth(xd::max_numeric_width);
+            setWidth(xd::max_numeric_width);
+        }
 
-            if (m_iter->modifyStructure(iter_structure, NULL))
-            {
-                kcl::Grid* grid = m_tabledoc->getGrid();
+        if (m_iter->modifyStructure(iter_structure, NULL))
+        {
+            kcl::Grid* grid = m_tabledoc->getGrid();
 
-                grid->refreshModel();
+            grid->refreshModel();
 
-                refreshDynamicFields();
-            }
+            refreshDynamicFields();
         }
 
         updateSpinBoxes();
@@ -569,17 +565,14 @@ void ColPropsPanel::onWidthChanged(wxCommandEvent& evt)
         xd::IStructurePtr iter_structure = m_iter->getStructure();
         xd::IColumnInfoPtr colinfo;
         colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
-        if (colinfo.isOk())
+        colinfo->setWidth(width);
+
+        if (m_iter->modifyStructure(iter_structure, NULL))
         {
-            colinfo->setWidth(width);
-            if (m_iter->modifyStructure(iter_structure, NULL))
-            {
-                kcl::Grid* grid = m_tabledoc->getGrid();
+            kcl::Grid* grid = m_tabledoc->getGrid();
+            grid->refreshModel();
 
-                grid->refreshModel();
-
-                refreshDynamicFields();
-            }
+            refreshDynamicFields();
         }
     }
 }
@@ -621,18 +614,16 @@ void ColPropsPanel::onScaleChanged(wxCommandEvent& evt)
 
         xd::IStructurePtr iter_structure = m_iter->getStructure();
         xd::IColumnInfoPtr colinfo;
+
         colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
-        if (colinfo.isOk())
+        colinfo->setScale(scale);
+
+        if (m_iter->modifyStructure(iter_structure, NULL))
         {
-            colinfo->setScale(scale);
-            if (m_iter->modifyStructure(iter_structure, NULL))
-            {
-                kcl::Grid* grid = m_tabledoc->getGrid();
+            kcl::Grid* grid = m_tabledoc->getGrid();
+            grid->refreshModel();
 
-                grid->refreshModel();
-
-                refreshDynamicFields();
-            }
+            refreshDynamicFields();
         }
     }
 }
@@ -667,81 +658,79 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
         xd::IStructurePtr iter_structure = m_iter->getStructure();
         xd::IColumnInfoPtr colinfo;
         colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
-        if (colinfo.isOk())
-        {
-            colinfo->setExpression(towstr(expr));
+
+        colinfo->setExpression(towstr(expr));
             
-            bool type_changed = false;
-            if (auto_type)
+        bool type_changed = false;
+        if (auto_type)
+        {
+            int cur_type = m_expr_panel->getExpressionType();
+
+            if (cur_type == xd::typeDateTime)
             {
-                int cur_type = m_expr_panel->getExpressionType();
-
-                if (cur_type == xd::typeDateTime)
-                {
-                    cur_type = xd::typeDate;
-                }
-
-                if (cur_type != m_last_type)
-                {
-                    int last_type = m_last_type;
-
-                    m_last_type = cur_type;
-                    colinfo->setType(cur_type);
-                    type_changed = true;
-
-                    // limit numeric width, if necessary
-                    if (cur_type == xd::typeNumeric &&
-                        m_last_width > xd::max_numeric_width)
-                    {
-                        colinfo->setWidth(xd::max_numeric_width);
-                        setWidth(xd::max_numeric_width);
-                    }
-
-                    if ((cur_type == xd::typeNumeric ||
-                         cur_type == xd::typeDouble) &&
-                        (last_type == xd::typeUndefined ||
-                         last_type == xd::typeCharacter ||
-                         last_type == xd::typeWideCharacter ||
-                         last_type == xd::typeBoolean ||
-                         last_type == xd::typeDate ||
-                         last_type == xd::typeDateTime ||
-                         last_type == xd::typeDouble ||
-                         last_type == xd::typeInteger))
-                    {
-                        colinfo->setScale(m_saved_numeric_scale);
-                        setScale(m_saved_numeric_scale);
-                    }
-
-                    // if the last type was some fixed-width type
-                    // and the new type is numeric, update the width
-
-                    if ((cur_type == xd::typeCharacter ||
-                         cur_type == xd::typeWideCharacter) &&
-                        (last_type == xd::typeBoolean ||
-                         last_type == xd::typeDate ||
-                         last_type == xd::typeDateTime ||
-                         last_type == xd::typeDouble ||
-                         last_type == xd::typeInteger))
-                    {
-                        colinfo->setWidth(m_saved_character_width);
-                        setWidth(m_saved_character_width);
-                    }
-
-                    updateSpinBoxes();
-                }
+                cur_type = xd::typeDate;
             }
 
-            if (m_iter->modifyStructure(iter_structure, NULL))
+            if (cur_type != m_last_type)
             {
-                kcl::Grid* grid = m_tabledoc->getGrid();
+                int last_type = m_last_type;
 
-                if (type_changed)
+                m_last_type = cur_type;
+                colinfo->setType(cur_type);
+                type_changed = true;
+
+                // limit numeric width, if necessary
+                if (cur_type == xd::typeNumeric &&
+                    m_last_width > xd::max_numeric_width)
                 {
-                    grid->refreshModel();
+                    colinfo->setWidth(xd::max_numeric_width);
+                    setWidth(xd::max_numeric_width);
                 }
 
-                refreshDynamicFields();
+                if ((cur_type == xd::typeNumeric ||
+                        cur_type == xd::typeDouble) &&
+                    (last_type == xd::typeUndefined ||
+                        last_type == xd::typeCharacter ||
+                        last_type == xd::typeWideCharacter ||
+                        last_type == xd::typeBoolean ||
+                        last_type == xd::typeDate ||
+                        last_type == xd::typeDateTime ||
+                        last_type == xd::typeDouble ||
+                        last_type == xd::typeInteger))
+                {
+                    colinfo->setScale(m_saved_numeric_scale);
+                    setScale(m_saved_numeric_scale);
+                }
+
+                // if the last type was some fixed-width type
+                // and the new type is numeric, update the width
+
+                if ((cur_type == xd::typeCharacter ||
+                        cur_type == xd::typeWideCharacter) &&
+                    (last_type == xd::typeBoolean ||
+                        last_type == xd::typeDate ||
+                        last_type == xd::typeDateTime ||
+                        last_type == xd::typeDouble ||
+                        last_type == xd::typeInteger))
+                {
+                    colinfo->setWidth(m_saved_character_width);
+                    setWidth(m_saved_character_width);
+                }
+
+                updateSpinBoxes();
             }
+        }
+
+        if (m_iter->modifyStructure(iter_structure, NULL))
+        {
+            kcl::Grid* grid = m_tabledoc->getGrid();
+
+            if (type_changed)
+            {
+                grid->refreshModel();
+            }
+
+            refreshDynamicFields();
         }
     }
 }
@@ -980,11 +969,6 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
 
         xd::IColumnInfoPtr colinfo;
         colinfo = structure->modifyColumn(towstr(m_orig_name));
-        if (!colinfo)
-        {
-            closeSite();
-            return;
-        }
 
         if (m_orig_name.CmpNoCase(m_last_name) != 0)
             colinfo->setName(towstr(m_last_name));
@@ -1151,8 +1135,6 @@ void ColPropsPanel::revertChanges()
     xd::IColumnInfoPtr colinfo;
     
     colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
-    if (!colinfo)
-        return;
 
     colinfo->setName(towstr(m_orig_name));
     colinfo->setType(m_orig_type);

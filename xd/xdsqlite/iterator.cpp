@@ -143,7 +143,6 @@ bool SlIterator::init(const std::wstring& _query)
         dai.width = 30;
         dai.scale = 0;
 
-        xd::IColumnInfoPtr colinfo;
         if (m_table_structure.isOk())
         {
             const xd::ColumnInfo& colinfo = m_table_structure->getColumnInfo(dai.name);

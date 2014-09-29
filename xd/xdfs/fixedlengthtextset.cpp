@@ -274,21 +274,6 @@ xd::objhandle_t FixedLengthTextRowInserter::getHandle(const std::wstring& column
     return 0;
 }
 
-/*
-xd::IColumnInfoPtr FixedLengthTextRowInserter::getInfo(xd::objhandle_t column_handle)
-{
-    FixedLengthTextInsertData* f = (FixedLengthTextInsertData*)column_handle;
-    if (!f)
-    {
-        return xcm::null;
-    }
-
-    xd::IStructurePtr structure = m_set->getStructure();
-    xd::IColumnInfoPtr col = structure->getColumnInfo(kl::towstring(f->m_colname));
-    return col;
-}
-*/
-
 bool FixedLengthTextRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                          const unsigned char* value,
                                          int length)
@@ -439,13 +424,13 @@ bool FixedLengthTextRowInserter::startInsert(const std::wstring& col_list)
     
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = s->getColumnInfoByIdx(i);
 
         FixedLengthTextInsertData* field = new FixedLengthTextInsertData;
-        field->m_colname = kl::tostring(colinfo->getName());
-        field->m_type = colinfo->getType();
-        field->m_width = colinfo->getWidth();
-        field->m_scale = colinfo->getScale();
+        field->m_colname = kl::tostring(colinfo.name);
+        field->m_type = colinfo.type;
+        field->m_width = colinfo.width;
+        field->m_scale = colinfo.scale;
 
         switch (field->m_type)
         {

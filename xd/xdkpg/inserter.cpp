@@ -60,11 +60,6 @@ xd::objhandle_t KpgRowInserter::getHandle(const std::wstring& column_name)
     return 0;
 }
 
-xd::IColumnInfoPtr KpgRowInserter::getInfo(xd::objhandle_t column_handle)
-{
-    return xcm::null;
-}
-
 bool KpgRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                const unsigned char* value,
                                int length)

@@ -991,22 +991,6 @@ xd::objhandle_t DelimitedTextRowInserter::getHandle(const std::wstring& column_n
     return (xd::objhandle_t)0;
 }
 
-xd::IColumnInfoPtr DelimitedTextRowInserter::getInfo(xd::objhandle_t column_handle)
-{
-    DelimitedTextDataAccessInfo* f = (DelimitedTextDataAccessInfo*)column_handle;
-    if (!f)
-        return xcm::null;
-
-    // create new xd::IColumnInfoPtr
-    xd::IColumnInfoPtr col_info = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-    col_info->setName(f->name);
-    col_info->setType(f->type);
-    col_info->setWidth(f->width);
-    col_info->setScale(f->scale);
-    col_info->setColumnOrdinal(f->ordinal);
-    return col_info;
-}
-
 bool DelimitedTextRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                          const unsigned char* value,
                                          int length)

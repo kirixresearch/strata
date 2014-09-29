@@ -71,19 +71,6 @@ xd::objhandle_t SlRowInserter::getHandle(const std::wstring& column_name)
     return 0;
 }
 
-/*
-xd::IColumnInfoPtr SlRowInserter::getInfo(xd::objhandle_t column_handle)
-{
-    SlRowInserterData* r = (SlRowInserterData*)column_handle;
-    if (!r)
-    {
-        return xcm::null;
-    }
-
-    return r->colinfo;
-}
-*/
-
 bool SlRowInserter::startInsert(const std::wstring& col_list)
 {
     std::vector<std::wstring> cols;

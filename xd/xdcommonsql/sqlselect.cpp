@@ -519,7 +519,6 @@ static std::wstring normalizeFieldNames(std::vector<SourceTable>& source_tables,
             std::wstring full_name;
             std::wstring colname = st_it->structure->getColumnName(i);
             std::wstring q_colname = L"[" + colname + L"]";
-            xd::IColumnInfoPtr colinfo;
 
             if (isUniqueFieldName(source_tables, colname))
             {       
@@ -635,7 +634,6 @@ static void normalizeFieldNames(std::vector<SourceTable>& source_tables,
             std::wstring full_name;
             std::wstring colname = st_it->structure->getColumnName(i);
             std::wstring q_colname = L"[" + colname + L"]";
-            xd::IColumnInfoPtr colinfo;
 
             if (isUniqueFieldName(source_tables, colname))
             {
@@ -2680,11 +2678,8 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
             SelectField f;
             
             std::vector<SourceTable>::iterator st_it;
-            xd::IColumnInfoPtr colinfo;
 
-            for (st_it = source_tables.begin();
-                 st_it != source_tables.end();
-                 ++st_it)
+            for (st_it = source_tables.begin(); st_it != source_tables.end();  ++st_it)
             {
                 int i, col_count = st_it->structure->getColumnCount();
         
@@ -2692,7 +2687,6 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
                 {
                     std::wstring colname = st_it->structure->getColumnName(i);
                     
-
                     f.name = colname;
 
                     if (!isUniqueFieldName(source_tables, f.name))

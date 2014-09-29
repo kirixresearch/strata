@@ -206,30 +206,29 @@ std::wstring Controller::createHandle() const
     return kl::towstring(kl::md5str(buf));
 }
 
-static void JsonNodeToColumn(kl::JsonNode& column, xd::IColumnInfoPtr col)
+static void JsonNodeToColumn(kl::JsonNode& column, xd::ColumnInfo& col)
 {
     if (column.childExists("name"))
-        col->setName(column["name"]);
+        col.name = column["name"];
     
     if (column.childExists("type"))
     {
         std::wstring type = column["type"];
         int ntype = xd::stringToDbtype(type);
-        col->setType(ntype);
+        col.type = ntype;
     }
     
     if (column.childExists("width"))
-        col->setWidth(column["width"].getInteger());
+        col.width = column["width"].getInteger();
 
     if (column.childExists("scale")) 
-        col->setScale(column["scale"].getInteger());
+        col.scale = column["scale"].getInteger();
         
     if (column.childExists("expression")) 
-        col->setExpression(column["expression"]);
+        col.expression = column["expression"];
         
     if (column.childExists("calculated")) 
-        col->setCalculated(column["calculated"].getBoolean());
-    
+        col.calculated = column["calculated"].getBoolean();
     
     //col->setColumnOrdinal(i); // add this later if necessary
 }
@@ -1769,11 +1768,14 @@ void Controller::apiAlter(RequestInfo& req)
         
         if (action["action"].getString() == L"create")
         {
-            xd::IColumnInfoPtr colinfo = structure->createColumn();
+            xd::ColumnInfo colinfo;
 
             kl::JsonNode params = action["params"];
             JsonNodeToColumn(params, colinfo);
+
+            structure->createColumn(colinfo);
         }
+        /*
          else if (action["action"].getString() == L"insert")
         {
             xd::IColumnInfoPtr colinfo = structure->insertColumn(action["position"].getInteger());
@@ -1786,6 +1788,7 @@ void Controller::apiAlter(RequestInfo& req)
             kl::JsonNode params = action["params"];
             JsonNodeToColumn(params, colinfo);
         }
+        */
          else if (action["action"].getString() == L"modify")
         {
             xd::IColumnInfoPtr colinfo = structure->modifyColumn(action["target_column"]);

@@ -541,7 +541,6 @@ QueryBuilderSourceTable* QueryTemplate::lookupTableByAlias(const wxString& alias
 
 xd::ColumnInfo QueryTemplate::lookupColumnInfo(const wxString& input)
 {
-    xd::IColumnInfoPtr colinfo;
     QueryBuilderSourceTable* tbl;
     
     if (input.IsEmpty())

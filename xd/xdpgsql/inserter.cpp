@@ -63,11 +63,6 @@ xd::objhandle_t PgsqlRowInserter::getHandle(const std::wstring& column_name)
     return 0;
 }
 
-xd::IColumnInfoPtr PgsqlRowInserter::getInfo(xd::objhandle_t column_handle)
-{
-    return xcm::null;
-}
-
 bool PgsqlRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                  const unsigned char* value,
                                  int length)

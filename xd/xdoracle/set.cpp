@@ -312,7 +312,7 @@ bool OracleSet::modifyStructure(xd::IStructure* struct_config,
 
     int i;
     int col_count = current_struct->getColumnCount();
-    xd::IColumnInfoPtr col_info;
+    xd::ColumnInfo col_info;
     bool found = false;
 
     // handle create
@@ -455,17 +455,6 @@ xd::objhandle_t OracleRowInserter::getHandle(const std::wstring& column_name)
 
     return (xd::objhandle_t)0;
 }
-
-/*
-xd::IColumnInfoPtr OracleRowInserter::getInfo(xd::objhandle_t column_handle)
-{
-    OracleInsertData* f = (OracleInsertData*)column_handle;
-
-    xd::IStructurePtr structure = m_set->getStructure();
-    xd::IColumnInfoPtr col = structure->getColumnInfo(f->m_name);
-    return col;
-}
-*/
 
 bool OracleRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                   const unsigned char* value,

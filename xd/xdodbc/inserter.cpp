@@ -68,11 +68,6 @@ xd::objhandle_t OdbcRowInserter::getHandle(const std::wstring& column_name)
     return 0;
 }
 
-xd::IColumnInfoPtr OdbcRowInserter::getInfo(xd::objhandle_t column_handle)
-{
-    return xcm::null;
-}
-
 bool OdbcRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                 const unsigned char* value,
                                 int length)

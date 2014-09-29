@@ -196,7 +196,6 @@ public:
                                 
 private:
 
-    xd::IColumnInfoPtr colinfoFromDAI(OdbcDataAccessInfo* dai);
     void skipWithCache(int delta);
     void saveRowToCache();
     void readRowFromCache(xd::rowpos_t row);

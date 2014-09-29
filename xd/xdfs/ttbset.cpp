@@ -506,16 +506,6 @@ xd::objhandle_t TtbRowInserter::getHandle(const std::wstring& column_name)
     return (xd::objhandle_t)0;
 }
 
-/*
-xd::IColumnInfoPtr TtbRowInserter::getInfo(xd::objhandle_t column_handle)
-{
-    TtbInsertData* dai = (TtbInsertData*)column_handle;
-    if (!dai)
-        return xcm::null;
-
-    return dai->col;
-}
-*/
 
 bool TtbRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                const unsigned char* value,

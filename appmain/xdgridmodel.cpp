@@ -581,7 +581,6 @@ void XdGridModel::getColumnBitmap(int col,
                                      wxBitmap* bitmap,
                                      int* alignment)
 {
-    xd::IColumnInfoPtr spCol;
     if (m_columns[col].m_col_calculated)
     {
         *bitmap = GETBMP(gf_lightning_16);

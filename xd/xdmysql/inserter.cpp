@@ -76,21 +76,6 @@ xd::objhandle_t MysqlRowInserter::getHandle(const std::wstring& column_name)
     return 0;
 }
 
-/*
-xd::IColumnInfoPtr MysqlRowInserter::getInfo(xd::objhandle_t column_handle)
-{
-    MySqlInsertData* data = (MySqlInsertData*)column_handle;
-
-    if (!data)
-    {
-        return xcm::null;
-    }
-
-    xd::IStructurePtr structure = m_database->describeTable(m_table);
-    return structure->getColumnInfo(data->m_col_name);
-}
-*/
-
 bool MysqlRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                  const unsigned char* value,
                                  int length)

@@ -519,7 +519,6 @@ bool TableSet::create(xd::IStructure* struct_config, const std::wstring& path)
 
     // add the calculated fields
     int col_count = struct_config->getColumnCount();
-    xd::IColumnInfoPtr colinfo;
     for (int col = 0; col < col_count; ++col)
     {
         const xd::ColumnInfo& colinfo = struct_config->getColumnInfoByIdx(col);
@@ -1663,13 +1662,6 @@ xd::objhandle_t TableSetRowInserter::getHandle(const std::wstring& column)
 {
     return m_iter->getHandle(column);
 }
-
-/*
-xd::IColumnInfoPtr TableSetRowInserter::getInfo(xd::objhandle_t handle)
-{
-    return m_iter->getInfo(handle);
-}
-*/
 
 bool TableSetRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                     const unsigned char* value,

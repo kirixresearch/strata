@@ -472,7 +472,7 @@ bool SqlServerIterator::releaseHandle(xd::objhandle_t data_handle)
     return false;
 }
 
-xd::IColumnInfoPtr SqlServerIterator::getInfo(xd::objhandle_t data_handle)
+xd::ColumnInfo SqlServerIterator::getInfo(xd::objhandle_t data_handle)
 {
     SqlServerDataAccessInfo* dai = (SqlServerDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -480,32 +480,31 @@ xd::IColumnInfoPtr SqlServerIterator::getInfo(xd::objhandle_t data_handle)
         return xcm::null;
     }
 
-    ColumnInfo* colinfo = new ColumnInfo;
-    colinfo->setName(dai->m_name);
-    colinfo->setType(dai->m_type);
-    colinfo->setWidth(dai->m_width);
-    colinfo->setScale(dai->m_scale);
+    xd::ColumnInfo colinfo;
+    colinfo.name = dai->m_name;
+    colinfo.type = dai->m_type;
+    colinfo.width = dai->m_width;
+    colinfo.scale = dai->m_scale;
 
-    if (dai->m_type == xd::typeDate ||
-        dai->m_type == xd::typeInteger)
+    if (dai->m_type == xd::typeDate || dai->m_type == xd::typeInteger)
     {
-        colinfo->setWidth(4);
+        colinfo.width = 4;
     }
      else if (dai->m_type == xd::typeDateTime ||
               dai->m_type == xd::typeDouble)
     {
-        colinfo->setWidth(8);
+        colinfo.width = 8;
     }
      else if (dai->m_type == xd::typeBoolean)
     {
-        colinfo->setWidth(1);
+        colinfo.width = 1;
     }
      else
     {
-        colinfo->setWidth(dai->m_width);
+        colinfo.width = dai->m_width;
     }
 
-    return static_cast<xd::IColumnInfo*>(colinfo);
+    return colinfo;
 }
 
 int SqlServerIterator::getType(xd::objhandle_t data_handle)

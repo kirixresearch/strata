@@ -329,8 +329,6 @@ bool physStructureEqual(xd::IStructurePtr s1, xd::IStructurePtr s2)
     int s2_col_count = s2->getColumnCount();
     int i;
 
-    xd::IColumnInfoPtr colinfo;
-
     std::vector<xd::ColumnInfo> s1_fields;
     std::vector<xd::ColumnInfo> s2_fields;
 

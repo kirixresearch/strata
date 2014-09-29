@@ -486,7 +486,7 @@ bool MysqlIterator::refreshStructure()
         delete m_fields[i]->expr;
         m_fields[i]->expr = NULL;
         
-        xd::IColumnInfoPtr col = set_structure->getColumnInfo(m_fields[i]->name);
+        const xd::ColumnInfo& col = set_structure->getColumnInfo(m_fields[i]->name);
         if (col.isNull())
         {
             m_fields.erase(m_fields.begin() + i);
@@ -494,10 +494,10 @@ bool MysqlIterator::refreshStructure()
             continue;
         }
                        
-        m_fields[i]->type = col->getType();
-        m_fields[i]->width = col->getWidth();
-        m_fields[i]->scale = col->getScale();
-        m_fields[i]->expr_text = col->getExpression();
+        m_fields[i]->type = col.type;
+        m_fields[i]->width = col.width;
+        m_fields[i]->scale = col.scale;
+        m_fields[i]->expr_text = col.expression;
     }
     
     // find new calc fields
