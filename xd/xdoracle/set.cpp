@@ -637,8 +637,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
 
     xd::IStructurePtr s = m_set->getStructure();
 
-    int i;
-    int col_count = s->getColumnCount();
+    int i, col_count = s->getColumnCount();
     std::vector<std::wstring> insert_fields;
 
     for (i = 0; i < col_count; ++i)

@@ -516,9 +516,9 @@ static std::wstring normalizeFieldNames(std::vector<SourceTable>& source_tables,
         
         for (i = 0; i < col_count; ++i)
         {
-            std::wstring full_name;
-            std::wstring colname = st_it->structure->getColumnName(i);
+            const std::wstring& colname = st_it->structure->getColumnName(i);
             std::wstring q_colname = L"[" + colname + L"]";
+            std::wstring full_name;
 
             if (isUniqueFieldName(source_tables, colname))
             {       
@@ -576,10 +576,10 @@ static std::wstring renameJoinFields(std::vector<SourceTable>& source_tables,
         
         for (i = 0; i < col_count; ++i)
         {
-            std::wstring full_name;
-            std::wstring colname = st_it->structure->getColumnName(i);
+            const std::wstring& colname = st_it->structure->getColumnName(i);
             std::wstring q_colname = L"[" + colname + L"]";
             std::wstring replace_with = L"[" + st_it->alias + L"." + colname + L"]";
+            std::wstring full_name;
      
             // replace alias.fieldname with [alias.fieldname]
             full_name = st_it->alias;
@@ -632,7 +632,7 @@ static void normalizeFieldNames(std::vector<SourceTable>& source_tables,
         for (i = 0; i < col_count; ++i)
         {
             std::wstring full_name;
-            std::wstring colname = st_it->structure->getColumnName(i);
+            const std::wstring& colname = st_it->structure->getColumnName(i);
             std::wstring q_colname = L"[" + colname + L"]";
 
             if (isUniqueFieldName(source_tables, colname))
@@ -1412,7 +1412,7 @@ static void getReferencedFields(std::vector<SourceTable>& s,
         for (i = 0; i < cnt; ++i)
         {
             std::wstring alias = it->alias;
-            std::wstring colname = it->structure->getColumnName(i);
+            const std::wstring& colname = it->structure->getColumnName(i);
 
             // alias.fieldname
             full_name = alias + L"." + colname;
@@ -2685,7 +2685,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
         
                 for (i = 0; i < col_count; ++i)
                 {
-                    std::wstring colname = st_it->structure->getColumnName(i);
+                    const std::wstring& colname = st_it->structure->getColumnName(i);
                     
                     f.name = colname;
 

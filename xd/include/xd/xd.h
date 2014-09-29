@@ -642,7 +642,7 @@ public:
 
     virtual IStructurePtr clone() = 0;
     virtual int getColumnCount() = 0;
-    virtual std::wstring getColumnName(int idx) = 0;
+    virtual const std::wstring& getColumnName(int idx) = 0;
     virtual const ColumnInfo& getColumnInfoByIdx(int idx) = 0;
     virtual const ColumnInfo& getColumnInfo(const std::wstring& column_name) = 0;
     virtual bool getColumnExist(const std::wstring& column_name) = 0;

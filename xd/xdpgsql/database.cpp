@@ -941,7 +941,7 @@ bool PgsqlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
         int i, cnt = instruct->getColumnCount();
         for (i = 0; i < cnt; ++i)
         {
-            std::wstring colname = instruct->getColumnName(i);
+            const std::wstring& colname = instruct->getColumnName(i);
             if (outstruct->getColumnExist(colname))
                 common_fields.push_back(colname);
         } 
