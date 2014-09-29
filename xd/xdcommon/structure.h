@@ -81,8 +81,6 @@ public:
     Structure();
     virtual ~Structure();
 
-    Structure* internalClone();
-
     // -- IStructureInternal --
     std::vector<StructureAction>& getStructureActions();
     void addColumn(const xd::ColumnInfo& col);

@@ -163,7 +163,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
                 {
                     if (kl::iequals(cit->name, it->m_colname))
                     {
-                        if (!it->m_params.calculated)
+                        if ((it->m_params.mask & xd::ColumnInfo::maskCalculated) && !it->m_params.calculated)
                         {
                             // caller wants this field to be permanent,
                             // so we won't do anything here
@@ -368,26 +368,12 @@ bool Structure::removeColumn(const std::wstring& column_name)
     return found;
 }
 
-
-Structure* Structure::internalClone()
-{
-    Structure* s = new Structure;
-    std::vector<xd::ColumnInfo>::iterator it, it_end;
-
-    s->m_cols.reserve(m_cols.size());
-
-    it_end = m_cols.end();
-    for (it = m_cols.begin(); it != it_end; ++it)
-        s->m_cols.push_back(*it);
-
-    s->m_actions = m_actions;
-
-    return s;
-}
-
 xd::IStructurePtr Structure::clone()
 {
-    Structure* s = internalClone();
+    Structure* s = new Structure;
+    s->m_cols = m_cols;
+    s->m_actions = m_actions;
+
     return static_cast<xd::IStructure*>(s);
 }
 

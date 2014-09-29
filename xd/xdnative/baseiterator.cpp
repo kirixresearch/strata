@@ -845,8 +845,7 @@ bool BaseIterator::refreshStructure()
 
 
 
-bool BaseIterator::modifyStructure(xd::IStructure* struct_config,
-                                   xd::IJob* job)
+bool BaseIterator::modifyStructure(xd::IStructure* struct_config, xd::IJob* job)
 { 
     KL_AUTO_LOCK(m_obj_mutex);
     
