@@ -305,6 +305,23 @@ enum
 
 struct ColumnInfo
 {
+    enum
+    {
+        maskName            = 0x0001,
+        maskType            = 0x0002,
+        maskWidth           = 0x0004,
+        maskScale           = 0x0008,
+        maskNullsAllowed    = 0x0010,
+        maskCalculated      = 0x0020,
+        maskExpression      = 0x0040,
+        maskColumnOrdinal   = 0x0080,
+        maskTableOrdinal    = 0x0100,
+        maskSourceOffset    = 0x0200,
+        maskSourceWidth     = 0x0400,
+        maskSourceEncoding  = 0x0800
+    };
+
+
     ColumnInfo()
     {
         type = typeInvalid;
@@ -318,6 +335,8 @@ struct ColumnInfo
         source_offset = 0;
         source_width = 0;
         source_encoding = encodingUndefined;
+
+        mask = 0;
     }
 
     bool isOk() const { return !name.empty(); }
@@ -336,6 +355,8 @@ struct ColumnInfo
     int source_offset;
     int source_width;
     int source_encoding;
+
+    unsigned int mask;
 };
 
 
@@ -672,7 +693,7 @@ public:
     virtual bool getColumnExist(const std::wstring& column_name) = 0;
 
     virtual bool deleteColumn(const std::wstring& column_name) = 0;
-    virtual IColumnInfoPtr modifyColumn(const std::wstring& column_name) = 0;
+    virtual bool modifyColumn(const std::wstring& column_name, const ColumnInfo& colinfo) = 0;
     virtual void createColumn(const xd::ColumnInfo& col) = 0;
 
     virtual int getExprType(const std::wstring& expression) = 0;

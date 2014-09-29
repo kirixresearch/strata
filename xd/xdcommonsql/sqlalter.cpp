@@ -206,8 +206,12 @@ bool sqlAlter(xd::IDatabasePtr db,
             dequote(column, '[', ']');
             dequote(new_name, '[', ']');
 
-            xd::IColumnInfoPtr colinfo = structure->modifyColumn(column);
-            if (colinfo.isNull())
+
+            xd::ColumnInfo colinfo;
+            colinfo.mask = xd::ColumnInfo::maskName;
+            colinfo.name = new_name;
+
+            if (!structure->modifyColumn(column, colinfo))
             {
                 // column doesn't exist
                 wchar_t buf[1024];
@@ -215,8 +219,6 @@ bool sqlAlter(xd::IDatabasePtr db,
                 error.setError(xd::errorGeneral, buf);
                 return false;
             }
-            
-            colinfo->setName(new_name);
         }
          else if (verb == L"ALTER")
         {
@@ -235,8 +237,11 @@ bool sqlAlter(xd::IDatabasePtr db,
             }
 
             std::wstring colname = new_params.name;
-            xd::IColumnInfoPtr colinfo = structure->modifyColumn(colname);
-            if (colinfo.isNull())
+
+            new_params.mask = xd::ColumnInfo::maskType | xd::ColumnInfo::maskWidth |
+                              xd::ColumnInfo::maskScale | xd::ColumnInfo::maskExpression;
+
+            if (!structure->modifyColumn(colname, new_params))
             {
                 // column doesn't exist
                 wchar_t buf[1024];
@@ -244,12 +249,6 @@ bool sqlAlter(xd::IDatabasePtr db,
                 error.setError(xd::errorGeneral, buf);                 
                 return false;
             }
-        
-            colinfo->setType(new_params.type);
-            colinfo->setWidth(new_params.width);
-            colinfo->setScale(new_params.scale);
-            colinfo->setExpression(new_params.expression);
-            colinfo->setCalculated(new_params.calculated);
         }
          else if (verb == L"MODIFY")
         {
@@ -288,7 +287,10 @@ bool sqlAlter(xd::IDatabasePtr db,
                     return false;
                 }
                 
-                xd::IColumnInfoPtr colinfo = structure->modifyColumn(old_name);
+                new_params.mask = xd::ColumnInfo::maskType | xd::ColumnInfo::maskWidth |
+                                  xd::ColumnInfo::maskScale | xd::ColumnInfo::maskExpression;
+
+                xd::IColumnInfoPtr colinfo = structure->modifyColumn(old_name, new_params);
                 if (colinfo.isNull())
                 {
                     // column doesn't exist
@@ -297,13 +299,6 @@ bool sqlAlter(xd::IDatabasePtr db,
                     error.setError(xd::errorGeneral, buf);                    
                     return false;
                 }
-            
-                colinfo->setName(new_params.name);
-                colinfo->setType(new_params.type);
-                colinfo->setWidth(new_params.width);
-                colinfo->setScale(new_params.scale);
-                colinfo->setExpression(new_params.expression);
-                colinfo->setCalculated(new_params.calculated);
             }
         }
     }    

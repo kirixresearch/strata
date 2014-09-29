@@ -60,15 +60,7 @@ public:
     virtual bool internalInsertColumn(const xd::ColumnInfo& col, int insert_idx) = 0;
     virtual bool internalMoveColumn(const std::wstring& column_name, int new_idx) = 0;
     virtual bool removeColumn(const std::wstring& name) = 0;
-    virtual bool modifyColumn(const std::wstring& column_name,
-                              const std::wstring& name,
-                              int type,
-                              int width,
-                              int scale,
-                              const std::wstring& expr,
-                              int offset,
-                              int encoding,
-                              int ordinal) = 0;
+    virtual bool modifyColumn(const std::wstring& column_name, const xd::ColumnInfo& params) = 0;
 };
 
 XCM_DECLARE_SMARTPTR(IStructureInternal)
@@ -97,15 +89,6 @@ public:
     bool internalInsertColumn(const xd::ColumnInfo& col, int insert_idx);
     bool internalMoveColumn(const std::wstring& column_name, int new_idx);
     bool removeColumn(const std::wstring& column_name);
-    bool modifyColumn(const std::wstring& column_name,
-                      const std::wstring& name,
-                      int type,
-                      int width,
-                      int scale,
-                      const std::wstring& expr,
-                      int offset,
-                      int encoding,
-                      int ordinal);
 
     // -- IStructure --
     xd::IStructurePtr clone();
@@ -117,7 +100,7 @@ public:
 
     bool deleteColumn(const std::wstring& column_name);
     bool moveColumn(const std::wstring& column_name, int new_idx);
-    xd::IColumnInfoPtr modifyColumn(const std::wstring& column_name);
+    bool modifyColumn(const std::wstring& column_name, const xd::ColumnInfo& colinfo);
     void createColumn(const xd::ColumnInfo& col);
 
     int getExprType(const std::wstring& expression);

@@ -28,63 +28,55 @@ static xd::ColumnInfo g_invalid_colinfo;
 
 // -- modify structure helper functions --
 
-static void modColumn(xd::ColumnInfo& target_col,
-                      const std::wstring& name,
-                      int type,
-                      int width,
-                      int scale,
-                      const std::wstring& expr,
-                      int offset,
-                      int encoding,
-                      int ordinal)
+static void modColumn(xd::ColumnInfo& target_col, const xd::ColumnInfo& params)
 {
-    if (name.length() > 0)
+    if (params.mask & xd::ColumnInfo::maskName)
     {
-        target_col.name = name;
+        target_col.name = params.name;
     }
 
-    if (type != -1)
+    if (params.mask & xd::ColumnInfo::maskType)
     {
-        target_col.type = type;
+        target_col.type = params.type;
     }
     
-    if (width != -1)
+    if (params.mask & xd::ColumnInfo::maskWidth)
     {
-        target_col.width = width;
+        target_col.width = params.width;
     }
 
-    if (scale != -1)
+    if (params.mask & xd::ColumnInfo::maskScale)
     {
-        target_col.scale = scale;
+        target_col.scale = params.scale;
     }
 
-    if (expr.length() > 0)
+    if (params.mask & xd::ColumnInfo::maskExpression)
     {
-        target_col.expression = expr;
+        target_col.expression = params.expression;
         target_col.calculated = true;
     }
 
-    if (offset != -1)
+    if (params.mask & xd::ColumnInfo::maskSourceOffset)
     {
-        target_col.source_offset = offset;
+        target_col.source_offset = params.source_offset;
     }
     
-    if (encoding != -1)
+    if (params.mask & xd::ColumnInfo::maskSourceEncoding)
     {
-        target_col.source_encoding = encoding;
+        target_col.source_encoding = params.source_encoding;
     }
      
-    if (ordinal != -1)
+    if (params.mask & xd::ColumnInfo::maskColumnOrdinal)
     {
         // new column position
-        target_col.column_ordinal = ordinal;
+        target_col.column_ordinal = params.column_ordinal;
     }
 
 
     // if type changed, make sure width and scale conform
-    if (type != -1)
+    if (params.mask & xd::ColumnInfo::maskType)
     {
-        switch (type)
+        switch (target_col.type)
         {
             case xd::typeDate:
                 target_col.width = 4;
@@ -180,15 +172,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
                             continue;
                         }
 
-                        modColumn(*cit,
-                                  it->m_params.name,
-                                  it->m_params.type,
-                                  it->m_params.width,
-                                  it->m_params.scale,
-                                  it->m_params.expression,
-                                  it->m_params.source_offset,
-                                  it->m_params.source_encoding,
-                                  -1 /* don't allow calc fields to be moved */);
+                        modColumn(*cit, it->m_params);
 
                         processed_action_count++;
                         processed = true;
@@ -199,15 +183,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
 
             if (mod_struct.isOk() && !processed)
             {
-                if (mod_struct->modifyColumn(it->m_colname,
-                                             it->m_params.name,
-                                             it->m_params.type,
-                                             it->m_params.width,
-                                             it->m_params.scale,
-                                             it->m_params.expression,
-                                             it->m_params.source_offset,
-                                             it->m_params.source_encoding,
-                                             it->m_params.column_ordinal))
+                if (mod_struct->modifyColumn(it->m_colname, it->m_params))
                 {
                     processed_action_count++;
                 }
@@ -347,6 +323,7 @@ bool Structure::internalMoveColumn(const std::wstring& column_name, int new_idx)
     return false;
 }
 
+/*
 bool Structure::modifyColumn(const std::wstring& column_name,
                              const std::wstring& name,
                              int type,
@@ -370,6 +347,7 @@ bool Structure::modifyColumn(const std::wstring& column_name,
 
     return false;
 }
+*/
 
 bool Structure::removeColumn(const std::wstring& column_name)
 {
@@ -490,31 +468,20 @@ bool Structure::moveColumn(const std::wstring& column_name, int new_idx)
     return true;
 }
 
-xd::IColumnInfoPtr Structure::modifyColumn(const std::wstring& column_name)
+bool Structure::modifyColumn(const std::wstring& column_name, const xd::ColumnInfo& colinfo)
 {
     int idx = getColumnIdx(column_name);
     if (idx == -1)
-        return xcm::null;
-
-    xd::ColumnInfo action_params;
-    action_params.name = L"";
-    action_params.type = -1;
-    action_params.width = -1;
-    action_params.scale = -1;
-    action_params.expression = L"";
-    action_params.source_offset = -1;
-    action_params.column_ordinal = -1;
-    action_params.source_encoding = -1;
-    action_params.calculated = m_cols[idx].calculated;
+        return false;
 
     StructureAction action;
     action.m_action = StructureAction::actionModify;
-    action.m_params = action_params;
+    action.m_params = colinfo;
     action.m_colname = column_name;
     action.m_pos = -1;
     m_actions.push_back(action);
 
-    return xcm::null;
+    return true;
 }
 
 void Structure::createColumn(const xd::ColumnInfo& col)

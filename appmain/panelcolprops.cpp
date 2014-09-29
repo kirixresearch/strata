@@ -478,10 +478,10 @@ void ColPropsPanel::onTypeChanged(wxCommandEvent& evt)
         m_last_type = type;
 
         xd::IStructurePtr iter_structure = m_iter->getStructure();
-        xd::IColumnInfoPtr colinfo;
+        xd::ColumnInfo colinfo;
         
-        colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
-        colinfo->setType(type);
+        colinfo.mask |= xd::ColumnInfo::maskType;
+        colinfo.type = type;
 
         if (type == xd::typeCharacter ||
             type == xd::typeWideCharacter ||
@@ -490,24 +490,25 @@ void ColPropsPanel::onTypeChanged(wxCommandEvent& evt)
             type == xd::typeInteger ||
             type == xd::typeBoolean)
         {
-            colinfo->setScale(0);
+            colinfo.mask |= xd::ColumnInfo::maskScale;
+            colinfo.scale = 0;
         }
 
 
         // limit numeric width, if necessary
-        if (type == xd::typeNumeric &&
-            m_last_width > xd::max_numeric_width)
+        if (type == xd::typeNumeric && m_last_width > xd::max_numeric_width)
         {
-            colinfo->setWidth(xd::max_numeric_width);
+            colinfo.mask |= xd::ColumnInfo::maskWidth;
+            colinfo.width = xd::max_numeric_width;
             setWidth(xd::max_numeric_width);
         }
+
+        iter_structure->modifyColumn(towstr(m_modify_field), colinfo);
 
         if (m_iter->modifyStructure(iter_structure, NULL))
         {
             kcl::Grid* grid = m_tabledoc->getGrid();
-
             grid->refreshModel();
-
             refreshDynamicFields();
         }
 
@@ -563,9 +564,12 @@ void ColPropsPanel::onWidthChanged(wxCommandEvent& evt)
         m_last_width = width;
 
         xd::IStructurePtr iter_structure = m_iter->getStructure();
-        xd::IColumnInfoPtr colinfo;
-        colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
-        colinfo->setWidth(width);
+
+        xd::ColumnInfo colinfo;
+        colinfo.mask |= xd::ColumnInfo::maskWidth;
+        colinfo.width = width;
+
+        iter_structure->modifyColumn(towstr(m_modify_field), colinfo);
 
         if (m_iter->modifyStructure(iter_structure, NULL))
         {
@@ -613,10 +617,12 @@ void ColPropsPanel::onScaleChanged(wxCommandEvent& evt)
         m_last_scale = scale;
 
         xd::IStructurePtr iter_structure = m_iter->getStructure();
-        xd::IColumnInfoPtr colinfo;
 
-        colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
-        colinfo->setScale(scale);
+        xd::ColumnInfo colinfo;
+        colinfo.mask |= xd::ColumnInfo::maskScale;
+        colinfo.scale = scale;
+
+        iter_structure->modifyColumn(towstr(m_modify_field), colinfo);
 
         if (m_iter->modifyStructure(iter_structure, NULL))
         {
@@ -649,17 +655,16 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
 
     bool auto_type = (m_coltype_combo->GetSelection() == 0 ? true : false);
 
-    if (expr != m_last_expr &&
-        m_expr_panel->getExpressionType() != xd::typeInvalid)
+    if (expr != m_last_expr && m_expr_panel->getExpressionType() != xd::typeInvalid)
     {
         m_last_expr = expr;
 
         // update the calcfield in the grid
         xd::IStructurePtr iter_structure = m_iter->getStructure();
-        xd::IColumnInfoPtr colinfo;
-        colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
 
-        colinfo->setExpression(towstr(expr));
+        xd::ColumnInfo colinfo;
+        colinfo.mask |= xd::ColumnInfo::maskExpression;
+        colinfo.expression = towstr(expr);
             
         bool type_changed = false;
         if (auto_type)
@@ -676,14 +681,17 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
                 int last_type = m_last_type;
 
                 m_last_type = cur_type;
-                colinfo->setType(cur_type);
+
+                colinfo.mask |= xd::ColumnInfo::maskExpression;
+                colinfo.type = cur_type;
+
                 type_changed = true;
 
                 // limit numeric width, if necessary
-                if (cur_type == xd::typeNumeric &&
-                    m_last_width > xd::max_numeric_width)
+                if (cur_type == xd::typeNumeric && m_last_width > xd::max_numeric_width)
                 {
-                    colinfo->setWidth(xd::max_numeric_width);
+                    colinfo.mask |= xd::ColumnInfo::maskWidth;
+                    colinfo.width = xd::max_numeric_width;
                     setWidth(xd::max_numeric_width);
                 }
 
@@ -698,7 +706,8 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
                         last_type == xd::typeDouble ||
                         last_type == xd::typeInteger))
                 {
-                    colinfo->setScale(m_saved_numeric_scale);
+                    colinfo.mask |= xd::ColumnInfo::maskScale;
+                    colinfo.scale = m_saved_numeric_scale;
                     setScale(m_saved_numeric_scale);
                 }
 
@@ -713,13 +722,16 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
                         last_type == xd::typeDouble ||
                         last_type == xd::typeInteger))
                 {
-                    colinfo->setWidth(m_saved_character_width);
+                    colinfo.mask |= xd::ColumnInfo::maskWidth;
+                    colinfo.width = m_saved_character_width;
                     setWidth(m_saved_character_width);
                 }
 
                 updateSpinBoxes();
             }
         }
+
+        iter_structure->modifyColumn(towstr(m_modify_field), colinfo);
 
         if (m_iter->modifyStructure(iter_structure, NULL))
         {
@@ -967,19 +979,39 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         }
 
 
-        xd::IColumnInfoPtr colinfo;
-        colinfo = structure->modifyColumn(towstr(m_orig_name));
+        xd::ColumnInfo colinfo;
 
         if (m_orig_name.CmpNoCase(m_last_name) != 0)
-            colinfo->setName(towstr(m_last_name));
+        {
+            colinfo.mask |= xd::ColumnInfo::maskName;
+            colinfo.name = towstr(m_last_name);
+        }
+
         if (m_orig_type != new_type)
-            colinfo->setType(new_type);
+        {
+            colinfo.mask |= xd::ColumnInfo::maskType;
+            colinfo.type = new_type;
+        }
+
         if (m_orig_width != new_width)
-            colinfo->setWidth(new_width);
+        {
+            colinfo.mask |= xd::ColumnInfo::maskWidth;
+            colinfo.width = new_width;
+        }
+
         if (m_orig_scale != new_scale)
-            colinfo->setScale(new_scale);
+        {
+            colinfo.mask |= xd::ColumnInfo::maskScale;
+            colinfo.scale = new_scale;
+        }
+
         if (m_orig_expr != m_last_expr)
-            colinfo->setExpression(towstr(m_last_expr));
+        {
+            colinfo.mask |= xd::ColumnInfo::maskExpression;
+            colinfo.expression = towstr(m_last_expr);
+        }
+
+        structure->modifyColumn(towstr(m_orig_name), colinfo);
     }
      else
     {
@@ -1132,15 +1164,19 @@ void ColPropsPanel::revertChanges()
     // restore calculated field
 
     xd::IStructurePtr iter_structure = m_iter->getStructure();
-    xd::IColumnInfoPtr colinfo;
+    xd::ColumnInfo colinfo;
     
-    colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
+    colinfo.mask = xd::ColumnInfo::maskName | xd::ColumnInfo::maskType |
+                   xd::ColumnInfo::maskWidth | xd::ColumnInfo::maskScale |
+                   xd::ColumnInfo::maskExpression;
 
-    colinfo->setName(towstr(m_orig_name));
-    colinfo->setType(m_orig_type);
-    colinfo->setWidth(m_orig_width);
-    colinfo->setScale(m_orig_scale);
-    colinfo->setExpression(towstr(m_orig_expr));
+    colinfo.name = towstr(m_orig_name);
+    colinfo.type = m_orig_type;
+    colinfo.width = m_orig_width;
+    colinfo.scale = m_orig_scale;
+    colinfo.expression = towstr(m_orig_expr);
+
+    iter_structure->modifyColumn(towstr(m_modify_field), colinfo);
 
     if (m_iter->modifyStructure(iter_structure, NULL))
     {

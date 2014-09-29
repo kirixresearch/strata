@@ -215,30 +215,56 @@ int AlterJob::runJob()
 
         if (action == L"modify")
         {
-            xd::IColumnInfoPtr col = structure->modifyColumn(column);
+            xd::ColumnInfo colinfo;
 
             if (name_exists)
-                col->setName(name);
+            {
+                colinfo.mask |= xd::ColumnInfo::maskName;
+                colinfo.name = name;
+            }
+
             if (type_exists)
-                col->setType(type);
+            {
+                colinfo.mask |= xd::ColumnInfo::maskType;
+                colinfo.type = type;
+            }
+
             if (width_exists)
-                col->setWidth(width);
+            {
+                colinfo.mask |= xd::ColumnInfo::maskWidth;
+                colinfo.width = width;
+            }
+
             if (scale_exists)
-                col->setScale(scale);
+            {
+                colinfo.mask |= xd::ColumnInfo::maskScale;
+                colinfo.scale = scale;
+            }
+
             if (position_exists)
-                col->setColumnOrdinal(position);
+            {
+                colinfo.mask |= xd::ColumnInfo::maskColumnOrdinal;
+                colinfo.column_ordinal = position;
+            }
+
             if (expression_exists)
             {
                 if (expression_isexplicitnull)
                 {
-                    col->setCalculated(false);
+                    colinfo.mask |= xd::ColumnInfo::maskCalculated;
+                    colinfo.calculated = false;
                 }
                  else
                 {
-                    col->setCalculated(true);
-                    col->setExpression(expression);
+                    colinfo.mask |= xd::ColumnInfo::maskCalculated;
+                    colinfo.mask |= xd::ColumnInfo::maskExpression;
+
+                    colinfo.calculated = true;
+                    colinfo.expression = expression;
                 }
             }
+
+            structure->modifyColumn(column, colinfo);
 
             continue;
         }
