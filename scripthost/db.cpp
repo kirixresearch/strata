@@ -569,10 +569,7 @@ void DbResult::getColumnName(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
     
-    
-    std::wstring col_name = m_structure->getColumnName(col);
-    
-    retval->setString(col_name);
+    retval->setString(m_structure->getColumnName(col));
 }
 
 // (METHOD) DbResult.getColumnInfo
