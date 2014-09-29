@@ -22,7 +22,6 @@
 #include <xd/xd.h>
 #include "ttbfile.h"
 #include "../xdcommon/structure.h"
-#include "../xdcommon/columninfo.h"
 #include "../xdcommon/util.h"
 
 #ifdef WIN32
@@ -969,8 +968,6 @@ xd::IStructurePtr TtbTable::getStructure()
         TtbField fldinfo;
         for (i = 0; i < column_count; ++i)
         {
-            ColumnInfo* col = new ColumnInfo;
-
             kl::ucsle2wstring(fldinfo.name, fld+64, 80);
             fldinfo.ttb_type = fld[0];
             fldinfo.width = buf2int(fld+5);

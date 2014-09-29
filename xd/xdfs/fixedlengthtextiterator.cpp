@@ -19,9 +19,8 @@
 #include <kl/portable.h>
 #include "xdfs.h"
 #include "database.h"
-#include "FixedLengthTextSet.h"
-#include "FixedLengthTextIterator.h"
-#include "../xdcommon/columninfo.h"
+#include "fixedlengthtextset.h"
+#include "fixedlengthtextiterator.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/util.h"
 

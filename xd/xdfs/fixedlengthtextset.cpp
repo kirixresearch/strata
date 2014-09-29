@@ -20,7 +20,6 @@
 #include "rawtext.h"
 #include "fixedlengthtextset.h"
 #include "fixedlengthtextiterator.h"
-#include "../xdcommon/columninfo.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/exindex.h"

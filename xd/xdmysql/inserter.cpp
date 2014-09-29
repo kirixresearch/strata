@@ -24,7 +24,6 @@
 #include "../xdcommon/structure.h"
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/util.h"
-#include "../xdcommon/columninfo.h"
 #include "../xdcommon/extfileinfo.h"
 #include "database.h"
 #include "inserter.h"

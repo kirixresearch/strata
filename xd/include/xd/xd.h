@@ -44,7 +44,6 @@ const int max_numeric_scale = 12;
 // forward declarations
 
 xcm_interface IAttributes;
-xcm_interface IColumnInfo;
 xcm_interface IDatabase;
 xcm_interface IDatabaseMgr;
 xcm_interface IFileInfo;
@@ -66,7 +65,6 @@ struct FormatDefinition;
 
 XCM_DECLARE_SMARTPTR(IAttributes)
 XCM_DECLARE_SMARTPTR(IFileInfo)
-XCM_DECLARE_SMARTPTR(IColumnInfo)
 XCM_DECLARE_SMARTPTR(IDatabase)
 XCM_DECLARE_SMARTPTR(IDatabaseMgr)
 XCM_DECLARE_SMARTPTR(IIndexInfo)
@@ -399,49 +397,6 @@ public:
 };
 
 
-
-xcm_interface IColumnInfo : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("xd.IColumnInfo")
-
-public:
-
-    virtual void setName(const std::wstring& new_val) = 0;
-    virtual std::wstring getName() = 0;
-
-    virtual void setType(int new_val) = 0;
-    virtual int getType() = 0;
-
-    virtual void setWidth(int new_val) = 0;
-    virtual int getWidth() = 0;
-
-    virtual void setScale(int new_val) = 0;
-    virtual int getScale() = 0;
-
-    virtual void setNullsAllowed(bool new_val) = 0;
-    virtual bool getNullsAllowed() = 0;
-
-    virtual void setCalculated(bool new_val) = 0;
-    virtual bool getCalculated() = 0;
-
-    virtual void setExpression(const std::wstring& new_val) = 0;
-    virtual std::wstring getExpression() = 0;
-
-    virtual void setOffset(int new_val) = 0;
-    virtual int getOffset() = 0;
-    
-    virtual void setEncoding(int new_val) = 0;
-    virtual int getEncoding() = 0;
-
-    virtual void setColumnOrdinal(int new_val) = 0;
-    virtual int getColumnOrdinal() = 0;
-
-    virtual void setTableOrdinal(int new_val) = 0;
-    virtual int getTableOrdinal() = 0;
-
-    virtual IColumnInfoPtr clone() = 0;
-    virtual void copyTo(IColumnInfoPtr dest) = 0;
-};
 
 
 

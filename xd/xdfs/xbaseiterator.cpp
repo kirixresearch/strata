@@ -18,7 +18,6 @@
 #include "database.h"
 #include "xbaseset.h"
 #include "xbaseiterator.h"
-#include "../xdcommon/columninfo.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/util.h"
 

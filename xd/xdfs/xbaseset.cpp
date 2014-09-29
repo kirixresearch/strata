@@ -20,7 +20,6 @@
 #include "xbaseiterator.h"
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/formatdefinition.h"
-#include "../xdcommon/columninfo.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/exindex.h"
 #include "../xdcommon/idxutil.h"

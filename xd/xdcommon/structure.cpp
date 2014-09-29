@@ -16,7 +16,6 @@
 
 #include <xd/xd.h>
 #include "structure.h"
-#include "columninfo.h"
 #include "util.h"
 #include "../../kscript/kscript.h"
 #include <kl/string.h>

@@ -21,7 +21,6 @@
 #include "database.h"
 #include "ttbset.h"
 #include "ttbiterator.h"
-#include "../xdcommon/columninfo.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/util.h"
 

@@ -22,7 +22,6 @@
 #include <xd/xd.h>
 #include "fixedlength.h"
 #include "../xdcommon/structure.h"
-#include "../xdcommon/columninfo.h"
 #include "../xdcommon/util.h"
 
 #ifdef WIN32

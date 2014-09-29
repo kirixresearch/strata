@@ -18,7 +18,6 @@
 #include "xdcommonsql.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/structure.h"
-#include "../xdcommon/columninfo.h"
 #include "../xdcommon/errorinfo.h"
 #include <kl/string.h>
 #include <kl/portable.h>

@@ -209,26 +209,42 @@ std::wstring Controller::createHandle() const
 static void JsonNodeToColumn(kl::JsonNode& column, xd::ColumnInfo& col)
 {
     if (column.childExists("name"))
+    {
+        col.mask |= xd::ColumnInfo::maskName;
         col.name = column["name"];
+    }
     
     if (column.childExists("type"))
     {
         std::wstring type = column["type"];
         int ntype = xd::stringToDbtype(type);
         col.type = ntype;
+        col.mask |= xd::ColumnInfo::maskType;
     }
     
     if (column.childExists("width"))
+    {
         col.width = column["width"].getInteger();
+        col.mask |= xd::ColumnInfo::maskWidth;
+    }
 
-    if (column.childExists("scale")) 
+    if (column.childExists("scale"))
+    {
         col.scale = column["scale"].getInteger();
+        col.mask |= xd::ColumnInfo::maskScale;
+    }
         
-    if (column.childExists("expression")) 
+    if (column.childExists("expression"))
+    {
         col.expression = column["expression"];
+        col.mask |= xd::ColumnInfo::maskExpression;
+    }
         
-    if (column.childExists("calculated")) 
+    if (column.childExists("calculated"))
+    {
         col.calculated = column["calculated"].getBoolean();
+        col.mask |= xd::ColumnInfo::maskCalculated;
+    }
     
     //col->setColumnOrdinal(i); // add this later if necessary
 }
@@ -1791,15 +1807,16 @@ void Controller::apiAlter(RequestInfo& req)
         */
          else if (action["action"].getString() == L"modify")
         {
-            xd::IColumnInfoPtr colinfo = structure->modifyColumn(action["target_column"]);
-            if (colinfo.isNull())
+            xd::ColumnInfo colinfo;
+
+            kl::JsonNode params = action["params"];
+            JsonNodeToColumn(params, colinfo);
+
+            if (structure->modifyColumn(action["target_column"], colinfo))
             {
                 returnApiError(req, "Invalid target column for modify operation");
                 return;
             }
-            
-            kl::JsonNode params = action["params"];
-            JsonNodeToColumn(params, colinfo);
         }
          else if (action["action"].getString() == L"delete")
         {

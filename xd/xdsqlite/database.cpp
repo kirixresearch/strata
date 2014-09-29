@@ -32,7 +32,6 @@
 #include "util.h"
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/structure.h"
-#include "../xdcommon/columninfo.h"
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/jobinfo.h"
 #include "../xdcommon/util.h"

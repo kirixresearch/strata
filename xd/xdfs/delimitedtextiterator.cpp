@@ -18,7 +18,6 @@
 #include "database.h"
 #include "delimitedtextset.h"
 #include "delimitedtextiterator.h"
-#include "../xdcommon/columninfo.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/util.h"
 

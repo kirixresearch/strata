@@ -28,7 +28,6 @@
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/util.h"
-#include "../xdcommon/columninfo.h"
 #include "../xdcommonsql/xdcommonsql.h"
 #include "database.h"
 #include "iterator.h"

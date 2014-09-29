@@ -290,8 +290,7 @@ bool sqlAlter(xd::IDatabasePtr db,
                 new_params.mask = xd::ColumnInfo::maskType | xd::ColumnInfo::maskWidth |
                                   xd::ColumnInfo::maskScale | xd::ColumnInfo::maskExpression;
 
-                xd::IColumnInfoPtr colinfo = structure->modifyColumn(old_name, new_params);
-                if (colinfo.isNull())
+                if (structure->modifyColumn(old_name, new_params))
                 {
                     // column doesn't exist
                     wchar_t buf[1024];

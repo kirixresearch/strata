@@ -23,7 +23,6 @@
 #include "bitmapfile.h"
 #include "util.h"
 #include "../xdcommon/structure.h"
-#include "../xdcommon/columninfo.h"
 
 
 // ------------------ FILE FORMAT: xdnative Native Table --------------------
