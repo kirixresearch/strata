@@ -93,7 +93,7 @@ public:
     // -- IStructure --
     xd::IStructurePtr clone();
     int getColumnCount();
-    std::wstring getColumnName(int idx);
+    const std::wstring& getColumnName(int idx);
     const xd::ColumnInfo& getColumnInfoByIdx(int idx);
     const xd::ColumnInfo& getColumnInfo(const std::wstring& column_name);
     bool getColumnExist(const std::wstring& column_name);

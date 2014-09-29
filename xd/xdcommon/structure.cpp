@@ -417,7 +417,7 @@ int Structure::getColumnCount()
     return m_cols.size();
 }
 
-std::wstring Structure::getColumnName(int idx)
+const std::wstring& Structure::getColumnName(int idx)
 {
     return m_cols[idx].name;
 }
