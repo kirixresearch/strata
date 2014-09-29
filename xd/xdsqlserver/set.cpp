@@ -338,18 +338,6 @@ xd::objhandle_t SqlServerRowInserter::getHandle(const std::wstring& column_name)
     return 0;
 }
 
-xd::IColumnInfoPtr SqlServerRowInserter::getInfo(xd::objhandle_t column_handle)
-{
-    SqlServerInsertData* data = (SqlServerInsertData*)column_handle;
-
-    if (!data)
-    {
-        return xcm::null;
-    }
-
-    xd::IStructurePtr structure = m_set->getStructure();
-    return structure->getColumnInfo(data->m_col_name);
-}
 
 bool SqlServerRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                      const unsigned char* value,
@@ -556,14 +544,11 @@ bool SqlServerRowInserter::startInsert(const std::wstring& col_list)
 
     for (it = columns.begin(); it != columns.end(); ++it)
     {
-        xd::IColumnInfoPtr col_info = s->getColumnInfo(*it);
-
+        const xd::ColumnInfo& col_info = s->getColumnInfo(*it);
         if (col_info.isNull())
-        {
             return false;
-        }
 
-        field_list += col_info->getName();
+        field_list += col_info.name;
 
         if (it+1 != columns.end())
         {
@@ -571,10 +556,10 @@ bool SqlServerRowInserter::startInsert(const std::wstring& col_list)
         }
 
         SqlServerInsertData d;
-        d.m_col_name = col_info->getName();
-        d.m_xd_type = col_info->getType();
-        d.m_xd_width = col_info->getWidth();
-        d.m_xd_scale = col_info->getScale();
+        d.m_col_name = col_info.name;
+        d.m_xd_type = col_info.type;
+        d.m_xd_width = col_info.width;
+        d.m_xd_scale = col_info.scale;
         d.m_text = "NULL";
 
         m_insert_data.push_back(d);

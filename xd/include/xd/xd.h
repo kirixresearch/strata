@@ -303,6 +303,43 @@ enum
 
 
 
+struct ColumnInfo
+{
+    ColumnInfo()
+    {
+        type = typeInvalid;
+        width = 0;
+        scale = 0;
+        nulls_allowed = true;
+        calculated = false;
+        column_ordinal = 0;
+        table_ordinal = 0;
+
+        source_offset = 0;
+        source_width = 0;
+        source_encoding = encodingUndefined;
+    }
+
+    bool isOk() const { return !name.empty(); }
+    bool isNull() const { return name.empty(); }
+
+    std::wstring name;
+    int type;
+    int width;
+    int scale;
+    bool nulls_allowed;
+    bool calculated;
+    std::wstring expression;
+    int column_ordinal;
+    int table_ordinal;
+
+    int source_offset;
+    int source_width;
+    int source_encoding;
+};
+
+
+
 
 xcm_interface IStream : public xcm::IObject
 {
@@ -419,7 +456,7 @@ public:
     virtual bool modifyStructure(IStructure* struct_config, IJob* job) = 0;
 
     virtual objhandle_t getHandle(const std::wstring& expr) = 0;
-    virtual IColumnInfoPtr getInfo(objhandle_t data_handle) = 0;
+    virtual ColumnInfo getInfo(objhandle_t data_handle) = 0;
     virtual int getType(objhandle_t data_handle) = 0;
     virtual bool releaseHandle(objhandle_t data_handle) = 0;
 
@@ -511,41 +548,6 @@ public:
 
 
 
-
-
-
-struct ColumnInfo
-{
-    ColumnInfo()
-    {
-        type = typeInvalid;
-        width = 0;
-        scale = 0;
-        nulls_allowed = true;
-        calculated = false;
-        column_ordinal = 0;
-        table_ordinal = 0;
-
-        source_offset = 0;
-        source_width = 0;
-        source_encoding = encodingUndefined;
-    }
-
-
-    std::wstring name;
-    int type;
-    int width;
-    int scale;
-    bool nulls_allowed;
-    bool calculated;
-    std::wstring expression;
-    int column_ordinal;
-    int table_ordinal;
-
-    int source_offset;
-    int source_width;
-    int source_encoding;
-};
 
 
 
@@ -665,8 +667,8 @@ public:
     virtual IStructurePtr clone() = 0;
     virtual int getColumnCount() = 0;
     virtual std::wstring getColumnName(int idx) = 0;
-    virtual IColumnInfoPtr getColumnInfoByIdx(int idx) = 0;
-    virtual IColumnInfoPtr getColumnInfo(const std::wstring& column_name) = 0;
+    virtual const ColumnInfo& getColumnInfoByIdx(int idx) = 0;
+    virtual const ColumnInfo& getColumnInfo(const std::wstring& column_name) = 0;
     virtual bool getColumnExist(const std::wstring& column_name) = 0;
 
     virtual bool deleteColumn(const std::wstring& column_name) = 0;

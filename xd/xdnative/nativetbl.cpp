@@ -159,7 +159,6 @@ bool NativeTable::removeEventHandler(ITableEvents* handler)
 
 bool NativeTable::create(const std::wstring& filename, xd::IStructure* structure)
 {
-    xd::IColumnInfoPtr colinfo;
     int column_count = structure->getColumnCount();
     int i;
     int col_type;
@@ -171,11 +170,11 @@ bool NativeTable::create(const std::wstring& filename, xd::IStructure* structure
     // check field widths and scales
     for (i = 0; i < column_count; ++i)
     {
-        colinfo = structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
 
-        col_type = colinfo->getType();
-        col_width = colinfo->getWidth();
-        col_scale = colinfo->getScale();
+        col_type = colinfo.type;
+        col_width = colinfo.width;
+        col_scale = colinfo.scale;
 
         if (col_type == xd::typeNumeric)
         {
@@ -244,17 +243,17 @@ bool NativeTable::create(const std::wstring& filename, xd::IStructure* structure
 
     for (i = 0; i < column_count; ++i)
     {
-        colinfo = structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
         
-        if (colinfo->getCalculated())
+        if (colinfo.calculated)
             continue;
 
         cols_written++;
 
-        col_type = colinfo->getType();
-        col_width = colinfo->getWidth();
-        col_scale = colinfo->getScale();
-        nulls_allowed = colinfo->getNullsAllowed();
+        col_type = colinfo.type;
+        col_width = colinfo.width;
+        col_scale = colinfo.scale;
+        nulls_allowed = colinfo.nulls_allowed;
 
         switch (col_type)
         {
@@ -292,7 +291,7 @@ bool NativeTable::create(const std::wstring& filename, xd::IStructure* structure
         int2buf(entry_ptr+13, col_flags);
 
         // field name (80 chars, 160 bytes)
-        kl::wstring2ucsle(entry_ptr+64, colinfo->getName(), 80);
+        kl::wstring2ucsle(entry_ptr+64, colinfo.name, 80);
 
         offset += col_width;
 
@@ -558,21 +557,21 @@ bool NativeTable::open(const std::wstring& filename,
     unsigned char* fld = flds;
     for (i = 0; i < column_count; ++i)
     {
-        ColumnInfo* col = new ColumnInfo;
+        xd::ColumnInfo col;
 
         kl::ucsle2wstring(col_name, fld+64, 80);
         
-        col->setName(col_name);
-        col->setType(convertType_native2xd(fld[0]));
-        col->setWidth(buf2int(fld+5));
-        col->setScale(buf2int(fld+9));
-        col->setOffset(buf2int(fld+1));
-        col->setCalculated(false);
-        col->setColumnOrdinal(i);
-        col->setTableOrdinal((int)m_ordinal);
-        col->setNullsAllowed((*(fld+13) & 0x01) ? true : false);
+        col.name = col_name;
+        col.type = convertType_native2xd(fld[0]);
+        col.width = buf2int(fld+5);
+        col.scale = buf2int(fld+9);
+        col.source_offset = buf2int(fld+1);
+        col.calculated = false;
+        col.column_ordinal = i;
+        col.table_ordinal = (int)m_ordinal;
+        col.nulls_allowed = (*(fld+13) & 0x01) ? true : false;
 
-        structure->addColumn(static_cast<xd::IColumnInfo*>(col));
+        structure->addColumn(col);
 
         fld += native_column_descriptor_len;
     }
@@ -1021,31 +1020,31 @@ bool NativeTable::writeColumnInfo(int col_idx,
     xf_seek(m_file, native_header_len+(native_column_descriptor_len*col_idx), xfSeekSet);
     xf_read(m_file, col_desc, native_column_descriptor_len, 1);
 
-    xd::IColumnInfoPtr col = m_structure->getColumnInfoByIdx(col_idx);
+    xd::ColumnInfo& col = (xd::ColumnInfo&)m_structure->getColumnInfoByIdx(col_idx);
 
     if (col_name.length() > 0)
     {
         // field name (80 chars, 160 bytes)
         kl::wstring2ucsle(col_desc+64, col_name, 80);
-        col->setName(col_name);
+        col.name = col_name;
     }
 
     if (type != -1)
     {
         col_desc[0] = convertType_xd2native(type);
-        col->setType(type);
+        col.type = type;
     }
 
     if (width != -1)
     {
         int2buf(col_desc+5, width);
-        col->setWidth(width);
+        col.width = width;
     }
 
     if (scale != -1)
     {
         int2buf(col_desc+9, scale);
-        col->setScale(scale);
+        col.scale = scale;
     }
 
     xf_seek(m_file,

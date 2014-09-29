@@ -71,6 +71,7 @@ xd::objhandle_t SlRowInserter::getHandle(const std::wstring& column_name)
     return 0;
 }
 
+/*
 xd::IColumnInfoPtr SlRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     SlRowInserterData* r = (SlRowInserterData*)column_handle;
@@ -81,6 +82,7 @@ xd::IColumnInfoPtr SlRowInserter::getInfo(xd::objhandle_t column_handle)
 
     return r->colinfo;
 }
+*/
 
 bool SlRowInserter::startInsert(const std::wstring& col_list)
 {
@@ -98,8 +100,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
         col_count = structure->getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            xd::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
-            cols.push_back(colinfo->getName());
+            cols.push_back(structure->getColumnName(i));
         }
     }
      else
@@ -176,8 +177,8 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
         SlRowInserterData data;
 
         data.colinfo = structure->getColumnInfo(cols[i]);
-        data.type = data.colinfo->getType();
-        data.length = data.colinfo->getWidth();
+        data.type = data.colinfo.type;
+        data.length = data.colinfo.width;
         data.idx = i+1;
         data.name = cols[i];
         

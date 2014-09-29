@@ -512,15 +512,14 @@ bool SlDatabase::createTable(const std::wstring& path,
 
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr colinfo;
-        colinfo = struct_config->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = struct_config->getColumnInfoByIdx(i);
         
         std::wstring piece;
-        piece += colinfo->getName();
+        piece += colinfo.name;
         piece += L" ";
 
         std::wstring type;
-        switch (colinfo->getType())
+        switch (colinfo.type)
         {
             case xd::typeCharacter:
             case xd::typeWideCharacter:
@@ -534,8 +533,8 @@ bool SlDatabase::createTable(const std::wstring& path,
                 break;
             case xd::typeNumeric:
                 {
-                    wchar_t buf[255];
-                    swprintf(buf, 255, L"NUMERIC(%d,%d)", colinfo->getWidth(), colinfo->getScale());
+                    wchar_t buf[128];
+                    swprintf(buf, 127, L"NUMERIC(%d,%d)", colinfo.width, colinfo.scale);
                     type = buf;
                 }
                 break;

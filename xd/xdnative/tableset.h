@@ -276,7 +276,7 @@ public:
     virtual ~TableSetRowInserter();
 
     xd::objhandle_t getHandle(const std::wstring& column_name);
-    xd::IColumnInfoPtr getInfo(xd::objhandle_t column_handle);
+    //xd::IColumnInfoPtr getInfo(xd::objhandle_t column_handle);
 
     bool putRawPtr(xd::objhandle_t column_handle,
                    const unsigned char* value,

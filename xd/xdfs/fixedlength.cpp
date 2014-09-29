@@ -189,19 +189,19 @@ xd::IStructurePtr FixedLengthTable::getStructure()
     int counter = 0;
     for (it = m_def.columns.begin(); it != it_end; ++it)
     {
-        ColumnInfo* col = new ColumnInfo;
+        xd::ColumnInfo col;
         
-        col->setName(it->name);
-        col->setType(it->type);
-        col->setWidth(it->width);
-        col->setScale(it->scale);
-        col->setOffset(0);
-        col->setCalculated(false);
-        col->setColumnOrdinal(counter++);
-        col->setTableOrdinal(0);
-        col->setNullsAllowed(it->nulls_allowed);
+        col.name = it->name;
+        col.type = it->type;
+        col.width = it->width;
+        col.scale = it->scale;
+        col.source_offset = 0;
+        col.calculated = false;
+        col.column_ordinal = counter++;
+        col.table_ordinal = 0;;
+        col.nulls_allowed = it->nulls_allowed;
 
-        structure->addColumn(static_cast<xd::IColumnInfo*>(col));
+        structure->addColumn(col);
     }
 
     return static_cast<xd::IStructure*>(structure);

@@ -247,9 +247,7 @@ bool CommonBaseIterator::refreshRelInfo(CommonBaseIteratorRelInfo& info)
         {
             if (!wcscasecmp(right_list[j].c_str(), idx_list[x].c_str()))
             {
-                xd::IColumnInfoPtr colinfo;
-
-                colinfo = right_structure->getColumnInfo(right_list[j]);
+                const xd::ColumnInfo& colinfo = right_structure->getColumnInfo(right_list[j]);
                 if (colinfo.isNull())
                 {
                     delete info.kl;
@@ -258,8 +256,8 @@ bool CommonBaseIterator::refreshRelInfo(CommonBaseIteratorRelInfo& info)
                 }
 
                 info.kl->addKeyPart(left_list[j],
-                                    colinfo->getType(),
-                                    colinfo->getWidth());
+                                    colinfo.type,
+                                    colinfo.width);
 
                 break;
             }
@@ -371,12 +369,12 @@ public:
         if (s.isNull())
             return false;
 
-        xd::IColumnInfoPtr colinfo = s->getColumnInfo(column);
+        const xd::ColumnInfo& colinfo = s->getColumnInfo(column);
         if (colinfo.isNull())
             return false;
 
         m_expr = column;
-        m_expr_type = colinfo->getType();
+        m_expr_type = colinfo.type;
 
         return true;
     }
@@ -501,7 +499,7 @@ bool CommonBaseIterator::script_parse_hook(kscript::ExprParseHookInfo& hook_info
         }
 
 
-        xd::IColumnInfoPtr colinfo = structure->getColumnInfo(hook_info.expr_text);
+        const xd::ColumnInfo& colinfo = structure->getColumnInfo(hook_info.expr_text);
         if (colinfo.isNull())
             return false;
         
@@ -517,7 +515,7 @@ bool CommonBaseIterator::script_parse_hook(kscript::ExprParseHookInfo& hook_info
         
         
         kscript::Value* val = new kscript::Value;
-        switch (colinfo->getType())
+        switch (colinfo.type)
         {
             case xd::typeCharacter:
             case xd::typeWideCharacter:

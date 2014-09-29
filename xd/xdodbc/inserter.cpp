@@ -304,22 +304,22 @@ bool OdbcRowInserter::startInsert(const std::wstring& col_list)
             values_list += L", ";
         }
 
-        xd::IColumnInfoPtr col_info = s->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col_info = s->getColumnInfoByIdx(i);
         
         field_list += quote_openchar;
-        field_list += col_info->getName();
+        field_list += col_info.name;
         field_list += quote_closechar;
         values_list += L"?";
 
-        xd_type = col_info->getType();
+        xd_type = col_info.type;
 
         OdbcInsertFieldData* field = new OdbcInsertFieldData;
-        field->m_name = col_info->getName();
+        field->m_name = col_info.name;
         field->m_xd_type = xd_type;
         field->m_sql_c_type = xd2sqlCType(xd_type);
         field->m_sql_type = xd2sqlType(xd_type);
-        field->m_width = col_info->getWidth();
-        field->m_scale = col_info->getScale();
+        field->m_width = col_info.width;
+        field->m_scale = col_info.scale;
         field->m_idx = i+1;
 
         // initialize the storage elements for this column

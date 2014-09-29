@@ -90,25 +90,23 @@ xd::IStructurePtr XbaseSet::getStructure()
     std::vector<XbaseField>::iterator it;
     for (it = fields.begin(); it != fields.end(); ++it)
     {
-        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        struct_int->addColumn(col);
+        xd::ColumnInfo col;
 
-        col->setName(kl::towstring(it->name));
-        col->setType(xbase2xdType(it->type));
-        col->setWidth(it->width);
-        col->setScale(it->scale);
-        col->setColumnOrdinal(it->ordinal);
+        col.name = kl::towstring(it->name);
+        col.type = xbase2xdType(it->type);
+        col.width = it->width;
+        col.scale = it->scale;
+        col.column_ordinal = it->ordinal;
         
         // handle column information for specific types (currency, etc.)
         if (it->type == 'Y')    // xbase currency type
-            col->setWidth(18);
-        if (col->getType() == xd::typeDouble)
-            col->setWidth(8);
-        if (col->getType() == xd::typeNumeric &&
-            col->getWidth() > xd::max_numeric_width)
-        {
-            col->setWidth(xd::max_numeric_width);
-        }
+            col.width = 18;
+        if (col.type == xd::typeDouble)
+            col.width = 8;
+        if (col.type == xd::typeNumeric && col.width > xd::max_numeric_width)
+            col.width = xd::max_numeric_width;
+
+        struct_int->addColumn(col);
     }
 
     XdfsBaseSet::appendCalcFields(s);

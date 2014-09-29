@@ -57,7 +57,6 @@ int xdcmnInsert(xd::IDatabasePtr dest_db,
     xd::IRowInserter* insert = sp_insert.p;
 
     // get table structure
-    xd::IColumnInfoPtr src_colinfo, dest_colinfo;
     xd::IStructurePtr dest_structure = dest_db->describeTable(dest_table);
     xd::IStructurePtr src_structure = source_iter->getStructure();
 
@@ -84,29 +83,29 @@ int xdcmnInsert(xd::IDatabasePtr dest_db,
 
     for (i = 0; i < col_count; i++)
     {
-        dest_colinfo = dest_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& dest_colinfo = dest_structure->getColumnInfoByIdx(i);
         if (dest_colinfo.isNull())
             continue;
-        if (dest_colinfo->getCalculated())
+        if (dest_colinfo.calculated)
             continue;
 
-        src_colinfo = src_structure->getColumnInfo(dest_colinfo->getName());
+        const xd::ColumnInfo& src_colinfo = src_structure->getColumnInfo(dest_colinfo.name);
         if (src_colinfo.isNull())
             continue;
 
-        insert_info[out_idx].src_handle = source_iter->getHandle(dest_colinfo->getName());
+        insert_info[out_idx].src_handle = source_iter->getHandle(dest_colinfo.name);
         if (!insert_info[out_idx].src_handle)
         {
             delete[] insert_info;
             return 0;
         }
 
-        insert_info[out_idx].src_type = src_colinfo->getType();
-        insert_info[out_idx].src_width = src_colinfo->getWidth();
+        insert_info[out_idx].src_type = src_colinfo.type;
+        insert_info[out_idx].src_width = src_colinfo.width;
 
-        insert_info[out_idx].dest_handle = insert->getHandle(dest_colinfo->getName());
-        insert_info[out_idx].dest_type = dest_colinfo->getType();
-        insert_info[out_idx].dest_width = dest_colinfo->getWidth();
+        insert_info[out_idx].dest_handle = insert->getHandle(dest_colinfo.name);
+        insert_info[out_idx].dest_type = dest_colinfo.type;
+        insert_info[out_idx].dest_width = dest_colinfo.width;
 
         if (insert_info[out_idx].src_type == insert_info[out_idx].dest_type &&
             insert_info[out_idx].src_width == insert_info[out_idx].dest_width)
@@ -332,15 +331,15 @@ bool physStructureEqual(xd::IStructurePtr s1, xd::IStructurePtr s2)
 
     xd::IColumnInfoPtr colinfo;
 
-    std::vector<xd::IColumnInfoPtr> s1_fields;
-    std::vector<xd::IColumnInfoPtr> s2_fields;
+    std::vector<xd::ColumnInfo> s1_fields;
+    std::vector<xd::ColumnInfo> s2_fields;
 
     // copy physical column infos
     for (i = 0; i < s1_col_count; ++i)
     {
-        colinfo = s1->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = s1->getColumnInfoByIdx(i);
 
-        if (!colinfo->getCalculated())
+        if (!colinfo.calculated)
         {
             s1_fields.push_back(colinfo);
         }
@@ -348,9 +347,9 @@ bool physStructureEqual(xd::IStructurePtr s1, xd::IStructurePtr s2)
 
     for (i = 0; i < s2_col_count; ++i)
     {
-        colinfo = s2->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = s2->getColumnInfoByIdx(i);
 
-        if (!colinfo->getCalculated())
+        if (!colinfo.calculated)
         {
             s2_fields.push_back(colinfo);
         }
@@ -363,26 +362,21 @@ bool physStructureEqual(xd::IStructurePtr s1, xd::IStructurePtr s2)
 
     for (i = 0; i < count; ++i)
     {
-        xd::IColumnInfoPtr col1, col2;
+        const xd::ColumnInfo& col1 = s1_fields[i];
+        const xd::ColumnInfo& col2 = s2_fields[i];
 
-        col1 = s1_fields[i];
-        col2 = s2_fields[i];
-
-        if (0 != wcscasecmp(col1->getName().c_str(), col2->getName().c_str()))
+        if (0 != wcscasecmp(col1.name.c_str(), col2.name.c_str()))
             return false;
 
-        if (col1->getType() != col2->getType())
+        if (col1.type != col2.type)
             return false;
 
-        if (col2->getWidth() != col2->getWidth())
+        if (col2.width != col2.width)
             return false;
 
-        if (col2->getScale() != col2->getScale())
+        if (col2.scale != col2.scale)
             return false;
     }
 
     return true;
 }
-
-
-

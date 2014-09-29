@@ -123,7 +123,7 @@ static std::wstring popToken(std::wstring& str)
 
 
 // this code is from xdcommon/sqlcreate.cpp
-xd::IColumnInfoPtr parseSqliteColumnDescription(const std::wstring& _col_desc)
+xd::ColumnInfo parseSqliteColumnDescription(const std::wstring& _col_desc)
 {
     std::wstring col_desc = _col_desc;
     
@@ -133,7 +133,7 @@ xd::IColumnInfoPtr parseSqliteColumnDescription(const std::wstring& _col_desc)
     if (field.empty())
     {
         // empty field name (probably a trailing comma);
-        return xcm::null;
+        return xd::ColumnInfo();
     }
     
     // get field type
@@ -176,18 +176,18 @@ xd::IColumnInfoPtr parseSqliteColumnDescription(const std::wstring& _col_desc)
 
 
     // make column info
-    ColumnInfo* colinfo = new ColumnInfo;
+    xd::ColumnInfo colinfo;
 
-    colinfo->setName(field);
+    colinfo.name = field;
 
     if (type == L"VARCHAR" ||
         type == L"CHAR" ||
         type == L"CHARACTER" ||
         type == L"TEXT")
     {
-        colinfo->setType(xd::typeCharacter);
+        colinfo.type = xd::typeCharacter;
         if (scale != 0)
-            return xcm::null;
+            return xd::ColumnInfo();
         if (width <= 0)
             width = 255;
     }
@@ -195,43 +195,43 @@ xd::IColumnInfoPtr parseSqliteColumnDescription(const std::wstring& _col_desc)
               type == L"INT" ||
               type == L"SMALLINT")
     {
-        colinfo->setType(xd::typeInteger);
+        colinfo.type = xd::typeInteger;
         if (scale != 0)
-            return xcm::null;
+            return xd::ColumnInfo();
     }
      else if (type == L"DEC" ||
               type == L"DECIMAL" ||
               type == L"NUMERIC" ||
               type == L"NUMBER")
     {
-        colinfo->setType(xd::typeNumeric);
+        colinfo.type = xd::typeNumeric;
     }
      else if (type == L"DOUBLE" ||
               type == L"FLOAT" ||
               type == L"REAL")
     {  
-        colinfo->setType(xd::typeDouble);
+        colinfo.type = xd::typeDouble;
     }
      else if (type == L"DATE")
     {
-        colinfo->setType(xd::typeDate);
+        colinfo.type = xd::typeDate;
     }
      else if (type == L"DATETIME")
     {
-        colinfo->setType(xd::typeDateTime);
+        colinfo.type = xd::typeDateTime;
     }
      else if (type == L"BOOLEAN")
     {
-        colinfo->setType(xd::typeBoolean);
+        colinfo.type = xd::typeBoolean;
     }
      else
     {
         // bad type
-        return xcm::null;
+        return xd::ColumnInfo();
     }
 
-    colinfo->setWidth(width);
-    colinfo->setScale(scale);
+    colinfo.width = width;
+    colinfo.scale = scale;
     
     
     if (!expr.empty())
@@ -240,7 +240,7 @@ xd::IColumnInfoPtr parseSqliteColumnDescription(const std::wstring& _col_desc)
         if (0 != wcscasecmp(as.c_str(), L"AS"))
         {
             // missing AS
-            return xcm::null;
+            return xd::ColumnInfo();
         }
         
         kl::trim(expr);
@@ -248,14 +248,14 @@ xd::IColumnInfoPtr parseSqliteColumnDescription(const std::wstring& _col_desc)
         if (expr.empty())
         {
             // empty expression
-            return xcm::null;
+            return xd::ColumnInfo();
         }
         
-        colinfo->setExpression(expr);
-        colinfo->setCalculated(true);
+        colinfo.expression = expr;
+        colinfo.type = true;
     }
     
-    return static_cast<xd::IColumnInfo*>(colinfo);
+    return colinfo;
 }
 
 
@@ -268,7 +268,6 @@ xd::IStructurePtr parseCreateStatement(const std::wstring& create)
     std::vector<std::wstring> colvec;
     kl::parseDelimitedList(columns, colvec, L',', true);
 
-
     Structure* s = new Structure;
     xd::IStructurePtr sp = static_cast<xd::IStructure*>(s);
 
@@ -277,7 +276,7 @@ xd::IStructurePtr parseCreateStatement(const std::wstring& create)
          it != colvec.end();
          ++it)
     {
-        xd::IColumnInfoPtr col = parseSqliteColumnDescription(*it);
+        xd::ColumnInfo col = parseSqliteColumnDescription(*it);
         if (col.isNull())
             return xcm::null;
             

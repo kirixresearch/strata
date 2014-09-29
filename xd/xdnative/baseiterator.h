@@ -146,7 +146,7 @@ public:
     xd::objhandle_t getHandle(const std::wstring& expr);
     int getType(xd::objhandle_t data_handle);
     bool releaseHandle(xd::objhandle_t data_handle);
-    xd::IColumnInfoPtr getInfo(xd::objhandle_t data_handle);
+    xd::ColumnInfo getInfo(xd::objhandle_t data_handle);
 
     xd::rowid_t getRowId();
 
@@ -185,7 +185,7 @@ protected:
     void clearDAI();
     void refreshDAI();
     DataAccessInfo* lookupDAI(const std::wstring& expr);
-    void colinfo2dai(DataAccessInfo* dai, xd::IColumnInfo* colinfo);
+    void colinfo2dai(DataAccessInfo* dai, const xd::ColumnInfo& colinfo);
     BaseIteratorTableEntry* registerTable(ITablePtr tbl);
     bool baseClone(BaseIterator* new_iter);
     void bindExprParser(kscript::ExprParser* parser, ParserBindInfo* info);
@@ -220,7 +220,7 @@ private:
     std::map<std::wstring, DataAccessInfo*, kl::cmp_nocase> m_dai_lookup;
     std::vector<BaseIteratorTableEntry> m_tables;
     std::vector<AggregateResult*> m_aggregate_results;
-    std::vector<xd::IColumnInfoPtr> m_calc_fields;
+    std::vector<xd::ColumnInfo> m_calc_fields;
     std::vector<BaseIteratorRelInfo> m_relations;
     xd::IRelationEnumPtr m_relenum;
 

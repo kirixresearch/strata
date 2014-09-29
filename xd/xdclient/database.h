@@ -151,7 +151,6 @@ public:
 
     xd::IStructurePtr jsonToStructure(kl::JsonNode& node);
     std::wstring structureToJson(xd::IStructurePtr structure);
-    void columnToJsonNode(xd::IColumnInfoPtr colinfo, kl::JsonNode& column);
     bool getCallCacheResult(const std::wstring& path,
                             const std::wstring& method,
                             const ServerCallParams* params,

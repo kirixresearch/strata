@@ -453,14 +453,16 @@ xd::IStructurePtr MysqlIterator::getStructure()
     std::vector<MysqlDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        col->setName((*it)->name);
-        col->setType((*it)->type);
-        col->setWidth((*it)->width);
-        col->setScale((*it)->scale);
-        col->setColumnOrdinal((*it)->ordinal);
-        col->setExpression((*it)->expr_text);
-        col->setCalculated((*it)->isCalculated());
+        xd::ColumnInfo col;
+
+        col.name = (*it)->name;
+        col.type = (*it)->type;
+        col.width = (*it)->width;
+        col.scale = (*it)->scale;
+        col.column_ordinal = (*it)->ordinal;
+        col.expression = (*it)->expr_text;
+        col.calculated = (*it)->isCalculated();
+
         s->addColumn(col);
     }
     
@@ -504,10 +506,8 @@ bool MysqlIterator::refreshStructure()
     col_count = set_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr col;
-        
-        col = set_structure->getColumnInfoByIdx(i);
-        if (!col->getCalculated())
+        const xd::ColumnInfo& col = set_structure->getColumnInfoByIdx(i);
+        if (!col.calculated)
             continue;
             
         bool found = false;
@@ -517,7 +517,7 @@ bool MysqlIterator::refreshStructure()
             if (!(*it)->isCalculated())
                 continue;
 
-            if (0 == wcscasecmp((*it)->name.c_str(), col->getName().c_str()))
+            if (0 == wcscasecmp((*it)->name.c_str(), col.name.c_str()))
             {
                 found = true;
                 break;
@@ -528,12 +528,12 @@ bool MysqlIterator::refreshStructure()
         {
             // add new calc field
             MysqlDataAccessInfo* dai = new MysqlDataAccessInfo;
-            dai->name = col->getName();
-            dai->type = col->getType();
-            dai->width = col->getWidth();
-            dai->scale = col->getScale();
+            dai->name = col.name;
+            dai->type = col.type;
+            dai->width = col.width;
+            dai->scale = col.scale;
             dai->ordinal = m_fields.size();
-            dai->expr_text = col->getExpression();
+            dai->expr_text = col.expression;
             dai->expr = NULL;
                 
             m_fields.push_back(dai);
@@ -565,9 +565,7 @@ bool MysqlIterator::modifyStructure(xd::IStructure* struct_config, xd::IJob* job
         if (it->m_action != StructureAction::actionDelete)
             continue;
 
-        for (it2 = m_fields.begin();
-             it2 != m_fields.end();
-             ++it2)
+        for (it2 = m_fields.begin(); it2 != m_fields.end(); ++it2)
         {
             if (0 == wcscasecmp(it->m_colname.c_str(), (*it2)->name.c_str()))
             {
@@ -585,40 +583,38 @@ bool MysqlIterator::modifyStructure(xd::IStructure* struct_config, xd::IJob* job
         if (it->m_action != StructureAction::actionModify)
             continue;
 
-        for (it2 = m_fields.begin();
-             it2 != m_fields.end();
-             ++it2)
+        for (it2 = m_fields.begin(); it2 != m_fields.end(); ++it2)
         {
-            if (0 == wcscasecmp(it->m_colname.c_str(), (*it2)->name.c_str()))
+            if (kl::iequals(it->m_colname, (*it2)->name))
             {
-                if (it->m_params->getName().length() > 0)
+                if (it->m_params.name.length() > 0)
                 {
-                    std::wstring new_name = it->m_params->getName();
+                    std::wstring new_name = it->m_params.name;
                     kl::makeUpper(new_name);
                     (*it2)->name = new_name;
                 }
 
-                if (it->m_params->getType() != -1)
+                if (it->m_params.type != -1)
                 {
-                    (*it2)->type = it->m_params->getType();
+                    (*it2)->type = it->m_params.type;
                 }
 
-                if (it->m_params->getWidth() != -1)
+                if (it->m_params.width != -1)
                 {
-                    (*it2)->width = it->m_params->getWidth();
+                    (*it2)->width = it->m_params.width;
                 }
 
-                if (it->m_params->getScale() != -1)
+                if (it->m_params.scale != -1)
                 {
-                    (*it2)->scale = it->m_params->getScale();
+                    (*it2)->scale = it->m_params.scale;
                 }
 
-                if (it->m_params->getExpression().length() > 0)
+                if (it->m_params.expression.length() > 0)
                 {
                     if ((*it2)->expr)
                         delete (*it2)->expr;
-                    (*it2)->expr_text = it->m_params->getExpression();
-                    (*it2)->expr = parse(it->m_params->getExpression());
+                    (*it2)->expr_text = it->m_params.expression;
+                    (*it2)->expr = parse(it->m_params.expression);
                 }
             }
         }
@@ -630,16 +626,16 @@ bool MysqlIterator::modifyStructure(xd::IStructure* struct_config, xd::IJob* job
         if (it->m_action != StructureAction::actionCreate)
             continue;
 
-        if (it->m_params->getExpression().length() > 0)
+        if (it->m_params.expression.length() > 0)
         {
             MysqlDataAccessInfo* dai = new MysqlDataAccessInfo;
-            dai->name = it->m_params->getName();
-            dai->type = it->m_params->getType();
-            dai->width = it->m_params->getWidth();
-            dai->scale = it->m_params->getScale();
+            dai->name = it->m_params.name;
+            dai->type = it->m_params.type;
+            dai->width = it->m_params.width;
+            dai->scale = it->m_params.scale;
             dai->ordinal = m_fields.size();
-            dai->expr_text = it->m_params->getExpression();
-            dai->expr = parse(it->m_params->getExpression());
+            dai->expr_text = it->m_params.expression;
+            dai->expr = parse(it->m_params.expression);
             m_fields.push_back(dai);
         }
     }
@@ -655,16 +651,16 @@ bool MysqlIterator::modifyStructure(xd::IStructure* struct_config, xd::IJob* job
         if (insert_idx < 0 || insert_idx >= (int)m_fields.size())
             continue;
         
-        if (it->m_params->getExpression().length() > 0)
+        if (it->m_params.expression.length() > 0)
         {
             MysqlDataAccessInfo* dai = new MysqlDataAccessInfo;
-            dai->name = it->m_params->getName();
-            dai->type = it->m_params->getType();
-            dai->width = it->m_params->getWidth();
-            dai->scale = it->m_params->getScale();
+            dai->name = it->m_params.name;
+            dai->type = it->m_params.type;
+            dai->width = it->m_params.width;
+            dai->scale = it->m_params.scale;
             dai->ordinal = m_fields.size();
-            dai->expr_text = it->m_params->getExpression();
-            dai->expr = parse(it->m_params->getExpression());
+            dai->expr_text = it->m_params.expression;
+            dai->expr = parse(it->m_params.expression);
             m_fields.insert(m_fields.begin()+insert_idx, dai);
         }
     }
@@ -743,42 +739,40 @@ bool MysqlIterator::releaseHandle(xd::objhandle_t data_handle)
     return false;
 }
 
-xd::IColumnInfoPtr MysqlIterator::getInfo(xd::objhandle_t data_handle)
+xd::ColumnInfo MysqlIterator::getInfo(xd::objhandle_t data_handle)
 {
     MysqlDataAccessInfo* dai = (MysqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
-        return xcm::null;
+        return xd::ColumnInfo();
     }
 
-    ColumnInfo* colinfo = new ColumnInfo;
-    colinfo->setName(dai->name);
-    colinfo->setType(dai->type);
-    colinfo->setWidth(dai->width);
-    colinfo->setScale(dai->scale);
-    colinfo->setExpression(dai->expr_text);
-    colinfo->setCalculated(dai->isCalculated());
+    xd::ColumnInfo colinfo;
+    colinfo.name = dai->name;
+    colinfo.type = dai->type;
+    colinfo.width = dai->width;
+    colinfo.scale = dai->scale;
+    colinfo.expression = dai->expr_text;
+    colinfo.calculated = dai->isCalculated();
 
-    if (dai->type == xd::typeDate ||
-        dai->type == xd::typeInteger)
+    if (dai->type == xd::typeDate || dai->type == xd::typeInteger)
     {
-        colinfo->setWidth(4);
+        colinfo.width = 4;
     }
-     else if (dai->type == xd::typeDateTime ||
-              dai->type == xd::typeDouble)
+     else if (dai->type == xd::typeDateTime || dai->type == xd::typeDouble)
     {
-        colinfo->setWidth(8);
+        colinfo.width = 8;
     }
      else if (dai->type == xd::typeBoolean)
     {
-        colinfo->setWidth(1);
+        colinfo.width = 1;
     }
      else
     {
-        colinfo->setWidth(dai->width);
+        colinfo.width = dai->width;
     }
 
-    return static_cast<xd::IColumnInfo*>(colinfo);
+    return colinfo;
 }
 
 int MysqlIterator::getType(xd::objhandle_t data_handle)

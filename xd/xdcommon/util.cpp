@@ -1276,15 +1276,13 @@ static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
             func_name == L"STDDEV" ||
             func_name == L"VARIANCE")
         {
-            xd::IColumnInfoPtr colinfo = info->structure->getColumnInfo(param);
+            const xd::ColumnInfo& colinfo = info->structure->getColumnInfo(param);
             if (colinfo.isNull())
                 return true;
-        
-            int type = colinfo->getType();
 
-            if (type != xd::typeNumeric &&
-                type != xd::typeInteger &&
-                type != xd::typeDouble)
+            if (colinfo.type != xd::typeNumeric &&
+                colinfo.type != xd::typeInteger &&
+                colinfo.type != xd::typeDouble)
             {
                 // fail
                 return true;
@@ -1297,14 +1295,12 @@ static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
         }
          else if (func_name == L"MERGE")
         {
-            xd::IColumnInfoPtr colinfo = info->structure->getColumnInfo(param);
+            const xd::ColumnInfo& colinfo = info->structure->getColumnInfo(param);
             if (colinfo.isNull())
                 return true;
         
-            int type = colinfo->getType();
-
-            if (type != xd::typeCharacter &&
-                type != xd::typeWideCharacter)
+            if (colinfo.type != xd::typeCharacter &&
+                colinfo.type != xd::typeWideCharacter)
             {
                 // fail
                 return true;
@@ -1352,8 +1348,7 @@ static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
     }
 
 
-    xd::IColumnInfoPtr colinfo;
-    colinfo = info->structure->getColumnInfo(expr_text);
+    const xd::ColumnInfo& colinfo = info->structure->getColumnInfo(expr_text);
 
     if (colinfo.isNull())
     {
@@ -1363,7 +1358,7 @@ static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
     kscript::Value* v = new kscript::Value;
 
-    switch (colinfo->getType())
+    switch (colinfo.type)
     {
         case xd::typeCharacter:
         case xd::typeWideCharacter:
@@ -1458,14 +1453,13 @@ static void _findFieldsInExpr(const std::wstring& expr,
              it != info.found_fields.end();
              ++it)
         {
-            xd::IColumnInfoPtr colinfo;
-            colinfo = s->getColumnInfo(*it);
+            xd::ColumnInfo colinfo = s->getColumnInfo(*it);
             if (colinfo.isNull())
                 continue;
-            if (!colinfo->getCalculated())
+            if (!colinfo.calculated)
                 continue;
             
-            _findFieldsInExpr(colinfo->getExpression(),
+            _findFieldsInExpr(colinfo.expression,
                               s,
                               recurse_calc_fields,
                               fields);

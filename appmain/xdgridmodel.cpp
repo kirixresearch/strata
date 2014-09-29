@@ -333,18 +333,19 @@ void XdGridModel::refresh()
 
         m_columns.resize(col_count);
 
-        xd::IColumnInfoPtr spCol;
         for (i = 0; i < col_count; i++)
         {
             XdGridColumnInfo& gci = m_columns[i];
 
             gci.m_col_name = structure->getColumnName(i);
             gci.m_col_handle = m_it->getHandle(towstr(gci.m_col_name));
-            spCol = m_it->getInfo(gci.m_col_handle);
-            gci.m_col_type = spCol->getType();
-            gci.m_col_width = spCol->getWidth();
-            gci.m_col_scale = spCol->getScale();
-            gci.m_col_calculated = spCol->getCalculated();
+
+            xd::ColumnInfo colinfo = m_it->getInfo(gci.m_col_handle);
+            gci.m_col_type = colinfo.type;
+            gci.m_col_width = colinfo.width;
+            gci.m_col_scale = colinfo.scale;
+            gci.m_col_calculated = colinfo.calculated;
+
             gci.m_model_col.clear();
 
             switch (gci.m_col_type)

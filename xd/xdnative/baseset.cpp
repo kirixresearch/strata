@@ -111,7 +111,7 @@ xd::IRowInserterPtr BaseSet::getRowInserter()
 
 // calculated Field routines
 
-bool BaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
+bool BaseSet::createCalcField(const xd::ColumnInfo& colinfo)
 {
     KL_AUTO_LOCK(m_structure_mutex);
 
@@ -124,7 +124,7 @@ bool BaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
     if (!folder_node)
         return false;
 
-    std::wstring name = colinfo->getName();
+    std::wstring name = colinfo.name;
     kl::makeUpper(name);
 
     if (folder_node->getChildExist(name))
@@ -135,31 +135,27 @@ bool BaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
     INodeValuePtr item_node = folder_node->createChild(name);
 
     INodeValuePtr name_node = item_node->createChild(L"name");
-    name_node->setString(colinfo->getName());
+    name_node->setString(colinfo.name);
 
     INodeValuePtr type_node = item_node->createChild(L"type");
-    type_node->setInteger(colinfo->getType());
+    type_node->setInteger(colinfo.type);
 
     INodeValuePtr width_node = item_node->createChild(L"width");
-    width_node->setInteger(colinfo->getWidth());
+    width_node->setInteger(colinfo.width);
 
     INodeValuePtr scale_node = item_node->createChild(L"scale");
-    scale_node->setInteger(colinfo->getScale());
+    scale_node->setInteger(colinfo.scale);
 
     INodeValuePtr expr_node = item_node->createChild(L"expression");
-    expr_node->setString(colinfo->getExpression());
+    expr_node->setString(colinfo.expression);
 
-    xd::IColumnInfoPtr newcol = colinfo->clone();
-    newcol->setCalculated(true);
-
-    m_calc_fields.push_back(newcol);
+    m_calc_fields.push_back(colinfo);
 
     return true;
 }
 
 
-bool BaseSet::modifyCalcField(const std::wstring& _name,
-                              xd::IColumnInfoPtr colinfo)
+bool BaseSet::modifyCalcField(const std::wstring& _name, const xd::ColumnInfo& colinfo)
 {
     KL_AUTO_LOCK(m_structure_mutex);
 
@@ -181,15 +177,15 @@ bool BaseSet::modifyCalcField(const std::wstring& _name,
         return false;
     }
     
-    if (!colinfo->getCalculated())
+    if (!colinfo.calculated)
     {
         // this is a make permanent operation
         return false;
     }
 
-    if (colinfo->getName().length() > 0)
+    if (colinfo.name.length() > 0)
     {
-        std::wstring new_name = colinfo->getName();
+        std::wstring new_name = colinfo.name;
         kl::makeUpper(new_name);
 
         if (!folder_node->renameChild(name, new_name))
@@ -198,31 +194,31 @@ bool BaseSet::modifyCalcField(const std::wstring& _name,
         }
 
         INodeValuePtr name_node = item_node->getChild(L"name", true);
-        name_node->setString(colinfo->getName());
+        name_node->setString(colinfo.name);
     }
 
-    if (colinfo->getType() != -1)
+    if (colinfo.type != -1)
     {
         INodeValuePtr type_node = item_node->getChild(L"type", true);
-        type_node->setInteger(colinfo->getType());
+        type_node->setInteger(colinfo.type);
     }
 
-    if (colinfo->getWidth() != -1)
+    if (colinfo.width != -1)
     {
         INodeValuePtr width_node = item_node->getChild(L"width", true);
-        width_node->setInteger(colinfo->getWidth());
+        width_node->setInteger(colinfo.width);
     }
 
-    if (colinfo->getScale() != -1)
+    if (colinfo.scale != -1)
     {
         INodeValuePtr scale_node = item_node->getChild(L"scale", true);
-        scale_node->setInteger(colinfo->getScale());
+        scale_node->setInteger(colinfo.scale);
     }
 
-    if (colinfo->getExpression().length() > 0)
+    if (colinfo.expression.length() > 0)
     {
         INodeValuePtr expr_node = item_node->getChild(L"expression", true);
-        expr_node->setString(colinfo->getExpression());
+        expr_node->setString(colinfo.expression);
     }
 
     m_calcrefresh_time = 0;
@@ -265,7 +261,8 @@ void BaseSet::appendCalcFields(xd::IStructure* structure)
     // do this before the m_structure_mutex of BaseSet is locked;
     // this will avoid interlocking the mutexes of NativeTable
     // and BaseSet.  This problem won't exist anymore once we
-    // make getStructureModifyTime in NativeTable take no mutex.
+    // make getStructureModifyTime in NativeTable take no mutex
+
     unsigned long long t = getStructureModifyTime();
     
     KL_AUTO_LOCK(m_structure_mutex);
@@ -284,7 +281,6 @@ void BaseSet::appendCalcFields(xd::IStructure* structure)
             return;
 
         INodeValuePtr item_node, node;
-        ColumnInfo* colinfo;
 
         int child_count = folder_node->getChildCount();
         m_calc_fields.clear();
@@ -292,54 +288,51 @@ void BaseSet::appendCalcFields(xd::IStructure* structure)
         for (int i = 0; i < child_count; i++)
         {
             item_node = folder_node->getChildByIdx(i);
-            colinfo = new ColumnInfo;
+            xd::ColumnInfo colinfo;
 
             node = item_node->getChild(L"name", false);
             if (node.isOk())
             {
-                colinfo->setName(node->getString());
+                colinfo.name = node->getString();
             }
              else
             {
-                colinfo->setName(item_node->getName());
+                colinfo.name = item_node->getName();
             }
 
             node = item_node->getChild(L"type", false);
             if (!node)
                 continue;
-            colinfo->setType(node->getInteger());
+            colinfo.type = node->getInteger();
 
             node = item_node->getChild(L"width", false);
             if (!node)
                 continue;
-            colinfo->setWidth(node->getInteger());
+            colinfo.width = node->getInteger();
 
             node = item_node->getChild(L"scale", false);
             if (!node)
                 continue;
-            colinfo->setScale(node->getInteger());
+            colinfo.scale = node->getInteger();
 
             node = item_node->getChild(L"expression", false);
             if (!node)
                 continue;
-            colinfo->setExpression(node->getString());
+            colinfo.expression = node->getString();
 
-            colinfo->setCalculated(true);
+            colinfo.calculated = true;
 
-            m_calc_fields.push_back(static_cast<xd::IColumnInfo*>(colinfo));
+            m_calc_fields.push_back(colinfo);
         }
     }
 
     IStructureInternalPtr intstruct = structure;
 
-    std::vector<xd::IColumnInfoPtr>::iterator it;
-    for (it = m_calc_fields.begin();
-         it != m_calc_fields.end();
-         ++it)
+    std::vector<xd::ColumnInfo>::iterator it;
+    for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
     {
-        intstruct->addColumn((*it)->clone());
+        intstruct->addColumn(*it);
     }
-
 }
 
 
@@ -394,7 +387,7 @@ bool BaseSet::baseSetModifyStructure(xd::IStructurePtr struct_config,
         if (it->m_action != StructureAction::actionCreate)
             continue;
 
-        if (it->m_params->getExpression().length() > 0)
+        if (it->m_params.expression.length() > 0)
         {
             if (createCalcField(it->m_params))
                 processed_action_count++;
@@ -407,7 +400,7 @@ bool BaseSet::baseSetModifyStructure(xd::IStructurePtr struct_config,
         if (it->m_action != StructureAction::actionInsert)
             continue;
 
-        if (it->m_params->getExpression().length() > 0)
+        if (it->m_params.expression.length() > 0)
         {
             if (createCalcField(it->m_params))
                 processed_action_count++;

@@ -343,12 +343,12 @@ void ViewPanel::insertViewColumn(int row,
         row = m_visible_fields->getRowCount()-1;
     
     // determine if this field is a calculated field
-    bool dynamic = false;
-    xd::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(col_name));
+    bool calculated = false;
+    const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(col_name));
     if (colinfo.isOk())
-        dynamic = colinfo->getCalculated();
+        calculated = colinfo.calculated;
     
-    // -- set the cell text and bitmap information --
+    // set the cell text and bitmap information
     
     if (col_name.CmpNoCase(label_separator) == 0 || col_name.IsEmpty())
     {
@@ -359,12 +359,12 @@ void ViewPanel::insertViewColumn(int row,
      else
     {
         m_visible_fields->setCellString(row, 0, col_name);
-        m_visible_fields->setCellBitmap(row, 0, dynamic ? GETBMP(gf_lightning_16) :
-                                                          GETBMP(gf_field_16),
-                                                          kcl::Grid::alignLeft);
+        m_visible_fields->setCellBitmap(row, 0, calculated ? GETBMP(gf_lightning_16) :
+                                                             GETBMP(gf_field_16),
+                                                             kcl::Grid::alignLeft);
     }
     
-    // -- set the row data for the output view --
+    // set the row data for the output view
     
     if (col_info != NULL)
     {

@@ -733,13 +733,13 @@ void QueryDoc::getColumnListItems(std::vector<ColumnListItem>& items)
         int i, col_count = structure->getColumnCount();
         for (i = 0; i < col_count; i++)
         {
-            xd::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
          
             ColumnListItem item;
             item.text = it->alias;
-            item.text += wxT(".");
-            item.text += makeProperIfNecessary(colinfo->getName());
-            if (colinfo->getCalculated())
+            item.text += ".";
+            item.text += makeProperIfNecessary(colinfo.name);
+            if (colinfo.calculated)
             {
                 item.bitmap = GETBMP(gf_lightning_16);
             }

@@ -121,7 +121,6 @@ int SummarizeJob::runJob()
     std::wstring column_param;
     int output_max_scale = 0;   // used to format the numeric summary output
 
-    xd::IColumnInfoPtr input_colinfo;
     for (it = summary_columns.begin(); it != it_end; ++it)
     {
         // see if we're already gathering information about the column
@@ -130,15 +129,15 @@ int SummarizeJob::runJob()
             continue;
 
         summary_columns_unique_list.insert(*it);
-        input_colinfo = input_structure->getColumnInfo(*it);
+        const xd::ColumnInfo& input_colinfo = input_structure->getColumnInfo(*it);
 
         if (input_colinfo.isNull())
             continue;
 
         wchar_t outcol[256];
 
-        if (input_colinfo->getType() == xd::typeCharacter ||
-            input_colinfo->getType() == xd::typeWideCharacter)
+        if (input_colinfo.type == xd::typeCharacter ||
+            input_colinfo.type == xd::typeWideCharacter)
         {
             swprintf(outcol, 256, L"%s_0result0_minlength=min(length([%s])),", it->c_str(), it->c_str());
             column_param += outcol;
@@ -147,11 +146,11 @@ int SummarizeJob::runJob()
             column_param += outcol;        
         }
 
-        if (input_colinfo->getType() == xd::typeInteger ||
-            input_colinfo->getType() == xd::typeDouble ||
-            input_colinfo->getType() == xd::typeNumeric)
+        if (input_colinfo.type == xd::typeInteger ||
+            input_colinfo.type == xd::typeDouble ||
+            input_colinfo.type == xd::typeNumeric)
         {
-            int scale = input_colinfo->getScale();
+            int scale = input_colinfo.scale;
             if (scale > output_max_scale)
                 output_max_scale = scale;
             
@@ -318,9 +317,9 @@ int SummarizeJob::runJob()
     int result_field_count = group_result_structure->getColumnCount();
     for (i = 0; i < result_field_count; ++i)
     {
-        xd::IColumnInfoPtr output_colinfo = group_result_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& output_colinfo = group_result_structure->getColumnInfoByIdx(i);
 
-        col_name = output_colinfo->getName();
+        col_name = output_colinfo.name;
         kl::makeUpper(col_name);
 
         size_t idx = col_name.find(L"_0RESULT0_");
@@ -372,7 +371,7 @@ int SummarizeJob::runJob()
 
 
         xd::objhandle_t result_col_handle = group_result_iter->getHandle(col_name);
-        xd::IColumnInfoPtr result_col_info = group_result_iter->getInfo(result_col_handle);
+        xd::ColumnInfo result_col_info = group_result_iter->getInfo(result_col_handle);
     
         // empty count
         if (h == field_handles[7])
@@ -381,7 +380,7 @@ int SummarizeJob::runJob()
             continue;
         }
 
-        switch (result_col_info->getType())
+        switch (result_col_info.type)
         {
             case xd::typeWideCharacter:
             case xd::typeCharacter:
@@ -436,7 +435,7 @@ int SummarizeJob::runJob()
                  else
                 {
                     wchar_t buf[255];
-                    swprintf(buf, 255, L"%.*f", result_col_info->getScale(), group_result_iter->getDouble(result_col_handle));
+                    swprintf(buf, 255, L"%.*f", result_col_info.scale, group_result_iter->getDouble(result_col_handle));
                     output_inserter->putWideString(h, buf);
                 }
             }
@@ -454,7 +453,6 @@ int SummarizeJob::runJob()
         output_inserter->insertRow();
 
     output_inserter->finishInsert();
-
 
     return 0;
 }

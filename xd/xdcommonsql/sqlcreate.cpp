@@ -25,7 +25,7 @@
 #include <map>
 
 
-xd::IColumnInfoPtr parseColumnDescription(const std::wstring& _col_desc, ThreadErrorInfo& error)
+xd::ColumnInfo parseColumnDescription(const std::wstring& _col_desc, ThreadErrorInfo& error)
 {
     std::wstring col_desc = _col_desc;
     
@@ -36,7 +36,7 @@ xd::IColumnInfoPtr parseColumnDescription(const std::wstring& _col_desc, ThreadE
     {
         // empty field name (probably a trailing comma);
         error.setError(xd::errorSyntax, L"Invalid syntax; empty field name in the column parameters");
-        return xcm::null;
+        return xd::ColumnInfo();
     }
     
     // if the field name is quoted with brackets,
@@ -82,53 +82,53 @@ xd::IColumnInfoPtr parseColumnDescription(const std::wstring& _col_desc, ThreadE
     
 
 
-    // -- make column info --
-    ColumnInfo* colinfo = new ColumnInfo;
+    // make column info
+    xd::ColumnInfo colinfo;
 
-    colinfo->setName(field);
+    colinfo.name = field;
 
     if (type == L"VARCHAR" ||
         type == L"CHAR" ||
         type == L"CHARACTER")
     {
-        colinfo->setType(xd::typeCharacter);
+        colinfo.type = xd::typeCharacter;
         if (width <= 0)
         {
             error.setError(xd::errorSyntax, L"Invalid syntax; character field has a width <= 0 in the column parameters");
-            return xcm::null;
+            return xd::ColumnInfo();
         }
         
         if (scale != 0)
         {
             error.setError(xd::errorSyntax, L"Invalid syntax; character field has a scale != 0 in the column parameters");        
-            return xcm::null;
+            return xd::ColumnInfo();
         }
     }
      else if (type == L"NVARCHAR" ||
               type == L"NCHAR")
     {
-        colinfo->setType(xd::typeWideCharacter);
+        colinfo.type = xd::typeWideCharacter;
         if (width <= 0)
         {
             error.setError(xd::errorSyntax, L"Invalid syntax; character field has a width <= 0 in the column parameters");
-            return xcm::null;
+            return xd::ColumnInfo();
         }
         
         if (scale != 0)
         {
             error.setError(xd::errorSyntax, L"Invalid syntax; character field has a scale != 0 in the column parameters");        
-            return xcm::null;
+            return xd::ColumnInfo();
         }
     }
      else if (type == L"INTEGER" ||
               type == L"INT" ||
               type == L"SMALLINT")
     {
-        colinfo->setType(xd::typeInteger);
+        colinfo.type = xd::typeInteger;
         if (scale != 0)
         {
             error.setError(xd::errorSyntax, L"Invalid syntax; integer field has a scale != 0 in the column parameters");        
-            return xcm::null;
+            return xd::ColumnInfo();
         }
     }
      else if (type == L"DEC" ||
@@ -136,37 +136,37 @@ xd::IColumnInfoPtr parseColumnDescription(const std::wstring& _col_desc, ThreadE
               type == L"NUMERIC" ||
               type == L"NUMBER")
     {
-        colinfo->setType(xd::typeNumeric);
+        colinfo.type = xd::typeNumeric;
     }
      else if (type == L"DOUBLE" ||
               type == L"FLOAT" ||
               type == L"REAL")
     {  
-        colinfo->setType(xd::typeDouble);
+        colinfo.type = xd::typeDouble;
     }
      else if (type == L"DATE")
     {
-        colinfo->setType(xd::typeDate);
+        colinfo.type = xd::typeDate;
     }
      else if (type == L"DATETIME")
     {
-        colinfo->setType(xd::typeDateTime);
+        colinfo.type = xd::typeDateTime;
     }
      else if (type == L"BOOLEAN")
     {
-        colinfo->setType(xd::typeBoolean);
+        colinfo.type = xd::typeBoolean;
     }
      else
     {
-        // -- bad type --
+        // bad type
         wchar_t buf[1024]; // some paths might be long
         swprintf(buf, 1024, L"Invalid syntax; invalid column type [%ls] in the column parameters", type.c_str()); 
         error.setError(xd::errorSyntax, buf);        
-        return xcm::null;
+        return xd::ColumnInfo();
     }
 
-    colinfo->setWidth(width);
-    colinfo->setScale(scale);
+    colinfo.width = width;
+    colinfo.scale = scale;
     
     
     if (!expr.empty())
@@ -176,7 +176,7 @@ xd::IColumnInfoPtr parseColumnDescription(const std::wstring& _col_desc, ThreadE
         {
             // missing AS
             error.setError(xd::errorSyntax, L"Invalid syntax; missing AS in the column parameters");
-            return xcm::null;
+            return xd::ColumnInfo();
         }
         
         kl::trim(expr);
@@ -185,14 +185,14 @@ xd::IColumnInfoPtr parseColumnDescription(const std::wstring& _col_desc, ThreadE
         {
             // empty expression
             error.setError(xd::errorSyntax, L"Invalid syntax; empty expression in the column parameters");            
-            return xcm::null;
+            return xd::ColumnInfo();
         }
         
-        colinfo->setExpression(expr);
-        colinfo->setCalculated(true);
+        colinfo.expression = expr;
+        colinfo.calculated = true;
     }
     
-    return static_cast<xd::IColumnInfo*>(colinfo);
+    return colinfo;
 }
 
 
@@ -349,7 +349,7 @@ bool sqlCreate(xd::IDatabasePtr db,
              it != colvec.end();
              ++it)
         {
-            xd::IColumnInfoPtr col = parseColumnDescription(*it, error);
+            xd::ColumnInfo col = parseColumnDescription(*it, error);
             if (col.isNull())
                 return false;
                 

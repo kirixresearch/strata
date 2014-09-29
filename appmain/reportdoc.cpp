@@ -2214,18 +2214,14 @@ void ReportDoc::getColumnListItems(std::vector<ColumnListItem>& list)
         
         for (i = 0; i < col_count; i++)
         {
-            xd::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
 
             ColumnListItem item;
-            item.text = makeProperIfNecessary(colinfo->getName());
-            if (colinfo->getCalculated())
-            {
+            item.text = makeProperIfNecessary(colinfo.name);
+            if (colinfo.calculated)
                 item.bitmap = GETBMP(gf_lightning_16);
-            }
-             else
-            {
+                 else
                 item.bitmap = GETBMP(gf_field_16);
-            }
 
             item.active = true;
             list.push_back(item);

@@ -278,15 +278,13 @@ bool StructureValidator::findDuplicateObjectNames(std::vector<RowErrorChecker>& 
     return found;
 }
 
-bool StructureValidator::findInvalidFieldNames(xd::IStructurePtr structure,
-                                               xd::IDatabasePtr db)
+bool StructureValidator::findInvalidFieldNames(xd::IStructurePtr structure, xd::IDatabasePtr db)
 {
     bool found = false;
     size_t i, count = structure->getColumnCount();
     for (i = 0; i < count; ++i)
     {
-        xd::IColumnInfoPtr col = structure->getColumnInfoByIdx(i);
-        if (!isValidFieldName(col->getName(), db))
+        if (!isValidFieldName(structure->getColumnName(i), db))
         {
             found = true;
             break;
@@ -296,8 +294,7 @@ bool StructureValidator::findInvalidFieldNames(xd::IStructurePtr structure,
     return found;
 }
 
-bool StructureValidator::findInvalidFieldNames(std::vector<RowErrorChecker>& vec,
-                                               xd::IDatabasePtr db)
+bool StructureValidator::findInvalidFieldNames(std::vector<RowErrorChecker>& vec, xd::IDatabasePtr db)
 {
     bool found = false;
     std::vector<RowErrorChecker>::iterator it;
@@ -313,8 +310,7 @@ bool StructureValidator::findInvalidFieldNames(std::vector<RowErrorChecker>& vec
     return found;
 }
 
-bool StructureValidator::findInvalidObjectNames(std::vector<RowErrorChecker>& vec,
-                                                xd::IDatabasePtr db)
+bool StructureValidator::findInvalidObjectNames(std::vector<RowErrorChecker>& vec, xd::IDatabasePtr db)
 {
     bool found = false;
     std::vector<RowErrorChecker>::iterator it;

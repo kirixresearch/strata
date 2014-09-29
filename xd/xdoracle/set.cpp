@@ -241,13 +241,12 @@ xd::IStructurePtr OracleSet::getStructure()
         std::wstring wcol_name = kl::towstring((char*)col_name);
 
         // create the column in the xd::IStructure
-        xd::IColumnInfoPtr col;
-        col = createColInfo(wcol_name,
-                            col_type,
-                            col_charset,
-                            col_width,
-                            col_precision,
-                            col_scale);
+        xd::ColumnInfo col = createColInfo(wcol_name,
+                                           col_type,
+                                           col_charset,
+                                           col_width,
+                                           col_precision,
+                                           col_scale);
         s->addColumn(col);
 
         counter++;
@@ -457,6 +456,7 @@ xd::objhandle_t OracleRowInserter::getHandle(const std::wstring& column_name)
     return (xd::objhandle_t)0;
 }
 
+/*
 xd::IColumnInfoPtr OracleRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     OracleInsertData* f = (OracleInsertData*)column_handle;
@@ -465,6 +465,7 @@ xd::IColumnInfoPtr OracleRowInserter::getInfo(xd::objhandle_t column_handle)
     xd::IColumnInfoPtr col = structure->getColumnInfo(f->m_name);
     return col;
 }
+*/
 
 bool OracleRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                   const unsigned char* value,
@@ -653,8 +654,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
 
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr col_info = s->getColumnInfoByIdx(i);
-        insert_fields.push_back(col_info->getName());
+        insert_fields.push_back(s->getColumnName(i));
     }
 
     std::wstring field_str;
@@ -668,12 +668,12 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
     std::vector<std::wstring>::iterator it;
     for (it = insert_fields.begin(); it != insert_fields.end(); ++it)
     {
-        xd::IColumnInfoPtr col_info = s->getColumnInfo(*it);
+        const xd::ColumnInfo& col_info = s->getColumnInfo(*it);
         if (col_info.isNull())
             return false;
 
         OracleInsertData* field = new OracleInsertData;
-        field->m_name = col_info->getName();
+        field->m_name = col_info.name;
 
         // oracle buffer offsets must be two-byte aligned
         if (buf_offset % 2 != 0)
@@ -684,9 +684,9 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
         
         field->m_buf_offset = buf_offset;
 
-        field->m_xd_type = col_info->getType();
-        field->m_xd_width = col_info->getWidth();
-        field->m_xd_scale = col_info->getScale();
+        field->m_xd_type = col_info.type;
+        field->m_xd_width = col_info.width;
+        field->m_xd_scale = col_info.scale;
 
         switch (field->m_xd_type)
         {

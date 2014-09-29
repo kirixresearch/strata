@@ -231,16 +231,15 @@ bool PgsqlRowInserter::startInsert(const std::wstring& col_list)
 
     for (it = columns.begin(); it != columns.end(); ++it)
     {
-        xd::IColumnInfoPtr col_info = s->getColumnInfo(*it);
-
+        const xd::ColumnInfo& col_info = s->getColumnInfo(*it);
         if (col_info.isNull())
             return false;
 
         PgsqlInsertFieldData d;
-        d.m_name = col_info->getName();
-        d.m_xd_type = col_info->getType();
-        d.m_width = col_info->getWidth();
-        d.m_scale = col_info->getScale();
+        d.m_name = col_info.name;
+        d.m_xd_type = col_info.type;
+        d.m_width = col_info.width;
+        d.m_scale = col_info.scale;
         d.m_value = L"";
 
         m_fields.push_back(d);

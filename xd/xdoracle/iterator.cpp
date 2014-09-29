@@ -750,16 +750,15 @@ xd::IStructurePtr OracleIterator::getStructure()
     std::vector<OracleDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        xd::IColumnInfoPtr col;
+        xd::ColumnInfo col = createColInfo((*it)->name,
+                                           (*it)->oracle_type,
+                                           (*it)->oracle_charset,
+                                           (*it)->width,
+                                           (*it)->precision,
+                                           (*it)->scale,
+                                           (*it)->expr_text);
 
-        col = createColInfo((*it)->name,
-                            (*it)->oracle_type,
-                            (*it)->oracle_charset,
-                            (*it)->width,
-                            (*it)->precision,
-                            (*it)->scale,
-                            (*it)->expr_text);
-        col->setColumnOrdinal((*it)->ordinal);
+        col.column_ordinal = (*it)->ordinal;
 
         //printf("getStructure() - name %ls type %d in-precision %d in-width %d width %d scale %d\n", col->getName().c_str(), col->getType(), (*it)->m_precision, (*it)->m_width, col->getWidth(), col->getScale());
 
@@ -788,7 +787,7 @@ bool OracleIterator::refreshStructure()
         delete m_fields[i]->expr;
         m_fields[i]->expr = NULL;
                    
-        xd::IColumnInfoPtr col = set_structure->getColumnInfo(m_fields[i]->name);
+        const xd::ColumnInfo& col = set_structure->getColumnInfo(m_fields[i]->name);
         if (col.isNull())
         {
             m_fields.erase(m_fields.begin() + i);
@@ -796,11 +795,11 @@ bool OracleIterator::refreshStructure()
             continue;
         }
   
-        m_fields[i]->xd_type = col->getType();
+        m_fields[i]->xd_type = col.type;
         m_fields[i]->oracle_type = xd2oracleType(m_fields[i]->xd_type);
-        m_fields[i]->width = col->getWidth();
-        m_fields[i]->scale = col->getScale();
-        m_fields[i]->expr_text = col->getExpression();
+        m_fields[i]->width = col.width;
+        m_fields[i]->scale = col.scale;
+        m_fields[i]->expr_text = col.expression;
     }
     
     // find new calc fields
@@ -810,10 +809,8 @@ bool OracleIterator::refreshStructure()
     
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr col;
-        
-        col = set_structure->getColumnInfoByIdx(i);
-        if (!col->getCalculated())
+        const xd::ColumnInfo& col = set_structure->getColumnInfoByIdx(i);
+        if (!col.calculated)
             continue;
             
         bool found = false;
@@ -823,7 +820,7 @@ bool OracleIterator::refreshStructure()
             if (!(*it)->isCalculated())
                 continue;
 
-            if (0 == wcscasecmp((*it)->name.c_str(), col->getName().c_str()))
+            if (0 == wcscasecmp((*it)->name.c_str(), col.name.c_str()))
             {
                 found = true;
                 break;
@@ -834,13 +831,13 @@ bool OracleIterator::refreshStructure()
         {
             // add new calc field
             OracleDataAccessInfo* dai = new OracleDataAccessInfo;
-            dai->name = col->getName();
-            dai->xd_type = col->getType();
+            dai->name = col.name;
+            dai->xd_type = col.type;
             dai->oracle_type = xd2oracleType(dai->xd_type);
-            dai->width = col->getWidth();
-            dai->scale = col->getScale();
+            dai->width = col.width;
+            dai->scale = col.scale;
             dai->ordinal = m_fields.size();
-            dai->expr_text = col->getExpression();
+            dai->expr_text = col.expression;
             dai->expr = NULL;
                 
             m_fields.push_back(dai);
@@ -895,37 +892,37 @@ bool OracleIterator::modifyStructure(xd::IStructure* struct_config,
              it2 != m_fields.end();
              ++it2)
         {
-            if (0 == wcscasecmp(it->m_colname.c_str(), (*it2)->name.c_str()))
+            if (kl::iequals(it->m_colname, (*it2)->name))
             {
-                if (it->m_params->getName().length() > 0)
+                if (it->m_params.name.length() > 0)
                 {
-                    std::wstring new_name = it->m_params->getName();
+                    std::wstring new_name = it->m_params.name;
                     kl::makeUpper(new_name);
                     (*it2)->name = new_name;
                 }
 
-                if (it->m_params->getType() != -1)
+                if (it->m_params.type != -1)
                 {
-                    (*it2)->xd_type = it->m_params->getType();
+                    (*it2)->xd_type = it->m_params.type;
                     (*it2)->oracle_type = xd2oracleType((*it2)->xd_type);
                 }
 
-                if (it->m_params->getWidth() != -1)
+                if (it->m_params.width != -1)
                 {
-                    (*it2)->width = it->m_params->getWidth();
+                    (*it2)->width = it->m_params.width;;
                 }
 
-                if (it->m_params->getScale() != -1)
+                if (it->m_params.scale != -1)
                 {
-                    (*it2)->scale = it->m_params->getScale();
+                    (*it2)->scale = it->m_params.scale;
                 }
 
-                if (it->m_params->getExpression().length() > 0)
+                if (it->m_params.expression.length() > 0)
                 {
                     if ((*it2)->expr)
                         delete (*it2)->expr;
-                    (*it2)->expr_text = it->m_params->getExpression();
-                    (*it2)->expr = parse(it->m_params->getExpression());
+                    (*it2)->expr_text = it->m_params.expression;
+                    (*it2)->expr = parse(it->m_params.expression);
                 }
             }
         }
@@ -937,17 +934,17 @@ bool OracleIterator::modifyStructure(xd::IStructure* struct_config,
         if (it->m_action != StructureAction::actionCreate)
             continue;
 
-        if (it->m_params->getExpression().length() > 0)
+        if (it->m_params.expression.length() > 0)
         {
             OracleDataAccessInfo* dai = new OracleDataAccessInfo;
-            dai->name = it->m_params->getName();
-            dai->xd_type = it->m_params->getType();
+            dai->name = it->m_params.name;
+            dai->xd_type = it->m_params.type;
             dai->oracle_type = xd2oracleType(dai->xd_type);
-            dai->width = it->m_params->getWidth();
-            dai->scale = it->m_params->getScale();
+            dai->width = it->m_params.width;
+            dai->scale = it->m_params.scale;
             dai->ordinal = m_fields.size();
-            dai->expr_text = it->m_params->getExpression();
-            dai->expr = parse(it->m_params->getExpression());
+            dai->expr_text = it->m_params.expression;
+            dai->expr = parse(it->m_params.expression);
             m_fields.push_back(dai);
         }
     }
@@ -963,17 +960,17 @@ bool OracleIterator::modifyStructure(xd::IStructure* struct_config,
         if (insert_idx < 0 || insert_idx >= (int)m_fields.size())
             continue;
         
-        if (it->m_params->getExpression().length() > 0)
+        if (it->m_params.expression.length() > 0)
         {
             OracleDataAccessInfo* dai = new OracleDataAccessInfo;
-            dai->name = it->m_params->getName();
-            dai->xd_type = it->m_params->getType();
+            dai->name = it->m_params.name;
+            dai->xd_type = it->m_params.type;
             dai->oracle_type = xd2oracleType(dai->xd_type);
-            dai->width = it->m_params->getWidth();
-            dai->scale = it->m_params->getScale();
+            dai->width = it->m_params.width;
+            dai->scale = it->m_params.scale;
             dai->ordinal = m_fields.size();
-            dai->expr_text = it->m_params->getExpression();
-            dai->expr = parse(it->m_params->getExpression());
+            dai->expr_text = it->m_params.expression;
+            dai->expr = parse(it->m_params.expression);
             m_fields.insert(m_fields.begin()+insert_idx, dai);
         }
     }
@@ -1056,24 +1053,19 @@ bool OracleIterator::releaseHandle(xd::objhandle_t data_handle)
     return false;
 }
 
-xd::IColumnInfoPtr OracleIterator::getInfo(xd::objhandle_t data_handle)
+xd::ColumnInfo OracleIterator::getInfo(xd::objhandle_t data_handle)
 {
     OracleDataAccessInfo* dai = (OracleDataAccessInfo*)data_handle;
     if (dai == NULL)
-    {
-        return xcm::null;
-    }
+        return xd::ColumnInfo();
 
-    xd::IColumnInfoPtr col;
-    col = createColInfo(dai->name,
-                        dai->oracle_type,
-                        dai->oracle_charset,
-                        dai->width,
-                        dai->precision,
-                        dai->scale,
-                        dai->expr_text);
-                        
-    return col;
+    return createColInfo(dai->name,
+                         dai->oracle_type,
+                         dai->oracle_charset,
+                         dai->width,
+                         dai->precision,
+                         dai->scale,
+                         dai->expr_text);
 }
 
 int OracleIterator::getType(xd::objhandle_t data_handle)

@@ -79,8 +79,7 @@ static std::vector<RowErrorChecker> getRowErrorCheckerVector(
     return vec;
 }
 
-void StructureDoc::createModifyJobInstructions(kl::JsonNode& params,
-                                               size_t* _action_count)
+void StructureDoc::createModifyJobInstructions(kl::JsonNode& params, size_t* _action_count)
 {
     // basic alter table job params
     params["input"] = m_path;
@@ -88,7 +87,6 @@ void StructureDoc::createModifyJobInstructions(kl::JsonNode& params,
 
     *_action_count = 0;
 
-    xd::IColumnInfoPtr col;
     
     int row_count = m_grid->getRowCount();
     size_t action_count = 0;
@@ -97,9 +95,9 @@ void StructureDoc::createModifyJobInstructions(kl::JsonNode& params,
     // structure that aren't found in the grid)
     for (int i = 0; i < m_structure->getColumnCount(); ++i)
     {
-        col = m_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col = m_structure->getColumnInfoByIdx(i);
 
-        wxString old_name = col->getName();
+        wxString old_name = col.name;
         bool found = false;
         
         // try to find the old field name in the grid's row data
@@ -744,18 +742,15 @@ void StructureDoc::getColumnListItems(std::vector<ColumnListItem>& items)
 
     for (i = 0; i < col_count; i++)
     {
-        xd::IColumnInfoPtr colinfo = m_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = m_structure->getColumnInfoByIdx(i);
      
         ColumnListItem item;
-        item.text = makeProperIfNecessary(colinfo->getName());
-        if (colinfo->getCalculated())
-        {
+        item.text = makeProperIfNecessary(colinfo.name);
+        if (colinfo.calculated)
             item.bitmap = GETBMP(gf_lightning_16);
-        }
-         else
-        {
+             else
             item.bitmap = GETBMP(gf_field_16);
-        }
+
         item.active = true;
         items.push_back(item);
     }
@@ -780,16 +775,16 @@ void StructureDoc::onColumnListDblClicked(const std::vector<wxString>& items)
     for (it = items.begin(); it != items.end(); ++it)
     {
         // get the column info from the column name we dragged in
-        xd::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(*it));
+        const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(*it));
         if (colinfo.isNull())
             continue;
         
-        insertRow(row, colinfo->getCalculated());
-        m_grid->setCellString(row, colFieldName, colinfo->getName());
-        m_grid->setCellComboSel(row, colFieldType, xd2choice(colinfo->getType()));
-        m_grid->setCellInteger(row, colFieldWidth, colinfo->getWidth());
-        m_grid->setCellInteger(row, colFieldScale, colinfo->getScale());
-        m_grid->setCellString(row, colFieldFormula, colinfo->getExpression());
+        insertRow(row, colinfo.calculated);
+        m_grid->setCellString(row, colFieldName, colinfo.name);
+        m_grid->setCellComboSel(row, colFieldType, xd2choice(colinfo.type));
+        m_grid->setCellInteger(row, colFieldWidth, colinfo.width);
+        m_grid->setCellInteger(row, colFieldScale, colinfo.scale);
+        m_grid->setCellString(row, colFieldFormula, colinfo.expression);
         updateRowCellProps(row);
         row++;
     }
@@ -1467,28 +1462,27 @@ void StructureDoc::populateGridFromStructure()
     int i, col_count = m_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr col;
-        col = m_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col = m_structure->getColumnInfoByIdx(i);
 
         StructureField* f = new StructureField;
-        f->name = col->getName();
-        f->type = col->getType();
-        f->width = col->getWidth();
-        f->scale = col->getScale();
-        f->dynamic = col->getCalculated() ? true : false;
-        f->expr = col->getExpression();
-        f->original_dynamic = col->getCalculated() ? true : false;
+        f->name = col.name;
+        f->type = col.type;
+        f->width = col.width;
+        f->scale = col.scale;
+        f->dynamic = col.calculated;
+        f->expr = col.expression;
+        f->original_dynamic = col.calculated;
         f->original = true;
         f->pos = i;
 
         m_grid->insertRow(i);
         m_grid->setRowData(i, (long)f);
-        m_grid->setCellBitmap(i,   colRowNumber,    col->getCalculated() ? GETBMP(gf_lightning_16) : GETBMP(xpm_blank_16));
-        m_grid->setCellString(i,   colFieldName,    col->getName());
-        m_grid->setCellComboSel(i, colFieldType,    xd2choice(col->getType()));
-        m_grid->setCellInteger(i,  colFieldWidth,   col->getWidth());
-        m_grid->setCellInteger(i,  colFieldScale,   col->getScale());
-        m_grid->setCellString(i,   colFieldFormula, col->getExpression());
+        m_grid->setCellBitmap(i,   colRowNumber,    col.calculated ? GETBMP(gf_lightning_16) : GETBMP(xpm_blank_16));
+        m_grid->setCellString(i,   colFieldName,    col.name);
+        m_grid->setCellComboSel(i, colFieldType,    xd2choice(col.type));
+        m_grid->setCellInteger(i,  colFieldWidth,   col.width);
+        m_grid->setCellInteger(i,  colFieldScale,   col.scale);
+        m_grid->setCellString(i,   colFieldFormula, col.expression);
         m_grid->setCellBitmap(i,   colFieldFormula, GETBMP(xpm_blank_16));
 
         updateRowCellProps(i);
@@ -2236,9 +2230,7 @@ void StructureDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
             // if we're modifying an existing table
             if (m_path.length() == 0)
                 return;
-
-            xd::IColumnInfoPtr colinfo;
-                        
+      
             int drop_row = drop_target->getDropRow();
 
             // dragging fields in from the field panel
@@ -2251,16 +2243,16 @@ void StructureDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
                     continue;
                 
                 // get the column info from the column name we dragged in
-                colinfo = m_structure->getColumnInfo(towstr((*it)->m_strvalue));
+                const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr((*it)->m_strvalue));
                 if (colinfo.isNull())
                     continue;
                 
-                insertRow(drop_row, colinfo->getCalculated());
-                m_grid->setCellString(drop_row, colFieldName, colinfo->getName());
-                m_grid->setCellComboSel(drop_row, colFieldType, xd2choice(colinfo->getType()));
-                m_grid->setCellInteger(drop_row, colFieldWidth, colinfo->getWidth());
-                m_grid->setCellInteger(drop_row, colFieldScale, colinfo->getScale());
-                m_grid->setCellString(drop_row, colFieldFormula, colinfo->getExpression());
+                insertRow(drop_row, colinfo.calculated);
+                m_grid->setCellString(drop_row, colFieldName, colinfo.name);
+                m_grid->setCellComboSel(drop_row, colFieldType, xd2choice(colinfo.type));
+                m_grid->setCellInteger(drop_row, colFieldWidth, colinfo.width);
+                m_grid->setCellInteger(drop_row, colFieldScale, colinfo.scale);
+                m_grid->setCellString(drop_row, colFieldFormula, colinfo.expression);
                 updateRowCellProps(drop_row);
                 drop_row++;
             }

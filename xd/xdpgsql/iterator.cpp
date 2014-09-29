@@ -435,44 +435,33 @@ xd::IStructurePtr PgsqlIterator::getStructure()
     std::vector<PgsqlDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        xd::IColumnInfoPtr col;
-     
-        if (col.isOk())
+        if ((*it)->isCalculated())
         {
-            col->setColumnOrdinal((*it)->ordinal - 1);
+            xd::ColumnInfo col;
+
+            col.name = (*it)->name;
+            col.type = (*it)->type;
+            col.width = (*it)->width;
+            col.scale = (*it)->scale;
+            col.expression = (*it)->expr_text;
+            col.calculated = true;
+            col.column_ordinal = (*it)->ordinal - 1;
+
             s->addColumn(col);
         }
          else
         {
-            if ((*it)->isCalculated())
-            {
-                xd::IColumnInfoPtr col;
-                col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-                col->setName((*it)->name);
-                col->setType((*it)->type);
-                col->setWidth((*it)->width);
-                col->setScale((*it)->scale);
-                col->setExpression((*it)->expr_text);
-                col->setCalculated(true);
-                col->setColumnOrdinal((*it)->ordinal - 1);
-                s->addColumn(col);
-            }
-             else
-            {
-                // generate column info from the
-                // field info from the query result
-                xd::IColumnInfoPtr col;
+            // generate column info from the
+            // field info from the query result
+            xd::ColumnInfo col = pgsqlCreateColInfo((*it)->name,
+                                                    (*it)->pg_type,
+                                                    (*it)->width,
+                                                    (*it)->scale,
+                                                    (*it)->expr_text,
+                                                    -1);
 
-                col = pgsqlCreateColInfo((*it)->name,
-                                         (*it)->pg_type,
-                                         (*it)->width,
-                                         (*it)->scale,
-                                         (*it)->expr_text,
-                                         -1);
-
-                col->setColumnOrdinal((*it)->ordinal - 1);
-                s->addColumn(col);
-            }
+            col.column_ordinal = (*it)->ordinal - 1;
+            s->addColumn(col);
         }
     }
     
@@ -497,7 +486,7 @@ bool PgsqlIterator::refreshStructure()
         delete m_fields[i]->expr;
         m_fields[i]->expr = NULL;
 
-        xd::IColumnInfoPtr col = set_structure->getColumnInfo(m_fields[i]->name);
+        const xd::ColumnInfo& col = set_structure->getColumnInfo(m_fields[i]->name);
         if (col.isNull())
         {
             m_fields.erase(m_fields.begin() + i);
@@ -505,10 +494,10 @@ bool PgsqlIterator::refreshStructure()
             continue;
         }
   
-        m_fields[i]->type = col->getType();
-        m_fields[i]->width = col->getWidth();
-        m_fields[i]->scale = col->getScale();
-        m_fields[i]->expr_text = col->getExpression();
+        m_fields[i]->type = col.type;
+        m_fields[i]->width = col.width;
+        m_fields[i]->scale = col.scale;
+        m_fields[i]->expr_text = col.expression;
     }
     
     // find new calc fields
@@ -518,10 +507,8 @@ bool PgsqlIterator::refreshStructure()
     std::vector<PgsqlDataAccessInfo*>::iterator it;
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr col;
-        
-        col = set_structure->getColumnInfoByIdx(i);
-        if (!col->getCalculated())
+        const xd::ColumnInfo& col = set_structure->getColumnInfoByIdx(i);
+        if (!col.calculated)
             continue;
             
         bool found = false;
@@ -531,7 +518,7 @@ bool PgsqlIterator::refreshStructure()
             if (!(*it)->isCalculated())
                 continue;
 
-            if (kl::iequals((*it)->name, col->getName()))
+            if (kl::iequals((*it)->name, col.name))
             {
                 found = true;
                 break;
@@ -542,12 +529,12 @@ bool PgsqlIterator::refreshStructure()
         {
             // add new calc field
             PgsqlDataAccessInfo* dai = new PgsqlDataAccessInfo;
-            dai->name = col->getName();
-            dai->type = col->getType();
-            dai->width = col->getWidth();
-            dai->scale = col->getScale();
+            dai->name = col.name;
+            dai->type = col.type;
+            dai->width = col.width;
+            dai->scale = col.scale;
             dai->ordinal = m_fields.size();
-            dai->expr_text = col->getExpression();
+            dai->expr_text = col.expression;
             dai->expr = NULL;
             
             m_fields.push_back(dai);
@@ -567,8 +554,7 @@ bool PgsqlIterator::refreshStructure()
     return true;
 }
 
-bool PgsqlIterator::modifyStructure(xd::IStructure* struct_config,
-                                   xd::IJob* job)
+bool PgsqlIterator::modifyStructure(xd::IStructure* struct_config, xd::IJob* job)
 {
     IStructureInternalPtr struct_int = struct_config;
 
@@ -606,34 +592,34 @@ bool PgsqlIterator::modifyStructure(xd::IStructure* struct_config,
         {
             if (kl::iequals(it->m_colname, (*it2)->name))
             {
-                if (it->m_params->getName().length() > 0)
+                if (it->m_params.name.length() > 0)
                 {
-                    std::wstring new_name = it->m_params->getName();
+                    std::wstring new_name = it->m_params.name;
                     kl::makeUpper(new_name);
                     (*it2)->name = new_name;
                 }
 
-                if (it->m_params->getType() != -1)
+                if (it->m_params.type != -1)
                 {
-                    (*it2)->type = it->m_params->getType();
+                    (*it2)->type = it->m_params.type;
                 }
 
-                if (it->m_params->getWidth() != -1)
+                if (it->m_params.width != -1)
                 {
-                    (*it2)->width = it->m_params->getWidth();
+                    (*it2)->width = it->m_params.width;
                 }
 
-                if (it->m_params->getScale() != -1)
+                if (it->m_params.scale != -1)
                 {
-                    (*it2)->scale = it->m_params->getScale();
+                    (*it2)->scale = it->m_params.scale;
                 }
 
-                if (it->m_params->getExpression().length() > 0)
+                if (it->m_params.expression.length() > 0)
                 {
                     if ((*it2)->expr)
                         delete (*it2)->expr;
-                    (*it2)->expr_text = it->m_params->getExpression();
-                    (*it2)->expr = parse(it->m_params->getExpression());
+                    (*it2)->expr_text = it->m_params.expression;
+                    (*it2)->expr = parse(it->m_params.expression);
                 }
             }
         }
@@ -645,16 +631,16 @@ bool PgsqlIterator::modifyStructure(xd::IStructure* struct_config,
         if (it->m_action != StructureAction::actionCreate)
             continue;
 
-        if (it->m_params->getExpression().length() > 0)
+        if (it->m_params.expression.length() > 0)
         {
             PgsqlDataAccessInfo* dai = new PgsqlDataAccessInfo;
-            dai->name = it->m_params->getName();
-            dai->type = it->m_params->getType();
-            dai->width = it->m_params->getWidth();
-            dai->scale = it->m_params->getScale();
+            dai->name = it->m_params.name;
+            dai->type = it->m_params.type;
+            dai->width = it->m_params.width;
+            dai->scale = it->m_params.scale;
             dai->ordinal = m_fields.size();
-            dai->expr_text = it->m_params->getExpression();
-            dai->expr = parse(it->m_params->getExpression());
+            dai->expr_text = it->m_params.expression;
+            dai->expr = parse(it->m_params.expression);
                 
             m_fields.push_back(dai);
         }
@@ -738,12 +724,12 @@ bool PgsqlIterator::releaseHandle(xd::objhandle_t data_handle)
     return false;
 }
 
-xd::IColumnInfoPtr PgsqlIterator::getInfo(xd::objhandle_t data_handle)
+xd::ColumnInfo PgsqlIterator::getInfo(xd::objhandle_t data_handle)
 {
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
-        return xcm::null;
+        return xd::ColumnInfo();
     }
 
     // try to get the column information from the set structure
@@ -755,12 +741,9 @@ xd::IColumnInfoPtr PgsqlIterator::getInfo(xd::objhandle_t data_handle)
 
     if (m_structure.isOk())
     {
-        xd::IColumnInfoPtr colinfo;
-        colinfo = m_structure->getColumnInfo(dai->name);
+        const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(dai->name);
         if (colinfo.isOk())
-        {
-            return colinfo->clone();
-        }
+            return colinfo;
     }
 
 

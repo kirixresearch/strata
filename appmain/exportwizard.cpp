@@ -1117,8 +1117,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     std::vector<wxString> invalid_fieldnames;
 
     row = 0;
-    for (it = m_template.m_ei.tables.begin();
-         it != m_template.m_ei.tables.end(); ++it)
+    for (it = m_template.m_ei.tables.begin(); it != m_template.m_ei.tables.end(); ++it)
     {
         xd::IStructurePtr s = db->describeTable(it->input_tablename);
         if (s.isNull())
@@ -1127,8 +1126,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         int i, col_count = s->getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
-            wxString colname = colinfo->getName();
+            wxString colname = s->getColumnName(i);
 
             if (!isValidFieldName(colname, db_ptr))
             {

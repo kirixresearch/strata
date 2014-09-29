@@ -63,10 +63,9 @@ protected:
     IIndex* lookupIndexForOrder(const std::wstring& order);
 
     // calculated field routines
-    bool createCalcField(xd::IColumnInfoPtr colinfo);
+    bool createCalcField(const xd::ColumnInfo& colinfo);
     bool deleteCalcField(const std::wstring& _name);
-    bool modifyCalcField(const std::wstring& name,
-                         xd::IColumnInfoPtr colinfo);
+    bool modifyCalcField(const std::wstring& name, const xd::ColumnInfo& colinfo);
     void appendCalcFields(xd::IStructure* structure);
 
 protected:
@@ -80,7 +79,7 @@ protected:
 private:
 
     kl::mutex m_object_mutex;
-    std::vector<xd::IColumnInfoPtr> m_calc_fields;
+    std::vector<xd::ColumnInfo> m_calc_fields;
     std::wstring m_object_path;
     std::wstring m_object_id;
     std::wstring m_config_file_path;

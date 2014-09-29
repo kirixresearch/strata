@@ -222,27 +222,26 @@ int pgsqlToXdType(int pg_type)
     return xd::typeInvalid;
 }
 
-xd::IColumnInfoPtr pgsqlCreateColInfo(const std::wstring& col_name,
-                                         int col_pg_type,
-                                         int col_width,
-                                         int col_scale,
-                                         const std::wstring& col_expr,
-                                         int datetime_sub)
+xd::ColumnInfo pgsqlCreateColInfo(const std::wstring& col_name,
+                                  int col_pg_type,
+                                  int col_width,
+                                  int col_scale,
+                                  const std::wstring& col_expr,
+                                  int datetime_sub)
 {
     int col_xd_type = pgsqlToXdType(col_pg_type);
 
-    xd::IColumnInfoPtr col;
-    col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
+    xd::ColumnInfo col;
 
-    col->setName(col_name);
-    col->setType(col_xd_type);
-    col->setWidth(col_width);
-    col->setScale(col_scale);
-    col->setExpression(col_expr);
-    col->setColumnOrdinal(0);
+    col.name = col_name;
+    col.type = col_xd_type;
+    col.width = col_width;
+    col.scale = col_scale;
+    col.expression = col_expr;
+    col.column_ordinal = 0;
 
     if (col_expr.length() > 0)
-        col->setCalculated(true);
+        col.expression = true;
         
     return col;
 }
@@ -1344,15 +1343,14 @@ bool PgsqlDatabase::createTable(const std::wstring& path,
     int i, col_count = struct_config->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr col_info;
-        col_info = struct_config->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = struct_config->getColumnInfoByIdx(i);
 
         // quote the fieldname
-        name = pgsqlQuoteIdentifierIfNecessary(col_info->getName());
+        name = pgsqlQuoteIdentifierIfNecessary(colinfo.name);
 
-        type = col_info->getType();
-        width = col_info->getWidth();
-        scale = col_info->getScale();
+        type = colinfo.type;
+        width = colinfo.width;
+        scale = colinfo.scale;
 
         field = pgsqlCreateFieldString(name,
                                   type,
@@ -1718,12 +1716,12 @@ xd::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
             col_scale = 0;
         }
 
-        xd::IColumnInfoPtr colinfo = pgsqlCreateColInfo(colname,
-                                                           pg_type, 
-                                                           col_width,
-                                                           col_scale,
-                                                           L"",
-                                                           0);
+        xd::ColumnInfo colinfo = pgsqlCreateColInfo(colname,
+                                                    pg_type, 
+                                                    col_width,
+                                                    col_scale,
+                                                    L"",
+                                                    0);
         s->addColumn(colinfo);
     }
     

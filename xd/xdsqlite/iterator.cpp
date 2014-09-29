@@ -146,12 +146,12 @@ bool SlIterator::init(const std::wstring& _query)
         xd::IColumnInfoPtr colinfo;
         if (m_table_structure.isOk())
         {
-            xd::IColumnInfoPtr colinfo = m_table_structure->getColumnInfo(dai.name);
+            const xd::ColumnInfo& colinfo = m_table_structure->getColumnInfo(dai.name);
             if (colinfo.isOk())
             {
-                dai.xd_type = colinfo->getType();
-                dai.width = colinfo->getWidth();
-                dai.scale = colinfo->getScale();
+                dai.xd_type = colinfo.type;
+                dai.width = colinfo.width;
+                dai.scale = colinfo.scale;
             }
         }
         
@@ -293,13 +293,13 @@ xd::IStructurePtr SlIterator::getStructure()
     std::vector<SlDataAccessInfo>::iterator it;
     for (it = m_columns.begin(); it != m_columns.end(); ++it)
     {
-        ColumnInfo* col = new ColumnInfo;
-        col->setName(it->name);
-        col->setType(it->xd_type);
-        col->setWidth(it->width);
-        col->setScale(it->scale);
-        col->setColumnOrdinal(it->col_ordinal);
-        s->addColumn(static_cast<xd::IColumnInfo*>(col));
+        xd::ColumnInfo col;
+        col.name = it->name;
+        col.type = it->xd_type;
+        col.width = it->width;
+        col.scale = it->scale;
+        col.column_ordinal = it->col_ordinal;
+        s->addColumn(col);
     }
     
     m_structure = static_cast<xd::IStructure*>(s);
@@ -345,18 +345,18 @@ bool SlIterator::releaseHandle(xd::objhandle_t data_handle)
     return true;
 }
 
-xd::IColumnInfoPtr SlIterator::getInfo(xd::objhandle_t data_handle)
+xd::ColumnInfo SlIterator::getInfo(xd::objhandle_t data_handle)
 {
     SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
 
-    ColumnInfo* col = new ColumnInfo;
-    col->setName(dai->name);
-    col->setType(dai->xd_type);
-    col->setWidth(dai->width);
-    col->setScale(dai->scale);
-    col->setColumnOrdinal(dai->col_ordinal);
+    xd::ColumnInfo colinfo;
+    colinfo.name = dai->name;
+    colinfo.type = dai->xd_type;
+    colinfo.width = dai->width;
+    colinfo.scale = dai->scale;
+    colinfo.column_ordinal = dai->col_ordinal;
     
-    return static_cast<xd::IColumnInfo*>(col);
+    return colinfo;
 }
 
 int SlIterator::getType(xd::objhandle_t data_handle)

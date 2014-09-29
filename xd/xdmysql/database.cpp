@@ -822,20 +822,20 @@ bool MysqlDatabase::createTable(const std::wstring& path,
     int width;
     int scale;
 
-    int col_count = struct_config->getColumnCount();
-    int i;
+    int i, col_count = struct_config->getColumnCount();
+    
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr col_info = struct_config->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col_info = struct_config->getColumnInfoByIdx(i);
 
         name = L"";
         name += m_attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
-        name += col_info->getName();
+        name += col_info.name;
         name += m_attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 
-        type = col_info->getType();
-        width = col_info->getWidth();
-        scale = col_info->getScale();
+        type = col_info.type;
+        width = col_info.width;
+        scale = col_info.scale;
 
         field = createMySqlFieldString(name, type, width, scale, true);
         command += field;
@@ -978,20 +978,19 @@ xd::IStructurePtr MysqlDatabase::describeTable(const std::wstring& path)
 
             std::wstring wcol_name = kl::towstring(colinfo->name);
 
-            xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-            col->setName(wcol_name);
-            col->setType(type);
-            col->setWidth(colinfo->length);
-            col->setScale(type == xd::typeDouble ? 4 : colinfo->decimals);
-            col->setColumnOrdinal(i);
+            xd::ColumnInfo col;
+            col.name = wcol_name;
+            col.type = type;
+            col.width = colinfo->length;
+            col.scale = type == xd::typeDouble ? 4 : colinfo->decimals;
+            col.column_ordinal = i;
             
-            // limit blob/text fields to 4096 characters (for now) --
+            // limit blob/text fields to 4096 characters (for now);
             // this seems to be sensible behavior because copies of
             // the table will not clog of the database space-wise
             if (colinfo->type == FIELD_TYPE_BLOB && colinfo->length > 4096)
-                col->setWidth(4096);
+                col.width = 4096;
   
-            
             s->addColumn(col);
             
             i++;

@@ -23,10 +23,12 @@
 #include <kl/portable.h>
 
 
+static xd::ColumnInfo g_invalid_colinfo;
+
 
 // -- modify structure helper functions --
 
-static void modColumn(xd::IColumnInfoPtr target_col,
+static void modColumn(xd::ColumnInfo& target_col,
                       const std::wstring& name,
                       int type,
                       int width,
@@ -38,70 +40,70 @@ static void modColumn(xd::IColumnInfoPtr target_col,
 {
     if (name.length() > 0)
     {
-        target_col->setName(name);
+        target_col.name = name;
     }
 
     if (type != -1)
     {
-        target_col->setType(type);
+        target_col.type = type;
     }
     
     if (width != -1)
     {
-        target_col->setWidth(width);
+        target_col.width = width;
     }
 
     if (scale != -1)
     {
-        target_col->setScale(scale);
+        target_col.scale = scale;
     }
 
     if (expr.length() > 0)
     {
-        target_col->setExpression(expr);
-        target_col->setCalculated(true);
+        target_col.expression = expr;
+        target_col.calculated = true;
     }
 
     if (offset != -1)
     {
-        target_col->setOffset(offset);
+        target_col.source_offset = offset;
     }
     
     if (encoding != -1)
     {
-        target_col->setEncoding(encoding);
+        target_col.source_encoding = encoding;
     }
      
     if (ordinal != -1)
     {
         // new column position
-        target_col->setColumnOrdinal(ordinal);
+        target_col.column_ordinal = ordinal;
     }
 
 
-    // -- if type changed, make sure width and scale conform --
+    // if type changed, make sure width and scale conform
     if (type != -1)
     {
         switch (type)
         {
             case xd::typeDate:
-                target_col->setWidth(4);
-                target_col->setScale(0);
+                target_col.width = 4;
+                target_col.scale = 0;
                 break;
             case xd::typeInteger:
-                target_col->setWidth(4);
-                target_col->setScale(0);
+                target_col.width = 4;
+                target_col.scale = 0;
                 break;
             case xd::typeDouble:
-                target_col->setWidth(8);
+                target_col.width = 8;
                 break;
             case xd::typeBoolean:
-                target_col->setWidth(1);
-                target_col->setScale(0);
+                target_col.width = 1;
+                target_col.scale = 0;
                 break;
             case xd::typeDateTime:
-                target_col->setWidth(8);
-                target_col->setScale(0);
+                target_col.width = 8;
+                target_col.scale = 0;
                 break;
         }
     }
@@ -111,7 +113,7 @@ static void modColumn(xd::IColumnInfoPtr target_col,
 
 bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
                                xd::IStructurePtr _mod_struct,
-                               std::vector<xd::IColumnInfoPtr>* calc_fields,
+                               std::vector<xd::ColumnInfo>* calc_fields,
                                bool* done_flag)
 {
     IStructureInternalPtr mod_struct = _mod_struct;
@@ -121,7 +123,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
     unsigned int processed_action_count = 0;
 
     std::vector<StructureAction>::iterator it;
-    std::vector<xd::IColumnInfoPtr>::iterator cit;
+    std::vector<xd::ColumnInfo>::iterator cit;
 
     // -- handle delete --
     for (it = actions.begin(); it != actions.end(); ++it)
@@ -136,8 +138,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
                      cit != calc_fields->end();
                      ++cit)
                 {
-                    if (!wcscasecmp((*cit)->getName().c_str(),
-                                    it->m_colname.c_str()))
+                    if (kl::iequals(cit->name, it->m_colname))
                     {
                         calc_fields->erase(cit);
                         processed_action_count++;
@@ -157,6 +158,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
         }
     }
 
+
     // -- handle modify --
     for (it = actions.begin(); it != actions.end(); ++it)
     {
@@ -166,13 +168,11 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
 
             if (calc_fields)
             {
-                for (cit = calc_fields->begin();
-                     cit != calc_fields->end();
-                     ++cit)
+                for (cit = calc_fields->begin(); cit != calc_fields->end(); ++cit)
                 {
-                    if (!wcscasecmp((*cit)->getName().c_str(), it->m_colname.c_str()))
+                    if (kl::iequals(cit->name, it->m_colname))
                     {
-                        if (!it->m_params->getCalculated())
+                        if (!it->m_params.calculated)
                         {
                             // caller wants this field to be permanent,
                             // so we won't do anything here
@@ -181,13 +181,13 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
                         }
 
                         modColumn(*cit,
-                                  it->m_params->getName(),
-                                  it->m_params->getType(),
-                                  it->m_params->getWidth(),
-                                  it->m_params->getScale(),
-                                  it->m_params->getExpression(),
-                                  it->m_params->getOffset(),
-                                  it->m_params->getEncoding(),
+                                  it->m_params.name,
+                                  it->m_params.type,
+                                  it->m_params.width,
+                                  it->m_params.scale,
+                                  it->m_params.expression,
+                                  it->m_params.source_offset,
+                                  it->m_params.source_encoding,
                                   -1 /* don't allow calc fields to be moved */);
 
                         processed_action_count++;
@@ -200,14 +200,14 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
             if (mod_struct.isOk() && !processed)
             {
                 if (mod_struct->modifyColumn(it->m_colname,
-                                             it->m_params->getName(),
-                                             it->m_params->getType(),
-                                             it->m_params->getWidth(),
-                                             it->m_params->getScale(),
-                                             it->m_params->getExpression(),
-                                             it->m_params->getOffset(),
-                                             it->m_params->getEncoding(),
-                                             it->m_params->getColumnOrdinal()))
+                                             it->m_params.name,
+                                             it->m_params.type,
+                                             it->m_params.width,
+                                             it->m_params.scale,
+                                             it->m_params.expression,
+                                             it->m_params.source_offset,
+                                             it->m_params.source_encoding,
+                                             it->m_params.column_ordinal))
                 {
                     processed_action_count++;
                 }
@@ -220,17 +220,17 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
     {
         if (it->m_action == StructureAction::actionCreate)
         {
-            if (it->m_params->getExpression().length() > 0)
+            if (it->m_params.expression.length() > 0)
             {
                 if (calc_fields)
                 {
-                    xd::IColumnInfoPtr col = it->m_params->clone();
-                    col->setCalculated(true);
-                    calc_fields->push_back(col);
+                    xd::ColumnInfo colinfo = it->m_params;
+                    colinfo.calculated = true;
+                    calc_fields->push_back(colinfo);
                 }
                  else
                 {
-                    mod_struct->addColumn(it->m_params->clone());
+                    mod_struct->addColumn(it->m_params);
                 }
 
                 processed_action_count++;
@@ -243,19 +243,18 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
     {
         if (it->m_action == StructureAction::actionInsert)
         {
-            if (it->m_params->getExpression().length() > 0)
+            if (it->m_params.expression.length() > 0)
             {
                 if (calc_fields)
                 {
-                    xd::IColumnInfoPtr col = it->m_params->clone();
-                    col->setCalculated(true);
-                    calc_fields->push_back(col);
+                    xd::ColumnInfo colinfo = it->m_params;
+                    colinfo.calculated = true;
+                    calc_fields->push_back(colinfo);
                 }
                  else
                 {
                     int insert_idx = it->m_pos;
-                    mod_struct->internalInsertColumn(it->m_params->clone(),
-                                                     insert_idx);
+                    mod_struct->internalInsertColumn(it->m_params, insert_idx);
                 }
 
                 processed_action_count++;
@@ -265,7 +264,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
 
     if (processed_action_count == actions.size())
     {
-        // -- we have handled all actions, so we're done --
+        // we have handled all actions, so we're done
         *done_flag = true;
     }
 
@@ -290,7 +289,8 @@ std::vector<StructureAction>& Structure::getStructureActions()
     return m_actions;
 }
 
-void Structure::addColumn(xd::IColumnInfoPtr col)
+
+void Structure::addColumn(const xd::ColumnInfo& col)
 {
     m_cols.push_back(col);
 
@@ -300,7 +300,8 @@ void Structure::addColumn(xd::IColumnInfoPtr col)
     }
 }
 
-bool Structure::internalInsertColumn(xd::IColumnInfoPtr col, int insert_idx)
+
+bool Structure::internalInsertColumn(const xd::ColumnInfo& col, int insert_idx)
 {
     // we're just adding a column to the end of the structure
     if (insert_idx == -1)
@@ -325,17 +326,17 @@ bool Structure::internalInsertColumn(xd::IColumnInfoPtr col, int insert_idx)
 
 bool Structure::internalMoveColumn(const std::wstring& column_name, int new_idx)
 {
-    std::vector<xd::IColumnInfoPtr>::iterator it;
+    std::vector<xd::ColumnInfo>::iterator it;
 
     for (it = m_cols.begin(); it != m_cols.end(); ++it)
     {
-        if (!wcscasecmp((*it)->getName().c_str(), column_name.c_str()))
+        if (kl::iequals(it->name, column_name))
         {
-            // -- save the element so we can reinsert it into our vector --
-            xd::IColumnInfoPtr insert_col = *it;
+            // save the element so we can reinsert it into our vector
+            xd::ColumnInfo insert_col = *it;
             
-            // -- remove the element from our vector and clear the map
-            //    to force it to renumber the elements --
+            // remove the element from our vector and clear the map
+            // to force it to renumber the elements
             m_cols.erase(it);
             m_cols.insert(m_cols.begin()+new_idx, insert_col);
             m_map.clear();
@@ -356,10 +357,10 @@ bool Structure::modifyColumn(const std::wstring& column_name,
                              int encoding,
                              int ordinal)
 {
-    std::vector<xd::IColumnInfoPtr>::iterator it;
+    std::vector<xd::ColumnInfo>::iterator it;
     for (it = m_cols.begin(); it != m_cols.end(); ++it)
     {
-        if (!wcscasecmp((*it)->getName().c_str(), column_name.c_str()))
+        if (kl::iequals(it->name, column_name))
         {
             modColumn(*it, name, type, width, scale, expr, offset, encoding, ordinal);
             m_map.clear();
@@ -377,7 +378,7 @@ bool Structure::removeColumn(const std::wstring& column_name)
     int i = 0, col_count = m_cols.size();
     for (i = 0; i < col_count; ++i)
     {
-        if (!wcscasecmp(m_cols[i]->getName().c_str(), column_name.c_str()))
+        if (kl::iequals(m_cols[i].name, column_name))
         {
             m_cols.erase(m_cols.begin() + i);
             m_map.erase(column_name);
@@ -394,13 +395,13 @@ bool Structure::removeColumn(const std::wstring& column_name)
 Structure* Structure::internalClone()
 {
     Structure* s = new Structure;
-    std::vector<xd::IColumnInfoPtr>::iterator it, it_end;
+    std::vector<xd::ColumnInfo>::iterator it, it_end;
 
     s->m_cols.reserve(m_cols.size());
 
     it_end = m_cols.end();
     for (it = m_cols.begin(); it != it_end; ++it)
-        s->m_cols.push_back((*it)->clone());
+        s->m_cols.push_back(*it);
 
     s->m_actions = m_actions;
 
@@ -417,12 +418,12 @@ int Structure::getColumnIdx(const std::wstring& name)
 {
     if (m_map.empty())
     {
-        std::vector<xd::IColumnInfoPtr>::iterator it;
+        std::vector<xd::ColumnInfo>::iterator it;
         int i = 0;
 
         for (it = m_cols.begin(); it != m_cols.end(); ++it)
         {
-            m_map[(*it)->getName()] = i;
+            m_map[it->name] = i;
             i++;
         }
     }
@@ -441,22 +442,22 @@ int Structure::getColumnCount()
 
 std::wstring Structure::getColumnName(int idx)
 {
-    return m_cols[idx]->getName();
+    return m_cols[idx].name;
 }
 
-xd::IColumnInfoPtr Structure::getColumnInfoByIdx(int idx)
+const xd::ColumnInfo& Structure::getColumnInfoByIdx(int idx)
 {
     if (idx < 0 || (size_t)idx >= m_cols.size())
-        return xcm::null;
-        
+        return g_invalid_colinfo;
+    
     return m_cols[idx];
 }
 
-xd::IColumnInfoPtr Structure::getColumnInfo(const std::wstring& column_name)
+const xd::ColumnInfo& Structure::getColumnInfo(const std::wstring& column_name)
 {
     int idx = getColumnIdx(column_name);
     if (idx == -1)
-        return xcm::null;
+        return g_invalid_colinfo;
 
     return getColumnInfoByIdx(idx);
 }
@@ -471,7 +472,7 @@ bool Structure::deleteColumn(const std::wstring& column_name)
 {
     StructureAction action;
     action.m_action = StructureAction::actionDelete;
-    action.m_params = xcm::null;
+    action.m_params = xd::ColumnInfo();
     action.m_colname = column_name;
     action.m_pos = -1;
     m_actions.push_back(action);
@@ -482,7 +483,7 @@ bool Structure::moveColumn(const std::wstring& column_name, int new_idx)
 {
     StructureAction action;
     action.m_action = StructureAction::actionMove;
-    action.m_params = xcm::null;
+    action.m_params = xd::ColumnInfo();
     action.m_colname = column_name;
     action.m_pos = new_idx;
     m_actions.push_back(action);
@@ -495,16 +496,16 @@ xd::IColumnInfoPtr Structure::modifyColumn(const std::wstring& column_name)
     if (idx == -1)
         return xcm::null;
 
-    ColumnInfo* action_params = new ColumnInfo;
-    action_params->setName(L"");
-    action_params->setType(-1);
-    action_params->setWidth(-1);
-    action_params->setScale(-1);
-    action_params->setExpression(L"");
-    action_params->setOffset(-1);
-    action_params->setColumnOrdinal(-1);
-    action_params->setEncoding(-1);
-    action_params->setCalculated(m_cols[idx]->getCalculated());
+    xd::ColumnInfo action_params;
+    action_params.name = L"";
+    action_params.type = -1;
+    action_params.width = -1;
+    action_params.scale = -1;
+    action_params.expression = L"";
+    action_params.source_offset = -1;
+    action_params.column_ordinal = -1;
+    action_params.source_encoding = -1;
+    action_params.calculated = m_cols[idx].calculated;
 
     StructureAction action;
     action.m_action = StructureAction::actionModify;
@@ -513,22 +514,19 @@ xd::IColumnInfoPtr Structure::modifyColumn(const std::wstring& column_name)
     action.m_pos = -1;
     m_actions.push_back(action);
 
-    return action_params;
+    return xcm::null;
 }
 
 void Structure::createColumn(const xd::ColumnInfo& col)
 {
-    ColumnInfo* action_params = new ColumnInfo;
-    action_params->fromColumnInfo(col);
-
     StructureAction action;
     action.m_action = StructureAction::actionCreate;
-    action.m_params = action_params;
+    action.m_params = col;
     action.m_colname = L"";
     action.m_pos = -1;
     m_actions.push_back(action);
 
-    m_cols.push_back(action_params);
+    m_cols.push_back(col);
 }
 
 static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
@@ -571,14 +569,12 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
         }
 
 
-        xd::IColumnInfoPtr col = structure->getColumnInfo(hook_info.expr_text);
+        const xd::ColumnInfo& col = structure->getColumnInfo(hook_info.expr_text);
         if (col.isNull())
             return false;
         
         kscript::Value* v = new kscript::Value;
-        v->setGetVal(xd2kscriptType(col->getType()),
-                     NULL,
-                     NULL);
+        v->setGetVal(xd2kscriptType(col.type), NULL, NULL);
         hook_info.res_element = v;
         
         return true;
@@ -614,9 +610,7 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
             func_name == L"MIN" ||
             func_name == L"MAX")
         {
-            xd::IColumnInfoPtr colinfo;
-            
-            colinfo = structure->getColumnInfo(param);
+            xd::ColumnInfo colinfo = structure->getColumnInfo(param);
             if (colinfo.isNull())
             {
                 // try the parameter dequoted
@@ -642,7 +636,7 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
             kscript::Value* v = new kscript::Value;
             
-            switch (colinfo->getType())
+            switch (colinfo.type)
             {
                 case xd::typeCharacter:
                 case xd::typeWideCharacter:
@@ -678,9 +672,7 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
                   func_name == L"STDDEV" ||
                   func_name == L"VARIANCE")
         {
-            xd::IColumnInfoPtr colinfo;
-            
-            colinfo = structure->getColumnInfo(param);
+            xd::ColumnInfo colinfo = structure->getColumnInfo(param);
 
             if (colinfo.isNull())
             {
@@ -702,12 +694,10 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
                 
                 return true;
             }
-            
-            int type = colinfo->getType();
 
-            if (type != xd::typeNumeric &&
-                type != xd::typeInteger &&
-                type != xd::typeDouble)
+            if (colinfo.type != xd::typeNumeric &&
+                colinfo.type != xd::typeInteger &&
+                colinfo.type != xd::typeDouble)
             {
                 return true;
             }
@@ -726,9 +716,7 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
         }
          else if (func_name == L"MERGE")
         {
-            xd::IColumnInfoPtr colinfo;
-            
-            colinfo = structure->getColumnInfo(param);
+            xd::ColumnInfo colinfo  = structure->getColumnInfo(param);
 
             if (colinfo.isNull())
             {
@@ -751,10 +739,8 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
                 return true;
             }
             
-            int type = colinfo->getType();
-
-            if (type != xd::typeCharacter &&
-                type != xd::typeWideCharacter)
+            if (colinfo.type != xd::typeCharacter &&
+                colinfo.type != xd::typeWideCharacter)
             {
                 return true;
             }
@@ -774,7 +760,7 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
         }
     }
 
-    // -- not handled --
+    // not handled
     return false;
 }
 
@@ -786,9 +772,9 @@ int Structure::getExprType(const std::wstring& expression)
     // if the expression is a column name, simply look it up via getColumnInfo
     std::wstring dequoted_expression = expression;
     dequote(dequoted_expression, '[', ']');
-    xd::IColumnInfoPtr colinfo = getColumnInfo(dequoted_expression);
+    const xd::ColumnInfo& colinfo = getColumnInfo(dequoted_expression);
     if (colinfo.isOk())
-        return colinfo->getType();
+        return colinfo.type;
 
 
     kscript::ExprParser* parser = createExprParser();

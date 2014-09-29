@@ -140,7 +140,6 @@ TtbTable::~TtbTable()
 
 bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
 {
-    xd::IColumnInfoPtr colinfo;
     int column_count = structure->getColumnCount();
     int i;
     int col_type;
@@ -152,11 +151,11 @@ bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
     // check field widths and scales
     for (i = 0; i < column_count; ++i)
     {
-        colinfo = structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
 
-        col_type = colinfo->getType();
-        col_width = colinfo->getWidth();
-        col_scale = colinfo->getScale();
+        col_type = colinfo.type;
+        col_width = colinfo.width;
+        col_scale = colinfo.scale;
 
         if (col_type == xd::typeNumeric)
         {
@@ -216,17 +215,17 @@ bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
 
     for (i = 0; i < column_count; ++i)
     {
-        colinfo = structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
         
-        if (colinfo->getCalculated())
+        if (colinfo.calculated)
             continue;
 
         cols_written++;
 
-        col_type = colinfo->getType();
-        col_width = colinfo->getWidth();
-        col_scale = colinfo->getScale();
-        nulls_allowed = colinfo->getNullsAllowed();
+        col_type = colinfo.type;
+        col_width = colinfo.width;
+        col_scale = colinfo.scale;
+        nulls_allowed = colinfo.nulls_allowed;
 
         switch (col_type)
         {
@@ -264,7 +263,7 @@ bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
         int2buf(entry_ptr+13, col_flags);
 
         // field name (80 chars, 160 bytes)
-        kl::wstring2ucsle(entry_ptr+64, colinfo->getName(), 80);
+        kl::wstring2ucsle(entry_ptr+64, colinfo.name, 80);
 
         offset += col_width;
 
@@ -995,19 +994,19 @@ xd::IStructurePtr TtbTable::getStructure()
     int counter = 0;
     for (it = m_fields.begin(); it != it_end; ++it)
     {
-        ColumnInfo* col = new ColumnInfo;
+        xd::ColumnInfo col;
         
-        col->setName(it->name);
-        col->setType(convertType_ttb2xd(it->ttb_type));
-        col->setWidth(it->width);
-        col->setScale(it->scale);
-        col->setOffset(it->offset);
-        col->setCalculated(false);
-        col->setColumnOrdinal(counter++);
-        col->setTableOrdinal(0);
-        col->setNullsAllowed(it->nulls_allowed);
+        col.name = it->name;
+        col.type = convertType_ttb2xd(it->ttb_type);
+        col.width = it->width;
+        col.scale = it->scale;
+        col.source_offset = it->offset;
+        col.calculated = false;
+        col.column_ordinal = counter++;
+        col.table_ordinal = 0;
+        col.nulls_allowed = it->nulls_allowed;
 
-        structure->addColumn(static_cast<xd::IColumnInfo*>(col));
+        structure->addColumn(col);
     }
 
     return static_cast<xd::IStructure*>(structure);

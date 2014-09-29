@@ -57,13 +57,13 @@ std::wstring createOdbcFieldString(const std::wstring& name,
                                    bool allow_nulls,
                                    int db_type);
 
-xd::IColumnInfoPtr createColInfo(int db_type,
-                                    const std::wstring& col_name,
-                                    int col_odbc_type,
-                                    int col_width,
-                                    int col_scale,
-                                    const std::wstring& col_expr,
-                                    int datetime_sub);
+xd::ColumnInfo createColInfo(int db_type,
+                             const std::wstring& col_name,
+                             int col_odbc_type,
+                             int col_width,
+                             int col_scale,
+                             const std::wstring& col_expr,
+                             int datetime_sub);
 
 
 

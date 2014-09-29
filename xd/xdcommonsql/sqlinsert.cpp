@@ -181,7 +181,7 @@ bool sqlInsert(xd::IDatabasePtr db,
     {
         dequote(*it, '[', ']');
         
-        xd::IColumnInfoPtr colinfo = structure->getColumnInfo(*it);
+        const xd::ColumnInfo& colinfo = structure->getColumnInfo(*it);
         if (colinfo.isNull())
         {
             wchar_t buf[1024]; // some paths might be long
@@ -191,7 +191,7 @@ bool sqlInsert(xd::IDatabasePtr db,
         }
 
         InsertFieldInfo fi;
-        fi.type = colinfo->getType();
+        fi.type = colinfo.type;
         fi.handle = inserter->getHandle(*it);
 
         if (fi.handle == 0)

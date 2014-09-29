@@ -623,14 +623,14 @@ void TransformationDoc::setInputStructure(xd::IStructurePtr structure)
     int i, count = structure->getColumnCount();
     for (i = 0; i < count; ++i)
     {
-        xd::IColumnInfoPtr col = structure->getColumnInfoByIdx(i);
-        if (col)
+        const xd::ColumnInfo& col = structure->getColumnInfoByIdx(i);
+        if (col.isOk())
         {
-            field.input_name = col->getName();
-            field.input_type = col->getType();
-            field.input_width = col->getWidth();
-            field.input_scale = col->getScale();
-            field.input_offset = col->getOffset();
+            field.input_name = col.name;
+            field.input_type = col.type;
+            field.input_width = col.width;
+            field.input_scale = col.scale;
+            field.input_offset = col.source_offset;
             m_source_fields.push_back(field);
         }
     }
@@ -1685,15 +1685,15 @@ bool TransformationDoc::doSave()
             int i, col_count = s->getColumnCount();
             for (i = 0; i < col_count; ++i)
             {
-                xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
-                int viewidx = tabledocview->getColumnIdx(colinfo->getName());
+                const xd::ColumnInfo& colinfo = s->getColumnInfoByIdx(i);
+                int viewidx = tabledocview->getColumnIdx(colinfo.name);
                 
                 // only add the column to our view if it doesn't already exist
                 if (viewidx == -1)
                 {
                     // add the column to the TableDoc's view
                     ITableDocViewColPtr viewcol = tabledocview->createColumn(i);
-                    viewcol->setName(colinfo->getName());
+                    viewcol->setName(colinfo.name);
                     viewcol->setSize(80);
                 }
             }

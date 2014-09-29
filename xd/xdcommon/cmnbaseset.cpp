@@ -80,7 +80,7 @@ bool CommonBaseSet::modifyStructure(xd::IStructure* struct_config,
         if (it->m_action != StructureAction::actionCreate)
             continue;
 
-        if (it->m_params->getExpression().length() > 0)
+        if (it->m_params.expression.length() > 0)
         {
             if (createCalcField(it->m_params))
                 processed_action_count++;
@@ -99,14 +99,14 @@ bool CommonBaseSet::modifyStructure(xd::IStructure* struct_config,
 
 // Calculated Field routines
 
-bool CommonBaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
+bool CommonBaseSet::createCalcField(const xd::ColumnInfo& colinfo)
 {
     KL_AUTO_LOCK(m_object_mutex);
     
     if (m_config_file_path.empty())
     {
-        xd::IColumnInfoPtr c = colinfo->clone();
-        c->setCalculated(true);
+        xd::ColumnInfo c = colinfo;
+        c.calculated = true;
         m_calc_fields.push_back(c);
         return true;
     }
@@ -122,11 +122,11 @@ bool CommonBaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
 
         // save the calculated field info
         ExtFileEntry field = entry.addChild(L"field");
-        field.addChild(L"name", colinfo->getName());
-        field.addChild(L"type", colinfo->getType());
-        field.addChild(L"width", colinfo->getWidth());
-        field.addChild(L"scale", colinfo->getScale());
-        field.addChild(L"expression", colinfo->getExpression());
+        field.addChild(L"name", colinfo.name);
+        field.addChild(L"type", colinfo.type);
+        field.addChild(L"width", colinfo.width);
+        field.addChild(L"scale", colinfo.scale);
+        field.addChild(L"expression", colinfo.expression);
         
         return fileinfo.save(m_config_file_path);
     }
@@ -140,10 +140,10 @@ bool CommonBaseSet::deleteCalcField(const std::wstring& _name)
 
     if (m_config_file_path.empty())
     {
-        std::vector<xd::IColumnInfoPtr>::iterator it;
+        std::vector<xd::ColumnInfo>::iterator it;
         for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
         {
-            if (!wcscasecmp((*it)->getName().c_str(), _name.c_str()))
+            if (kl::iequals(it->name, _name))
             {
                 m_calc_fields.erase(it);
                 return true;
@@ -167,11 +167,12 @@ bool CommonBaseSet::deleteCalcField(const std::wstring& _name)
             ExtFileEntry field = entry.getChild(i);
             std::wstring store_name = field.getChildContents(L"name");
             
-            if (!wcscasecmp(store_name.c_str(), _name.c_str()))
+            if (kl::iequals(store_name, _name))
             {
                 // this is a kludge -- since all of the "calc_fields" childrens'
                 // tags are "field", we need to rename the one with a matching
                 // field name to something unique so that we can delete it
+
                 field.setTagName(store_name);
                 field_deleted = entry.deleteChild(store_name);
                 break;
@@ -188,12 +189,11 @@ bool CommonBaseSet::deleteCalcField(const std::wstring& _name)
     return false;
 }
 
-bool CommonBaseSet::modifyCalcField(const std::wstring& name,
-                                    xd::IColumnInfoPtr colinfo)
+bool CommonBaseSet::modifyCalcField(const std::wstring& name, const xd::ColumnInfo& colinfo)
 {
     KL_AUTO_LOCK(m_object_mutex);
     
-    if (!colinfo->getCalculated())
+    if (!colinfo.calculated)
     {
         // this is a make permanent operation
         return false;
@@ -206,31 +206,31 @@ bool CommonBaseSet::modifyCalcField(const std::wstring& name,
     if (m_config_file_path.empty())
     {
         // find the calculated field and modify it
-        std::vector<xd::IColumnInfoPtr>::iterator it;
+        std::vector<xd::ColumnInfo>::iterator it;
         for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
         {
-            if (!wcscasecmp((*it)->getName().c_str(), name.c_str()))
+            if (kl::iequals(it->name, name))
             {
-                new_name  = colinfo->getName();
-                new_type  = colinfo->getType();
-                new_width = colinfo->getWidth();
-                new_scale = colinfo->getScale();
-                new_expr  = colinfo->getExpression();
+                new_name  = colinfo.name;
+                new_type  = colinfo.type;
+                new_width = colinfo.width;
+                new_scale = colinfo.scale;
+                new_expr  = colinfo.expression;
 
                 if (new_name.length() > 0)
-                    (*it)->setName(new_name);
+                    it->name = new_name;
 
                 if (new_type != -1)
-                    (*it)->setType(new_type);
+                    it->type = new_type;
 
                 if (new_width != -1)
-                    (*it)->setWidth(new_width);
+                    it->width = new_width;
 
                 if (new_scale != -1)
-                    (*it)->setScale(new_scale);
+                    it->scale = new_scale;
 
                 if (new_expr.length() > 0)
-                    (*it)->setExpression(new_expr);
+                    it->expression = new_expr;
             }
         }
     }
@@ -250,13 +250,13 @@ bool CommonBaseSet::modifyCalcField(const std::wstring& name,
             ExtFileEntry field = entry.getChild(i);
             std::wstring store_name = field.getChildContents(L"name");
             
-            if (!wcscasecmp(store_name.c_str(), name.c_str()))
+            if (kl::iequals(store_name, name))
             {
-                new_name  = colinfo->getName();
-                new_type  = colinfo->getType();
-                new_width = colinfo->getWidth();
-                new_scale = colinfo->getScale();
-                new_expr  = colinfo->getExpression();
+                new_name  = colinfo.name;
+                new_type  = colinfo.type;
+                new_width = colinfo.width;
+                new_scale = colinfo.scale;
+                new_expr  = colinfo.expression;
                 
                 if (new_name.length() > 0)
                 {
@@ -295,10 +295,10 @@ void CommonBaseSet::appendCalcFields(xd::IStructure* structure)
     std::wstring set_id = getSetId();
     if (set_id.empty())
     {
-        std::vector<xd::IColumnInfoPtr>::iterator it;
+        std::vector<xd::ColumnInfo>::iterator it;
         for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
         {
-            intstruct->addColumn((*it)->clone());
+            intstruct->addColumn(*it);
         }
     }
      else
@@ -322,13 +322,15 @@ void CommonBaseSet::appendCalcFields(xd::IStructure* structure)
             scale = kl::wtoi(field.getChildContents(L"scale"));
             expression = field.getChildContents(L"expression");
 
-            xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-            col->setName(name);
-            col->setType(type);
-            col->setWidth(width);
-            col->setScale(scale);
-            col->setExpression(expression);
-            col->setCalculated(true);
+            xd::ColumnInfo col;
+
+            col.name = name;
+            col.type = type;
+            col.width = width;
+            col.scale = scale;
+            col.expression = expression;
+            col.calculated = true;
+
             intstruct->addColumn(col);
         }
     }

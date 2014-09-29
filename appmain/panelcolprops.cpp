@@ -318,33 +318,30 @@ wxString ColPropsPanel::getModifyField()
 
 void ColPropsPanel::populate()
 {
-    xd::IColumnInfoPtr colinfo;
-    colinfo = m_iter->getInfo(m_iter->getHandle(towstr(m_modify_field)));
+    xd::ColumnInfo colinfo = m_iter->getInfo(m_iter->getHandle(towstr(m_modify_field)));
 
-    if (!colinfo)
+    if (colinfo.isNull())
         return;
 
-    if (!colinfo->getCalculated())
+    if (!colinfo.calculated)
         return;
 
 
-    m_orig_name = colinfo->getName();
-    m_orig_type = colinfo->getType();
-    m_orig_width = colinfo->getWidth();
-    m_orig_scale = colinfo->getScale();
-    m_orig_expr = colinfo->getExpression();
+    m_orig_name = colinfo.name;
+    m_orig_type = colinfo.type;
+    m_orig_width = colinfo.width;
+    m_orig_scale = colinfo.scale;
+    m_orig_expr = colinfo.expression;
 
     xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
     m_orig_existed = structure->getColumnExist(towstr(m_orig_name));
 
 
-    if (m_orig_type == xd::typeCharacter ||
-        m_orig_type == xd::typeWideCharacter)
+    if (m_orig_type == xd::typeCharacter || m_orig_type == xd::typeWideCharacter)
     {
         m_saved_character_width = m_orig_width;
     }
-     else if (m_orig_type == xd::typeNumeric ||
-              m_orig_type == xd::typeDouble)
+     else if (m_orig_type == xd::typeNumeric || m_orig_type == xd::typeDouble)
     {
         m_saved_numeric_width = m_orig_width;
         m_saved_numeric_scale = m_orig_scale;
@@ -361,11 +358,11 @@ void ColPropsPanel::populate()
         setType(xd::typeUndefined); // auto type
     }
 
-    setWidth(colinfo->getWidth());
-    setScale(colinfo->getScale());
+    setWidth(colinfo.width);
+    setScale(colinfo.scale);
 
-    // a kludge to pacify Nate...he didn't like the ""
-    wxString expr = colinfo->getExpression();
+    // avoid "" as an empty expression
+    wxString expr = colinfo.expression;
 
     if (expr == "\"\"")
     {
@@ -374,7 +371,7 @@ void ColPropsPanel::populate()
     }
      else
     {
-        setExpression(colinfo->getExpression());
+        setExpression(colinfo.expression);
     }
 
     updateSpinBoxes();

@@ -1138,12 +1138,11 @@ void RelationBox::populate()
     i = 0;
     for (it = items.begin(); it != items.end(); ++it)
     {
-        xd::IColumnInfoPtr col_info;
-        col_info = m_structure->getColumnInfo(towstr(*it));
+        const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(*it));
 
         wxBitmap icon;
 
-        if (col_info->getCalculated())
+        if (colinfo.calculated)
         {
             icon = GETBMP(gf_lightning_16);
         }
@@ -1152,7 +1151,7 @@ void RelationBox::populate()
             icon = GETBMP(gf_field_16);
         }
         
-        wxString text = makeProper(col_info->getName());
+        wxString text = makeProperIfNecessary(colinfo.name);
 
 
         m_grid->insertRow(-1);
@@ -2404,8 +2403,7 @@ void RelationDiagram::onSetStructureChanged(const wxString& set_path)
     int i, count = structure->getColumnCount();
     for (i = 0; i < count; ++i)
     {
-        xd::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
-        fieldnames.push_back(colinfo->getName());
+        fieldnames.push_back(structure->getColumnName(i));
     }
     
     // check to see if we need to delete any relationship lines

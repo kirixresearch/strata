@@ -147,6 +147,10 @@ int AppendJob::runJob()
     }
      else
     {
+
+        // TODO: reimplement!
+
+/*
         // output target does not yet exist;  create an output table with a merged structure
         xd::IStructurePtr input_structure = xcm::null;
         xd::IStructurePtr output_structure = xcm::null;
@@ -201,7 +205,9 @@ int AppendJob::runJob()
             m_job_info->setError(jobserrWriteError, L"");
             return 0;
         }
+        */
     }
+
 
 
     for (it = tables.begin(); it != tables.end(); ++it)
@@ -230,7 +236,7 @@ int AppendJob::runJob()
             break;
         }
     }
-
+   
 
     return 0;
 }

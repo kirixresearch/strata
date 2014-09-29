@@ -142,13 +142,11 @@ static int doUpdate(xd::IDatabasePtr db,
     col_update = new xd::ColumnUpdateInfo[replace.size()];
     size_t i;
     
-    xd::IColumnInfoPtr colinfo;
-
     bool success = true;
     for (rit = replace.begin(), i = 0; rit != replace.end(); ++rit, ++i)
     {
-        colinfo = structure->getColumnInfo(rit->col_text);
-        if (!colinfo)
+        const xd::ColumnInfo& colinfo = structure->getColumnInfo(rit->col_text);
+        if (colinfo.isNull())
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Invalid syntax: Column [%ls] does not exist", (rit->col_text).c_str());
@@ -158,7 +156,7 @@ static int doUpdate(xd::IDatabasePtr db,
             break;
         }
 
-        rit->col_type = colinfo->getType();
+        rit->col_type = colinfo.type;
         rit->col_handle = iter->getHandle(rit->col_text);
         if (rit->col_handle == NULL)
         {
@@ -191,7 +189,6 @@ static int doUpdate(xd::IDatabasePtr db,
                 break;
             }
         }
-
 
         col_update[i].handle = rit->col_handle;
     }

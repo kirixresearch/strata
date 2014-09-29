@@ -89,13 +89,13 @@ bool KpgIterator::init(const std::wstring& path)
     int off = 0;
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr colinfo = m_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = m_structure->getColumnInfoByIdx(i);
 
         KpgDataAccessInfo* field = new KpgDataAccessInfo;
-        field->name = colinfo->getName();
-        field->type = colinfo->getType();
-        field->width = colinfo->getWidth();
-        field->scale = colinfo->getScale();
+        field->name = colinfo.name;
+        field->type = colinfo.type;
+        field->width = colinfo.width;
+        field->scale = colinfo.scale;
         field->ordinal = i;
 
         switch (field->type)
@@ -121,14 +121,11 @@ bool KpgIterator::init(const std::wstring& path)
                 break;
         }
 
-
         field->offset = off;
         off += field->buf_width;
 
         m_fields.push_back(field);
     }
-
-
 
     refreshStructure();
 
@@ -386,13 +383,11 @@ bool KpgIterator::releaseHandle(xd::objhandle_t data_handle)
     return false;
 }
 
-xd::IColumnInfoPtr KpgIterator::getInfo(xd::objhandle_t data_handle)
+xd::ColumnInfo KpgIterator::getInfo(xd::objhandle_t data_handle)
 {
     KpgDataAccessInfo* dai = (KpgDataAccessInfo*)data_handle;
     if (dai == NULL)
-    {
-        return xcm::null;
-    }
+        return xd::ColumnInfo();
 
     // try to get the column information from the set structure
 
@@ -403,12 +398,7 @@ xd::IColumnInfoPtr KpgIterator::getInfo(xd::objhandle_t data_handle)
 
     if (m_structure.isOk())
     {
-        xd::IColumnInfoPtr colinfo;
-        colinfo = m_structure->getColumnInfo(dai->name);
-        if (colinfo.isOk())
-        {
-            return colinfo->clone();
-        }
+        return m_structure->getColumnInfo(dai->name);
     }
 
 
@@ -421,7 +411,8 @@ xd::IColumnInfoPtr KpgIterator::getInfo(xd::objhandle_t data_handle)
                               dai->expr_text,
                               -1);
     */
-    return xcm::null;
+
+    return xd::ColumnInfo();
 }
 
 int KpgIterator::getType(xd::objhandle_t data_handle)

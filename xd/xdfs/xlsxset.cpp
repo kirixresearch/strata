@@ -110,14 +110,15 @@ xd::IStructurePtr XlsxSet::getStructure()
     size_t i, col_count = m_file.getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        struct_int->addColumn(col);
+        xd::ColumnInfo col;
 
-        col->setName(getSpreadsheetColumnName((int)i));
-        col->setType(xd::typeWideCharacter);
-        col->setWidth(255);
-        col->setScale(0);
-        col->setColumnOrdinal(i);
+        col.name = getSpreadsheetColumnName((int)i);
+        col.type = xd::typeWideCharacter;
+        col.width = 255;
+        col.scale = 0;
+        col.column_ordinal = i;
+
+        struct_int->addColumn(col);
     }
 
     XdfsBaseSet::appendCalcFields(s);

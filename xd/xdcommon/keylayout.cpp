@@ -97,7 +97,7 @@ const unsigned char* KeyLayout::getKey()
     
     m_trunc = false;
 
-    // -- fill out the key buffer --
+    // fill out the key buffer
     std::vector<KeyPart>::const_iterator part_end = m_parts.end();
     std::vector<KeyPart>::const_iterator part_it;
 
@@ -163,7 +163,7 @@ const unsigned char* KeyLayout::getKey()
                 ptr[2] = (tempui >> 8) & 0xff;
                 ptr[3] = (tempui & 0xff);
 
-                // -- flip sign so the integers sort properly --
+                // flip sign so the integers sort properly
                 if (ptr[0] & 0x80)
                 {
                     ptr[0] &= 0x7f;
@@ -303,7 +303,7 @@ const unsigned char* KeyLayout::getKeyFromValues(const wchar_t* values[], size_t
 
     m_trunc = false;
 
-    // -- fill out the key buffer --
+    // fill out the key buffer
     std::vector<KeyPart>::const_iterator part_end = m_parts.end();
     std::vector<KeyPart>::const_iterator part_it;
 
@@ -383,7 +383,7 @@ const unsigned char* KeyLayout::getKeyFromValues(const wchar_t* values[], size_t
                 ptr[2] = (tempui >> 8) & 0xff;
                 ptr[3] = (tempui & 0xff);
 
-                // -- flip sign so the integers sort properly --
+                // flip sign so the integers sort properly
                 if (ptr[0] & 0x80)
                 {
                     ptr[0] &= 0x7f;
@@ -510,7 +510,7 @@ bool KeyLayout::getTruncation()
 
 void KeyLayout::setIterator(xd::IIteratorPtr iter, bool hold_ref)
 {
-    // -- release old iterator --
+    // release old iterator
     if (m_iter)
     {
         std::vector<KeyPart>::const_iterator part_end = m_parts.end();
@@ -533,7 +533,7 @@ void KeyLayout::setIterator(xd::IIteratorPtr iter, bool hold_ref)
     }
     m_iter_structure.clear();
     
-    // -- assign new iterator --
+    // assign new iterator
     m_iter = iter.p;
 
     if (hold_ref)
@@ -567,18 +567,18 @@ bool KeyLayout::addKeyPart(const std::wstring& expr,
     if (!part.handle)
         return false;
 
-    xd::IColumnInfoPtr info = m_iter_structure->getColumnInfo(expr);
+    const xd::ColumnInfo& info = m_iter_structure->getColumnInfo(expr);
 
-    if (info)
+    if (info.isOk())
     {
         if (part.type == -1)
         {
-            part.type = info->getType();
+            part.type = info.type;
         }
 
         if (part.width == -1)
         {
-            part.width = info->getWidth();
+            part.width = info.width;
         }
     }
      else
@@ -592,9 +592,9 @@ bool KeyLayout::addKeyPart(const std::wstring& expr,
         {
             if (part.type == xd::typeCharacter)
             {
-                // -- idx part is a character expression, so
-                //    the width is unpredictable. We will choose
-                //    a sensible default value --
+                // idx part is a character expression, so
+                // the width is unpredictable. We will choose
+                // a sensible default value
 
                 part.width = 50;
             }
@@ -608,7 +608,7 @@ bool KeyLayout::addKeyPart(const std::wstring& expr,
     switch (part.type)
     {
         default:
-            // -- width is already set --
+            // width is already set
             break;
 
         case xd::typeWideCharacter:

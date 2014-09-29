@@ -176,25 +176,21 @@ void BaseIterator::refreshDAI()
     // by subsequent calls to colinfo2dai
 
     std::vector<DataAccessInfo*> dai_entries = m_dai_entries;
-    std::vector<xd::IColumnInfoPtr>::iterator cit;
+    std::vector<xd::ColumnInfo>::iterator cit;
 
     // find out if anything changed in our existing dai entries
     std::vector<DataAccessInfo*>::iterator dai_it;
-    xd::IColumnInfoPtr colinfo;
-    for (dai_it = dai_entries.begin();
-         dai_it != dai_entries.end();
-         ++dai_it)
+
+
+    for (dai_it = dai_entries.begin(); dai_it != dai_entries.end(); ++dai_it)
     {
         // does it still exist?
         
-        colinfo.clear();
+        xd::ColumnInfo colinfo;
 
-        for (cit = m_calc_fields.begin();
-             cit != m_calc_fields.end();
-             ++cit)
+        for (cit = m_calc_fields.begin(); cit != m_calc_fields.end(); ++cit)
         {
-            if (!wcscasecmp((*cit)->getName().c_str(),
-                            (*dai_it)->name.c_str()))
+            if (kl::iequals(cit->name, (*dai_it)->name))
             {
                 colinfo = *cit;
                 break;
@@ -214,14 +210,14 @@ void BaseIterator::refreshDAI()
         }
 
         // have the parameters changed?
-        if ((*dai_it)->type != colinfo->getType() ||
-            (*dai_it)->offset != colinfo->getOffset() ||
-            (*dai_it)->width != colinfo->getWidth() ||
-            (*dai_it)->scale != colinfo->getScale() ||
-            (*dai_it)->tableord != colinfo->getTableOrdinal() ||
-            (*dai_it)->expr_text != colinfo->getExpression())
+        if ((*dai_it)->type != colinfo.type ||
+            (*dai_it)->offset != colinfo.source_offset ||
+            (*dai_it)->width != colinfo.width ||
+            (*dai_it)->scale != colinfo.scale ||
+            (*dai_it)->tableord != colinfo.table_ordinal ||
+            (*dai_it)->expr_text != colinfo.expression)
         {
-            colinfo2dai(*dai_it, colinfo.p);
+            colinfo2dai(*dai_it, colinfo);
         }
     }
 }
@@ -449,9 +445,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
         {
             if (!wcscasecmp(right_list[j].c_str(), idx_list[x].c_str()))
             {
-                xd::IColumnInfoPtr colinfo;
-
-                colinfo = right_structure->getColumnInfo(right_list[j]);
+                const xd::ColumnInfo& colinfo = right_structure->getColumnInfo(right_list[j]);
                 if (colinfo.isNull())
                 {
                     delete info.kl;
@@ -459,10 +453,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
                     return false;
                 }
 
-                info.kl->addKeyPart(left_list[j],
-                                    colinfo->getType(),
-                                    colinfo->getWidth());
-
+                info.kl->addKeyPart(left_list[j], colinfo.type, colinfo.width);
                 break;
             }
         }    
@@ -624,10 +615,10 @@ void BaseIterator::appendCalcFields(xd::IStructure* structure)
 
     IStructureInternalPtr intstruct = structure;
 
-    std::vector<xd::IColumnInfoPtr>::iterator it;
+    std::vector<xd::ColumnInfo>::iterator it;
     for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
     {
-        intstruct->addColumn((*it)->clone());
+        intstruct->addColumn(*it);
     }
 }
 
@@ -663,10 +654,10 @@ bool BaseIterator::initStructure()
             std::wstring part = *it;
             kl::trim(part);
 
-            xd::IColumnInfoPtr col;
+            xd::ColumnInfo col;
             
             col = m_set_structure->getColumnInfo(part);
-            if (col)
+            if (col.isOk())
             {
                 s->addColumn(col);
                 continue;
@@ -677,7 +668,7 @@ bool BaseIterator::initStructure()
                 std::wstring dequote_part = part;
                 dequote(dequote_part, '[', ']');
                 col = m_set_structure->getColumnInfo(dequote_part);
-                if (col)
+                if (col.isOk())
                 {
                     s->addColumn(col);
                     continue;
@@ -733,7 +724,7 @@ bool BaseIterator::initStructure()
             if (0 == wcscasecmp(dequote_expr.c_str(), colname.c_str()))
             {
                 col = m_set_structure->getColumnInfo(colname);
-                if (col)
+                if (col.isOk())
                 {
                     s->addColumn(col);
                     continue;
@@ -792,32 +783,30 @@ bool BaseIterator::initStructure()
 
             // see if the expression is just a column and use its precise type info if it is
             col = m_set_structure->getColumnInfo(dequote_expr);
-            if (col)
+            if (col.isOk())
             {
-                xd_type = col->getType();
-                width = col->getWidth();
-                scale = col->getScale();
+                xd_type = col.type;
+                width = col.width;
+                scale = col.scale;
             }
 
 
+            xd::ColumnInfo c;
+            c.name = colname;
+            c.type = xd_type;
+            c.width = width;
+            c.scale = scale;
+            c.expression = expr;
+            c.calculated = true;
 
-            ColumnInfo* c = new ColumnInfo;
-            c->setName(colname);
-            c->setType(xd_type);
-            c->setWidth(width);
-            c->setScale(scale);
-            c->setExpression(expr);
-            c->setCalculated(true);
-
-            //s->addColumn(static_cast<xd::IColumnInfo*>(c));
-            m_calc_fields.push_back(static_cast<xd::IColumnInfo*>(c));
+            //s->addColumn(c);
+            m_calc_fields.push_back(c);
         }
 
         m_iter_structure = s;
 
         clearDAI();
     }
-
 
     return true;
 }
@@ -848,16 +837,11 @@ bool BaseIterator::refreshStructure()
         }
     }
 
-
     initStructure();
     refreshDAI();
 
     return true;
 }
-
-
-
-
 
 
 
@@ -884,8 +868,7 @@ bool BaseIterator::modifyStructure(xd::IStructure* struct_config,
 }
 
 
-void BaseIterator::colinfo2dai(DataAccessInfo* dai,
-                               xd::IColumnInfo* colinfo)
+void BaseIterator::colinfo2dai(DataAccessInfo* dai, const xd::ColumnInfo& colinfo)
 {
     if (dai->result)
     {
@@ -907,15 +890,15 @@ void BaseIterator::colinfo2dai(DataAccessInfo* dai,
 
     dai->is_active = true;
     dai->is_column = true;
-    dai->name = colinfo->getName();
-    dai->type = colinfo->getType();
-    dai->ordinal = colinfo->getColumnOrdinal();
-    dai->offset = colinfo->getOffset();
-    dai->width = colinfo->getWidth();
-    dai->scale = colinfo->getScale();
-    dai->nulls_allowed = colinfo->getNullsAllowed();
-    dai->tableord = colinfo->getTableOrdinal();
-    dai->expr_text = colinfo->getExpression();
+    dai->name = colinfo.name;
+    dai->type = colinfo.type;
+    dai->ordinal = colinfo.column_ordinal;
+    dai->offset = colinfo.source_offset;
+    dai->width = colinfo.width;
+    dai->scale = colinfo.scale;
+    dai->nulls_allowed = colinfo.nulls_allowed;
+    dai->tableord = colinfo.table_ordinal;
+    dai->expr_text = colinfo.expression;
     dai->expr = NULL;
 
     if (dai->expr_text.length() > 0)
@@ -1080,12 +1063,12 @@ public:
         if (s.isNull())
             return false;
 
-        xd::IColumnInfoPtr colinfo = s->getColumnInfo(column);
+        const xd::ColumnInfo& colinfo = s->getColumnInfo(column);
         if (colinfo.isNull())
             return false;
 
         m_expr = column;
-        m_expr_type = colinfo->getType();
+        m_expr_type = colinfo.type;
 
         return true;
     }
@@ -1850,14 +1833,13 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
             }
         }
             
-        xd::IColumnInfoPtr colinfo;
-        colinfo = iter->m_set_structure->getColumnInfo(hook_info.expr_text);
+        xd::ColumnInfo colinfo = iter->m_set_structure->getColumnInfo(hook_info.expr_text);
         if (colinfo.isNull())
         {
             size_t i, calc_field_count = iter->m_calc_fields.size();
             for (i = 0; i < calc_field_count; ++i)
             {
-                if (!wcscasecmp(iter->m_calc_fields[i]->getName().c_str(), hook_info.expr_text.c_str()))
+                if (kl::iequals(iter->m_calc_fields[i].name, hook_info.expr_text))
                 {
                     colinfo = iter->m_calc_fields[i];
                     break;
@@ -1868,18 +1850,18 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
         if (colinfo.isNull())
             return false;
         
-        if (colinfo->getType() == xd::typeNumeric || colinfo->getType() == xd::typeDouble)
+        if (colinfo.type == xd::typeNumeric || colinfo.type == xd::typeDouble)
         {
-            bind_param->max_scale = std::max(bind_param->max_scale, colinfo->getScale());
+            bind_param->max_scale = std::max(bind_param->max_scale, colinfo.scale);
             if (bind_param->max_scale > 10)
                 bind_param->max_scale = std::min(bind_param->max_scale, 4);
         }
 
         DataAccessInfo* dai = NULL;
         
-        if (0 == wcscasecmp(bind_param->column.c_str(), hook_info.expr_text.c_str()))
+        if (kl::iequals(bind_param->column, hook_info.expr_text))
         {
-            if (colinfo->getCalculated())
+            if (colinfo.calculated)
             {
                 // calculated field referring to itself
                 return false;
@@ -1896,13 +1878,13 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
 
                 iter->m_dai_entries.push_back(dai);
             
-                iter->colinfo2dai(dai, colinfo.p);
+                iter->colinfo2dai(dai, colinfo);
             }
         }
         
         
         if (!dai)
-            dai = (DataAccessInfo*)iter->getHandle(colinfo->getName());
+            dai = (DataAccessInfo*)iter->getHandle(colinfo.name);
             
         if (!dai)
             return false;
@@ -1992,24 +1974,21 @@ void BaseIterator::bindExprParser(kscript::ExprParser* parser,
 
 
 
-xd::IColumnInfoPtr BaseIterator::getInfo(xd::objhandle_t data_handle)
+xd::ColumnInfo BaseIterator::getInfo(xd::objhandle_t data_handle)
 {
     DataAccessInfo* dai = (DataAccessInfo*)data_handle;
-
     if (!dai)
-    {
-        return xcm::null;
-    }
+        return xd::ColumnInfo();
 
-    ColumnInfo* colinfo = new ColumnInfo;
-    colinfo->setName(dai->name);
-    colinfo->setType(dai->type);
-    colinfo->setWidth(dai->width);
-    colinfo->setScale(dai->scale);
-    colinfo->setExpression(dai->expr_text);
-    colinfo->setCalculated(dai->expr_text.length() > 0 ? true : false);
+    xd::ColumnInfo colinfo;
+    colinfo.name = dai->name;
+    colinfo.type = dai->type;
+    colinfo.width = dai->width;
+    colinfo.scale = dai->scale;
+    colinfo.expression = dai->expr_text;
+    colinfo.calculated = dai->expr_text.length() > 0 ? true : false;
 
-    return static_cast<xd::IColumnInfo*>(colinfo);
+    return colinfo;
 }
 
 
@@ -2044,8 +2023,8 @@ xd::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
         dai->scale = 0;
 
         if (!dai->key_layout->setKeyExpr(static_cast<xd::IIterator*>(this),
-                                    expr.substr(4),
-                                    false))
+                                         expr.substr(4),
+                                         false))
         {
             delete dai;
             return 0;
@@ -2060,12 +2039,12 @@ xd::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
 
 
     // try calc fields 
-    xd::IColumnInfoPtr colinfo;
+    xd::ColumnInfo colinfo;
 
-    std::vector<xd::IColumnInfoPtr>::iterator cit;
+    std::vector<xd::ColumnInfo>::iterator cit;
     for (cit = m_calc_fields.begin(); cit != m_calc_fields.end(); ++cit)
     {
-        if (!wcscasecmp((*cit)->getName().c_str(), expr.c_str()))
+        if (kl::iequals(cit->name, expr))
         {
             colinfo = *cit;
             break;
@@ -2082,7 +2061,7 @@ xd::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
         colinfo = m_set_structure->getColumnInfo(expr);
     }
 
-    if (colinfo)
+    if (colinfo.isOk())
     {
         dai = new DataAccessInfo;
         dai->it = this;
@@ -2093,7 +2072,7 @@ xd::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
         m_dai_entries.push_back(dai);
         m_dai_lookup[expr] = dai;
 
-        colinfo2dai(dai, colinfo.p);
+        colinfo2dai(dai, colinfo);
 
         return (xd::objhandle_t)dai;
     }

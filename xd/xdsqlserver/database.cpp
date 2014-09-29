@@ -569,12 +569,12 @@ bool SqlServerDatabase::createTable(const std::wstring& path,
 
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr col_info = struct_config->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col_info = struct_config->getColumnInfoByIdx(i);
         
-        name = col_info->getName();
-        type = col_info->getType();
-        width = col_info->getWidth();
-        scale = col_info->getScale();
+        name = col_info.name;
+        type = col_info.type;
+        width = col_info.width;
+        scale = col_info.scale;
 
         field = createSqlServerFieldString(name, type, width, scale, true);
         command += field;

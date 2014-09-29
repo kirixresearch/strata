@@ -645,7 +645,6 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
 
     m_grid->endEdit(true);
 
-    xd::IColumnInfoPtr colinfo;
     int i, row_count = m_grid->getRowCount();
     int combo_sel;
 
@@ -704,7 +703,7 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
         kl::trim(output_name);
 
         func = m_grid->getCellComboSel(i, GroupCol_GroupFunc);
-        colinfo = m_structure->getColumnInfo(input_name);
+        const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(input_name);
 
 
         // check for empty output field names
@@ -747,7 +746,7 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
         }
          else
         {
-            input_type = colinfo->getType();
+            input_type = colinfo.type;
         }
 
         if (func == GroupFunc_Count && input_name.length() > 0)

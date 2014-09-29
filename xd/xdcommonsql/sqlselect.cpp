@@ -247,12 +247,12 @@ static wchar_t* zl_strrchr(wchar_t* str,
 }
 
 
-static xd::IColumnInfoPtr getColumnInfoMulti(std::vector<SourceTable>& s,
-                                                const std::wstring& field_name,
-                                                SourceTable** tbl = NULL)
+static xd::ColumnInfo getColumnInfoMulti(std::vector<SourceTable>& s,
+                                         const std::wstring& field_name,
+                                         SourceTable** tbl = NULL)
 {
     if (!isUniqueFieldName(s, field_name))
-        return xcm::null;
+        return xd::ColumnInfo();
 
     std::wstring alias_part;
     std::wstring field_part;
@@ -290,8 +290,8 @@ static xd::IColumnInfoPtr getColumnInfoMulti(std::vector<SourceTable>& s,
     {
         for (it = s.begin(); it != s.end(); ++it)
         {
-            xd::IColumnInfoPtr col_info = it->structure->getColumnInfo(field_name);
-            if (col_info)
+            const xd::ColumnInfo& col_info = it->structure->getColumnInfo(field_name);
+            if (col_info.isOk())
             {
                 if (tbl)
                     *tbl = &(*it);
@@ -310,8 +310,8 @@ static xd::IColumnInfoPtr getColumnInfoMulti(std::vector<SourceTable>& s,
                 continue;
         }
         
-        xd::IColumnInfoPtr col_info = it->structure->getColumnInfo(field_part);
-        if (col_info)
+        const xd::ColumnInfo& col_info = it->structure->getColumnInfo(field_part);
+        if (col_info.isOk())
         {
             if (tbl)
                 *tbl = &(*it);
@@ -320,7 +320,7 @@ static xd::IColumnInfoPtr getColumnInfoMulti(std::vector<SourceTable>& s,
         }
     }
 
-    return xcm::null;
+    return xd::ColumnInfo();
 }
 
 
@@ -804,15 +804,15 @@ static bool insertDistinct(xd::IDatabase* db,
 
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr info = s->getColumnInfoByIdx(i);
-        std::wstring col_name = info->getName();
+        const xd::ColumnInfo& info = s->getColumnInfoByIdx(i);
+        std::wstring col_name = info.name;
 
         key.addKeyPart(col_name);
 
         InsertDistinctField f;
         f.source_handle = iter->getHandle(col_name);
         f.dest_handle = output->getHandle(col_name);
-        f.type = info->getType();
+        f.type = info.type;
 
         fields.push_back(f);
     }
@@ -1152,7 +1152,7 @@ static bool join_parse_hook(kscript::ExprParseHookInfo& hook_info)
         return false;
 
 
-    xd::IColumnInfoPtr colinfo;
+    xd::ColumnInfo colinfo;
     SourceTable* p1 = NULL;
     SourceTable* p2 = NULL;
     std::wstring left;
@@ -1734,7 +1734,7 @@ static bool doJoin(xd::IDatabasePtr db,
 
         std::vector<std::wstring> left_parts;
         std::vector<std::wstring>::iterator it;
-        xd::IColumnInfoPtr colinfo;
+        xd::ColumnInfo colinfo;
 
         kl::parseDelimitedList(jparse.left, left_parts, ',', true);
 
@@ -1888,7 +1888,7 @@ static bool doJoin(xd::IDatabasePtr db,
         int idx = 0;
         for (it = right_parts.begin(); it != right_parts.end(); ++it)
         {
-            xd::IColumnInfoPtr colinfo;
+            xd::ColumnInfo colinfo;
   
             SourceTable* tbl = NULL;
             colinfo = getColumnInfoMulti(source_tables, *it, &tbl);
@@ -1910,9 +1910,7 @@ static bool doJoin(xd::IDatabasePtr db,
             }
 
 
-            if (!jit->left_key.addKeyPart(left,
-                                     colinfo->getType(),
-                                     colinfo->getWidth()))
+            if (!jit->left_key.addKeyPart(left, colinfo.type, colinfo.width))
             {
                 return false;
             }
@@ -2013,7 +2011,7 @@ static bool doJoin(xd::IDatabasePtr db,
     for (jf_it = jfields.begin(); jf_it != jfields.end(); ++jf_it)
     {
         SourceTable* src_table = NULL;
-        xd::IColumnInfoPtr colinfo;
+        xd::ColumnInfo colinfo;
 
         // get the column info for the join field
         colinfo = getColumnInfoMulti(source_tables, jf_it->name, &src_table);
@@ -2023,11 +2021,11 @@ static bool doJoin(xd::IDatabasePtr db,
         }
 
 
-        jf_it->type = colinfo->getType();
-        jf_it->width = colinfo->getWidth();
-        jf_it->scale = colinfo->getScale();
+        jf_it->type = colinfo.type;
+        jf_it->width = colinfo.width;
+        jf_it->scale = colinfo.scale;
 
-        jf_it->orig_name = colinfo->getName();
+        jf_it->orig_name = colinfo.name;
         jf_it->source_table = src_table;
 
         // find join field's source iterator
@@ -2052,7 +2050,7 @@ static bool doJoin(xd::IDatabasePtr db,
             return false;
 
         // get our source handle
-        jf_it->source_handle = jf_it->source_iter->getHandle(colinfo->getName());
+        jf_it->source_handle = jf_it->source_iter->getHandle(colinfo.name);
     }
 
 
@@ -2115,16 +2113,15 @@ static bool doJoin(xd::IDatabasePtr db,
 
         for (i = 0; i < col_count; ++i)
         {
-            xd::IColumnInfoPtr colinfo;
-            colinfo = st_it->structure->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& colinfo = st_it->structure->getColumnInfoByIdx(i);
 
             JoinField f;
 
             f.name = st_it->alias;
             f.name += L".";
-            f.name += colinfo->getName();
+            f.name += colinfo.name;
 
-            f.orig_name = colinfo->getName();
+            f.orig_name = colinfo.name;
 
             // try to find the field's optional output name
             for (sf_it = columns.begin(); sf_it != columns.end(); ++sf_it)
@@ -2137,9 +2134,9 @@ static bool doJoin(xd::IDatabasePtr db,
             }
 
 
-            f.type = colinfo->getType();
-            f.width = colinfo->getWidth();
-            f.scale = colinfo->getScale();
+            f.type = colinfo.type;
+            f.width = colinfo.width;
+            f.scale = colinfo.scale;
             f.source_table = &(*st_it);
             f.dest_handle = 0;
 
@@ -2812,8 +2809,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
         {
             dequoteField(*it);
 
-            xd::IColumnInfoPtr colinfo;
-            colinfo = getColumnInfoMulti(source_tables, *it);
+            xd::ColumnInfo colinfo = getColumnInfoMulti(source_tables, *it);
             
             if (colinfo.isNull())
             {
@@ -2836,11 +2832,10 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
         for (it = order_vec.begin(); it != order_vec.end(); ++it)
         {
+            xd::ColumnInfo colinfo;
             OrderByField f;
-            xd::IColumnInfoPtr colinfo;
-            
-            kl::trim(*it);
 
+            kl::trim(*it);
             f.descending = false;
 
             const wchar_t* space;
@@ -3329,7 +3324,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
         if (!f_it->expr.empty() && !isSameField(f_it->expr, f_it->name))
         {
             std::wstring f = f_it->expr;
-            xd::IColumnInfoPtr colinfo = getColumnInfoMulti(source_tables, f);
+            xd::ColumnInfo colinfo = getColumnInfoMulti(source_tables, f);
             if (colinfo.isOk())
             {
                 dequoteField(f);
@@ -3432,17 +3427,15 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
     for (f_it = fields.begin(); f_it != fields.end(); ++f_it)
     {
-        xd::IColumnInfoPtr itercol;
-        xd::ColumnInfo colinfo;
-
-        itercol = iter_structure->getColumnInfo(f_it->name);
+        const xd::ColumnInfo& itercol = iter_structure->getColumnInfo(f_it->name);
         if (itercol.isNull())
             continue;
 
-        colinfo.name = itercol->getName();
-        colinfo.type = itercol->getType();
-        colinfo.width = itercol->getWidth();
-        colinfo.scale = itercol->getScale();
+        xd::ColumnInfo colinfo;
+        colinfo.name = itercol.name;
+        colinfo.type = itercol.type;
+        colinfo.width = itercol.width;
+        colinfo.scale = itercol.scale;
 
         output_structure->createColumn(colinfo);
     }

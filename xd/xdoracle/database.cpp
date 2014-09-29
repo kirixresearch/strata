@@ -254,13 +254,13 @@ int xd2oracleType(int xd_type)
 }
 
 
-xd::IColumnInfoPtr createColInfo(const std::wstring& col_name,
-                                    int oracle_type,
-                                    int oracle_charset,
-                                    int width,
-                                    int precision,
-                                    int scale,
-                                    const std::wstring& expr)
+xd::ColumnInfo createColInfo(const std::wstring& col_name,
+                             int oracle_type,
+                             int oracle_charset,
+                             int width,
+                             int precision,
+                             int scale,
+                             const std::wstring& expr)
 {
     int xd_type = oracle2xdType(oracle_type, oracle_charset);
 
@@ -308,20 +308,20 @@ xd::IColumnInfoPtr createColInfo(const std::wstring& col_name,
     }
 
 
-    ColumnInfo* c = new ColumnInfo;
+    xd::ColumnInfo c;
 
-    c->setName(col_name);
-    c->setType(xd_type);
-    c->setWidth(width);
-    c->setScale(scale);
+    c.name = col_name;
+    c.type = xd_type;
+    c.width = width;
+    c.scale = scale;
 
     if (expr.length() > 0)
     {
-        c->setExpression(expr);
-        c->setCalculated(true);
+        c.expression = expr;
+        c.calculated = true;
     }
 
-    return static_cast<xd::IColumnInfo*>(c);
+    return c;
 }
 
 
@@ -1103,12 +1103,12 @@ bool OracleDatabase::createTable(const std::wstring& path,
 
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr col_info = struct_config->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col_info = struct_config->getColumnInfoByIdx(i);
         
-        name = col_info->getName();
-        type = col_info->getType();
-        width = col_info->getWidth();
-        scale = col_info->getScale();
+        name = col_info.name;
+        type = col_info.type;
+        width = col_info.width;
+        scale = col_info.scale;
 
         field = createOracleFieldString(name, type, width, scale, true);
         command += field;

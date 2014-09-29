@@ -1856,21 +1856,20 @@ void XdModel::refresh()
 {
     // refresh columns
     xd::IStructurePtr structure = m_iter->getStructure();
-    int col_count = structure->getColumnCount();
-    int i;
+    int i, col_count = structure->getColumnCount();
 
     m_columns.resize(col_count, NULL);
 
-    xd::IColumnInfoPtr spCol;
     for (i = 0; i < col_count; ++i)
     {
         m_columns[i] = new ModelColumn;
         m_columns[i]->m_name = structure->getColumnName(i);
         m_columns[i]->m_handle = m_iter->getHandle(towstr(m_columns[i]->m_name));
-        spCol = m_iter->getInfo(m_columns[i]->m_handle);
-        m_columns[i]->m_xd_type = spCol->getType();
-        m_columns[i]->m_width = spCol->getWidth();
-        m_columns[i]->m_scale = spCol->getScale();
+
+        xd::ColumnInfo colinfo = m_iter->getInfo(m_columns[i]->m_handle);
+        m_columns[i]->m_xd_type = colinfo.type;
+        m_columns[i]->m_width = colinfo.width;
+        m_columns[i]->m_scale = colinfo.scale;
 
         switch (m_columns[i]->m_xd_type)
         {

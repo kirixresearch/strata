@@ -18,12 +18,12 @@
 
 std::wstring pgsqlGetTablenameFromPath(const std::wstring& path);
 
-xd::IColumnInfoPtr pgsqlCreateColInfo(const std::wstring& col_name,
-                                         int col_odbc_type,
-                                         int col_width,
-                                         int col_scale,
-                                         const std::wstring& col_expr,
-                                         int datetime_sub);
+xd::ColumnInfo pgsqlCreateColInfo(const std::wstring& col_name,
+                                  int col_odbc_type,
+                                  int col_width,
+                                  int col_scale,
+                                  const std::wstring& col_expr,
+                                  int datetime_sub);
 
 int pgsqlToXdType(int pg_type);
 

@@ -89,7 +89,7 @@ public:
 
     QueryBuilderSourceTable* lookupTableByPath(const wxString& path);
     QueryBuilderSourceTable* lookupTableByAlias(const wxString& alias);
-    xd::IColumnInfoPtr lookupColumnInfo(const wxString& input);
+    xd::ColumnInfo lookupColumnInfo(const wxString& input);
     wxString buildJoinString(QueryBuilderSourceTable& tbl);
     wxString stripAllAliases(const wxString& input);
     wxString completeFilter(const wxString& _expr,

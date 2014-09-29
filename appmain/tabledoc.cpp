@@ -452,9 +452,8 @@ bool TableDoc::canDeleteColumns(std::vector<int>& view_cols)
             return false;
         
         // don't allow deletes on static fields in external sets
-        xd::IColumnInfoPtr colinfo;
-        colinfo = structure->getColumnInfoByIdx(model_col);
-        if (colinfo.isNull() || !colinfo->getCalculated())
+        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(model_col);
+        if (colinfo.isNull() || !colinfo.calculated)
             return false;
     }
     
@@ -1253,23 +1252,22 @@ void TableDoc::onUpdateUI(wxUpdateUIEvent& evt)
 
             // for now, limit deleting to calculated fields
             xd::IStructurePtr structure = m_iter->getStructure();
-            xd::IColumnInfoPtr colinfo;
 
-            int col_count = m_grid->getColumnCount();
-            int i;
+            int i, col_count = m_grid->getColumnCount();
 
             for (i = 0; i < col_count; ++i)
             {
                 if (m_grid->isColumnSelected(i))
                 {
-                    colinfo = structure->getColumnInfo(towstr(m_grid->getColumnCaption(i)));
-                    if (!colinfo)
+                    const xd::ColumnInfo& colinfo = structure->getColumnInfo(towstr(m_grid->getColumnCaption(i)));
+
+                    if (colinfo.isNull())
                     {
                         evt.Enable(false);
                         return;
                     }
 
-                    if (!colinfo->getCalculated())
+                    if (!colinfo.calculated)
                     {
                         evt.Enable(false);
                         return;
@@ -1277,16 +1275,16 @@ void TableDoc::onUpdateUI(wxUpdateUIEvent& evt)
                 }
             }
 
-            // -- if no fields are selected, check the cursor column --
+            //  if no fields are selected, check the cursor column
             int col_idx = m_grid->getCursorColumn();
-            colinfo = structure->getColumnInfo(towstr(m_grid->getColumnCaption(col_idx)));
-            if (!colinfo)
+            const xd::ColumnInfo& colinfo = structure->getColumnInfo(towstr(m_grid->getColumnCaption(col_idx)));
+            if (colinfo.isNull())
             {
                 evt.Enable(false);
                 return;
             }
 
-            if (!colinfo->getCalculated())
+            if (!colinfo.calculated)
             {
                 evt.Enable(false);
                 return;
@@ -3008,17 +3006,16 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
 
     int i, col_count = s->getColumnCount();
 
-    xd::IColumnInfoPtr colinfo;
     for (i = 0; i < col_count; ++i)
     {
-        colinfo = s->getColumnInfoByIdx(i);
-        if (!colinfo->getCalculated())
+        const xd::ColumnInfo& colinfo = s->getColumnInfoByIdx(i);
+        if (!colinfo.calculated)
             continue;
 
-        if (text.CmpNoCase(colinfo->getExpression()) == 0)
+        if (text.CmpNoCase(colinfo.expression) == 0)
         {
             // we found an exact match
-            insertColumn(insert_pos, colinfo->getName());
+            insertColumn(insert_pos, colinfo.name);
             return;
         }
     }
@@ -3026,13 +3023,13 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
     // a suitable calculated field did not exist for the expression,
     // so we have to create it
 
-    if (text.Find(wxT('.')) == -1)
+    if (text.Find('.') == -1)
     {
         return;
     }
 
-    wxString rel_tag = text.BeforeFirst(wxT('.'));
-    wxString col_name = text.AfterFirst(wxT('.'));
+    wxString rel_tag = text.BeforeFirst('.');
+    wxString col_name = text.AfterFirst('.');
 
 
     // now try to find the set that has that column
@@ -3041,6 +3038,8 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
     xd::IRelationEnumPtr rel_enum = rels->getRelationEnum(m_path);
     xd::IRelationPtr rel;
     int rel_count = (int)rel_enum->size();
+
+    xd::ColumnInfo colinfo;
 
     for (i = 0; i < rel_count; ++i)
     {
@@ -3093,9 +3092,9 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
 
 
     if (createDynamicField(column_name,
-                           colinfo->getType(),
-                           colinfo->getWidth(),
-                           colinfo->getScale(),
+                           colinfo.type,
+                           colinfo.width,
+                           colinfo.scale,
                            column_expr,
                            true))
     {
@@ -3654,18 +3653,15 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
     if (!colhandle)
         return;
 
-    xd::IColumnInfoPtr colinfo = m_iter->getInfo(colhandle);
+    xd::ColumnInfo colinfo = m_iter->getInfo(colhandle);
     if (colinfo.isNull())
         return;
 
-    int coltype = colinfo->getType();
-    
     m_iter->releaseHandle(colhandle);
-
 
     wxString value;
 
-    switch (coltype)
+    switch (colinfo.type)
     {
         case xd::typeWideCharacter:
         case xd::typeCharacter:
@@ -3679,7 +3675,7 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
         case xd::typeNumeric:
         {
             double d = xd_grid_model->getCellDouble(row, model_col);
-            value = wxString::Format(wxT("%.*f"), colinfo->getScale(), d);
+            value = wxString::Format(wxT("%.*f"), colinfo.type, d);
             value.Replace(wxT(","), wxT("."));
         }
         break;
@@ -3772,20 +3768,20 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
     }
 
 
-    // -- create value-side string --
+    // create value-side string
     wxMenu menuPopup;
     menuPopup.Append(ID_Edit_Cut, _("Cu&t"));
     menuPopup.Append(ID_Edit_Copy, _("&Copy"));
     menuPopup.Append(ID_Edit_Paste, _("&Paste"));
     menuPopup.AppendSeparator();
-    menuPopup.Append(27100, _("&Filter Records"), createExprMenu(colname, coltype, value, 27100));
+    menuPopup.Append(27100, _("&Filter Records"), createExprMenu(colname, colinfo.type, value, 27100));
     menuPopup.Append(ID_Data_RemoveSortFilter, _("&Remove Sort/Filter"));
     menuPopup.AppendSeparator();
-    menuPopup.Append(27500, _("&Mark Records"), createExprMenu(colname, coltype, value, 27500));
+    menuPopup.Append(27500, _("&Mark Records"), createExprMenu(colname, colinfo.type, value, 27500));
     menuPopup.AppendSeparator();
-    menuPopup.Append(27200, _("C&opy Records"), createExprMenu(colname, coltype, value, 27200));
-    menuPopup.Append(27400, _("&Delete Records"), createExprMenu(colname, coltype, value, 27400));
-    menuPopup.Append(27300, _("&Update Records"), createExprMenu(colname, coltype, value, 27300));
+    menuPopup.Append(27200, _("C&opy Records"), createExprMenu(colname, colinfo.type, value, 27200));
+    menuPopup.Append(27400, _("&Delete Records"), createExprMenu(colname, colinfo.type, value, 27400));
+    menuPopup.Append(27300, _("&Update Records"), createExprMenu(colname, colinfo.type, value, 27300));
 
 
     if (getIsChildSet())
@@ -3808,9 +3804,9 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
 
     if (command >= 27100 && command <= 27199)
     {
-        // -- filter --
+        // filter
         wxString expr;
-        getMenuItemExpr(colname, coltype, command-27100, value, expr);
+        getMenuItemExpr(colname, colinfo.type, command-27100, value, expr);
         
         
         // --------------------
@@ -3828,14 +3824,14 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
     {
         // copy rows
         wxString expr;
-        getMenuItemExpr(colname, coltype, command-27200, value, expr);
+        getMenuItemExpr(colname, colinfo.type, command-27200, value, expr);
         copyRecords(towstr(expr));
     }
      else if (command >= 27300 && command <= 27399)
     {
         // replace rows
         wxString expr;
-        getMenuItemExpr(colname, coltype, command-27300, value, expr);
+        getMenuItemExpr(colname, colinfo.type, command-27300, value, expr);
         
         wxString cursor_column = getCursorColumnName(m_grid);
         showReplacePanel(expr, cursor_column);
@@ -3855,14 +3851,14 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
         if (res == wxYES)
         {
             wxString expr;
-            getMenuItemExpr(colname, coltype, command-27400, value, expr);
+            getMenuItemExpr(colname, colinfo.type, command-27400, value, expr);
             deleteRecords(towstr(expr));
         }
     }
      else if (command >= 27500 && command <= 27599)
     {
         wxString expr;
-        getMenuItemExpr(colname, coltype, command-27500, value, expr);
+        getMenuItemExpr(colname, colinfo.type, command-27500, value, expr);
         createNewMark(expr.c_str());
     }
      else
@@ -4314,11 +4310,11 @@ static wxString generateContextSyncMarkExpression(
         part = xd::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(*it));
         part += "=";
         
-        xd::IColumnInfoPtr info = right_iter->getInfo(rh);
+        xd::ColumnInfo info = right_iter->getInfo(rh);
         if (info.isNull())
             return "";
             
-        switch (info->getType())
+        switch (info.type)
         {
             case xd::typeCharacter:
             case xd::typeWideCharacter:
@@ -4333,7 +4329,7 @@ static wxString generateContextSyncMarkExpression(
                 
             case xd::typeNumeric:
             case xd::typeDouble:
-                value = wxString::Format("%.*f", info->getScale(), left_iter->getDouble(lh));
+                value = wxString::Format("%.*f", info.scale, left_iter->getDouble(lh));
                 value.Replace(",", ".");
                 part += value;
                 break;
@@ -4649,15 +4645,15 @@ void TableDoc::onGridNeedTooltipText(kcl::GridEvent& event)
         if (!colhandle)
             return;
 
-        xd::IColumnInfoPtr colinfo = m_iter->getInfo(colhandle);
+        xd::ColumnInfo colinfo = m_iter->getInfo(colhandle);
         if (colinfo.isNull())
             return;
 
         event.SetString(wxString::Format(_("Name: %s, Type: %s, Width: %d, Decimals: %d"),
-                            makeProperIfNecessary(colinfo->getName()).c_str(),
-                            getDbColumnTypeText(colinfo->getType()).c_str(),
-                            colinfo->getWidth(),
-                            colinfo->getScale()));
+                            makeProperIfNecessary(colinfo.name).c_str(),
+                            getDbColumnTypeText(colinfo.type).c_str(),
+                            colinfo.width,
+                            colinfo.scale));
     }
      else
     {
@@ -4665,23 +4661,21 @@ void TableDoc::onGridNeedTooltipText(kcl::GridEvent& event)
         if (!colhandle)
             return;
 
-        xd::IColumnInfoPtr colinfo = m_iter->getInfo(colhandle);
+        xd::ColumnInfo colinfo = m_iter->getInfo(colhandle);
         if (colinfo.isNull())
             return;
 
-        int coltype = colinfo->getType();
-
-        if (coltype == xd::typeDate ||
-            coltype == xd::typeDateTime)
+        if (colinfo.type == xd::typeDate ||
+            colinfo.type == xd::typeDateTime)
         {
             const wxChar* date_rep = wxT("%#c");
 
-            if (coltype == xd::typeDate)
+            if (colinfo.type == xd::typeDate)
             {
                 date_rep = wxT("%#x");
             }
 
-            // -- move model --
+            // move model
             if (!model->isRowValid(row))
             {
                 m_iter->releaseHandle(colhandle);
@@ -4842,12 +4836,11 @@ std::wstring TableDoc::getWhereExpressionForRow(int row)
                 case xd::typeNumeric:
                 case xd::typeDouble:
                 {
-                    xd::IColumnInfoPtr info = m_iter->getInfo(handle);
+                    xd::ColumnInfo info = m_iter->getInfo(handle);
                     if (info.isNull())
                         return L"";
                     double d = m_iter->getDouble(handle);
-                    int scale = info->getScale();
-                    wxString str = wxString::Format(wxT("%.*f"), scale, d);
+                    wxString str = wxString::Format(wxT("%.*f"), info.scale, d);
                     piece += towstr(str);
                 }
                 break;
@@ -5005,12 +4998,11 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
                 case xd::typeNumeric:
                 case xd::typeDouble:
                 {
-                    xd::IColumnInfoPtr info = m_iter->getInfo(handle);
+                    xd::ColumnInfo info = m_iter->getInfo(handle);
                     if (info.isNull())
                         return;
                     double d = m_iter->getDouble(handle);
-                    int scale = info->getScale();
-                    wxString str = wxString::Format(wxT("%.*f"), scale, d);
+                    wxString str = wxString::Format(wxT("%.*f"), info.scale, d);
                     piece += towstr(str);
                 }
                 break;
@@ -5053,7 +5045,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     if (structure.isNull())
         return;
 
-    xd::IColumnInfoPtr col_info = structure->getColumnInfo(towstr(col_name));
+    const xd::ColumnInfo& col_info = structure->getColumnInfo(towstr(col_name));
     if (col_info.isNull())
         return;
 
@@ -5067,7 +5059,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     update_info.null = false;
 
     wxString str;
-    switch (col_info->getType())
+    switch (col_info.type)
     {
         case xd::typeCharacter:
         case xd::typeWideCharacter:
@@ -5113,7 +5105,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
             // fill out update_info for ICacheRowUpdate below
             update_info.dbl_val = evt.GetDouble();
 
-            wxString num = wxString::Format(wxT("%.*f"), col_info->getScale(),
+            wxString num = wxString::Format(wxT("%.*f"), col_info.scale,
                                                          evt.GetDouble());
             num.Replace(wxT(","), wxT("."));
 
@@ -5620,15 +5612,14 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
 
 
 
-    // make sure that the columns are all dynamic
+    // make sure that the columns are all calculated fields
 
     xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
-    xd::IColumnInfoPtr colinfo;
-           
+
     std::set<wxString>::iterator it;
     for (it = cols.begin(); it != cols.end(); ++it)
     {
-        colinfo = structure->getColumnInfo(towstr(*it));
+        const xd::ColumnInfo& colinfo = structure->getColumnInfo(towstr(*it));
 
         if (colinfo.isNull())
         {
@@ -5638,7 +5629,7 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
             return;
         }
 
-        if (!colinfo->getCalculated())
+        if (!colinfo.calculated)
         {
             appMessageBox(_("This operation may only be performed on calculated fields."),
                                APPLICATION_NAME,
@@ -5733,14 +5724,12 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
     int i, col_count = structure->getColumnCount();
     list.reserve(col_count);
     
-    xd::IColumnInfoPtr colinfo;
-
     for (i = 0; i < col_count; i++)
     {
-        colinfo = structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
         
         bool in_view = false;
-        int model_idx = m_grid->getColumnModelIdxByName(colinfo->getName());
+        int model_idx = m_grid->getColumnModelIdxByName(colinfo.name);
         if (model_idx >= 0 && m_grid->getColumnViewIdx(model_idx) != -1)
         {
             in_view = true;
@@ -5749,9 +5738,9 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
         ColumnListItem item;
 
         item.active = true;
-        item.text = makeProperIfNecessary(colinfo->getName());
+        item.text = makeProperIfNecessary(colinfo.name);
 
-        if (colinfo->getCalculated())
+        if (colinfo.calculated)
         {
             item.bitmap = in_view ? GETBMP(gf_lightning_16) : GETDISBMP(gf_lightning_16);
         }
@@ -5792,11 +5781,11 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
  
             for (i = 0; i < col_count; ++i)
             {
-                colinfo = right_structure->getColumnInfoByIdx(i);
+                const xd::ColumnInfo& colinfo = right_structure->getColumnInfoByIdx(i);
 
                 s = wxString::Format(wxT("%s.%s"),
                             makeProperIfNecessary(rel->getTag()).c_str(),
-                            makeProperIfNecessary(colinfo->getName()).c_str());
+                            makeProperIfNecessary(colinfo.name).c_str());
                 
                 ColumnListItem item;
                 item.text = s;
@@ -5965,7 +5954,6 @@ void TableDoc::deleteSelectedColumns()
 
     wxString object_path = m_path;
     xd::IStructurePtr structure = m_iter->getStructure();
-    xd::IColumnInfoPtr colinfo;
 
     std::set<wxString> cols;
     std::set<wxString>::iterator it;
@@ -5977,19 +5965,19 @@ void TableDoc::deleteSelectedColumns()
 
     for (i = 0; i < col_count; ++i)
     {
-        colinfo = structure->getColumnInfo(towstr(m_grid->getColumnCaption(i)));
+        const xd::ColumnInfo& colinfo = structure->getColumnInfo(towstr(m_grid->getColumnCaption(i)));
         if (colinfo.isNull())
             continue;
 
         if (m_grid->isColumnSelected(i))
         {
-            cols.insert(colinfo->getName());
+            cols.insert(colinfo.name);
 
-            if (!colinfo->getCalculated())
+            if (!colinfo.calculated)
                 total_phys_fields_to_delete++;
         }
 
-        if (!colinfo->getCalculated())
+        if (!colinfo.calculated)
             total_phys_fields++;
     }
 
@@ -6497,11 +6485,9 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
     xd::IStructurePtr iter_struct = m_iter->getStructure();
 
 
-    std::vector<xd::IColumnInfoPtr> search_cols;
+    std::vector<xd::ColumnInfo> search_cols;
 
-    xd::IColumnInfoPtr colinfo;
-    int col_count = m_grid->getColumnCount();
-    int i;
+    int i, col_count = m_grid->getColumnCount();
 
     for (i = 0; i < col_count; ++i)
     {
@@ -6513,7 +6499,7 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
 
             wxString col_name = model->getColumnInfo(model_idx)->getName();
 
-            colinfo = iter_struct->getColumnInfo(towstr(col_name));
+            const xd::ColumnInfo& colinfo = iter_struct->getColumnInfo(towstr(col_name));
             if (colinfo.isNull())
                 continue;
 
@@ -6528,7 +6514,7 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
         col_count = iter_struct->getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            colinfo = iter_struct->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& colinfo = iter_struct->getColumnInfoByIdx(i);
             search_cols.push_back(colinfo);
         }
     }
@@ -6552,13 +6538,13 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
 
     wxString expr;
 
-    std::vector<xd::IColumnInfoPtr>::iterator it;
+    std::vector<xd::ColumnInfo>::iterator it;
     for (it = search_cols.begin(); it != search_cols.end(); ++it)
     {
         wxString piece, left, right;
-        wxString colname = xd::quoteIdentifierIfNecessary(g_app->getDatabase(), (*it)->getName());        
+        wxString colname = xd::quoteIdentifierIfNecessary(g_app->getDatabase(), it->name);        
         
-        switch ((*it)->getType())
+        switch (it->type)
         {
             default:
             case xd::typeBoolean:
@@ -6943,9 +6929,7 @@ bool TableDoc::saveAsStructure(const wxString& path)
     // build up a string that we'll save
     std::wstring result_text = L"";
 
-    int col_count = structure->getColumnCount();
-    xd::IColumnInfoPtr colinfo;
-
+    int i, col_count = structure->getColumnCount();
 
     // TODO: we could use the kl::JsonNode library here instead of hand-generating the JSON
     
@@ -6954,23 +6938,22 @@ bool TableDoc::saveAsStructure(const wxString& path)
     result_text += L"\n    [\n";
 
     bool first = true;
-    int i;
     for (i = 0; i < col_count; ++i)
     {
-        colinfo = structure->getColumnInfoByIdx(i);    
+        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);    
     
         if (!first)
             result_text += L",\n";
         first = false;
  
         // initial tab space (use spaces instead of tab)
-        std::wstring name = colinfo->getName();
-        std::wstring type = xdTypeToOutputType(colinfo->getType());
+        std::wstring name = colinfo.name;
+        std::wstring type = xdTypeToOutputType(colinfo.type);
 
         wchar_t buf[30];
-        swprintf(buf, 30, L"%d", colinfo->getWidth());
+        swprintf(buf, 30, L"%d", colinfo.width);
         std::wstring width(buf);
-        swprintf(buf, 30, L"%d", colinfo->getScale());
+        swprintf(buf, 30, L"%d", colinfo.scale);
         std::wstring scale(buf);
 
         result_text += L"        ";
@@ -6980,8 +6963,8 @@ bool TableDoc::saveAsStructure(const wxString& path)
         result_text += (L", \"width\": " + width);
         result_text += (L", \"scale\": " + scale);
         
-        if (colinfo->getCalculated())
-            result_text += (L", \"formula\": \"" + kl::escape_string(colinfo->getExpression()) + L"\"");
+        if (colinfo.calculated)
+            result_text += (L", \"formula\": \"" + kl::escape_string(colinfo.expression) + L"\"");
             true;
         
         result_text += L" }";
@@ -7052,7 +7035,6 @@ bool TableDoc::saveAsStructure(const wxString& path)
 
     xf_write(f, buf, 1, buf_len);
     xf_close(f);
-
 
     g_app->getAppController()->openScript(path);
 
@@ -8487,24 +8469,21 @@ void TableDoc::onRequestRowColors(wxColor& fgcolor, wxColor& bgcolor)
     }
 }
 
-void TableDoc::initializeDefaultView(ITableDocViewPtr view,
-                                     xd::IStructurePtr v_struct)
+void TableDoc::initializeDefaultView(ITableDocViewPtr view, xd::IStructurePtr v_struct)
 {
     view->deleteAllColumns();
 
     if (v_struct)
     {
-        xd::IColumnInfoPtr colinfo;
         ITableDocViewColPtr viewcol;
 
-        int col_count;
-        col_count = v_struct->getColumnCount();
-        for (int i = 0; i < col_count; i++)
+        int i, col_count = v_struct->getColumnCount();
+        for (i = 0; i < col_count; i++)
         {
-            colinfo = v_struct->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& colinfo = v_struct->getColumnInfoByIdx(i);
             
             viewcol = view->createColumn(-1);
-            viewcol->setName(colinfo->getName());
+            viewcol->setName(colinfo.name);
             viewcol->setSize(80);
         }
     }

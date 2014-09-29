@@ -522,8 +522,8 @@ bool TableSet::create(xd::IStructure* struct_config, const std::wstring& path)
     xd::IColumnInfoPtr colinfo;
     for (int col = 0; col < col_count; ++col)
     {
-        colinfo = struct_config->getColumnInfoByIdx(col);
-        if (colinfo->getCalculated())
+        const xd::ColumnInfo& colinfo = struct_config->getColumnInfoByIdx(col);
+        if (colinfo.calculated)
         {
             createCalcField(colinfo);
         }
@@ -752,11 +752,11 @@ bool TableSet::prepareIndexEntry(IndexEntry& e)
 
         dequote(colname, '[', ']');
 
-        xd::IColumnInfoPtr info = structure->getColumnInfo(colname);
+        xd::ColumnInfo info = structure->getColumnInfo(colname);
 
         if (info.isOk())
         {
-            if (info->getCalculated())
+            if (info.calculated)
             {
                 // in the case of a calculated field, the index may be
                 // dependant on those fields which make up the formula
@@ -764,24 +764,22 @@ bool TableSet::prepareIndexEntry(IndexEntry& e)
                 std::vector<std::wstring> fields_used;
                 std::vector<std::wstring>::iterator it;
 
-                fields_used = getFieldsInExpr(info->getExpression(),
+                fields_used = getFieldsInExpr(info.expression,
                                               structure,
                                               true);
 
-                for (it = fields_used.begin();
-                     it != fields_used.end();
-                     ++it)
+                for (it = fields_used.begin(); it != fields_used.end(); ++it)
                 {
                     info = structure->getColumnInfo(*it);
-                    if (!info->getCalculated())
+                    if (!info.calculated)
                     {
-                        e.active_columns[info->getColumnOrdinal()] = true;
+                        e.active_columns[info.column_ordinal] = true;
                     }
                 }
             }
              else
             {
-                e.active_columns[info->getColumnOrdinal()] = true;
+                e.active_columns[info.column_ordinal] = true;
             }
         }
     }
@@ -1666,10 +1664,12 @@ xd::objhandle_t TableSetRowInserter::getHandle(const std::wstring& column)
     return m_iter->getHandle(column);
 }
 
+/*
 xd::IColumnInfoPtr TableSetRowInserter::getInfo(xd::objhandle_t handle)
 {
     return m_iter->getInfo(handle);
 }
+*/
 
 bool TableSetRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                     const unsigned char* value,

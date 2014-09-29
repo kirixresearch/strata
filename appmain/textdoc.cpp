@@ -86,19 +86,16 @@ static int showOverwriteTransformationChangesDialog()
 // based on the offset of the column to the left of the column that we
 // inserted in the source structure
 
-static int getBestDestinationInsertPosition(xd::IColumnInfoPtr src_coltoleft,
-                                            xd::IStructurePtr dest_struct)
+static int getBestDestinationInsertPosition(const xd::ColumnInfo& src_coltoleft, xd::IStructurePtr dest_struct)
 {
-    if (!src_coltoleft)
+    if (src_coltoleft.isNull())
         return 0;
         
-    xd::IColumnInfoPtr dest_col;
-    
     int i, col_count = dest_struct->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        dest_col = dest_struct->getColumnInfoByIdx(i);
-        if (dest_col->getExpression() == src_coltoleft->getName())
+        const xd::ColumnInfo& dest_col = dest_struct->getColumnInfoByIdx(i);
+        if (dest_col.expression == src_coltoleft.name)
             return i+1;
     }
     
@@ -550,12 +547,12 @@ void TextDoc::getColumnListItems(std::vector<ColumnListItem>& list)
     
     for (i = 0; i < col_count; i++)
     {
-        xd::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
         if (colinfo.isNull())
             continue;
         
         ColumnListItem item;
-        item.text = makeProperIfNecessary(colinfo->getName());
+        item.text = makeProperIfNecessary(colinfo.name);
         item.bitmap = GETBMP(gf_field_16);
         item.active = true;
         list.push_back(item);

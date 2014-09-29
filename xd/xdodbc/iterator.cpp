@@ -855,32 +855,31 @@ xd::IStructurePtr OdbcIterator::getStructure()
     {
         if ((*it)->isCalculated())
         {
-            xd::IColumnInfoPtr col;
-            col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-            col->setName((*it)->name);
-            col->setType((*it)->type);
-            col->setWidth((*it)->width);
-            col->setScale((*it)->scale);
-            col->setExpression((*it)->expr_text);
-            col->setCalculated(true);
-            col->setColumnOrdinal((*it)->ordinal - 1);
+            xd::ColumnInfo col;
+
+            col.name = (*it)->name;
+            col.type = (*it)->type;
+            col.width = (*it)->width;
+            col.scale = (*it)->scale;
+            col.expression = (*it)->expr_text;
+            col.calculated = true;
+            col.column_ordinal = (*it)->ordinal - 1;
+
             s->addColumn(col);
         }
             else
         {
             // generate column info from the
             // field info from the query result
-            xd::IColumnInfoPtr col;
+            xd::ColumnInfo col = createColInfo(m_db_type,
+                                               (*it)->name,
+                                               (*it)->odbc_type,
+                                               (*it)->width,
+                                               (*it)->scale,
+                                               (*it)->expr_text,
+                                               -1);
 
-            col = createColInfo(m_db_type,
-                                (*it)->name,
-                                (*it)->odbc_type,
-                                (*it)->width,
-                                (*it)->scale,
-                                (*it)->expr_text,
-                                -1);
-
-            col->setColumnOrdinal((*it)->ordinal - 1);
+            col.column_ordinal = (*it)->ordinal - 1;
             s->addColumn(col);
         }
     }
@@ -934,34 +933,34 @@ bool OdbcIterator::modifyStructure(xd::IStructure* struct_config,
         {
             if (0 == wcscasecmp(it->m_colname.c_str(), (*it2)->name.c_str()))
             {
-                if (it->m_params->getName().length() > 0)
+                if (it->m_params.name.length() > 0)
                 {
-                    std::wstring new_name = it->m_params->getName();
+                    std::wstring new_name = it->m_params.name;
                     kl::makeUpper(new_name);
                     (*it2)->name = new_name;
                 }
 
-                if (it->m_params->getType() != -1)
+                if (it->m_params.type != -1)
                 {
-                    (*it2)->type = it->m_params->getType();
+                    (*it2)->type = it->m_params.type;
                 }
 
-                if (it->m_params->getWidth() != -1)
+                if (it->m_params.width != -1)
                 {
-                    (*it2)->width = it->m_params->getWidth();
+                    (*it2)->width = it->m_params.width;
                 }
 
-                if (it->m_params->getScale() != -1)
+                if (it->m_params.scale != -1)
                 {
-                    (*it2)->scale = it->m_params->getScale();
+                    (*it2)->scale = it->m_params.scale;
                 }
 
-                if (it->m_params->getExpression().length() > 0)
+                if (it->m_params.expression.length() > 0)
                 {
                     if ((*it2)->expr)
                         delete (*it2)->expr;
-                    (*it2)->expr_text = it->m_params->getExpression();
-                    (*it2)->expr = parse(it->m_params->getExpression());
+                    (*it2)->expr_text = it->m_params.expression;
+                    (*it2)->expr = parse(it->m_params.expression);
                 }
             }
         }
@@ -973,16 +972,16 @@ bool OdbcIterator::modifyStructure(xd::IStructure* struct_config,
         if (it->m_action != StructureAction::actionCreate)
             continue;
 
-        if (it->m_params->getExpression().length() > 0)
+        if (it->m_params.expression.length() > 0)
         {
             OdbcDataAccessInfo* dai = new OdbcDataAccessInfo;
-            dai->name = it->m_params->getName();
-            dai->type = it->m_params->getType();
-            dai->width = it->m_params->getWidth();
-            dai->scale = it->m_params->getScale();
+            dai->name = it->m_params.name;
+            dai->type = it->m_params.type;
+            dai->width = it->m_params.width;
+            dai->scale = it->m_params.scale;
             dai->ordinal = m_fields.size();
-            dai->expr_text = it->m_params->getExpression();
-            dai->expr = parse(it->m_params->getExpression());
+            dai->expr_text = it->m_params.expression;
+            dai->expr = parse(it->m_params.expression);
                 
             dai->str_val = new char[(dai->width+1)*sizeof(char)];
             dai->wstr_val = new wchar_t[(dai->width+1)*sizeof(wchar_t)];
@@ -1076,13 +1075,11 @@ bool OdbcIterator::releaseHandle(xd::objhandle_t data_handle)
     return false;
 }
 
-xd::IColumnInfoPtr OdbcIterator::getInfo(xd::objhandle_t data_handle)
+xd::ColumnInfo OdbcIterator::getInfo(xd::objhandle_t data_handle)
 {
     OdbcDataAccessInfo* dai = (OdbcDataAccessInfo*)data_handle;
     if (dai == NULL)
-    {
-        return xcm::null;
-    }
+        return xd::ColumnInfo();
 
     // try to get the column information from the set structure
 
@@ -1093,12 +1090,9 @@ xd::IColumnInfoPtr OdbcIterator::getInfo(xd::objhandle_t data_handle)
 
     if (m_structure.isOk())
     {
-        xd::IColumnInfoPtr colinfo;
-        colinfo = m_structure->getColumnInfo(dai->name);
+        const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(dai->name);
         if (colinfo.isOk())
-        {
-            return colinfo->clone();
-        }
+            return colinfo;
     }
 
 

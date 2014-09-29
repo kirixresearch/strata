@@ -82,23 +82,22 @@ void xdkpgStructureToXml(xd::IStructurePtr s, kl::xmlnode& node)
 {
     node.setNodeName(L"structure");
 
-    xd::IColumnInfoPtr colinfo;
     int i, col_count;
 
     col_count = s->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        colinfo = s->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = s->getColumnInfoByIdx(i);
 
         kl::xmlnode& col = node.addChild();
         col.setNodeName(L"column");
 
-        col.addChild(L"name", colinfo->getName());
-        col.addChild(L"type", colinfo->getType());
-        col.addChild(L"width", colinfo->getWidth());
-        col.addChild(L"scale", colinfo->getScale());
-        col.addChild(L"calculated", colinfo->getCalculated() ? 1 : 0);
-        col.addChild(L"expression", colinfo->getExpression());
+        col.addChild(L"name", colinfo.name);
+        col.addChild(L"type", colinfo.type);
+        col.addChild(L"width", colinfo.width);
+        col.addChild(L"scale", colinfo.scale);
+        col.addChild(L"calculated", colinfo.calculated ? 1 : 0);
+        col.addChild(L"expression", colinfo.expression);
     }
 }
 

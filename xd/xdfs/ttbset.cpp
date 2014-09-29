@@ -474,12 +474,12 @@ bool TtbRowInserter::startInsert(const std::wstring& _col_list)
             delete col;
             return false;
         }
-        col->name = col->col->getName();
-        col->ordinal = col->col->getColumnOrdinal();
-        col->type = col->col->getType();
-        col->width = col->col->getWidth();
-        col->scale = col->col->getScale();
-        col->offset = col->col->getOffset();
+        col->name = col->col.name;
+        col->ordinal = col->col.column_ordinal;
+        col->type = col->col.type;
+        col->width = col->col.width;
+        col->scale = col->col.scale;
+        col->offset = col->col.source_offset;
         col->nulls_allowed = false;
 
         m_fields.push_back(col);
@@ -506,6 +506,7 @@ xd::objhandle_t TtbRowInserter::getHandle(const std::wstring& column_name)
     return (xd::objhandle_t)0;
 }
 
+/*
 xd::IColumnInfoPtr TtbRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     TtbInsertData* dai = (TtbInsertData*)column_handle;
@@ -514,6 +515,7 @@ xd::IColumnInfoPtr TtbRowInserter::getInfo(xd::objhandle_t column_handle)
 
     return dai->col;
 }
+*/
 
 bool TtbRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                const unsigned char* value,

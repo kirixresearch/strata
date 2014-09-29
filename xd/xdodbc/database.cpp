@@ -552,20 +552,20 @@ int sql2xdType(SQLSMALLINT sql_type)
 // this function consolidates all the rules for creating a
 // xd column info structure from odbc field information
 
-xd::IColumnInfoPtr createColInfo(int db_type,
-                                    const std::wstring& col_name,
-                                    int col_odbc_type,
-                                    int col_width,
-                                    int col_scale,
-                                    const std::wstring& col_expr,
-                                    int datetime_sub)
+xd::ColumnInfo createColInfo(int db_type,
+                             const std::wstring& col_name,
+                             int col_odbc_type,
+                             int col_width,
+                             int col_scale,
+                             const std::wstring& col_expr,
+                             int datetime_sub)
 {
     int col_xd_type = sql2xdType(col_odbc_type);
     col_scale = sql2xdScale(col_odbc_type, col_scale);
 
     if (col_xd_type == xd::typeInvalid)
     {
-        return xcm::null;
+        return xd::ColumnInfo();
     }
 
     if (col_xd_type == xd::typeCharacter ||
@@ -666,18 +666,17 @@ xd::IColumnInfoPtr createColInfo(int db_type,
             col_width = col_scale + 2;
     }
 
-    xd::IColumnInfoPtr col;
-    col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
+    xd::ColumnInfo col;
 
-    col->setName(col_name);
-    col->setType(col_xd_type);
-    col->setWidth(col_width);
-    col->setScale(col_scale);
-    col->setExpression(col_expr);
-    col->setColumnOrdinal(0);
+    col.name = col_name;
+    col.type = col_xd_type;
+    col.width = col_width;
+    col.scale = col_scale;
+    col.expression = col_expr;
+    col.column_ordinal = 0;
 
     if (col_expr.length() > 0)
-        col->setCalculated(true);
+        col.calculated = true;
         
     return col;
 }
@@ -2098,18 +2097,17 @@ bool OdbcDatabase::createTable(const std::wstring& path,
 
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr col_info;
-        col_info = struct_config->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col_info = struct_config->getColumnInfoByIdx(i);
 
         // quote the fieldname
         name = L"";
         name += quote_openchar;
-        name += col_info->getName();
+        name += col_info.name;
         name += quote_closechar;
 
-        type = col_info->getType();
-        width = col_info->getWidth();
-        scale = col_info->getScale();
+        type = col_info.type;
+        width = col_info.width;
+        scale = col_info.scale;
 
         field = createOdbcFieldString(name,
                                       type,
@@ -2160,10 +2158,9 @@ xd::IIteratorPtr OdbcDatabase::query(const xd::QueryParams& qp)
         query = L"SELECT ";
         for (i = 0; i < cnt; ++i)
         {
-            xd::IColumnInfoPtr colinfo;
-            colinfo = s->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& colinfo  = s->getColumnInfoByIdx(i);
 
-            if (colinfo->getCalculated())
+            if (colinfo.calculated)
                 continue;
                 
             if (i != 0)
@@ -2171,22 +2168,21 @@ xd::IIteratorPtr OdbcDatabase::query(const xd::QueryParams& qp)
                 query += L",";
             }
             
-            if (colinfo->getType() == xd::typeNumeric ||
-                colinfo->getType() == xd::typeDouble)
+            if (colinfo.type == xd::typeNumeric || colinfo.type == xd::typeDouble)
             {
                 query += L"IIF(ISNUMERIC([";
-                query += colinfo->getName();
+                query += colinfo.name;
                 query += L"]),VAL(STR([";
-                query += colinfo->getName();
+                query += colinfo.name;
                 query += L"])),null) AS ";
                 query += L"[";
-                query += colinfo->getName();
+                query += colinfo.name;
                 query += L"] ";
             }
              else
             {
                 query += L"[";
-                query += colinfo->getName();
+                query += colinfo.name;
                 query += L"]";
             }
         }
@@ -2469,21 +2465,19 @@ xd::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
                 std::wstring wcol_name;
                 wcol_name = col_name;
 
-                xd::IColumnInfoPtr col;
-                
-                col = createColInfo(m_db_type,
-                                    wcol_name,
-                                    col_type,
-                                    col_width,
-                                    col_scale,
-                                    L"",
-                                      (datetime_sub_ind == SQL_NULL_DATA) ?
-                                         -1 : datetime_sub);
+                xd::ColumnInfo col = createColInfo(m_db_type,
+                                                   wcol_name,
+                                                   col_type,
+                                                   col_width,
+                                                   col_scale,
+                                                   L"",
+                                                     (datetime_sub_ind == SQL_NULL_DATA) ?
+                                                        -1 : datetime_sub);
 
                 if (col.isNull())
                     continue;
 
-                col->setColumnOrdinal(i);
+                col.column_ordinal = i;
                 i++;
 
                 s->addColumn(col);
@@ -2610,7 +2604,7 @@ bool OdbcDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 
 struct TempInfo
 {
-    xd::IColumnInfoPtr colinfo;
+    xd::ColumnInfo* colinfo;
     std::wstring colname;
     char buf[255];
     SQLLEN indicator;
@@ -2625,7 +2619,6 @@ void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, Structure*
     // scale by performing a query to look at the data itself
 
     std::wstring query;
-    xd::IColumnInfoPtr colinfo;
     int col_count = s->getColumnCount();
     int i;
     std::vector<TempInfo> cols;
@@ -2636,20 +2629,19 @@ void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, Structure*
     bool first = true;
     for (i = 0; i < col_count; ++i)
     {
-        colinfo = s->getColumnInfoByIdx(i);
-        if (colinfo->getType() == xd::typeNumeric ||
-            colinfo->getType() == xd::typeDouble)
+        const xd::ColumnInfo& colinfo = s->getColumnInfoByIdx(i);
+        if (colinfo.type == xd::typeNumeric || colinfo.type == xd::typeDouble)
         {
             if (!first)
                 query += L",";
             first = false;
             query += L"STR([";
-            query += colinfo->getName();
+            query += colinfo.name;
             query += L"])";
             TempInfo ti;
-            ti.colinfo = colinfo;
+            ti.colinfo = (xd::ColumnInfo*)&colinfo;
             ti.max_dec = 0;
-            ti.colname = colinfo->getName();
+            ti.colname = colinfo.name;
             cols.push_back(ti);
         }
     }
@@ -2746,7 +2738,7 @@ void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, Structure*
 
     for (it = cols.begin(); it != cols.end(); ++it)
     {
-        it->colinfo->setScale(it->max_dec);
+        it->colinfo->scale = it->max_dec;
     }
 
 
@@ -2839,6 +2831,6 @@ void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, Structure*
 
     for (it = cols.begin(); it != cols.end(); ++it)
     {
-        it->colinfo->setScale(it->max_dec);
+        it->colinfo->scale = it->max_dec;
     }
 }

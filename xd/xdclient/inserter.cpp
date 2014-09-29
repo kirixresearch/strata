@@ -47,18 +47,6 @@ xd::objhandle_t ClientRowInserter::getHandle(const std::wstring& column_name)
     return 0;
 }
 
-xd::IColumnInfoPtr ClientRowInserter::getInfo(xd::objhandle_t column_handle)
-{
-    ClientInsertData* data = (ClientInsertData*)column_handle;
-
-    if (!data)
-        return xcm::null;
-
-    return m_structure->getColumnInfo(data->m_col_name);
-}
-
-
-
 bool ClientRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                    const unsigned char* value,
                                    int length)
@@ -247,21 +235,20 @@ bool ClientRowInserter::startInsert(const std::wstring& col_list)
 
     for (it = columns.begin(); it != columns.end(); ++it)
     {
-        xd::IColumnInfoPtr col_info = m_structure->getColumnInfo(*it);
-
+        const xd::ColumnInfo& col_info = m_structure->getColumnInfo(*it);
         if (col_info.isNull())
             return false;
 
-        field_list += col_info->getName();
+        field_list += col_info.name;
 
         if (it+1 != columns.end())
             field_list += L",";
 
         ClientInsertData d;
-        d.m_col_name = col_info->getName();
-        d.m_xd_type = col_info->getType();
-        d.m_xd_width = col_info->getWidth();
-        d.m_xd_scale = col_info->getScale();
+        d.m_col_name = col_info.name;
+        d.m_xd_type = col_info.type;
+        d.m_xd_width = col_info.width;
+        d.m_xd_scale = col_info.scale;
         d.m_text = L"null";
         d.m_specified = false;
 
@@ -274,7 +261,6 @@ bool ClientRowInserter::startInsert(const std::wstring& col_list)
     m_rows = L"[";
     m_buffer_row_count = 0;
     m_columns = scols;
-
 
     ServerCallParams params;
     params.setParam(L"columns", m_columns);

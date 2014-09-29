@@ -34,13 +34,13 @@ std::wstring createOracleFieldString(const std::wstring& name,
                                      bool null);
 bool isSafeFieldname(const std::wstring& s);
 
-xd::IColumnInfoPtr createColInfo(const std::wstring& col_name,
-                                    int oracle_type,
-                                    int oracle_charset,
-                                    int width,
-                                    int precision,
-                                    int scale,
-                                    const std::wstring& expr = L"");
+xd::ColumnInfo createColInfo(const std::wstring& col_name,
+                             int oracle_type,
+                             int oracle_charset,
+                             int width,
+                             int precision,
+                             int scale,
+                             const std::wstring& expr = L"");
 
 xcm_interface IOracleDatabase : public xcm::IObject
 {

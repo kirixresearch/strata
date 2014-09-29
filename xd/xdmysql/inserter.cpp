@@ -76,6 +76,7 @@ xd::objhandle_t MysqlRowInserter::getHandle(const std::wstring& column_name)
     return 0;
 }
 
+/*
 xd::IColumnInfoPtr MysqlRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     MySqlInsertData* data = (MySqlInsertData*)column_handle;
@@ -88,7 +89,7 @@ xd::IColumnInfoPtr MysqlRowInserter::getInfo(xd::objhandle_t column_handle)
     xd::IStructurePtr structure = m_database->describeTable(m_table);
     return structure->getColumnInfo(data->m_col_name);
 }
-
+*/
 
 bool MysqlRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                  const unsigned char* value,
@@ -295,15 +296,13 @@ bool MysqlRowInserter::startInsert(const std::wstring& col_list)
 
     for (it = columns.begin(); it != columns.end(); ++it)
     {
-        xd::IColumnInfoPtr col_info = s->getColumnInfo(*it);
+        const xd::ColumnInfo& colinfo = s->getColumnInfo(*it);
 
-        if (col_info.isNull())
-        {
+        if (colinfo.isNull())
             return false;
-        }
 
         field_list += m_quote_openchar;
-        field_list += col_info->getName();
+        field_list += colinfo.name;
         field_list += m_quote_closechar;
 
         if (it+1 != columns.end())
@@ -312,10 +311,10 @@ bool MysqlRowInserter::startInsert(const std::wstring& col_list)
         }
 
         MySqlInsertData d;
-        d.m_col_name = col_info->getName();
-        d.m_xd_type = col_info->getType();
-        d.m_xd_width = col_info->getWidth();
-        d.m_xd_scale = col_info->getScale();
+        d.m_col_name = colinfo.name;
+        d.m_xd_type = colinfo.type;
+        d.m_xd_width = colinfo.width;
+        d.m_xd_scale = colinfo.scale;
         d.m_text = L"NULL";
         d.m_specified = false;
 

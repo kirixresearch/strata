@@ -90,10 +90,9 @@ protected:
     bool baseSetModifyStructure(xd::IStructurePtr struct_config,
                                 bool* done);
 
-    bool createCalcField(xd::IColumnInfoPtr params);
+    bool createCalcField(const xd::ColumnInfo& params);
     bool deleteCalcField(const std::wstring& name);
-    bool modifyCalcField(const std::wstring& name,
-                         xd::IColumnInfoPtr params);
+    bool modifyCalcField(const std::wstring& name, const xd::ColumnInfo& params);
     void appendCalcFields(xd::IStructure* structure);
 
     void onOfsPathChanged(const std::wstring& new_path) { }
@@ -121,7 +120,7 @@ private:
     unsigned int m_set_flags;
 
     std::vector<IXdnativeSetEvents*> m_event_handlers;
-    std::vector<xd::IColumnInfoPtr> m_calc_fields;
+    std::vector<xd::ColumnInfo> m_calc_fields;
     unsigned long long m_calcrefresh_time;
     bool m_rel_init;
 };

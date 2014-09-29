@@ -193,27 +193,25 @@ xd::IStructurePtr XlsxIterator::getStructure()
     std::vector<XlsxDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        struct_int->addColumn(col);
-        
-        col->setName((*it)->name);
-        col->setType((*it)->type);
-        col->setWidth((*it)->width);
-        col->setScale((*it)->scale);
-        col->setColumnOrdinal((*it)->ordinal);
-        col->setExpression((*it)->expr_text);
+        xd::ColumnInfo col;
+
+        col.name = (*it)->name;
+        col.type = (*it)->type;
+        col.width = (*it)->width;
+        col.scale = (*it)->scale;
+        col.column_ordinal = (*it)->ordinal;
+        col.expression = (*it)->expr_text;
         
         if ((*it)->xlsx_type == 'Y')    // currency
-            col->setWidth(18);
-        if (col->getType() == xd::typeDouble)
-            col->setWidth(8);
-        if (col->getType() == xd::typeNumeric &&
-            col->getWidth() > xd::max_numeric_width)
-        {
-            col->setWidth(xd::max_numeric_width);
-        }
-        if (col->getExpression().length() > 0)
-            col->setCalculated(true);
+            col.width = 18;
+        if (col.type == xd::typeDouble)
+            col.width = 8;
+        if (col.type == xd::typeNumeric && col.width > xd::max_numeric_width)
+            col.width = xd::max_numeric_width;
+        if (col.expression.length() > 0)
+            col.calculated = true;
+
+        struct_int->addColumn(col);
     }
 
     return s;
@@ -306,40 +304,38 @@ bool XlsxIterator::modifyStructure(xd::IStructure* struct_config,
         if (it->m_action != StructureAction::actionModify)
             continue;
 
-        for (it2 = m_fields.begin();
-             it2 != m_fields.end();
-             ++it2)
+        for (it2 = m_fields.begin();  it2 != m_fields.end(); ++it2)
         {
-            if (0 == wcscasecmp(it->m_colname.c_str(), (*it2)->name.c_str()))
+            if (kl::iequals(it->m_colname, (*it2)->name))
             {
-                if (it->m_params->getName().length() > 0)
+                if (it->m_params.name.length() > 0)
                 {
-                    std::wstring new_name = it->m_params->getName();
+                    std::wstring new_name = it->m_params.name;
                     kl::makeUpper(new_name);
                     (*it2)->name = new_name;
                 }
 
-                if (it->m_params->getType() != -1)
+                if (it->m_params.type != -1)
                 {
-                    (*it2)->type = it->m_params->getType();
+                    (*it2)->type = it->m_params.type;
                 }
 
-                if (it->m_params->getWidth() != -1)
+                if (it->m_params.width != -1)
                 {
-                    (*it2)->width = it->m_params->getWidth();
+                    (*it2)->width = it->m_params.width;
                 }
 
-                if (it->m_params->getScale() != -1)
+                if (it->m_params.scale != -1)
                 {
-                    (*it2)->scale = it->m_params->getScale();
+                    (*it2)->scale = it->m_params.scale;
                 }
 
-                if (it->m_params->getExpression().length() > 0)
+                if (it->m_params.expression.length() > 0)
                 {
                      if ((*it2)->expr)
                         delete (*it2)->expr;
-                    (*it2)->expr_text = it->m_params->getExpression();
-                    (*it2)->expr = parse(it->m_params->getExpression());
+                    (*it2)->expr_text = it->m_params.expression;
+                    (*it2)->expr = parse(it->m_params.expression);
                 }
             }
         }
@@ -351,16 +347,16 @@ bool XlsxIterator::modifyStructure(xd::IStructure* struct_config,
         if (it->m_action != StructureAction::actionCreate)
             continue;
 
-        if (it->m_params->getExpression().length() > 0)
+        if (it->m_params.expression.length() > 0)
         {
             XlsxDataAccessInfo* dai = new XlsxDataAccessInfo;
-            dai->name = it->m_params->getName();
-            dai->type = it->m_params->getType();
-            dai->width = it->m_params->getWidth();
-            dai->scale = it->m_params->getScale();
+            dai->name = it->m_params.name;
+            dai->type = it->m_params.type;
+            dai->width = it->m_params.width;
+            dai->scale = it->m_params.scale;
             dai->ordinal = m_fields.size();
-            dai->expr_text = it->m_params->getExpression();
-            dai->expr = parse(it->m_params->getExpression());
+            dai->expr_text = it->m_params.expression;
+            dai->expr = parse(it->m_params.expression);
             m_fields.push_back(dai);
         }
     }
@@ -376,16 +372,16 @@ bool XlsxIterator::modifyStructure(xd::IStructure* struct_config,
         if (insert_idx < 0 || (size_t)insert_idx >= m_fields.size())
             continue;
         
-        if (it->m_params->getExpression().length() > 0)
+        if (it->m_params.expression.length() > 0)
         {
             XlsxDataAccessInfo* dai = new XlsxDataAccessInfo;
-            dai->name = it->m_params->getName();
-            dai->type = it->m_params->getType();
-            dai->width = it->m_params->getWidth();
-            dai->scale = it->m_params->getScale();
+            dai->name = it->m_params.name;
+            dai->type = it->m_params.type;
+            dai->width = it->m_params.width;
+            dai->scale = it->m_params.scale;
             dai->ordinal = m_fields.size();
-            dai->expr_text = it->m_params->getExpression();
-            dai->expr = parse(it->m_params->getExpression());
+            dai->expr_text = it->m_params.expression;
+            dai->expr = parse(it->m_params.expression);
             m_fields.insert(m_fields.begin()+insert_idx, dai);
         }
     }
@@ -464,44 +460,42 @@ bool XlsxIterator::releaseHandle(xd::objhandle_t data_handle)
     return false;
 }
 
-xd::IColumnInfoPtr XlsxIterator::getInfo(xd::objhandle_t data_handle)
+xd::ColumnInfo XlsxIterator::getInfo(xd::objhandle_t data_handle)
 {
     XlsxDataAccessInfo* dai = (XlsxDataAccessInfo*)data_handle;
     if (dai == NULL)
-    {
-        return xcm::null;
-    }
+        return xd::ColumnInfo();
 
-    ColumnInfo* colinfo = new ColumnInfo;
-    colinfo->setName(dai->name);
-    colinfo->setType(dai->type);
-    colinfo->setWidth(dai->width);
-    colinfo->setScale(dai->scale);
-    colinfo->setExpression(dai->expr_text);
+    xd::ColumnInfo colinfo;
+    colinfo.name = dai->name;
+    colinfo.type = dai->type;
+    colinfo.width = dai->width;
+    colinfo.scale = dai->scale;
+    colinfo.expression = dai->expr_text;
     
     if (dai->type == xd::typeDate ||
         dai->type == xd::typeInteger)
     {
-        colinfo->setWidth(4);
+        colinfo.width = 4;
     }
      else if (dai->type == xd::typeDateTime ||
               dai->type == xd::typeDouble)
     {
-        colinfo->setWidth(8);
+        colinfo.width = 8;
     }
      else if (dai->type == xd::typeBoolean)
     {
-        colinfo->setWidth(1);
+        colinfo.width = 1;
     }
      else
     {
-        colinfo->setWidth(dai->width);
+        colinfo.width = dai->width;
     }
     
     if (dai->expr_text.length() > 0)
-        colinfo->setCalculated(true);
+        colinfo.calculated = true;
 
-    return static_cast<xd::IColumnInfo*>(colinfo);
+    return colinfo;
 }
 
 int XlsxIterator::getType(xd::objhandle_t data_handle)

@@ -547,7 +547,7 @@ void IndexPanel::checkOverlayText()
 
 void IndexPanel::insertIndexColumn(int row,
                                    const wxString& col_name,
-                                   IndexColumnInfo* col_info)
+                                   IndexColumnInfo* index_col_info)
 {
     // insert a new row in the index fields grid
     m_index_fields->insertRow(row);
@@ -555,19 +555,19 @@ void IndexPanel::insertIndexColumn(int row,
         row = m_index_fields->getRowCount()-1;
     
     // determine if this field is a calculated field
-    bool dynamic = false;
-    xd::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(col_name));
+    bool calculated = false;
+    const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(col_name));
     if (colinfo.isOk())
-        dynamic = colinfo->getCalculated();
+        calculated = colinfo.calculated;
     
     // set the cell text and bitmap information
     
     m_index_fields->setCellString(row, 0, col_name);
-    m_index_fields->setCellBitmap(row, 0, dynamic ? GETBMP(gf_lightning_16) :
-                                                    GETBMP(gf_field_16),
-                                                    kcl::Grid::alignLeft);
-    if (col_info)
-        m_index_fields->setCellComboSel(row, 1, col_info->ascending ? 0 : 1);
+    m_index_fields->setCellBitmap(row, 0, calculated ? GETBMP(gf_lightning_16) :
+                                                       GETBMP(gf_field_16),
+                                                       kcl::Grid::alignLeft);
+    if (index_col_info)
+        m_index_fields->setCellComboSel(row, 1, index_col_info->ascending ? 0 : 1);
          else
         m_index_fields->setCellComboSel(row, 1, 0); // ascending
 }

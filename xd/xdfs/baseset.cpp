@@ -103,7 +103,7 @@ bool XdfsBaseSet::modifyStructure(xd::IStructure* struct_config,
         if (it->m_action != StructureAction::actionCreate)
             continue;
 
-        if (it->m_params->getExpression().length() > 0)
+        if (it->m_params.expression.length() > 0)
         {
             if (createCalcField(it->m_params))
                 processed_action_count++;
@@ -272,10 +272,10 @@ bool XdfsBaseSet::prepareIndexEntry(XdfsIndexEntry& e)
 
         dequote(colname, '[', ']');
 
-        xd::IColumnInfoPtr info = structure->getColumnInfo(colname);
+        xd::ColumnInfo info = structure->getColumnInfo(colname);
         if (info.isOk())
         {
-            if (info->getCalculated())
+            if (info.calculated)
             {
                 // in the case of a calculated field, the index may be
                 // dependant on those fields which make up the formula
@@ -283,22 +283,22 @@ bool XdfsBaseSet::prepareIndexEntry(XdfsIndexEntry& e)
                 std::vector<std::wstring> fields_used;
                 std::vector<std::wstring>::iterator it;
 
-                fields_used = getFieldsInExpr(info->getExpression(), structure, true);
+                fields_used = getFieldsInExpr(info.expression, structure, true);
 
                 for (it = fields_used.begin();
                      it != fields_used.end();
                      ++it)
                 {
                     info = structure->getColumnInfo(*it);
-                    if (!info->getCalculated())
+                    if (!info.calculated)
                     {
-                        e.active_columns[info->getColumnOrdinal()] = true;
+                        e.active_columns[info.column_ordinal] = true;
                     }
                 }
             }
              else
             {
-                e.active_columns[info->getColumnOrdinal()] = true;
+                e.active_columns[info.column_ordinal] = true;
             }
         }
     }
@@ -336,14 +336,14 @@ IIndex* XdfsBaseSet::lookupIndexForOrder(const std::wstring& order)
 
 // calculated Field routines
 
-bool XdfsBaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
+bool XdfsBaseSet::createCalcField(const xd::ColumnInfo& colinfo)
 {
     KL_AUTO_LOCK(m_object_mutex);
     
     if (m_config_file_path.empty())
     {
-        xd::IColumnInfoPtr c = colinfo->clone();
-        c->setCalculated(true);
+        xd::ColumnInfo c = colinfo;
+        c.calculated = true;
         m_calc_fields.push_back(c);
         return true;
     }
@@ -360,11 +360,11 @@ bool XdfsBaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
             calculated_fields.setArray();
 
         kl::JsonNode field = calculated_fields.appendElement();
-        field["name"] = colinfo->getName();
-        field["type"] = xd::dbtypeToString(colinfo->getType());
-        field["width"] = colinfo->getWidth();
-        field["scale"] = colinfo->getScale();
-        field["expression"] = colinfo->getExpression();
+        field["name"] = colinfo.name;
+        field["type"] = xd::dbtypeToString(colinfo.type);
+        field["width"] = colinfo.width;
+        field["scale"] = colinfo.scale;
+        field["expression"] = colinfo.expression;
 
         return xf_put_file_contents(m_config_file_path, root.toString());
     }
@@ -378,10 +378,10 @@ bool XdfsBaseSet::deleteCalcField(const std::wstring& _name)
 
     if (m_config_file_path.empty())
     {
-        std::vector<xd::IColumnInfoPtr>::iterator it;
+        std::vector<xd::ColumnInfo>::iterator it;
         for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
         {
-            if (!wcscasecmp((*it)->getName().c_str(), _name.c_str()))
+            if (kl::iequals(it->name, _name))
             {
                 m_calc_fields.erase(it);
                 return true;
@@ -427,12 +427,11 @@ bool XdfsBaseSet::deleteCalcField(const std::wstring& _name)
     return false;
 }
 
-bool XdfsBaseSet::modifyCalcField(const std::wstring& name,
-                                  xd::IColumnInfoPtr colinfo)
+bool XdfsBaseSet::modifyCalcField(const std::wstring& name, const xd::ColumnInfo& colinfo)
 {
     KL_AUTO_LOCK(m_object_mutex);
     
-    if (!colinfo->getCalculated())
+    if (!colinfo.calculated)
     {
         // this is a make permanent operation
         return false;
@@ -445,37 +444,36 @@ bool XdfsBaseSet::modifyCalcField(const std::wstring& name,
     if (m_config_file_path.empty())
     {
         // find the calculated field and modify it
-        std::vector<xd::IColumnInfoPtr>::iterator it;
+        std::vector<xd::ColumnInfo>::iterator it;
         for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
         {
-            if (!wcscasecmp((*it)->getName().c_str(), name.c_str()))
+            if (kl::iequals(it->name, name))
             {
-                new_name  = colinfo->getName();
-                new_type  = colinfo->getType();
-                new_width = colinfo->getWidth();
-                new_scale = colinfo->getScale();
-                new_expr  = colinfo->getExpression();
+                new_name  = colinfo.name;
+                new_type  = colinfo.type;
+                new_width = colinfo.width;
+                new_scale = colinfo.scale;
+                new_expr  = colinfo.expression;
 
                 if (new_name.length() > 0)
-                    (*it)->setName(new_name);
+                    it->name = new_name;
 
                 if (new_type != -1)
-                    (*it)->setType(new_type);
+                    it->type = new_type;
 
                 if (new_width != -1)
-                    (*it)->setWidth(new_width);
+                    it->width = new_width;
 
                 if (new_scale != -1)
-                    (*it)->setScale(new_scale);
+                    it->scale = new_scale;
 
                 if (new_expr.length() > 0)
-                    (*it)->setExpression(new_expr);
+                    it->expression = new_expr;
             }
         }
     }
      else
     {
-
         kl::JsonNode root;
 
         std::wstring json = xf_get_file_contents(m_config_file_path);
@@ -494,11 +492,11 @@ bool XdfsBaseSet::modifyCalcField(const std::wstring& name,
             kl::JsonNode field = calculated_fields[i];
             if (kl::iequals(field["name"], name))
             {
-                new_name  = colinfo->getName();
-                new_type  = colinfo->getType();
-                new_width = colinfo->getWidth();
-                new_scale = colinfo->getScale();
-                new_expr  = colinfo->getExpression();
+                new_name  = colinfo.name;
+                new_type  = colinfo.type;
+                new_width = colinfo.width;
+                new_scale = colinfo.scale;
+                new_expr  = colinfo.expression;
                 
                 if (new_name.length() > 0)
                 {
@@ -542,10 +540,10 @@ void XdfsBaseSet::appendCalcFields(xd::IStructure* structure)
     
     if (m_config_file_path.empty())
     {
-        std::vector<xd::IColumnInfoPtr>::iterator it;
+        std::vector<xd::ColumnInfo>::iterator it;
         for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
         {
-            intstruct->addColumn((*it)->clone());
+            intstruct->addColumn(*it);
         }
     }
      else
@@ -564,13 +562,13 @@ void XdfsBaseSet::appendCalcFields(xd::IStructure* structure)
         {
             kl::JsonNode field = calculated_fields[i];
 
-            xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-            col->setName(field["name"]);
-            col->setType(xd::stringToDbtype(field["type"]));
-            col->setWidth(field["width"].getInteger());
-            col->setScale(field["scale"].getInteger());
-            col->setExpression(field["expression"]);
-            col->setCalculated(!col->getExpression().empty());
+            xd::ColumnInfo col;
+            col.name = field["name"];
+            col.type = xd::stringToDbtype(field["type"]);
+            col.width = field["width"].getInteger();
+            col.scale = field["scale"].getInteger();
+            col.expression = field["expression"];
+            col.calculated = (col.expression.length() > 0) ? true : false;
             intstruct->addColumn(col);
         }
     }

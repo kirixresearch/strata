@@ -171,15 +171,16 @@ inline xd::IStructurePtr createDefaultStructure(xd::IStructurePtr source)
     int i, col_count = source->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr sourcecol = source->getColumnInfoByIdx(i);
+        const xd::ColumnInfo&  sourcecol = source->getColumnInfoByIdx(i);
         
-        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        col->setName(sourcecol->getName());
-        col->setType(sourcecol->getType());
-        col->setWidth(sourcecol->getWidth());
-        col->setScale(sourcecol->getScale());
-        col->setExpression(sourcecol->getName());
-        col->setColumnOrdinal(i);
+        xd::ColumnInfo col;
+        col.name = sourcecol.name;
+        col.type = sourcecol.type;
+        col.width = sourcecol.width;
+        col.scale = sourcecol.scale;
+        col.expression = sourcecol.name;
+        col.column_ordinal = i;
+
         struct_int->addColumn(col);
     }
     
@@ -196,19 +197,19 @@ xd::IStructurePtr FixedLengthTextSet::getStructure()
     int counter = 0;
     for (it = m_def.columns.begin(); it != it_end; ++it)
     {
-        ColumnInfo* col = new ColumnInfo;
+        xd::ColumnInfo col;
         
-        col->setName(it->name);
-        col->setType(it->type);
-        col->setWidth(it->width);
-        col->setScale(it->scale);
-        col->setOffset(0);
-        col->setCalculated(false);
-        col->setColumnOrdinal(counter++);
-        col->setTableOrdinal(0);
-        col->setNullsAllowed(it->nulls_allowed);
+        col.name = it->name;
+        col.type = it->type;
+        col.width = it->width;
+        col.scale = it->scale;
+        col.source_offset = 0;
+        col.calculated = false;
+        col.column_ordinal = counter++;
+        col.table_ordinal = 0;
+        col.nulls_allowed = it->nulls_allowed;
 
-        structure->addColumn(static_cast<xd::IColumnInfo*>(col));
+        structure->addColumn(col);
     }
 
     XdfsBaseSet::appendCalcFields(structure);
@@ -273,6 +274,7 @@ xd::objhandle_t FixedLengthTextRowInserter::getHandle(const std::wstring& column
     return 0;
 }
 
+/*
 xd::IColumnInfoPtr FixedLengthTextRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     FixedLengthTextInsertData* f = (FixedLengthTextInsertData*)column_handle;
@@ -285,6 +287,7 @@ xd::IColumnInfoPtr FixedLengthTextRowInserter::getInfo(xd::objhandle_t column_ha
     xd::IColumnInfoPtr col = structure->getColumnInfo(kl::towstring(f->m_colname));
     return col;
 }
+*/
 
 bool FixedLengthTextRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                          const unsigned char* value,

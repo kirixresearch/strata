@@ -175,33 +175,31 @@ bool KpgRowInserter::startInsert(const std::wstring& col_list)
     // calculate the total physical row width
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr colinfo;
+        const xd::ColumnInfo& colinfo = m_structure->getColumnInfoByIdx(i);
 
-        colinfo = m_structure->getColumnInfoByIdx(i);
-
-        if (!colinfo->getCalculated())
+        if (!colinfo.calculated)
         {
             KpgInsertFieldData fd;
-            fd.m_name = colinfo->getName();
-            fd.m_xd_type = colinfo->getType();
-            fd.m_width = colinfo->getWidth();
-            fd.m_scale = colinfo->getScale();
+            fd.m_name = colinfo.name;
+            fd.m_xd_type = colinfo.type;
+            fd.m_width = colinfo.width;
+            fd.m_scale = colinfo.scale;
             fd.m_offset = total_phys_width;
             m_fields.push_back(fd);
 
 
             int width = 0;
             
-            switch (colinfo->getType())
+            switch (colinfo.type)
             {
                 case xd::typeCharacter:
-                    width = colinfo->getWidth();
+                    width = colinfo.width;
                     break;
                 case xd::typeWideCharacter:
-                    width = colinfo->getWidth() * 2;
+                    width = colinfo.width * 2;
                     break;
                 case xd::typeNumeric:
-                    width = colinfo->getWidth();
+                    width = colinfo.width;
                     break;
                 case xd::typeDouble:
                     width = sizeof(double);
@@ -222,7 +220,7 @@ bool KpgRowInserter::startInsert(const std::wstring& col_list)
 
             total_phys_width += width;
 
-            if (colinfo->getNullsAllowed())
+            if (colinfo.nulls_allowed)
                 total_phys_width++;
         }
     }

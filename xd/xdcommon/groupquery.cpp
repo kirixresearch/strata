@@ -424,14 +424,14 @@ public:
             ii.m_input_handle = handle;
             ii.m_offset = m_store_size;
 
-            xd::IColumnInfoPtr colinfo = m_iter_structure->getColumnInfo(field);
+            const xd::ColumnInfo& colinfo = m_iter_structure->getColumnInfo(field);
             if (colinfo.isOk())
             {
                 // if we have a regular column, get the info
-                ii.m_name = colinfo->getName();
-                ii.m_type = colinfo->getType();
-                ii.m_width = colinfo->getWidth();
-                ii.m_scale = colinfo->getScale();
+                ii.m_name = colinfo.name;
+                ii.m_type = colinfo.type;
+                ii.m_width = colinfo.width;
+                ii.m_scale = colinfo.scale;
             }
             else            
             {
@@ -580,8 +580,7 @@ bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
         std::wstring lookup_colname = result->m_param_text;
         dequote(lookup_colname, '[', ']');
 
-        xd::IColumnInfoPtr colinfo;
-        colinfo = info->m_set_structure->getColumnInfo(lookup_colname);
+        const xd::ColumnInfo& colinfo = info->m_set_structure->getColumnInfo(lookup_colname);
 
         if (colinfo.isNull())
         {
@@ -590,9 +589,9 @@ bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
         }
         else
         {
-            result->m_type = colinfo->getType();
-            result->m_width = colinfo->getWidth();
-            result->m_scale = colinfo->getScale();
+            result->m_type = colinfo.type;
+            result->m_width = colinfo.width;
+            result->m_scale = colinfo.scale;
         }
 
 
@@ -793,18 +792,18 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
             int colcount = structure->getColumnCount();
             for (int i = 0; i < colcount; ++i)
             {
-                xd::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
+                const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
 
                 GroupOutputInfo of;
-                of.m_detail_source_field = colinfo->getName();
+                of.m_detail_source_field = colinfo.name;
                 of.m_result = NULL;
                 of.m_store_offset = -1;
                 of.m_input_handle = 0;
                 of.m_output_handle = 0;
-                of.m_name = colinfo->getName();
-                of.m_type = colinfo->getType();
-                of.m_width = colinfo->getWidth();
-                of.m_scale = colinfo->getScale();
+                of.m_name = colinfo.name;
+                of.m_type = colinfo.type;
+                of.m_width = colinfo.width;
+                of.m_scale = colinfo.scale;
 
                 output_fields.push_back(of);
             }
@@ -813,15 +812,13 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
         {
             // '*' is equal to the first() of every column
 
-            xd::IColumnInfoPtr colinfo;
-
             int colcount = structure->getColumnCount();
             for (int i = 0; i < colcount; ++i)
             {
-                colinfo = structure->getColumnInfoByIdx(i);
+                const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
 
                 std::wstring part2 = L"FIRST([";
-                part2 += colinfo->getName();
+                part2 += colinfo.name;
                 part2 += L"])";
 
                 // parse a group expr - this will add a GroupResult object to |gi.m_results|
@@ -838,7 +835,7 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
 
                 // add an output field in the output file definition
                 GroupOutputInfo of;
-                of.m_name = colinfo->getName();
+                of.m_name = colinfo.name;
                 of.m_store_offset = -1;
                 of.m_input_handle = 0;
                 of.m_output_handle = 0;

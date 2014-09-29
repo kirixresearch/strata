@@ -306,32 +306,20 @@ xd::IStructurePtr ClientDatabase::jsonToStructure(kl::JsonNode& node)
     {
         kl::JsonNode column = columns[i];
 
-        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
-        col->setName(column["name"]);
-        col->setType(xd::stringToDbtype(column["type"]));
-        col->setWidth(column["width"].getInteger());
-        col->setScale(column["scale"].getInteger());
-        col->setColumnOrdinal(i);
-        col->setExpression(column["expression"]);
-        col->setCalculated(column["expression"].getString().length() > 0 ? true : false);
+        xd::ColumnInfo col;
+        col.name = column["name"];
+        col.type = xd::stringToDbtype(column["type"]);
+        col.width = column["width"].getInteger();
+        col.scale = column["scale"].getInteger();
+        col.column_ordinal = i;
+        col.expression = column["expression"];
+        col.calculated = (col.expression.length() > 0) ? true : false;
 
         s->addColumn(col);
     }
 
     return static_cast<xd::IStructure*>(s);
 }
-
-
-void ClientDatabase::columnToJsonNode(xd::IColumnInfoPtr info, kl::JsonNode& column)
-{  
-    column["name"] = info->getName();
-    column["type"] = xd::dbtypeToString(info->getType());
-    column["width"].setInteger(info->getWidth());
-    column["scale"].setInteger(info->getScale());   
-    column["expression"] = info->getExpression();
-    column["calculated"].setBoolean(info->getCalculated());
-}
-
 
 
 
@@ -347,12 +335,12 @@ std::wstring ClientDatabase::structureToJson(xd::IStructurePtr structure)
     {
         kl::JsonNode column = columns.appendElement();
             
-        xd::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
-        column["name"] = info->getName();
-        column["type"] = xd::dbtypeToString(info->getType());
-        column["width"].setInteger(info->getWidth());
-        column["scale"].setInteger(info->getScale());
-        column["expression"] = info->getExpression();
+        const xd::ColumnInfo& info = structure->getColumnInfoByIdx(idx);
+        column["name"] = info.name;
+        column["type"] = xd::dbtypeToString(info.type);
+        column["width"].setInteger(info.width);
+        column["scale"].setInteger(info.scale);
+        column["expression"] = info.expression;
     }
 
     return columns.toString();

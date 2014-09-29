@@ -51,11 +51,11 @@ int SplitPanel::getSetRowWidth()
     int i, col_count = m_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr col = m_structure->getColumnInfoByIdx(i);
-        if (col->getCalculated())
+        const xd::ColumnInfo& colinfo = m_structure->getColumnInfoByIdx(i);
+        if (colinfo.calculated)
             continue;
 
-        row_width += col->getWidth();
+        row_width += colinfo.width;
     }
     
     return row_width;

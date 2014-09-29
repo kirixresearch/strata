@@ -139,7 +139,7 @@ public:
     bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
 
     xd::objhandle_t getHandle(const std::wstring& expr);
-    xd::IColumnInfoPtr getInfo(xd::objhandle_t data_handle);
+    xd::ColumnInfo getInfo(xd::objhandle_t data_handle);
     int getType(xd::objhandle_t data_handle);
     bool releaseHandle(xd::objhandle_t data_handle);
 

@@ -101,8 +101,7 @@ static std::vector<wxString> getColumnsFromSource(const std::wstring& source)
 
         for (int i = 0; i < column_count; ++i)
         {
-            xd::IColumnInfoPtr info = set_structure->getColumnInfoByIdx(i);
-            columns.push_back(info->getName());
+            columns.push_back(set_structure->getColumnName(i));
         }
 
         return columns;

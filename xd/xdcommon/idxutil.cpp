@@ -712,7 +712,7 @@ xd::objhandle_t CommonIndexIterator::getHandle(const std::wstring& expr)
     return m_data_iter->getHandle(expr);
 }
 
-xd::IColumnInfoPtr CommonIndexIterator::getInfo(xd::objhandle_t data_handle)
+xd::ColumnInfo CommonIndexIterator::getInfo(xd::objhandle_t data_handle)
 {
     return m_data_iter->getInfo(data_handle);
 }

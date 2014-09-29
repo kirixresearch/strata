@@ -2213,14 +2213,13 @@ bool FsDatabase::createTable(const std::wstring& path,
         // create vector of XbaseFields
         for (i = 0; i < col_count; ++i)
         {
-            xd::IColumnInfoPtr col_info;
-            col_info = structure->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& col_info = structure->getColumnInfoByIdx(i);
 
             XbaseField f;
-            f.name = kl::tostring(col_info->getName());
-            f.type = xd2xbaseType(col_info->getType());
-            f.width = col_info->getWidth();
-            f.scale = col_info->getScale();
+            f.name = kl::tostring(col_info.name);
+            f.type = xd2xbaseType(col_info.type);
+            f.width = col_info.width;
+            f.scale = col_info.scale;
             f.ordinal = i;
 
             fields.push_back(f);
@@ -2245,24 +2244,23 @@ bool FsDatabase::createTable(const std::wstring& path,
         // create vector of fields
         for (i = 0; i < col_count; ++i)
         {
-            xd::IColumnInfoPtr col_info;
-            col_info = structure->getColumnInfoByIdx(i);
-            if (col_info->getType() == xd::typeWideCharacter)
+            const xd::ColumnInfo& col_info = structure->getColumnInfoByIdx(i);
+            if (col_info.type == xd::typeWideCharacter)
                 unicode_data_found = true;
             
-            if (!col_info->getCalculated())
+            if (!col_info.calculated)
             {
-                std::wstring fld = col_info->getName();
+                std::wstring fld = col_info.name;
                 fld += L"(";
                     
-                switch (col_info->getType())
+                switch (col_info.type)
                 {
                     default:
                     case xd::typeCharacter:
                     case xd::typeWideCharacter:
                     {
                         wchar_t info[255];
-                        swprintf(info, 255, L"C %d", col_info->getWidth());
+                        swprintf(info, 255, L"C %d", col_info.width);
                         fld += info;
                         break;
                     }
@@ -2271,7 +2269,7 @@ bool FsDatabase::createTable(const std::wstring& path,
                     case xd::typeInteger:
                     {
                         wchar_t info[255];
-                        swprintf(info, 255, L"N %d %d", col_info->getWidth(), col_info->getScale());
+                        swprintf(info, 255, L"N %d %d", col_info.width, col_info.scale);
                         fld += info;
                         break;
                     }
@@ -2363,13 +2361,12 @@ bool FsDatabase::createTable(const std::wstring& path,
         // create vector of fields
         for (i = 0; i < col_count; ++i)
         {
-            xd::IColumnInfoPtr col_info;
-            col_info = structure->getColumnInfoByIdx(i);
-            if (col_info->getType() == xd::typeWideCharacter)
+            const xd::ColumnInfo& col_info = structure->getColumnInfoByIdx(i);
+            if (col_info.type == xd::typeWideCharacter)
                 unicode_data_found = true;
             
-            if (!col_info->getCalculated())
-                fields.push_back(col_info->getName());
+            if (!col_info.calculated)
+                fields.push_back(col_info.name);
         }
         
         

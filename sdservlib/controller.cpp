@@ -1049,12 +1049,12 @@ void Controller::apiDescribeTable(RequestInfo& req)
     {
         kl::JsonNode item = columns.appendElement();
         
-        xd::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
-        item["name"] = info->getName();
-        item["type"] = xd::dbtypeToString(info->getType());
-        item["width"].setInteger(info->getWidth());
-        item["scale"].setInteger(info->getScale());
-        item["expression"] = info->getExpression();
+        const xd::ColumnInfo& info = structure->getColumnInfoByIdx(idx);
+        item["name"] = info.name;
+        item["type"] = xd::dbtypeToString(info.type);
+        item["width"].setInteger(info.width);
+        item["scale"].setInteger(info.scale);
+        item["expression"] = info.expression;
     }
 
     req.write(response.toString());
@@ -1197,14 +1197,14 @@ void Controller::apiRead(RequestInfo& req)
         xd::IStructurePtr s = iter->getStructure();
         for (int i = 0; i < s->getColumnCount(); ++i)
         {
-            xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& colinfo = s->getColumnInfoByIdx(i);
             
             SessionQueryResultColumn qrc;
-            qrc.name = colinfo->getName();
+            qrc.name = colinfo.name;
             qrc.handle = iter->getHandle(qrc.name);
-            qrc.type = colinfo->getType();
-            qrc.width = colinfo->getWidth();
-            qrc.scale = colinfo->getScale();
+            qrc.type = colinfo.type;
+            qrc.width = colinfo.width;
+            qrc.scale = colinfo.scale;
             
             so->columns.push_back(qrc);
         }
@@ -1260,18 +1260,18 @@ void Controller::apiRead(RequestInfo& req)
 
             for (idx = 0; idx < count; ++idx)
             {  
-                xd::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
+                const xd::ColumnInfo& info = structure->getColumnInfoByIdx(idx);
 
                 if (idx > 0)
                     str += L",";
 
                 str += L"{\"name\":";
-                quotedAppend(str, info->getName());
-                str += L",\"type\":\"" +  xd::dbtypeToString(info->getType()) + L"\"";
-                str += L",\"width\":" + kl::itowstring(info->getWidth());
-                str += L",\"scale\":" + kl::itowstring(info->getScale());
+                quotedAppend(str, info.name);
+                str += L",\"type\":\"" +  xd::dbtypeToString(info.type) + L"\"";
+                str += L",\"width\":" + kl::itowstring(info.width);
+                str += L",\"scale\":" + kl::itowstring(info.scale);
                 str += L",\"expression\":";
-                quotedAppend(str, info->getExpression());
+                quotedAppend(str, info.expression);
                 str += L"}";
             }
 
@@ -1518,14 +1518,14 @@ void Controller::apiInsertRows(RequestInfo& req)
                 return;
             }
         
-            xd::IColumnInfoPtr colinfo = structure->getColumnInfo(*it);
+            const xd::ColumnInfo& colinfo = structure->getColumnInfo(*it);
             if (colinfo.isNull())
             {
                 returnApiError(req, kl::tostring(L"Cannot initialize inserter (invalid column info) " + *it).c_str());
                 return;
             }
         
-            ric.type = colinfo->getType();
+            ric.type = colinfo.type;
         
             columns.push_back(ric);
         }

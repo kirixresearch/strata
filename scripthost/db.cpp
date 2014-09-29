@@ -369,12 +369,12 @@ void DbResult::init(xd::IIteratorPtr iter)
     
     for (i = 0; i < colcount; ++i)
     {
-        xd::IColumnInfoPtr colinfo = m_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = m_structure->getColumnInfoByIdx(i);
 
         DbResultColumn c;
-        c.name = colinfo->getName();
-        c.type = colinfo->getType();
-        c.scale = colinfo->getScale();
+        c.name = colinfo.name;
+        c.type = colinfo.type;
+        c.scale = colinfo.scale;
         c.handle = m_iter->getHandle(c.name);
 
         // this line makes the column members appear
@@ -598,8 +598,7 @@ void DbResult::getColumnInfo(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
     
-    xd::IColumnInfoPtr col;
-    
+    xd::ColumnInfo col;
     
     if (env->getParam(0)->isString() ||
         env->getParam(0)->isObject())
@@ -613,7 +612,6 @@ void DbResult::getColumnInfo(kscript::ExprEnv* env, kscript::Value* retval)
     }
     
     
-    
     if (col.isNull())
     {
         retval->setNull();
@@ -624,11 +622,11 @@ void DbResult::getColumnInfo(kscript::ExprEnv* env, kscript::Value* retval)
     // documentation next to class definition, as well
     // as the other instance where DbColumn is used
     DbColumn* dbcol = DbColumn::createObject(env);
-    dbcol->getMember(L"name")->setString(col->getName());
-    dbcol->getMember(L"type")->setInteger(DbType::fromXdType(col->getType()));
-    dbcol->getMember(L"width")->setInteger(col->getWidth());
-    dbcol->getMember(L"scale")->setInteger(col->getScale());
-    dbcol->getMember(L"expression")->setString(col->getExpression());
+    dbcol->getMember(L"name")->setString(col.name);
+    dbcol->getMember(L"type")->setInteger(DbType::fromXdType(col.type));
+    dbcol->getMember(L"width")->setInteger(col.width);
+    dbcol->getMember(L"scale")->setInteger(col.scale);
+    dbcol->getMember(L"expression")->setString(col.expression);
     
     retval->setObject(dbcol);
 }
@@ -1026,11 +1024,11 @@ bool DbBulkInsert::init(xd::IDatabasePtr db,
         size_t i, col_count = (size_t)structure->getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            xd::IColumnInfoPtr sp_col = structure->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& sp_col = structure->getColumnInfoByIdx(i);
             
             DbBulkInsertColumn col;
-            col.name = sp_col->getName();
-            col.type = sp_col->getType();
+            col.name = sp_col.name;
+            col.type = sp_col.type;
             col.handle = m_ri->getHandle(col.name);
             
             m_cols.push_back(col);
@@ -1046,8 +1044,8 @@ bool DbBulkInsert::init(xd::IDatabasePtr db,
             std::wstring token = *it;
             kl::trim(token);
             
-            xd::IColumnInfoPtr sp_col = structure->getColumnInfo(token);
-            if (!sp_col)
+            const xd::ColumnInfo& sp_col = structure->getColumnInfo(token);
+            if (sp_col.isNull())
             {
                 // column not found, fail
                 m_ri = NULL;
@@ -1056,8 +1054,8 @@ bool DbBulkInsert::init(xd::IDatabasePtr db,
             }
             
             DbBulkInsertColumn col;
-            col.name = sp_col->getName();
-            col.type = sp_col->getType();
+            col.name = sp_col.name;
+            col.type = sp_col.type;
             col.handle = m_ri->getHandle(col.name);
             
             m_cols.push_back(col);
@@ -2006,17 +2004,17 @@ void DbConnection::describeTable(kscript::ExprEnv* env, kscript::Value* retval)
     int i, col_count = structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr col = structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col = structure->getColumnInfoByIdx(i);
 
         // TODO: if members are added, make sure to change
         // documentation next to class definition, as well
         // as the other instance where DbColumn is used
         DbColumn* dbcol = DbColumn::createObject(env);
-        dbcol->getMember(L"name")->setString(col->getName());
-        dbcol->getMember(L"type")->setInteger(DbType::fromXdType(col->getType()));
-        dbcol->getMember(L"width")->setInteger(col->getWidth());
-        dbcol->getMember(L"scale")->setInteger(col->getScale());
-        dbcol->getMember(L"expression")->setString(col->getExpression());
+        dbcol->getMember(L"name")->setString(col.name);
+        dbcol->getMember(L"type")->setInteger(DbType::fromXdType(col.type));
+        dbcol->getMember(L"width")->setInteger(col.width);
+        dbcol->getMember(L"scale")->setInteger(col.scale);
+        dbcol->getMember(L"expression")->setString(col.expression);
         
         retval->getMemberI(i)->setObject(dbcol);
     }

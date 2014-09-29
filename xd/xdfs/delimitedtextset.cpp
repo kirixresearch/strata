@@ -357,26 +357,25 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
 xd::IStructurePtr DelimitedTextSet::getStructure()
 {
     Structure* structure = new Structure;
-    ColumnInfo* col;
     xd::IStructurePtr sp = static_cast<xd::IStructure*>(structure);
 
     std::vector<xd::ColumnInfo>::iterator it, it_end = m_def.columns.end();
     int counter = 0;
     for (it = m_def.columns.begin(); it != it_end; ++it)
     {
-        col = new ColumnInfo;
+        xd::ColumnInfo col;
         
-        col->setName(it->name);
-        col->setType(it->type);
-        col->setWidth(it->width);
-        col->setScale(it->scale);
-        col->setOffset(0);
-        col->setCalculated(false);
-        col->setColumnOrdinal(counter++);
-        col->setTableOrdinal(0);
-        col->setNullsAllowed(it->nulls_allowed);
+        col.name = it->name;
+        col.type = it->type;
+        col.width = it->width;
+        col.scale = it->scale;
+        col.source_offset = 0;
+        col.calculated = false;
+        col.column_ordinal = counter++;
+        col.table_ordinal = 0;
+        col.nulls_allowed = it->nulls_allowed;
 
-        structure->addColumn(static_cast<xd::IColumnInfo*>(col));
+        structure->addColumn(col);
     }
 
     XdfsBaseSet::appendCalcFields(structure);
@@ -1117,16 +1116,16 @@ bool DelimitedTextRowInserter::startInsert(const std::wstring& col_list)
     int i, col_count = s->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = s->getColumnInfoByIdx(i);
         
         DelimitedTextDataAccessInfo* f = new DelimitedTextDataAccessInfo;
-        f->name = colinfo->getName();
-        f->type = colinfo->getType();
-        f->width = colinfo->getWidth();
-        f->scale = colinfo->getScale();
-        f->ordinal = colinfo->getColumnOrdinal();
-        f->nulls_allowed = colinfo->getNullsAllowed();
-        f->expr_text = colinfo->getExpression();
+        f->name = colinfo.name;
+        f->type = colinfo.type;
+        f->width = colinfo.width;
+        f->scale = colinfo.scale;
+        f->ordinal = colinfo.column_ordinal;
+        f->nulls_allowed = colinfo.nulls_allowed;
+        f->expr_text = colinfo.expression;
         m_fields.push_back(f);
     }
 

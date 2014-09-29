@@ -324,7 +324,7 @@ void FieldListControl::populate()
     // first, clear out the grid
     m_grid->deleteAllRows();
 
-    xd::IColumnInfoPtr colinfo;
+    
     int col_count = m_structure->getColumnCount();
 
     // create a temporary vector of field list items
@@ -332,15 +332,14 @@ void FieldListControl::populate()
     std::vector<FieldListItem> fields;
     for (int i = 0; i < col_count; i++)
     {
-        colinfo = m_structure->getColumnInfoByIdx(i);
-        bool dynamic = colinfo->getCalculated();
+        const xd::ColumnInfo& colinfo = m_structure->getColumnInfoByIdx(i);
 
         FieldListItem fli;
-        fli.name = makeProperIfNecessary(colinfo->getName());
-        fli.bitmap = dynamic ? GETBMP(gf_lightning_16) : GETBMP(gf_field_16);
-        fli.type = colinfo->getType();
-        fli.width = colinfo->getWidth();
-        fli.scale = colinfo->getScale();
+        fli.name = makeProperIfNecessary(colinfo.name);
+        fli.bitmap = colinfo.calculated ? GETBMP(gf_lightning_16) : GETBMP(gf_field_16);
+        fli.type = colinfo.type;
+        fli.width = colinfo.width;
+        fli.scale = colinfo.scale;
         fli.enabled = true;
         
         fields.push_back(fli);

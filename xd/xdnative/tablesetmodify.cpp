@@ -632,21 +632,19 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
     std::vector<ModifyField>::iterator it_mf;
     ModifyField mf;
 
-    xd::IColumnInfoPtr col_info;
-
     int col_count = src_structure->getColumnCount();
     int i;
 
     for (i = 0; i < col_count; ++i)
     {
-        col_info = src_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col_info = src_structure->getColumnInfoByIdx(i);
 
-        mf.calculated = col_info->getCalculated();
+        mf.calculated = col_info.calculated;
 
-        mf.dest_name = col_info->getName();
-        mf.dest_type = col_info->getType();
-        mf.dest_width = col_info->getWidth();
-        mf.dest_scale = col_info->getScale();
+        mf.dest_name = col_info.name;
+        mf.dest_type = col_info.type;
+        mf.dest_width = col_info.width;
+        mf.dest_scale = col_info.scale;
 
         mf.src_name = mf.dest_name;
         mf.src_type = mf.dest_type;
@@ -655,8 +653,6 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
 
         modfields.push_back(mf);
     }
-
-
 
 
     bool write_all = false;
@@ -670,7 +666,7 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
         // corresponding to the duplicate
         if (it_sa->m_action != StructureAction::actionDelete)
         {
-            if (it_sa->m_params->getCalculated())
+            if (it_sa->m_params.calculated)
                 continue;
         }
 
@@ -680,12 +676,12 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
             {
                 ModifyField mf;
 
-                mf.dest_name = it_sa->m_params->getName();
-                mf.dest_type = it_sa->m_params->getType();
-                mf.dest_width = it_sa->m_params->getWidth();
-                mf.dest_scale = it_sa->m_params->getScale();
+                mf.dest_name = it_sa->m_params.name;
+                mf.dest_type = it_sa->m_params.type;
+                mf.dest_width = it_sa->m_params.width;
+                mf.dest_scale = it_sa->m_params.scale;
 
-                int pos = it_sa->m_params->getColumnOrdinal();
+                int pos = it_sa->m_params.column_ordinal;
                 if (pos < 0)
                     pos = modfields.size();
                     
@@ -706,27 +702,24 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
 
             case StructureAction::actionModify:
             {
-                for (it_mf = modfields.begin();
-                     it_mf != modfields.end();
-                     ++it_mf)
+                for (it_mf = modfields.begin(); it_mf != modfields.end(); ++it_mf)
                 {
-                    if (0 == wcscasecmp(it_mf->src_name.c_str(),
-                                        it_sa->m_colname.c_str()))
+                    if (kl::iequals(it_mf->src_name, it_sa->m_colname))
                     {
-                        if (it_sa->m_params->getName().length() > 0)
+                        if (it_sa->m_params.name.length() > 0)
                         {
-                            it_mf->dest_name = it_sa->m_params->getName();
+                            it_mf->dest_name = it_sa->m_params.name;
                         }
 
-                        if (it_sa->m_params->getType() != -1)
+                        if (it_sa->m_params.type != -1)
                         {
-                            it_mf->dest_type = it_sa->m_params->getType();
+                            it_mf->dest_type = it_sa->m_params.type;
                             write_all = true;
                         }
 
-                        if (it_sa->m_params->getWidth() != -1)
+                        if (it_sa->m_params.width != -1)
                         {
-                            it_mf->dest_width = it_sa->m_params->getWidth();
+                            it_mf->dest_width = it_sa->m_params.width;
                             write_all = true;
 
                             if ((it_mf->dest_type == -1 && it_mf->src_type == xd::typeNumeric) ||
@@ -739,9 +732,9 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
                             }
                         }
 
-                        if (it_sa->m_params->getScale() != -1)
+                        if (it_sa->m_params.scale != -1)
                         {
-                            it_mf->dest_scale = it_sa->m_params->getScale();
+                            it_mf->dest_scale = it_sa->m_params.scale;
                             if (it_mf->src_type != xd::typeDouble)
                             {
                                 // if we are changing the scale of a double,
@@ -750,7 +743,7 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
                             }
                         }
 
-                        if (!it_sa->m_params->getCalculated() && it_mf->calculated)
+                        if (!it_sa->m_params.calculated && it_mf->calculated)
                         {
                             // "make permanent" operation
                             it_mf->calculated = false;
@@ -758,9 +751,9 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
                             makeperm_fields.push_back(it_sa->m_colname);
                         }
                         
-                        if (it_sa->m_params->getColumnOrdinal() != -1)
+                        if (it_sa->m_params.column_ordinal != -1)
                         {
-                            int desired_pos = it_sa->m_params->getColumnOrdinal();
+                            int desired_pos = it_sa->m_params.column_ordinal;
                             if (desired_pos < 0)
                                 desired_pos = 0;
                         
@@ -832,8 +825,7 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
 
                 for (int i = 0; i < col_count; ++i)
                 {
-                    if (!wcscasecmp(src_structure->getColumnName(i).c_str(),
-                                    it_sa->m_colname.c_str()))
+                    if (kl::iequals(src_structure->getColumnName(i), it_sa->m_colname))
                     {
                         idx = i;
                         break;
@@ -846,18 +838,18 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
                     continue;
                 }
 
-                xd::IColumnInfoPtr col = src_structure->getColumnInfoByIdx(idx);
-                if (col->getCalculated())
+                const xd::ColumnInfo& col = src_structure->getColumnInfoByIdx(idx);
+                if (col.calculated)
                 {
                     // skip calculated fields (they have already been processed)
                     continue;
                 }
 
                 m_table->writeColumnInfo(idx,
-                                         it_sa->m_params->getName(),
-                                         it_sa->m_params->getType(),
-                                         it_sa->m_params->getWidth(),
-                                         it_sa->m_params->getScale());
+                                         it_sa->m_params.name,
+                                         it_sa->m_params.type,
+                                         it_sa->m_params.width,
+                                         it_sa->m_params.scale);
             }
         }
 

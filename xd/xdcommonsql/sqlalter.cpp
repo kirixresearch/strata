@@ -23,7 +23,7 @@
 #include <map>
 
 
-xd::IColumnInfoPtr parseColumnDescription(const std::wstring& str, ThreadErrorInfo& error);
+xd::ColumnInfo parseColumnDescription(const std::wstring& str, ThreadErrorInfo& error);
 
 
 
@@ -95,7 +95,7 @@ bool sqlAlter(xd::IDatabasePtr db,
                 popToken(*it);
             
             
-            xd::IColumnInfoPtr new_params = parseColumnDescription(*it, error);
+            xd::ColumnInfo new_params = parseColumnDescription(*it, error);
             if (new_params.isNull())
             {
                 // something wrong with the column description section;
@@ -104,10 +104,10 @@ bool sqlAlter(xd::IDatabasePtr db,
             }
 
             // if field name already exists, fail out
-            if (structure->getColumnExist(new_params->getName()))
+            if (structure->getColumnExist(new_params.name))
             {
                 std::wstring msg = L"Unable to add column in ALTER statement; column '";
-                msg += new_params->getName();
+                msg += new_params.name;
                 msg += L"' already exists";
                 
                 // can't add column
@@ -118,12 +118,12 @@ bool sqlAlter(xd::IDatabasePtr db,
 
             xd::ColumnInfo colinfo;
 
-            colinfo.name = new_params->getName();
-            colinfo.type = new_params->getType();
-            colinfo.width = new_params->getWidth();
-            colinfo.scale = new_params->getScale();
-            colinfo.expression = new_params->getExpression();
-            colinfo.calculated = new_params->getCalculated();
+            colinfo.name = new_params.name;
+            colinfo.type = new_params.type;
+            colinfo.width = new_params.width;
+            colinfo.scale = new_params.scale;
+            colinfo.expression = new_params.expression;
+            colinfo.calculated = new_params.calculated;
             
             if (stmt.getKeywordExists(L"FIRST"))
                 colinfo.column_ordinal = 0;
@@ -134,29 +134,29 @@ bool sqlAlter(xd::IDatabasePtr db,
             if (stmt.getKeywordExists(L"BEFORE"))
             {
                 std::wstring before = stmt.getKeywordParam(L"BEFORE");
-                xd::IColumnInfoPtr col = structure->getColumnInfo(before);
+                const xd::ColumnInfo& col = structure->getColumnInfo(before);
                 if (col.isNull())
                 {
                     std::wstring msg = L"Unable to add column in ALTER statement; column '";
-                    msg += new_params->getName();
+                    msg += new_params.name;
                     msg += L"' specified in BEFORE clause does not exist";
                 }
                 
-                colinfo.column_ordinal = col->getColumnOrdinal();
+                colinfo.column_ordinal = col.column_ordinal;
             }
             
             if (stmt.getKeywordExists(L"AFTER"))
             {
                 std::wstring after = stmt.getKeywordParam(L"AFTER");
-                xd::IColumnInfoPtr col = structure->getColumnInfo(after);
+                const xd::ColumnInfo& col = structure->getColumnInfo(after);
                 if (col.isNull())
                 {
                     std::wstring msg = L"Unable to add column in ALTER statement; column '";
-                    msg += new_params->getName();
+                    msg += new_params.name;
                     msg += L"' specified in AFTER clause does not exist";
                 }
                 
-                colinfo.column_ordinal = col->getColumnOrdinal()+1;
+                colinfo.column_ordinal = col.column_ordinal+1;
             }
 
 
@@ -226,7 +226,7 @@ bool sqlAlter(xd::IDatabasePtr db,
                 popToken(*it);
             
             
-            xd::IColumnInfoPtr new_params = parseColumnDescription(*it, error);
+            xd::ColumnInfo new_params = parseColumnDescription(*it, error);
             if (new_params.isNull())
             {
                 // something wrong with the column description section;
@@ -234,7 +234,7 @@ bool sqlAlter(xd::IDatabasePtr db,
                 return false;
             }
 
-            std::wstring colname = new_params->getName();
+            std::wstring colname = new_params.name;
             xd::IColumnInfoPtr colinfo = structure->modifyColumn(colname);
             if (colinfo.isNull())
             {
@@ -245,11 +245,11 @@ bool sqlAlter(xd::IDatabasePtr db,
                 return false;
             }
         
-            colinfo->setType(new_params->getType());
-            colinfo->setWidth(new_params->getWidth());
-            colinfo->setScale(new_params->getScale());
-            colinfo->setExpression(new_params->getExpression());
-            colinfo->setCalculated(new_params->getCalculated());
+            colinfo->setType(new_params.type);
+            colinfo->setWidth(new_params.width);
+            colinfo->setScale(new_params.scale);
+            colinfo->setExpression(new_params.expression);
+            colinfo->setCalculated(new_params.calculated);
         }
          else if (verb == L"MODIFY")
         {
@@ -280,7 +280,7 @@ bool sqlAlter(xd::IDatabasePtr db,
                     return false;
                 }
                 
-                xd::IColumnInfoPtr new_params = parseColumnDescription(*col_it, error);
+                xd::ColumnInfo new_params = parseColumnDescription(*col_it, error);
                 if (new_params.isNull())
                 {
                     // something wrong with the column description section;
@@ -298,12 +298,12 @@ bool sqlAlter(xd::IDatabasePtr db,
                     return false;
                 }
             
-                colinfo->setName(new_params->getName());
-                colinfo->setType(new_params->getType());
-                colinfo->setWidth(new_params->getWidth());
-                colinfo->setScale(new_params->getScale());
-                colinfo->setExpression(new_params->getExpression());
-                colinfo->setCalculated(new_params->getCalculated());
+                colinfo->setName(new_params.name);
+                colinfo->setType(new_params.type);
+                colinfo->setWidth(new_params.width);
+                colinfo->setScale(new_params.scale);
+                colinfo->setExpression(new_params.expression);
+                colinfo->setCalculated(new_params.calculated);
             }
         }
     }    

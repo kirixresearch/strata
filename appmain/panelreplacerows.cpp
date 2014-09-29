@@ -150,7 +150,6 @@ void ReplaceRowsPanel::populate()
     m_expr_panel->setStructure(m_structure);
 
     // populate choicebox
-    xd::IColumnInfoPtr colinfo;
 
     std::vector<wxString> fields;
 
@@ -158,8 +157,7 @@ void ReplaceRowsPanel::populate()
     int i, col_count = m_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        colinfo = m_structure->getColumnInfoByIdx(i);
-        fields.push_back(makeProper(colinfo->getName()));
+        fields.push_back(makeProperIfNecessary(m_structure->getColumnName(i)));
     }
 
     std::sort(fields.begin(), fields.end());
@@ -176,15 +174,15 @@ bool ReplaceRowsPanel::isValidValue()
     replace_value.Trim(TRUE);
     
     wxString replace_field = m_field_choice->GetStringSelection();
-    xd::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
+    const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(replace_field));
     if (colinfo.isNull())
         return false;
 
-    switch (colinfo->getType())
+    switch (colinfo.type)
     {
         case xd::typeWideCharacter:
         case xd::typeCharacter:
-            if (replace_value.Length() > (size_t)colinfo->getWidth())
+            if (replace_value.Length() > (size_t)colinfo.width)
                 return false;
             return true;
 
@@ -231,7 +229,7 @@ void ReplaceRowsPanel::checkEnableRun()
         return;
 
     wxString replace_field = m_field_choice->GetStringSelection();
-    xd::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
+    const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(replace_field));
     
     if (replace_field.IsEmpty() || colinfo.isNull())
     {
@@ -249,15 +247,14 @@ bool ReplaceRowsPanel::validate(bool* value)
     if (value)
         *value = false;
 
-
     wxString replace_value = m_replace_text->GetValue();
     wxString replace_field = m_field_choice->GetStringSelection();
 
-    xd::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
+    const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(replace_field));
     if (colinfo.isOk())
     {
         int type = m_structure->getExprType(towstr(replace_value));
-        valid = xd::isTypeCompatible(type, colinfo->getType());
+        valid = xd::isTypeCompatible(type, colinfo.type);
     }
 
 
@@ -305,7 +302,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
     bool is_value = false;
     
     wxString replace_field = m_field_choice->GetStringSelection();
-    xd::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
+    const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(replace_field));
     
     if (replace_field.IsEmpty())
     {
@@ -347,11 +344,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
     if (is_value)
     {
         // must adjust for value replace
-
-        int col_type = colinfo->getType();
-
-        if (col_type == xd::typeCharacter ||
-            col_type == xd::typeWideCharacter)
+        if (colinfo.type == xd::typeCharacter || colinfo.type == xd::typeWideCharacter)
         {
             int len = replace_value.Length();
 
@@ -376,8 +369,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
             temp += "'";
             replace_value = temp;
         }
-         else if (col_type == xd::typeDate ||
-                  col_type == xd::typeDateTime)
+         else if (colinfo.type == xd::typeDate || colinfo.type == xd::typeDateTime)
         {
             int y, m, d, hh, mm, ss;
 
@@ -396,9 +388,9 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
                                        y, m, d, hh, mm, ss);
             }
         }
-         else if (col_type == xd::typeInteger ||
-                  col_type == xd::typeDouble ||
-                  col_type == xd::typeNumeric)
+         else if (colinfo.type == xd::typeInteger ||
+                  colinfo.type == xd::typeDouble ||
+                  colinfo.type == xd::typeNumeric)
         {
             replace_value.Replace(wxT(","), wxT("."));
         }
