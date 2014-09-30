@@ -25,7 +25,7 @@
 
 const int PACKAGE_BLOCK_SIZE = 1000000;
 
-KpgRowInserter::KpgRowInserter(KpgDatabase* db, const std::wstring& table, xd::IStructurePtr structure)
+KpgRowInserter::KpgRowInserter(KpgDatabase* db, const std::wstring& table, const xd::FormatDefinition& structure)
 {
     m_database = db;
     m_database->ref();
@@ -164,13 +164,13 @@ bool KpgRowInserter::putNull(xd::objhandle_t column_handle)
 
 bool KpgRowInserter::startInsert(const std::wstring& col_list)
 {
-    int i, col_count = m_structure->getColumnCount();
     int total_phys_width = 0;
 
     // calculate the total physical row width
-    for (i = 0; i < col_count; ++i)
+    std::vector<xd::ColumnInfo>::const_iterator it;
+    for (it = m_structure.columns.begin(); it != m_structure.columns.end(); ++it)
     {
-        const xd::ColumnInfo& colinfo = m_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = *it;
 
         if (!colinfo.calculated)
         {
@@ -232,7 +232,7 @@ bool KpgRowInserter::startInsert(const std::wstring& col_list)
     // remove table from the shadow m_create_tables map in KpgDatabase
     {
         KL_AUTO_LOCK(m_database->m_obj_mutex);
-        std::map<std::wstring, xd::IStructurePtr, kl::cmp_nocase>::iterator it;
+        std::map<std::wstring, xd::FormatDefinition, kl::cmp_nocase>::iterator it;
         it = m_database->m_create_tables.find(m_table);
         if (it != m_database->m_create_tables.end())
             m_database->m_create_tables.erase(it);

@@ -137,9 +137,9 @@ TtbTable::~TtbTable()
     close();
 }
 
-bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
+bool TtbTable::create(const std::wstring& filename, const std::vector<xd::ColumnInfo>& structure)
 {
-    int column_count = structure->getColumnCount();
+    int column_count = (int)structure.size();
     int i;
     int col_type;
     int col_width;
@@ -150,7 +150,7 @@ bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
     // check field widths and scales
     for (i = 0; i < column_count; ++i)
     {
-        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = structure[i];
 
         col_type = colinfo.type;
         col_width = colinfo.width;
@@ -214,7 +214,7 @@ bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
 
     for (i = 0; i < column_count; ++i)
     {
-        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = structure[i];
         
         if (colinfo.calculated)
             continue;

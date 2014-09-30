@@ -92,7 +92,7 @@ public:
                        std::wstring& remote_path);
 
     xd::IStructurePtr createStructure();
-    bool createTable(const std::wstring& path, xd::IStructurePtr struct_config, const xd::FormatDefinition* format_info);
+    bool createTable(const std::wstring& path, const xd::FormatDefinition& format_definition);
     xd::IStreamPtr openStream(const std::wstring& path);
     bool createStream(const std::wstring& path, const std::wstring& mime_type);
 

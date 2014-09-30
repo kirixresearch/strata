@@ -222,7 +222,6 @@ int LoadJob::runJob()
 
         // create the destination table
 
-        xd::FormatDefinition* p_destination_format = NULL;
         xd::FormatDefinition destination_format;
 
         if (object.childExists("destination_format"))
@@ -236,7 +235,6 @@ int LoadJob::runJob()
             destination_format.delimiters = format.getChild("delimiter").getString();
             destination_format.text_qualifiers = format.getChild("text_qualifier").getString();
             destination_format.first_row_column_names = format.getChild("header_row").getBoolean();
-            p_destination_format = &destination_format;
         }
 
 
@@ -247,7 +245,10 @@ int LoadJob::runJob()
             destination_db->deleteFile(destination_path);
 
             xd::IStructurePtr structure = source_iter->getStructure();
-            if (!destination_db->createTable(destination_path, structure, p_destination_format))
+            for (int i = 0, colcount = structure->getColumnCount(); i < colcount; ++i)
+                destination_format.columns.push_back(structure->getColumnInfoByIdx(i));
+
+            if (!destination_db->createTable(destination_path, destination_format))
             {
                 // could not create output file
                 m_job_info->setState(jobStateFailed);
@@ -259,7 +260,10 @@ int LoadJob::runJob()
             if (!destination_db->getFileExist(destination_path))
             {
                 xd::IStructurePtr structure = source_iter->getStructure();
-                if (!destination_db->createTable(destination_path, structure, p_destination_format))
+                for (int i = 0, colcount = structure->getColumnCount(); i < colcount; ++i)
+                    destination_format.columns.push_back(structure->getColumnInfoByIdx(i));
+
+                if (!destination_db->createTable(destination_path, destination_format))
                 {
                     // could not create output file
                     m_job_info->setState(jobStateFailed);

@@ -490,41 +490,40 @@ void MultiFileInfoPanel::onSave(wxCommandEvent& event)
     if (db.isNull())
         return;
 
-    xd::IStructurePtr output_structure;
+    xd::FormatDefinition output_structure;
     xd::ColumnInfo colinfo;
-    output_structure = db->createStructure();
 
     colinfo = xd::ColumnInfo();
     colinfo.name = L"Filename";
     colinfo.type = xd::typeWideCharacter;
     colinfo.width = 255;
     colinfo.scale = 0;
-    output_structure->createColumn(colinfo);
+    output_structure.createColumn(colinfo);
 
     colinfo = xd::ColumnInfo();
     colinfo.name = L"Type";
     colinfo.type = xd::typeWideCharacter;
     colinfo.width = 30;
     colinfo.scale = 0;
-    output_structure->createColumn(colinfo);
+    output_structure.createColumn(colinfo);
 
     colinfo = xd::ColumnInfo();
     colinfo.name = L"Size";
     colinfo.type = xd::typeDouble;
     colinfo.width = 8;
     colinfo.scale = 0;
-    output_structure->createColumn(colinfo);
+    output_structure.createColumn(colinfo);
 
     colinfo = xd::ColumnInfo();
     colinfo.name = L"Records";
     colinfo.type = xd::typeDouble;
     colinfo.width = 8;
     colinfo.scale = 0;
-    output_structure->createColumn(colinfo);
+    output_structure.createColumn(colinfo);
 
     std::wstring output_path = xd::getTemporaryPath();
 
-    if (!db->createTable(output_path, output_structure, NULL))
+    if (!db->createTable(output_path, output_structure))
         return;
 
     xd::IRowInserterPtr output_inserter = db->bulkInsert(output_path);

@@ -836,7 +836,14 @@ bool PgsqlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
          else
         {
             deleteFile(info->output);
-            if (!createTable(info->output, structure, NULL))
+
+            xd::FormatDefinition fd = info->output_format;
+            fd.columns.clear();
+            int i, colcount = structure->getColumnCount();
+            for (i = 0; i < colcount; ++i)
+                fd.createColumn(structure->getColumnInfoByIdx(i));
+
+            if (!createTable(info->output, fd))
                 return false;
         }
 
@@ -1314,9 +1321,7 @@ xd::IStructurePtr PgsqlDatabase::createStructure()
     return static_cast<xd::IStructure*>(s);
 }
 
-bool PgsqlDatabase::createTable(const std::wstring& path,
-                                xd::IStructurePtr struct_config,
-                                const xd::FormatDefinition* format_info)
+bool PgsqlDatabase::createTable(const std::wstring& path, const xd::FormatDefinition& format_definition)
 {
     std::wstring tbl = pgsqlQuoteIdentifierIfNecessary(path);
 
@@ -1332,38 +1337,24 @@ bool PgsqlDatabase::createTable(const std::wstring& path,
     command += L" (";
 
     std::wstring field;
-    field.reserve(255);
 
-    std::wstring name;
-    int type;
-    int width;
-    int scale;
-    
-    int i, col_count = struct_config->getColumnCount();
-    for (i = 0; i < col_count; ++i)
+    std::vector<xd::ColumnInfo>::const_iterator it;
+    for (it = format_definition.columns.cbegin(); it != format_definition.columns.cend(); ++it)
     {
-        const xd::ColumnInfo& colinfo = struct_config->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = *it;
 
         // quote the fieldname
-        name = pgsqlQuoteIdentifierIfNecessary(colinfo.name);
 
-        type = colinfo.type;
-        width = colinfo.width;
-        scale = colinfo.scale;
-
-        field = pgsqlCreateFieldString(name,
-                                  type,
-                                  width,
-                                  scale,
-                                  true,
-                                  xd::dbtypePostgres);
-
+        field = pgsqlCreateFieldString(pgsqlQuoteIdentifierIfNecessary(colinfo.name),
+                                       colinfo.type,
+                                       colinfo.width,
+                                       colinfo.scale,
+                                       true,
+                                       xd::dbtypePostgres);
         command += field;
 
-        if (i+1 != col_count)
-        {
+        if (it+1 < format_definition.columns.cend())
             command += L", ";
-        }
     }
     command += L")";
 

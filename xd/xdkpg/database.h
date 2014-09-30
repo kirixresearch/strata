@@ -21,8 +21,10 @@ class JobInfo;
 class PkgFile;
 
 namespace kl { class xmlnode; };
-void xdkpgStructureToXml(xd::IStructurePtr s, kl::xmlnode& node);
-xd::IStructurePtr xdkpgXmlToStructure(kl::xmlnode& node);
+void xdkpgStructureToXml(const xd::FormatDefinition& fd, kl::xmlnode& node);
+xd::FormatDefinition xdkpgXmlToStructure(kl::xmlnode& node);
+xd::IStructurePtr xdkpgXmlToIStructure(kl::xmlnode& node);
+
 
 class KpgDatabase : public xd::IDatabase
 {
@@ -80,7 +82,7 @@ public:
     std::wstring getPrimaryKey(const std::wstring table);
     
     xd::IStructurePtr createStructure();
-    bool createTable(const std::wstring& path, xd::IStructurePtr struct_config, const xd::FormatDefinition* format_info);
+    bool createTable(const std::wstring& path, const xd::FormatDefinition& format_info);
     xd::IStreamPtr openStream(const std::wstring& path);
     bool createStream(const std::wstring& path, const std::wstring& mime_type);
 
@@ -133,7 +135,7 @@ private:
     int m_last_job;
     std::vector<JobInfo*> m_jobs;
 
-    std::map<std::wstring, xd::IStructurePtr, kl::cmp_nocase> m_create_tables;
+    std::map<std::wstring, xd::FormatDefinition, kl::cmp_nocase> m_create_tables;
     std::map<std::wstring, std::wstring /*mime type*/, kl::cmp_nocase> m_create_streams;
 
     ThreadErrorInfo m_error;

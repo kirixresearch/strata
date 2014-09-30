@@ -541,9 +541,7 @@ xd::IStructurePtr SqlServerDatabase::createStructure()
     return static_cast<xd::IStructure*>(s);
 }
 
-bool SqlServerDatabase::createTable(const std::wstring& path,
-                                    xd::IStructurePtr struct_config,
-                                    const xd::FormatDefinition* format_info)
+bool SqlServerDatabase::createTable(const std::wstring& path, const xd::FormatDefinition& format_info)
 {
     std::wstring command;
     command.reserve(1024);

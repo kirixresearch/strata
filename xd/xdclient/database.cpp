@@ -323,19 +323,19 @@ xd::IStructurePtr ClientDatabase::jsonToStructure(kl::JsonNode& node)
 
 
 
-std::wstring ClientDatabase::structureToJson(xd::IStructurePtr structure)
+std::wstring ClientDatabase::structureToJson(const xd::FormatDefinition& structure)
 {
-    // set the total number of items
-    int idx, count = structure->getColumnCount();
-
     // set the items
     kl::JsonNode columns;
     columns.setArray();
-    for (idx = 0; idx < count; ++idx)
+
+    std::vector<xd::ColumnInfo>::const_iterator it;
+    for (it = structure.columns.cbegin(); it != structure.columns.cend(); ++it)
     {
         kl::JsonNode column = columns.appendElement();
             
-        const xd::ColumnInfo& info = structure->getColumnInfoByIdx(idx);
+        const xd::ColumnInfo& info = *it;
+
         column["name"] = info.name;
         column["type"] = xd::dbtypeToString(info.type);
         column["width"].setInteger(info.width);
@@ -724,11 +724,9 @@ xd::IStructurePtr ClientDatabase::createStructure()
     return static_cast<xd::IStructure*>(s);
 }
 
-bool ClientDatabase::createTable(const std::wstring& path,
-                                 xd::IStructurePtr structure,
-                                 const xd::FormatDefinition* format_info)
+bool ClientDatabase::createTable(const std::wstring& path, const xd::FormatDefinition& format_definition)
 {
-    std::wstring columns = structureToJson(structure);
+    std::wstring columns = structureToJson(format_definition);
 
     ServerCallParams params;
     params.setParam(L"columns", columns);

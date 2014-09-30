@@ -294,7 +294,7 @@ bool FeedParser::convertToTable(const std::wstring& output_path)
     max_id_len = (max_id_len*150)/100;
 
     // create the output file
-    xd::IStructurePtr structure = g_app->getDatabase()->createStructure();
+    xd::FormatDefinition structure;
     xd::ColumnInfo colinfo;
     
     colinfo = xd::ColumnInfo();
@@ -302,38 +302,38 @@ bool FeedParser::convertToTable(const std::wstring& output_path)
     colinfo.type = xd::typeWideCharacter;
     colinfo.width = max_link_len;
     colinfo.scale = 0;
-    structure->createColumn(colinfo);
+    structure.createColumn(colinfo);
     
     colinfo = xd::ColumnInfo();
     colinfo.name = L"title";
     colinfo.type = xd::typeWideCharacter;
     colinfo.width = max_title_len;
     colinfo.scale = 0;
-    structure->createColumn(colinfo);
+    structure.createColumn(colinfo);
     
     colinfo = xd::ColumnInfo();
     colinfo.name = L"description";
     colinfo.type = xd::typeWideCharacter;
     colinfo.width = max_description_len;
     colinfo.scale = 0;
-    structure->createColumn(colinfo);
+    structure.createColumn(colinfo);
     
     colinfo = xd::ColumnInfo();
     colinfo.name = L"publication_date";
     colinfo.type = xd::typeDateTime;
     colinfo.width = 8;
     colinfo.scale = 0;
-    structure->createColumn(colinfo);
+    structure.createColumn(colinfo);
     
     colinfo = xd::ColumnInfo();
     colinfo.name = L"id";
     colinfo.type = xd::typeWideCharacter;
     colinfo.width = max_id_len;
     colinfo.scale = 0;
-    structure->createColumn(colinfo);
+    structure.createColumn(colinfo);
 
 
-    if (!db->createTable(output_path, structure, NULL))
+    if (!db->createTable(output_path, structure))
         return false;
 
     xd::IRowInserterPtr row_inserter = db->bulkInsert(output_path);

@@ -2055,7 +2055,7 @@ static bool doJoin(xd::IDatabasePtr db,
 
 
     // create output structure
-    xd::IStructurePtr output_structure = db->createStructure();
+    xd::FormatDefinition fd;
 
     for (jf_it = jfields.begin(); jf_it != jfields.end(); ++jf_it)
     {
@@ -2066,10 +2066,10 @@ static bool doJoin(xd::IDatabasePtr db,
         colinfo.width = jf_it->width;
         colinfo.scale = jf_it->scale;
 
-        output_structure->createColumn(colinfo);
+        fd.createColumn(colinfo);
     }
 
-    if (!db->createTable(output_path, output_structure, NULL))
+    if (!db->createTable(output_path, fd))
         return false;
 
     // create output row inserter
@@ -3416,7 +3416,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
     // create output set
     
-    xd::IStructurePtr output_structure = db->createStructure();
+    xd::FormatDefinition output_structure;
     xd::IStructurePtr iter_structure = iter->getStructure();
 
     for (f_it = fields.begin(); f_it != fields.end(); ++f_it)
@@ -3431,7 +3431,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
         colinfo.width = itercol.width;
         colinfo.scale = itercol.scale;
 
-        output_structure->createColumn(colinfo);
+        output_structure.createColumn(colinfo);
     }
 
 
@@ -3441,12 +3441,12 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
     // check if the output file will be in a mount
     if (output_path.length() > 0 && db->getMountDatabase(output_path).isOk())
     {
-        create_result = db->createTable(output_path, output_structure, NULL);
+        create_result = db->createTable(output_path, output_structure);
     }
      else
     {
         output_path = xd::getTemporaryPath();
-        create_result = db->createTable(output_path, output_structure, NULL);
+        create_result = db->createTable(output_path, output_structure);
         temporary = true;
     }
 

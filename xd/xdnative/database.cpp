@@ -1577,7 +1577,14 @@ bool XdnativeDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
      else
     {
         deleteFile(info->output);
-        if (!createTable(info->output, structure, NULL))
+
+        xd::FormatDefinition fd = info->output_format;
+        fd.columns.clear();
+        int i, colcount = structure->getColumnCount();
+        for (i = 0; i < colcount; ++i)
+            fd.createColumn(structure->getColumnInfoByIdx(i));
+
+        if (!createTable(info->output, fd))
             return false;
     }
 
@@ -3026,9 +3033,7 @@ xd::IStructurePtr XdnativeDatabase::createStructure()
     return static_cast<xd::IStructure*>(s);
 }
 
-bool XdnativeDatabase::createTable(const std::wstring& path,
-                                   xd::IStructurePtr structure,
-                                   const xd::FormatDefinition* format_info)
+bool XdnativeDatabase::createTable(const std::wstring& path, const xd::FormatDefinition& format_definition)
 {
     if (path.length() == 0)
         return false;
@@ -3043,14 +3048,14 @@ bool XdnativeDatabase::createTable(const std::wstring& path,
         if (db.isNull())
             return xcm::null;
 
-        return db->createTable(rpath, structure, format_info);
+        return db->createTable(rpath, format_definition);
     }
 
 
     TableSet* set = new TableSet(this);
     set->ref();
 
-    if (!set->create(structure, path))
+    if (!set->create(format_definition, path))
     {
         set->unref();
         return false;

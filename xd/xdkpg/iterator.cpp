@@ -75,7 +75,7 @@ bool KpgIterator::init(const std::wstring& path)
         return false;
 
     kl::xmlnode& structure_node = m_info.getChild(node_idx);
-    m_structure = xdkpgXmlToStructure(structure_node);
+    m_structure = xdkpgXmlToIStructure(structure_node);
     if (m_structure.isNull())
         return false;
 

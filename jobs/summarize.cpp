@@ -212,7 +212,7 @@ int SummarizeJob::runJob()
 
     // STEP 3: pivot the output
 
-    xd::IStructurePtr output_structure = m_db->createStructure();
+    xd::FormatDefinition output_structure;
     
 
     const wchar_t* fields[] = { L"Field",
@@ -258,12 +258,12 @@ int SummarizeJob::runJob()
         }
 
 
-        output_structure->createColumn(output_colinfo);
+        output_structure.createColumn(output_colinfo);
 
         ++i;
     }
 
-    if (!m_db->createTable(output_path, output_structure, NULL))
+    if (!m_db->createTable(output_path, output_structure))
     {
         m_job_info->setState(jobStateFailed);
         return 0;

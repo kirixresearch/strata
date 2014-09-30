@@ -877,7 +877,7 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
 
 
     // create output table
-    xd::IStructurePtr output_structure = static_cast<xd::IStructure*>(new Structure);
+    xd::FormatDefinition output_structure;
 
     for (it_mf = modfields.begin(); it_mf != modfields.end(); ++it_mf)
     {
@@ -888,7 +888,7 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
         col_info.width = it_mf->dest_width;
         col_info.scale = it_mf->dest_scale;
 
-        output_structure->createColumn(col_info);
+        output_structure.createColumn(col_info);
     }
 
 
@@ -899,7 +899,7 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
     temp_tbl_filename += L".tmp";
 
     // create the table
-    if (!TtbTable::create(temp_tbl_filename, output_structure))
+    if (!TtbTable::create(temp_tbl_filename, output_structure.columns))
     {
         if (ijob.isOk())
         {
@@ -933,8 +933,6 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
     tbl_set->m_file.setGuid(guid);
 
 
-    output_structure = tbl_set->getStructure();
-    
     // create a row inserter for the output set
     xd::IRowInserterPtr sp_output_inserter = tbl_set->getRowInserter();
     if (sp_output_inserter.isNull())

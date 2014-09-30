@@ -1063,13 +1063,11 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
 
     
     // create output structure
-    xd::IStructurePtr output_struct = db->createStructure();
+    xd::FormatDefinition output_struct;
     std::set<std::wstring> unique_output_fields;
     std::vector<GroupOutputInfo>::iterator out_it;
 
-    for (out_it = output_fields.begin();
-         out_it != output_fields.end();
-         ++out_it)
+    for (out_it = output_fields.begin(); out_it != output_fields.end(); ++out_it)
     {
         // check to make sure that there are no duplicate output fields 
         std::wstring f = out_it->m_name;
@@ -1090,10 +1088,10 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
         info.width = out_it->m_width;
         info.scale = out_it->m_scale;
 
-        output_struct->createColumn(info);
+        output_struct.createColumn(info);
     }
 
-    if (!db->createTable(info->output, output_struct, NULL))
+    if (!db->createTable(info->output, output_struct))
         return false;
 
     xd::IRowInserterPtr output_inserter = db->bulkInsert(info->output);

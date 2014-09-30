@@ -682,7 +682,7 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
 
                 m_last_type = cur_type;
 
-                colinfo.mask |= xd::ColumnInfo::maskExpression;
+                colinfo.mask |= xd::ColumnInfo::maskType;
                 colinfo.type = cur_type;
 
                 type_changed = true;

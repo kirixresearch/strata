@@ -1369,7 +1369,7 @@ bool StructureDoc::createTable()
         return false;
 
     // create the structure
-    xd::IStructurePtr structure = g_app->getDatabase()->createStructure();
+    xd::FormatDefinition structure;
     
     wxString name;
     int type;
@@ -1394,12 +1394,12 @@ bool StructureDoc::createTable()
         col.scale = scale;
         col.expression = towstr(expr);
         col.calculated = isCalculatedField(m_grid, row);
-        structure->createColumn(col);
+        structure.createColumn(col);
     }
     
     // get the path from the dialog and create the new set
     std::wstring new_path = towstr(dlg.getPath());
-    if (!g_app->getDatabase()->createTable(new_path, structure, NULL))
+    if (!g_app->getDatabase()->createTable(new_path, structure))
         return false;
 
     // set the modify set in case the user wants to further modify the set

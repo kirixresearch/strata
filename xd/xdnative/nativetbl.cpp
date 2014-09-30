@@ -156,9 +156,9 @@ bool NativeTable::removeEventHandler(ITableEvents* handler)
     return true;
 }
 
-bool NativeTable::create(const std::wstring& filename, xd::IStructure* structure)
+bool NativeTable::create(const std::wstring& filename, const xd::FormatDefinition& structure)
 {
-    int column_count = structure->getColumnCount();
+    int column_count = (int)structure.columns.size();
     int i;
     int col_type;
     int col_width;
@@ -169,7 +169,7 @@ bool NativeTable::create(const std::wstring& filename, xd::IStructure* structure
     // check field widths and scales
     for (i = 0; i < column_count; ++i)
     {
-        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = structure.columns[i];
 
         col_type = colinfo.type;
         col_width = colinfo.width;
@@ -242,7 +242,7 @@ bool NativeTable::create(const std::wstring& filename, xd::IStructure* structure
 
     for (i = 0; i < column_count; ++i)
     {
-        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = structure.columns[i];
         
         if (colinfo.calculated)
             continue;

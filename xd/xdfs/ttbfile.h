@@ -65,7 +65,7 @@ public:
     };
 
 public:
-    static bool create(const std::wstring& filename, xd::IStructure* structure);
+    static bool create(const std::wstring& filename, const std::vector<xd::ColumnInfo>& structure);
 
 public:
     

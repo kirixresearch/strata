@@ -496,9 +496,7 @@ xd::IStructurePtr SlDatabase::createStructure()
 }
 
 
-bool SlDatabase::createTable(const std::wstring& path,
-                             xd::IStructurePtr struct_config,
-                             const xd::FormatDefinition* format_info)
+bool SlDatabase::createTable(const std::wstring& path, const xd::FormatDefinition& format_definition)
 {
     // generate table name, SQL CREATE statment, and execute
 
@@ -507,11 +505,10 @@ bool SlDatabase::createTable(const std::wstring& path,
     sql += sqliteGetTablenameFromPath(path);
     sql += L" (";
     
-    int i, col_count = struct_config->getColumnCount();
-
-    for (i = 0; i < col_count; ++i)
+    std::vector<xd::ColumnInfo>::const_iterator it;
+    for (it = format_definition.columns.cbegin(); it != format_definition.columns.cend(); ++it)
     {
-        const xd::ColumnInfo& colinfo = struct_config->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = *it;
         
         std::wstring piece;
         piece += colinfo.name;
@@ -552,7 +549,7 @@ bool SlDatabase::createTable(const std::wstring& path,
         }
 
         piece += type;
-        if (i+1 < col_count)
+        if (it+1 != format_definition.columns.cend())
             piece += L", ";
 
         sql += piece;

@@ -340,8 +340,7 @@ bool sqlCreate(xd::IDatabasePtr db,
         kl::parseDelimitedList(columns, colvec, L',', true);
 
 
-        Structure* s = new Structure;
-        xd::IStructurePtr sp = static_cast<xd::IStructure*>(s);
+        xd::FormatDefinition fd;
 
         std::vector<std::wstring>::iterator it;
         for (it = colvec.begin();
@@ -352,7 +351,7 @@ bool sqlCreate(xd::IDatabasePtr db,
             if (col.isNull())
                 return false;
                 
-            s->addColumn(col);
+            fd.createColumn(col);
         }
 
         if (db->getFileExist(table_name))
@@ -364,7 +363,7 @@ bool sqlCreate(xd::IDatabasePtr db,
             return false;
         }
         
-        bool res = db->createTable(table_name, sp, NULL);
+        bool res = db->createTable(table_name, fd);
         if (!res)
         {
             wchar_t buf[1024]; // some paths might be long

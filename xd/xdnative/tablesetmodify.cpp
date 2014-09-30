@@ -893,7 +893,7 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
 
 
     // create output table
-    xd::IStructurePtr output_structure = m_database->createStructure();
+    xd::FormatDefinition output_structure;
 
     for (it_mf = modfields.begin(); it_mf != modfields.end(); ++it_mf)
     {
@@ -904,7 +904,7 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
         col_info.width = it_mf->dest_width;
         col_info.scale = it_mf->dest_scale;
 
-        output_structure->createColumn(col_info);
+        output_structure.createColumn(col_info);
     }
 
 
@@ -947,8 +947,6 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
     }
 
 
-    output_structure = tbl_set->getStructure();
-    
 
     // create a row inserter for the output set
     xd::IRowInserterPtr sp_output_inserter = tbl_set->getRowInserter();

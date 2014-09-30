@@ -407,9 +407,52 @@ struct FormatDefinition
 
     // structure
     std::vector<ColumnInfo> columns;
+
+    // helper functions
+
+    void createColumn(const xd::ColumnInfo& params) { columns.push_back(params); }
 };
 
 
+class StructureModify
+{
+private:
+
+    struct Action
+    {
+        enum
+        {
+            actionCreate = 0,
+            actionModify = 1,
+            actionDelete = 2,
+            actionMove   = 3,
+            actionInsert = 4
+        };
+
+        Action(int _action, const std::wstring& _column, const xd::ColumnInfo& _params)
+            : action(_action), column(_column), colinfo(_params) { }
+        Action(int _action, const std::wstring& _column)
+            : action(_action), column(_column) { }
+
+        int action;
+        std::wstring column;
+        xd::ColumnInfo colinfo;
+    };
+
+    std::vector<Action> actions;
+
+public:
+
+    void deleteColumn(const std::wstring& column_name)
+        { actions.push_back(Action(Action::actionDelete, column_name)); }
+    void moveColumn(const std::wstring& column_name, int new_idx)
+        { xd::ColumnInfo c; c.mask = xd::ColumnInfo::maskColumnOrdinal; c.column_ordinal = new_idx;
+          actions.push_back(Action(Action::actionMove, column_name, c)); }
+    void modifyColumn(const std::wstring& column_name, const xd::ColumnInfo& params)
+        { actions.push_back(Action(Action::actionModify, column_name, params)); }
+    void createColumn(const xd::ColumnInfo& params)
+        { actions.push_back(Action(Action::actionCreate, L"", params)); }
+};
 
 
 struct IndexInfo
@@ -673,7 +716,7 @@ public:
 
     virtual bool createFolder(const std::wstring& path) = 0;
     virtual bool createStream(const std::wstring& path, const std::wstring& mime_type) = 0;
-    virtual bool createTable(const std::wstring& path, IStructurePtr struct_config, const FormatDefinition* format_info) = 0;
+    virtual bool createTable(const std::wstring& path, const FormatDefinition& format_info) = 0;
 
     virtual bool loadDefinition(const std::wstring& path, FormatDefinition* format_info, const FormatDefinition* defaults = NULL) { return false; }
     virtual bool saveDefinition(const std::wstring& path, const FormatDefinition* format_info) { return false; }

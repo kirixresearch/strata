@@ -763,9 +763,7 @@ xd::IStructurePtr MysqlDatabase::createStructure()
     return static_cast<xd::IStructure*>(s);
 }
 
-bool MysqlDatabase::createTable(const std::wstring& path,
-                                xd::IStructurePtr struct_config,
-                                const xd::FormatDefinition* format_info)
+bool MysqlDatabase::createTable(const std::wstring& path, const xd::FormatDefinition& format_definition)
 {
 /*
     std::wstring command;
@@ -814,35 +812,22 @@ bool MysqlDatabase::createTable(const std::wstring& path,
     command += L" ( ";
 
     std::wstring field;
-    field.reserve(255);
-
     std::wstring name;
-    int type;
-    int width;
-    int scale;
 
-    int i, col_count = struct_config->getColumnCount();
-    
-    for (i = 0; i < col_count; ++i)
+    std::vector<xd::ColumnInfo>::const_iterator it;
+    for (it = format_definition.columns.cbegin(); it != format_definition.columns.cend(); ++it)
     {
-        const xd::ColumnInfo& col_info = struct_config->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = *it;
 
-        name = L"";
-        name += m_attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
-        name += col_info.name;
+        name = m_attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+        name += colinfo.name;
         name += m_attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 
-        type = col_info.type;
-        width = col_info.width;
-        scale = col_info.scale;
-
-        field = createMySqlFieldString(name, type, width, scale, true);
+        field = createMySqlFieldString(name, colinfo.type, colinfo.width, colinfo.scale, true);
         command += field;
 
-        if (i+1 != col_count)
-        {
+        if (it+1 != format_definition.columns.cend())
             command += L", ";
-        }
     }
     command += L" )";
 

@@ -470,7 +470,7 @@ void Controller::apiCreateTable(RequestInfo& req)
     kl::JsonNode columns;
     columns.fromString(s_columns);
     
-    xd::IStructurePtr structure = db->createStructure();
+    xd::FormatDefinition fd;
 
     int i, cnt = columns.getChildCount();
     for (i = 0; i < cnt; ++i)
@@ -488,10 +488,10 @@ void Controller::apiCreateTable(RequestInfo& req)
         col.expression = column["expression"];
         col.calculated = (col.expression.length() > 0) ? true : false;
 
-        structure->createColumn(col);
+        fd.createColumn(col);
     }
 
-    if (!db->createTable(path, structure, NULL))
+    if (!db->createTable(path, fd))
     {
         returnApiError(req, "Cannot create table");
         return;

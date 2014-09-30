@@ -21,6 +21,7 @@
 #include "../xdcommon/jobinfo.h"
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/util.h"
+#include "../xdcommon/structure.h"
 #include "database.h"
 #include "iterator.h"
 #include "inserter.h"
@@ -77,16 +78,14 @@ const wchar_t* sql92_keywords =
 
 
 
-void xdkpgStructureToXml(xd::IStructurePtr s, kl::xmlnode& node)
+void xdkpgStructureToXml(const xd::FormatDefinition& s, kl::xmlnode& node)
 {
     node.setNodeName(L"structure");
 
-    int i, col_count;
-
-    col_count = s->getColumnCount();
-    for (i = 0; i < col_count; ++i)
+    std::vector<xd::ColumnInfo>::const_iterator it;
+    for (it = s.columns.begin(); it != s.columns.end(); ++it)
     {
-        const xd::ColumnInfo& colinfo = s->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = *it;
 
         kl::xmlnode& col = node.addChild();
         col.setNodeName(L"column");
@@ -102,12 +101,11 @@ void xdkpgStructureToXml(xd::IStructurePtr s, kl::xmlnode& node)
 
 
 
-xd::IStructurePtr xdkpgXmlToStructure(kl::xmlnode& node)
+xd::FormatDefinition xdkpgXmlToStructure(kl::xmlnode& node)
 {
-    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
+    xd::FormatDefinition fd;
 
-    int child_count = node.getChildCount();
-    int i;
+    int i, child_count = node.getChildCount();
 
     for (i = 0; i < child_count; ++i)
     {
@@ -131,7 +129,7 @@ xd::IStructurePtr xdkpgXmlToStructure(kl::xmlnode& node)
             colcalculated.isEmpty() ||
             colexpression.isEmpty())
         {
-            return xcm::null;
+            return xd::FormatDefinition();
         }
 
         
@@ -143,10 +141,23 @@ xd::IStructurePtr xdkpgXmlToStructure(kl::xmlnode& node)
         colinfo.calculated = kl::wtoi(colcalculated.getNodeValue()) != 0 ? true : false;
         colinfo.expression = colexpression.getNodeValue();
         
-        s->createColumn(colinfo);
+        fd.createColumn(colinfo);
     }
 
-    return s;
+    return fd;
+}
+
+xd::IStructurePtr xdkpgXmlToIStructure(kl::xmlnode& node)
+{
+    xd::FormatDefinition fd = xdkpgXmlToStructure(node);
+
+    Structure* s = new Structure;
+
+    std::vector<xd::ColumnInfo>::const_iterator it;
+    for (it = fd.columns.cbegin(); it != fd.columns.cend(); ++it)
+        s->addColumn(*it);
+
+    return static_cast<xd::IStructure*>(s);
 }
 
 
@@ -380,7 +391,13 @@ bool KpgDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
     if (!info->append)
     {
         deleteFile(info->output);
-        if (!createTable(info->output, structure, NULL))
+
+        xd::FormatDefinition fd;
+        int i, colcount = structure->getColumnCount();
+        for (i = 0; i < colcount; ++i)
+            fd.createColumn(structure->getColumnInfoByIdx(i));
+
+        if (!createTable(info->output, fd))
             return false;
     }
 
@@ -388,7 +405,6 @@ bool KpgDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
     xdcmnInsert(static_cast<xd::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
 
     return true;
-
 }
 
 bool KpgDatabase::deleteFile(const std::wstring& _path)
@@ -525,8 +541,7 @@ xd::IStructurePtr KpgDatabase::createStructure()
 }
 
 bool KpgDatabase::createTable(const std::wstring& _path,
-                              xd::IStructurePtr struct_config,
-                              const xd::FormatDefinition* format_info)
+                              const xd::FormatDefinition& format_definition)
 {
     KL_AUTO_LOCK(m_obj_mutex);
 
@@ -543,7 +558,7 @@ bool KpgDatabase::createTable(const std::wstring& _path,
     if (path.length() == 0)
         return false;
 
-    m_create_tables[path] = struct_config;
+    m_create_tables[path] = format_definition;
 
     return true;
 }
@@ -693,23 +708,20 @@ xd::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)
     if (path.substr(0,1) == L"/")
         path.erase(0,1);
 
-    xd::IStructurePtr structure;
+    xd::FormatDefinition format_definition;
 
-    std::map<std::wstring, xd::IStructurePtr, kl::cmp_nocase>::iterator it;
+    std::map<std::wstring, xd::FormatDefinition, kl::cmp_nocase>::iterator it;
     it = m_create_tables.find(path);
     if (it != m_create_tables.end())
     {
-        structure = it->second;
+        format_definition = it->second;
     }
      else
     {
-        structure = describeTable(_path);
+        xd::IStructurePtr structure = describeTable(_path);
     }
 
-    if (structure.isNull())
-        return xcm::null;
-
-    KpgRowInserter* inserter = new KpgRowInserter(this, path, structure);
+    KpgRowInserter* inserter = new KpgRowInserter(this, path, format_definition);
     return static_cast<xd::IRowInserter*>(inserter);
 }
 
@@ -724,11 +736,14 @@ xd::IStructurePtr KpgDatabase::describeTable(const std::wstring& _path)
 
     xd::IStructurePtr structure;
 
-    std::map<std::wstring, xd::IStructurePtr, kl::cmp_nocase>::iterator it;
+    std::map<std::wstring, xd::FormatDefinition, kl::cmp_nocase>::iterator it;
     it = m_create_tables.find(path);
     if (it != m_create_tables.end())
     {
-        return it->second;
+        Structure* s = new Structure;
+        for (int i = 0, colcount = (int)it->second.columns.size(); i < colcount; ++i)
+            s->addColumn(it->second.columns[i]);
+        return static_cast<xd::IStructure*>(s);
     }
 
 
@@ -749,7 +764,7 @@ xd::IStructurePtr KpgDatabase::describeTable(const std::wstring& _path)
 
     kl::xmlnode& structure_node = info.getChild(node_idx);
 
-    return xdkpgXmlToStructure(structure_node);
+    return xdkpgXmlToIStructure(structure_node);
 }
 
 bool KpgDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)

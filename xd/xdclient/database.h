@@ -112,7 +112,7 @@ public:
                        std::wstring& remote_path);
 
     xd::IStructurePtr createStructure();
-    bool createTable(const std::wstring& path, xd::IStructurePtr struct_config, const xd::FormatDefinition* format_info);
+    bool createTable(const std::wstring& path, const xd::FormatDefinition& format_definition);
     bool createStream(const std::wstring& path, const std::wstring& mime_type);
     xd::IStreamPtr openStream(const std::wstring& path);
 
@@ -150,7 +150,7 @@ public:
 public:
 
     xd::IStructurePtr jsonToStructure(kl::JsonNode& node);
-    std::wstring structureToJson(xd::IStructurePtr structure);
+    std::wstring structureToJson(const xd::FormatDefinition& structure);
     bool getCallCacheResult(const std::wstring& path,
                             const std::wstring& method,
                             const ServerCallParams* params,

@@ -1458,7 +1458,6 @@ static double extractNumber(const wxString& num, int* dec_places = NULL)
 static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
 {
     std::vector<HtmlTableFieldInfo> fields;
-    xd::IStructurePtr dest_struct;
     wxDOMNode node = _node;
     wxDOMNode table_node;
     size_t i, count;
@@ -1912,23 +1911,23 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
        
     // create the output data table
     
-    dest_struct = dest_db->createStructure();
+    xd::FormatDefinition dest_struct;
 
                                            
     std::vector<HtmlTableFieldInfo>::iterator field_it;
     for (field_it = fields.begin(); field_it != fields.end(); ++field_it)
     {
-        xd::ColumnInfo col_info;
+        xd::ColumnInfo colinfo;
 
-        col_info.name = towstr(field_it->name);
-        col_info.type = field_it->type;
-        col_info.width = field_it->max_len;
-        col_info.scale = field_it->type == xd::typeNumeric ? field_it->max_dec : 0;
+        colinfo.name = towstr(field_it->name);
+        colinfo.type = field_it->type;
+        colinfo.width = field_it->max_len;
+        colinfo.scale = field_it->type == xd::typeNumeric ? field_it->max_dec : 0;
 
-        dest_struct->createColumn(col_info);
+        dest_struct.createColumn(colinfo);
     }
 
-    if (!dest_db->createTable(output_path, dest_struct, NULL))
+    if (!dest_db->createTable(output_path, dest_struct))
         return false;
         
     xd::IRowInserterPtr row_inserter = dest_db->bulkInsert(output_path);

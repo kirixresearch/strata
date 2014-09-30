@@ -119,16 +119,16 @@ public:
     std::wstring getPrimaryKey(const std::wstring& table);
 
     xd::IStructurePtr createStructure();
-    bool createTable(const std::wstring& path, xd::IStructurePtr struct_config, const xd::FormatDefinition* format_info);
+    bool createTable(const std::wstring& path, const xd::FormatDefinition& format_definition);
     xd::IStreamPtr openStream(const std::wstring& path);
     bool createStream(const std::wstring& path, const std::wstring& mime_type);
 
     xd::IIteratorPtr query(const xd::QueryParams& qp);
 
     xd::IndexInfo createIndex(const std::wstring& path,
-                                     const std::wstring& name,
-                                     const std::wstring& expr,
-                                     xd::IJob* job);
+                              const std::wstring& name,
+                              const std::wstring& expr,
+                              xd::IJob* job);
     bool renameIndex(const std::wstring& path,
                      const std::wstring& name,
                      const std::wstring& new_name);

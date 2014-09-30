@@ -481,14 +481,14 @@ TableSet::~TableSet()
 
 
 
-bool TableSet::create(xd::IStructure* struct_config, const std::wstring& path)
+bool TableSet::create(const xd::FormatDefinition& format_definition, const std::wstring& path)
 {
     // generate a unique filename for the table
     std::wstring table_filename = m_database->getUniqueFilename();
     table_filename += L".ttb";
 
     // create the table
-    if (!NativeTable::create(table_filename, struct_config))
+    if (!NativeTable::create(table_filename, format_definition))
         return false;
 
     // allocate an ordinal for us
@@ -518,13 +518,12 @@ bool TableSet::create(xd::IStructure* struct_config, const std::wstring& path)
     file.clear();
 
     // add the calculated fields
-    int col_count = struct_config->getColumnCount();
-    for (int col = 0; col < col_count; ++col)
+    std::vector<xd::ColumnInfo>::const_iterator it;
+    for (it = format_definition.columns.cbegin(); it != format_definition.columns.cend(); ++it)
     {
-        const xd::ColumnInfo& colinfo = struct_config->getColumnInfoByIdx(col);
-        if (colinfo.calculated)
+        if (it->calculated)
         {
-            createCalcField(colinfo);
+            createCalcField(*it);
         }
     }
 

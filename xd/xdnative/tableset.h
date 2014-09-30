@@ -159,7 +159,7 @@ public:
     TableSet(XdnativeDatabase* database);
     virtual ~TableSet();
 
-    bool create(xd::IStructure* struct_config, const std::wstring& path);
+    bool create(const xd::FormatDefinition& format_definition, const std::wstring& path);
     bool load(INodeValuePtr file);
     bool save();
 
@@ -172,8 +172,8 @@ public:
     xd::IndexInfoEnum getIndexEnum();
 
     xd::IndexInfo createIndex(const std::wstring& tag,
-                                     const std::wstring& expr,
-                                     xd::IJob* job);
+                              const std::wstring& expr,
+                              xd::IJob* job);
     bool deleteIndex(const std::wstring& name);
     bool renameIndex(const std::wstring& name,
                      const std::wstring& new_name);

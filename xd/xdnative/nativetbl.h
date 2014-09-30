@@ -77,7 +77,7 @@ class NativeTable : public ITable
     
     
 public:
-    static bool create(const std::wstring& filename, xd::IStructure* structure);
+    static bool create(const std::wstring& filename, const xd::FormatDefinition& structure);
 
 public:
     

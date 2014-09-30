@@ -1181,6 +1181,8 @@ bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
     {
         iter = info->iter_input;
         structure = iter->getStructure();
+        if (structure.isNull())
+            return false;
     }
      else
     {
@@ -1199,7 +1201,6 @@ bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
     }
 
 
-    
     if (info->append)
     {
         IXdsqlTablePtr output = openSetEx(info->output, info->output_format);
@@ -1209,7 +1210,14 @@ bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
      else
     {
         deleteFile(info->output);
-        if (!createTable(info->output, structure, &info->output_format))
+
+        xd::FormatDefinition fd = info->output_format;
+        fd.columns.clear();
+        int i, colcount = structure->getColumnCount();
+        for (i = 0; i < colcount; ++i)
+            fd.createColumn(structure->getColumnInfoByIdx(i));
+
+        if (!createTable(info->output, fd))
             return false;
     }
 
@@ -2115,9 +2123,7 @@ static int xdToDelimitedTextEncoding(int xd_encoding)
 }
 
 
-bool FsDatabase::createTable(const std::wstring& path,
-                             xd::IStructurePtr structure,
-                             const xd::FormatDefinition* format_info)
+bool FsDatabase::createTable(const std::wstring& path, const xd::FormatDefinition& format_definition)
 {
     if (path.length() == 0)
         return false;
@@ -2132,16 +2138,11 @@ bool FsDatabase::createTable(const std::wstring& path,
         if (db.isNull())
             return xcm::null;
 
-        return db->createTable(rpath, structure, format_info);
+        return db->createTable(rpath, format_definition);
     }
 
 
-    size_t i, col_count = structure->getColumnCount();
 
-    int format = xd::formatDefault;
-    if (format_info)
-        format = format_info->format;
-    
     std::wstring phys_path = makeFullPath(path);
 
     // traverse the path given and create
@@ -2176,6 +2177,9 @@ bool FsDatabase::createTable(const std::wstring& path,
         }
     }
 
+
+    int format = format_definition.format;
+    
     if (format == xd::formatDefault)
     {
         // look for an extension to yield some guidance as to which
@@ -2202,7 +2206,7 @@ bool FsDatabase::createTable(const std::wstring& path,
         if (!kl::icontains(phys_path, L".ttb"))
             phys_path += L".ttb";
 
-        return TtbTable::create(phys_path, structure);
+        return TtbTable::create(phys_path, format_definition.columns);
     }
      else if (format == xd::formatXbase)
     {
@@ -2211,9 +2215,10 @@ bool FsDatabase::createTable(const std::wstring& path,
         std::vector<XbaseField> fields;
         
         // create vector of XbaseFields
+        int i, col_count = (int)format_definition.columns.size();
         for (i = 0; i < col_count; ++i)
         {
-            const xd::ColumnInfo& col_info = structure->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& col_info = format_definition.columns[i];
 
             XbaseField f;
             f.name = kl::tostring(col_info.name);
@@ -2242,9 +2247,11 @@ bool FsDatabase::createTable(const std::wstring& path,
         bool unicode_data_found = false;
         
         // create vector of fields
+        int i, col_count = (int)format_definition.columns.size();
+
         for (i = 0; i < col_count; ++i)
         {
-            const xd::ColumnInfo& col_info = structure->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& col_info = format_definition.columns[i];
             if (col_info.type == xd::typeWideCharacter)
                 unicode_data_found = true;
             
@@ -2292,10 +2299,8 @@ bool FsDatabase::createTable(const std::wstring& path,
         
         // determine the encoding we will use in the icsv
 
-        int xd_encoding = xd::encodingUndefined;
-        if (format_info)
-            xd_encoding = format_info->encoding;
-        
+        int xd_encoding = format_definition.encoding;
+
         if (xd_encoding == xd::encodingUndefined)
         {
             if (unicode_data_found)
@@ -2308,7 +2313,7 @@ bool FsDatabase::createTable(const std::wstring& path,
         if (csv_encoding == -1)
             return false; // unknown encoding
         
-        if (format_info && !format_info->first_row_column_names)
+        if (!format_definition.first_row_column_names)
         {
             // no field names
             fields.clear();
@@ -2345,37 +2350,34 @@ bool FsDatabase::createTable(const std::wstring& path,
         {
             // use the csv defaults as specified in
             // the DelimitedTextFile constructor
-            if (format_info && format_info->line_delimiters.length() > 0)
-                file.setLineDelimiters(format_info->line_delimiters);
-            if (format_info && format_info->delimiters.length() > 0)
-                file.setDelimiters(format_info->delimiters);
-            if (format_info && format_info->text_qualifiers.length() > 0)
-                file.setTextQualifiers(format_info->text_qualifiers);
+            if (format_definition.line_delimiters.length() > 0)
+                file.setLineDelimiters(format_definition.line_delimiters);
+            if (format_definition.delimiters.length() > 0)
+                file.setDelimiters(format_definition.delimiters);
+            if (format_definition.text_qualifiers.length() > 0)
+                file.setTextQualifiers(format_definition.text_qualifiers);
         }
         
         
-        // create a text-delimited file
+        // create vector of field names
         std::vector<std::wstring> fields;
         bool unicode_data_found = false;
-        
-        // create vector of fields
-        for (i = 0; i < col_count; ++i)
+
+        std::vector<xd::ColumnInfo>::const_iterator it;
+        for (it = format_definition.columns.begin(); it != format_definition.columns.end(); ++it)
         {
-            const xd::ColumnInfo& col_info = structure->getColumnInfoByIdx(i);
-            if (col_info.type == xd::typeWideCharacter)
+            if (it->type == xd::typeWideCharacter)
                 unicode_data_found = true;
             
-            if (!col_info.calculated)
-                fields.push_back(col_info.name);
+            if (!it->calculated)
+                fields.push_back(it->name);
         }
-        
+
         
         // determine the encoding we will use in the csv
 
-        int xd_encoding = xd::encodingUndefined;
-        if (format_info)
-            xd_encoding = format_info->encoding;
-        
+        int xd_encoding = format_definition.encoding;
+
         if (xd_encoding == xd::encodingUndefined)
         {
             if (unicode_data_found)
@@ -2389,7 +2391,7 @@ bool FsDatabase::createTable(const std::wstring& path,
             return false; // unknown encoding
         
 
-        if (format_info && !format_info->first_row_column_names)
+        if (!format_definition.first_row_column_names)
         {
             // no field names
             fields.clear();
