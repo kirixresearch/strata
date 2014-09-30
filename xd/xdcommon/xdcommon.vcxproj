@@ -275,7 +275,6 @@
     <ClCompile Include="keylayout.cpp" />
     <ClCompile Include="localrowcache.cpp" />
     <ClCompile Include="rowidarray.cpp" />
-    <ClCompile Include="setconfigfile.cpp" />
     <ClCompile Include="structure.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -332,7 +331,6 @@
     <ClInclude Include="localrowcache.h" />
     <ClInclude Include="relationinfo.h" />
     <ClInclude Include="rowidarray.h" />
-    <ClInclude Include="setconfigfile.h" />
     <ClInclude Include="structure.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="xdcommon.h" />

@@ -706,18 +706,18 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
                 {
                     if (kl::iequals(it_mf->src_name, it_sa->m_colname))
                     {
-                        if (it_sa->m_params.name.length() > 0)
+                        if (it_sa->m_params.mask & xd::ColumnInfo::maskName)
                         {
                             it_mf->dest_name = it_sa->m_params.name;
                         }
 
-                        if (it_sa->m_params.type != -1)
+                        if (it_sa->m_params.mask & xd::ColumnInfo::maskType)
                         {
                             it_mf->dest_type = it_sa->m_params.type;
                             write_all = true;
                         }
 
-                        if (it_sa->m_params.width != -1)
+                        if (it_sa->m_params.mask & xd::ColumnInfo::maskWidth)
                         {
                             it_mf->dest_width = it_sa->m_params.width;
                             write_all = true;
@@ -732,7 +732,7 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
                             }
                         }
 
-                        if (it_sa->m_params.scale != -1)
+                        if (it_sa->m_params.mask & xd::ColumnInfo::maskScale)
                         {
                             it_mf->dest_scale = it_sa->m_params.scale;
                             if (it_mf->src_type != xd::typeDouble)
@@ -743,7 +743,7 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
                             }
                         }
 
-                        if (!it_sa->m_params.calculated && it_mf->calculated)
+                        if ((it_sa->m_params.mask & xd::ColumnInfo::maskCalculated) && !it_sa->m_params.calculated && it_mf->calculated)
                         {
                             // "make permanent" operation
                             it_mf->calculated = false;
@@ -751,7 +751,7 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
                             makeperm_fields.push_back(it_sa->m_colname);
                         }
                         
-                        if (it_sa->m_params.column_ordinal != -1)
+                        if (it_sa->m_params.mask & xd::ColumnInfo::maskColumnOrdinal)
                         {
                             int desired_pos = it_sa->m_params.column_ordinal;
                             if (desired_pos < 0)
@@ -785,12 +785,9 @@ bool TableSet::modifyStructure(xd::IStructurePtr struct_config,
 
             case StructureAction::actionDelete:
             {
-                for (it_mf = modfields.begin();
-                     it_mf != modfields.end();
-                     ++it_mf)
+                for (it_mf = modfields.begin(); it_mf != modfields.end(); ++it_mf)
                 {
-                    if (0 == wcscasecmp(it_mf->src_name.c_str(),
-                                        it_sa->m_colname.c_str()))
+                    if (kl::iequals(it_mf->src_name, it_sa->m_colname))
                     {
                         write_all = true;
                         modfields.erase(it_mf);

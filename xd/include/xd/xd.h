@@ -301,6 +301,16 @@ enum
 
 
 
+struct DatabaseEntry
+{
+    std::wstring name;
+    std::wstring description;
+};
+
+typedef std::vector<DatabaseEntry> DatabaseEntryEnum;
+
+
+
 struct ColumnInfo
 {
     enum
@@ -360,6 +370,106 @@ struct ColumnInfo
 
 
 
+struct FormatDefinition
+{
+    FormatDefinition()
+    {
+        format = formatDefault;
+        object_type = filetypeTable;
+        encoding = encodingUndefined;
+        first_row_column_names = true;
+        determine_structure = false;
+        fixed_start_offset = 0;
+        fixed_row_width = 0;
+        fixed_line_delimited = false;
+    };
+    
+    std::wstring object_id;
+    int object_type;
+
+    int format;
+    int encoding;
+
+    std::wstring data_connection_string;  // optional connection string associated with data_file
+    std::wstring data_path;               // project relative path, or file:/// url
+    
+    // delimited files parameters (when format = formatDelimitedText)
+    std::wstring text_qualifiers;
+    std::wstring delimiters;
+    std::wstring line_delimiters;
+    bool first_row_column_names;
+    bool determine_structure;
+
+    // fixed length parameters (when format = formatFixedLengthText)
+    int fixed_start_offset;
+    int fixed_row_width;
+    bool fixed_line_delimited;
+
+    // structure
+    std::vector<ColumnInfo> columns;
+};
+
+
+
+
+struct IndexInfo
+{
+    std::wstring name;
+    std::wstring expression;
+
+    bool isOk() const { return name.length() > 0 ? true : false; }
+};
+
+typedef std::vector<IndexInfo> IndexInfoEnum;
+
+
+
+
+
+struct CopyParams
+{
+    CopyParams()
+    {
+        append = false;
+        limit = -1;
+    }
+
+    IIteratorPtr iter_input;
+    std::wstring input;
+    std::wstring output;
+    bool append;
+
+    std::wstring where;
+    std::wstring order;
+    int limit;
+    xd::FormatDefinition output_format;
+};
+
+struct QueryParams
+{
+    std::wstring from;
+    std::wstring columns;
+    std::wstring where;
+    std::wstring order;
+
+    FormatDefinition format;
+
+    IJobPtr job;
+};
+
+struct GroupQueryParams
+{
+    std::wstring input;
+    std::wstring output;
+
+    std::wstring group;
+    std::wstring columns;
+    std::wstring where;
+    std::wstring having;
+    std::wstring order;
+};
+
+
 xcm_interface IStream : public xcm::IObject
 {
     XCM_INTERFACE_NAME("xd.IStream")
@@ -395,9 +505,6 @@ public:
     virtual const std::wstring& getObjectId() = 0;                          // object id (i.e. set id, oid, etc)
     virtual const std::wstring& getUrl() = 0;                               // url associated with object
 };
-
-
-
 
 
 xcm_interface IIterator : public xcm::IObject
@@ -505,7 +612,6 @@ public:
 
 
 
-
 xcm_interface IAttributes : public xcm::IObject
 {
     XCM_INTERFACE_NAME("xd.IAttributes")
@@ -523,116 +629,6 @@ public:
 };
 
 
-
-
-
-
-struct DatabaseEntry
-{
-    std::wstring name;
-    std::wstring description;
-};
-
-typedef std::vector<DatabaseEntry> DatabaseEntryEnum;
-
-
-
-
-struct IndexInfo
-{
-    std::wstring name;
-    std::wstring expression;
-
-    bool isOk() const { return name.length() > 0 ? true : false; }
-};
-
-typedef std::vector<IndexInfo> IndexInfoEnum;
-
-
-
-
-struct FormatDefinition
-{
-    FormatDefinition()
-    {
-        format = formatDefault;
-        object_type = filetypeTable;
-        encoding = encodingUndefined;
-        first_row_column_names = true;
-        determine_structure = false;
-        fixed_start_offset = 0;
-        fixed_row_width = 0;
-        fixed_line_delimited = false;
-    };
-    
-    std::wstring object_id;
-    int object_type;
-
-    int format;
-    int encoding;
-
-    std::wstring data_connection_string;  // optional connection string associated with data_file
-    std::wstring data_path;               // project relative path, or file:/// url
-    
-    // delimited files parameters (when format = formatDelimitedText)
-    std::wstring text_qualifiers;
-    std::wstring delimiters;
-    std::wstring line_delimiters;
-    bool first_row_column_names;
-    bool determine_structure;
-
-    // fixed length parameters (when format = formatFixedLengthText)
-    int fixed_start_offset;
-    int fixed_row_width;
-    bool fixed_line_delimited;
-
-    // structure
-    std::vector<ColumnInfo> columns;
-};
-
-
-struct CopyParams
-{
-    CopyParams()
-    {
-        append = false;
-        limit = -1;
-    }
-
-    IIteratorPtr iter_input;
-    std::wstring input;
-    std::wstring output;
-    bool append;
-
-    std::wstring where;
-    std::wstring order;
-    int limit;
-    xd::FormatDefinition output_format;
-};
-
-struct QueryParams
-{
-    std::wstring from;
-    std::wstring columns;
-    std::wstring where;
-    std::wstring order;
-
-    FormatDefinition format;
-
-    IJobPtr job;
-};
-
-struct GroupQueryParams
-{
-    std::wstring input;
-    std::wstring output;
-
-    std::wstring group;
-    std::wstring columns;
-    std::wstring where;
-    std::wstring having;
-    std::wstring order;
-};
 
 xcm_interface IStructure : public xcm::IObject
 {
