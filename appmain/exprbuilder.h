@@ -28,8 +28,6 @@ public:
                       const wxSize& size = wxDefaultSize,
                       long style = kcl::DEFAULT_BORDER);
 
-    void setStructure(xd::IStructurePtr structure);
-
     wxString GetValue();
     void SetValue(const wxString& value);
 

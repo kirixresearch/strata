@@ -242,12 +242,6 @@ wxString ExprEditorControl::GetValue()
     return GetText();
 }
 
-void ExprEditorControl::setStructure(xd::IStructurePtr structure)
-{
-
-}
-
-
 int ExprEditorControl::FindBrace(int pos)
 {
     wxChar ch;
