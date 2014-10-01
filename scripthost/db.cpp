@@ -1002,7 +1002,7 @@ bool DbBulkInsert::init(xd::IDatabasePtr db,
     std::wstring columns = _columns;
     kl::trim(columns);
         
-    xd::IStructurePtr structure = db->describeTableI(table);
+    xd::Structure structure = db->describeTable(table);
     if (!structure.isOk())
         return false;
         
@@ -1018,10 +1018,10 @@ bool DbBulkInsert::init(xd::IDatabasePtr db,
 
     if (columns == L"*")
     {
-        size_t i, col_count = (size_t)structure->getColumnCount();
+        size_t i, col_count = structure.getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            const xd::ColumnInfo& sp_col = structure->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& sp_col = structure.getColumnInfoByIdx(i);
             
             DbBulkInsertColumn col;
             col.name = sp_col.name;
@@ -1041,8 +1041,8 @@ bool DbBulkInsert::init(xd::IDatabasePtr db,
             std::wstring token = *it;
             kl::trim(token);
             
-            const xd::ColumnInfo& sp_col = structure->getColumnInfo(token);
-            if (sp_col.isNull())
+            const xd::ColumnInfo& colinfo = structure.getColumnInfo(token);
+            if (colinfo.isNull())
             {
                 // column not found, fail
                 m_ri = NULL;
@@ -1051,8 +1051,8 @@ bool DbBulkInsert::init(xd::IDatabasePtr db,
             }
             
             DbBulkInsertColumn col;
-            col.name = sp_col.name;
-            col.type = sp_col.type;
+            col.name = colinfo.name;
+            col.type = colinfo.type;
             col.handle = m_ri->getHandle(col.name);
             
             m_cols.push_back(col);
@@ -1987,7 +1987,7 @@ void DbConnection::describeTable(kscript::ExprEnv* env, kscript::Value* retval)
     
     std::wstring table_name = env->getParam(0)->getString();
     
-    xd::IStructurePtr structure = m_db->describeTableI(table_name);
+    xd::Structure structure = m_db->describeTable(table_name);
     
     if (structure.isNull())
     {
@@ -1998,10 +1998,10 @@ void DbConnection::describeTable(kscript::ExprEnv* env, kscript::Value* retval)
     
     retval->setArray(env);
     
-    int i, col_count = structure->getColumnCount();
+    size_t i, col_count = structure.getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& col = structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col = structure.getColumnInfoByIdx(i);
 
         // TODO: if members are added, make sure to change
         // documentation next to class definition, as well
@@ -2013,7 +2013,7 @@ void DbConnection::describeTable(kscript::ExprEnv* env, kscript::Value* retval)
         dbcol->getMember(L"scale")->setInteger(col.scale);
         dbcol->getMember(L"expression")->setString(col.expression);
         
-        retval->getMemberI(i)->setObject(dbcol);
+        retval->getMemberI((int)i)->setObject(dbcol);
     }
 }
 

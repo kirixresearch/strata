@@ -799,8 +799,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         }
 
         row = 0;
-        for (it = m_template.m_ei.tables.begin();
-             it != m_template.m_ei.tables.end(); ++it)
+        for (it = m_template.m_ei.tables.begin(); it != m_template.m_ei.tables.end(); ++it)
         {
             xd::IStructurePtr structure = local_db->describeTableI(it->input_tablename);
 
@@ -811,8 +810,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
                 continue;
             }
             
-            bool found = StructureValidator::findInvalidFieldNames(structure,
-                                                                   fs_db);
+            bool found = StructureValidator::findInvalidFieldNames(structure, fs_db);
             if (found)
             {
                 invalid_fieldnames_rows.push_back(row);
@@ -1119,19 +1117,20 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     row = 0;
     for (it = m_template.m_ei.tables.begin(); it != m_template.m_ei.tables.end(); ++it)
     {
-        xd::IStructurePtr s = db->describeTableI(it->input_tablename);
+        xd::Structure s = db->describeTable(it->input_tablename);
         if (s.isNull())
             continue;
 
-        int i, col_count = s->getColumnCount();
+        size_t i, col_count = s.getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            wxString colname = s->getColumnName(i);
+            std::wstring colname = s.getColumnName(i);
+            kl::makeUpper(colname);
 
             if (!isValidFieldName(colname, db_ptr))
             {
                 m_table_selection_page->markProblemRow(row, true);
-                invalid_fieldnames.push_back(colname.MakeUpper());
+                invalid_fieldnames.push_back(colname);
             }
         }
 

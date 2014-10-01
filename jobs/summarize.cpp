@@ -107,7 +107,7 @@ int SummarizeJob::runJob()
         summary_columns.push_back(col);
     }
 
-    xd::IStructurePtr input_structure = m_db->describeTableI(input_path);
+    xd::Structure input_structure = m_db->describeTable(input_path);
     if (input_structure.isNull())
     {
         m_job_info->setState(jobStateFailed);
@@ -129,7 +129,7 @@ int SummarizeJob::runJob()
             continue;
 
         summary_columns_unique_list.insert(*it);
-        const xd::ColumnInfo& input_colinfo = input_structure->getColumnInfo(*it);
+        const xd::ColumnInfo& input_colinfo = input_structure.getColumnInfo(*it);
 
         if (input_colinfo.isNull())
             continue;

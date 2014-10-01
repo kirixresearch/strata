@@ -89,8 +89,7 @@ int DivideJob::runJob()
         return 0;    
     }
 
-    xd::IStructurePtr structure;
-    structure = m_db->describeTableI(input_path);
+    xd::Structure structure = m_db->describeTable(input_path);
     if (structure.isNull())
     {
         m_job_info->setState(jobStateFailed);

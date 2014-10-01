@@ -79,8 +79,7 @@ static std::vector<wxString> getColumnsFromSource(const std::wstring& source)
     if (!exists)
         return columns;
 
-    xd::IFileInfoPtr info;
-    info = g_app->getDatabase()->getFileInfo(source);
+    xd::IFileInfoPtr info = g_app->getDatabase()->getFileInfo(source);
     
     // table source
     if (info->getType() == xd::filetypeTable)
@@ -92,16 +91,16 @@ static std::vector<wxString> getColumnsFromSource(const std::wstring& source)
         if (!isValidTable(source, db))
             return columns;
 
-        xd::IStructurePtr set_structure = db->describeTableI(source);
-        if (set_structure.isNull())
+        xd::Structure structure = db->describeTable(source);
+        if (structure.isNull())
             return columns;
 
-        int column_count = set_structure->getColumnCount();
+        size_t i, column_count = structure.getColumnCount();
         columns.reserve(column_count);
 
-        for (int i = 0; i < column_count; ++i)
+        for (i = 0; i < column_count; ++i)
         {
-            columns.push_back(set_structure->getColumnName(i));
+            columns.push_back(structure.getColumnName(i));
         }
 
         return columns;

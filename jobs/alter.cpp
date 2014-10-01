@@ -102,7 +102,7 @@ int AlterJob::runJob()
 
 
     // build the structure configuration from the action list
-    xd::IStructurePtr structure = m_db->describeTableI(input_path);
+    xd::Structure structure = m_db->describeTable(input_path);
     if (structure.isNull())
     {
         m_job_info->setState(jobStateFailed);
