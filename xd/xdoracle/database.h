@@ -138,7 +138,7 @@ public:
 
     xd::IRowInserterPtr bulkInsert(const std::wstring& path);
 
-    xd::IStructurePtr describeTable(const std::wstring& path);
+    xd::IStructurePtr describeTableI(const std::wstring& path);
 
     bool modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job);
 

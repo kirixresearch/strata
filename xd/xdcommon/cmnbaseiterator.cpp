@@ -207,7 +207,7 @@ bool CommonBaseIterator::refreshRelInfo(CommonBaseIteratorRelInfo& info)
     if (info.tag.length() == 0)
         return false;
 
-    xd::IStructurePtr right_structure = database->describeTable(rel->getRightTable());
+    xd::IStructurePtr right_structure = database->describeTableI(rel->getRightTable());
     if (right_structure.isNull())
         return false;
 
@@ -365,7 +365,7 @@ public:
 
 
 
-        xd::IStructurePtr s = database->describeTable(rel->getRightTable());
+        xd::IStructurePtr s = database->describeTableI(rel->getRightTable());
         if (s.isNull())
             return false;
 

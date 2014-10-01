@@ -57,7 +57,7 @@ int xdcmnInsert(xd::IDatabasePtr dest_db,
     xd::IRowInserter* insert = sp_insert.p;
 
     // get table structure
-    xd::IStructurePtr dest_structure = dest_db->describeTable(dest_table);
+    xd::IStructurePtr dest_structure = dest_db->describeTableI(dest_table);
     xd::IStructurePtr src_structure = source_iter->getStructure();
 
     if (dest_structure.isNull() || src_structure.isNull())

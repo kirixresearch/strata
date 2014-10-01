@@ -315,7 +315,7 @@ bool StructureDoc::setModifySet(const std::wstring& path)
 
     if (path.length() > 0)
     {
-        m_structure = g_app->getDatabase()->describeTable(path);
+        m_structure = g_app->getDatabase()->describeTableI(path);
         if (m_structure.isNull())
         {
             m_path = L"";
@@ -1517,7 +1517,7 @@ void StructureDoc::onAlterTableJobFinished(jobs::IJobPtr job)
     params.fromString(job->getParameters());
 
     std::wstring input = params["input"];
-    m_structure = g_app->getDatabase()->describeTable(input);
+    m_structure = g_app->getDatabase()->describeTableI(input);
 
     // enable the structure editor grid
     m_grid->setVisibleState(kcl::Grid::stateVisible);

@@ -99,7 +99,7 @@ bool SlIterator::init(const std::wstring& _query)
         // if we are iterating on a simple table, we can
         // get better type information by querying this from the db
 
-        m_table_structure = m_database->describeTable(m_tablename);
+        m_table_structure = m_database->describeTableI(m_tablename);
         if (m_table_structure.isNull())
             return false;
     }

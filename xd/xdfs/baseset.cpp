@@ -240,7 +240,7 @@ bool XdfsBaseSet::prepareIndexEntry(XdfsIndexEntry& e)
     e.key_length = e.index->getKeyLength();
     e.update = false;
 
-    xd::IStructurePtr structure = m_database->describeTable(m_object_path);
+    xd::IStructurePtr structure = m_database->describeTableI(m_object_path);
     if (structure.isNull())
         return false;
         

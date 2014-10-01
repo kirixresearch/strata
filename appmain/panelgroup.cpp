@@ -343,7 +343,7 @@ bool GroupPanel::initDoc(IFramePtr frame,
     }
 
     xd::IDatabasePtr db = g_app->getDatabase();
-    m_structure = db->describeTable(towstr(m_path));
+    m_structure = db->describeTableI(towstr(m_path));
     if (m_structure.isNull())
         return false;
 

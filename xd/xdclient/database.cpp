@@ -580,7 +580,7 @@ xd::IRowInserterPtr ClientDatabase::bulkInsert(const std::wstring& path)
     return static_cast<xd::IRowInserter*>(new ClientRowInserter(this, path));
 }
 
-xd::IStructurePtr ClientDatabase::describeTable(const std::wstring& path)
+xd::IStructurePtr ClientDatabase::describeTableI(const std::wstring& path)
 {
     ServerCallParams params;
     std::wstring sres = serverCall(path, L"describetable", &params);

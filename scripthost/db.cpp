@@ -1002,7 +1002,7 @@ bool DbBulkInsert::init(xd::IDatabasePtr db,
     std::wstring columns = _columns;
     kl::trim(columns);
         
-    xd::IStructurePtr structure = db->describeTable(table);
+    xd::IStructurePtr structure = db->describeTableI(table);
     if (!structure.isOk())
         return false;
         
@@ -1966,7 +1966,7 @@ void DbConnection::enableExceptions(kscript::ExprEnv* env, kscript::Value* retva
 // Description: Returns an array of DbColumn objects which describe 
 //     the structure of the specified table
 // 
-// Syntax: function DbConnection.describeTable(path : String) : Array(DbColumn)
+// Syntax: function DbConnection.describeTableI(path : String) : Array(DbColumn)
 //
 // Remarks: Returns an array of DbColumn objects which describe 
 //     the structure of the specified table.  Each DbColumn object
@@ -1987,7 +1987,7 @@ void DbConnection::describeTable(kscript::ExprEnv* env, kscript::Value* retval)
     
     std::wstring table_name = env->getParam(0)->getString();
     
-    xd::IStructurePtr structure = m_db->describeTable(table_name);
+    xd::IStructurePtr structure = m_db->describeTableI(table_name);
     
     if (structure.isNull())
     {

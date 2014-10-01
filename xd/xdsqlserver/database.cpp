@@ -646,7 +646,7 @@ xd::IRowInserterPtr SqlServerDatabase::bulkInsert(const std::wstring& path)
     return xcm::null;
 }
 
-xd::IStructurePtr SqlServerDatabase::describeTable(const std::wstring& path)
+xd::IStructurePtr SqlServerDatabase::describeTableI(const std::wstring& path)
 {
     // TODO: implement
     return xcm::null;

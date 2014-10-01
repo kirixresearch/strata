@@ -255,7 +255,7 @@ bool MysqlRowInserter::startInsert(const std::wstring& col_list)
     if (m_mysql == NULL)
         return false;
     
-    xd::IStructurePtr s = m_database->describeTable(m_table);
+    xd::IStructurePtr s = m_database->describeTableI(m_table);
 
     std::vector<std::wstring> columns;
     std::vector<std::wstring>::iterator it;

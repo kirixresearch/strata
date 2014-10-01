@@ -730,7 +730,7 @@ void SplitPanel::onSourceTableTextChanged(wxCommandEvent& evt)
     
     if (m_finfo.isOk())
     {
-        m_structure = g_app->getDatabase()->describeTable(towstr(m_path));
+        m_structure = g_app->getDatabase()->describeTableI(towstr(m_path));
         if (m_structure.isNull())
             m_finfo.clear();
     }

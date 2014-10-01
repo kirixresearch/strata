@@ -64,7 +64,7 @@ ViewPanel::ViewPanel(ITableDocPtr tabledoc)
             else
         m_set_path = path;
         
-    m_structure = g_app->getDatabase()->describeTable(path);
+    m_structure = g_app->getDatabase()->describeTableI(path);
 
     
     // store all existing views

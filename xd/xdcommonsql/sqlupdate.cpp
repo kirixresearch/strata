@@ -56,7 +56,7 @@ static int doUpdate(xd::IDatabasePtr db,
     if (set.isNull())
         return -1;
 
-    xd::IStructurePtr structure = db->describeTable(path);
+    xd::IStructurePtr structure = db->describeTableI(path);
     if (structure.isNull())
         return -1;
 

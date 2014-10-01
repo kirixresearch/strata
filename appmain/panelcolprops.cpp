@@ -226,7 +226,7 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
     m_path = m_tabledoc->getBrowsePath();
 
     xd::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(m_path);
-    m_structure = g_app->getDatabase()->describeTable(m_path);
+    m_structure = g_app->getDatabase()->describeTableI(m_path);
     if (finfo.isNull() || m_structure.isNull())
     {
         m_doc_site = xcm::null;
@@ -333,7 +333,7 @@ void ColPropsPanel::populate()
     m_orig_scale = colinfo.scale;
     m_orig_expr = colinfo.expression;
 
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
     m_orig_existed = structure->getColumnExist(towstr(m_orig_name));
 
 
@@ -967,7 +967,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     }
 
     xd::StructureModify mod_params;
-    xd::IStructurePtr structure = db->describeTable(m_path);
+    xd::IStructurePtr structure = db->describeTableI(m_path);
 
     if (structure->getColumnExist(towstr(m_orig_name)))
     {
@@ -1041,7 +1041,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     }
 
     // refresh the iterator with the set's new structure information
-    m_structure = db->describeTable(m_path);
+    m_structure = db->describeTableI(m_path);
 
     m_iter->refreshStructure();
 

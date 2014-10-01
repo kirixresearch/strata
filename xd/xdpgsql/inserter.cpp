@@ -201,7 +201,7 @@ bool PgsqlRowInserter::putNull(xd::objhandle_t column_handle)
 
 bool PgsqlRowInserter::startInsert(const std::wstring& col_list)
 {
-    xd::IStructurePtr s = m_database->describeTable(m_table);
+    xd::IStructurePtr s = m_database->describeTableI(m_table);
     if (s.isNull())
         return false;
 

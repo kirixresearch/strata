@@ -939,8 +939,8 @@ bool PgsqlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 
     if (info->append)
     {
-        xd::IStructurePtr instruct = describeTable(info->input);
-        xd::IStructurePtr outstruct = describeTable(info->output);
+        xd::IStructurePtr instruct = describeTableI(info->input);
+        xd::IStructurePtr outstruct = describeTableI(info->output);
 
         std::vector<std::wstring> common_fields;
         std::vector<std::wstring>::iterator it;
@@ -1640,7 +1640,7 @@ xd::IRowInserterPtr PgsqlDatabase::bulkInsert(const std::wstring& path)
 
 
 
-xd::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
+xd::IStructurePtr PgsqlDatabase::describeTableI(const std::wstring& path)
 {
     std::wstring tbl = pgsqlGetTablenameFromPath(path);
 

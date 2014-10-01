@@ -3907,7 +3907,7 @@ xd::IndexInfoEnum XdnativeDatabase::getIndexEnum(const std::wstring& path)
 
 
 
-xd::IStructurePtr XdnativeDatabase::describeTable(const std::wstring& path)
+xd::IStructurePtr XdnativeDatabase::describeTableI(const std::wstring& path)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
@@ -3917,7 +3917,7 @@ xd::IStructurePtr XdnativeDatabase::describeTable(const std::wstring& path)
         if (db.isNull())
             return xcm::null;
 
-        return db->describeTable(rpath);
+        return db->describeTableI(rpath);
     }
 
 

@@ -141,7 +141,7 @@ bool IndexPanel::setPath(const std::wstring& path)
 {
     xd::IDatabasePtr db = g_app->getDatabase();
 
-    m_structure = db->describeTable(path);
+    m_structure = db->describeTableI(path);
     if (m_structure.isNull())
         return false;
 

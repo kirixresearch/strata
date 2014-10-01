@@ -2540,7 +2540,7 @@ xd::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
     return xdfs_set->getRowInserter();
 }
 
-xd::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
+xd::IStructurePtr FsDatabase::describeTableI(const std::wstring& path)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
@@ -2550,7 +2550,7 @@ xd::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
         if (db.isNull())
             return xcm::null;
 
-        return db->describeTable(rpath);
+        return db->describeTableI(rpath);
     }
 
 

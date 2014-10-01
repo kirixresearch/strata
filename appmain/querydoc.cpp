@@ -1156,7 +1156,7 @@ void QueryDoc::onTreeDataDropped(FsDataObject* data)
         xd::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(path));
         if (finfo.isOk() && finfo->getType() == xd::filetypeTable)
         {
-            xd::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(path));
+            xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(towstr(path));
 
             if (structure.isOk())
             {
@@ -1203,7 +1203,7 @@ void QueryDoc::onDiagramSetAdded(wxString path, bool* allow)
     if (finfo.isNull() || finfo->getType() != xd::filetypeTable)
         return;
 
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(path));
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(towstr(path));
     if (structure.isNull())
         return;
 

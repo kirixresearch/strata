@@ -92,7 +92,7 @@ static std::vector<wxString> getColumnsFromSource(const std::wstring& source)
         if (!isValidTable(source, db))
             return columns;
 
-        xd::IStructurePtr set_structure = db->describeTable(source);
+        xd::IStructurePtr set_structure = db->describeTableI(source);
         if (set_structure.isNull())
             return columns;
 

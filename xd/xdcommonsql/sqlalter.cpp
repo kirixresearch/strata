@@ -65,7 +65,7 @@ bool sqlAlter(xd::IDatabasePtr db,
     
     dequote(table_name, '[', ']');
     
-    xd::IStructurePtr structure = db->describeTable(table_name);
+    xd::IStructurePtr structure = db->describeTableI(table_name);
 
     if (structure.isNull())
     {

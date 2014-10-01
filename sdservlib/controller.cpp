@@ -119,7 +119,7 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
     else if (method == L"writestream")           apiWriteStream(req);
     else if (method == L"query")                 apiQuery(req);
     else if (method == L"groupquery")            apiGroupQuery(req);
-    else if (method == L"describetable")         apiDescribeTable(req);
+    else if (method == L"describetable")         apidescribeTableI(req);
 
     else if (method == L"insertrows")            apiInsertRows(req);
     else if (method == L"clone")                 apiClone(req);
@@ -1013,7 +1013,7 @@ void Controller::apiGroupQuery(RequestInfo& req)
 }
 
 
-void Controller::apiDescribeTable(RequestInfo& req)
+void Controller::apidescribeTableI(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
@@ -1043,7 +1043,7 @@ void Controller::apiDescribeTable(RequestInfo& req)
     }
      else
     {
-        structure = db->describeTable(path);
+        structure = db->describeTableI(path);
     }
 
         
@@ -1499,7 +1499,7 @@ void Controller::apiInsertRows(RequestInfo& req)
 
     if (handle == L"" || handle == L"create")
     {
-        xd::IStructurePtr structure = db->describeTable(req.getURI());
+        xd::IStructurePtr structure = db->describeTableI(req.getURI());
         if (structure.isNull())
         {
             returnApiError(req, "Invalid data resource");
@@ -1763,7 +1763,7 @@ void Controller::apiAlter(RequestInfo& req)
     std::wstring s_actions = req.getValue(L"actions");
     
     
-    xd::IStructurePtr structure = db->describeTable(path);
+    xd::IStructurePtr structure = db->describeTableI(path);
     if (structure.isNull())
     {
         returnApiError(req, "Could not access table");

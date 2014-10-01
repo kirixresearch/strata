@@ -718,7 +718,7 @@ xd::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)
     }
      else
     {
-        xd::IStructurePtr structure = describeTable(_path);
+        xd::IStructurePtr structure = describeTableI(_path);
     }
 
     KpgRowInserter* inserter = new KpgRowInserter(this, path, format_definition);
@@ -726,7 +726,7 @@ xd::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)
 }
 
 
-xd::IStructurePtr KpgDatabase::describeTable(const std::wstring& _path)
+xd::IStructurePtr KpgDatabase::describeTableI(const std::wstring& _path)
 {
     KL_AUTO_LOCK(m_obj_mutex);
 

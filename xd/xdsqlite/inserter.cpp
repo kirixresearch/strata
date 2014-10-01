@@ -74,7 +74,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
 {
     std::vector<std::wstring> cols;
 
-    xd::IStructurePtr structure = m_database->describeTable(m_table);
+    xd::IStructurePtr structure = m_database->describeTableI(m_table);
     if (structure.isNull())
         return false;
 

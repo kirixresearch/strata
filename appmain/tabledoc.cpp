@@ -435,7 +435,7 @@ bool TableDoc::canDeleteColumns(std::vector<int>& view_cols)
     if (db.isNull())
         return false;
 
-    xd::IStructurePtr structure = db->describeTable(m_path);
+    xd::IStructurePtr structure = db->describeTableI(m_path);
     if (structure.isNull())
         return false;
     
@@ -3000,7 +3000,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
     if (rels.isNull())
         return;
 
-    xd::IStructurePtr s = db->describeTable(m_path);
+    xd::IStructurePtr s = db->describeTableI(m_path);
     if (s.isNull())
         return;
 
@@ -3051,7 +3051,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
         if (0 != rel_tag.CmpNoCase(rel->getTag()))
             continue;
 
-        right_structure = db->describeTable(rel->getRightTable());
+        right_structure = db->describeTableI(rel->getRightTable());
         if (right_structure.isNull())
             continue;
 
@@ -5041,7 +5041,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     }
 
 
-    xd::IStructurePtr structure = db->describeTable(m_path);
+    xd::IStructurePtr structure = db->describeTableI(m_path);
     if (structure.isNull())
         return;
 
@@ -5455,7 +5455,7 @@ void TableDoc::showCreateDynamicField()
 
     m_grid->clearSelection();
 
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
     if (structure.isNull())
         return;
 
@@ -5612,7 +5612,7 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
 
     // make sure that the columns are all calculated fields
 
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
 
     std::set<wxString>::iterator it;
     for (it = cols.begin(); it != cols.end(); ++it)
@@ -5771,7 +5771,7 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 
             std::wstring right_path = rel->getRightTable();
 
-            xd::IStructurePtr right_structure = db->describeTable(right_path);
+            xd::IStructurePtr right_structure = db->describeTableI(right_path);
             if (right_structure.isNull())
                 continue;
 
@@ -6327,7 +6327,7 @@ void TableDoc::onSummary(wxCommandEvent& evt)
     // if there was no selection, summarize all columns
     if (summary_columns.size() == 0)
     {
-        xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+        xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
         if (structure.isNull())
             return;
 
@@ -6920,7 +6920,7 @@ static std::wstring xdTypeToOutputType(int type)
 
 bool TableDoc::saveAsStructure(const wxString& path)
 {
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
     if (structure.isNull())
         return false;
 
@@ -7267,7 +7267,7 @@ void TableDoc::onSetOrder(wxCommandEvent& evt)
     site = m_frame->lookupSite(wxT("SortPanel"));
     if (site.isNull())
     {
-        xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+        xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
         if (structure.isNull())
             return;
 
@@ -7576,7 +7576,7 @@ void TableDoc::onCopyRecords(wxCommandEvent& evt)
         {
             AppBusyCursor bc;
 
-            xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+            xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
             if (structure.isNull())
                 return;
 
@@ -7734,7 +7734,7 @@ void TableDoc::onFilter(wxCommandEvent& evt)
         {
             AppBusyCursor bc;
 
-            xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+            xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
             if (structure.isNull())
                 return;
 
@@ -7887,7 +7887,7 @@ void TableDoc::onDeleteRecords(wxCommandEvent& evt)
         {
             AppBusyCursor bc;
 
-            xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+            xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
             if (structure.isNull())
                 return;
 
@@ -8380,7 +8380,7 @@ void TableDoc::onSetBreakExpr(wxCommandEvent& evt)
     if (model.isNull())
         return;
 
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
     if (structure.isNull())
         return;
 

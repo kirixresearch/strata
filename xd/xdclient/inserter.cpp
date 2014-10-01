@@ -201,7 +201,7 @@ bool ClientRowInserter::startInsert(const std::wstring& col_list)
     if (m_inserting)
         return false;
 
-    m_structure = m_database->describeTable(m_path);
+    m_structure = m_database->describeTableI(m_path);
     if (m_structure.isNull())
         return false;
 

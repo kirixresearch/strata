@@ -279,7 +279,7 @@ bool OdbcRowInserter::startInsert(const std::wstring& col_list)
     std::wstring quote_closechar = attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 
 
-    xd::IStructurePtr s = m_database->describeTable(m_table);
+    xd::IStructurePtr s = m_database->describeTableI(m_table);
     if (s.isNull())
         return false;
 

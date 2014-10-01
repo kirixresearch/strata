@@ -2142,7 +2142,7 @@ xd::IIteratorPtr OdbcDatabase::query(const xd::QueryParams& qp)
 
     if (m_db_type == xd::dbtypeAccess)
     {
-        xd::IStructurePtr s = describeTable(qp.from);
+        xd::IStructurePtr s = describeTableI(qp.from);
         if (s.isNull())
             return xcm::null;
 
@@ -2194,7 +2194,7 @@ xd::IIteratorPtr OdbcDatabase::query(const xd::QueryParams& qp)
     }
      else if (m_db_type == xd::dbtypeOracle)
     {
-        xd::IStructurePtr s = describeTable(qp.from);
+        xd::IStructurePtr s = describeTableI(qp.from);
 
         int i, cnt = s->getColumnCount();
 
@@ -2286,7 +2286,7 @@ xd::IRowInserterPtr OdbcDatabase::bulkInsert(const std::wstring& path)
 }
 
 
-xd::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
+xd::IStructurePtr OdbcDatabase::describeTableI(const std::wstring& path)
 {
     HDBC conn = createConnection();
     if (!conn)

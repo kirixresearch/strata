@@ -1214,7 +1214,7 @@ bool QueryTemplate::loadJson(const wxString& path)
             xd::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(query_table.path));
             if (finfo.isNull())
                 continue;
-            xd::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(query_table.path));
+            xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(towstr(query_table.path));
             if (structure.isNull())
                 continue;
 
@@ -1431,7 +1431,7 @@ bool QueryTemplate::loadJsonFromNode(const wxString& path)
 
         // attempt to open the set and get it's structure
         {
-            xd::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(tbl.path));
+            xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(towstr(tbl.path));
             if (structure)
                 tbl.structure = structure;
                  else

@@ -2098,7 +2098,7 @@ bool RelationDiagram::addBox(const wxString& path,
     if (height <= 0)
         height = BOX_DEFAULT_HEIGHT;
 
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(path));
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(towstr(path));
     if (structure.isNull())
         return false;
 
@@ -2394,7 +2394,7 @@ void RelationDiagram::onSetStructureChanged(const wxString& set_path)
     if (!box)
         return;
     
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(set_path));
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(towstr(set_path));
     if (structure.isNull())
         return;
     

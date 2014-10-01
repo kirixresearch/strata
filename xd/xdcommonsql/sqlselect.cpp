@@ -2549,7 +2549,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
             SourceTable j;
             j.path = tbl;
-            j.structure = db->describeTable(tbl);
+            j.structure = db->describeTableI(tbl);
             j.alias = alias;
             j.join_expr = on;
             j.join_type = joinInner;
@@ -2630,7 +2630,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
         parseTableAndAlias(set_paths[0], table, alias);
 
 
-        set_structure = db->describeTable(table);
+        set_structure = db->describeTableI(table);
         if (set_structure.isNull())
         {
             wchar_t buf[1024]; // some paths might be long

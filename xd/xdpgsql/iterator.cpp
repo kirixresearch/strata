@@ -472,7 +472,7 @@ xd::IStructurePtr PgsqlIterator::getStructure()
 
 bool PgsqlIterator::refreshStructure()
 {
-    xd::IStructurePtr set_structure = m_database->describeTable(getTable());
+    xd::IStructurePtr set_structure = m_database->describeTableI(getTable());
     if (set_structure.isNull())
         return false;
 

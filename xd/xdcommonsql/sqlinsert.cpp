@@ -156,7 +156,7 @@ bool sqlInsert(xd::IDatabasePtr db,
 
     // try to open the target set
 
-    xd::IStructurePtr structure = db->describeTable(table);
+    xd::IStructurePtr structure = db->describeTableI(table);
 
     if (structure.isNull())
     {

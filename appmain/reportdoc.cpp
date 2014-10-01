@@ -2205,7 +2205,7 @@ void ReportDoc::getColumnListItems(std::vector<ColumnListItem>& list)
         return;
 
     xd::IStructurePtr structure;
-    structure = g_app->getDatabase()->describeTable(towstr(data_source));
+    structure = g_app->getDatabase()->describeTableI(towstr(data_source));
     if (structure.isOk())
     {
         // add the columns to the list
@@ -4683,7 +4683,7 @@ void ReportDoc::insertFormula(int command_id)
 
             wxString data_source = getDesignComponentRaw()->getDataSource();
 
-            xd::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(data_source));
+            xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(towstr(data_source));
 
             if (structure.isOk())
                 panel->setStructure(structure);
