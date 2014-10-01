@@ -2542,7 +2542,27 @@ xd::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
 
 xd::Structure FsDatabase::describeTable(const std::wstring& path)
 {
-    return xd::Structure();
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, &cstr, &rpath))
+    {
+        // action takes place in a mount
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xd::Structure();
+
+        return db->describeTable(rpath);
+    }
+
+
+    xd::FormatDefinition fi;
+    fi.format = xd::formatDefault;
+
+    IXdsqlTablePtr tbl = openSetEx(path, fi);
+    if (tbl.isNull())
+        return xd::Structure();
+
+    xd::IStructurePtr s = tbl->getStructure();
+    return s.isOk() ? s->toStructure() : xd::Structure();
 }
 
 

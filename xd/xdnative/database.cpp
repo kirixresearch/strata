@@ -3907,7 +3907,23 @@ xd::IndexInfoEnum XdnativeDatabase::getIndexEnum(const std::wstring& path)
 
 xd::Structure XdnativeDatabase::describeTable(const std::wstring& path)
 {
-    return xd::Structure();
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, &cstr, &rpath))
+    {
+        // action takes place in a mount
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xd::Structure();
+
+        return db->describeTable(rpath);
+    }
+
+    IXdsqlTablePtr table = openTable(path);
+    if (table.isNull())
+        return xd::Structure();
+
+    xd::IStructurePtr s = table->getStructure();
+    return s.isOk() ? s->toStructure() : xd::Structure();
 }
 
 xd::IStructurePtr XdnativeDatabase::describeTableI(const std::wstring& path)
@@ -3922,7 +3938,6 @@ xd::IStructurePtr XdnativeDatabase::describeTableI(const std::wstring& path)
 
         return db->describeTableI(rpath);
     }
-
 
     IXdsqlTablePtr table = openTable(path);
     if (table.isNull())

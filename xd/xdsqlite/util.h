@@ -13,7 +13,7 @@
 #define __XDSQLITE_UTIL_H
 
 
-xd::IStructurePtr parseCreateStatement(const std::wstring& create);
+xd::Structure parseCreateStatement(const std::wstring& create);
 
 
 #endif

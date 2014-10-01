@@ -726,12 +726,7 @@ xd::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)
 }
 
 
-xd::Structure KpgDatabase::describeTable(const std::wstring& path)
-{
-    return xd::Structure();
-}
-
-xd::IStructurePtr KpgDatabase::describeTableI(const std::wstring& _path)
+xd::Structure KpgDatabase::describeTable(const std::wstring& _path)
 {
     KL_AUTO_LOCK(m_obj_mutex);
 
@@ -743,30 +738,44 @@ xd::IStructurePtr KpgDatabase::describeTableI(const std::wstring& _path)
     it = m_create_tables.find(path);
     if (it != m_create_tables.end())
     {
-        Structure* s = new Structure;
+        xd::Structure s;
         for (int i = 0, colcount = (int)it->second.columns.size(); i < colcount; ++i)
-            s->createColumn(it->second.columns[i]);
-        return static_cast<xd::IStructure*>(s);
+            s.createColumn(it->second.columns[i]);
+        return s;
     }
 
 
     std::wstring stream_info;
     if (!getStreamInfoBlock(path, stream_info))
-        return xcm::null;
+        return xd::Structure();
 
     // create set and initialize variables
     kl::xmlnode info;
 
     if (!info.parse(stream_info))
-        return xcm::null;
+        return xd::Structure();
 
     int node_idx = info.getChildIdx(L"structure");
     if (node_idx == -1)
-        return xcm::null;
+        return xd::Structure();
 
     kl::xmlnode& structure_node = info.getChild(node_idx);
 
-    return xdkpgXmlToIStructure(structure_node);
+    xd::FormatDefinition fd = xdkpgXmlToStructure(structure_node);
+    xd::Structure s;
+    s.columns = fd.columns;
+    return s;
+}
+
+xd::IStructurePtr KpgDatabase::describeTableI(const std::wstring& path)
+{
+    xd::Structure s = describeTable(path);
+    if (s.isNull())
+        return xcm::null;
+    
+    Structure* st = new Structure;
+    st->fromStructure(s);
+    return static_cast<xd::IStructure*>(st);
 }
 
 bool KpgDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)

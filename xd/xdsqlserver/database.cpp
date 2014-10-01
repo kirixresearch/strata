@@ -648,6 +648,7 @@ xd::IRowInserterPtr SqlServerDatabase::bulkInsert(const std::wstring& path)
 
 xd::Structure SqlServerDatabase::describeTable(const std::wstring& path)
 {
+    // TODO: implement
     return xd::Structure();
 }
 

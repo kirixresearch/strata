@@ -634,12 +634,7 @@ xd::IRowInserterPtr SlDatabase::bulkInsert(const std::wstring& path)
     return static_cast<xd::IRowInserter*>(inserter);
 }
 
-xd::Structure SlDatabase::describeTable(const std::wstring& path)
-{
-    return xd::Structure();
-}
-
-xd::IStructurePtr SlDatabase::describeTableI(const std::wstring& _path)
+xd::Structure SlDatabase::describeTable(const std::wstring& _path)
 {
     std::wstring path = sqliteGetTablenameFromPath(_path);
 
@@ -647,7 +642,6 @@ xd::IStructurePtr SlDatabase::describeTableI(const std::wstring& _path)
     
     wchar_t buf[512];
     swprintf(buf, 512, L"SELECT sql FROM sqlite_master WHERE name='%ls'", path.c_str());
-    
     
     char** result;
     int rows = 0;
@@ -657,13 +651,24 @@ xd::IStructurePtr SlDatabase::describeTableI(const std::wstring& _path)
     if (rc != SQLITE_OK || rows < 1)
     {
         // return failure
-        return xcm::null;
+        return xd::Structure();
     }
     
     std::wstring create_stmt = kl::fromUtf8(result[1]);
     sqlite3_free_table(result);
     
     return parseCreateStatement(create_stmt);
+}
+
+xd::IStructurePtr SlDatabase::describeTableI(const std::wstring& path)
+{
+    xd::Structure s = describeTable(path);
+    if (s.isNull())
+        return xcm::null;
+    
+    Structure* st = new Structure;
+    st->fromStructure(s);
+    return static_cast<xd::IStructure*>(st);
 }
 
 bool SlDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)

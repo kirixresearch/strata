@@ -931,11 +931,6 @@ xd::IRowInserterPtr MysqlDatabase::bulkInsert(const std::wstring& path)
 
 xd::Structure MysqlDatabase::describeTable(const std::wstring& path)
 {
-    return xd::Structure();
-}
-
-xd::IStructurePtr MysqlDatabase::describeTableI(const std::wstring& path)
-{
     // create select statement
     std::wstring tablename = L"";
     tablename += L"`";
@@ -948,13 +943,13 @@ xd::IStructurePtr MysqlDatabase::describeTableI(const std::wstring& path)
 
     MYSQL* db = open();
     if (!db)
-        return xcm::null;
+        return xd::Structure();
     
     std::string asc_query = kl::tostring(query);
     int error = mysql_query(db, asc_query.c_str());
     
 
-    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
+    xd::Structure s;
 
     if (!error)
     {
@@ -981,7 +976,7 @@ xd::IStructurePtr MysqlDatabase::describeTableI(const std::wstring& path)
             if (colinfo->type == FIELD_TYPE_BLOB && colinfo->length > 4096)
                 col.width = 4096;
   
-            s->createColumn(col);
+            s.createColumn(col);
             
             i++;
         }
@@ -991,8 +986,18 @@ xd::IStructurePtr MysqlDatabase::describeTableI(const std::wstring& path)
 
     mysql_close(db);
     
-
     return s;
+}
+
+xd::IStructurePtr MysqlDatabase::describeTableI(const std::wstring& path)
+{
+    xd::Structure s = describeTable(path);
+    if (s.isNull())
+        return xcm::null;
+    
+    Structure* st = new Structure;
+    st->fromStructure(s);
+    return static_cast<xd::IStructure*>(st);
 }
 
 

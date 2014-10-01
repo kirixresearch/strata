@@ -259,7 +259,7 @@ xd::ColumnInfo parseSqliteColumnDescription(const std::wstring& _col_desc)
 
 
 
-xd::IStructurePtr parseCreateStatement(const std::wstring& create)
+xd::Structure parseCreateStatement(const std::wstring& create)
 {
     std::wstring params = kl::afterFirst(create, L'(');
     std::wstring columns = kl::beforeLast(params, L')');
@@ -267,17 +267,17 @@ xd::IStructurePtr parseCreateStatement(const std::wstring& create)
     std::vector<std::wstring> colvec;
     kl::parseDelimitedList(columns, colvec, L',', true);
 
-    Structure* s = new Structure;
+    xd::Structure s;
 
     std::vector<std::wstring>::iterator it;
     for (it = colvec.begin(); it != colvec.end(); ++it)
     {
         xd::ColumnInfo col = parseSqliteColumnDescription(*it);
         if (col.isNull())
-            return xcm::null;
+            return xd::Structure();
             
-        s->createColumn(col);
+        s.createColumn(col);
     }
 
-    return static_cast<xd::IStructure*>(s);
+    return s;
 }

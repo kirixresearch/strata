@@ -1640,11 +1640,7 @@ xd::IRowInserterPtr PgsqlDatabase::bulkInsert(const std::wstring& path)
 
 xd::Structure PgsqlDatabase::describeTable(const std::wstring& path)
 {
-    return xd::Structure();
-}
-
-xd::IStructurePtr PgsqlDatabase::describeTableI(const std::wstring& path)
-{
+    xd::Structure s;
     std::wstring tbl = pgsqlGetTablenameFromPath(path);
 
     std::wstring query;
@@ -1654,18 +1650,17 @@ xd::IStructurePtr PgsqlDatabase::describeTableI(const std::wstring& path)
 
     PGconn* conn = createConnection();
     if (!conn)
-        return xcm::null;
+        return xd::Structure();
 
     PGresult* res = PQexec(conn, kl::toUtf8(query));
 
     if (!res || PQresultStatus(res) != PGRES_TUPLES_OK)
     {
         PQclear(res);
-        return xcm::null;
+        return xd::Structure();
     }
 
-    // create new xd::IStructure
-    Structure* s = new Structure;
+
 
     std::wstring colname;
     int pg_type;
@@ -1715,14 +1710,25 @@ xd::IStructurePtr PgsqlDatabase::describeTableI(const std::wstring& path)
                                                     col_scale,
                                                     L"",
                                                     0);
-        s->createColumn(colinfo);
+        s.createColumn(colinfo);
     }
     
     PQclear(res);
 
     closeConnection(conn);
 
-    return static_cast<xd::IStructure*>(s);
+    return s;
+}
+
+xd::IStructurePtr PgsqlDatabase::describeTableI(const std::wstring& path)
+{
+    xd::Structure s = describeTable(path);
+    if (s.isNull())
+        return xcm::null;
+    
+    Structure* st = new Structure;
+    st->fromStructure(s);
+    return static_cast<xd::IStructure*>(st);
 }
 
 

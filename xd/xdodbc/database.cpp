@@ -682,7 +682,7 @@ xd::ColumnInfo createColInfo(int db_type,
     return col;
 }
 
-void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, xd::IStructurePtr s);
+void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, xd::Structure& s);
 
 
 // OdbcFileInfo class implementation
@@ -2287,23 +2287,17 @@ xd::IRowInserterPtr OdbcDatabase::bulkInsert(const std::wstring& path)
 
 xd::Structure OdbcDatabase::describeTable(const std::wstring& path)
 {
-    return xd::Structure();
-}
-
-xd::IStructurePtr OdbcDatabase::describeTableI(const std::wstring& path)
-{
     HDBC conn = createConnection();
     if (!conn)
     {
         // no connection could be made
         // TODO: return more specific m_error code here
-        return xcm::null;
+        return xd::Structure();
     }
 
     std::wstring schema;
     std::wstring tablename = getTablenameFromOfsPath(path);
-
-    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
+    xd::Structure s;
 
     wchar_t col_name[255];
     short int col_type;
@@ -2322,7 +2316,6 @@ xd::IStructurePtr OdbcDatabase::describeTableI(const std::wstring& path)
     SQLAllocHandle(SQL_HANDLE_STMT, conn, &stmt);
 
 
-
     if (tablename.find(L'.') != -1)
     {
         schema = kl::beforeFirst(tablename, L'.');
@@ -2338,9 +2331,7 @@ xd::IStructurePtr OdbcDatabase::describeTableI(const std::wstring& path)
 
 
     SQLRETURN r;
-    if (m_db_type == xd::dbtypeExcel ||
-        m_db_type == xd::dbtypeAccess ||
-        schema.empty())
+    if (m_db_type == xd::dbtypeExcel || m_db_type == xd::dbtypeAccess || schema.empty())
     {
         // excel and access drivers cannot tolerate even an 
         // empty string for parameter 4 of SQLColumns();
@@ -2477,7 +2468,7 @@ xd::IStructurePtr OdbcDatabase::describeTableI(const std::wstring& path)
                 col.column_ordinal = i;
                 i++;
 
-                s->createColumn(col);
+                s.createColumn(col);
             }
              else
             {
@@ -2508,6 +2499,17 @@ xd::IStructurePtr OdbcDatabase::describeTableI(const std::wstring& path)
     */
 
     return s;
+}
+
+xd::IStructurePtr OdbcDatabase::describeTableI(const std::wstring& path)
+{
+    xd::Structure s = describeTable(path);
+    if (s.isNull())
+        return xcm::null;
+    
+    Structure* st = new Structure;
+    st->fromStructure(s);
+    return static_cast<xd::IStructure*>(st);
 }
 
 bool OdbcDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
@@ -2607,15 +2609,14 @@ struct TempInfo
 };
 
 
-void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, xd::IStructurePtr s)
+void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, xd::Structure& s)
 {
     // because Access can store arbitrary numeric scales (decimal digits
     // to the right of the decimal point), we must find out the correct
     // scale by performing a query to look at the data itself
 
     std::wstring query;
-    int col_count = s->getColumnCount();
-    int i;
+    int i, col_count = s.getColumnCount();
     std::vector<TempInfo> cols;
     std::vector<TempInfo>::iterator it;
 
@@ -2624,7 +2625,7 @@ void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, xd::IStruc
     bool first = true;
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& colinfo = s->getColumnInfoByIdx(i);
+        xd::ColumnInfo& colinfo = s.columns[i];
         if (colinfo.type == xd::typeNumeric || colinfo.type == xd::typeDouble)
         {
             if (!first)
@@ -2634,7 +2635,7 @@ void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, xd::IStruc
             query += colinfo.name;
             query += L"])";
             TempInfo ti;
-            ti.colinfo = (xd::ColumnInfo*)&colinfo;
+            ti.colinfo = &colinfo;
             ti.max_dec = 0;
             ti.colname = colinfo.name;
             cols.push_back(ti);
