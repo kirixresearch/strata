@@ -3905,7 +3905,10 @@ xd::IndexInfoEnum XdnativeDatabase::getIndexEnum(const std::wstring& path)
     return set_int->getIndexEnum();
 }
 
-
+xd::Structure XdnativeDatabase::describeTable(const std::wstring& path)
+{
+    return xd::Structure();
+}
 
 xd::IStructurePtr XdnativeDatabase::describeTableI(const std::wstring& path)
 {

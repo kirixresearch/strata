@@ -42,6 +42,10 @@ public:
     virtual ~Structure();
 
     // -- IStructure --
+
+    void fromStructure(const xd::Structure& s);
+    xd::Structure toStructure();
+
     xd::IStructurePtr clone();
     int getColumnCount();
     const std::wstring& getColumnName(int idx);

@@ -119,7 +119,7 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
     else if (method == L"writestream")           apiWriteStream(req);
     else if (method == L"query")                 apiQuery(req);
     else if (method == L"groupquery")            apiGroupQuery(req);
-    else if (method == L"describetable")         apidescribeTableI(req);
+    else if (method == L"describetable")         apiDescribeTable(req);
 
     else if (method == L"insertrows")            apiInsertRows(req);
     else if (method == L"clone")                 apiClone(req);

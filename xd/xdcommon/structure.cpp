@@ -218,6 +218,20 @@ Structure::~Structure()
 }
 
 
+void Structure::fromStructure(const xd::Structure& s)
+{
+    m_cols = s.columns;
+    m_map.clear();
+}
+
+xd::Structure Structure::toStructure()
+{
+    xd::Structure s;
+    s.columns = m_cols;
+    return s;
+}
+
+
 void Structure::createColumn(const xd::ColumnInfo& col)
 {
     m_cols.push_back(col);

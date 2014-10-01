@@ -132,6 +132,7 @@ public:
 
     xd::IRowInserterPtr bulkInsert(const std::wstring& path);
 
+    xd::Structure describeTable(const std::wstring& path);
     xd::IStructurePtr describeTableI(const std::wstring& path);
 
     bool modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job);
@@ -149,8 +150,9 @@ public:
 
 public:
 
-    xd::IStructurePtr jsonToStructure(kl::JsonNode& node);
+    xd::Structure jsonToStructure(kl::JsonNode& node);
     std::wstring structureToJson(const xd::FormatDefinition& structure);
+
     bool getCallCacheResult(const std::wstring& path,
                             const std::wstring& method,
                             const ServerCallParams* params,

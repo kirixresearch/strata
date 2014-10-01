@@ -962,17 +962,15 @@ bool ClientIterator::refreshDataAccessInfo()
     if (!response["success"].getBoolean())
         return xcm::null;
 
-    xd::IStructurePtr structure = m_database->jsonToStructure(response);
-
-
 
     // fill out the data access information array
-    int idx;
-    int count = structure->getColumnCount();
 
-    for (idx = 0; idx < count; ++idx)
+    xd::Structure structure = m_database->jsonToStructure(response);
+    size_t i, count = structure.getColumnCount();
+
+    for (i = 0; i < count; ++i)
     {
-        const xd::ColumnInfo& info = structure->getColumnInfoByIdx(idx);
+        const xd::ColumnInfo& info = structure.getColumnInfoByIdx(i);
 
         HttpDataAccessInfo* dai = new HttpDataAccessInfo;
         dai->name = info.name;

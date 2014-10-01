@@ -722,6 +722,9 @@ xcm_interface IStructure : public xcm::IObject
 
 public:
 
+    virtual void fromStructure(const xd::Structure& s) = 0;
+    virtual xd::Structure toStructure() = 0;
+
     virtual IStructurePtr clone() = 0;
     virtual int getColumnCount() = 0;
     virtual const std::wstring& getColumnName(int idx) = 0;
@@ -786,6 +789,7 @@ public:
                              const std::wstring& name) = 0;
     virtual IndexInfoEnum getIndexEnum(const std::wstring& path) = 0;
 
+    virtual Structure describeTable(const std::wstring& path) = 0;
     virtual IStructurePtr describeTableI(const std::wstring& path) = 0;
 
     virtual IRowInserterPtr bulkInsert(const std::wstring& path) = 0;

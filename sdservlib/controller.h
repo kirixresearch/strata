@@ -123,7 +123,7 @@ private:
     void apiWriteStream(RequestInfo& req);
     void apiQuery(RequestInfo& req);
     void apiGroupQuery(RequestInfo& req);
-    void apidescribeTableI(RequestInfo& req);
+    void apiDescribeTable(RequestInfo& req);
     void apiGetData(RequestInfo& req);
     void apiRead(RequestInfo& req);
     void apiInsertRows(RequestInfo& req);

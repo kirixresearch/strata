@@ -295,9 +295,9 @@ std::wstring ClientDatabase::serverCall(const std::wstring& path,
     return result;
 }
 
-xd::IStructurePtr ClientDatabase::jsonToStructure(kl::JsonNode& node)
+xd::Structure ClientDatabase::jsonToStructure(kl::JsonNode& node)
 {
-    Structure* s = new Structure;
+    xd::Structure s;
 
     kl::JsonNode columns = node["columns"];
     size_t i = 0, cnt = columns.getChildCount();
@@ -315,12 +315,11 @@ xd::IStructurePtr ClientDatabase::jsonToStructure(kl::JsonNode& node)
         col.expression = column["expression"];
         col.calculated = (col.expression.length() > 0) ? true : false;
 
-        s->createColumn(col);
+        s.createColumn(col);
     }
 
-    return static_cast<xd::IStructure*>(s);
+    return s;
 }
-
 
 
 std::wstring ClientDatabase::structureToJson(const xd::FormatDefinition& structure)
@@ -580,6 +579,11 @@ xd::IRowInserterPtr ClientDatabase::bulkInsert(const std::wstring& path)
     return static_cast<xd::IRowInserter*>(new ClientRowInserter(this, path));
 }
 
+xd::Structure ClientDatabase::describeTable(const std::wstring& path)
+{
+    return xd::Structure();
+}
+
 xd::IStructurePtr ClientDatabase::describeTableI(const std::wstring& path)
 {
     ServerCallParams params;
@@ -591,7 +595,9 @@ xd::IStructurePtr ClientDatabase::describeTableI(const std::wstring& path)
     if (!response["success"].getBoolean())
         return xcm::null;
 
-    return jsonToStructure(response);
+    Structure* s = new Structure;
+    s->fromStructure(jsonToStructure(response));
+    return static_cast<xd::IStructure*>(s);
 }
 
 

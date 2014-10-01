@@ -2540,6 +2540,12 @@ xd::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
     return xdfs_set->getRowInserter();
 }
 
+xd::Structure FsDatabase::describeTable(const std::wstring& path)
+{
+    return xd::Structure();
+}
+
+
 xd::IStructurePtr FsDatabase::describeTableI(const std::wstring& path)
 {
     std::wstring cstr, rpath;

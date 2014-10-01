@@ -634,6 +634,11 @@ xd::IRowInserterPtr SlDatabase::bulkInsert(const std::wstring& path)
     return static_cast<xd::IRowInserter*>(inserter);
 }
 
+xd::Structure SlDatabase::describeTable(const std::wstring& path)
+{
+    return xd::Structure();
+}
+
 xd::IStructurePtr SlDatabase::describeTableI(const std::wstring& _path)
 {
     std::wstring path = sqliteGetTablenameFromPath(_path);

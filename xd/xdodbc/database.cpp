@@ -2285,6 +2285,10 @@ xd::IRowInserterPtr OdbcDatabase::bulkInsert(const std::wstring& path)
     return static_cast<xd::IRowInserter*>(inserter);
 }
 
+xd::Structure OdbcDatabase::describeTable(const std::wstring& path)
+{
+    return xd::Structure();
+}
 
 xd::IStructurePtr OdbcDatabase::describeTableI(const std::wstring& path)
 {

@@ -726,6 +726,11 @@ xd::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)
 }
 
 
+xd::Structure KpgDatabase::describeTable(const std::wstring& path)
+{
+    return xd::Structure();
+}
+
 xd::IStructurePtr KpgDatabase::describeTableI(const std::wstring& _path)
 {
     KL_AUTO_LOCK(m_obj_mutex);

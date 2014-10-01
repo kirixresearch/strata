@@ -929,6 +929,11 @@ xd::IRowInserterPtr MysqlDatabase::bulkInsert(const std::wstring& path)
     return static_cast<xd::IRowInserter*>(inserter);
 }
 
+xd::Structure MysqlDatabase::describeTable(const std::wstring& path)
+{
+    return xd::Structure();
+}
+
 xd::IStructurePtr MysqlDatabase::describeTableI(const std::wstring& path)
 {
     // create select statement

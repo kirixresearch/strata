@@ -1638,7 +1638,10 @@ xd::IRowInserterPtr PgsqlDatabase::bulkInsert(const std::wstring& path)
     return static_cast<xd::IRowInserter*>(inserter);
 }
 
-
+xd::Structure PgsqlDatabase::describeTable(const std::wstring& path)
+{
+    return xd::Structure();
+}
 
 xd::IStructurePtr PgsqlDatabase::describeTableI(const std::wstring& path)
 {

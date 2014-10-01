@@ -1177,6 +1177,10 @@ xd::IRowInserterPtr OracleDatabase::bulkInsert(const std::wstring& path)
     return xcm::null;
 }
 
+xd::Structure OracleDatabase::describeTable(const std::wstring& path)
+{
+    return xd::Structure();
+}
 
 xd::IStructurePtr OracleDatabase::describeTableI(const std::wstring& path)
 {

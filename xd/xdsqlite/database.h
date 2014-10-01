@@ -99,7 +99,8 @@ public:
                        std::wstring& remote_path);
     
     xd::IRowInserterPtr bulkInsert(const std::wstring& path);
-          
+
+    xd::Structure describeTable(const std::wstring& path);   
     xd::IStructurePtr describeTableI(const std::wstring& path);
 
     bool modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job);
