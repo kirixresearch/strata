@@ -66,10 +66,9 @@ public:
 
     xd::IStructurePtr getStructure();
 
-    bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
+    bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
     bool determineColumns(int check_rows, int max_seconds, xd::IJob* job);
-    bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job) { return false; }
- 
+
 private:
 
     bool loadConfigurationFromDataFile();

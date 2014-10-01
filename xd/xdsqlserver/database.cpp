@@ -652,7 +652,7 @@ xd::IStructurePtr SqlServerDatabase::describeTable(const std::wstring& path)
     return xcm::null;
 }
 
-bool SqlServerDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
+bool SqlServerDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {
     return false;
 }

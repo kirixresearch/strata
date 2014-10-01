@@ -990,7 +990,7 @@ xd::IStructurePtr MysqlDatabase::describeTable(const std::wstring& path)
 }
 
 
-bool MysqlDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
+bool MysqlDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {
     return false;
 }

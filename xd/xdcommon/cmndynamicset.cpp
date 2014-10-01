@@ -506,8 +506,7 @@ xd::rowpos_t CommonDynamicSet::getRowCount()
 
 
 /*
-bool CommonDynamicSet::modifyStructure(xd::IStructure* struct_config,
-                                       xd::IJob* job)
+bool CommonDynamicSet::modifyStructure(xd::IStructure* struct_config, xd::IJob* job)
 {
 
     // release all indexes

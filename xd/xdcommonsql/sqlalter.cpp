@@ -77,6 +77,11 @@ bool sqlAlter(xd::IDatabasePtr db,
     }
 
     
+
+    xd::StructureModify mod_params;
+
+
+
     std::vector<std::wstring> commands;
     std::vector<std::wstring>::iterator it;
     kl::parseDelimitedList(params, commands, ',', true);
@@ -160,7 +165,7 @@ bool sqlAlter(xd::IDatabasePtr db,
             }
 
 
-            structure->createColumn(colinfo);
+            mod_params.createColumn(colinfo);
         }
          else if (verb == L"DROP")
         {
@@ -171,7 +176,7 @@ bool sqlAlter(xd::IDatabasePtr db,
             
             dequote(column, '[', ']');
             
-            if (!structure->deleteColumn(column))
+            if (!structure->getColumnExist(column))
             {
                 // column didn't exist in the first place
                 wchar_t buf[1024];
@@ -179,6 +184,8 @@ bool sqlAlter(xd::IDatabasePtr db,
                 error.setError(xd::errorGeneral, buf);               
                 return false;
             }
+
+            mod_params.deleteColumn(column);
         }
          else if (verb == L"RENAME")
         {
@@ -206,12 +213,7 @@ bool sqlAlter(xd::IDatabasePtr db,
             dequote(column, '[', ']');
             dequote(new_name, '[', ']');
 
-
-            xd::ColumnInfo colinfo;
-            colinfo.mask = xd::ColumnInfo::maskName;
-            colinfo.name = new_name;
-
-            if (!structure->modifyColumn(column, colinfo))
+            if (!structure->getColumnExist(column))
             {
                 // column doesn't exist
                 wchar_t buf[1024];
@@ -219,6 +221,12 @@ bool sqlAlter(xd::IDatabasePtr db,
                 error.setError(xd::errorGeneral, buf);
                 return false;
             }
+
+            xd::ColumnInfo colinfo;
+            colinfo.mask = xd::ColumnInfo::maskName;
+            colinfo.name = new_name;
+
+            mod_params.modifyColumn(column, colinfo);
         }
          else if (verb == L"ALTER")
         {
@@ -241,7 +249,7 @@ bool sqlAlter(xd::IDatabasePtr db,
             new_params.mask = xd::ColumnInfo::maskType | xd::ColumnInfo::maskWidth |
                               xd::ColumnInfo::maskScale | xd::ColumnInfo::maskExpression;
 
-            if (!structure->modifyColumn(colname, new_params))
+            if (!structure->getColumnExist(colname))
             {
                 // column doesn't exist
                 wchar_t buf[1024];
@@ -249,6 +257,8 @@ bool sqlAlter(xd::IDatabasePtr db,
                 error.setError(xd::errorGeneral, buf);                 
                 return false;
             }
+
+            mod_params.modifyColumn(colname, new_params);
         }
          else if (verb == L"MODIFY")
         {
@@ -290,7 +300,7 @@ bool sqlAlter(xd::IDatabasePtr db,
                 new_params.mask = xd::ColumnInfo::maskType | xd::ColumnInfo::maskWidth |
                                   xd::ColumnInfo::maskScale | xd::ColumnInfo::maskExpression;
 
-                if (structure->modifyColumn(old_name, new_params))
+                if (structure->getColumnExist(old_name))
                 {
                     // column doesn't exist
                     wchar_t buf[1024];
@@ -298,12 +308,14 @@ bool sqlAlter(xd::IDatabasePtr db,
                     error.setError(xd::errorGeneral, buf);                    
                     return false;
                 }
+
+                mod_params.modifyColumn(old_name, new_params);
             }
         }
     }    
     
 
-    db->modifyStructure(table_name, structure, NULL);
+    db->modifyStructure(table_name, mod_params, NULL);
 
     return true;
 }

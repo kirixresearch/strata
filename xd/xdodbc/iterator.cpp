@@ -894,24 +894,20 @@ bool OdbcIterator::refreshStructure()
     return true;
 }
 
-bool OdbcIterator::modifyStructure(xd::IStructure* struct_config,
-                                   xd::IJob* job)
+bool OdbcIterator::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
 {
-    IStructureInternalPtr struct_int = struct_config;
-
-    std::vector<StructureAction>& actions = struct_int->getStructureActions();
-    std::vector<StructureAction>::iterator it;
+    std::vector<xd::StructureModify::Action>::const_iterator it;
     std::vector<OdbcDataAccessInfo*>::iterator it2;
     
     // handle delete
-    for (it = actions.begin(); it != actions.end(); ++it)
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action != StructureAction::actionDelete)
+        if (it->action != xd::StructureModify::Action::actionDelete)
             continue;
 
         for (it2 = m_fields.begin(); it2 != m_fields.end(); ++it2)
         {
-            if (0 == wcscasecmp(it->m_colname.c_str(), (*it2)->name.c_str()))
+            if (kl::iequals(it->column, (*it2)->name))
             {
                 OdbcDataAccessInfo* dai = *(it2);
                 m_fields.erase(it2);
@@ -922,66 +918,66 @@ bool OdbcIterator::modifyStructure(xd::IStructure* struct_config,
     }
 
     // handle modify
-    for (it = actions.begin(); it != actions.end(); ++it)
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action != StructureAction::actionModify)
+        if (it->action != xd::StructureModify::Action::actionModify)
             continue;
 
         for (it2 = m_fields.begin();
              it2 != m_fields.end();
              ++it2)
         {
-            if (0 == wcscasecmp(it->m_colname.c_str(), (*it2)->name.c_str()))
+            if (kl::iequals(it->column, (*it2)->name))
             {
-                if (it->m_params.name.length() > 0)
+                if (it->params.mask & xd::ColumnInfo::maskName)
                 {
-                    std::wstring new_name = it->m_params.name;
+                    std::wstring new_name = it->params.name;
                     kl::makeUpper(new_name);
                     (*it2)->name = new_name;
                 }
 
-                if (it->m_params.type != -1)
+                if (it->params.mask & xd::ColumnInfo::maskType)
                 {
-                    (*it2)->type = it->m_params.type;
+                    (*it2)->type = it->params.type;
                 }
 
-                if (it->m_params.width != -1)
+                if (it->params.mask & xd::ColumnInfo::maskWidth)
                 {
-                    (*it2)->width = it->m_params.width;
+                    (*it2)->width = it->params.width;
                 }
 
-                if (it->m_params.scale != -1)
+                if (it->params.mask & xd::ColumnInfo::maskScale)
                 {
-                    (*it2)->scale = it->m_params.scale;
+                    (*it2)->scale = it->params.scale;
                 }
 
-                if (it->m_params.expression.length() > 0)
+                if (it->params.mask & xd::ColumnInfo::maskExpression)
                 {
                     if ((*it2)->expr)
                         delete (*it2)->expr;
-                    (*it2)->expr_text = it->m_params.expression;
-                    (*it2)->expr = parse(it->m_params.expression);
+                    (*it2)->expr_text = it->params.expression;
+                    (*it2)->expr = parse(it->params.expression);
                 }
             }
         }
     }
 
     // handle create
-    for (it = actions.begin(); it != actions.end(); ++it)
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action != StructureAction::actionCreate)
+        if (it->action != xd::StructureModify::Action::actionCreate)
             continue;
 
-        if (it->m_params.expression.length() > 0)
+        if (it->params.expression.length() > 0)
         {
             OdbcDataAccessInfo* dai = new OdbcDataAccessInfo;
-            dai->name = it->m_params.name;
-            dai->type = it->m_params.type;
-            dai->width = it->m_params.width;
-            dai->scale = it->m_params.scale;
+            dai->name = it->params.name;
+            dai->type = it->params.type;
+            dai->width = it->params.width;
+            dai->scale = it->params.scale;
             dai->ordinal = m_fields.size();
-            dai->expr_text = it->m_params.expression;
-            dai->expr = parse(it->m_params.expression);
+            dai->expr_text = it->params.expression;
+            dai->expr = parse(it->params.expression);
                 
             dai->str_val = new char[(dai->width+1)*sizeof(char)];
             dai->wstr_val = new wchar_t[(dai->width+1)*sizeof(wchar_t)];

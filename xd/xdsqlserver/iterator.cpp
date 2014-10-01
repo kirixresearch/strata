@@ -418,7 +418,7 @@ bool SqlServerIterator::refreshStructure()
     return true;
 }
 
-bool SqlServerIterator::modifyStructure(xd::IStructure* struct_config, xd::IJob* job)
+bool SqlServerIterator::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
 {
     return false;
 }

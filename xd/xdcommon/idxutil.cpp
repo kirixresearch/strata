@@ -686,9 +686,9 @@ xd::IStructurePtr CommonIndexIterator::getStructure()
     return m_data_iter->getStructure();
 }
 
-bool CommonIndexIterator::modifyStructure(xd::IStructure* struct_config, xd::IJob* job)
+bool CommonIndexIterator::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
 {
-    return m_data_iter->modifyStructure(struct_config, job);
+    return m_data_iter->modifyStructure(mod_params, job);
 }
 
 xd::IIteratorPtr CommonIndexIterator::getChildIterator(xd::IRelationPtr relation)

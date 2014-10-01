@@ -1185,7 +1185,7 @@ xd::IStructurePtr OracleDatabase::describeTable(const std::wstring& path)
 }
 
 
-bool OracleDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
+bool OracleDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {
     return false;
 }

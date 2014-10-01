@@ -477,7 +477,7 @@ void ColPropsPanel::onTypeChanged(wxCommandEvent& evt)
     {
         m_last_type = type;
 
-        xd::IStructurePtr iter_structure = m_iter->getStructure();
+
         xd::ColumnInfo colinfo;
         
         colinfo.mask |= xd::ColumnInfo::maskType;
@@ -503,9 +503,10 @@ void ColPropsPanel::onTypeChanged(wxCommandEvent& evt)
             setWidth(xd::max_numeric_width);
         }
 
-        iter_structure->modifyColumn(towstr(m_modify_field), colinfo);
+        xd::StructureModify mod_params;
+        mod_params.modifyColumn(towstr(m_modify_field), colinfo);
 
-        if (m_iter->modifyStructure(iter_structure, NULL))
+        if (m_iter->modifyStructure(mod_params, NULL))
         {
             kcl::Grid* grid = m_tabledoc->getGrid();
             grid->refreshModel();
@@ -563,15 +564,14 @@ void ColPropsPanel::onWidthChanged(wxCommandEvent& evt)
     {
         m_last_width = width;
 
-        xd::IStructurePtr iter_structure = m_iter->getStructure();
-
         xd::ColumnInfo colinfo;
         colinfo.mask |= xd::ColumnInfo::maskWidth;
         colinfo.width = width;
 
-        iter_structure->modifyColumn(towstr(m_modify_field), colinfo);
+        xd::StructureModify mod_params;
+        mod_params.modifyColumn(towstr(m_modify_field), colinfo);
 
-        if (m_iter->modifyStructure(iter_structure, NULL))
+        if (m_iter->modifyStructure(mod_params, NULL))
         {
             kcl::Grid* grid = m_tabledoc->getGrid();
             grid->refreshModel();
@@ -616,15 +616,14 @@ void ColPropsPanel::onScaleChanged(wxCommandEvent& evt)
     {
         m_last_scale = scale;
 
-        xd::IStructurePtr iter_structure = m_iter->getStructure();
-
         xd::ColumnInfo colinfo;
         colinfo.mask |= xd::ColumnInfo::maskScale;
         colinfo.scale = scale;
 
-        iter_structure->modifyColumn(towstr(m_modify_field), colinfo);
+        xd::StructureModify mod_params;
+        mod_params.modifyColumn(towstr(m_modify_field), colinfo);
 
-        if (m_iter->modifyStructure(iter_structure, NULL))
+        if (m_iter->modifyStructure(mod_params, NULL))
         {
             kcl::Grid* grid = m_tabledoc->getGrid();
             grid->refreshModel();
@@ -660,7 +659,6 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
         m_last_expr = expr;
 
         // update the calcfield in the grid
-        xd::IStructurePtr iter_structure = m_iter->getStructure();
 
         xd::ColumnInfo colinfo;
         colinfo.mask |= xd::ColumnInfo::maskExpression;
@@ -731,9 +729,10 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
             }
         }
 
-        iter_structure->modifyColumn(towstr(m_modify_field), colinfo);
+        xd::StructureModify mod_params;
+        mod_params.modifyColumn(towstr(m_modify_field), colinfo);
 
-        if (m_iter->modifyStructure(iter_structure, NULL))
+        if (m_iter->modifyStructure(mod_params, NULL))
         {
             kcl::Grid* grid = m_tabledoc->getGrid();
 
@@ -967,7 +966,9 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         return;
     }
 
+    xd::StructureModify mod_params;
     xd::IStructurePtr structure = db->describeTable(m_path);
+
     if (structure->getColumnExist(towstr(m_orig_name)))
     {
         if (!m_orig_existed)
@@ -1011,7 +1012,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
             colinfo.expression = towstr(m_last_expr);
         }
 
-        structure->modifyColumn(towstr(m_orig_name), colinfo);
+        mod_params.modifyColumn(towstr(m_orig_name), colinfo);
     }
      else
     {
@@ -1023,18 +1024,17 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         colinfo.scale = new_scale;
         colinfo.expression = towstr(m_last_expr);
 
-        structure->createColumn(colinfo);
+        mod_params.createColumn(colinfo);
     }
 
 
-    xd::IndexInfoEnum old_indexes;
-    old_indexes = db->getIndexEnum(m_tabledoc->getPath());
+    xd::IndexInfoEnum old_indexes = db->getIndexEnum(m_tabledoc->getPath());
 
-    if (!db->modifyStructure(m_path, structure, NULL))
+    if (!db->modifyStructure(m_path, mod_params, NULL))
     {
         appMessageBox(_("The structure of the table could not be modified, due to an invalid parameter."),
-                           APPLICATION_NAME,
-                           wxOK | wxICON_EXCLAMATION | wxCENTER);
+                      APPLICATION_NAME,
+                      wxOK | wxICON_EXCLAMATION | wxCENTER);
 
         g_app->getMainFrame()->closeSite(m_doc_site);
         return;
@@ -1163,7 +1163,6 @@ void ColPropsPanel::revertChanges()
 
     // restore calculated field
 
-    xd::IStructurePtr iter_structure = m_iter->getStructure();
     xd::ColumnInfo colinfo;
     
     colinfo.mask = xd::ColumnInfo::maskName | xd::ColumnInfo::maskType |
@@ -1176,9 +1175,10 @@ void ColPropsPanel::revertChanges()
     colinfo.scale = m_orig_scale;
     colinfo.expression = towstr(m_orig_expr);
 
-    iter_structure->modifyColumn(towstr(m_modify_field), colinfo);
+    xd::StructureModify mod_params;
+    mod_params.modifyColumn(towstr(m_modify_field), colinfo);
 
-    if (m_iter->modifyStructure(iter_structure, NULL))
+    if (m_iter->modifyStructure(mod_params, NULL))
     {
         kcl::Grid* grid = m_tabledoc->getGrid();
         grid->refreshModel();

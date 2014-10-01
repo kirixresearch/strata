@@ -57,7 +57,7 @@ public:
 
     xd::IStructurePtr getStructure();
    
-    bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job) { return false; }
+    bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job) { return false; }
 
     void setTemporary(bool value) { m_temporary = value; }
 

@@ -134,7 +134,7 @@ public:
 
     xd::IStructurePtr describeTable(const std::wstring& path);
 
-    bool modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job);
+    bool modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job);
 
     bool executePost(const std::wstring& command);
 

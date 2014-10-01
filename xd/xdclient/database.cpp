@@ -595,7 +595,7 @@ xd::IStructurePtr ClientDatabase::describeTable(const std::wstring& path)
 }
 
 
-bool ClientDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
+bool ClientDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {
 /*
     if (!struct_config)
@@ -623,24 +623,24 @@ bool ClientDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr
     {
         kl::JsonNode json_action = json_actions.appendElement();
         
-        switch (it->m_action)
+        switch (it->action)
         {
-            case StructureAction::actionCreate:  json_action[L"action"] = L"create"; break;
-            case StructureAction::actionModify:  json_action[L"action"] = L"modify"; break;
-            case StructureAction::actionDelete:  json_action[L"action"] = L"delete"; break;
-            case StructureAction::actionMove:    json_action[L"action"] = L"move";   break;
-            case StructureAction::actionInsert:  json_action[L"action"] = L"insert"; break;
+            case xd::StructureModify::Action::actionCreate:  json_action[L"action"] = L"create"; break;
+            case xd::StructureModify::Action::actionModify:  json_action[L"action"] = L"modify"; break;
+            case xd::StructureModify::Action::actionDelete:  json_action[L"action"] = L"delete"; break;
+            case xd::StructureModify::Action::actionMove:    json_action[L"action"] = L"move";   break;
+            case xd::StructureModify::Action::actionInsert:  json_action[L"action"] = L"insert"; break;
         }
 
-        if (it->m_action == StructureAction::actionModify ||
-            it->m_action == StructureAction::actionDelete ||
-            it->m_action == StructureAction::actionMove ||
-            it->m_action == StructureAction::actionInsert)
+        if (it->action == xd::StructureModify::Action::actionModify ||
+            it->action == xd::StructureModify::Action::actionDelete ||
+            it->action == xd::StructureModify::Action::actionMove ||
+            it->action == xd::StructureModify::Action::actionInsert)
         {
             json_action[L"target_column"] = it->m_colname;
         }
 
-        if (it->m_action == StructureAction::actionInsert)
+        if (it->action == xd::StructureModify::Action::actionInsert)
         {
             json_action[L"position"] = it->m_pos;
         }

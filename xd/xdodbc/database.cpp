@@ -2505,9 +2505,7 @@ xd::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
     return static_cast<xd::IStructure*>(s);
 }
 
-bool OdbcDatabase::modifyStructure(const std::wstring& path,
-                                   xd::IStructurePtr struct_config,
-                                   xd::IJob* job)
+bool OdbcDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {
     return false;
 }

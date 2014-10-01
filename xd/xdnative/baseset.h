@@ -37,7 +37,7 @@ public:
 
     IXdnativeSet* getRawXdnativeSetPtr() { return this; }
 
-    bool modifyStructure(xd::IStructurePtr struct_config, xd::IJob* job) { return false; }
+    bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job) { return false; }
 
     unsigned int getSetFlags();
     void setSetFlags(unsigned int new_val);
@@ -87,8 +87,7 @@ protected:
 
     INodeValuePtr openSetDefinition(bool create_if_not_exist);
 
-    bool baseSetModifyStructure(xd::IStructurePtr struct_config,
-                                bool* done);
+    bool baseSetModifyStructure(const xd::StructureModify& mod_params, bool* done);
 
     bool createCalcField(const xd::ColumnInfo& params);
     bool deleteCalcField(const std::wstring& name);

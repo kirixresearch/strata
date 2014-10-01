@@ -384,11 +384,10 @@ struct FormatDefinition
         fixed_line_delimited = false;
     };
     
-    std::wstring object_id;
-    int object_type;
-
-    int format;
-    int encoding;
+    std::wstring object_id;               // unique object id
+    int object_type;                      // one of the filetype* enum values (see above)
+    int format;                           // one of the format* enum values (see above)
+    int encoding;                         // one of the encoding* enum values (see above)
 
     std::wstring data_connection_string;  // optional connection string associated with data_file
     std::wstring data_path;               // project relative path, or file:/// url
@@ -409,15 +408,12 @@ struct FormatDefinition
     std::vector<ColumnInfo> columns;
 
     // helper functions
-
     void createColumn(const xd::ColumnInfo& params) { columns.push_back(params); }
 };
 
 
-class StructureModify
+struct StructureModify
 {
-private:
-
     struct Action
     {
         enum
@@ -430,18 +426,19 @@ private:
         };
 
         Action(int _action, const std::wstring& _column, const xd::ColumnInfo& _params)
-            : action(_action), column(_column), colinfo(_params) { }
+            : action(_action), column(_column), params(_params) { }
         Action(int _action, const std::wstring& _column)
             : action(_action), column(_column) { }
 
         int action;
         std::wstring column;
-        xd::ColumnInfo colinfo;
+        xd::ColumnInfo params;
     };
 
     std::vector<Action> actions;
 
-public:
+
+    // helper functions
 
     void deleteColumn(const std::wstring& column_name)
         { actions.push_back(Action(Action::actionDelete, column_name)); }
@@ -579,7 +576,7 @@ public:
 
     virtual bool refreshStructure() = 0;
     virtual IStructurePtr getStructure() = 0;
-    virtual bool modifyStructure(IStructure* struct_config, IJob* job) = 0;
+    virtual bool modifyStructure(const StructureModify& mod_params, IJob* job) = 0;
 
     virtual objhandle_t getHandle(const std::wstring& expr) = 0;
     virtual ColumnInfo getInfo(objhandle_t data_handle) = 0;
@@ -751,7 +748,7 @@ public:
 
     virtual IRowInserterPtr bulkInsert(const std::wstring& path) = 0;
 
-    virtual bool modifyStructure(const std::wstring& path, IStructurePtr struct_config, IJob* job) = 0;
+    virtual bool modifyStructure(const std::wstring& path, const StructureModify& mod_params, IJob* job) = 0;
 
     virtual IIteratorPtr query(const std::wstring& path,
                                const std::wstring& columns,

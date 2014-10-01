@@ -1723,7 +1723,7 @@ xd::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
 }
 
 
-bool PgsqlDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
+bool PgsqlDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {
     return false;
 }

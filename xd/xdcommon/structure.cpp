@@ -102,7 +102,7 @@ static void modColumn(xd::ColumnInfo& target_col, const xd::ColumnInfo& params)
 
 
 
-bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
+bool calcfieldsModifyStructure(const xd::StructureModify& mod_params,
                                xd::IStructurePtr _mod_struct,
                                std::vector<xd::ColumnInfo>* calc_fields,
                                bool* done_flag)
@@ -113,13 +113,13 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
     *done_flag = false;
     unsigned int processed_action_count = 0;
 
-    std::vector<StructureAction>::iterator it;
+    std::vector<xd::StructureModify::Action>::const_iterator it;
     std::vector<xd::ColumnInfo>::iterator cit;
 
-    // -- handle delete --
-    for (it = actions.begin(); it != actions.end(); ++it)
+    // handle delete
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action == StructureAction::actionDelete)
+        if (it->action == xd::StructureModify::Action::actionDelete)
         {
             bool processed = false;
 
@@ -129,7 +129,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
                      cit != calc_fields->end();
                      ++cit)
                 {
-                    if (kl::iequals(cit->name, it->m_colname))
+                    if (kl::iequals(cit->name, it->column))
                     {
                         calc_fields->erase(cit);
                         processed_action_count++;
@@ -141,7 +141,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
 
             if (mod_struct.isOk() && !processed)
             {
-                if (mod_struct->removeColumn(it->m_colname))
+                if (mod_struct->removeColumn(it->column))
                 {
                     processed_action_count++;
                 }
@@ -150,10 +150,10 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
     }
 
 
-    // -- handle modify --
-    for (it = actions.begin(); it != actions.end(); ++it)
+    // handle modify
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action == StructureAction::actionModify)
+        if (it->action == xd::StructureModify::Action::actionModify)
         {
             bool processed = false;
 
@@ -161,9 +161,9 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
             {
                 for (cit = calc_fields->begin(); cit != calc_fields->end(); ++cit)
                 {
-                    if (kl::iequals(cit->name, it->m_colname))
+                    if (kl::iequals(cit->name, it->column))
                     {
-                        if ((it->m_params.mask & xd::ColumnInfo::maskCalculated) && !it->m_params.calculated)
+                        if ((it->params.mask & xd::ColumnInfo::maskCalculated) && !it->params.calculated)
                         {
                             // caller wants this field to be permanent,
                             // so we won't do anything here
@@ -171,7 +171,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
                             continue;
                         }
 
-                        modColumn(*cit, it->m_params);
+                        modColumn(*cit, it->params);
 
                         processed_action_count++;
                         processed = true;
@@ -182,7 +182,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
 
             if (mod_struct.isOk() && !processed)
             {
-                if (mod_struct->modifyColumn(it->m_colname, it->m_params))
+                if (mod_struct->modifyColumn(it->column, it->params))
                 {
                     processed_action_count++;
                 }
@@ -190,22 +190,22 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
         }
     }
 
-    // -- handle create --
-    for (it = actions.begin(); it != actions.end(); ++it)
+    // handle create
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action == StructureAction::actionCreate)
+        if (it->action == xd::StructureModify::Action::actionCreate)
         {
-            if (it->m_params.expression.length() > 0)
+            if (it->params.expression.length() > 0)
             {
                 if (calc_fields)
                 {
-                    xd::ColumnInfo colinfo = it->m_params;
+                    xd::ColumnInfo colinfo = it->params;
                     colinfo.calculated = true;
                     calc_fields->push_back(colinfo);
                 }
                  else
                 {
-                    mod_struct->addColumn(it->m_params);
+                    mod_struct->addColumn(it->params);
                 }
 
                 processed_action_count++;
@@ -213,23 +213,23 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
         }
     }
 
-    // -- handle insert --
-    for (it = actions.begin(); it != actions.end(); ++it)
+    // handle insert
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action == StructureAction::actionInsert)
+        if (it->action == xd::StructureModify::Action::actionInsert)
         {
-            if (it->m_params.expression.length() > 0)
+            if (it->params.expression.length() > 0)
             {
                 if (calc_fields)
                 {
-                    xd::ColumnInfo colinfo = it->m_params;
+                    xd::ColumnInfo colinfo = it->params;
                     colinfo.calculated = true;
                     calc_fields->push_back(colinfo);
                 }
                  else
                 {
-                    int insert_idx = it->m_pos;
-                    mod_struct->internalInsertColumn(it->m_params, insert_idx);
+                    int insert_idx = it->params.column_ordinal;
+                    mod_struct->internalInsertColumn(it->params, insert_idx);
                 }
 
                 processed_action_count++;
@@ -237,7 +237,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
         }
     }
 
-    if (processed_action_count == actions.size())
+    if (processed_action_count == mod_params.actions.size())
     {
         // we have handled all actions, so we're done
         *done_flag = true;
@@ -434,7 +434,7 @@ bool Structure::getColumnExist(const std::wstring& column_name)
 bool Structure::deleteColumn(const std::wstring& column_name)
 {
     StructureAction action;
-    action.m_action = StructureAction::actionDelete;
+    action.m_action = xd::StructureModify::Action::actionDelete;
     action.m_params = xd::ColumnInfo();
     action.m_colname = column_name;
     action.m_pos = -1;
@@ -445,7 +445,7 @@ bool Structure::deleteColumn(const std::wstring& column_name)
 bool Structure::moveColumn(const std::wstring& column_name, int new_idx)
 {
     StructureAction action;
-    action.m_action = StructureAction::actionMove;
+    action.m_action = xd::StructureModify::Action::actionMove;
     action.m_params = xd::ColumnInfo();
     action.m_colname = column_name;
     action.m_pos = new_idx;
@@ -460,7 +460,7 @@ bool Structure::modifyColumn(const std::wstring& column_name, const xd::ColumnIn
         return false;
 
     StructureAction action;
-    action.m_action = StructureAction::actionModify;
+    action.m_action = xd::StructureModify::Action::actionModify;
     action.m_params = colinfo;
     action.m_colname = column_name;
     action.m_pos = -1;
@@ -472,7 +472,7 @@ bool Structure::modifyColumn(const std::wstring& column_name, const xd::ColumnIn
 void Structure::createColumn(const xd::ColumnInfo& col)
 {
     StructureAction action;
-    action.m_action = StructureAction::actionCreate;
+    action.m_action = xd::StructureModify::Action::actionCreate;
     action.m_params = col;
     action.m_colname = L"";
     action.m_pos = -1;

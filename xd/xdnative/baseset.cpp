@@ -183,7 +183,7 @@ bool BaseSet::modifyCalcField(const std::wstring& _name, const xd::ColumnInfo& c
         return false;
     }
 
-    if (colinfo.name.length() > 0)
+    if (colinfo.mask & xd::ColumnInfo::maskName)
     {
         std::wstring new_name = colinfo.name;
         kl::makeUpper(new_name);
@@ -197,25 +197,25 @@ bool BaseSet::modifyCalcField(const std::wstring& _name, const xd::ColumnInfo& c
         name_node->setString(colinfo.name);
     }
 
-    if (colinfo.type != -1)
+    if (colinfo.mask & xd::ColumnInfo::maskType)
     {
         INodeValuePtr type_node = item_node->getChild(L"type", true);
         type_node->setInteger(colinfo.type);
     }
 
-    if (colinfo.width != -1)
+    if (colinfo.mask & xd::ColumnInfo::maskWidth)
     {
         INodeValuePtr width_node = item_node->getChild(L"width", true);
         width_node->setInteger(colinfo.width);
     }
 
-    if (colinfo.scale != -1)
+    if (colinfo.mask & xd::ColumnInfo::maskScale)
     {
         INodeValuePtr scale_node = item_node->getChild(L"scale", true);
         scale_node->setInteger(colinfo.scale);
     }
 
-    if (colinfo.expression.length() > 0)
+    if (colinfo.mask & xd::ColumnInfo::maskExpression)
     {
         INodeValuePtr expr_node = item_node->getChild(L"expression", true);
         expr_node->setString(colinfo.expression);
@@ -343,8 +343,7 @@ void BaseSet::onRelationshipsUpdated()
 
 
 
-bool BaseSet::baseSetModifyStructure(xd::IStructurePtr struct_config,
-                                     bool* done_flag)
+bool BaseSet::baseSetModifyStructure(const xd::StructureModify& mod_params, bool* done_flag)
 {
     KL_AUTO_LOCK(m_structure_mutex);
 
@@ -355,59 +354,56 @@ bool BaseSet::baseSetModifyStructure(xd::IStructurePtr struct_config,
     if (file.isNull())
         return false;
 
-    IStructureInternalPtr struct_int = struct_config;
-
-    std::vector<StructureAction>& actions = struct_int->getStructureActions();
-    std::vector<StructureAction>::iterator it;
+    std::vector<xd::StructureModify::Action>::const_iterator it;
     int processed_action_count = 0;
 
     // handle delete
-    for (it = actions.begin(); it != actions.end(); ++it)
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action != StructureAction::actionDelete)
+        if (it->action != xd::StructureModify::Action::actionDelete)
             continue;
 
-        if (deleteCalcField(it->m_colname))
+        if (deleteCalcField(it->column))
             processed_action_count++;
     }
 
     // handle modify
-    for (it = actions.begin(); it != actions.end(); ++it)
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action != StructureAction::actionModify)
+        if (it->action != xd::StructureModify::Action::actionModify)
             continue;
 
-        if (modifyCalcField(it->m_colname, it->m_params))
+        if (modifyCalcField(it->column, it->params))
             processed_action_count++;
     }
 
     // handle create
-    for (it = actions.begin(); it != actions.end(); ++it)
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action != StructureAction::actionCreate)
+        if (it->action != xd::StructureModify::Action::actionCreate)
             continue;
 
-        if (it->m_params.expression.length() > 0)
+        if (it->params.expression.length() > 0)
         {
-            if (createCalcField(it->m_params))
+            if (createCalcField(it->params))
                 processed_action_count++;
         }
     }
 
     // handle insert
-    for (it = actions.begin(); it != actions.end(); ++it)
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action != StructureAction::actionInsert)
+        if (it->action != xd::StructureModify::Action::actionInsert)
             continue;
 
-        if (it->m_params.expression.length() > 0)
+        if (it->params.expression.length() > 0)
         {
-            if (createCalcField(it->m_params))
+            if (createCalcField(it->params))
                 processed_action_count++;
         }
     }
 
-    if (processed_action_count == actions.size())
+    if (processed_action_count == mod_params.actions.size())
     {
         // we have handled all actions, so we're done
         *done_flag = true;

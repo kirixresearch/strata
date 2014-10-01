@@ -42,7 +42,7 @@ struct StructureAction
 };
 
 
-bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
+bool calcfieldsModifyStructure(const xd::StructureModify& mod_params,
                                xd::IStructurePtr _mod_struct,
                                std::vector<xd::ColumnInfo>* calc_fields,
                                bool* done_flag);
@@ -111,8 +111,6 @@ private:
     std::map<std::wstring, int, kl::cmp_nocase> m_map;
 
     int getColumnIdx(const std::wstring& name);
-
-    xd::ColumnInfo m_ret;
 };
 
 

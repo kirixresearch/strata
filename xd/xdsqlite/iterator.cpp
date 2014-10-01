@@ -312,8 +312,7 @@ bool SlIterator::refreshStructure()
     return true;
 }
 
-bool SlIterator::modifyStructure(xd::IStructure* struct_config,
-                                   xd::IJob* job)
+bool SlIterator::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
 {
     return false;
 }

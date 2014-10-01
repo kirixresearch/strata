@@ -381,10 +381,10 @@ xd::IStructurePtr DelimitedTextSet::getStructure()
     return sp;
 }
 
-bool DelimitedTextSet::modifyStructure(xd::IStructure* struct_config, xd::IJob* job)
+bool DelimitedTextSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
 {
     bool done_flag = false;
-    XdfsBaseSet::modifyStructure(struct_config, &done_flag);
+    XdfsBaseSet::modifyStructure(mod_params, &done_flag);
     return true;
 }
 

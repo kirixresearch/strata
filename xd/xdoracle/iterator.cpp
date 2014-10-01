@@ -853,26 +853,22 @@ bool OracleIterator::refreshStructure()
     return true;
 }
 
-bool OracleIterator::modifyStructure(xd::IStructure* struct_config,
-                                     xd::IJob* job)
+bool OracleIterator::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
 {
-    IStructureInternalPtr struct_int = struct_config;
-
-    std::vector<StructureAction>& actions = struct_int->getStructureActions();
-    std::vector<StructureAction>::iterator it;
+    std::vector<xd::StructureModify::Action>::const_iterator it;
     std::vector<OracleDataAccessInfo*>::iterator it2;
     
     // handle delete
-    for (it = actions.begin(); it != actions.end(); ++it)
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action != StructureAction::actionDelete)
+        if (it->action != xd::StructureModify::Action::actionDelete)
             continue;
 
         for (it2 = m_fields.begin();
              it2 != m_fields.end();
              ++it2)
         {
-            if (0 == wcscasecmp(it->m_colname.c_str(), (*it2)->name.c_str()))
+            if (kl::iequals(it->column, (*it2)->name))
             {
                 OracleDataAccessInfo* dai = *(it2);
                 m_fields.erase(it2);
@@ -883,94 +879,92 @@ bool OracleIterator::modifyStructure(xd::IStructure* struct_config,
     }
 
     // handle modify
-    for (it = actions.begin(); it != actions.end(); ++it)
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action != StructureAction::actionModify)
+        if (it->action != xd::StructureModify::Action::actionModify)
             continue;
 
-        for (it2 = m_fields.begin();
-             it2 != m_fields.end();
-             ++it2)
+        for (it2 = m_fields.begin(); it2 != m_fields.end(); ++it2)
         {
-            if (kl::iequals(it->m_colname, (*it2)->name))
+            if (kl::iequals(it->column, (*it2)->name))
             {
-                if (it->m_params.name.length() > 0)
+                if (it->params.mask & xd::ColumnInfo::maskName)
                 {
-                    std::wstring new_name = it->m_params.name;
+                    std::wstring new_name = it->params.name;
                     kl::makeUpper(new_name);
                     (*it2)->name = new_name;
                 }
 
-                if (it->m_params.type != -1)
+                if (it->params.mask & xd::ColumnInfo::maskType)
                 {
-                    (*it2)->xd_type = it->m_params.type;
+                    (*it2)->xd_type = it->params.type;
                     (*it2)->oracle_type = xd2oracleType((*it2)->xd_type);
                 }
 
-                if (it->m_params.width != -1)
+                if (it->params.mask & xd::ColumnInfo::maskWidth)
                 {
-                    (*it2)->width = it->m_params.width;;
+                    (*it2)->width = it->params.width;;
                 }
 
-                if (it->m_params.scale != -1)
+                if (it->params.mask & xd::ColumnInfo::maskScale)
                 {
-                    (*it2)->scale = it->m_params.scale;
+                    (*it2)->scale = it->params.scale;
                 }
 
-                if (it->m_params.expression.length() > 0)
+                if (it->params.mask & xd::ColumnInfo::maskExpression)
                 {
                     if ((*it2)->expr)
                         delete (*it2)->expr;
-                    (*it2)->expr_text = it->m_params.expression;
-                    (*it2)->expr = parse(it->m_params.expression);
+                    (*it2)->expr_text = it->params.expression;
+                    (*it2)->expr = parse(it->params.expression);
                 }
             }
         }
     }
 
     // handle create
-    for (it = actions.begin(); it != actions.end(); ++it)
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action != StructureAction::actionCreate)
+        if (it->action != xd::StructureModify::Action::actionCreate)
             continue;
 
-        if (it->m_params.expression.length() > 0)
+        if (it->params.expression.length() > 0)
         {
             OracleDataAccessInfo* dai = new OracleDataAccessInfo;
-            dai->name = it->m_params.name;
-            dai->xd_type = it->m_params.type;
+            dai->name = it->params.name;
+            dai->xd_type = it->params.type;
             dai->oracle_type = xd2oracleType(dai->xd_type);
-            dai->width = it->m_params.width;
-            dai->scale = it->m_params.scale;
+            dai->width = it->params.width;
+            dai->scale = it->params.scale;
             dai->ordinal = m_fields.size();
-            dai->expr_text = it->m_params.expression;
-            dai->expr = parse(it->m_params.expression);
+            dai->expr_text = it->params.expression;
+            dai->expr = parse(it->params.expression);
             m_fields.push_back(dai);
         }
     }
 
     // handle insert
-    for (it = actions.begin(); it != actions.end(); ++it)
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action != StructureAction::actionInsert)
+        if (it->action != xd::StructureModify::Action::actionInsert)
             continue;
 
         // the insert index is out-of-bounds, continue with other actions
-        int insert_idx = it->m_pos;
+        int insert_idx = it->params.column_ordinal;
         if (insert_idx < 0 || insert_idx >= (int)m_fields.size())
             continue;
         
-        if (it->m_params.expression.length() > 0)
+        if (it->params.expression.length() > 0)
         {
             OracleDataAccessInfo* dai = new OracleDataAccessInfo;
-            dai->name = it->m_params.name;
-            dai->xd_type = it->m_params.type;
+            dai->name = it->params.name;
+            dai->xd_type = it->params.type;
             dai->oracle_type = xd2oracleType(dai->xd_type);
-            dai->width = it->m_params.width;
-            dai->scale = it->m_params.scale;
+            dai->width = it->params.width;
+            dai->scale = it->params.scale;
             dai->ordinal = m_fields.size();
-            dai->expr_text = it->m_params.expression;
-            dai->expr = parse(it->m_params.expression);
+            dai->expr_text = it->params.expression;
+            dai->expr = parse(it->params.expression);
             m_fields.insert(m_fields.begin()+insert_idx, dai);
         }
     }

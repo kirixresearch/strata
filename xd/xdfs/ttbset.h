@@ -77,7 +77,7 @@ public:
 
     bool deleteRow(xd::rowid_t rowid);
 
-    bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job);
+    bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
 
     void setTemporary(bool value) { m_temporary = value; }
 

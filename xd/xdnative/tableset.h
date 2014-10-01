@@ -166,8 +166,7 @@ public:
     void updateRowCount();
 
     xd::IStructurePtr getStructure();
-    bool modifyStructure(xd::IStructurePtr struct_config,
-                         xd::IJob* job);
+    bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
 
     xd::IndexInfoEnum getIndexEnum();
 

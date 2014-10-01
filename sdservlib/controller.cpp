@@ -1772,6 +1772,7 @@ void Controller::apiAlter(RequestInfo& req)
     
 
     
+    xd::StructureModify mod_params;
     
     
     kl::JsonNode actions;
@@ -1789,12 +1790,12 @@ void Controller::apiAlter(RequestInfo& req)
             kl::JsonNode params = action["params"];
             JsonNodeToColumn(params, colinfo);
 
-            structure->createColumn(colinfo);
+            mod_params.createColumn(colinfo);
         }
         /*
          else if (action["action"].getString() == L"insert")
         {
-            xd::IColumnInfoPtr colinfo = structure->insertColumn(action["position"].getInteger());
+            xd::IColumnInfoPtr colinfo = mod_params.insertColumn(action["position"].getInteger());
             if (colinfo.isNull())
             {
                 returnApiError(req, "Invalid insert position");
@@ -1812,19 +1813,25 @@ void Controller::apiAlter(RequestInfo& req)
             kl::JsonNode params = action["params"];
             JsonNodeToColumn(params, colinfo);
 
-            if (structure->modifyColumn(action["target_column"], colinfo))
+            std::wstring target_column = action["target_column"];
+            if (!structure->getColumnExist(target_column))
             {
                 returnApiError(req, "Invalid target column for modify operation");
                 return;
             }
+
+            mod_params.modifyColumn(target_column, colinfo);
         }
          else if (action["action"].getString() == L"delete")
         {
-            if (!structure->deleteColumn(action["target_column"]))
+            std::wstring target_column = action["target_column"];
+            if (!structure->getColumnExist(target_column))
             {
                 returnApiError(req, "Invalid target column for modify operation");
                 return;
             }
+
+            mod_params.deleteColumn(action["target_column"]);
         }
 
     }

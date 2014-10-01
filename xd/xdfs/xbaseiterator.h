@@ -117,7 +117,7 @@ public:
 
     xd::IStructurePtr getStructure();
     bool refreshStructure();
-    bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
+    bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
 
     xd::objhandle_t getHandle(const std::wstring& expr);
     xd::ColumnInfo getInfo(xd::objhandle_t data_handle);

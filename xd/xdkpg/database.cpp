@@ -767,7 +767,7 @@ xd::IStructurePtr KpgDatabase::describeTable(const std::wstring& _path)
     return xdkpgXmlToIStructure(structure_node);
 }
 
-bool KpgDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
+bool KpgDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {
     return false;
 }

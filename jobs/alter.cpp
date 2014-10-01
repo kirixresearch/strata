@@ -110,6 +110,9 @@ int AlterJob::runJob()
     }
 
 
+
+    xd::StructureModify mod_params;
+
     std::vector<kl::JsonNode>::iterator it, it_end;
     it_end = action_nodes.end();
 
@@ -185,7 +188,7 @@ int AlterJob::runJob()
         // drop action
         if (action == L"drop")
         {
-            structure->deleteColumn(column);
+            mod_params.deleteColumn(column);
             continue;
         }
 
@@ -208,7 +211,7 @@ int AlterJob::runJob()
             if (position_exists)
                 col.column_ordinal = position;
  
-            structure->createColumn(col);
+            mod_params.createColumn(col);
 
             continue;
         }
@@ -264,7 +267,7 @@ int AlterJob::runJob()
                 }
             }
 
-            structure->modifyColumn(column, colinfo);
+            mod_params.modifyColumn(column, colinfo);
 
             continue;
         }
@@ -274,7 +277,7 @@ int AlterJob::runJob()
     xd::IJobPtr xd_job = m_db->createJob();
     setXdJob(xd_job);
 
-    bool res = m_db->modifyStructure(input_path, structure, xd_job);
+    bool res = m_db->modifyStructure(input_path, mod_params, xd_job);
 
     if (xd_job->getCancelled())
     {

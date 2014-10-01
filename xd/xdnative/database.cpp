@@ -3951,7 +3951,7 @@ xd::IRowInserterPtr XdnativeDatabase::bulkInsert(const std::wstring& path)
 
 
 
-bool XdnativeDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
+bool XdnativeDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
@@ -3961,7 +3961,7 @@ bool XdnativeDatabase::modifyStructure(const std::wstring& path, xd::IStructureP
         if (db.isNull())
             return xcm::null;
 
-        return db->modifyStructure(path, struct_config, job);
+        return db->modifyStructure(path, mod_params, job);
     }
 
 
@@ -3969,5 +3969,5 @@ bool XdnativeDatabase::modifyStructure(const std::wstring& path, xd::IStructureP
     if (set.isNull())
         return xcm::null;
 
-    return set->modifyStructure(struct_config, job);
+    return set->modifyStructure(mod_params, job);
 }

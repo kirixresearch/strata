@@ -305,8 +305,7 @@ bool KpgIterator::refreshStructure()
     return true;
 }
 
-bool KpgIterator::modifyStructure(xd::IStructure* struct_config,
-                                   xd::IJob* job)
+bool KpgIterator::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
 {
     return false;
 }

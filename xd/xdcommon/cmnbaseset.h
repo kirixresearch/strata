@@ -31,8 +31,7 @@ public:
 
 protected:
 
-    bool modifyStructure(xd::IStructure* struct_config,
-                                        bool* done_flag);
+    bool modifyStructure(const xd::StructureModify& mod_params, bool* done_flag);
 
     // calculated field routines
     bool createCalcField(const xd::ColumnInfo& colinfo);

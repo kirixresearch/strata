@@ -135,7 +135,7 @@ public:
 
     xd::IStructurePtr getStructure();
     bool refreshStructure();
-    bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
+    bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
 
     unsigned int getIteratorFlags();
     void setIteratorFlags(unsigned int new_val);

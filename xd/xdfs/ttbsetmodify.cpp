@@ -514,13 +514,10 @@ public:
 
 
 
-bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
-                             xd::IJob* job)
+bool TtbSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
 {
     IJobInternalPtr ijob = job;
-    IStructureInternalPtr struct_internal = struct_config;
-    std::vector<StructureAction>& actions = struct_internal->getStructureActions();
-    std::vector<StructureAction>::iterator it_sa;
+    std::vector<xd::StructureModify::Action>::const_iterator it_sa;
     xd::IStructurePtr src_structure = getStructure();
 
 
@@ -530,12 +527,12 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
     // drop all indexes that are based on the columns
     // being modified or dropped
 
-    for (it_sa = actions.begin(); it_sa != actions.end(); ++it_sa)
+    for (it_sa = mod_params.actions.cbegin(); it_sa != mod_params.actions.cend(); ++it_sa)
     {
-        switch (it_sa->m_action)
+        switch (it_sa->action)
         {
-            case StructureAction::actionModify:
-            case StructureAction::actionDelete:
+            case xd::StructureModify::Action::actionModify:
+            case xd::StructureModify::Action::actionDelete:
             {
             /*
                 std::vector<IndexEntry>::iterator idx_it;
@@ -574,7 +571,7 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
 
     bool done = false;
 
-    if (!XdfsBaseSet::modifyStructure(struct_config, &done))
+    if (!XdfsBaseSet::modifyStructure(mod_params, &done))
         return false;
 
     if (done)
@@ -639,30 +636,30 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
     bool write_all = false;
     std::vector<std::wstring> makeperm_fields;
 
-    for (it_sa = actions.begin(); it_sa != actions.end(); ++it_sa)
+    for (it_sa = mod_params.actions.cbegin(); it_sa != mod_params.actions.cend(); ++it_sa)
     {
         // we've already handled calculated fields upstream in
         // BaseSet::modifyStructure, so don't perform non-delete
         // work here or we'll end up with a "shadow" real field 
         // corresponding to the duplicate
-        if (it_sa->m_action != StructureAction::actionDelete)
+        if (it_sa->action != xd::StructureModify::Action::actionDelete)
         {
-            if (it_sa->m_params.calculated)
+            if (it_sa->params.calculated)
                 continue;
         }
 
-        switch (it_sa->m_action)
+        switch (it_sa->action)
         {
-            case StructureAction::actionCreate:
+            case xd::StructureModify::Action::actionCreate:
             {
                 ModifyField mf;
 
-                mf.dest_name = it_sa->m_params.name;
-                mf.dest_type = it_sa->m_params.type;
-                mf.dest_width = it_sa->m_params.width;
-                mf.dest_scale = it_sa->m_params.scale;
+                mf.dest_name = it_sa->params.name;
+                mf.dest_type = it_sa->params.type;
+                mf.dest_width = it_sa->params.width;
+                mf.dest_scale = it_sa->params.scale;
 
-                int pos = it_sa->m_params.column_ordinal;
+                int pos = it_sa->params.column_ordinal;
                 if (pos < 0)
                     pos = modfields.size();
                     
@@ -681,29 +678,28 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
             }
             break;
 
-            case StructureAction::actionModify:
+            case xd::StructureModify::Action::actionModify:
             {
                 for (it_mf = modfields.begin();
                      it_mf != modfields.end();
                      ++it_mf)
                 {
-                    if (0 == wcscasecmp(it_mf->src_name.c_str(),
-                                        it_sa->m_colname.c_str()))
+                    if (kl::iequals(it_mf->src_name, it_sa->column))
                     {
-                        if (it_sa->m_params.name.length() > 0)
+                        if (it_sa->params.mask & xd::ColumnInfo::maskName)
                         {
-                            it_mf->dest_name = it_sa->m_params.name;
+                            it_mf->dest_name = it_sa->params.name;
                         }
 
-                        if (it_sa->m_params.type != -1)
+                        if (it_sa->params.mask & xd::ColumnInfo::maskType)
                         {
-                            it_mf->dest_type = it_sa->m_params.type;
+                            it_mf->dest_type = it_sa->params.type;
                             write_all = true;
                         }
 
-                        if (it_sa->m_params.width != -1)
+                        if (it_sa->params.mask & xd::ColumnInfo::maskWidth)
                         {
-                            it_mf->dest_width = it_sa->m_params.width;
+                            it_mf->dest_width = it_sa->params.width;
                             write_all = true;
 
                             if ((it_mf->dest_type == -1 && it_mf->src_type == xd::typeNumeric) ||
@@ -716,9 +712,9 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
                             }
                         }
 
-                        if (it_sa->m_params.scale != -1)
+                        if (it_sa->params.mask & xd::ColumnInfo::maskScale)
                         {
-                            it_mf->dest_scale = it_sa->m_params.scale;
+                            it_mf->dest_scale = it_sa->params.scale;
                             if (it_mf->src_type != xd::typeDouble)
                             {
                                 // if we are changing the scale of a double,
@@ -727,17 +723,17 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
                             }
                         }
 
-                        if (!it_sa->m_params.calculated && it_mf->calculated)
+                        if ((it_sa->params.mask & xd::ColumnInfo::maskCalculated) && !it_sa->params.calculated && it_mf->calculated)
                         {
                             // "make permanent" operation
                             it_mf->calculated = false;
                             write_all = true;
-                            makeperm_fields.push_back(it_sa->m_colname);
+                            makeperm_fields.push_back(it_sa->column);
                         }
                         
-                        if (it_sa->m_params.column_ordinal != -1)
+                        if (it_sa->params.mask & xd::ColumnInfo::maskColumnOrdinal)
                         {
-                            int desired_pos = it_sa->m_params.column_ordinal;
+                            int desired_pos = it_sa->params.column_ordinal;
                             if (desired_pos < 0)
                                 desired_pos = 0;
                         
@@ -767,13 +763,11 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
             }
             break;
 
-            case StructureAction::actionDelete:
+            case xd::StructureModify::Action::actionDelete:
             {
-                for (it_mf = modfields.begin();
-                     it_mf != modfields.end();
-                     ++it_mf)
+                for (it_mf = modfields.begin(); it_mf != modfields.end(); ++it_mf)
                 {
-                    if (kl::iequals(it_mf->src_name, it_sa->m_colname))
+                    if (kl::iequals(it_mf->src_name, it_sa->column))
                     {
                         write_all = true;
                         modfields.erase(it_mf);
@@ -783,7 +777,7 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
             }
             break;
 
-            case StructureAction::actionMove:
+            case xd::StructureModify::Action::actionMove:
             {
                 // right now this is unimplemented
                 write_all = true;
@@ -796,9 +790,9 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
 
     if (!write_all)
     {
-        for (it_sa = actions.begin(); it_sa != actions.end(); ++it_sa)
+        for (it_sa = mod_params.actions.cbegin(); it_sa != mod_params.actions.cend(); ++it_sa)
         {
-            if (it_sa->m_action == StructureAction::actionModify)
+            if (it_sa->action == xd::StructureModify::Action::actionModify)
             {
                 // unchanged parameters are -1 for integers and empty strings
                 // for character values, and thus will not be changed in the
@@ -808,7 +802,7 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
 
                 for (i = 0; i < col_count; ++i)
                 {
-                    if (0 == wcscasecmp(src_structure->getColumnName(i).c_str(), it_sa->m_colname.c_str()))
+                    if (kl::iequals(src_structure->getColumnName(i), it_sa->column))
                     {
                         idx = i;
                         break;
@@ -829,10 +823,10 @@ bool TtbSet::modifyStructure(xd::IStructurePtr struct_config,
                 }
 
                 m_file.writeColumnInfo(idx,
-                                       it_sa->m_params.name,
-                                       it_sa->m_params.type,
-                                       it_sa->m_params.width,
-                                       it_sa->m_params.scale);
+                                       it_sa->params.name,
+                                       it_sa->params.type,
+                                       it_sa->params.width,
+                                       it_sa->params.scale);
             }
         }
 

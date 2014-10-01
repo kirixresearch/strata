@@ -265,8 +265,7 @@ xd::IStructurePtr OracleSet::getStructure()
 }
 
 /*
-bool OracleSet::modifyStructure(xd::IStructure* struct_config,
-                                xd::IJob* job)
+bool OracleSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
 {
     KL_AUTO_LOCK(m_object_mutex);
 
@@ -289,7 +288,7 @@ bool OracleSet::modifyStructure(xd::IStructure* struct_config,
     // handle delete
     for (it = actions.begin(); it != actions.end(); ++it)
     {
-        if (it->m_action == StructureAction::actionDelete)
+        if (it->action == xd::StructureModify::Action::actionDelete)
         {
             command = L"ALTER TABLE ";
             command += m_tablename;
@@ -305,7 +304,7 @@ bool OracleSet::modifyStructure(xd::IStructure* struct_config,
     // handle modify
     for (it = actions.begin(); it != actions.end(); ++it)
     {
-        if (it->m_action == StructureAction::actionModify)
+        if (it->action == xd::StructureModify::Action::actionModify)
         {
         }
     }
@@ -318,7 +317,7 @@ bool OracleSet::modifyStructure(xd::IStructure* struct_config,
     // handle create
     for (it = actions.begin(); it != actions.end(); ++it)
     {
-        if (it->m_action == StructureAction::actionCreate)
+        if (it->action == xd::StructureModify::Action::actionCreate)
         {
             for (i = 0; i < col_count; ++i)
             {

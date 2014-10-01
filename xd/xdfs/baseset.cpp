@@ -63,53 +63,50 @@ void XdfsBaseSet::setConfigFilePath(const std::wstring& path)
 }
 
 
-bool XdfsBaseSet::modifyStructure(xd::IStructure* struct_config,
-                                  bool* done_flag)
+bool XdfsBaseSet::modifyStructure(const xd::StructureModify& mod_params, bool* done_flag)
 {
     KL_AUTO_LOCK(m_object_mutex);
 
     *done_flag = false;
 
-    IStructureInternalPtr struct_int = struct_config;
 
-    std::vector<StructureAction>& actions = struct_int->getStructureActions();
-    std::vector<StructureAction>::iterator it;
+    std::vector<xd::StructureModify::Action>::const_iterator it;
     int processed_action_count = 0;
 
     // handle delete
-    for (it = actions.begin(); it != actions.end(); ++it)
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action != StructureAction::actionDelete)
+        if (it->action != xd::StructureModify::Action::actionDelete)
             continue;
 
-        if (deleteCalcField(it->m_colname))
+        if (deleteCalcField(it->column))
             processed_action_count++;
     }
 
     // handle modify
-    for (it = actions.begin(); it != actions.end(); ++it)
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action != StructureAction::actionModify)
+        if (it->action != xd::StructureModify::Action::actionModify)
             continue;
 
-        if (modifyCalcField(it->m_colname, it->m_params))
+        if (modifyCalcField(it->column, it->params))
             processed_action_count++;
     }
 
     // handle create
-    for (it = actions.begin(); it != actions.end(); ++it)
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
     {
-        if (it->m_action != StructureAction::actionCreate)
+        if (it->action != xd::StructureModify::Action::actionCreate)
             continue;
 
-        if (it->m_params.expression.length() > 0)
+        if (it->params.expression.length() > 0)
         {
-            if (createCalcField(it->m_params))
+            if (createCalcField(it->params))
                 processed_action_count++;
         }
     }
 
-    if (processed_action_count == actions.size())
+    if (processed_action_count == mod_params.actions.size())
     {
         // we have handled all actions, so we're done
         *done_flag = true;

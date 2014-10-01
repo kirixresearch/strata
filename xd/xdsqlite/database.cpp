@@ -661,7 +661,7 @@ xd::IStructurePtr SlDatabase::describeTable(const std::wstring& _path)
     return parseCreateStatement(create_stmt);
 }
 
-bool SlDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
+bool SlDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {
     return false;
 }

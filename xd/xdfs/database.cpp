@@ -2564,9 +2564,7 @@ xd::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
     return tbl->getStructure();
 }
 
-bool FsDatabase::modifyStructure(const std::wstring& path,
-                                 xd::IStructurePtr structure,
-                                 xd::IJob* job)
+bool FsDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
@@ -2576,14 +2574,14 @@ bool FsDatabase::modifyStructure(const std::wstring& path,
         if (db.isNull())
             return xcm::null;
 
-        return db->modifyStructure(path, structure, job);
+        return db->modifyStructure(path, mod_params, job);
     }
 
     IXdsqlTablePtr tbl = openTable(path);
     if (tbl.isNull())
         return false;
 
-    return tbl->modifyStructure(structure, job);
+    return tbl->modifyStructure(mod_params, job);
 }
 
 

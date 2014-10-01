@@ -845,15 +845,13 @@ bool BaseIterator::refreshStructure()
 
 
 
-bool BaseIterator::modifyStructure(xd::IStructure* struct_config, xd::IJob* job)
+bool BaseIterator::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
 { 
     KL_AUTO_LOCK(m_obj_mutex);
     
     bool done = false;
 
-    IStructureInternalPtr int_struct = struct_config;
-
-    if (!calcfieldsModifyStructure(int_struct->getStructureActions(),
+    if (!calcfieldsModifyStructure(mod_params,
                                    m_iter_structure,
                                    &m_calc_fields,
                                    &done))

@@ -83,7 +83,7 @@ public:
                    xd::ColumnUpdateInfo* info,
                    size_t info_size);
 
-    bool modifyStructure(xd::IStructurePtr structure, xd::IJob* job) { return false; }
+    bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job) { return false; }
     
 private:
 

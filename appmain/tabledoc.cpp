@@ -5342,8 +5342,6 @@ bool TableDoc::createDynamicField(const wxString& col_name,
                                   bool on_set)
 {
     freeTemporaryHandles();
-        
-    xd::IStructurePtr structure = m_iter->getStructure();
 
     xd::ColumnInfo col;
     col.name = towstr(col_name);
@@ -5351,9 +5349,11 @@ bool TableDoc::createDynamicField(const wxString& col_name,
     col.width = width;
     col.scale = scale;
     col.expression = towstr(expr);
-    structure->createColumn(col);
 
-    if (m_iter->modifyStructure(structure, NULL))
+    xd::StructureModify mod_params;
+    mod_params.createColumn(col);
+
+    if (m_iter->modifyStructure(mod_params, NULL))
     {
         m_grid->refreshModel();
     }
@@ -5367,19 +5367,17 @@ bool TableDoc::createDynamicField(const wxString& col_name,
     {
         xd::IDatabasePtr db = g_app->getDatabase();
 
-        xd::IStructurePtr structure = db->describeTable(m_path);
-        if (structure.isNull())
-            return false;
-
         xd::ColumnInfo col;
         col.name = towstr(col_name);
         col.type = type;
         col.width = width;
         col.scale = scale;
         col.expression = towstr(expr);
-        structure->createColumn(col);
 
-        if (!db->modifyStructure(m_path, structure, NULL))
+        xd::StructureModify mod_params;
+        mod_params.createColumn(col);
+
+        if (!db->modifyStructure(m_path, mod_params, NULL))
         {
             return false;
         }
@@ -5416,9 +5414,9 @@ void TableDoc::onCreateDynamicFieldCancelled(ColPropsPanel* panel)
     
     // we are deleting just calculated fields
     wxString modify_struct = panel->getModifyField();
-    xd::IStructurePtr structure = m_iter->getStructure();
-    structure->deleteColumn(towstr(modify_struct));
-    if (m_iter->modifyStructure(structure, NULL))
+    xd::StructureModify mod_params;
+    mod_params.deleteColumn(towstr(modify_struct));
+    if (m_iter->modifyStructure(mod_params, NULL))
     {
         m_grid->refreshModel();
 

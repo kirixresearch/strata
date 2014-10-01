@@ -97,7 +97,7 @@ public:
 
     bool refreshStructure();
     xd::IStructurePtr getStructure();
-    bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
+    bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
 
     xd::IIteratorPtr getChildIterator(xd::IRelationPtr relation);
     xd::IIteratorPtr getFilteredChildIterator(xd::IRelationPtr relation);
