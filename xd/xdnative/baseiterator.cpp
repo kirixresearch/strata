@@ -852,8 +852,7 @@ bool BaseIterator::modifyStructure(const xd::StructureModify& mod_params, xd::IJ
     bool done = false;
 
     if (!calcfieldsModifyStructure(mod_params,
-                                   m_iter_structure,
-                                   &m_calc_fields,
+                                   m_calc_fields,
                                    &done))
     {
         return false;

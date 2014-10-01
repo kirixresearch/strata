@@ -683,12 +683,8 @@ public:
     virtual const ColumnInfo& getColumnInfo(const std::wstring& column_name) = 0;
     virtual bool getColumnExist(const std::wstring& column_name) = 0;
 
-    virtual bool deleteColumn(const std::wstring& column_name) = 0;
-    virtual bool modifyColumn(const std::wstring& column_name, const ColumnInfo& colinfo) = 0;
     virtual void createColumn(const xd::ColumnInfo& col) = 0;
-
     virtual int getExprType(const std::wstring& expression) = 0;
-    virtual bool isValid() = 0;
 };
 
 

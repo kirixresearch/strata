@@ -103,12 +103,9 @@ static void modColumn(xd::ColumnInfo& target_col, const xd::ColumnInfo& params)
 
 
 bool calcfieldsModifyStructure(const xd::StructureModify& mod_params,
-                               xd::IStructurePtr _mod_struct,
-                               std::vector<xd::ColumnInfo>* calc_fields,
+                               std::vector<xd::ColumnInfo>& calc_fields,
                                bool* done_flag)
 {
-    IStructureInternalPtr mod_struct = _mod_struct;
-
 
     *done_flag = false;
     unsigned int processed_action_count = 0;
@@ -123,27 +120,14 @@ bool calcfieldsModifyStructure(const xd::StructureModify& mod_params,
         {
             bool processed = false;
 
-            if (calc_fields)
+            for (cit = calc_fields.begin(); cit != calc_fields.end(); ++cit)
             {
-                for (cit = calc_fields->begin();
-                     cit != calc_fields->end();
-                     ++cit)
+                if (kl::iequals(cit->name, it->column))
                 {
-                    if (kl::iequals(cit->name, it->column))
-                    {
-                        calc_fields->erase(cit);
-                        processed_action_count++;
-                        processed = true;
-                        break;
-                    }
-                }
-            }
-
-            if (mod_struct.isOk() && !processed)
-            {
-                if (mod_struct->removeColumn(it->column))
-                {
+                    calc_fields.erase(cit);
                     processed_action_count++;
+                    processed = true;
+                    break;
                 }
             }
         }
@@ -157,34 +141,23 @@ bool calcfieldsModifyStructure(const xd::StructureModify& mod_params,
         {
             bool processed = false;
 
-            if (calc_fields)
+            for (cit = calc_fields.begin(); cit != calc_fields.end(); ++cit)
             {
-                for (cit = calc_fields->begin(); cit != calc_fields->end(); ++cit)
+                if (kl::iequals(cit->name, it->column))
                 {
-                    if (kl::iequals(cit->name, it->column))
+                    if ((it->params.mask & xd::ColumnInfo::maskCalculated) && !it->params.calculated)
                     {
-                        if ((it->params.mask & xd::ColumnInfo::maskCalculated) && !it->params.calculated)
-                        {
-                            // caller wants this field to be permanent,
-                            // so we won't do anything here
+                        // caller wants this field to be permanent,
+                        // so we won't do anything here
 
-                            continue;
-                        }
-
-                        modColumn(*cit, it->params);
-
-                        processed_action_count++;
-                        processed = true;
-                        break;
+                        continue;
                     }
-                }
-            }
 
-            if (mod_struct.isOk() && !processed)
-            {
-                if (mod_struct->modifyColumn(it->column, it->params))
-                {
+                    modColumn(*cit, it->params);
+
                     processed_action_count++;
+                    processed = true;
+                    break;
                 }
             }
         }
@@ -197,16 +170,9 @@ bool calcfieldsModifyStructure(const xd::StructureModify& mod_params,
         {
             if (it->params.expression.length() > 0)
             {
-                if (calc_fields)
-                {
-                    xd::ColumnInfo colinfo = it->params;
-                    colinfo.calculated = true;
-                    calc_fields->push_back(colinfo);
-                }
-                 else
-                {
-                    mod_struct->addColumn(it->params);
-                }
+                xd::ColumnInfo colinfo = it->params;
+                colinfo.calculated = true;
+                calc_fields.push_back(colinfo);
 
                 processed_action_count++;
             }
@@ -220,17 +186,9 @@ bool calcfieldsModifyStructure(const xd::StructureModify& mod_params,
         {
             if (it->params.expression.length() > 0)
             {
-                if (calc_fields)
-                {
-                    xd::ColumnInfo colinfo = it->params;
-                    colinfo.calculated = true;
-                    calc_fields->push_back(colinfo);
-                }
-                 else
-                {
-                    int insert_idx = it->params.column_ordinal;
-                    mod_struct->internalInsertColumn(it->params, insert_idx);
-                }
+                xd::ColumnInfo colinfo = it->params;
+                colinfo.calculated = true;
+                calc_fields.push_back(colinfo);
 
                 processed_action_count++;
             }
@@ -259,13 +217,20 @@ Structure::~Structure()
 {
 }
 
-std::vector<StructureAction>& Structure::getStructureActions()
+
+void Structure::addColumn(const xd::ColumnInfo& col)
 {
-    return m_actions;
+    m_cols.push_back(col);
+
+    if (!m_map.empty())
+    {
+        m_map.clear();
+    }
 }
 
 
-void Structure::addColumn(const xd::ColumnInfo& col)
+
+void Structure::createColumn(const xd::ColumnInfo& col)
 {
     m_cols.push_back(col);
 
@@ -372,7 +337,6 @@ xd::IStructurePtr Structure::clone()
 {
     Structure* s = new Structure;
     s->m_cols = m_cols;
-    s->m_actions = m_actions;
 
     return static_cast<xd::IStructure*>(s);
 }
@@ -431,55 +395,6 @@ bool Structure::getColumnExist(const std::wstring& column_name)
 }
 
 
-bool Structure::deleteColumn(const std::wstring& column_name)
-{
-    StructureAction action;
-    action.m_action = xd::StructureModify::Action::actionDelete;
-    action.m_params = xd::ColumnInfo();
-    action.m_colname = column_name;
-    action.m_pos = -1;
-    m_actions.push_back(action);
-    return true;
-}
-
-bool Structure::moveColumn(const std::wstring& column_name, int new_idx)
-{
-    StructureAction action;
-    action.m_action = xd::StructureModify::Action::actionMove;
-    action.m_params = xd::ColumnInfo();
-    action.m_colname = column_name;
-    action.m_pos = new_idx;
-    m_actions.push_back(action);
-    return true;
-}
-
-bool Structure::modifyColumn(const std::wstring& column_name, const xd::ColumnInfo& colinfo)
-{
-    int idx = getColumnIdx(column_name);
-    if (idx == -1)
-        return false;
-
-    StructureAction action;
-    action.m_action = xd::StructureModify::Action::actionModify;
-    action.m_params = colinfo;
-    action.m_colname = column_name;
-    action.m_pos = -1;
-    m_actions.push_back(action);
-
-    return true;
-}
-
-void Structure::createColumn(const xd::ColumnInfo& col)
-{
-    StructureAction action;
-    action.m_action = xd::StructureModify::Action::actionCreate;
-    action.m_params = col;
-    action.m_colname = L"";
-    action.m_pos = -1;
-    m_actions.push_back(action);
-
-    m_cols.push_back(col);
-}
 
 static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
 {

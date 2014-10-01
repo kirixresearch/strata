@@ -23,28 +23,8 @@
 #endif
 #endif
 
-
-struct StructureAction
-{
-    enum
-    {
-        actionCreate = 0,
-        actionModify = 1,
-        actionDelete = 2,
-        actionMove   = 3,
-        actionInsert = 4
-    };
-
-    int m_action;
-    std::wstring m_colname;
-    xd::ColumnInfo m_params;
-    int m_pos; // for actionMove and actionInsert only;
-};
-
-
 bool calcfieldsModifyStructure(const xd::StructureModify& mod_params,
-                               xd::IStructurePtr _mod_struct,
-                               std::vector<xd::ColumnInfo>* calc_fields,
+                               std::vector<xd::ColumnInfo>& calc_fields,
                                bool* done_flag);
 
 
@@ -55,12 +35,9 @@ xcm_interface IStructureInternal : public xcm::IObject
 
 public:
 
-    virtual std::vector<StructureAction>& getStructureActions() = 0;
     virtual void addColumn(const xd::ColumnInfo& col) = 0;
     virtual bool internalInsertColumn(const xd::ColumnInfo& col, int insert_idx) = 0;
     virtual bool internalMoveColumn(const std::wstring& column_name, int new_idx) = 0;
-    virtual bool removeColumn(const std::wstring& name) = 0;
-    virtual bool modifyColumn(const std::wstring& column_name, const xd::ColumnInfo& params) = 0;
 };
 
 XCM_DECLARE_SMARTPTR(IStructureInternal)
@@ -82,7 +59,6 @@ public:
     virtual ~Structure();
 
     // -- IStructureInternal --
-    std::vector<StructureAction>& getStructureActions();
     void addColumn(const xd::ColumnInfo& col);
     bool internalInsertColumn(const xd::ColumnInfo& col, int insert_idx);
     bool internalMoveColumn(const std::wstring& column_name, int new_idx);
@@ -96,9 +72,6 @@ public:
     const xd::ColumnInfo& getColumnInfo(const std::wstring& column_name);
     bool getColumnExist(const std::wstring& column_name);
 
-    bool deleteColumn(const std::wstring& column_name);
-    bool moveColumn(const std::wstring& column_name, int new_idx);
-    bool modifyColumn(const std::wstring& column_name, const xd::ColumnInfo& colinfo);
     void createColumn(const xd::ColumnInfo& col);
 
     int getExprType(const std::wstring& expression);
@@ -107,7 +80,6 @@ public:
 private:
 
     std::vector<xd::ColumnInfo> m_cols;
-    std::vector<StructureAction> m_actions;
     std::map<std::wstring, int, kl::cmp_nocase> m_map;
 
     int getColumnIdx(const std::wstring& name);
