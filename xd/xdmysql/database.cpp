@@ -947,8 +947,8 @@ xd::IStructurePtr MysqlDatabase::describeTable(const std::wstring& path)
     std::string asc_query = kl::tostring(query);
     int error = mysql_query(db, asc_query.c_str());
     
-    // create new xd::IStructure
-    Structure* s = new Structure;
+
+    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
 
     if (!error)
     {
@@ -975,7 +975,7 @@ xd::IStructurePtr MysqlDatabase::describeTable(const std::wstring& path)
             if (colinfo->type == FIELD_TYPE_BLOB && colinfo->length > 4096)
                 col.width = 4096;
   
-            s->addColumn(col);
+            s->createColumn(col);
             
             i++;
         }
@@ -985,8 +985,8 @@ xd::IStructurePtr MysqlDatabase::describeTable(const std::wstring& path)
 
     mysql_close(db);
     
-    xd::IStructurePtr ret = static_cast<xd::IStructure*>(s);
-    return ret;
+
+    return s;
 }
 
 

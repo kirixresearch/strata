@@ -76,8 +76,7 @@ xd::IStructurePtr XbaseSet::getStructure()
 {
     // create new xd::IStructure
     xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
-    IStructureInternalPtr struct_int = s;
-    
+
     // if we can't open the file, return an empty structure
     if (!m_file.isOpen())
         return s;
@@ -105,7 +104,7 @@ xd::IStructurePtr XbaseSet::getStructure()
         if (col.type == xd::typeNumeric && col.width > xd::max_numeric_width)
             col.width = xd::max_numeric_width;
 
-        struct_int->addColumn(col);
+        s->createColumn(col);
     }
 
     XdfsBaseSet::appendCalcFields(s);

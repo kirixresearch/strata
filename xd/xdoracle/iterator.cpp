@@ -762,7 +762,7 @@ xd::IStructurePtr OracleIterator::getStructure()
 
         //printf("getStructure() - name %ls type %d in-precision %d in-width %d width %d scale %d\n", col->getName().c_str(), col->getType(), (*it)->m_precision, (*it)->m_width, col->getWidth(), col->getScale());
 
-        s->addColumn(col);
+        s->createColumn(col);
     }
     
     return static_cast<xd::IStructure*>(s);

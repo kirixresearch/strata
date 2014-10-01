@@ -97,7 +97,7 @@ xd::IStructurePtr OracleSet::getStructure()
     }
     
     // create new xd::IStructure
-    Structure* s = new Structure;
+    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
 
     // allocate error handle
     if (!m_err)
@@ -247,7 +247,7 @@ xd::IStructurePtr OracleSet::getStructure()
                                            col_width,
                                            col_precision,
                                            col_scale);
-        s->addColumn(col);
+        s->createColumn(col);
 
         counter++;
 
@@ -259,9 +259,8 @@ xd::IStructurePtr OracleSet::getStructure()
     }
 
 
-    xd::IStructurePtr ret = s;
-    appendCalcFields(ret);
-    return ret;
+    appendCalcFields(s);
+    return s;
 }
 
 /*

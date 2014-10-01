@@ -29,40 +29,17 @@ bool calcfieldsModifyStructure(const xd::StructureModify& mod_params,
 
 
 
-xcm_interface IStructureInternal : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("xd.IStructureInternal")
-
-public:
-
-    virtual void addColumn(const xd::ColumnInfo& col) = 0;
-    virtual bool internalInsertColumn(const xd::ColumnInfo& col, int insert_idx) = 0;
-    virtual bool internalMoveColumn(const std::wstring& column_name, int new_idx) = 0;
-};
-
-XCM_DECLARE_SMARTPTR(IStructureInternal)
-
-
-
-class Structure : public xd::IStructure,
-                  public IStructureInternal
+class Structure : public xd::IStructure
 {
     XCM_CLASS_NAME("xd.Structure")
     XCM_BEGIN_INTERFACE_MAP(Structure)
         XCM_INTERFACE_ENTRY(xd::IStructure)
-        XCM_INTERFACE_ENTRY(IStructureInternal)
     XCM_END_INTERFACE_MAP()
 
 public:
 
     Structure();
     virtual ~Structure();
-
-    // -- IStructureInternal --
-    void addColumn(const xd::ColumnInfo& col);
-    bool internalInsertColumn(const xd::ColumnInfo& col, int insert_idx);
-    bool internalMoveColumn(const std::wstring& column_name, int new_idx);
-    bool removeColumn(const std::wstring& column_name);
 
     // -- IStructure --
     xd::IStructurePtr clone();

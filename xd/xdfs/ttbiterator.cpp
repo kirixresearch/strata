@@ -498,7 +498,7 @@ xd::IStructurePtr TtbIterator::getStructure()
         col.calculated = (*it)->isCalculated();
         col.column_ordinal = (*it)->ordinal;
 
-        s->addColumn(col);
+        s->createColumn(col);
     }
 
     return static_cast<xd::IStructure*>(s);
@@ -523,7 +523,7 @@ xd::IStructurePtr TtbIterator::getParserStructure()
         col.calculated = (*it)->isCalculated();
         col.column_ordinal = (*it)->ordinal;
 
-        s->addColumn(col);
+        s->createColumn(col);
     }
 
     return static_cast<xd::IStructure*>(s);

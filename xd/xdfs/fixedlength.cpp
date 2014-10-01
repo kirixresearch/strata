@@ -200,7 +200,7 @@ xd::IStructurePtr FixedLengthTable::getStructure()
         col.table_ordinal = 0;;
         col.nulls_allowed = it->nulls_allowed;
 
-        structure->addColumn(col);
+        structure->createColumn(col);
     }
 
     return static_cast<xd::IStructure*>(structure);

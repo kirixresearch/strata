@@ -315,7 +315,7 @@ xd::IStructurePtr ClientDatabase::jsonToStructure(kl::JsonNode& node)
         col.expression = column["expression"];
         col.calculated = (col.expression.length() > 0) ? true : false;
 
-        s->addColumn(col);
+        s->createColumn(col);
     }
 
     return static_cast<xd::IStructure*>(s);

@@ -496,7 +496,7 @@ xd::IStructurePtr ClientIterator::getStructure()
             col.calculated = true;
         }
 
-        s->addColumn(col);
+        s->createColumn(col);
     }
     
     m_structure = static_cast<xd::IStructure*>(s);

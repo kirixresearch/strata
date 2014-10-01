@@ -865,7 +865,7 @@ xd::IStructurePtr OdbcIterator::getStructure()
             col.calculated = true;
             col.column_ordinal = (*it)->ordinal - 1;
 
-            s->addColumn(col);
+            s->createColumn(col);
         }
             else
         {
@@ -880,7 +880,7 @@ xd::IStructurePtr OdbcIterator::getStructure()
                                                -1);
 
             col.column_ordinal = (*it)->ordinal - 1;
-            s->addColumn(col);
+            s->createColumn(col);
         }
     }
     

@@ -298,7 +298,7 @@ xd::IStructurePtr SlIterator::getStructure()
         col.width = it->width;
         col.scale = it->scale;
         col.column_ordinal = it->col_ordinal;
-        s->addColumn(col);
+        s->createColumn(col);
     }
     
     m_structure = static_cast<xd::IStructure*>(s);

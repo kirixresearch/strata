@@ -530,16 +530,14 @@ bool XdfsBaseSet::modifyCalcField(const std::wstring& name, const xd::ColumnInfo
 
 void XdfsBaseSet::appendCalcFields(xd::IStructure* structure)
 {
-    KL_AUTO_LOCK(m_object_mutex);
-
-    IStructureInternalPtr intstruct = structure;
-    
     if (m_config_file_path.empty())
     {
+        KL_AUTO_LOCK(m_object_mutex);
+
         std::vector<xd::ColumnInfo>::iterator it;
         for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
         {
-            intstruct->addColumn(*it);
+            structure->createColumn(*it);
         }
     }
      else
@@ -565,7 +563,7 @@ void XdfsBaseSet::appendCalcFields(xd::IStructure* structure)
             col.scale = field["scale"].getInteger();
             col.expression = field["expression"];
             col.calculated = (col.expression.length() > 0) ? true : false;
-            intstruct->addColumn(col);
+            structure->createColumn(col);
         }
     }
 }

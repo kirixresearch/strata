@@ -218,18 +218,6 @@ Structure::~Structure()
 }
 
 
-void Structure::addColumn(const xd::ColumnInfo& col)
-{
-    m_cols.push_back(col);
-
-    if (!m_map.empty())
-    {
-        m_map.clear();
-    }
-}
-
-
-
 void Structure::createColumn(const xd::ColumnInfo& col)
 {
     m_cols.push_back(col);
@@ -238,99 +226,6 @@ void Structure::createColumn(const xd::ColumnInfo& col)
     {
         m_map.clear();
     }
-}
-
-
-bool Structure::internalInsertColumn(const xd::ColumnInfo& col, int insert_idx)
-{
-    // we're just adding a column to the end of the structure
-    if (insert_idx == -1)
-    {
-        addColumn(col);
-        return true;
-    }
-    
-    // the insert index is out-of-bounds
-    if (insert_idx < 0 || insert_idx >= (int)m_cols.size())
-        return false;
-
-    m_cols.insert(m_cols.begin()+insert_idx, col);
-
-    if (!m_map.empty())
-    {
-        m_map.clear();
-    }
-    
-    return true;
-}
-
-bool Structure::internalMoveColumn(const std::wstring& column_name, int new_idx)
-{
-    std::vector<xd::ColumnInfo>::iterator it;
-
-    for (it = m_cols.begin(); it != m_cols.end(); ++it)
-    {
-        if (kl::iequals(it->name, column_name))
-        {
-            // save the element so we can reinsert it into our vector
-            xd::ColumnInfo insert_col = *it;
-            
-            // remove the element from our vector and clear the map
-            // to force it to renumber the elements
-            m_cols.erase(it);
-            m_cols.insert(m_cols.begin()+new_idx, insert_col);
-            m_map.clear();
-            return true;
-        }
-    }
-
-    return false;
-}
-
-/*
-bool Structure::modifyColumn(const std::wstring& column_name,
-                             const std::wstring& name,
-                             int type,
-                             int width,
-                             int scale,
-                             const std::wstring& expr,
-                             int offset,
-                             int encoding,
-                             int ordinal)
-{
-    std::vector<xd::ColumnInfo>::iterator it;
-    for (it = m_cols.begin(); it != m_cols.end(); ++it)
-    {
-        if (kl::iequals(it->name, column_name))
-        {
-            modColumn(*it, name, type, width, scale, expr, offset, encoding, ordinal);
-            m_map.clear();
-            return true;
-        }
-    }
-
-    return false;
-}
-*/
-
-bool Structure::removeColumn(const std::wstring& column_name)
-{
-    bool found = false;
-    
-    int i = 0, col_count = m_cols.size();
-    for (i = 0; i < col_count; ++i)
-    {
-        if (kl::iequals(m_cols[i].name, column_name))
-        {
-            m_cols.erase(m_cols.begin() + i);
-            m_map.erase(column_name);
-            found = true;
-            i--;
-            col_count--;
-        }
-    }
-
-    return found;
 }
 
 xd::IStructurePtr Structure::clone()

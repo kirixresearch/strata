@@ -1712,7 +1712,7 @@ xd::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
                                                     col_scale,
                                                     L"",
                                                     0);
-        s->addColumn(colinfo);
+        s->createColumn(colinfo);
     }
     
     PQclear(res);

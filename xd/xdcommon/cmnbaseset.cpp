@@ -282,9 +282,7 @@ bool CommonBaseSet::modifyCalcField(const std::wstring& name, const xd::ColumnIn
 void CommonBaseSet::appendCalcFields(xd::IStructure* structure)
 {
     KL_AUTO_LOCK(m_object_mutex);
-
-    IStructureInternalPtr intstruct = structure;
-        
+   
     std::wstring name, expression;
     int type, width, scale;
     
@@ -294,7 +292,7 @@ void CommonBaseSet::appendCalcFields(xd::IStructure* structure)
         std::vector<xd::ColumnInfo>::iterator it;
         for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
         {
-            intstruct->addColumn(*it);
+            structure->createColumn(*it);
         }
     }
      else
@@ -327,7 +325,7 @@ void CommonBaseSet::appendCalcFields(xd::IStructure* structure)
             col.expression = expression;
             col.calculated = true;
 
-            intstruct->addColumn(col);
+            structure->createColumn(col);
         }
     }
 }

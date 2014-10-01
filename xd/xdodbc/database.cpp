@@ -681,7 +681,7 @@ xd::ColumnInfo createColInfo(int db_type,
     return col;
 }
 
-void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, Structure* s);
+void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, xd::IStructurePtr s);
 
 
 // OdbcFileInfo class implementation
@@ -2298,7 +2298,7 @@ xd::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
     std::wstring schema;
     std::wstring tablename = getTablenameFromOfsPath(path);
 
-    Structure* s = new Structure;
+    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
 
     wchar_t col_name[255];
     short int col_type;
@@ -2472,7 +2472,7 @@ xd::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
                 col.column_ordinal = i;
                 i++;
 
-                s->addColumn(col);
+                s->createColumn(col);
             }
              else
             {
@@ -2502,7 +2502,7 @@ xd::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
     return ret;
     */
 
-    return static_cast<xd::IStructure*>(s);
+    return s;
 }
 
 bool OdbcDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
@@ -2602,7 +2602,7 @@ struct TempInfo
 };
 
 
-void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, Structure* s)
+void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, xd::IStructurePtr s)
 {
     // because Access can store arbitrary numeric scales (decimal digits
     // to the right of the decimal point), we must find out the correct

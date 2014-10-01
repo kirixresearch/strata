@@ -326,13 +326,10 @@ void BaseSet::appendCalcFields(xd::IStructure* structure)
         }
     }
 
-    IStructureInternalPtr intstruct = structure;
 
     std::vector<xd::ColumnInfo>::iterator it;
     for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
-    {
-        intstruct->addColumn(*it);
-    }
+        structure->createColumn(*it);
 }
 
 

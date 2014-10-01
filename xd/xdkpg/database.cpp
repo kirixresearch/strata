@@ -155,7 +155,7 @@ xd::IStructurePtr xdkpgXmlToIStructure(kl::xmlnode& node)
 
     std::vector<xd::ColumnInfo>::const_iterator it;
     for (it = fd.columns.cbegin(); it != fd.columns.cend(); ++it)
-        s->addColumn(*it);
+        s->createColumn(*it);
 
     return static_cast<xd::IStructure*>(s);
 }
@@ -734,18 +734,15 @@ xd::IStructurePtr KpgDatabase::describeTable(const std::wstring& _path)
     if (path.substr(0,1) == L"/")
         path.erase(0,1);
 
-    xd::IStructurePtr structure;
-
     std::map<std::wstring, xd::FormatDefinition, kl::cmp_nocase>::iterator it;
     it = m_create_tables.find(path);
     if (it != m_create_tables.end())
     {
         Structure* s = new Structure;
         for (int i = 0, colcount = (int)it->second.columns.size(); i < colcount; ++i)
-            s->addColumn(it->second.columns[i]);
+            s->createColumn(it->second.columns[i]);
         return static_cast<xd::IStructure*>(s);
     }
-
 
 
     std::wstring stream_info;

@@ -355,8 +355,7 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
 
 xd::IStructurePtr DelimitedTextSet::getStructure()
 {
-    Structure* structure = new Structure;
-    xd::IStructurePtr sp = static_cast<xd::IStructure*>(structure);
+    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
 
     std::vector<xd::ColumnInfo>::iterator it, it_end = m_def.columns.end();
     int counter = 0;
@@ -374,11 +373,11 @@ xd::IStructurePtr DelimitedTextSet::getStructure()
         col.table_ordinal = 0;
         col.nulls_allowed = it->nulls_allowed;
 
-        structure->addColumn(col);
+        s->createColumn(col);
     }
 
-    XdfsBaseSet::appendCalcFields(structure);
-    return sp;
+    XdfsBaseSet::appendCalcFields(s);
+    return s;
 }
 
 bool DelimitedTextSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)

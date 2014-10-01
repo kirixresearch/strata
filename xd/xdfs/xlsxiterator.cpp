@@ -187,8 +187,7 @@ void XlsxIterator::goRow(const xd::rowid_t& rowid)
 xd::IStructurePtr XlsxIterator::getStructure()
 {
     xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
-    IStructureInternalPtr struct_int = s;
-    
+
     std::vector<XlsxDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
@@ -210,7 +209,7 @@ xd::IStructurePtr XlsxIterator::getStructure()
         if (col.expression.length() > 0)
             col.calculated = true;
 
-        struct_int->addColumn(col);
+        s->createColumn(col);
     }
 
     return s;

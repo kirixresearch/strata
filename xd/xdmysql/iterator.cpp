@@ -463,7 +463,7 @@ xd::IStructurePtr MysqlIterator::getStructure()
         col.expression = (*it)->expr_text;
         col.calculated = (*it)->isCalculated();
 
-        s->addColumn(col);
+        s->createColumn(col);
     }
     
     return static_cast<xd::IStructure*>(s);

@@ -93,8 +93,7 @@ xd::IStructurePtr XlsxSet::getStructure()
 {
     // create new xd::IStructure
     xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
-    IStructureInternalPtr struct_int = s;
-    
+
     // if we can't open the file, return an empty structure
     if (!m_file.isOpen())
         return s;
@@ -117,7 +116,7 @@ xd::IStructurePtr XlsxSet::getStructure()
         col.scale = 0;
         col.column_ordinal = i;
 
-        struct_int->addColumn(col);
+        s->createColumn(col);
     }
 
     XdfsBaseSet::appendCalcFields(s);

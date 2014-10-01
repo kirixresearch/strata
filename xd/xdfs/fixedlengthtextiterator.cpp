@@ -496,7 +496,7 @@ xd::IStructurePtr FixedLengthTextIterator::getStructure()
         col.calculated = (*it)->isCalculated();
         col.column_ordinal = (*it)->ordinal;
 
-        s->addColumn(col);
+        s->createColumn(col);
     }
 
     return static_cast<xd::IStructure*>(s);
@@ -522,7 +522,7 @@ xd::IStructurePtr FixedLengthTextIterator::getParserStructure()
         col.calculated = (*it)->isCalculated();
         col.column_ordinal = (*it)->ordinal;
 
-        s->addColumn(col);
+        s->createColumn(col);
     }
 
     return static_cast<xd::IStructure*>(s);

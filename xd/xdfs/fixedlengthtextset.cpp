@@ -165,8 +165,7 @@ xd::rowpos_t FixedLengthTextSet::getRowCount()
 inline xd::IStructurePtr createDefaultStructure(xd::IStructurePtr source)
 {
     xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
-    IStructureInternalPtr struct_int = s;
-    
+
     int i, col_count = source->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
@@ -180,7 +179,7 @@ inline xd::IStructurePtr createDefaultStructure(xd::IStructurePtr source)
         col.expression = sourcecol.name;
         col.column_ordinal = i;
 
-        struct_int->addColumn(col);
+        s->createColumn(col);
     }
     
     return s;
@@ -189,8 +188,7 @@ inline xd::IStructurePtr createDefaultStructure(xd::IStructurePtr source)
 
 xd::IStructurePtr FixedLengthTextSet::getStructure()
 {
-    Structure* structure = new Structure;
-    xd::IStructurePtr sp = static_cast<xd::IStructure*>(structure);
+    xd::IStructurePtr structure = static_cast<xd::IStructure*>(new Structure);
 
     std::vector<xd::ColumnInfo>::iterator it, it_end = m_def.columns.end();
     int counter = 0;
@@ -208,11 +206,11 @@ xd::IStructurePtr FixedLengthTextSet::getStructure()
         col.table_ordinal = 0;
         col.nulls_allowed = it->nulls_allowed;
 
-        structure->addColumn(col);
+        structure->createColumn(col);
     }
 
     XdfsBaseSet::appendCalcFields(structure);
-    return sp;
+    return structure;
 }
 
 

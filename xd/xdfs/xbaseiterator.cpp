@@ -194,8 +194,7 @@ void XbaseIterator::goRow(const xd::rowid_t& rowid)
 xd::IStructurePtr XbaseIterator::getStructure()
 {
     xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
-    IStructureInternalPtr struct_int = s;
-    
+
     std::vector<XbaseDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
@@ -217,7 +216,7 @@ xd::IStructurePtr XbaseIterator::getStructure()
         if (col.expression.length() > 0)
             col.calculated = true;
 
-        struct_int->addColumn(col);
+        s->createColumn(col);
     }
 
     return s;

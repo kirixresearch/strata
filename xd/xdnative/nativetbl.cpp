@@ -570,7 +570,7 @@ bool NativeTable::open(const std::wstring& filename,
         col.table_ordinal = (int)m_ordinal;
         col.nulls_allowed = (*(fld+13) & 0x01) ? true : false;
 
-        structure->addColumn(col);
+        structure->createColumn(col);
 
         fld += native_column_descriptor_len;
     }

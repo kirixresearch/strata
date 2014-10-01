@@ -613,13 +613,9 @@ void BaseIterator::appendCalcFields(xd::IStructure* structure)
 {
     KL_AUTO_LOCK(m_obj_mutex);
 
-    IStructureInternalPtr intstruct = structure;
-
     std::vector<xd::ColumnInfo>::iterator it;
     for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
-    {
-        intstruct->addColumn(*it);
-    }
+        structure->createColumn(*it);
 }
 
 
@@ -659,7 +655,7 @@ bool BaseIterator::initStructure()
             col = m_set_structure->getColumnInfo(part);
             if (col.isOk())
             {
-                s->addColumn(col);
+                s->createColumn(col);
                 continue;
             }
             
@@ -670,7 +666,7 @@ bool BaseIterator::initStructure()
                 col = m_set_structure->getColumnInfo(dequote_part);
                 if (col.isOk())
                 {
-                    s->addColumn(col);
+                    s->createColumn(col);
                     continue;
                 }
             }
@@ -726,7 +722,7 @@ bool BaseIterator::initStructure()
                 col = m_set_structure->getColumnInfo(colname);
                 if (col.isOk())
                 {
-                    s->addColumn(col);
+                    s->createColumn(col);
                     continue;
                 }
             }
