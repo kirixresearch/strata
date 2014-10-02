@@ -191,7 +191,7 @@ private:
     void markProblemRow(int row, bool scroll_to);
     int checkDuplicateFieldnames(int check_flags);
     int checkInvalidFieldnames(int check_flags);
-    int validateExpression(xd::IStructurePtr structure, const wxString& expr, int type = xd::typeUndefined);
+    int validateExpression(const xd::Structure& structure, const wxString& expr, int type = xd::typeUndefined);
     int validateStructure();
     bool doErrorCheck();
     

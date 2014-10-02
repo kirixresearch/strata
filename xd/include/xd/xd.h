@@ -382,20 +382,20 @@ struct Structure
     size_t getColumnCount() const { return columns.size(); }
     const std::wstring& getColumnName(size_t idx) const { return columns[idx].name; }
     const ColumnInfo& getColumnInfoByIdx(size_t idx) const { return columns[idx]; }
-    const ColumnInfo& getColumnInfo(const std::wstring& column_name)
+    const ColumnInfo& getColumnInfo(const std::wstring& column_name) const
       { static xd::ColumnInfo nullcol;
         size_t idx = getColumnIdx(column_name); 
         if (idx == (size_t)-1) return nullcol;
         return columns[idx];
       }
-    bool getColumnExist(const std::wstring& column_name) { return (getColumnIdx(column_name) != (size_t)-1); }
-    size_t getColumnIdx(const std::wstring& name)
-      { if (m_map.empty()) {
+    bool getColumnExist(const std::wstring& column_name) const { return (getColumnIdx(column_name) != (size_t)-1); }
+    size_t getColumnIdx(const std::wstring& name) const
+      { if (m_map.empty()) { // populate cache
             int i = 0;
-            for (std::vector<xd::ColumnInfo>::iterator it = columns.begin(), cend = columns.end(); it != cend; ++it)
-                m_map[it->name] = i++;
+            for (std::vector<xd::ColumnInfo>::const_iterator it = columns.begin(), cend = columns.end(); it != cend; ++it)
+                ((Structure*)this)->m_map[it->name] = i++;
         }
-        std::map<std::wstring, int, cmp_nocase>::iterator it = m_map.find(name);
+        std::map<std::wstring, int, cmp_nocase>::const_iterator it = m_map.find(name);
         return (it == m_map.end() ? -1 : it->second);
       }
 

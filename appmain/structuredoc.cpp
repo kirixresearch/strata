@@ -93,9 +93,9 @@ void StructureDoc::createModifyJobInstructions(kl::JsonNode& params, size_t* _ac
     
     // find deleted fields (i.e. fields in the original
     // structure that aren't found in the grid)
-    for (int i = 0; i < m_structure->getColumnCount(); ++i)
+    for (int i = 0; i < (int)m_structure.getColumnCount(); ++i)
     {
-        const xd::ColumnInfo& col = m_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col = m_structure.getColumnInfoByIdx(i);
 
         wxString old_name = col.name;
         bool found = false;
@@ -315,7 +315,7 @@ bool StructureDoc::setModifySet(const std::wstring& path)
 
     if (path.length() > 0)
     {
-        m_structure = g_app->getDatabase()->describeTableI(path);
+        m_structure = g_app->getDatabase()->describeTable(path);
         if (m_structure.isNull())
         {
             m_path = L"";
@@ -339,7 +339,7 @@ bool StructureDoc::setModifySet(const std::wstring& path)
     {
         m_path = L"";
         m_readonly = true;
-        m_structure.clear();
+        m_structure = xd::Structure();
     }
 
     return true;
@@ -737,12 +737,12 @@ void StructureDoc::getColumnListItems(std::vector<ColumnListItem>& items)
         return;
 
     // get the column count and reserve space for the items
-    int i, col_count = m_structure->getColumnCount();
+    size_t i, col_count = m_structure.getColumnCount();
     items.reserve(col_count);
 
     for (i = 0; i < col_count; i++)
     {
-        const xd::ColumnInfo& colinfo = m_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = m_structure.getColumnInfoByIdx(i);
      
         ColumnListItem item;
         item.text = makeProperIfNecessary(colinfo.name);
@@ -775,7 +775,7 @@ void StructureDoc::onColumnListDblClicked(const std::vector<wxString>& items)
     for (it = items.begin(); it != items.end(); ++it)
     {
         // get the column info from the column name we dragged in
-        const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(*it));
+        const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(towstr(*it));
         if (colinfo.isNull())
             continue;
         
@@ -1190,7 +1190,7 @@ int StructureDoc::validateStructure()
         return StructureValidator::ErrorNoFields;
 
     // make sure we clear out the structure cache
-    m_expr_edit_structure = xcm::null;
+    m_expr_edit_structure = xd::Structure();
 
     // clear rows that have exlamation mark icons in them
     clearProblemRows();
@@ -1223,8 +1223,7 @@ int StructureDoc::validateExpression(const wxString& expr, int type)
     if (m_expr_edit_structure.isNull())
         m_expr_edit_structure = createStructureFromGrid();
     
-    return StructureValidator::validateExpression(m_expr_edit_structure,
-                                                  expr, type);
+    return StructureValidator::validateExpression(m_expr_edit_structure, expr, type);
 }
 
 int StructureDoc::checkInvalidExpressions(int check_flags)
@@ -1429,10 +1428,10 @@ bool StructureDoc::createTable()
     return true;
 }
 
-xd::IStructurePtr StructureDoc::createStructureFromGrid()
+xd::Structure StructureDoc::createStructureFromGrid()
 {
     // create the xd::IStructure
-    xd::IStructurePtr s = g_app->getDatabase()->createStructure();
+    xd::Structure s;
 
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
@@ -1444,7 +1443,7 @@ xd::IStructurePtr StructureDoc::createStructureFromGrid()
         col.scale = m_grid->getCellInteger(row, colFieldScale);
         col.expression = towstr(m_grid->getCellString(row, colFieldFormula));
         col.calculated = isCalculatedField(m_grid, row);
-        s->createColumn(col);
+        s.createColumn(col);
     }
     
     return s;
@@ -1459,10 +1458,10 @@ void StructureDoc::populateGridFromStructure()
     // on later fields in grid that need to be added to the validation structure
     // before validation on previous fields in the grid is possible
 
-    int i, col_count = m_structure->getColumnCount();
+    size_t i, col_count = m_structure.getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& col = m_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col = m_structure.getColumnInfoByIdx(i);
 
         StructureField* f = new StructureField;
         f->name = col.name;
@@ -1517,7 +1516,7 @@ void StructureDoc::onAlterTableJobFinished(jobs::IJobPtr job)
     params.fromString(job->getParameters());
 
     std::wstring input = params["input"];
-    m_structure = g_app->getDatabase()->describeTableI(input);
+    m_structure = g_app->getDatabase()->describeTable(input);
 
     // enable the structure editor grid
     m_grid->setVisibleState(kcl::Grid::stateVisible);
@@ -2243,7 +2242,7 @@ void StructureDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
                     continue;
                 
                 // get the column info from the column name we dragged in
-                const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr((*it)->m_strvalue));
+                const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(towstr((*it)->m_strvalue));
                 if (colinfo.isNull())
                     continue;
                 

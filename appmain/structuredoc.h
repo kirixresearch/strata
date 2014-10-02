@@ -170,7 +170,7 @@ private:
 
     // structural
     bool createTable();
-    xd::IStructurePtr createStructureFromGrid();
+    xd::Structure createStructureFromGrid();
     void populateGridFromStructure();
     
     bool isChanged();
@@ -216,8 +216,8 @@ private:
 
 private:
 
-    xd::IStructurePtr m_structure;
-    xd::IStructurePtr m_expr_edit_structure;
+    xd::Structure m_structure;
+    xd::Structure m_expr_edit_structure;
     
     IFramePtr m_frame;
     IDocumentSitePtr m_doc_site;

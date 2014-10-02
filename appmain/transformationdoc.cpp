@@ -743,7 +743,7 @@ void TransformationDoc::insertRow(int row, bool calculated)
     m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
 
     // make sure either a source field or an expression is specified
-    int valid_res = validateExpression(getSourceStructure(), f->output_expression, f->output_type);
+    int valid_res = validateExpression(getSourceStructure()->toStructure(), f->output_expression, f->output_type);
     updateExpressionIcon(row, valid_res);
 
     updateRowCellProps(row);
@@ -1285,11 +1285,8 @@ int TransformationDoc::checkInvalidFieldnames(int check_flags)
                          : StructureValidator::ErrorNone);
 }
 
-int TransformationDoc::validateExpression(xd::IStructurePtr structure, const wxString& expr, int type)
+int TransformationDoc::validateExpression(const xd::Structure& structure, const wxString& expr, int type)
 {
-    if (structure.isNull())
-        structure = getSourceStructure();
-
     if (structure.isNull())
         return StructureValidator::ErrorInvalidStructure;
 
@@ -1302,7 +1299,7 @@ int TransformationDoc::validateStructure()
     if (m_grid->getRowCount() == 0)
         return StructureValidator::ErrorNoFields;
 
-    xd::IStructurePtr source_structure = getSourceStructure();
+    xd::Structure source_structure = getSourceStructure()->toStructure();
     
     // CHECK: check for invalid expressions
     wxString expr;
@@ -1781,7 +1778,7 @@ void TransformationDoc::onGridNeedTooltipText(kcl::GridEvent& evt)
             {
                 int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
                 wxString expr = getFieldExpression(row);
-                int res = validateExpression(getSourceStructure(), expr, type);
+                int res = validateExpression(getSourceStructure()->toStructure(), expr, type);
                 
                 if (res == StructureValidator::ExpressionTypeMismatch)
                     msg = _("This formula has a return type that does not match the field type");
@@ -1963,7 +1960,7 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
         
         if (expr_combosel == -1)
         {
-            int res = validateExpression(getSourceStructure(), expr, type);
+            int res = validateExpression(getSourceStructure()->toStructure(), expr, type);
             updateExpressionIcon(row, res);
         }
          else
@@ -1997,7 +1994,7 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
             int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
             wxString expr = getFieldExpression(row);
         
-            int res = validateExpression(getSourceStructure(), expr, type);
+            int res = validateExpression(getSourceStructure()->toStructure(), expr, type);
             updateExpressionIcon(row, res);
         }
          else
@@ -2024,7 +2021,7 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
         wxString expr = getFieldExpression(row);
         
         // make sure either a source field or an expression is specified
-        int res = validateExpression(getSourceStructure(), expr, type);
+        int res = validateExpression(getSourceStructure()->toStructure(), expr, type);
         updateExpressionIcon(row, res);
         m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldFormula);
     }

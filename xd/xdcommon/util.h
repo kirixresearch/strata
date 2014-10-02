@@ -88,12 +88,12 @@ void bindExprParser(kscript::ExprParser* parser);
 kscript::ExprParser* createExprParser();
 
 std::vector<std::wstring> getFieldsInExpr(const std::wstring& expr,
-                                          xd::IStructurePtr s,
+                                          const xd::Structure& s,
                                           bool recurse_calcfields);
 
 bool findFieldInExpr(const std::wstring& field,
                      const std::wstring& expr,
-                     xd::IStructurePtr s,
+                     const xd::Structure& s,
                      bool recurse_calcfields);
 
 

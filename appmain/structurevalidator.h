@@ -46,7 +46,7 @@ public:
     static int showErrorMessage(int errorcode, bool* block);
     
     // this function validates an expression based on the input structure
-    static int validateExpression(xd::IStructurePtr structure,
+    static int validateExpression(const xd::Structure& structure,
                                   const wxString& expr,
                                   int match_fieldtype = xd::typeUndefined);
 
@@ -55,7 +55,7 @@ public:
     // true/false based on if any are found (should be used
     // when you have a list of expressions)    
     static bool findInvalidExpressions(std::vector<RowErrorChecker>& vec,
-                                       xd::IStructurePtr structure);
+                                       const xd::Structure& structure);
     
     // returns true/false if any invalid field names exist
     // in the specified structure based on the attributes

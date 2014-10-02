@@ -722,11 +722,11 @@ bool TableSet::prepareIndexEntry(IndexEntry& e)
     e.key_expr->setKeyExpr(static_cast<xd::IIterator*>(m_update_iter),
                            e.expr);
 
-    xd::IStructurePtr structure = getStructure();
+    xd::Structure structure = getStructure()->toStructure();
     if (structure.isNull())
         return false;
         
-    e.active_columns.resize(structure->getColumnCount(), false);
+    e.active_columns.resize(structure.getColumnCount(), false);
     std::vector<std::wstring> cols;
     kl::parseDelimitedList(e.expr, cols, L',', true);
 
@@ -750,7 +750,7 @@ bool TableSet::prepareIndexEntry(IndexEntry& e)
 
         dequote(colname, '[', ']');
 
-        xd::ColumnInfo info = structure->getColumnInfo(colname);
+        xd::ColumnInfo info = structure.getColumnInfo(colname);
 
         if (info.isOk())
         {
@@ -768,7 +768,7 @@ bool TableSet::prepareIndexEntry(IndexEntry& e)
 
                 for (it = fields_used.begin(); it != fields_used.end(); ++it)
                 {
-                    info = structure->getColumnInfo(*it);
+                    info = structure.getColumnInfo(*it);
                     if (!info.calculated)
                     {
                         e.active_columns[info.column_ordinal] = true;

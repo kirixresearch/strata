@@ -518,7 +518,7 @@ bool TableSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* 
     IJobInternalPtr ijob = job;
 
     std::vector<xd::StructureModify::Action>::const_iterator it_sa;
-    xd::IStructurePtr src_structure = getStructure();
+    xd::Structure src_structure = getStructure()->toStructure();
 
 
     // start the job
@@ -627,12 +627,11 @@ bool TableSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* 
     std::vector<ModifyField>::iterator it_mf;
     ModifyField mf;
 
-    int col_count = src_structure->getColumnCount();
-    int i;
+    size_t i, col_count = src_structure.getColumnCount();
 
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& col_info = src_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col_info = src_structure.getColumnInfoByIdx(i);
 
         mf.calculated = col_info.calculated;
 
@@ -816,11 +815,11 @@ bool TableSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* 
 
                 int idx = -1;
 
-                for (int i = 0; i < col_count; ++i)
+                for (i = 0; i < col_count; ++i)
                 {
-                    if (kl::iequals(src_structure->getColumnName(i), it_sa->column))
+                    if (kl::iequals(src_structure.getColumnName(i), it_sa->column))
                     {
-                        idx = i;
+                        idx = (int)i;
                         break;
                     }
                 }
@@ -831,7 +830,7 @@ bool TableSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* 
                     continue;
                 }
 
-                const xd::ColumnInfo& col = src_structure->getColumnInfoByIdx(idx);
+                const xd::ColumnInfo& col = src_structure.getColumnInfoByIdx(idx);
                 if (col.calculated)
                 {
                     // skip calculated fields (they have already been processed)
@@ -1109,8 +1108,7 @@ bool TableSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* 
 
     // remove all calculated fields which were made permanent
     std::vector<std::wstring>::iterator makeperm_it;
-    for (makeperm_it = makeperm_fields.begin();
-         makeperm_it != makeperm_fields.end(); ++makeperm_it)
+    for (makeperm_it = makeperm_fields.begin(); makeperm_it != makeperm_fields.end(); ++makeperm_it)
     {
         deleteCalcField(*makeperm_it);
     }

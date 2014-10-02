@@ -1013,7 +1013,7 @@ void Controller::apiGroupQuery(RequestInfo& req)
 }
 
 
-void Controller::apidescribeTableI(RequestInfo& req)
+void Controller::apiDescribeTable(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
@@ -1027,7 +1027,7 @@ void Controller::apidescribeTableI(RequestInfo& req)
     kl::JsonNode response;
     
     
-    xd::IStructurePtr structure;
+    xd::Structure structure;
         
     std::wstring handle = req.getValue(L"handle");
     std::wstring path = req.getURI();
@@ -1038,12 +1038,12 @@ void Controller::apidescribeTableI(RequestInfo& req)
         SessionQueryResult* so = (SessionQueryResult*)getServerSessionObject(handle, "SessionQueryResult");
         if (so && so->iter.isOk())
         {
-            structure = so->iter->getStructure();
+            structure = so->iter->getStructure()->toStructure();
         }
     }
      else
     {
-        structure = db->describeTableI(path);
+        structure = db->describeTable(path);
     }
 
         
@@ -1056,7 +1056,7 @@ void Controller::apidescribeTableI(RequestInfo& req)
 
 
     response["success"].setBoolean(true);
-    int idx, count = structure->getColumnCount();
+    size_t idx, count = structure.getColumnCount();
     
     // set the items
     kl::JsonNode columns = response["columns"];
@@ -1064,7 +1064,7 @@ void Controller::apidescribeTableI(RequestInfo& req)
     {
         kl::JsonNode item = columns.appendElement();
         
-        const xd::ColumnInfo& info = structure->getColumnInfoByIdx(idx);
+        const xd::ColumnInfo& info = structure.getColumnInfoByIdx(idx);
         item["name"] = info.name;
         item["type"] = xd::dbtypeToString(info.type);
         item["width"].setInteger(info.width);
@@ -1499,7 +1499,7 @@ void Controller::apiInsertRows(RequestInfo& req)
 
     if (handle == L"" || handle == L"create")
     {
-        xd::IStructurePtr structure = db->describeTableI(req.getURI());
+        xd::Structure structure = db->describeTable(req.getURI());
         if (structure.isNull())
         {
             returnApiError(req, "Invalid data resource");
@@ -1533,7 +1533,7 @@ void Controller::apiInsertRows(RequestInfo& req)
                 return;
             }
         
-            const xd::ColumnInfo& colinfo = structure->getColumnInfo(*it);
+            const xd::ColumnInfo& colinfo = structure.getColumnInfo(*it);
             if (colinfo.isNull())
             {
                 returnApiError(req, kl::tostring(L"Cannot initialize inserter (invalid column info) " + *it).c_str());
@@ -1763,7 +1763,7 @@ void Controller::apiAlter(RequestInfo& req)
     std::wstring s_actions = req.getValue(L"actions");
     
     
-    xd::IStructurePtr structure = db->describeTableI(path);
+    xd::Structure structure = db->describeTable(path);
     if (structure.isNull())
     {
         returnApiError(req, "Could not access table");
@@ -1814,7 +1814,7 @@ void Controller::apiAlter(RequestInfo& req)
             JsonNodeToColumn(params, colinfo);
 
             std::wstring target_column = action["target_column"];
-            if (!structure->getColumnExist(target_column))
+            if (!structure.getColumnExist(target_column))
             {
                 returnApiError(req, "Invalid target column for modify operation");
                 return;
@@ -1825,7 +1825,7 @@ void Controller::apiAlter(RequestInfo& req)
          else if (action["action"].getString() == L"delete")
         {
             std::wstring target_column = action["target_column"];
-            if (!structure->getColumnExist(target_column))
+            if (!structure.getColumnExist(target_column))
             {
                 returnApiError(req, "Invalid target column for modify operation");
                 return;
@@ -1837,7 +1837,7 @@ void Controller::apiAlter(RequestInfo& req)
     }
     
     
-    bool res = db->modifyStructure(path, structure, NULL);
+    bool res = db->modifyStructure(path, mod_params, NULL);
     
     // return success/failure to caller
     kl::JsonNode response;

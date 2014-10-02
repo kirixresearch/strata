@@ -240,11 +240,11 @@ bool XdfsBaseSet::prepareIndexEntry(XdfsIndexEntry& e)
     e.key_length = e.index->getKeyLength();
     e.update = false;
 
-    xd::IStructurePtr structure = m_database->describeTableI(m_object_path);
+    xd::Structure structure = m_database->describeTable(m_object_path);
     if (structure.isNull())
         return false;
         
-    e.active_columns.resize(structure->getColumnCount(), false);
+    e.active_columns.resize(structure.getColumnCount(), false);
     std::vector<std::wstring> cols;
     kl::parseDelimitedList(e.expr, cols, L',', true);
 
@@ -268,7 +268,7 @@ bool XdfsBaseSet::prepareIndexEntry(XdfsIndexEntry& e)
 
         dequote(colname, '[', ']');
 
-        xd::ColumnInfo info = structure->getColumnInfo(colname);
+        xd::ColumnInfo info = structure.getColumnInfo(colname);
         if (info.isOk())
         {
             if (info.calculated)
@@ -285,7 +285,7 @@ bool XdfsBaseSet::prepareIndexEntry(XdfsIndexEntry& e)
                      it != fields_used.end();
                      ++it)
                 {
-                    info = structure->getColumnInfo(*it);
+                    info = structure.getColumnInfo(*it);
                     if (!info.calculated)
                     {
                         e.active_columns[info.column_ordinal] = true;

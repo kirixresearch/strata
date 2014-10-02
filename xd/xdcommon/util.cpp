@@ -1243,7 +1243,7 @@ kscript::ExprParser* createExprParser()
 struct FindFieldInfo
 {
     std::set<std::wstring> found_fields;
-    xd::IStructurePtr structure;
+    xd::Structure structure;
 };
 
 static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
@@ -1276,7 +1276,7 @@ static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
             func_name == L"STDDEV" ||
             func_name == L"VARIANCE")
         {
-            const xd::ColumnInfo& colinfo = info->structure->getColumnInfo(param);
+            const xd::ColumnInfo& colinfo = info->structure.getColumnInfo(param);
             if (colinfo.isNull())
                 return true;
 
@@ -1295,7 +1295,7 @@ static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
         }
          else if (func_name == L"MERGE")
         {
-            const xd::ColumnInfo& colinfo = info->structure->getColumnInfo(param);
+            const xd::ColumnInfo& colinfo = info->structure.getColumnInfo(param);
             if (colinfo.isNull())
                 return true;
         
@@ -1348,7 +1348,7 @@ static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
     }
 
 
-    const xd::ColumnInfo& colinfo = info->structure->getColumnInfo(expr_text);
+    const xd::ColumnInfo& colinfo = info->structure.getColumnInfo(expr_text);
 
     if (colinfo.isNull())
     {
@@ -1396,7 +1396,7 @@ static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
 
 static void _findFieldsInExpr(const std::wstring& expr,
-                              xd::IStructurePtr s,
+                              const xd::Structure& s,
                               bool recurse_calc_fields,
                               std::set<std::wstring>& fields)
 {
@@ -1453,7 +1453,7 @@ static void _findFieldsInExpr(const std::wstring& expr,
              it != info.found_fields.end();
              ++it)
         {
-            xd::ColumnInfo colinfo = s->getColumnInfo(*it);
+            xd::ColumnInfo colinfo = s.getColumnInfo(*it);
             if (colinfo.isNull())
                 continue;
             if (!colinfo.calculated)
@@ -1469,7 +1469,7 @@ static void _findFieldsInExpr(const std::wstring& expr,
 }
 
 std::vector<std::wstring> getFieldsInExpr(const std::wstring& expr,
-                                          xd::IStructurePtr s,
+                                          const xd::Structure& s,
                                           bool recurse_calcfields)
 {
     std::set<std::wstring> flds;
@@ -1490,7 +1490,7 @@ std::vector<std::wstring> getFieldsInExpr(const std::wstring& expr,
 
 bool findFieldInExpr(const std::wstring& _field,
                      const std::wstring& expr,
-                     xd::IStructurePtr s,
+                     const xd::Structure& s,
                      bool recurse_calcfields)
 {
     std::wstring field = _field;

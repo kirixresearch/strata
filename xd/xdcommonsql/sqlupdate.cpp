@@ -56,7 +56,7 @@ static int doUpdate(xd::IDatabasePtr db,
     if (set.isNull())
         return -1;
 
-    xd::IStructurePtr structure = db->describeTableI(path);
+    xd::Structure structure = db->describeTable(path);
     if (structure.isNull())
         return -1;
 
@@ -145,7 +145,7 @@ static int doUpdate(xd::IDatabasePtr db,
     bool success = true;
     for (rit = replace.begin(), i = 0; rit != replace.end(); ++rit, ++i)
     {
-        const xd::ColumnInfo& colinfo = structure->getColumnInfo(rit->col_text);
+        const xd::ColumnInfo& colinfo = structure.getColumnInfo(rit->col_text);
         if (colinfo.isNull())
         {
             wchar_t buf[1024]; // some paths might be long

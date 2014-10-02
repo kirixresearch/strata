@@ -114,7 +114,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
     return -1;
 }
 
-int StructureValidator::validateExpression(xd::IStructurePtr structure,
+int StructureValidator::validateExpression(const xd::Structure& structure,
                                            const wxString& expr,
                                            int match_fieldtype)
 {
@@ -125,7 +125,9 @@ int StructureValidator::validateExpression(xd::IStructurePtr structure,
     if (expr.Length() == 0)
         return ExpressionInvalid;
     
-    int expr_type = structure->getExprType(towstr(expr));
+    int expr_type = xd::typeInvalid;
+   // int expr_type = structure.getExprType(towstr(expr));
+
     if (expr_type == xd::typeInvalid ||
         expr_type == xd::typeUndefined)
     {
@@ -149,7 +151,7 @@ int StructureValidator::validateExpression(xd::IStructurePtr structure,
 }
 
 bool StructureValidator::findInvalidExpressions(std::vector<RowErrorChecker>& vec,
-                                                xd::IStructurePtr structure)
+                                                const xd::Structure& structure)
 {
     bool found = false;
     std::vector<RowErrorChecker>::iterator it;
