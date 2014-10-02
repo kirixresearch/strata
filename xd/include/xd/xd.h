@@ -400,6 +400,7 @@ struct Structure
       }
 
     void createColumn(const xd::ColumnInfo& col) { columns.push_back(col); m_map.clear(); }
+    void clear() { columns.clear(); m_map.clear(); }
 
     struct cmp_nocase : std::binary_function<const std::wstring&, const std::wstring&, bool> {
         bool operator()(const std::wstring& lhs,  const std::wstring& rhs) const {
@@ -621,7 +622,7 @@ public:
     virtual void goRow(const xd::rowid_t& rowid) = 0;
 
     virtual bool refreshStructure() = 0;
-    virtual IStructurePtr getStructure() = 0;
+    virtual Structure getStructure() = 0;
     virtual bool modifyStructure(const StructureModify& mod_params, IJob* job) = 0;
 
     virtual objhandle_t getHandle(const std::wstring& expr) = 0;

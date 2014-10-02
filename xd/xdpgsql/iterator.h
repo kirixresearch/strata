@@ -139,7 +139,7 @@ public:
     double getPos();
     void goRow(const xd::rowid_t& rowid);
     
-    xd::IStructurePtr getStructure();
+    xd::Structure getStructure();
     bool refreshStructure();
     bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
 
@@ -176,7 +176,7 @@ private:
     std::vector<PgsqlIteratorRelInfo> m_relations;
 
     PgsqlDatabase* m_database;
-    xd::IStructurePtr m_structure;
+    xd::Structure m_structure;
     PGconn* m_conn;
     PGresult* m_res;
 

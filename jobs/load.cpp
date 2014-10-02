@@ -244,9 +244,8 @@ int LoadJob::runJob()
         {
             destination_db->deleteFile(destination_path);
 
-            xd::Structure structure = source_iter->getStructure()->toStructure();
-            for (size_t i = 0, col_count = structure.getColumnCount(); i < col_count; ++i)
-                destination_format.columns.push_back(structure.getColumnInfoByIdx(i));
+            xd::Structure structure = source_iter->getStructure();
+            destination_format.columns = structure.columns;
 
             if (!destination_db->createTable(destination_path, destination_format))
             {
@@ -259,9 +258,8 @@ int LoadJob::runJob()
         {
             if (!destination_db->getFileExist(destination_path))
             {
-                xd::Structure structure = source_iter->getStructure()->toStructure();
-                for (size_t i = 0, col_count = structure.getColumnCount(); i < col_count; ++i)
-                    destination_format.columns.push_back(structure.getColumnInfoByIdx(i));
+                xd::Structure structure = source_iter->getStructure();
+                destination_format.columns = structure.columns;
 
                 if (!destination_db->createTable(destination_path, destination_format))
                 {

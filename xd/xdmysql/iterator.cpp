@@ -447,9 +447,9 @@ void MysqlIterator::goRow(const xd::rowid_t& rowid)
 {
 }
 
-xd::IStructurePtr MysqlIterator::getStructure()
+xd::Structure MysqlIterator::getStructure()
 {
-    Structure* s = new Structure;
+    xd::Structure s;
 
     std::vector<MysqlDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -464,16 +464,16 @@ xd::IStructurePtr MysqlIterator::getStructure()
         col.expression = (*it)->expr_text;
         col.calculated = (*it)->isCalculated();
 
-        s->createColumn(col);
+        s.createColumn(col);
     }
     
-    return static_cast<xd::IStructure*>(s);
+    return s;
 }
 
 bool MysqlIterator::refreshStructure()
 {
 /*
-    xd::IStructurePtr set_structure = m_set->getStructure();
+    xd::Structure set_structure = m_set->getStructure();
     if (set_structure.isNull())
         return;
         
@@ -777,7 +777,7 @@ int MysqlIterator::getType(xd::objhandle_t data_handle)
 {
     MysqlDataAccessInfo* dai = (MysqlDataAccessInfo*)data_handle;
     if (dai == NULL)
-        return 0;
+        return xd::typeInvalid;
 
     return dai->type;
 }

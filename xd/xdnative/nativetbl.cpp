@@ -550,8 +550,8 @@ bool NativeTable::open(const std::wstring& filename,
         return false;
     }
 
-    Structure* structure = new Structure;
     std::wstring col_name;
+    m_structure.clear();
 
     unsigned char* fld = flds;
     for (i = 0; i < column_count; ++i)
@@ -570,14 +570,12 @@ bool NativeTable::open(const std::wstring& filename,
         col.table_ordinal = (int)m_ordinal;
         col.nulls_allowed = (*(fld+13) & 0x01) ? true : false;
 
-        structure->createColumn(col);
+        m_structure.createColumn(col);
 
         fld += native_column_descriptor_len;
     }
 
     delete[] flds;
-
-    m_structure = static_cast<xd::IStructure*>(structure);
 
     return true;
 }
@@ -1019,7 +1017,7 @@ bool NativeTable::writeColumnInfo(int col_idx,
     xf_seek(m_file, native_header_len+(native_column_descriptor_len*col_idx), xfSeekSet);
     xf_read(m_file, col_desc, native_column_descriptor_len, 1);
 
-    xd::ColumnInfo& col = (xd::ColumnInfo&)m_structure->getColumnInfoByIdx(col_idx);
+    xd::ColumnInfo& col = (xd::ColumnInfo&)m_structure.getColumnInfoByIdx(col_idx);
 
     if (col_name.length() > 0)
     {
@@ -1111,9 +1109,9 @@ int NativeTable::getRowWidth()
     return m_row_width;
 }
 
-xd::IStructurePtr NativeTable::getStructure()
+xd::Structure NativeTable::getStructure()
 {
-    return m_structure->clone();
+    return m_structure;
 }
 
 

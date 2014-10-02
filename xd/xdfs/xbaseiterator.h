@@ -115,7 +115,7 @@ public:
     double getPos();
     void goRow(const xd::rowid_t& rowid);
 
-    xd::IStructurePtr getStructure();
+    xd::Structure getStructure();
     bool refreshStructure();
     bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
 

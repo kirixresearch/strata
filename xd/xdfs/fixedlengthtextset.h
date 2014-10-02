@@ -55,7 +55,7 @@ public:
                    xd::ColumnUpdateInfo* info,
                    size_t info_size) { return false; }
 
-    xd::IStructurePtr getStructure();
+    xd::Structure getStructure();
    
     bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job) { return false; }
 

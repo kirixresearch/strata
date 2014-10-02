@@ -474,9 +474,9 @@ void FixedLengthTextIterator::goRow(const xd::rowid_t& rowid)
     updatePosition();
 }
 
-xd::IStructurePtr FixedLengthTextIterator::getStructure()
+xd::Structure FixedLengthTextIterator::getStructure()
 {
-    Structure* s = new Structure;
+    xd::Structure s;
 
     std::vector<TtbDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -496,15 +496,15 @@ xd::IStructurePtr FixedLengthTextIterator::getStructure()
         col.calculated = (*it)->isCalculated();
         col.column_ordinal = (*it)->ordinal;
 
-        s->createColumn(col);
+        s.createColumn(col);
     }
 
-    return static_cast<xd::IStructure*>(s);
+    return s;
 }
 
-xd::IStructurePtr FixedLengthTextIterator::getParserStructure()
+xd::Structure FixedLengthTextIterator::getParserStructure()
 {
-    Structure* s = new Structure;
+    xd::Structure s;
 
     std::vector<TtbDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -522,17 +522,17 @@ xd::IStructurePtr FixedLengthTextIterator::getParserStructure()
         col.calculated = (*it)->isCalculated();
         col.column_ordinal = (*it)->ordinal;
 
-        s->createColumn(col);
+        s.createColumn(col);
     }
 
-    return static_cast<xd::IStructure*>(s);
+    return s;
 }
 
 bool FixedLengthTextIterator::refreshStructure()
 {
     m_fields.clear();
 
-    xd::IStructurePtr set_structure = m_set->getStructure();
+    xd::Structure set_structure = m_set->getStructure();
 
     // add fields from structure
     bool default_structure_visible = false;
@@ -540,11 +540,11 @@ bool FixedLengthTextIterator::refreshStructure()
         default_structure_visible = true;
 
 
-    int i, col_count = set_structure->getColumnCount();
+    size_t i, col_count = set_structure.getColumnCount();
 
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& colinfo = set_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = set_structure.getColumnInfoByIdx(i);
         
         TtbDataAccessInfo* dai = new TtbDataAccessInfo;
         dai->name = colinfo.name;
@@ -575,14 +575,14 @@ bool FixedLengthTextIterator::refreshStructure()
             std::wstring& part = *it;
             kl::trim(part);
 
-            xd::ColumnInfo colinfo = set_structure->getColumnInfo(part);
+            xd::ColumnInfo colinfo = set_structure.getColumnInfo(part);
 
             if (colinfo.isNull() && part[0] == '[')
             {
                 // maybe the above just needs to be dequoted
                 std::wstring dequote_part = part;
                 dequote(dequote_part, '[', ']');
-                colinfo = set_structure->getColumnInfo(dequote_part);
+                colinfo = set_structure.getColumnInfo(dequote_part);
             }
 
             if (colinfo.isOk())
@@ -633,7 +633,7 @@ bool FixedLengthTextIterator::refreshStructure()
                     do
                     {
                         swprintf(buf, 32, L"EXPR%03d", ++colname_counter);
-                    } while (set_structure->getColumnExist(buf));
+                    } while (set_structure.getColumnExist(buf));
 
                     colname = buf;
                 }
@@ -644,7 +644,7 @@ bool FixedLengthTextIterator::refreshStructure()
 
 
                 // see if the expression is just a column and use its precise type info if it is
-                const xd::ColumnInfo& colinfo = set_structure->getColumnInfo(dequote_expr);
+                const xd::ColumnInfo& colinfo = set_structure.getColumnInfo(dequote_expr);
                 if (colinfo.isOk())
                 {
                     TtbDataAccessInfo* dai = new TtbDataAccessInfo;
@@ -946,7 +946,7 @@ int FixedLengthTextIterator::getType(xd::objhandle_t data_handle)
 {
     TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
     if (dai == NULL)
-        return 0;
+        return xd::typeInvalid;
 
     return dai->type;
 }

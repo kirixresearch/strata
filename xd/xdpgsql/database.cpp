@@ -824,7 +824,7 @@ bool PgsqlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
     if (info->iter_input.isOk())
     {
         xd::IIteratorPtr iter = info->iter_input;
-        xd::IStructurePtr structure = iter->getStructure();
+        xd::Structure structure = iter->getStructure();
         if (structure.isNull())
             return false;
     
@@ -839,9 +839,9 @@ bool PgsqlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 
             xd::FormatDefinition fd = info->output_format;
             fd.columns.clear();
-            int i, colcount = structure->getColumnCount();
+            size_t i, colcount = structure.getColumnCount();
             for (i = 0; i < colcount; ++i)
-                fd.createColumn(structure->getColumnInfoByIdx(i));
+                fd.createColumn(structure.getColumnInfoByIdx(i));
 
             if (!createTable(info->output, fd))
                 return false;

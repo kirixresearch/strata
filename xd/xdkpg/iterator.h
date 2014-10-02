@@ -140,7 +140,7 @@ public:
     double getPos();
     void goRow(const xd::rowid_t& rowid);
     
-    xd::IStructurePtr getStructure();
+    xd::Structure getStructure();
     bool refreshStructure();
     bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
 
@@ -167,7 +167,7 @@ private:
 
     KpgDatabase* m_database;
     PkgStreamReader* m_reader;
-    xd::IStructurePtr m_structure;
+    xd::Structure m_structure;
     std::wstring m_path;
     kl::xmlnode m_info;
 

@@ -1855,7 +1855,7 @@ void XdModel::clear()
 void XdModel::refresh()
 {
     // refresh columns
-    xd::Structure structure = m_iter->getStructure()->toStructure();
+    xd::Structure structure = m_iter->getStructure();
     size_t i, col_count = structure.getColumnCount();
 
     m_columns.resize(col_count, NULL);

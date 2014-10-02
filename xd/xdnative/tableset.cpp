@@ -722,7 +722,7 @@ bool TableSet::prepareIndexEntry(IndexEntry& e)
     e.key_expr->setKeyExpr(static_cast<xd::IIterator*>(m_update_iter),
                            e.expr);
 
-    xd::Structure structure = getStructure()->toStructure();
+    xd::Structure structure = getStructure();
     if (structure.isNull())
         return false;
         
@@ -1574,9 +1574,9 @@ bool TableSet::updateRow(xd::rowid_t rowid,
 }
 
 
-xd::IStructurePtr TableSet::getStructure()
+xd::Structure TableSet::getStructure()
 {
-    xd::IStructurePtr s = m_table->getStructure();
+    xd::Structure s = m_table->getStructure();
     appendCalcFields(s);
     return s;
 }

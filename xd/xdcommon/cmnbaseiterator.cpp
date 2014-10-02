@@ -134,7 +134,7 @@ static void _bindFieldBoolean(kscript::ExprEnv*,
     retval->setBoolean(info->iter->getBoolean(info->handle));
 }
 
-xd::IStructurePtr CommonBaseIterator::getParserStructure()
+xd::Structure CommonBaseIterator::getParserStructure()
 {
     // default is to just use the normal iterator structure
     // as source fields for the expression.  This can, however,
@@ -476,7 +476,7 @@ public:
 struct CommonBaseIteratorParseHookInfo
 {
     CommonBaseIterator* iter;
-    xd::IStructurePtr structure;
+    xd::Structure structure;
 };
 
 
@@ -487,7 +487,7 @@ bool CommonBaseIterator::script_parse_hook(kscript::ExprParseHookInfo& hook_info
 
     if (hook_info.element_type == kscript::ExprParseHookInfo::typeIdentifier)
     {
-        xd::IStructurePtr& structure = ((CommonBaseIteratorParseHookInfo*)hook_info.hook_param)->structure;
+        xd::Structure& structure = ((CommonBaseIteratorParseHookInfo*)hook_info.hook_param)->structure;
         
         if (hook_info.expr_text.length() > 1 &&
             hook_info.expr_text[0] == '[' &&
@@ -498,8 +498,7 @@ bool CommonBaseIterator::script_parse_hook(kscript::ExprParseHookInfo& hook_info
             hook_info.expr_text.erase(0, 1);
         }
 
-
-        const xd::ColumnInfo& colinfo = structure->getColumnInfo(hook_info.expr_text);
+        const xd::ColumnInfo& colinfo = structure.getColumnInfo(hook_info.expr_text);
         if (colinfo.isNull())
             return false;
         

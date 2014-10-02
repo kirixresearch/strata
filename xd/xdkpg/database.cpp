@@ -78,7 +78,7 @@ const wchar_t* sql92_keywords =
 
 
 
-void xdkpgStructureToXml(const xd::FormatDefinition& s, kl::xmlnode& node)
+void xdkpgStructureToXml(const xd::Structure& s, kl::xmlnode& node)
 {
     node.setNodeName(L"structure");
 
@@ -101,9 +101,9 @@ void xdkpgStructureToXml(const xd::FormatDefinition& s, kl::xmlnode& node)
 
 
 
-xd::FormatDefinition xdkpgXmlToStructure(kl::xmlnode& node)
+xd::Structure xdkpgXmlToStructure(kl::xmlnode& node)
 {
-    xd::FormatDefinition fd;
+    xd::Structure s;
 
     int i, child_count = node.getChildCount();
 
@@ -129,7 +129,7 @@ xd::FormatDefinition xdkpgXmlToStructure(kl::xmlnode& node)
             colcalculated.isEmpty() ||
             colexpression.isEmpty())
         {
-            return xd::FormatDefinition();
+            return xd::Structure();
         }
 
         
@@ -141,27 +141,11 @@ xd::FormatDefinition xdkpgXmlToStructure(kl::xmlnode& node)
         colinfo.calculated = kl::wtoi(colcalculated.getNodeValue()) != 0 ? true : false;
         colinfo.expression = colexpression.getNodeValue();
         
-        fd.createColumn(colinfo);
+        s.createColumn(colinfo);
     }
 
-    return fd;
+    return s;
 }
-
-xd::IStructurePtr xdkpgXmlToIStructure(kl::xmlnode& node)
-{
-    xd::FormatDefinition fd = xdkpgXmlToStructure(node);
-
-    Structure* s = new Structure;
-
-    std::vector<xd::ColumnInfo>::const_iterator it;
-    for (it = fd.columns.cbegin(); it != fd.columns.cend(); ++it)
-        s->createColumn(*it);
-
-    return static_cast<xd::IStructure*>(s);
-}
-
-
-
 
 
 
@@ -363,7 +347,7 @@ bool KpgDatabase::copyFile(const std::wstring& src_path,
 bool KpgDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
     xd::IIteratorPtr iter;
-    xd::IStructurePtr structure;
+    xd::Structure structure;
 
     if (info->iter_input.isOk())
     {
@@ -393,14 +377,11 @@ bool KpgDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
         deleteFile(info->output);
 
         xd::FormatDefinition fd;
-        int i, colcount = structure->getColumnCount();
-        for (i = 0; i < colcount; ++i)
-            fd.createColumn(structure->getColumnInfoByIdx(i));
+        fd.columns = structure.columns;
 
         if (!createTable(info->output, fd))
             return false;
     }
-
 
     xdcmnInsert(static_cast<xd::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
 
@@ -702,20 +683,25 @@ xd::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)
     if (path.substr(0,1) == L"/")
         path.erase(0,1);
 
-    xd::FormatDefinition format_definition;
+    KpgRowInserter* inserter;
 
     std::map<std::wstring, xd::FormatDefinition, kl::cmp_nocase>::iterator it;
     it = m_create_tables.find(path);
     if (it != m_create_tables.end())
     {
-        format_definition = it->second;
+        xd::Structure s;
+        s.columns = it->second.columns;
+        inserter = new KpgRowInserter(this, path, s);
     }
      else
     {
-        format_definition.columns = describeTable(_path).columns;
+        xd::Structure structure = describeTable(_path);
+        if (structure.isNull())
+            return xcm::null;
+
+        inserter = new KpgRowInserter(this, path, structure);
     }
 
-    KpgRowInserter* inserter = new KpgRowInserter(this, path, format_definition);
     return static_cast<xd::IRowInserter*>(inserter);
 }
 
@@ -755,10 +741,7 @@ xd::Structure KpgDatabase::describeTable(const std::wstring& _path)
 
     kl::xmlnode& structure_node = info.getChild(node_idx);
 
-    xd::FormatDefinition fd = xdkpgXmlToStructure(structure_node);
-    xd::Structure s;
-    s.columns = fd.columns;
-    return s;
+    return xdkpgXmlToStructure(structure_node);
 }
 
 

@@ -472,15 +472,10 @@ void ClientIterator::goRow(const xd::rowid_t& rowid)
     skip(offset);
 }
 
-xd::IStructurePtr ClientIterator::getStructure()
+xd::Structure ClientIterator::getStructure()
 {
     if (m_structure.isOk())
-    {
-        Structure* s = new Structure;
-        s->fromStructure(m_structure);
-        return static_cast<xd::IStructure*>(s);
-    }
-
+        return m_structure;
 
     std::vector<HttpDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -502,10 +497,7 @@ xd::IStructurePtr ClientIterator::getStructure()
         m_structure.createColumn(col);
     }
     
-
-    Structure* s = new Structure;
-    s->fromStructure(m_structure);
-    return static_cast<xd::IStructure*>(s);
+    return m_structure;
 }
 
 bool ClientIterator::refreshStructure()

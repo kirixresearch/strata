@@ -294,7 +294,7 @@ int SummarizeJob::runJob()
         return 0;
     }
 
-    xd::Structure group_result_structure = group_result_iter->getStructure()->toStructure();
+    xd::Structure group_result_structure = group_result_iter->getStructure();
 
     group_result_iter->goFirst();
     if (group_result_iter->eof())

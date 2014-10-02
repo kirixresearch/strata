@@ -177,9 +177,6 @@ private:
     kl::mutex m_http_mutex;
     std::map<kl::thread_t, HttpRequest*> m_http_objects;
 
-    kl::mutex m_describe_mutex;
-    std::map<std::wstring, xd::IStructurePtr> m_describe;
-
     kl::mutex m_call_cache_mutex;
     std::map<std::wstring, std::pair<time_t /*age*/, std::wstring > > m_call_cache;
 

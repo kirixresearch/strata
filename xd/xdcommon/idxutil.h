@@ -96,7 +96,7 @@ public:
     unsigned int getIteratorFlags();
 
     bool refreshStructure();
-    xd::IStructurePtr getStructure();
+    xd::Structure getStructure();
     bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
 
     xd::IIteratorPtr getChildIterator(xd::IRelationPtr relation);

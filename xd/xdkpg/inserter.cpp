@@ -25,7 +25,7 @@
 
 const int PACKAGE_BLOCK_SIZE = 1000000;
 
-KpgRowInserter::KpgRowInserter(KpgDatabase* db, const std::wstring& table, const xd::FormatDefinition& structure)
+KpgRowInserter::KpgRowInserter(KpgDatabase* db, const std::wstring& table, const xd::Structure& structure)
 {
     m_database = db;
     m_database->ref();

@@ -327,7 +327,7 @@ void XdGridModel::refresh()
 
     if (m_it)
     {
-        xd::Structure structure = m_it->getStructure()->toStructure();
+        xd::Structure structure = m_it->getStructure();
         size_t i, col_count = structure.getColumnCount();
 
         m_columns.resize(col_count);

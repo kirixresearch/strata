@@ -518,7 +518,7 @@ bool TableSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* 
     IJobInternalPtr ijob = job;
 
     std::vector<xd::StructureModify::Action>::const_iterator it_sa;
-    xd::Structure src_structure = getStructure()->toStructure();
+    xd::Structure src_structure = getStructure();
 
 
     // start the job

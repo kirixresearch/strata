@@ -49,14 +49,14 @@ std::wstring SqlServerSet::getSetId()
     return L"";
 }
 
-xd::IStructurePtr SqlServerSet::getStructure()
+xd::Structure SqlServerSet::getStructure()
 {
     // create new xd::IStructure
-    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
+    xd::Structure s;
 
     if (!m_connect_info)
     {
-        return xcm::null;
+        return xd::Structure();
     }
 
     // allocate socket
@@ -68,7 +68,7 @@ xd::IStructurePtr SqlServerSet::getStructure()
     if (!m_connect_info || tds_connect(tds, m_connect_info) == TDS_FAIL)
     {
         fprintf(stderr, "There was a problem connecting to the server\n");
-        return xcm::null;
+        return xd::Structure();
     }
 
 
@@ -89,7 +89,7 @@ xd::IStructurePtr SqlServerSet::getStructure()
     if (res != TDS_SUCCEED)
     {
         // tds_submit_query() failed
-        return xcm::null;
+        return xd::Structure();
     }
 
     // add columns to the table's structure
@@ -143,10 +143,11 @@ xd::IStructurePtr SqlServerSet::getStructure()
         col.scale = colinfo->column_scale;
         col.column_ordinal = i;
 
-        s->createColumn(col);
+        s.createColumn(col);
     }
 
     tds_free_socket(tds);
+
     return s;
 }
 
@@ -157,7 +158,7 @@ bool SqlServerSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJ
 
     unsigned int processed_action_count = 0;
 
-    xd::IStructurePtr current_struct = getStructure();
+    xd::Structure current_struct = getStructure();
     IStructureInternalPtr s = struct_config;
     std::vector<StructureAction>& actions = s->getStructureActions();
     std::vector<StructureAction>::iterator it;
@@ -516,7 +517,7 @@ bool SqlServerRowInserter::putNull(xd::objhandle_t column_handle)
 
 bool SqlServerRowInserter::startInsert(const std::wstring& col_list)
 {
-    xd::IStructurePtr s = m_set->getStructure();
+    xd::Structure s = m_set->getStructure();
 
     std::vector<std::wstring> columns;
     std::vector<std::wstring>::iterator it;
@@ -525,13 +526,11 @@ bool SqlServerRowInserter::startInsert(const std::wstring& col_list)
     kl::parseDelimitedList(col_list, columns, L',');
 
 
-    if (!wcscmp(col_list.c_str(), L"*"))
+    if (0 == wcscmp(col_list.c_str(), L"*"))
     {
         columns.clear();
 
-        int col_count = s->getColumnCount();
-        int i;
-
+        size_t i, col_count = s.getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
             columns.push_back(s->getColumnName(i));

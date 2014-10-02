@@ -59,7 +59,7 @@ public:
 
     bool init(const std::wstring& filename);
 
-    xd::IStructurePtr getStructure();
+    xd::Structure getStructure();
 
     xd::IRowInserterPtr getRowInserter();
     IXdsqlRowDeleterPtr getRowDeleter();

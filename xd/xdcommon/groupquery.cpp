@@ -314,7 +314,8 @@ public:
         }
 
         // get the parameter expression type
-        int param_type = m_set_structure->getExprType(param);
+        int param_type = xd::typeInvalid;
+        //int param_type = m_set_structure.getExprType(param);
 
         // check if the parameter is a valid column
         if (group_func != GroupFunc_Count &&
@@ -405,7 +406,7 @@ public:
         // problem sql was: select inv_date from ap_hist group by inv_date
         std::wstring deq_field = field;
         dequote(deq_field, '[', ']');
-        if (m_iter_structure->getColumnExist(deq_field))
+        if (m_iter_structure.getColumnExist(deq_field))
             field = deq_field;
 
 
@@ -424,7 +425,7 @@ public:
             ii.m_input_handle = handle;
             ii.m_offset = m_store_size;
 
-            const xd::ColumnInfo& colinfo = m_iter_structure->getColumnInfo(field);
+            const xd::ColumnInfo& colinfo = m_iter_structure.getColumnInfo(field);
             if (colinfo.isOk())
             {
                 // if we have a regular column, get the info
@@ -513,8 +514,8 @@ public:
     int m_store_size;
     
     GroupResult* m_last_result;
-    xd::IStructurePtr m_set_structure;
-    xd::IStructurePtr m_iter_structure;
+    xd::Structure m_set_structure;
+    xd::Structure m_iter_structure;
     std::vector<kscript::ExprParser*> m_to_destroy;
 };
 
@@ -580,11 +581,12 @@ bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
         std::wstring lookup_colname = result->m_param_text;
         dequote(lookup_colname, '[', ']');
 
-        const xd::ColumnInfo& colinfo = info->m_set_structure->getColumnInfo(lookup_colname);
+        const xd::ColumnInfo& colinfo = info->m_set_structure.getColumnInfo(lookup_colname);
 
         if (colinfo.isNull())
         {
-            result->m_type = info->m_set_structure->getExprType(result->m_param_text);
+            result->m_type = xd::typeInvalid;
+            //result->m_type = info->m_set_structure.getExprType(result->m_param_text);
             getDefaultExprWidthAndScale(result->m_param_text, result->m_type, &result->m_width, &result->m_scale);
         }
         else
@@ -723,7 +725,7 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
     bool detail_in_index = false;
     xd::IIteratorPtr sp_iter;
     xd::IIterator* iter;
-    xd::IStructurePtr structure;
+    xd::Structure structure;
     xd::rowpos_t row_count = 0;
 
 
@@ -748,7 +750,7 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
     iter = sp_iter.p;
     structure = iter->getStructure();
     gi.m_iter_structure = iter->getStructure();
-    gi.m_set_structure = gi.m_iter_structure->clone();
+    gi.m_set_structure = gi.m_iter_structure;
 
     // try to get the row count
     if (finfo->getFlags() & xd::sfFastRowCount)
@@ -789,10 +791,10 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
                 detail_in_index = true;
             }
 
-            int colcount = structure->getColumnCount();
-            for (int i = 0; i < colcount; ++i)
+            size_t i, col_count = structure.getColumnCount();
+            for (i = 0; i < col_count; ++i)
             {
-                const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
+                const xd::ColumnInfo& colinfo = structure.getColumnInfoByIdx(i);
 
                 GroupOutputInfo of;
                 of.m_detail_source_field = colinfo.name;
@@ -812,10 +814,10 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
         {
             // '*' is equal to the first() of every column
 
-            int colcount = structure->getColumnCount();
-            for (int i = 0; i < colcount; ++i)
+            size_t i, col_count = structure.getColumnCount();
+            for (i = 0; i < col_count; ++i)
             {
-                const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
+                const xd::ColumnInfo& colinfo = structure.getColumnInfoByIdx(i);
 
                 std::wstring part2 = L"FIRST([";
                 part2 += colinfo.name;
@@ -858,7 +860,7 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
             // if it's just a field name, make a FIRST(<field_name>) out of it
             if (eq_pos == -1)
             {
-                if (structure->getColumnExist(*outcol_it))
+                if (structure.getColumnExist(*outcol_it))
                 {
                     part1 = *outcol_it;
                     part2 = L"FIRST([";
@@ -885,7 +887,7 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
                 
                 dequoteIfField(structure, part2, '[', ']');
 
-                if (structure->getColumnExist(part2))
+                if (structure.getColumnExist(part2))
                 {
                     std::wstring temps;
                     temps = L"FIRST([";

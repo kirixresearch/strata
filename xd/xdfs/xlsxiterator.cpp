@@ -184,9 +184,9 @@ void XlsxIterator::goRow(const xd::rowid_t& rowid)
     m_file->goRow(m_current_row);
 }
 
-xd::IStructurePtr XlsxIterator::getStructure()
+xd::Structure XlsxIterator::getStructure()
 {
-    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
+    xd::Structure s;
 
     std::vector<XlsxDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -209,7 +209,7 @@ xd::IStructurePtr XlsxIterator::getStructure()
         if (col.expression.length() > 0)
             col.calculated = true;
 
-        s->createColumn(col);
+        s.createColumn(col);
     }
 
     return s;
@@ -496,9 +496,7 @@ int XlsxIterator::getType(xd::objhandle_t data_handle)
 {
     XlsxDataAccessInfo* dai = (XlsxDataAccessInfo*)data_handle;
     if (dai == NULL)
-    {
-        return 0;
-    }
+        return xd::typeInvalid;
 
     return dai->type;
 }

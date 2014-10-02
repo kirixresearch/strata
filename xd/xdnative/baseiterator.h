@@ -133,7 +133,7 @@ public:
     xd::rowpos_t getRowCount();
     void setSet(IXdnativeSetPtr set);
 
-    xd::IStructurePtr getStructure();
+    xd::Structure getStructure();
     bool refreshStructure();
     bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
 
@@ -190,7 +190,7 @@ protected:
     bool baseClone(BaseIterator* new_iter);
     void bindExprParser(kscript::ExprParser* parser, ParserBindInfo* info);
     bool initStructure();
-    void appendCalcFields(xd::IStructure* structure);
+    void appendCalcFields(xd::Structure& structure);
     bool refreshRelInfo(BaseIteratorRelInfo& info);
 
     void goRow(const xd::rowid_t& rowid);
@@ -206,8 +206,8 @@ public:
 protected:
     XdnativeDatabase* m_database;
     std::wstring m_columns;
-    xd::IStructurePtr m_iter_structure;  // iter structure
-    xd::IStructurePtr m_set_structure;   // set structure
+    xd::Structure m_iter_structure;  // iter structure
+    xd::Structure m_set_structure;   // set structure
     IXdnativeSetPtr m_set;               // set internal ptr
 
 private:

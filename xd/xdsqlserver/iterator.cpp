@@ -393,9 +393,9 @@ void SqlServerIterator::goRow(const xd::rowid_t& row)
 }
 
 
-xd::IStructurePtr SqlServerIterator::getStructure()
+xd::Structure SqlServerIterator::getStructure()
 {
-    Structure* s = new Structure;
+    Structure s;
 
     std::vector<SqlServerDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -407,10 +407,10 @@ xd::IStructurePtr SqlServerIterator::getStructure()
         col.scale = (*it)->m_scale;
         col.column_ordinal = (*it)->m_ordinal;
 
-        s->createColumn(col);
+        s.createColumn(col);
     }
     
-    return static_cast<xd::IStructure*>(s);
+    return s;
 }
 
 bool SqlServerIterator::refreshStructure()
@@ -477,7 +477,7 @@ xd::ColumnInfo SqlServerIterator::getInfo(xd::objhandle_t data_handle)
     SqlServerDataAccessInfo* dai = (SqlServerDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
-        return xcm::null;
+        return xd::ColumnInfo();
     }
 
     xd::ColumnInfo colinfo;
@@ -516,9 +516,7 @@ int SqlServerIterator::getRawWidth(xd::objhandle_t data_handle)
 {
     SqlServerDataAccessInfo* dai = (SqlServerDataAccessInfo*)data_handle;
     if (dai == NULL)
-    {
-        return 0;
-    }
+        return xd::typeInvalid;
 
     return dai->m_width;
 }

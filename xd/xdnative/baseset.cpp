@@ -256,7 +256,7 @@ bool BaseSet::deleteCalcField(const std::wstring& _name)
 }
 
 
-void BaseSet::appendCalcFields(xd::IStructure* structure)
+void BaseSet::appendCalcFields(xd::Structure& structure)
 {
     // do this before the m_structure_mutex of BaseSet is locked;
     // this will avoid interlocking the mutexes of NativeTable
@@ -329,7 +329,7 @@ void BaseSet::appendCalcFields(xd::IStructure* structure)
 
     std::vector<xd::ColumnInfo>::iterator it;
     for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
-        structure->createColumn(*it);
+        structure.createColumn(*it);
 }
 
 

@@ -21,9 +21,6 @@ int xdcmnInsert(xd::IDatabasePtr db,
                 xd::IJob* job);
 
 
-bool physStructureEqual(xd::IStructurePtr s1,
-                        xd::IStructurePtr s2);
-
 
 #endif
 

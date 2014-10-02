@@ -57,7 +57,7 @@ private:
     std::vector<KeyPart> m_parts;
     xd::IIterator* m_iter;
     xd::IIteratorPtr m_sp_iter;
-    xd::IStructurePtr m_iter_structure;
+    xd::Structure m_iter_structure;
     int m_key_length;
     bool m_hold_ref;
     bool m_trunc;

@@ -41,7 +41,7 @@ public:
 
     virtual xd::IDatabase* cmniterGetDatabase() = 0; // derivers must implement
 
-    virtual xd::IStructurePtr getParserStructure();
+    virtual xd::Structure getParserStructure();
     kscript::ExprParser* parse(const std::wstring& expr);
     
     void setIteratorFlags(unsigned int mask, unsigned int value)

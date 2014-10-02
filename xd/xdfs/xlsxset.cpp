@@ -89,14 +89,13 @@ static std::wstring getSpreadsheetColumnName(int idx)
     return res;
 }
 
-xd::IStructurePtr XlsxSet::getStructure()
+xd::Structure XlsxSet::getStructure()
 {
-    // create new xd::IStructure
-    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
+    xd::Structure s;
 
     // if we can't open the file, return an empty structure
     if (!m_file.isOpen())
-        return s;
+        return xd::Structure();
 
     // get structure from table
     //std::vector<XlsxField> fields = m_file.getFields();
@@ -116,7 +115,7 @@ xd::IStructurePtr XlsxSet::getStructure()
         col.scale = 0;
         col.column_ordinal = i;
 
-        s->createColumn(col);
+        s.createColumn(col);
     }
 
     XdfsBaseSet::appendCalcFields(s);
@@ -138,7 +137,7 @@ xd::IRowInserterPtr XlsxSet::getRowInserter()
 bool XlsxSet::getFormatDefinition(xd::FormatDefinition* def)
 {
     *def = xd::FormatDefinition();
-    copyStructureToDefinition(getStructure(), def);
+    def->columns = getStructure().columns;
     return true;
 }
 

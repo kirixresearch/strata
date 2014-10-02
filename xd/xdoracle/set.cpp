@@ -84,21 +84,20 @@ std::wstring OracleSet::getSetId()
     return kl::md5str(id);
 }
 
-xd::IStructurePtr OracleSet::getStructure()
+xd::Structure OracleSet::getStructure()
 {
+    xd::Structure s;
+
     if (!m_env)
     {
-        return xcm::null;
+        return xd::Structure();
     }
 
     if (!m_svc)
     {
-        return xcm::null;
+        return xd::Structure();
     }
     
-    // create new xd::IStructure
-    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
-
     // allocate error handle
     if (!m_err)
     {
@@ -158,7 +157,7 @@ xd::IStructurePtr OracleSet::getStructure()
                                            (OCISnapshot*)NULL,
                                            OCI_DEFAULT)))
     {
-        return xcm::null;
+        return xd::Structure();
     }
 
     // request parameter descriptors
@@ -247,7 +246,7 @@ xd::IStructurePtr OracleSet::getStructure()
                                            col_width,
                                            col_precision,
                                            col_scale);
-        s->createColumn(col);
+        s.createColumn(col);
 
         counter++;
 
@@ -260,6 +259,8 @@ xd::IStructurePtr OracleSet::getStructure()
 
 
     appendCalcFields(s);
+
+
     return s;
 }
 
@@ -276,7 +277,7 @@ bool OracleSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob*
         
     unsigned int processed_action_count = 0;
 
-    xd::IStructurePtr current_struct = getStructure();
+    xd::Structure current_struct = getStructure();
     IStructureInternalPtr s = struct_config;
     std::vector<StructureAction>& actions = s->getStructureActions();
     std::vector<StructureAction>::iterator it;
@@ -633,14 +634,14 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
     // for now insert all fields; later a parameter
     // will be passed in startInsert() which must be parsed
 
-    xd::IStructurePtr s = m_set->getStructure();
+    xd::Structure s = m_set->getStructure();
 
-    int i, col_count = s->getColumnCount();
+    size_t i, col_count = s.getColumnCount();
     std::vector<std::wstring> insert_fields;
 
     for (i = 0; i < col_count; ++i)
     {
-        insert_fields.push_back(s->getColumnName(i));
+        insert_fields.push_back(s.getColumnName(i));
     }
 
     std::wstring field_str;
@@ -654,7 +655,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
     std::vector<std::wstring>::iterator it;
     for (it = insert_fields.begin(); it != insert_fields.end(); ++it)
     {
-        const xd::ColumnInfo& col_info = s->getColumnInfo(*it);
+        const xd::ColumnInfo& col_info = s.getColumnInfo(*it);
         if (col_info.isNull())
             return false;
 
@@ -712,7 +713,6 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
         field->m_oracle_scale = field->m_xd_scale;
 
         m_fields.push_back(field);
-
 
         if (it != insert_fields.begin())
         {

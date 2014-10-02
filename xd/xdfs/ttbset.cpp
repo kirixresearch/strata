@@ -77,15 +77,14 @@ bool TtbSet::init(const std::wstring& filename)
 
 
 
-xd::IStructurePtr TtbSet::getStructure()
+xd::Structure TtbSet::getStructure()
 {
     // if we can't open the file, return an empty structure
     if (!m_file.isOpen())
-        return xcm::null;
+        return xd::Structure();
 
     // get structure from table
-    xd::IStructurePtr s = m_file.getStructure();
-
+    xd::Structure s = m_file.getStructure();
     XdfsBaseSet::appendCalcFields(s);
     return s;
 }
@@ -93,7 +92,7 @@ xd::IStructurePtr TtbSet::getStructure()
 bool TtbSet::getFormatDefinition(xd::FormatDefinition* def)
 {
     *def = xd::FormatDefinition();
-    copyStructureToDefinition(getStructure(), def);
+    def->columns = getStructure().columns;
     return true;
 }
 
@@ -440,7 +439,7 @@ TtbRowInserter::~TtbRowInserter()
 
 bool TtbRowInserter::startInsert(const std::wstring& _col_list)
 {
-    xd::IStructurePtr structure = m_file->getStructure();
+    xd::Structure structure = m_file->getStructure();
     if (structure.isNull())
         return false;
 
@@ -449,12 +448,12 @@ bool TtbRowInserter::startInsert(const std::wstring& _col_list)
     if (col_list == L"" || col_list == L"*")
     {
         col_list = L"";
-        int i, col_count = structure->getColumnCount();
+        size_t i, col_count = structure.getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
             if (i > 0)
                 col_list += L",";
-            col_list += structure->getColumnName(i);
+            col_list += structure.getColumnName(i);
         }
     }
 
@@ -467,7 +466,7 @@ bool TtbRowInserter::startInsert(const std::wstring& _col_list)
     for (it = columns.begin(); it != columns.end(); ++it)
     {
         TtbInsertData* col = new TtbInsertData;
-        col->col = structure->getColumnInfo(*it);
+        col->col = structure.getColumnInfo(*it);
         if (col->col.isNull())
         {
             delete col;

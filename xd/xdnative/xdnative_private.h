@@ -165,7 +165,7 @@ public:
 
     virtual void close() = 0;
 
-    virtual xd::IStructurePtr getStructure() = 0;
+    virtual xd::Structure getStructure() = 0;
     virtual xd::tableord_t getTableOrdinal() = 0;
     virtual xd::rowpos_t getRowCount(xd::rowpos_t* deleted_row_cnt) = 0;
 
@@ -216,12 +216,12 @@ public:
     virtual void setTemporary(bool value) = 0;
 
     virtual xd::rowpos_t getRowCount() = 0;
-    virtual xd::IStructurePtr getStructure() = 0;
+    virtual xd::Structure getStructure() = 0;
 
     virtual bool addEventHandler(IXdnativeSetEvents* handler) = 0;
     virtual bool removeEventHandler(IXdnativeSetEvents* handler) = 0;
 
-    virtual void appendCalcFields(xd::IStructure* s) = 0;
+    virtual void appendCalcFields(xd::Structure& s) = 0;
     virtual void onOfsPathChanged(const std::wstring& new_path) = 0;
     virtual void onRelationshipsUpdated() = 0;
     

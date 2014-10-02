@@ -101,7 +101,7 @@ public:
     int getRowWidth();
     xd::tableord_t getTableOrdinal();
     xd::rowpos_t getRowCount(xd::rowpos_t* deleted_row_count);
-    xd::IStructurePtr getStructure();
+    xd::Structure getStructure();
 
     xd::rowpos_t findNextRowPos(xd::rowpos_t offset, int delta);
     bool getRow(xd::rowpos_t row, unsigned char* buf);
@@ -143,7 +143,7 @@ private:
 
     XdnativeDatabase* m_database;
 
-    xd::IStructurePtr m_structure;
+    xd::Structure m_structure;
     xf_file_t m_file;
     BitmapFile* m_map_file;
 

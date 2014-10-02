@@ -1251,7 +1251,7 @@ void TableDoc::onUpdateUI(wxUpdateUIEvent& evt)
 
 
             // for now, limit deleting to calculated fields
-            xd::Structure structure = m_iter->getStructure()->toStructure();
+            xd::Structure structure = m_iter->getStructure();
 
             size_t i, col_count = m_grid->getColumnCount();
 
@@ -2834,7 +2834,7 @@ void TableDoc::setIterator(xd::IIteratorPtr iter, bool go_first)
         // will be flushed later on
 
         ITableDocViewPtr defview = m_model->createViewObject();
-        xd::Structure s = m_iter->getStructure()->toStructure();
+        xd::Structure s = m_iter->getStructure();
         initializeDefaultView(defview, s);
         defview->setDescription(towstr(_("Default View")));
         setActiveView(defview);
@@ -5712,7 +5712,7 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
     if (m_iter.isNull())
         return;
 
-    xd::Structure structure = m_iter->getStructure()->toStructure();
+    xd::Structure structure = m_iter->getStructure();
     if (structure.isNull())
         return;
     
@@ -5948,7 +5948,7 @@ void TableDoc::deleteSelectedColumns()
         return;
 
     wxString object_path = m_path;
-    xd::Structure structure = m_iter->getStructure()->toStructure();
+    xd::Structure structure = m_iter->getStructure();
 
     std::set<wxString> cols;
     std::set<wxString>::iterator it;
@@ -6476,7 +6476,7 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
     // will first check for any selected columns that will
     // limit the scope of our search
 
-    xd::Structure iter_struct = m_iter->getStructure()->toStructure();
+    xd::Structure iter_struct = m_iter->getStructure();
 
 
     std::vector<xd::ColumnInfo> search_cols;
@@ -8710,7 +8710,7 @@ void TableDoc::refreshActiveView(bool repaint)
         {
             if (col_count > 0 && ((bad_columns >= col_count) || (col_count > 2 && bad_columns >= col_count/2)))
             {
-                xd::Structure s = m_iter->getStructure()->toStructure();
+                xd::Structure s = m_iter->getStructure();
                 initializeDefaultView(m_active_view, s);
                 m_grid->setHorizontalOffset(0);
                 m_model->writeObject(m_active_view);

@@ -52,7 +52,7 @@ class KpgRowInserter : public xd::IRowInserter
 
 public:
 
-    KpgRowInserter(KpgDatabase* db, const std::wstring& table, const xd::FormatDefinition& format_definition);
+    KpgRowInserter(KpgDatabase* db, const std::wstring& table, const xd::Structure& format_definition);
     ~KpgRowInserter();
 
     xd::objhandle_t getHandle(const std::wstring& column_name);
@@ -85,7 +85,7 @@ private:
     int m_rows_per_buf;
     unsigned char* m_data;
 
-    xd::FormatDefinition m_structure;
+    xd::Structure m_structure;
     std::vector<KpgInsertFieldData> m_fields;
 };
 

@@ -1175,7 +1175,7 @@ bool FsDatabase::copyFile(const std::wstring& src_path,
 bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
     xd::IIteratorPtr iter;
-    xd::IStructurePtr structure;
+    xd::Structure structure;
 
     if (info->iter_input.isOk())
     {
@@ -1212,11 +1212,7 @@ bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
         deleteFile(info->output);
 
         xd::FormatDefinition fd = info->output_format;
-        fd.columns.clear();
-        int i, colcount = structure->getColumnCount();
-        for (i = 0; i < colcount; ++i)
-            fd.createColumn(structure->getColumnInfoByIdx(i));
-
+        fd.columns = structure.columns;
         if (!createTable(info->output, fd))
             return false;
     }
@@ -2555,8 +2551,7 @@ xd::Structure FsDatabase::describeTable(const std::wstring& path)
     if (tbl.isNull())
         return xd::Structure();
 
-    xd::IStructurePtr s = tbl->getStructure();
-    return s.isOk() ? s->toStructure() : xd::Structure();
+    return tbl->getStructure();
 }
 
 bool FsDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)

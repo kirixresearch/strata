@@ -180,9 +180,9 @@ int FixedLengthTable::getRowWidth()
     return m_def.fixed_row_width;
 }
 
-xd::IStructurePtr FixedLengthTable::getStructure()
+xd::Structure FixedLengthTable::getStructure()
 {
-    Structure* structure = new Structure;
+    xd::Structure structure;
 
     std::vector<xd::ColumnInfo>::iterator it, it_end = m_def.columns.end();
     int counter = 0;
@@ -200,10 +200,10 @@ xd::IStructurePtr FixedLengthTable::getStructure()
         col.table_ordinal = 0;;
         col.nulls_allowed = it->nulls_allowed;
 
-        structure->createColumn(col);
+        structure.createColumn(col);
     }
 
-    return static_cast<xd::IStructure*>(structure);
+    return structure;
 }
 
 

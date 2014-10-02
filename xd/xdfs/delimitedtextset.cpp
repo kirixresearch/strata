@@ -353,9 +353,9 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
 }
 
 
-xd::IStructurePtr DelimitedTextSet::getStructure()
+xd::Structure DelimitedTextSet::getStructure()
 {
-    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
+    xd::Structure s;
 
     std::vector<xd::ColumnInfo>::iterator it, it_end = m_def.columns.end();
     int counter = 0;
@@ -373,7 +373,7 @@ xd::IStructurePtr DelimitedTextSet::getStructure()
         col.table_ordinal = 0;
         col.nulls_allowed = it->nulls_allowed;
 
-        s->createColumn(col);
+        s.createColumn(col);
     }
 
     XdfsBaseSet::appendCalcFields(s);
@@ -1093,12 +1093,12 @@ bool DelimitedTextRowInserter::putNull(xd::objhandle_t column_handle)
 
 bool DelimitedTextRowInserter::startInsert(const std::wstring& col_list)
 {
-    xd::IStructurePtr s = m_set->getStructure();
+    xd::Structure s;
     
-    int i, col_count = s->getColumnCount();
+    size_t i, col_count = s.getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& colinfo = s->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = s.getColumnInfoByIdx(i);
         
         DelimitedTextDataAccessInfo* f = new DelimitedTextDataAccessInfo;
         f->name = colinfo.name;
@@ -1108,6 +1108,7 @@ bool DelimitedTextRowInserter::startInsert(const std::wstring& col_list)
         f->ordinal = colinfo.column_ordinal;
         f->nulls_allowed = colinfo.nulls_allowed;
         f->expr_text = colinfo.expression;
+
         m_fields.push_back(f);
     }
 

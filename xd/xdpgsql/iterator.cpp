@@ -423,14 +423,10 @@ double PgsqlIterator::getPos()
     return (double)(long long)m_row_pos;
 }
 
-xd::IStructurePtr PgsqlIterator::getStructure()
+xd::Structure PgsqlIterator::getStructure()
 {
     if (m_structure.isOk())
-        return m_structure->clone();
-
-
-
-    Structure* s = new Structure;
+        return m_structure;
 
     std::vector<PgsqlDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -447,7 +443,7 @@ xd::IStructurePtr PgsqlIterator::getStructure()
             col.calculated = true;
             col.column_ordinal = (*it)->ordinal - 1;
 
-            s->createColumn(col);
+            m_structure.createColumn(col);
         }
          else
         {
@@ -461,13 +457,11 @@ xd::IStructurePtr PgsqlIterator::getStructure()
                                                     -1);
 
             col.column_ordinal = (*it)->ordinal - 1;
-            s->createColumn(col);
+            m_structure.createColumn(col);
         }
     }
     
-    m_structure = static_cast<xd::IStructure*>(s);
-
-    return m_structure->clone();
+    return m_structure;
 }
 
 bool PgsqlIterator::refreshStructure()
@@ -727,16 +721,17 @@ xd::ColumnInfo PgsqlIterator::getInfo(xd::objhandle_t data_handle)
         return xd::ColumnInfo();
     }
 
-    // try to get the column information from the set structure
+    // try to get the column information from the table structure
 
     if (m_structure.isNull())
     {
-        xd::IStructurePtr s = getStructure();
+        // cause m_structure to be populated; see getStructure() for details
+        xd::Structure s = getStructure();
     }
 
     if (m_structure.isOk())
     {
-        const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(dai->name);
+        const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(dai->name);
         if (colinfo.isOk())
             return colinfo;
     }
@@ -756,9 +751,7 @@ int PgsqlIterator::getType(xd::objhandle_t data_handle)
 {
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
-    {
         return xd::typeInvalid;
-    }
     
     return dai->type;
 }

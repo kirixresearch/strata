@@ -92,7 +92,7 @@ protected:
     bool createCalcField(const xd::ColumnInfo& params);
     bool deleteCalcField(const std::wstring& name);
     bool modifyCalcField(const std::wstring& name, const xd::ColumnInfo& params);
-    void appendCalcFields(xd::IStructure* structure);
+    void appendCalcFields(xd::Structure& structure);
 
     void onOfsPathChanged(const std::wstring& new_path) { }
     void onRelationshipsUpdated();

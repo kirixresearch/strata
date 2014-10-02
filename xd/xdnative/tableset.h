@@ -165,7 +165,7 @@ public:
 
     void updateRowCount();
 
-    xd::IStructurePtr getStructure();
+    xd::Structure getStructure();
     bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
 
     xd::IndexInfoEnum getIndexEnum();
@@ -219,7 +219,7 @@ private:
     xd::rowpos_t m_phys_row_count;
     unsigned long long m_idxrefresh_time;
     NativeTable* m_table;
-    xd::IStructurePtr m_structure;
+    xd::Structure m_structure;
 
     kl::mutex m_update_mutex;
     std::vector<IndexEntry> m_indexes;

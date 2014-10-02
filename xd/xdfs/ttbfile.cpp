@@ -920,7 +920,7 @@ int TtbTable::getRowWidth()
     return m_row_width;
 }
 
-xd::IStructurePtr TtbTable::getStructure()
+xd::Structure TtbTable::getStructure()
 {
     if (m_fields.size() == 0)
     {
@@ -928,7 +928,7 @@ xd::IStructurePtr TtbTable::getStructure()
 
         // lock the header
         if (!xf_trylock(m_file, 0, ttb_header_len, 10000))
-            return xcm::null;
+            return xd::Structure();
 
         // get column count
         unsigned char buf[4];
@@ -941,13 +941,13 @@ xd::IStructurePtr TtbTable::getStructure()
         if (column_count == 0)
         {
             xf_unlock(m_file, 0, ttb_header_len);
-            return xcm::null;
+            return xd::Structure();
         }
 
         if (!xf_seek(m_file, ttb_header_len, xfSeekSet))
         {
             xf_unlock(m_file, 0, ttb_header_len);
-            return xcm::null;
+            return xd::Structure();
         }
 
         // read in columns data
@@ -958,7 +958,7 @@ xd::IStructurePtr TtbTable::getStructure()
         {
             delete[] flds;
             xf_unlock(m_file, 0, ttb_header_len);
-            return xcm::null;
+            return xd::Structure();
         }
 
         xf_unlock(m_file, 0, ttb_header_len);
@@ -985,7 +985,7 @@ xd::IStructurePtr TtbTable::getStructure()
 
 
 
-    Structure* structure = new Structure;
+    xd::Structure s;
 
     std::vector<TtbField>::iterator it, it_end = m_fields.end();
     int counter = 0;
@@ -1003,10 +1003,10 @@ xd::IStructurePtr TtbTable::getStructure()
         col.table_ordinal = 0;
         col.nulls_allowed = it->nulls_allowed;
 
-        structure->createColumn(col);
+        s.createColumn(col);
     }
 
-    return static_cast<xd::IStructure*>(structure);
+    return s;
 }
 
 

@@ -1528,7 +1528,7 @@ static bool _copyTree(const std::wstring& path,
 bool XdnativeDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
     xd::IIteratorPtr iter;
-    xd::IStructurePtr structure;
+    xd::Structure structure;
 
     if (info->iter_input.isOk())
     {
@@ -1579,10 +1579,7 @@ bool XdnativeDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
         deleteFile(info->output);
 
         xd::FormatDefinition fd = info->output_format;
-        fd.columns.clear();
-        int i, colcount = structure->getColumnCount();
-        for (i = 0; i < colcount; ++i)
-            fd.createColumn(structure->getColumnInfoByIdx(i));
+        fd.columns = structure.columns;
 
         if (!createTable(info->output, fd))
             return false;
@@ -3915,8 +3912,7 @@ xd::Structure XdnativeDatabase::describeTable(const std::wstring& path)
     if (table.isNull())
         return xd::Structure();
 
-    xd::IStructurePtr s = table->getStructure();
-    return s.isOk() ? s->toStructure() : xd::Structure();
+    return table->getStructure();
 }
 
 

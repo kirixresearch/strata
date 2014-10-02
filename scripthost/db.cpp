@@ -359,8 +359,7 @@ DbResult::~DbResult()
 void DbResult::init(xd::IIteratorPtr iter)
 {
     m_iter = iter;
-    m_structure = m_iter->getStructure()->toStructure();
-
+    m_structure = m_iter->getStructure();
 
     size_t i, colcount = m_structure.getColumnCount();
 

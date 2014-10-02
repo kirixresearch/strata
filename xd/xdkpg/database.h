@@ -21,10 +21,8 @@ class JobInfo;
 class PkgFile;
 
 namespace kl { class xmlnode; };
-void xdkpgStructureToXml(const xd::FormatDefinition& fd, kl::xmlnode& node);
-xd::FormatDefinition xdkpgXmlToStructure(kl::xmlnode& node);
-xd::IStructurePtr xdkpgXmlToIStructure(kl::xmlnode& node);
-
+void xdkpgStructureToXml(const xd::Structure& structure, kl::xmlnode& node);
+xd::Structure xdkpgXmlToStructure(kl::xmlnode& node);
 
 class KpgDatabase : public xd::IDatabase
 {

@@ -681,7 +681,7 @@ bool CommonIndexIterator::refreshStructure()
     return m_data_iter->refreshStructure();
 }
 
-xd::IStructurePtr CommonIndexIterator::getStructure()
+xd::Structure CommonIndexIterator::getStructure()
 {
     return m_data_iter->getStructure();
 }

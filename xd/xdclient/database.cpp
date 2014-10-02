@@ -601,14 +601,14 @@ bool ClientDatabase::modifyStructure(const std::wstring& path, const xd::Structu
     if (!struct_config)
         return false;
 
-    xd::IStructurePtr orig_structure = getStructure();
+    xd::Structure orig_structure = getStructure();
     if (orig_structure.isNull())
         return false;
 
     m_database->clearDescribeTableCache(m_path);
 
 
-    xd::IStructurePtr structure = struct_config;
+    xd::Structure structure = struct_config;
     IStructureInternalPtr struct_internal = structure;
     if (struct_internal.isNull())
         return false;

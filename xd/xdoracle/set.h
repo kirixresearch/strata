@@ -61,7 +61,7 @@ public:
 
     std::wstring getSetId();
 
-    xd::IStructurePtr getStructure();
+    xd::Structure getStructure();
 
     xd::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,

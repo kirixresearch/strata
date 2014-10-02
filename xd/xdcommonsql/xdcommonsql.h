@@ -60,7 +60,7 @@ public:
     virtual xd::IIteratorPtr createIterator(const std::wstring& columns,
                                             const std::wstring& order,
                                             xd::IJob* job) = 0;
-    virtual xd::IStructurePtr getStructure() = 0;
+    virtual xd::Structure getStructure() = 0;
 
     virtual IXdsqlRowDeleterPtr getRowDeleter() = 0;
     virtual bool restoreDeleted() = 0;

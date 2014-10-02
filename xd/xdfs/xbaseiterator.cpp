@@ -191,9 +191,9 @@ void XbaseIterator::goRow(const xd::rowid_t& rowid)
     m_file.goRow(m_current_row);
 }
 
-xd::IStructurePtr XbaseIterator::getStructure()
+xd::Structure XbaseIterator::getStructure()
 {
-    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
+    xd::Structure s;
 
     std::vector<XbaseDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -216,7 +216,7 @@ xd::IStructurePtr XbaseIterator::getStructure()
         if (col.expression.length() > 0)
             col.calculated = true;
 
-        s->createColumn(col);
+        s.createColumn(col);
     }
 
     return s;
@@ -234,16 +234,16 @@ bool XbaseIterator::refreshStructure()
     m_fields.clear();
 
 
-    xd::IStructurePtr s = m_set->getStructure();
-    int col_count = s->getColumnCount();
-    int i;
+    xd::Structure s = m_set->getStructure();
+
+    size_t i, col_count = s.getColumnCount();
 
     // get structure from table
     std::vector<XbaseField> fields = m_file.getFields();
     
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& colinfo = s->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = s.getColumnInfoByIdx(i);
         
         XbaseDataAccessInfo* dai = new XbaseDataAccessInfo;
         dai->xbase_type = xd2xbaseType(colinfo.type);
@@ -260,7 +260,7 @@ bool XbaseIterator::refreshStructure()
         for (it = fields.begin(); it != fields.end(); ++it)
         {
             std::wstring xbase_name = kl::towstring(it->name);
-            if (0 == wcscasecmp(xbase_name.c_str(), dai->name.c_str()))
+            if (kl::iequals(xbase_name, dai->name))
             {
                 dai->xbase_type = it->type;
                 break;
@@ -502,9 +502,7 @@ int XbaseIterator::getType(xd::objhandle_t data_handle)
 {
     XbaseDataAccessInfo* dai = (XbaseDataAccessInfo*)data_handle;
     if (dai == NULL)
-    {
-        return 0;
-    }
+        return xd::typeInvalid;
 
     return dai->type;
 }

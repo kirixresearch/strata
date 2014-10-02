@@ -843,13 +843,10 @@ double OdbcIterator::getPos()
     return (double)(long long)m_row_pos;
 }
 
-xd::IStructurePtr OdbcIterator::getStructure()
+xd::Structure OdbcIterator::getStructure()
 {
     if (m_structure.isOk())
-        return m_structure->clone();
-
-
-    Structure* s = new Structure;
+        return m_structure;
 
     std::vector<OdbcDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -866,9 +863,9 @@ xd::IStructurePtr OdbcIterator::getStructure()
             col.calculated = true;
             col.column_ordinal = (*it)->ordinal - 1;
 
-            s->createColumn(col);
+            m_structure.createColumn(col);
         }
-            else
+         else
         {
             // generate column info from the
             // field info from the query result
@@ -881,13 +878,11 @@ xd::IStructurePtr OdbcIterator::getStructure()
                                                -1);
 
             col.column_ordinal = (*it)->ordinal - 1;
-            s->createColumn(col);
+            m_structure.createColumn(col);
         }
     }
     
-    m_structure = static_cast<xd::IStructure*>(s);
-
-    return m_structure->clone();
+    return m_structure;
 }
 
 bool OdbcIterator::refreshStructure()
@@ -995,7 +990,7 @@ bool OdbcIterator::modifyStructure(const xd::StructureModify& mod_params, xd::IJ
     }
     
     // the next call to getStructure() will refresh m_structure
-    m_structure.clear();
+    m_structure = xd::Structure();
     
     return true;
 }
@@ -1078,16 +1073,17 @@ xd::ColumnInfo OdbcIterator::getInfo(xd::objhandle_t data_handle)
     if (dai == NULL)
         return xd::ColumnInfo();
 
-    // try to get the column information from the set structure
+    // try to get the column information from the table structure
 
     if (m_structure.isNull())
     {
-        xd::IStructurePtr s = getStructure();
+        // cause m_structure to be populated; see getStructure() for details
+        xd::Structure s = getStructure();
     }
 
     if (m_structure.isOk())
     {
-        const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(dai->name);
+        const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(dai->name);
         if (colinfo.isOk())
             return colinfo;
     }
@@ -1108,9 +1104,7 @@ int OdbcIterator::getType(xd::objhandle_t data_handle)
 {
     OdbcDataAccessInfo* dai = (OdbcDataAccessInfo*)data_handle;
     if (dai == NULL)
-    {
         return xd::typeInvalid;
-    }
     
     return dai->type;
 }

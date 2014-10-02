@@ -81,7 +81,7 @@ public:
 
     std::wstring getSetId();
 
-    xd::IStructurePtr getStructure();
+    xd::Structure getStructure();
 
     xd::IRowInserterPtr getRowInserter();
     IXdsqlRowDeleterPtr getRowDeleter() { return xcm::null; }

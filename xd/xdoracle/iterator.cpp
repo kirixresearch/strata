@@ -743,9 +743,9 @@ void OracleIterator::goRow(const xd::rowid_t& row)
 {
 }
 
-xd::IStructurePtr OracleIterator::getStructure()
+xd::Structure OracleIterator::getStructure()
 {
-    Structure* s = new Structure;
+    xd::Structure s;
 
     std::vector<OracleDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -762,10 +762,10 @@ xd::IStructurePtr OracleIterator::getStructure()
 
         //printf("getStructure() - name %ls type %d in-precision %d in-width %d width %d scale %d\n", col->getName().c_str(), col->getType(), (*it)->m_precision, (*it)->m_width, col->getWidth(), col->getScale());
 
-        s->createColumn(col);
+        s.createColumn(col);
     }
     
-    return static_cast<xd::IStructure*>(s);
+    return s;
 }
 
 bool OracleIterator::refreshStructure()
@@ -773,13 +773,13 @@ bool OracleIterator::refreshStructure()
     if (!m_set)
         return false;
 
-    xd::IStructurePtr set_structure = m_set->getStructure();
+    xd::Structure set_structure = m_set->getStructure();
     if (set_structure.isNull())
         return false;
         
     // find changed/deleted calc fields
-    int i, col_count;
-    for (i = 0; i < (int)m_fields.size(); ++i)
+    size_t i, col_count;
+    for (i = 0; i < m_fields.size(); ++i)
     {
         if (!m_fields[i]->isCalculated())
             continue;
@@ -787,7 +787,7 @@ bool OracleIterator::refreshStructure()
         delete m_fields[i]->expr;
         m_fields[i]->expr = NULL;
                    
-        const xd::ColumnInfo& col = set_structure->getColumnInfo(m_fields[i]->name);
+        const xd::ColumnInfo& col = set_structure.getColumnInfo(m_fields[i]->name);
         if (col.isNull())
         {
             m_fields.erase(m_fields.begin() + i);
@@ -804,12 +804,12 @@ bool OracleIterator::refreshStructure()
     
     // find new calc fields
     
-    col_count = set_structure->getColumnCount();
+    col_count = set_structure.getColumnCount();
     std::vector<OracleDataAccessInfo*>::iterator it;
     
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& col = set_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col = set_structure.getColumnInfoByIdx(i);
         if (!col.calculated)
             continue;
             
@@ -1066,7 +1066,7 @@ int OracleIterator::getType(xd::objhandle_t data_handle)
 {
     OracleDataAccessInfo* dai = (OracleDataAccessInfo*)data_handle;
     if (!dai)
-        return 0;
+        return xd::typeInvalid;
     return dai->xd_type;
 }
 

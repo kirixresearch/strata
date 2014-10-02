@@ -518,7 +518,7 @@ bool TtbSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* jo
 {
     IJobInternalPtr ijob = job;
     std::vector<xd::StructureModify::Action>::const_iterator it_sa;
-    xd::IStructurePtr src_structure = getStructure();
+    xd::Structure src_structure = getStructure();
 
 
     // start the job
@@ -609,11 +609,11 @@ bool TtbSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* jo
     std::vector<ModifyField>::iterator it_mf;
     ModifyField mf;
 
-    int i,col_count = src_structure->getColumnCount();
+    size_t i,col_count = src_structure.getColumnCount();
 
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& col_info = src_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col_info = src_structure.getColumnInfoByIdx(i);
 
         mf.calculated = col_info.calculated;
 
@@ -802,7 +802,7 @@ bool TtbSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* jo
 
                 for (i = 0; i < col_count; ++i)
                 {
-                    if (kl::iequals(src_structure->getColumnName(i), it_sa->column))
+                    if (kl::iequals(src_structure.getColumnName(i), it_sa->column))
                     {
                         idx = i;
                         break;
@@ -815,7 +815,7 @@ bool TtbSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* jo
                     continue;
                 }
 
-                const xd::ColumnInfo&  col = src_structure->getColumnInfoByIdx(idx);
+                const xd::ColumnInfo&  col = src_structure.getColumnInfoByIdx(idx);
                 if (col.calculated)
                 {
                     // skip calculated fields (they have already been processed)

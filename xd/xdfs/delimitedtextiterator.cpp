@@ -205,9 +205,9 @@ void DelimitedTextIterator::goRow(const xd::rowid_t& rowid)
     m_file.goOffset(rowid);
 }
 
-xd::IStructurePtr DelimitedTextIterator::getStructure()
+xd::Structure DelimitedTextIterator::getStructure()
 {
-    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
+    xd::Structure s;
     
     std::vector<DelimitedTextDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -224,7 +224,7 @@ xd::IStructurePtr DelimitedTextIterator::getStructure()
         if (col.expression.length() > 0)
             col.calculated = true;
 
-        s->createColumn(col);
+        s.createColumn(col);
     }
 
     return s;
@@ -234,7 +234,7 @@ bool DelimitedTextIterator::refreshStructure()
 {
     m_fields.clear();
 
-    xd::IStructurePtr set_structure = m_set->getStructure();
+    xd::Structure set_structure;
 
     // add fields from structure
     bool default_structure_visible = false;
@@ -242,11 +242,11 @@ bool DelimitedTextIterator::refreshStructure()
         default_structure_visible = true;
 
 
-    int i, col_count = set_structure->getColumnCount();
+    size_t i, col_count = set_structure.getColumnCount();
 
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& colinfo = set_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = set_structure.getColumnInfoByIdx(i);
         
         DelimitedTextDataAccessInfo* dai = new DelimitedTextDataAccessInfo;
         dai->name = colinfo.name;
@@ -275,14 +275,14 @@ bool DelimitedTextIterator::refreshStructure()
             std::wstring& part = *it;
             kl::trim(part);
 
-            xd::ColumnInfo colinfo = set_structure->getColumnInfo(part);
+            xd::ColumnInfo colinfo = set_structure.getColumnInfo(part);
 
             if (colinfo.isNull() && part[0] == '[')
             {
                 // maybe the above just needs to be dequoted
                 std::wstring dequote_part = part;
                 dequote(dequote_part, '[', ']');
-                colinfo = set_structure->getColumnInfo(dequote_part);
+                colinfo = set_structure.getColumnInfo(dequote_part);
             }
 
             if (colinfo.isOk())
@@ -331,7 +331,7 @@ bool DelimitedTextIterator::refreshStructure()
                     do
                     {
                         swprintf(buf, 32, L"EXPR%03d", ++colname_counter);
-                    } while (set_structure->getColumnExist(buf));
+                    } while (set_structure.getColumnExist(buf));
 
                     colname = buf;
                 }
@@ -342,7 +342,7 @@ bool DelimitedTextIterator::refreshStructure()
 
 
                 // see if the expression is just a column and use its precise type info if it is
-                const xd::ColumnInfo& colinfo = set_structure->getColumnInfo(dequote_expr);
+                const xd::ColumnInfo& colinfo = set_structure.getColumnInfo(dequote_expr);
                 if (colinfo.isOk())
                 {
                     DelimitedTextDataAccessInfo* dai = new DelimitedTextDataAccessInfo;
@@ -529,8 +529,6 @@ bool DelimitedTextIterator::modifyStructure(const xd::StructureModify& mod_param
 
 
 
-
-
 xd::objhandle_t DelimitedTextIterator::getHandle(const std::wstring& expr)
 {
     std::vector<DelimitedTextDataAccessInfo*>::iterator it;
@@ -639,7 +637,7 @@ int DelimitedTextIterator::getType(xd::objhandle_t data_handle)
 {
     DelimitedTextDataAccessInfo* dai = (DelimitedTextDataAccessInfo*)data_handle;
     if (dai == NULL)
-        return 0;
+        return xd::typeInvalid;
 
     return dai->type;
 }

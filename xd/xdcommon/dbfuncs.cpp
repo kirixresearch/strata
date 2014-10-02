@@ -58,7 +58,7 @@ int xdcmnInsert(xd::IDatabasePtr dest_db,
 
     // get table structure
     xd::Structure dest_structure = dest_db->describeTable(dest_table);
-    xd::Structure src_structure = source_iter->getStructure()->toStructure();
+    xd::Structure src_structure = source_iter->getStructure();
 
     if (dest_structure.isNull() || src_structure.isNull())
         return 0;
@@ -317,64 +317,4 @@ int xdcmnInsert(xd::IDatabasePtr dest_db,
     }
 
     return cur_count;
-}
-
-
-
-
-
-bool physStructureEqual(xd::IStructurePtr s1, xd::IStructurePtr s2)
-{
-    int s1_col_count = s1->getColumnCount();
-    int s2_col_count = s2->getColumnCount();
-    int i;
-
-    std::vector<xd::ColumnInfo> s1_fields;
-    std::vector<xd::ColumnInfo> s2_fields;
-
-    // copy physical column infos
-    for (i = 0; i < s1_col_count; ++i)
-    {
-        const xd::ColumnInfo& colinfo = s1->getColumnInfoByIdx(i);
-
-        if (!colinfo.calculated)
-        {
-            s1_fields.push_back(colinfo);
-        }
-    }
-
-    for (i = 0; i < s2_col_count; ++i)
-    {
-        const xd::ColumnInfo& colinfo = s2->getColumnInfoByIdx(i);
-
-        if (!colinfo.calculated)
-        {
-            s2_fields.push_back(colinfo);
-        }
-    }
-
-    if (s1_fields.size() != s2_fields.size())
-        return false;
-
-    int count = s1_fields.size();
-
-    for (i = 0; i < count; ++i)
-    {
-        const xd::ColumnInfo& col1 = s1_fields[i];
-        const xd::ColumnInfo& col2 = s2_fields[i];
-
-        if (0 != wcscasecmp(col1.name.c_str(), col2.name.c_str()))
-            return false;
-
-        if (col1.type != col2.type)
-            return false;
-
-        if (col2.width != col2.width)
-            return false;
-
-        if (col2.scale != col2.scale)
-            return false;
-    }
-
-    return true;
 }

@@ -145,7 +145,7 @@ void dequote(std::wstring& str, wchar_t ch1, wchar_t ch2)
     }
 }
 
-void dequoteIfField(xd::IStructurePtr& structure, std::wstring& str, wchar_t ch1, wchar_t ch2)
+void dequoteIfField(xd::Structure& structure, std::wstring& str, wchar_t ch1, wchar_t ch2)
 {
     size_t len = str.length();
     if (len > 1)
@@ -154,7 +154,7 @@ void dequoteIfField(xd::IStructurePtr& structure, std::wstring& str, wchar_t ch1
         {
             std::wstring deq = str;
             dequote(deq, ch1, ch2);
-            if (structure->getColumnExist(deq))
+            if (structure.getColumnExist(deq))
             {
                 str = deq;
             }

@@ -163,7 +163,7 @@ std::wstring CommonDynamicSet::getSetId()
     return m_set_id;
 }
 
-xd::IStructurePtr CommonDynamicSet::getStructure()
+xd::Structure CommonDynamicSet::getStructure()
 {
     return m_base_table->getStructure();
 }

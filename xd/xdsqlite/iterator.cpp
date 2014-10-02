@@ -282,14 +282,10 @@ void SlIterator::goRow(const xd::rowid_t& rowid)
 {
 }
 
-xd::IStructurePtr SlIterator::getStructure()
+xd::Structure SlIterator::getStructure()
 {
     if (m_structure.isOk())
-    {
-        Structure* s = new Structure;
-        s->fromStructure(m_structure);
-        return static_cast<xd::IStructure*>(s);
-    }
+        return m_structure;
 
     std::vector<SlDataAccessInfo>::iterator it;
     for (it = m_columns.begin(); it != m_columns.end(); ++it)
@@ -303,9 +299,7 @@ xd::IStructurePtr SlIterator::getStructure()
         m_structure.createColumn(col);
     }
     
-    Structure* s = new Structure;
-    s->fromStructure(m_structure);
-    return static_cast<xd::IStructure*>(s);
+    return m_structure;
 }
 
 bool SlIterator::refreshStructure()
@@ -361,6 +355,9 @@ xd::ColumnInfo SlIterator::getInfo(xd::objhandle_t data_handle)
 int SlIterator::getType(xd::objhandle_t data_handle)
 {
     SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
+    if (dai == NULL)
+        return xd::typeInvalid;
+
     return dai->xd_type;
 }
 

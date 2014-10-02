@@ -445,7 +445,7 @@ void MarkMgrPanel::editMark(int mark_idx)
     if (iter.isNull())
         return;
 
-    xd::Structure structure = iter->getStructure()->toStructure();
+    xd::Structure structure = iter->getStructure();
 
     if (mark_idx < 0 || mark_idx >= m_grid->getRowCount())
         return;

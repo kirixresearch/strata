@@ -164,7 +164,7 @@ public:
     double getPos();
     void goRow(const xd::rowid_t& rowid);
     
-    xd::IStructurePtr getStructure();
+    xd::Structure getStructure();
     bool refreshStructure();
     bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
 
@@ -208,7 +208,7 @@ private:
     std::vector<OdbcIteratorRelInfo> m_relations;
 
     OdbcDatabase* m_database;
-    xd::IStructurePtr m_structure;
+    xd::Structure m_structure;
 
     LocalRowCache m_cache;
     LocalRow m_cache_row;

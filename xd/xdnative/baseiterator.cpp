@@ -199,7 +199,7 @@ void BaseIterator::refreshDAI()
 
         if (colinfo.isNull())
         {
-            colinfo = m_set_structure->getColumnInfo((*dai_it)->name);
+            colinfo = m_set_structure.getColumnInfo((*dai_it)->name);
         }
 
         if (colinfo.isNull())
@@ -405,7 +405,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
     if (!right_set_int)
         return false;
 
-    xd::IStructurePtr right_structure = right_set_int->getStructure();
+    xd::Structure right_structure = right_set_int->getStructure();
     if (right_structure.isNull())
         return false;
 
@@ -443,9 +443,9 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
     {
         for (j = 0; j < count; ++j)
         {
-            if (!wcscasecmp(right_list[j].c_str(), idx_list[x].c_str()))
+            if (kl::iequals(right_list[j], idx_list[x]))
             {
-                const xd::ColumnInfo& colinfo = right_structure->getColumnInfo(right_list[j]);
+                const xd::ColumnInfo& colinfo = right_structure.getColumnInfo(right_list[j]);
                 if (colinfo.isNull())
                 {
                     delete info.kl;
@@ -598,24 +598,23 @@ xd::IIteratorPtr BaseIterator::getFilteredChildIterator(xd::IRelationPtr relatio
 }
 
 
-xd::IStructurePtr BaseIterator::getStructure()
+xd::Structure BaseIterator::getStructure()
 {
     KL_AUTO_LOCK(m_obj_mutex);
 
-    xd::IStructurePtr s = m_iter_structure->clone();
+    xd::Structure s = m_iter_structure;
     appendCalcFields(s);
-
     return s;
 }
 
 
-void BaseIterator::appendCalcFields(xd::IStructure* structure)
+void BaseIterator::appendCalcFields(xd::Structure& structure)
 {
     KL_AUTO_LOCK(m_obj_mutex);
 
     std::vector<xd::ColumnInfo>::iterator it;
     for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
-        structure->createColumn(*it);
+        structure.createColumn(*it);
 }
 
 
@@ -641,7 +640,7 @@ bool BaseIterator::initStructure()
 
         kl::parseDelimitedList(m_columns, colvec, L',', true);
 
-        Structure* s = new Structure;
+        xd::Structure s;
 
         int colname_counter = 0;
 
@@ -652,10 +651,10 @@ bool BaseIterator::initStructure()
 
             xd::ColumnInfo col;
             
-            col = m_set_structure->getColumnInfo(part);
+            col = m_set_structure.getColumnInfo(part);
             if (col.isOk())
             {
-                s->createColumn(col);
+                s.createColumn(col);
                 continue;
             }
             
@@ -663,10 +662,10 @@ bool BaseIterator::initStructure()
             {
                 std::wstring dequote_part = part;
                 dequote(dequote_part, '[', ']');
-                col = m_set_structure->getColumnInfo(dequote_part);
+                col = m_set_structure.getColumnInfo(dequote_part);
                 if (col.isOk())
                 {
-                    s->createColumn(col);
+                    s.createColumn(col);
                     continue;
                 }
             }
@@ -706,7 +705,7 @@ bool BaseIterator::initStructure()
                 do
                 {
                     swprintf(buf, 64, L"EXPR%03d", ++colname_counter);
-                } while (m_set_structure->getColumnExist(buf));
+                } while (m_set_structure.getColumnExist(buf));
 
                 colname = buf;
             }
@@ -717,12 +716,12 @@ bool BaseIterator::initStructure()
 
             // check if we have a scenario where the field name is the same as the expression
             // ex:  fld123 AS fld123
-            if (0 == wcscasecmp(dequote_expr.c_str(), colname.c_str()))
+            if (kl::iequals(dequote_expr, colname))
             {
-                col = m_set_structure->getColumnInfo(colname);
+                col = m_set_structure.getColumnInfo(colname);
                 if (col.isOk())
                 {
-                    s->createColumn(col);
+                    s.createColumn(col);
                     continue;
                 }
             }
@@ -734,7 +733,6 @@ bool BaseIterator::initStructure()
 
             if (!p->parse(expr))
             {
-                delete s;
                 delete p;
                 return false;
             }
@@ -744,10 +742,8 @@ bool BaseIterator::initStructure()
             delete p;
 
             int xd_type = kscript2xdType(expr_type);
-            if (xd_type == xd::typeInvalid ||
-                xd_type == xd::typeUndefined)
+            if (xd_type == xd::typeInvalid || xd_type == xd::typeUndefined)
             {
-                delete s;
                 return false;
             }
 
@@ -778,7 +774,7 @@ bool BaseIterator::initStructure()
 
 
             // see if the expression is just a column and use its precise type info if it is
-            col = m_set_structure->getColumnInfo(dequote_expr);
+            col = m_set_structure.getColumnInfo(dequote_expr);
             if (col.isOk())
             {
                 xd_type = col.type;
@@ -795,7 +791,6 @@ bool BaseIterator::initStructure()
             c.expression = expr;
             c.calculated = true;
 
-            //s->addColumn(c);
             m_calc_fields.push_back(c);
         }
 
@@ -1051,11 +1046,11 @@ public:
         if (right_set_internal.isNull())
             return false;
 
-        xd::IStructurePtr s = right_set_internal->getStructure();
+        xd::Structure s = right_set_internal->getStructure();
         if (s.isNull())
             return false;
 
-        const xd::ColumnInfo& colinfo = s->getColumnInfo(column);
+        const xd::ColumnInfo& colinfo = s.getColumnInfo(column);
         if (colinfo.isNull())
             return false;
 
@@ -1825,7 +1820,7 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
             }
         }
             
-        xd::ColumnInfo colinfo = iter->m_set_structure->getColumnInfo(hook_info.expr_text);
+        xd::ColumnInfo colinfo = iter->m_set_structure.getColumnInfo(hook_info.expr_text);
         if (colinfo.isNull())
         {
             size_t i, calc_field_count = iter->m_calc_fields.size();
@@ -2045,12 +2040,12 @@ xd::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
 
     if (colinfo.isNull() && m_iter_structure.isOk())
     {
-        colinfo = m_iter_structure->getColumnInfo(expr);
+        colinfo = m_iter_structure.getColumnInfo(expr);
     }
 
     if (colinfo.isNull())
     {
-        colinfo = m_set_structure->getColumnInfo(expr);
+        colinfo = m_set_structure.getColumnInfo(expr);
     }
 
     if (colinfo.isOk())
@@ -2098,9 +2093,8 @@ int BaseIterator::getType(xd::objhandle_t data_handle)
 {
     DataAccessInfo* dai = (DataAccessInfo*)data_handle;
     if (dai == NULL)
-    {
         return xd::typeInvalid;
-    }
+
     if (dai->expr == NULL)
     {
         return dai->type;

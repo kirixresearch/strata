@@ -128,8 +128,8 @@ public:
     double getPos();
     void goRow(const xd::rowid_t& rowid);
 
-    xd::IStructurePtr getStructure();
-    xd::IStructurePtr getParserStructure();
+    xd::Structure getStructure();
+    xd::Structure getParserStructure();
     bool refreshStructure();
     bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
 

@@ -567,7 +567,7 @@ bool KeyLayout::addKeyPart(const std::wstring& expr,
     if (!part.handle)
         return false;
 
-    const xd::ColumnInfo& info = m_iter_structure->getColumnInfo(expr);
+    const xd::ColumnInfo& info = m_iter_structure.getColumnInfo(expr);
 
     if (info.isOk())
     {

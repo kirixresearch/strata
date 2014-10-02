@@ -1545,14 +1545,11 @@ bool OdbcDatabase::copyFile(const std::wstring& src_path,
 
 bool OdbcDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
-    xd::IStructurePtr structure;
-
-
     if (info->iter_input.isOk())
     {
         if (!info->append)
         {
-            xd::IStructurePtr structure = info->iter_input->getStructure();
+            xd::Structure structure = info->iter_input->getStructure();
             if (structure.isNull())
                 return false;
 
@@ -1560,9 +1557,9 @@ bool OdbcDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 
             xd::FormatDefinition fd = info->output_format;
             fd.columns.clear();
-            int i, colcount = structure->getColumnCount();
-            for (i = 0; i < colcount; ++i)
-                fd.createColumn(structure->getColumnInfoByIdx(i));
+            int i, col_count = structure.getColumnCount();
+            for (i = 0; i < col_count; ++i)
+                fd.createColumn(structure.getColumnInfoByIdx(i));
 
             if (!createTable(info->output, fd))
                 return false;
@@ -2487,7 +2484,7 @@ xd::Structure OdbcDatabase::describeTable(const std::wstring& path)
     closeConnection(conn);
 
     /*
-    xd::IStructurePtr ret = m_structure->clone();
+    xd::Structure ret = m_structure->clone();
     appendCalcFields(ret);
     return ret;
     */

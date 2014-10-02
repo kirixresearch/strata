@@ -792,22 +792,21 @@ static bool insertDistinct(xd::IDatabase* db,
     KeyLayout key;
     key.setIterator(src_iter);
 
-    xd::IStructurePtr s = src_iter->getStructure();
+    xd::Structure s = src_iter->getStructure();
 
-    int col_count = s->getColumnCount();
-    int i, key_len;
+    size_t i, col_count = s.getColumnCount();
+    int key_len;
 
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& info = s->getColumnInfoByIdx(i);
-        std::wstring col_name = info.name;
+        const xd::ColumnInfo& colinfo = s.getColumnInfoByIdx(i);
 
-        key.addKeyPart(col_name);
+        key.addKeyPart(colinfo.name);
 
         InsertDistinctField f;
-        f.source_handle = iter->getHandle(col_name);
-        f.dest_handle = output->getHandle(col_name);
-        f.type = info.type;
+        f.source_handle = iter->getHandle(colinfo.name);
+        f.dest_handle = output->getHandle(colinfo.name);
+        f.type = colinfo.type;
 
         fields.push_back(f);
     }
@@ -2250,7 +2249,7 @@ bool convertToNativeTables(xd::IDatabasePtr db,
         }
         
         // need to make an xdnative copy of the set
-        xd::IStructurePtr structure = st_it->set->getStructure();
+        xd::Structure structure = st_it->set->getStructure();
         std::wstring output_path = xd::getTemporaryPath();
         if (!db->createTable(output_path, structure, NULL))
         {
@@ -3411,11 +3410,11 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
     // create output set
     
     xd::FormatDefinition output_structure;
-    xd::IStructurePtr iter_structure = iter->getStructure();
+    xd::Structure iter_structure = iter->getStructure();
 
     for (f_it = fields.begin(); f_it != fields.end(); ++f_it)
     {
-        const xd::ColumnInfo& itercol = iter_structure->getColumnInfo(f_it->name);
+        const xd::ColumnInfo& itercol = iter_structure.getColumnInfo(f_it->name);
         if (itercol.isNull())
             continue;
 

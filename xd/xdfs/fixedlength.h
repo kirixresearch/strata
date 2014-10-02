@@ -41,7 +41,7 @@ public:
 
     int getRowWidth();
     xd::rowpos_t getRowCount();
-    xd::IStructurePtr getStructure();
+    xd::Structure getStructure();
 
     xd::rowpos_t findNextRowPos(xd::rowpos_t offset, int delta);
     bool getRow(xd::rowpos_t row, unsigned char* buf);

@@ -72,14 +72,14 @@ std::wstring XbaseSet::getSetId()
     return kl::md5str(set_id);
 }
 
-xd::IStructurePtr XbaseSet::getStructure()
+xd::Structure XbaseSet::getStructure()
 {
     // create new xd::IStructure
-    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
+    xd::Structure s;
 
     // if we can't open the file, return an empty structure
     if (!m_file.isOpen())
-        return s;
+        return xd::Structure();
 
     // get structure from table
     std::vector<XbaseField> fields = m_file.getFields();
@@ -104,7 +104,7 @@ xd::IStructurePtr XbaseSet::getStructure()
         if (col.type == xd::typeNumeric && col.width > xd::max_numeric_width)
             col.width = xd::max_numeric_width;
 
-        s->createColumn(col);
+        s.createColumn(col);
     }
 
     XdfsBaseSet::appendCalcFields(s);
@@ -126,7 +126,7 @@ xd::IRowInserterPtr XbaseSet::getRowInserter()
 bool XbaseSet::getFormatDefinition(xd::FormatDefinition* def)
 {
     *def = xd::FormatDefinition();
-    copyStructureToDefinition(getStructure(), def);
+    def->columns = getStructure().columns;
     return true;
 }
 

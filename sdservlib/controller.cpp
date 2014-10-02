@@ -1038,7 +1038,7 @@ void Controller::apiDescribeTable(RequestInfo& req)
         SessionQueryResult* so = (SessionQueryResult*)getServerSessionObject(handle, "SessionQueryResult");
         if (so && so->iter.isOk())
         {
-            structure = so->iter->getStructure()->toStructure();
+            structure = so->iter->getStructure();
         }
     }
      else
@@ -1209,10 +1209,11 @@ void Controller::apiRead(RequestInfo& req)
     if (so->columns.size() == 0)
     {
         // init handles;
-        xd::IStructurePtr s = iter->getStructure();
-        for (int i = 0; i < s->getColumnCount(); ++i)
+        xd::Structure s = iter->getStructure();
+        size_t i, col_count = s.getColumnCount();
+        for (i = 0; i < col_count; ++i)
         {
-            const xd::ColumnInfo& colinfo = s->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& colinfo = s.getColumnInfoByIdx(i);
             
             SessionQueryResultColumn qrc;
             qrc.name = colinfo.name;
@@ -1265,17 +1266,16 @@ void Controller::apiRead(RequestInfo& req)
 
     if (metadata)
     {
-        xd::IStructurePtr structure = so->iter->getStructure();
+        xd::Structure structure = so->iter->getStructure();
         if (structure.isOk())
         {
-            int idx, count = structure->getColumnCount();
-    
             // set the items
             str += L"\"columns\":[";
 
+            size_t idx, count = structure.getColumnCount();
             for (idx = 0; idx < count; ++idx)
             {  
-                const xd::ColumnInfo& info = structure->getColumnInfoByIdx(idx);
+                const xd::ColumnInfo& info = structure.getColumnInfoByIdx(idx);
 
                 if (idx > 0)
                     str += L",";
