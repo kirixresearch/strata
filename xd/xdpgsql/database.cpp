@@ -1315,12 +1315,6 @@ std::wstring PgsqlDatabase::getPrimaryKey(const std::wstring path)
     return pk;
 }
 
-xd::IStructurePtr PgsqlDatabase::createStructure()
-{
-    Structure* s = new Structure;
-    return static_cast<xd::IStructure*>(s);
-}
-
 bool PgsqlDatabase::createTable(const std::wstring& path, const xd::FormatDefinition& format_definition)
 {
     std::wstring tbl = pgsqlQuoteIdentifierIfNecessary(path);

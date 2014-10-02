@@ -1070,16 +1070,6 @@ std::wstring OracleDatabase::getPrimaryKey(const std::wstring& _table)
     return result;
 }
 
-
-
-
-
-xd::IStructurePtr OracleDatabase::createStructure()
-{
-    Structure* s = new Structure;
-    return static_cast<xd::IStructure*>(s);
-}
-
 bool OracleDatabase::createTable(const std::wstring& path, const xd::FormatDefinition& format_definition)
 {
     std::wstring command;

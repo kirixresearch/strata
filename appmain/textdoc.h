@@ -27,7 +27,7 @@ public:
     virtual bool open(const wxString& filename) = 0;
     virtual void close() = 0;
     virtual wxString getPath() = 0;
-    virtual xd::IStructurePtr getStructure() = 0;
+    virtual xd::Structure getStructure() = 0;
     virtual void setSourceUrl(const wxString& source_url) = 0; // allows override of displayed url
     virtual xd::FormatDefinition& getDefinition() = 0;
 };
@@ -91,7 +91,7 @@ public:
 
     // ITextDoc
     void setSourceUrl(const wxString& source_url);
-    xd::IStructurePtr getStructure();
+    xd::Structure getStructure();
     bool open(const wxString& filename);
     void close();
     bool save();

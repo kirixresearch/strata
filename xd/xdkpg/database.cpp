@@ -534,12 +534,6 @@ std::wstring KpgDatabase::getPrimaryKey(const std::wstring path)
     return L"";
 }
 
-xd::IStructurePtr KpgDatabase::createStructure()
-{
-    Structure* s = new Structure;
-    return static_cast<xd::IStructure*>(s);
-}
-
 bool KpgDatabase::createTable(const std::wstring& _path,
                               const xd::FormatDefinition& format_definition)
 {

@@ -535,12 +535,6 @@ xd::IFileInfoEnumPtr SqlServerDatabase::getFolderInfo(const std::wstring& path)
     return retval;
 }
 
-xd::IStructurePtr SqlServerDatabase::createStructure()
-{
-    Structure* s = new Structure;
-    return static_cast<xd::IStructure*>(s);
-}
-
 bool SqlServerDatabase::createTable(const std::wstring& path, const xd::FormatDefinition& format_info)
 {
     std::wstring command;

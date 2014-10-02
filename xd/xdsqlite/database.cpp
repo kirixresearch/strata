@@ -489,13 +489,6 @@ xd::IFileInfoEnumPtr SlDatabase::getFolderInfo(const std::wstring& path)
     return retval;
 }
 
-xd::IStructurePtr SlDatabase::createStructure()
-{
-    Structure* s = new Structure;
-    return static_cast<xd::IStructure*>(s);
-}
-
-
 bool SlDatabase::createTable(const std::wstring& path, const xd::FormatDefinition& format_definition)
 {
     // generate table name, SQL CREATE statment, and execute

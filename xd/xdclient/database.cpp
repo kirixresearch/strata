@@ -718,12 +718,6 @@ bool ClientDatabase::getMountPoint(const std::wstring& path,
     return false;
 }
 
-xd::IStructurePtr ClientDatabase::createStructure()
-{
-    Structure* s = new Structure;
-    return static_cast<xd::IStructure*>(s);
-}
-
 bool ClientDatabase::createTable(const std::wstring& path, const xd::FormatDefinition& format_definition)
 {
     std::wstring columns = structureToJson(format_definition);

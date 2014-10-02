@@ -758,11 +758,6 @@ bool MysqlDatabase::getMountPoint(const std::wstring& path,
     return false;
 }
 
-xd::IStructurePtr MysqlDatabase::createStructure()
-{
-    Structure* s = new Structure;
-    return static_cast<xd::IStructure*>(s);
-}
 
 bool MysqlDatabase::createTable(const std::wstring& path, const xd::FormatDefinition& format_definition)
 {

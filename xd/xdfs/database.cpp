@@ -2089,12 +2089,6 @@ bool FsDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefini
 }
 
 
-xd::IStructurePtr FsDatabase::createStructure()
-{
-    Structure* s = new Structure;
-    return static_cast<xd::IStructure*>(s);
-}
-
 static int xdToDelimitedTextEncoding(int xd_encoding)
 {
     switch (xd_encoding)

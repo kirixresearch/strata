@@ -109,7 +109,7 @@ public:
     virtual void getTransformation(std::vector<TransformField>& result) = 0;
 
     virtual void setInputStructure(const std::vector<TransformField>& input_fields) = 0;
-    virtual void setInputStructure(xd::IStructurePtr structure) = 0;
+    virtual void setInputStructure(const xd::Structure& structure) = 0;
 };
 
 XCM_DECLARE_SMARTPTR(ITransformationDoc)
@@ -153,7 +153,7 @@ public:
     void getTransformation(std::vector<TransformField>& result);
 
     void setInputStructure(const std::vector<TransformField>& input_fields);
-    void setInputStructure(xd::IStructurePtr structure);
+    void setInputStructure(const xd::Structure& structure);
 
 private:
 
@@ -204,8 +204,8 @@ private:
                                           int* format_comboidx);
 
     void populateSourceFieldDropDown();
-    xd::IStructurePtr createStructureFromGrid();
-    xd::IStructurePtr getSourceStructure();
+    xd::Structure createStructureFromGrid();
+    xd::Structure getSourceStructure();
     
     bool doSave();
 

@@ -118,7 +118,7 @@ public:
     std::vector<QueryBuilderParam> m_params;
     wxString m_output_path;
     bool m_distinct;
-    xd::IStructurePtr m_validation_struct;
+    xd::Structure m_validation_struct;
     int m_disposition;
 };
 

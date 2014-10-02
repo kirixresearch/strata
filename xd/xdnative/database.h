@@ -153,7 +153,6 @@ public:
     INodeValuePtr openNodeFile(const std::wstring& path);
     INodeValuePtr openLocalNodeFile(const std::wstring& path);
 
-    xd::IStructurePtr createStructure();
     bool createStream(const std::wstring& path, const std::wstring& mime_type);
     bool createTable(const std::wstring& path, const xd::FormatDefinition& format_definition);
     

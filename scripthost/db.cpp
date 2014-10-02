@@ -359,17 +359,17 @@ DbResult::~DbResult()
 void DbResult::init(xd::IIteratorPtr iter)
 {
     m_iter = iter;
-    m_structure = m_iter->getStructure();
+    m_structure = m_iter->getStructure()->toStructure();
 
-    int i;
-    int colcount = m_structure->getColumnCount();
+
+    size_t i, colcount = m_structure.getColumnCount();
 
     m_cols.clear();
     m_cols_map.clear();
     
     for (i = 0; i < colcount; ++i)
     {
-        const xd::ColumnInfo& colinfo = m_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = m_structure.getColumnInfoByIdx(i);
 
         DbResultColumn c;
         c.name = colinfo.name;
@@ -569,7 +569,7 @@ void DbResult::getColumnName(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
     
-    retval->setString(m_structure->getColumnName(col));
+    retval->setString(m_structure.getColumnName(col));
 }
 
 // (METHOD) DbResult.getColumnInfo
@@ -601,11 +601,11 @@ void DbResult::getColumnInfo(kscript::ExprEnv* env, kscript::Value* retval)
         env->getParam(0)->isObject())
     {
         std::wstring colname = env->getParam(0)->getString();
-        col = m_structure->getColumnInfo(colname);
+        col = m_structure.getColumnInfo(colname);
     }
      else
     {
-        col = m_structure->getColumnInfoByIdx(env->getParam(0)->getInteger());
+        col = m_structure.getColumnInfoByIdx(env->getParam(0)->getInteger());
     }
     
     
@@ -883,7 +883,7 @@ kscript::Value* DbResult::getMember(const std::wstring& name)
     return ValueObject::getMember(name);
 }
 
-xd::IStructurePtr DbResult::getStructure()
+xd::Structure DbResult::getStructure()
 {
     return m_structure;
 }

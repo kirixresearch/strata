@@ -754,7 +754,6 @@ public:
     virtual void close() = 0;
     
     virtual IJobPtr createJob() = 0;
-    virtual IStructurePtr createStructure() = 0;
 
     virtual bool createFolder(const std::wstring& path) = 0;
     virtual bool createStream(const std::wstring& path, const std::wstring& mime_type) = 0;

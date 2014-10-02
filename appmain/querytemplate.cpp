@@ -682,7 +682,8 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
 {
     int type;
 
-    type = m_validation_struct->getExprType(towstr(_input));
+    type = xd::typeInvalid;
+    //type = m_validation_struct.getExprType(towstr(_input));
     
     if (type == xd::typeInvalid || type == xd::typeUndefined)
     {
@@ -774,7 +775,8 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
     test = output;
     test += expr;
 
-    if (m_validation_struct->getExprType(towstr(test)) == xd::typeBoolean)
+
+    //if (m_validation_struct->getExprType(towstr(test)) == xd::typeBoolean)
     {
         return test;
     }
@@ -923,14 +925,13 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
 
 void QueryTemplate::updateValidationStructure()
 {
-    m_validation_struct = g_app->getDatabase()->createStructure();
+    m_validation_struct = xd::Structure();
 
     std::vector<QueryBuilderSourceTable>::iterator tbl_it;
 
     // find field names that are non-unique
     std::set<std::wstring> idx, non_unique_field_names;
-    for (tbl_it = m_source_tables.begin();
-         tbl_it != m_source_tables.end(); ++tbl_it)
+    for (tbl_it = m_source_tables.begin(); tbl_it != m_source_tables.end(); ++tbl_it)
     {
         size_t i, col_count = tbl_it->structure.getColumnCount();
 
@@ -967,16 +968,16 @@ void QueryTemplate::updateValidationStructure()
             newcol.scale = colinfo.scale;
             newcol.calculated = colinfo.calculated;
             newcol.expression = colinfo.expression;
-            m_validation_struct->createColumn(newcol);
+            m_validation_struct.createColumn(newcol);
 
             newcol.name = L"[" + alias + L"]." + column;
-            m_validation_struct->createColumn(newcol);
+            m_validation_struct.createColumn(newcol);
 
             newcol.name = alias + L".[" + column + L"]";
-            m_validation_struct->createColumn(newcol);
+            m_validation_struct.createColumn(newcol);
 
             newcol.name = L"[" + alias + L"].[" + column + L"]";
-            m_validation_struct->createColumn(newcol);
+            m_validation_struct.createColumn(newcol);
 
             // if the field name is unique, then represent it also in our validation structure
             std::wstring fname = colinfo.name;
@@ -992,7 +993,7 @@ void QueryTemplate::updateValidationStructure()
                 newcol.calculated = colinfo.calculated;
                 newcol.expression = colinfo.expression;
 
-                m_validation_struct->createColumn(newcol);
+                m_validation_struct.createColumn(newcol);
             }
 
         }
@@ -1018,7 +1019,7 @@ void QueryTemplate::updateValidationStructure()
             newcol.calculated = colinfo.calculated;
             newcol.expression = colinfo.expression;
 
-            m_validation_struct->createColumn(newcol);
+            m_validation_struct.createColumn(newcol);
         }
     }
 }

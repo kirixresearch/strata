@@ -228,7 +228,7 @@ int SummarizeJob::runJob()
 
     xd::objhandle_t field_handles[255];
 
-    int i;
+    size_t i;
     
     i = 0;
     while (fields[i])
@@ -294,7 +294,7 @@ int SummarizeJob::runJob()
         return 0;
     }
 
-    xd::IStructurePtr group_result_structure = group_result_iter->getStructure();
+    xd::Structure group_result_structure = group_result_iter->getStructure()->toStructure();
 
     group_result_iter->goFirst();
     if (group_result_iter->eof())
@@ -314,10 +314,10 @@ int SummarizeJob::runJob()
     group_result_iter->releaseHandle(total_count_handle);
 
 
-    int result_field_count = group_result_structure->getColumnCount();
+    size_t result_field_count = group_result_structure.getColumnCount();
     for (i = 0; i < result_field_count; ++i)
     {
-        const xd::ColumnInfo& output_colinfo = group_result_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& output_colinfo = group_result_structure.getColumnInfoByIdx(i);
 
         col_name = output_colinfo.name;
         kl::makeUpper(col_name);

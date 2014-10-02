@@ -93,7 +93,6 @@ public:
     xd::IFileInfoEnumPtr getFolderInfo(const std::wstring& path);
     std::wstring getPrimaryKey(const std::wstring table);
     
-    xd::IStructurePtr createStructure();
     bool createTable(const std::wstring& path, const xd::FormatDefinition& format_definition);
     xd::IStreamPtr openStream(const std::wstring& path);
     bool createStream(const std::wstring& path, const std::wstring& mime_type);

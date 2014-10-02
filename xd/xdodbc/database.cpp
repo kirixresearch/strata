@@ -2070,12 +2070,6 @@ std::wstring OdbcDatabase::getPrimaryKey(const std::wstring _path)
     return result;
 }
 
-xd::IStructurePtr OdbcDatabase::createStructure()
-{
-    Structure* s = new Structure;
-    return static_cast<xd::IStructure*>(s);
-}
-
 bool OdbcDatabase::createTable(const std::wstring& path, const xd::FormatDefinition& format_definition)
 {
     std::wstring quote_openchar = m_attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);

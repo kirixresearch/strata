@@ -327,9 +327,8 @@ void XdGridModel::refresh()
 
     if (m_it)
     {
-        xd::IStructurePtr structure = m_it->getStructure();
-        int col_count = structure->getColumnCount();
-        int i;
+        xd::Structure structure = m_it->getStructure()->toStructure();
+        size_t i, col_count = structure.getColumnCount();
 
         m_columns.resize(col_count);
 
@@ -337,7 +336,7 @@ void XdGridModel::refresh()
         {
             XdGridColumnInfo& gci = m_columns[i];
 
-            gci.m_col_name = structure->getColumnName(i);
+            gci.m_col_name = structure.getColumnName(i);
             gci.m_col_handle = m_it->getHandle(towstr(gci.m_col_name));
 
             xd::ColumnInfo colinfo = m_it->getInfo(gci.m_col_handle);

@@ -1855,15 +1855,15 @@ void XdModel::clear()
 void XdModel::refresh()
 {
     // refresh columns
-    xd::IStructurePtr structure = m_iter->getStructure();
-    int i, col_count = structure->getColumnCount();
+    xd::Structure structure = m_iter->getStructure()->toStructure();
+    size_t i, col_count = structure.getColumnCount();
 
     m_columns.resize(col_count, NULL);
 
     for (i = 0; i < col_count; ++i)
     {
         m_columns[i] = new ModelColumn;
-        m_columns[i]->m_name = structure->getColumnName(i);
+        m_columns[i]->m_name = structure.getColumnName(i);
         m_columns[i]->m_handle = m_iter->getHandle(towstr(m_columns[i]->m_name));
 
         xd::ColumnInfo colinfo = m_iter->getInfo(m_columns[i]->m_handle);

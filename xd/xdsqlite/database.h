@@ -69,7 +69,6 @@ public:
     xd::IFileInfoPtr getFileInfo(const std::wstring& path);
     xd::IFileInfoEnumPtr getFolderInfo(const std::wstring& path);
 
-    xd::IStructurePtr createStructure();
     bool createTable(const std::wstring& path, const xd::FormatDefinition& format_definition);
  
     xd::IStreamPtr openStream(const std::wstring& path);

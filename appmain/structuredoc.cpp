@@ -1430,7 +1430,6 @@ bool StructureDoc::createTable()
 
 xd::Structure StructureDoc::createStructureFromGrid()
 {
-    // create the xd::IStructure
     xd::Structure s;
 
     int row, row_count = m_grid->getRowCount();

@@ -2998,7 +2998,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
                 set->setLineDelimited(false);
             
             
-            xd::IStructurePtr s;
+            xd::Structure s;
             size_t col_count;
             std::vector<HostDataDefinitionField>::iterator it;
 
@@ -3044,7 +3044,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
             for (i = 0; i < col_count; ++i)
                 s->deleteColumn(s->getColumnName(i));
             
-            xd::IStructurePtr source_structure = set->getSourceStructure();
+            xd::Structure source_structure = set->getSourceStructure();
             int idx = 0;
             for (it = fields.begin(); it != fields.end(); ++it)
             {
@@ -3154,9 +3154,9 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
         set->determineColumns(5000, NULL);
         set->setFirstRowColumnNames(first_row_column_names);
         
-        xd::IStructurePtr source_structure = set->getSourceStructure();
+        xd::Structure source_structure = set->getSourceStructure();
         
-        xd::IStructurePtr s;
+        xd::Structure s;
         size_t i, col_count;
         std::vector<HostDataDefinitionField>::iterator it;
 

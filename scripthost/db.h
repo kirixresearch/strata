@@ -445,7 +445,7 @@ public:
 
     // public members that aren't part of the script api
     kscript::Value* getMember(const std::wstring& name);
-    xd::IStructurePtr getStructure();
+    xd::Structure getStructure();
     xd::IIteratorPtr getIterator();
 
 private:
@@ -458,7 +458,7 @@ private:
 
     kscript::ExprParser* m_parser;
     xd::IIteratorPtr m_iter;
-    xd::IStructurePtr m_structure;
+    xd::Structure m_structure;
     std::vector<DbResultColumn> m_cols;
     std::map<std::wstring, int, kl::cmp_nocase> m_cols_map;
     kscript::Value m_member_val;

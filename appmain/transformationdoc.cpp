@@ -614,16 +614,16 @@ void TransformationDoc::setInputStructure(const std::vector<TransformField>& inp
     populateSourceFieldDropDown();
 }
 
-void TransformationDoc::setInputStructure(xd::IStructurePtr structure)
+void TransformationDoc::setInputStructure(const xd::Structure& structure)
 {
     m_source_fields.clear();
     
     TransformField field;
     
-    int i, count = structure->getColumnCount();
+    size_t i, count = structure.getColumnCount();
     for (i = 0; i < count; ++i)
     {
-        const xd::ColumnInfo& col = structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col = structure.getColumnInfoByIdx(i);
         if (col.isOk())
         {
             field.input_name = col.name;
@@ -655,7 +655,7 @@ void TransformationDoc::getColumnListItems(std::vector<ColumnListItem>& items)
 void TransformationDoc::onColumnListDblClicked(const std::vector<wxString>& items)
 {
 /*
-    xd::IStructurePtr s = getTextSourceStructure(m_doc_site);
+    xd::Structure s = getTextSourceStructure(m_doc_site);
     if (s.isNull())
         return;
         
@@ -743,7 +743,7 @@ void TransformationDoc::insertRow(int row, bool calculated)
     m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
 
     // make sure either a source field or an expression is specified
-    int valid_res = validateExpression(getSourceStructure()->toStructure(), f->output_expression, f->output_type);
+    int valid_res = validateExpression(getSourceStructure(), f->output_expression, f->output_type);
     updateExpressionIcon(row, valid_res);
 
     updateRowCellProps(row);
@@ -1299,7 +1299,7 @@ int TransformationDoc::validateStructure()
     if (m_grid->getRowCount() == 0)
         return StructureValidator::ErrorNoFields;
 
-    xd::Structure source_structure = getSourceStructure()->toStructure();
+    xd::Structure source_structure = getSourceStructure();
     
     // CHECK: check for invalid expressions
     wxString expr;
@@ -1369,9 +1369,9 @@ bool TransformationDoc::doErrorCheck()
     return true;
 }
 
-xd::IStructurePtr TransformationDoc::createStructureFromGrid()
+xd::Structure TransformationDoc::createStructureFromGrid()
 {
-    xd::IStructurePtr s = g_app->getDatabase()->createStructure();
+    xd::Structure s;
 
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
@@ -1384,16 +1384,18 @@ xd::IStructurePtr TransformationDoc::createStructureFromGrid()
         col.scale = m_grid->getCellInteger(row, colFieldScale);
         col.calculated = isFieldCalculated(m_grid, row);
 
-        s->createColumn(col);
+        s.createColumn(col);
     }
     
     return s;
 }
 
-xd::IStructurePtr TransformationDoc::getSourceStructure()
+xd::Structure TransformationDoc::getSourceStructure()
 {
+    xd::Structure s;
+
 /*
-    xd::IStructurePtr s;
+    xd::Structure s;
     if (m_init_set.isOk())
     {
         xd::IFixedLengthDefinitionPtr fset = m_init_set;
@@ -1406,7 +1408,7 @@ xd::IStructurePtr TransformationDoc::getSourceStructure()
     
     */
 
-    return xcm::null;
+    return s;
 }
 
 
@@ -1673,7 +1675,7 @@ bool TransformationDoc::doSave()
         ITableDocViewPtr tabledocview = tabledoc->getActiveView();
         if (tabledocview)
         {
-            xd::IStructurePtr s;
+            xd::Structure s;
             if (fset)
                 s = fset->getDestinationStructure();
             if (tset)
@@ -1778,7 +1780,7 @@ void TransformationDoc::onGridNeedTooltipText(kcl::GridEvent& evt)
             {
                 int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
                 wxString expr = getFieldExpression(row);
-                int res = validateExpression(getSourceStructure()->toStructure(), expr, type);
+                int res = validateExpression(getSourceStructure(), expr, type);
                 
                 if (res == StructureValidator::ExpressionTypeMismatch)
                     msg = _("This formula has a return type that does not match the field type");
@@ -1960,7 +1962,7 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
         
         if (expr_combosel == -1)
         {
-            int res = validateExpression(getSourceStructure()->toStructure(), expr, type);
+            int res = validateExpression(getSourceStructure(), expr, type);
             updateExpressionIcon(row, res);
         }
          else
@@ -1994,7 +1996,7 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
             int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
             wxString expr = getFieldExpression(row);
         
-            int res = validateExpression(getSourceStructure()->toStructure(), expr, type);
+            int res = validateExpression(getSourceStructure(), expr, type);
             updateExpressionIcon(row, res);
         }
          else
@@ -2021,7 +2023,7 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
         wxString expr = getFieldExpression(row);
         
         // make sure either a source field or an expression is specified
-        int res = validateExpression(getSourceStructure()->toStructure(), expr, type);
+        int res = validateExpression(getSourceStructure(), expr, type);
         updateExpressionIcon(row, res);
         m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldFormula);
     }
@@ -2177,7 +2179,7 @@ void TransformationDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
          else if (fmt.GetId() == kcl::getGridDataFormat(wxT("fieldspanel")))
         {
         /*
-            xd::IStructurePtr s = getTextSourceStructure(m_doc_site);
+            xd::Structure s = getTextSourceStructure(m_doc_site);
             if (s.isNull())
                 return;
                 

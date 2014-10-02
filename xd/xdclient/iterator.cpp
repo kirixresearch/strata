@@ -475,9 +475,12 @@ void ClientIterator::goRow(const xd::rowid_t& rowid)
 xd::IStructurePtr ClientIterator::getStructure()
 {
     if (m_structure.isOk())
-        return m_structure->clone();
+    {
+        Structure* s = new Structure;
+        s->fromStructure(m_structure);
+        return static_cast<xd::IStructure*>(s);
+    }
 
-    Structure* s = new Structure;
 
     std::vector<HttpDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -496,11 +499,13 @@ xd::IStructurePtr ClientIterator::getStructure()
             col.calculated = true;
         }
 
-        s->createColumn(col);
+        m_structure.createColumn(col);
     }
     
-    m_structure = static_cast<xd::IStructure*>(s);
-    return m_structure->clone();
+
+    Structure* s = new Structure;
+    s->fromStructure(m_structure);
+    return static_cast<xd::IStructure*>(s);
 }
 
 bool ClientIterator::refreshStructure()
@@ -638,7 +643,7 @@ bool ClientIterator::modifyStructure(const xd::StructureModify& mod_params, xd::
     
 
     // the next call to getStructure() will refresh m_structure
-    m_structure.clear();
+    m_structure = xd::Structure();
 
     return true;
 }
@@ -946,7 +951,7 @@ bool ClientIterator::updateCacheRow(xd::rowid_t rowid,
 
 bool ClientIterator::refreshDataAccessInfo()
 {
-    m_structure.clear();
+    m_structure = xd::Structure();
 
     // clear out any existing data access info
     clearDataAccessInfo();

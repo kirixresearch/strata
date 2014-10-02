@@ -152,8 +152,8 @@ int AppendJob::runJob()
 
 /*
         // output target does not yet exist;  create an output table with a merged structure
-        xd::IStructurePtr input_structure = xcm::null;
-        xd::IStructurePtr output_structure = xcm::null;
+        xd::Structure input_structure = xcm::null;
+        xd::Structure output_structure = xcm::null;
         xd::IColumnInfoPtr input_colinfo = xcm::null;
         xd::IColumnInfoPtr output_colinfo = xcm::null;
 

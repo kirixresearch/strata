@@ -3026,13 +3026,6 @@ IXdnativeSet* XdnativeDatabase::lookupSet(const std::wstring& set_id)
     return NULL;
 }
 
-
-xd::IStructurePtr XdnativeDatabase::createStructure()
-{
-    Structure* s = new Structure;
-    return static_cast<xd::IStructure*>(s);
-}
-
 bool XdnativeDatabase::createTable(const std::wstring& path, const xd::FormatDefinition& format_definition)
 {
     if (path.length() == 0)

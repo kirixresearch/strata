@@ -226,8 +226,7 @@ private:
     void createModel();
     void updateCaption();
     wxString makeCaption(const wxString& title);
-    void initializeDefaultView(ITableDocViewPtr view,
-                               xd::IStructurePtr v_struct);
+    void initializeDefaultView(ITableDocViewPtr view, const xd::Structure& v_struct);
 
     xd::objhandle_t getTemporaryHandle(const wxString& expr);
     void freeTemporaryHandles();

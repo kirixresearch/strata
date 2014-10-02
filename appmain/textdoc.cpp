@@ -86,15 +86,15 @@ static int showOverwriteTransformationChangesDialog()
 // based on the offset of the column to the left of the column that we
 // inserted in the source structure
 
-static int getBestDestinationInsertPosition(const xd::ColumnInfo& src_coltoleft, xd::IStructurePtr dest_struct)
+static int getBestDestinationInsertPosition(const xd::ColumnInfo& src_coltoleft, const xd::Structure& dest_struct)
 {
     if (src_coltoleft.isNull())
         return 0;
         
-    int i, col_count = dest_struct->getColumnCount();
+    size_t i, col_count = dest_struct.getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& dest_col = dest_struct->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& dest_col = dest_struct.getColumnInfoByIdx(i);
         if (dest_col.expression == src_coltoleft.name)
             return i+1;
     }
@@ -489,8 +489,10 @@ bool TextDoc::updateColumnList()
 }
 
 
-xd::IStructurePtr TextDoc::getStructure()
+xd::Structure TextDoc::getStructure()
 {
+    xd::Structure s;
+
 /*
     TODO: implement
 
@@ -508,7 +510,7 @@ xd::IStructurePtr TextDoc::getStructure()
     }
    */
 
-    return xcm::null;
+    return s;
 }
 
 wxString TextDoc::getPath()
@@ -531,7 +533,7 @@ void TextDoc::getColumnListItems(std::vector<ColumnListItem>& list)
     if (set.isNull())
         return;
 
-    xd::IStructurePtr structure;
+    xd::Structure structure;
     xd::IFixedLengthDefinitionPtr fset = set;
     xd::IDelimitedTextSetPtr tset = set;
     if (fset)
@@ -2062,7 +2064,7 @@ void TextDoc::onTextDelimitedCaptionEndEdit(kcl::GridEvent& evt)
         return;
 
     // get the column's info
-    xd::IStructurePtr src_struct = tset->getSourceStructure();
+    xd::Structure src_struct = tset->getSourceStructure();
     if (src_struct.isNull())
         return;
     
@@ -2152,7 +2154,7 @@ bool TextDoc::saveLayoutTemplate(const wxString& path)
         if (tset.isNull())
             return false;
 
-        xd::IStructurePtr s = tset->getDestinationStructure();
+        xd::Structure s = tset->getDestinationStructure();
         
         int i, count = s->getColumnCount();
         for (i = 0; i < count; ++i)

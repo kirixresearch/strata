@@ -183,7 +183,7 @@ private:
     ClientDatabase* m_database;
     std::wstring m_handle;
 
-    xd::IStructurePtr m_structure;
+    xd::Structure m_structure;
 
     xd::rowid_t m_current_row;
     xd::rowid_t m_cache_row_count;

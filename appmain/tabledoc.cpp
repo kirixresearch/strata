@@ -1251,15 +1251,15 @@ void TableDoc::onUpdateUI(wxUpdateUIEvent& evt)
 
 
             // for now, limit deleting to calculated fields
-            xd::IStructurePtr structure = m_iter->getStructure();
+            xd::Structure structure = m_iter->getStructure()->toStructure();
 
-            int i, col_count = m_grid->getColumnCount();
+            size_t i, col_count = m_grid->getColumnCount();
 
             for (i = 0; i < col_count; ++i)
             {
                 if (m_grid->isColumnSelected(i))
                 {
-                    const xd::ColumnInfo& colinfo = structure->getColumnInfo(towstr(m_grid->getColumnCaption(i)));
+                    const xd::ColumnInfo& colinfo = structure.getColumnInfo(towstr(m_grid->getColumnCaption(i)));
 
                     if (colinfo.isNull())
                     {
@@ -1277,7 +1277,7 @@ void TableDoc::onUpdateUI(wxUpdateUIEvent& evt)
 
             //  if no fields are selected, check the cursor column
             int col_idx = m_grid->getCursorColumn();
-            const xd::ColumnInfo& colinfo = structure->getColumnInfo(towstr(m_grid->getColumnCaption(col_idx)));
+            const xd::ColumnInfo& colinfo = structure.getColumnInfo(towstr(m_grid->getColumnCaption(col_idx)));
             if (colinfo.isNull())
             {
                 evt.Enable(false);
@@ -2834,7 +2834,7 @@ void TableDoc::setIterator(xd::IIteratorPtr iter, bool go_first)
         // will be flushed later on
 
         ITableDocViewPtr defview = m_model->createViewObject();
-        xd::IStructurePtr s = m_iter->getStructure();
+        xd::Structure s = m_iter->getStructure()->toStructure();
         initializeDefaultView(defview, s);
         defview->setDescription(towstr(_("Default View")));
         setActiveView(defview);
@@ -5948,19 +5948,18 @@ void TableDoc::deleteSelectedColumns()
         return;
 
     wxString object_path = m_path;
-    xd::IStructurePtr structure = m_iter->getStructure();
+    xd::Structure structure = m_iter->getStructure()->toStructure();
 
     std::set<wxString> cols;
     std::set<wxString>::iterator it;
 
-    int col_count = m_grid->getColumnCount();
+    int i, col_count = m_grid->getColumnCount();
     int total_phys_fields_to_delete = 0;
     int total_phys_fields = 0;
-    int i;
 
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& colinfo = structure->getColumnInfo(towstr(m_grid->getColumnCaption(i)));
+        const xd::ColumnInfo& colinfo = structure.getColumnInfo(towstr(m_grid->getColumnCaption(i)));
         if (colinfo.isNull())
             continue;
 
@@ -6477,7 +6476,7 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
     // will first check for any selected columns that will
     // limit the scope of our search
 
-    xd::IStructurePtr iter_struct = m_iter->getStructure();
+    xd::Structure iter_struct = m_iter->getStructure()->toStructure();
 
 
     std::vector<xd::ColumnInfo> search_cols;
@@ -6494,7 +6493,7 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
 
             wxString col_name = model->getColumnInfo(model_idx)->getName();
 
-            const xd::ColumnInfo& colinfo = iter_struct->getColumnInfo(towstr(col_name));
+            const xd::ColumnInfo& colinfo = iter_struct.getColumnInfo(towstr(col_name));
             if (colinfo.isNull())
                 continue;
 
@@ -6506,10 +6505,10 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
     {
         // no columns selected, therefore search all columns
 
-        col_count = iter_struct->getColumnCount();
+        col_count = (int)iter_struct.getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            const xd::ColumnInfo& colinfo = iter_struct->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& colinfo = iter_struct.getColumnInfoByIdx(i);
             search_cols.push_back(colinfo);
         }
     }
@@ -7326,15 +7325,14 @@ void TableDoc::onSetOrderAscending(wxCommandEvent& evt)
     {
         kcl::IModelPtr model = m_grid->getModel();
         kcl::IModelColumnPtr model_colinfo;
-        wxString col_name;
-        xd::IStructurePtr structure = m_iter->getStructure();
+
         int model_idx = m_grid->getColumnModelIdx(m_grid->getCursorColumn());
         if (model_idx == -1)
         {
             return;
         }
         model_colinfo = model->getColumnInfo(model_idx);
-        col_name = model_colinfo->getName();
+        wxString col_name = model_colinfo->getName();
 
         expr = xd::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(col_name));
     }
@@ -7365,14 +7363,13 @@ void TableDoc::onSetOrderDescending(wxCommandEvent& evt)
     {
         kcl::IModelPtr model = m_grid->getModel();
         kcl::IModelColumnPtr model_colinfo;
-        wxString col_name;
-        xd::IStructurePtr structure = m_iter->getStructure();
+
         int model_idx = m_grid->getColumnModelIdx(m_grid->getCursorColumn());
         if (model_idx == -1)
             return;
             
         model_colinfo = model->getColumnInfo(model_idx);
-        col_name = model_colinfo->getName();
+        wxString col_name = model_colinfo->getName();
 
         expr = xd::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(col_name));
         expr += " DESC";
@@ -7400,8 +7397,7 @@ void TableDoc::onSetGroupBreakExpr(wxCommandEvent& evt)
     {
         kcl::IModelPtr model = m_grid->getModel();
         kcl::IModelColumnPtr model_colinfo;
-        wxString col_name;
-        xd::IStructurePtr structure = m_iter->getStructure();
+
         int model_idx = m_grid->getColumnModelIdx(m_grid->getCursorColumn());
         if (model_idx == -1)
             return;
@@ -8464,18 +8460,18 @@ void TableDoc::onRequestRowColors(wxColor& fgcolor, wxColor& bgcolor)
     }
 }
 
-void TableDoc::initializeDefaultView(ITableDocViewPtr view, xd::IStructurePtr v_struct)
+void TableDoc::initializeDefaultView(ITableDocViewPtr view, const xd::Structure& structure)
 {
     view->deleteAllColumns();
 
-    if (v_struct)
+    if (structure.isOk())
     {
         ITableDocViewColPtr viewcol;
 
-        int i, col_count = v_struct->getColumnCount();
+        size_t i, col_count = structure.getColumnCount();
         for (i = 0; i < col_count; i++)
         {
-            const xd::ColumnInfo& colinfo = v_struct->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& colinfo = structure.getColumnInfoByIdx(i);
             
             viewcol = view->createColumn(-1);
             viewcol->setName(colinfo.name);
@@ -8714,7 +8710,7 @@ void TableDoc::refreshActiveView(bool repaint)
         {
             if (col_count > 0 && ((bad_columns >= col_count) || (col_count > 2 && bad_columns >= col_count/2)))
             {
-                xd::IStructurePtr s = m_iter->getStructure();
+                xd::Structure s = m_iter->getStructure()->toStructure();
                 initializeDefaultView(m_active_view, s);
                 m_grid->setHorizontalOffset(0);
                 m_model->writeObject(m_active_view);
