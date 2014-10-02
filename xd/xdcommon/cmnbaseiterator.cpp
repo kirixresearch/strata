@@ -17,6 +17,7 @@
 #include <xd/xd.h>
 #include "xd_private.h"
 #include <kl/portable.h>
+#include <kl/string.h>
 #include <kl/math.h>
 #include "xdcommon.h"
 #include "cmnbaseiterator.h"

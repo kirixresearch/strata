@@ -14,7 +14,6 @@
 #include <kl/json.h>
 #include "../xdcommonsql/xdcommonsql.h"
 #include "../xdcommon/extfileinfo.h"
-#include "../xdcommon/structure.h"
 #include "../xdcommon/exindex.h"
 #include "../xdcommon/keylayout.h"
 #include "database.h"

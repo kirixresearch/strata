@@ -17,7 +17,6 @@
 #include <xd/xd.h>
 #include "xdcommonsql.h"
 #include "../xdcommon/util.h"
-#include "../xdcommon/structure.h"
 #include "../xdcommon/errorinfo.h"
 #include <kl/string.h>
 #include <kl/portable.h>

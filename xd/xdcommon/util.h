@@ -97,6 +97,12 @@ bool findFieldInExpr(const std::wstring& field,
                      bool recurse_calcfields);
 
 
+
+bool calcfieldsModifyStructure(const xd::StructureModify& mod_params,
+                               std::vector<xd::ColumnInfo>& calc_fields,
+                               bool* done_flag);
+
+
 int kscript2xdType(int type);
 int xd2kscriptType(int type);
 

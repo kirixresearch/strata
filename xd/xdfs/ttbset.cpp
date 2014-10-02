@@ -20,7 +20,6 @@
 #include "ttbiterator.h"
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/formatdefinition.h"
-#include "../xdcommon/structure.h"
 #include "../xdcommon/exindex.h"
 #include "../xdcommon/idxutil.h"
 #include "../xdcommon/util.h"

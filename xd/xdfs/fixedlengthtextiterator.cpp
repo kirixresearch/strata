@@ -21,7 +21,6 @@
 #include "database.h"
 #include "fixedlengthtextset.h"
 #include "fixedlengthtextiterator.h"
-#include "../xdcommon/structure.h"
 #include "../xdcommon/util.h"
 
 

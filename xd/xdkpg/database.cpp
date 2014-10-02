@@ -17,11 +17,9 @@
 #include <xd/xd.h>
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
-#include "../xdcommon/structure.h"
 #include "../xdcommon/jobinfo.h"
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/util.h"
-#include "../xdcommon/structure.h"
 #include "database.h"
 #include "iterator.h"
 #include "inserter.h"

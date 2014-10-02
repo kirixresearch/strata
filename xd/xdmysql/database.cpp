@@ -25,7 +25,6 @@
 #include <kl/regex.h>
 #include <kl/md5.h>
 #include <xd/xd.h>
-#include "../xdcommon/structure.h"
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/util.h"

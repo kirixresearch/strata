@@ -22,7 +22,6 @@
 
 #include "mysql.h"
 #include <xd/xd.h>
-#include "../xdcommon/structure.h"
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/extfileinfo.h"

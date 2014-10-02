@@ -10,7 +10,8 @@
 
 
 #include <xd/xd.h>
-#include "../xdcommon/structure.h"
+#include <kl/string.h>
+#include <kl/portable.h>
 #include "../xdcommon/util.h"
 #include "util.h"
 

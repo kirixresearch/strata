@@ -15,6 +15,7 @@
 #endif
 
 
+#include <kl/string.h>
 #include <kl/portable.h>
 #include <kl/regex.h>
 #include <oci.h>

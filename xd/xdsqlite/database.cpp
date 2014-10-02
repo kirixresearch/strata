@@ -19,6 +19,7 @@
 
 
 #include <kl/portable.h>
+#include <kl/string.h>
 #include <kl/utf8.h>
 #include <kl/file.h>
 #include <kl/regex.h>
@@ -31,7 +32,6 @@
 #include "iterator.h"
 #include "util.h"
 #include "../xdcommon/dbattr.h"
-#include "../xdcommon/structure.h"
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/jobinfo.h"
 #include "../xdcommon/util.h"

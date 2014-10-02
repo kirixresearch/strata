@@ -17,6 +17,7 @@
 #include <set>
 #include <ctime>
 #include <kl/portable.h>
+#include <kl/string.h>
 #include <kl/math.h>
 #include <xd/xd.h>
 #include "../xdcommon/xdcommon.h"

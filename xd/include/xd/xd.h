@@ -50,14 +50,12 @@ xcm_interface IAttributes;
 xcm_interface IDatabase;
 xcm_interface IDatabaseMgr;
 xcm_interface IFileInfo;
-xcm_interface IIndexInfo;
 xcm_interface IIterator;
 xcm_interface IJob;
 xcm_interface IRelation;
 xcm_interface IRowInserter;
 xcm_interface ICacheRowUpdate;
 xcm_interface IStream;
-xcm_interface IStructure;
 
 xcm_interface IIteratorRelation;
 xcm_interface IRelationSchema;
@@ -70,10 +68,8 @@ XCM_DECLARE_SMARTPTR(IAttributes)
 XCM_DECLARE_SMARTPTR(IFileInfo)
 XCM_DECLARE_SMARTPTR(IDatabase)
 XCM_DECLARE_SMARTPTR(IDatabaseMgr)
-XCM_DECLARE_SMARTPTR(IIndexInfo)
 XCM_DECLARE_SMARTPTR(IJob)
 XCM_DECLARE_SMARTPTR(IIterator)
-XCM_DECLARE_SMARTPTR(IStructure)
 XCM_DECLARE_SMARTPTR(IRelation)
 XCM_DECLARE_SMARTPTR(IRowInserter)
 XCM_DECLARE_SMARTPTR(ICacheRowUpdate)
@@ -715,27 +711,6 @@ public:
     virtual std::wstring getStringAttribute(int attr_id) = 0;
 };
 
-
-
-xcm_interface IStructure : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("xd.IStructure")
-
-public:
-
-    virtual void fromStructure(const xd::Structure& s) = 0;
-    virtual xd::Structure toStructure() = 0;
-
-    virtual IStructurePtr clone() = 0;
-    virtual int getColumnCount() = 0;
-    virtual const std::wstring& getColumnName(int idx) = 0;
-    virtual const ColumnInfo& getColumnInfoByIdx(int idx) = 0;
-    virtual const ColumnInfo& getColumnInfo(const std::wstring& column_name) = 0;
-    virtual bool getColumnExist(const std::wstring& column_name) = 0;
-
-    virtual void createColumn(const xd::ColumnInfo& col) = 0;
-    virtual int getExprType(const std::wstring& expression) = 0;
-};
 
 
 xcm_interface IDatabase : public xcm::IObject

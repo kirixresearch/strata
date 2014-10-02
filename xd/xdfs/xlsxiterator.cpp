@@ -18,7 +18,6 @@
 #include "database.h"
 #include "xlsxset.h"
 #include "xlsxiterator.h"
-#include "../xdcommon/structure.h"
 #include "../xdcommon/util.h"
 
 

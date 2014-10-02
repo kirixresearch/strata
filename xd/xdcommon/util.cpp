@@ -1513,6 +1513,186 @@ bool findFieldInExpr(const std::wstring& _field,
 
 
 
+static void modColumn(xd::ColumnInfo& target_col, const xd::ColumnInfo& params)
+{
+    if (params.mask & xd::ColumnInfo::maskName)
+    {
+        target_col.name = params.name;
+    }
+
+    if (params.mask & xd::ColumnInfo::maskType)
+    {
+        target_col.type = params.type;
+    }
+    
+    if (params.mask & xd::ColumnInfo::maskWidth)
+    {
+        target_col.width = params.width;
+    }
+
+    if (params.mask & xd::ColumnInfo::maskScale)
+    {
+        target_col.scale = params.scale;
+    }
+
+    if (params.mask & xd::ColumnInfo::maskExpression)
+    {
+        target_col.expression = params.expression;
+        target_col.calculated = true;
+    }
+
+    if (params.mask & xd::ColumnInfo::maskSourceOffset)
+    {
+        target_col.source_offset = params.source_offset;
+    }
+    
+    if (params.mask & xd::ColumnInfo::maskSourceEncoding)
+    {
+        target_col.source_encoding = params.source_encoding;
+    }
+     
+    if (params.mask & xd::ColumnInfo::maskColumnOrdinal)
+    {
+        // new column position
+        target_col.column_ordinal = params.column_ordinal;
+    }
+
+
+    // if type changed, make sure width and scale conform
+    if (params.mask & xd::ColumnInfo::maskType)
+    {
+        switch (target_col.type)
+        {
+            case xd::typeDate:
+                target_col.width = 4;
+                target_col.scale = 0;
+                break;
+            case xd::typeInteger:
+                target_col.width = 4;
+                target_col.scale = 0;
+                break;
+            case xd::typeDouble:
+                target_col.width = 8;
+                break;
+            case xd::typeBoolean:
+                target_col.width = 1;
+                target_col.scale = 0;
+                break;
+            case xd::typeDateTime:
+                target_col.width = 8;
+                target_col.scale = 0;
+                break;
+        }
+    }
+}
+
+bool calcfieldsModifyStructure(const xd::StructureModify& mod_params,
+                               std::vector<xd::ColumnInfo>& calc_fields,
+                               bool* done_flag)
+{
+
+    *done_flag = false;
+    unsigned int processed_action_count = 0;
+
+    std::vector<xd::StructureModify::Action>::const_iterator it;
+    std::vector<xd::ColumnInfo>::iterator cit;
+
+    // handle delete
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
+    {
+        if (it->action == xd::StructureModify::Action::actionDelete)
+        {
+            bool processed = false;
+
+            for (cit = calc_fields.begin(); cit != calc_fields.end(); ++cit)
+            {
+                if (kl::iequals(cit->name, it->column))
+                {
+                    calc_fields.erase(cit);
+                    processed_action_count++;
+                    processed = true;
+                    break;
+                }
+            }
+        }
+    }
+
+
+    // handle modify
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
+    {
+        if (it->action == xd::StructureModify::Action::actionModify)
+        {
+            bool processed = false;
+
+            for (cit = calc_fields.begin(); cit != calc_fields.end(); ++cit)
+            {
+                if (kl::iequals(cit->name, it->column))
+                {
+                    if ((it->params.mask & xd::ColumnInfo::maskCalculated) && !it->params.calculated)
+                    {
+                        // caller wants this field to be permanent,
+                        // so we won't do anything here
+
+                        continue;
+                    }
+
+                    modColumn(*cit, it->params);
+
+                    processed_action_count++;
+                    processed = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    // handle create
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
+    {
+        if (it->action == xd::StructureModify::Action::actionCreate)
+        {
+            if (it->params.expression.length() > 0)
+            {
+                xd::ColumnInfo colinfo = it->params;
+                colinfo.calculated = true;
+                calc_fields.push_back(colinfo);
+
+                processed_action_count++;
+            }
+        }
+    }
+
+    // handle insert
+    for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
+    {
+        if (it->action == xd::StructureModify::Action::actionInsert)
+        {
+            if (it->params.expression.length() > 0)
+            {
+                xd::ColumnInfo colinfo = it->params;
+                colinfo.calculated = true;
+                calc_fields.push_back(colinfo);
+
+                processed_action_count++;
+            }
+        }
+    }
+
+    if (processed_action_count == mod_params.actions.size())
+    {
+        // we have handled all actions, so we're done
+        *done_flag = true;
+    }
+
+    return true;
+}
+
+
+
+
+
+
 
 
 

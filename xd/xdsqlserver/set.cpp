@@ -20,7 +20,6 @@
 #include <xd/xd.h>
 #include "database.h"
 #include "set.h"
-#include "iterator.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/dbfuncs.h"

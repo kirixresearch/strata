@@ -19,9 +19,9 @@
 #include <kl/xcm.h>
 #include <kl/file.h>
 #include <kl/math.h>
+#include <kl/string.h>
 #include <xd/xd.h>
 #include "fixedlength.h"
-#include "../xdcommon/structure.h"
 #include "../xdcommon/util.h"
 
 #ifdef WIN32

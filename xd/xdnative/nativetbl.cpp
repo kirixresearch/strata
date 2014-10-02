@@ -22,7 +22,6 @@
 #include "nativetbl.h"
 #include "bitmapfile.h"
 #include "util.h"
-#include "../xdcommon/structure.h"
 
 
 // ------------------ FILE FORMAT: xdnative Native Table --------------------

@@ -14,7 +14,6 @@
 
 
 #include <xd/xd.h>
-#include "structure.h"
 #include "jobinfo.h"
 #include "util.h"
 
