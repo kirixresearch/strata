@@ -888,7 +888,7 @@ void ExprBuilderPanel::setEmptyOk(bool empty_ok)
     }
 }
 
-void ExprBuilderPanel::setStructure(xd::IStructurePtr structure)
+void ExprBuilderPanel::setStructure(const xd::Structure& structure)
 {
     m_structure = structure;
 
@@ -952,9 +952,9 @@ bool ExprBuilderPanel::validate()
     bool valid = false;
     int type = xd::typeInvalid;
     
-    if (m_structure)
+    if (m_structure.isOk())
     {
-        type = m_structure->getExprType(towstr(text));
+        //type = m_structure->getExprType(towstr(text));
     }
 
     wxString valid_text;
@@ -1569,7 +1569,7 @@ void KeyBuilderPanel::setEmptyOk(bool empty_ok)
     validate();
 }
 
-void KeyBuilderPanel::setStructure(xd::IStructurePtr structure)
+void KeyBuilderPanel::setStructure(const xd::Structure& structure)
 {
     m_structure = structure;
 
@@ -1665,7 +1665,7 @@ DlgExprBuilder::DlgExprBuilder(wxWindow* parent, const wxString& title)
     Layout();
 }
 
-void DlgExprBuilder::setStructure(xd::IStructurePtr structure)
+void DlgExprBuilder::setStructure(const xd::Structure& structure)
 {
     m_panel->setStructure(structure);
 }
@@ -1781,7 +1781,7 @@ DlgKeyBuilder::DlgKeyBuilder(wxWindow* parent, const wxString& title)
     SetSizer(m_main_sizer);
 }
 
-void DlgKeyBuilder::setStructure(xd::IStructurePtr structure)
+void DlgKeyBuilder::setStructure(const xd::Structure& structure)
 {
     m_panel->setStructure(structure);
 }

@@ -64,7 +64,7 @@ ViewPanel::ViewPanel(ITableDocPtr tabledoc)
             else
         m_set_path = path;
         
-    m_structure = g_app->getDatabase()->describeTableI(path);
+    m_structure = g_app->getDatabase()->describeTable(path);
 
     
     // store all existing views
@@ -344,7 +344,7 @@ void ViewPanel::insertViewColumn(int row,
     
     // determine if this field is a calculated field
     bool calculated = false;
-    const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(col_name));
+    const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(towstr(col_name));
     if (colinfo.isOk())
         calculated = colinfo.calculated;
     

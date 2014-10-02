@@ -343,7 +343,7 @@ bool GroupPanel::initDoc(IFramePtr frame,
     }
 
     xd::IDatabasePtr db = g_app->getDatabase();
-    m_structure = db->describeTableI(towstr(m_path));
+    m_structure = db->describeTable(towstr(m_path));
     if (m_structure.isNull())
         return false;
 
@@ -587,7 +587,8 @@ bool GroupPanel::validateGroupQuery()
     if (value.Length() == 0)
         return true;
 
-    bool valid = (m_structure->getExprType(towstr(value)) == xd::typeBoolean);
+    bool valid = false;
+    //bool valid = (m_structure.getExprType(towstr(value)) == xd::typeBoolean);
     m_adv_group_query_valid->setValid(valid);
 
     return valid;
@@ -680,10 +681,10 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
     // must check the base structure fields also for duplicity
     if (include_detail)
     {
-        int col_count = m_structure->getColumnCount();
+        size_t i, col_count = m_structure.getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            std::wstring s = m_structure->getColumnName(i);
+            std::wstring s = m_structure.getColumnName(i);
             kl::makeUpper(s);
             kl::trim(s);
 
@@ -703,7 +704,7 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
         kl::trim(output_name);
 
         func = m_grid->getCellComboSel(i, GroupCol_GroupFunc);
-        const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(input_name);
+        const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(input_name);
 
 
         // check for empty output field names
@@ -751,7 +752,8 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
 
         if (func == GroupFunc_Count && input_name.length() > 0)
         {
-            int type = m_structure->getExprType(input_name);
+            int type = xd::typeInvalid;
+            //int type = m_structure.getExprType(input_name);
 
             if (type != xd::typeBoolean)
             {

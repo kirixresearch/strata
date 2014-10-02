@@ -231,7 +231,7 @@ void FieldListControl::setDragFormat(const wxString& format)
     m_grid->setDragFormat(format);
 }
 
-void FieldListControl::setStructure(xd::IStructurePtr structure)
+void FieldListControl::setStructure(const xd::Structure& structure)
 {
     m_structure = structure;
     populate();
@@ -325,14 +325,14 @@ void FieldListControl::populate()
     m_grid->deleteAllRows();
 
     
-    int col_count = m_structure->getColumnCount();
+    size_t i, col_count = m_structure.getColumnCount();
 
     // create a temporary vector of field list items
     // to be used to populate the grid
     std::vector<FieldListItem> fields;
-    for (int i = 0; i < col_count; i++)
+    for (i = 0; i < col_count; i++)
     {
-        const xd::ColumnInfo& colinfo = m_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = m_structure.getColumnInfoByIdx(i);
 
         FieldListItem fli;
         fli.name = makeProperIfNecessary(colinfo.name);

@@ -7267,7 +7267,7 @@ void TableDoc::onSetOrder(wxCommandEvent& evt)
     site = m_frame->lookupSite(wxT("SortPanel"));
     if (site.isNull())
     {
-        xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
+        xd::Structure structure = g_app->getDatabase()->describeTable(m_path);
         if (structure.isNull())
             return;
 
@@ -7576,7 +7576,7 @@ void TableDoc::onCopyRecords(wxCommandEvent& evt)
         {
             AppBusyCursor bc;
 
-            xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
+            xd::Structure structure = g_app->getDatabase()->describeTable(m_path);
             if (structure.isNull())
                 return;
 
@@ -7734,7 +7734,7 @@ void TableDoc::onFilter(wxCommandEvent& evt)
         {
             AppBusyCursor bc;
 
-            xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
+            xd::Structure structure = g_app->getDatabase()->describeTable(m_path);
             if (structure.isNull())
                 return;
 
@@ -7887,7 +7887,7 @@ void TableDoc::onDeleteRecords(wxCommandEvent& evt)
         {
             AppBusyCursor bc;
 
-            xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
+            xd::Structure structure = g_app->getDatabase()->describeTable(m_path);
             if (structure.isNull())
                 return;
 
@@ -8380,7 +8380,7 @@ void TableDoc::onSetBreakExpr(wxCommandEvent& evt)
     if (model.isNull())
         return;
 
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
+    xd::Structure structure = g_app->getDatabase()->describeTable(m_path);
     if (structure.isNull())
         return;
 

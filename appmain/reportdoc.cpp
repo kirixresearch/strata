@@ -4683,7 +4683,7 @@ void ReportDoc::insertFormula(int command_id)
 
             wxString data_source = getDesignComponentRaw()->getDataSource();
 
-            xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(towstr(data_source));
+            xd::Structure structure = g_app->getDatabase()->describeTable(towstr(data_source));
 
             if (structure.isOk())
                 panel->setStructure(structure);

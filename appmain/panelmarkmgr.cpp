@@ -444,6 +444,10 @@ void MarkMgrPanel::editMark(int mark_idx)
     xd::IIteratorPtr iter = tabledoc->getIterator();
     if (iter.isNull())
         return;
+
+    xd::IStructurePtr structure = iter->getStructure();
+    if (structure.isNull())
+        return;
     
     if (mark_idx < 0 || mark_idx >= m_grid->getRowCount())
         return;
@@ -460,7 +464,7 @@ void MarkMgrPanel::editMark(int mark_idx)
     m_builder->setTypeOnly(xd::typeBoolean);
     m_builder->sigExprEditFinished.connect(this, &MarkMgrPanel::onExprEditFinished);
     m_builder->sigExprEditCancelled.connect(this, &MarkMgrPanel::onExprEditCancelled);
-    m_builder->setStructure(iter->getStructure());
+    m_builder->setStructure(structure->toStructure());
     m_builder->setExpression(expr);
     m_builder->Show(true);
 }

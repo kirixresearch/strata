@@ -52,7 +52,7 @@ private:
 private:
 
     wxString m_path;
-    xd::IStructurePtr m_structure;
+    xd::Structure m_structure;
     xd::IIteratorPtr m_iter;
     IDocumentSitePtr m_doc_site;
     wxString m_default_expr;

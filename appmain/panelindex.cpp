@@ -141,7 +141,7 @@ bool IndexPanel::setPath(const std::wstring& path)
 {
     xd::IDatabasePtr db = g_app->getDatabase();
 
-    m_structure = db->describeTableI(path);
+    m_structure = db->describeTable(path);
     if (m_structure.isNull())
         return false;
 
@@ -556,7 +556,7 @@ void IndexPanel::insertIndexColumn(int row,
     
     // determine if this field is a calculated field
     bool calculated = false;
-    const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(col_name));
+    const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(towstr(col_name));
     if (colinfo.isOk())
         calculated = colinfo.calculated;
     

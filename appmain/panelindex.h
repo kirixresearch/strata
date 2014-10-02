@@ -110,7 +110,7 @@ private:
     IndexPanelEntry* m_selected_index_entry;
 
     std::wstring m_path;
-    xd::IStructurePtr m_structure;
+    xd::Structure m_structure;
     IDocumentSitePtr m_doc_site;
     
     DECLARE_EVENT_TABLE()

@@ -77,7 +77,7 @@ private:
 private:
 
     IDocumentSitePtr m_doc_site;
-    xd::IStructurePtr m_structure;
+    xd::Structure m_structure;
     
     wxString m_path;
     wxString m_where_condition;

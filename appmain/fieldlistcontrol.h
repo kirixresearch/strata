@@ -109,7 +109,7 @@ public:
     void clearSelection();
     void sortList(int sort_state);
     void setDragFormat(const wxString& format);
-    void setStructure(xd::IStructurePtr structure);
+    void setStructure(const xd::Structure& structure);
     void setItemEnabled(const wxString& item_name, bool enabled = true);
     void addCustomItem(const wxString& text,
                        const wxBitmap& bitmap = wxNullBitmap,
@@ -139,7 +139,7 @@ private:
 
     int m_sort_state;
     kcl::RowSelectionGrid* m_grid;
-    xd::IStructurePtr m_structure;
+    xd::Structure m_structure;
     std::vector<FieldListItem> m_custom_items;
     std::vector<FieldListItem*> m_to_delete;
 

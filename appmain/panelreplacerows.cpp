@@ -43,7 +43,7 @@ void ReplaceRowsPanel::setParameters(const wxString& path, const wxString& expr,
 {
     m_path = path;
     m_iter = g_app->getDatabase()->query(towstr(path), L"", L"", L"", NULL);
-    m_structure = m_iter->getStructure();
+    m_structure = m_iter->getStructure()->toStructure();
     m_default_expr = expr;
     m_default_field = field;
 }
@@ -154,10 +154,10 @@ void ReplaceRowsPanel::populate()
     std::vector<wxString> fields;
 
     m_field_choice->Clear();
-    int i, col_count = m_structure->getColumnCount();
+    size_t i, col_count = m_structure.getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        fields.push_back(makeProperIfNecessary(m_structure->getColumnName(i)));
+        fields.push_back(makeProperIfNecessary(m_structure.getColumnName(i)));
     }
 
     std::sort(fields.begin(), fields.end());
@@ -174,7 +174,7 @@ bool ReplaceRowsPanel::isValidValue()
     replace_value.Trim(TRUE);
     
     wxString replace_field = m_field_choice->GetStringSelection();
-    const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(replace_field));
+    const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(towstr(replace_field));
     if (colinfo.isNull())
         return false;
 
@@ -229,7 +229,7 @@ void ReplaceRowsPanel::checkEnableRun()
         return;
 
     wxString replace_field = m_field_choice->GetStringSelection();
-    const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(replace_field));
+    const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(towstr(replace_field));
     
     if (replace_field.IsEmpty() || colinfo.isNull())
     {
@@ -250,10 +250,11 @@ bool ReplaceRowsPanel::validate(bool* value)
     wxString replace_value = m_replace_text->GetValue();
     wxString replace_field = m_field_choice->GetStringSelection();
 
-    const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(replace_field));
+    const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(towstr(replace_field));
     if (colinfo.isOk())
     {
-        int type = m_structure->getExprType(towstr(replace_value));
+        int type = xd::typeInvalid;
+        //int type = m_structure->getExprType(towstr(replace_value));
         valid = xd::isTypeCompatible(type, colinfo.type);
     }
 
@@ -302,7 +303,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
     bool is_value = false;
     
     wxString replace_field = m_field_choice->GetStringSelection();
-    const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(replace_field));
+    const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(towstr(replace_field));
     
     if (replace_field.IsEmpty())
     {
