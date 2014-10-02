@@ -156,7 +156,7 @@ bool sqlInsert(xd::IDatabasePtr db,
 
     // try to open the target set
 
-    xd::IStructurePtr structure = db->describeTableI(table);
+    xd::Structure structure = db->describeTable(table);
 
     if (structure.isNull())
     {
@@ -181,7 +181,7 @@ bool sqlInsert(xd::IDatabasePtr db,
     {
         dequote(*it, '[', ']');
         
-        const xd::ColumnInfo& colinfo = structure->getColumnInfo(*it);
+        const xd::ColumnInfo& colinfo = structure.getColumnInfo(*it);
         if (colinfo.isNull())
         {
             wchar_t buf[1024]; // some paths might be long

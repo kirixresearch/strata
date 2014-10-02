@@ -207,7 +207,7 @@ bool CommonBaseIterator::refreshRelInfo(CommonBaseIteratorRelInfo& info)
     if (info.tag.length() == 0)
         return false;
 
-    xd::IStructurePtr right_structure = database->describeTableI(rel->getRightTable());
+    xd::Structure right_structure = database->describeTable(rel->getRightTable());
     if (right_structure.isNull())
         return false;
 
@@ -245,9 +245,9 @@ bool CommonBaseIterator::refreshRelInfo(CommonBaseIteratorRelInfo& info)
     {
         for (j = 0; j < count; ++j)
         {
-            if (!wcscasecmp(right_list[j].c_str(), idx_list[x].c_str()))
+            if (kl::iequals(right_list[j], idx_list[x]))
             {
-                const xd::ColumnInfo& colinfo = right_structure->getColumnInfo(right_list[j]);
+                const xd::ColumnInfo& colinfo = right_structure.getColumnInfo(right_list[j]);
                 if (colinfo.isNull())
                 {
                     delete info.kl;
@@ -365,11 +365,11 @@ public:
 
 
 
-        xd::IStructurePtr s = database->describeTableI(rel->getRightTable());
+        xd::Structure s = database->describeTable(rel->getRightTable());
         if (s.isNull())
             return false;
 
-        const xd::ColumnInfo& colinfo = s->getColumnInfo(column);
+        const xd::ColumnInfo& colinfo = s.getColumnInfo(column);
         if (colinfo.isNull())
             return false;
 

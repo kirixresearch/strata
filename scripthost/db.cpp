@@ -1966,7 +1966,7 @@ void DbConnection::enableExceptions(kscript::ExprEnv* env, kscript::Value* retva
 // Description: Returns an array of DbColumn objects which describe 
 //     the structure of the specified table
 // 
-// Syntax: function DbConnection.describeTableI(path : String) : Array(DbColumn)
+// Syntax: function DbConnection.describeTable(path : String) : Array(DbColumn)
 //
 // Remarks: Returns an array of DbColumn objects which describe 
 //     the structure of the specified table.  Each DbColumn object

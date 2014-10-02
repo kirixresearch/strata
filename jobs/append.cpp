@@ -168,7 +168,7 @@ int AppendJob::runJob()
             // doing an append implies that the result set should have the
             // same structure as the set we're appending to)
 
-            input_structure = m_db->describeTableI(*it);
+            input_structure = m_db->describeTable(*it);
             if (input_structure.isNull())
             {
                 m_job_info->setState(jobStateFailed);

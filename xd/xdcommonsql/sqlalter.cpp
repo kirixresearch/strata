@@ -65,7 +65,7 @@ bool sqlAlter(xd::IDatabasePtr db,
     
     dequote(table_name, '[', ']');
     
-    xd::IStructurePtr structure = db->describeTableI(table_name);
+    xd::Structure structure = db->describeTable(table_name);
 
     if (structure.isNull())
     {
@@ -109,7 +109,7 @@ bool sqlAlter(xd::IDatabasePtr db,
             }
 
             // if field name already exists, fail out
-            if (structure->getColumnExist(new_params.name))
+            if (structure.getColumnExist(new_params.name))
             {
                 std::wstring msg = L"Unable to add column in ALTER statement; column '";
                 msg += new_params.name;
@@ -133,13 +133,13 @@ bool sqlAlter(xd::IDatabasePtr db,
             if (stmt.getKeywordExists(L"FIRST"))
                 colinfo.column_ordinal = 0;
                  else
-                colinfo.column_ordinal = structure->getColumnCount();
+                colinfo.column_ordinal = structure.getColumnCount();
 
 
             if (stmt.getKeywordExists(L"BEFORE"))
             {
                 std::wstring before = stmt.getKeywordParam(L"BEFORE");
-                const xd::ColumnInfo& col = structure->getColumnInfo(before);
+                const xd::ColumnInfo& col = structure.getColumnInfo(before);
                 if (col.isNull())
                 {
                     std::wstring msg = L"Unable to add column in ALTER statement; column '";
@@ -153,7 +153,7 @@ bool sqlAlter(xd::IDatabasePtr db,
             if (stmt.getKeywordExists(L"AFTER"))
             {
                 std::wstring after = stmt.getKeywordParam(L"AFTER");
-                const xd::ColumnInfo& col = structure->getColumnInfo(after);
+                const xd::ColumnInfo& col = structure.getColumnInfo(after);
                 if (col.isNull())
                 {
                     std::wstring msg = L"Unable to add column in ALTER statement; column '";
@@ -176,7 +176,7 @@ bool sqlAlter(xd::IDatabasePtr db,
             
             dequote(column, '[', ']');
             
-            if (!structure->getColumnExist(column))
+            if (!structure.getColumnExist(column))
             {
                 // column didn't exist in the first place
                 wchar_t buf[1024];
@@ -191,7 +191,7 @@ bool sqlAlter(xd::IDatabasePtr db,
         {
             std::wstring column = popToken(*it);
             
-            if (0 == wcscasecmp(column.c_str(), L"COLUMN"))
+            if (kl::iequals(column, L"COLUMN"))
                 column = popToken(*it);
             
             std::wstring to = popToken(*it);
@@ -213,7 +213,7 @@ bool sqlAlter(xd::IDatabasePtr db,
             dequote(column, '[', ']');
             dequote(new_name, '[', ']');
 
-            if (!structure->getColumnExist(column))
+            if (!structure.getColumnExist(column))
             {
                 // column doesn't exist
                 wchar_t buf[1024];
@@ -249,7 +249,7 @@ bool sqlAlter(xd::IDatabasePtr db,
             new_params.mask = xd::ColumnInfo::maskType | xd::ColumnInfo::maskWidth |
                               xd::ColumnInfo::maskScale | xd::ColumnInfo::maskExpression;
 
-            if (!structure->getColumnExist(colname))
+            if (!structure.getColumnExist(colname))
             {
                 // column doesn't exist
                 wchar_t buf[1024];
@@ -300,7 +300,7 @@ bool sqlAlter(xd::IDatabasePtr db,
                 new_params.mask = xd::ColumnInfo::maskType | xd::ColumnInfo::maskWidth |
                                   xd::ColumnInfo::maskScale | xd::ColumnInfo::maskExpression;
 
-                if (structure->getColumnExist(old_name))
+                if (structure.getColumnExist(old_name))
                 {
                     // column doesn't exist
                     wchar_t buf[1024];

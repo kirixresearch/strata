@@ -435,7 +435,7 @@ bool TableDoc::canDeleteColumns(std::vector<int>& view_cols)
     if (db.isNull())
         return false;
 
-    xd::IStructurePtr structure = db->describeTableI(m_path);
+    xd::Structure structure = db->describeTable(m_path);
     if (structure.isNull())
         return false;
     
@@ -452,7 +452,7 @@ bool TableDoc::canDeleteColumns(std::vector<int>& view_cols)
             return false;
         
         // don't allow deletes on static fields in external sets
-        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(model_col);
+        const xd::ColumnInfo& colinfo = structure.getColumnInfoByIdx((size_t)model_col);
         if (colinfo.isNull() || !colinfo.calculated)
             return false;
     }
@@ -3000,15 +3000,15 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
     if (rels.isNull())
         return;
 
-    xd::IStructurePtr s = db->describeTableI(m_path);
+    xd::Structure s = db->describeTable(m_path);
     if (s.isNull())
         return;
 
-    int i, col_count = s->getColumnCount();
+    size_t i, col_count = s.getColumnCount();
 
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& colinfo = s->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = s.getColumnInfoByIdx(i);
         if (!colinfo.calculated)
             continue;
 
@@ -3033,11 +3033,10 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
 
 
     // now try to find the set that has that column
-    xd::IStructurePtr right_structure;
 
     xd::IRelationEnumPtr rel_enum = rels->getRelationEnum(m_path);
     xd::IRelationPtr rel;
-    int rel_count = (int)rel_enum->size();
+    size_t rel_count = rel_enum->size();
 
     xd::ColumnInfo colinfo;
 
@@ -3051,11 +3050,11 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
         if (0 != rel_tag.CmpNoCase(rel->getTag()))
             continue;
 
-        right_structure = db->describeTableI(rel->getRightTable());
+        xd::Structure right_structure = db->describeTable(rel->getRightTable());
         if (right_structure.isNull())
             continue;
 
-        colinfo = right_structure->getColumnInfo(towstr(col_name));
+        colinfo = right_structure.getColumnInfo(towstr(col_name));
         if (colinfo.isNull())
         {
             // we couldn't find the appropriate column
@@ -3081,7 +3080,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
              else
             temp = column_name.c_str();
 
-        if (!s->getColumnExist(towstr(temp)))
+        if (!s.getColumnExist(towstr(temp)))
         {
             column_name = temp;
             break;
@@ -5041,17 +5040,15 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     }
 
 
-    xd::IStructurePtr structure = db->describeTableI(m_path);
+    xd::Structure structure = db->describeTable(m_path);
     if (structure.isNull())
         return;
 
-    const xd::ColumnInfo& col_info = structure->getColumnInfo(towstr(col_name));
+    const xd::ColumnInfo& col_info = structure.getColumnInfo(towstr(col_name));
     if (col_info.isNull())
         return;
 
-
     wxString quoted_col_name = xd::quoteIdentifierIfNecessary(db, towstr(col_name));
-
 
     // update_info is used by ICacheRowUpdate below, however only
     // iterators that employ a row cache need this
@@ -5455,7 +5452,7 @@ void TableDoc::showCreateDynamicField()
 
     m_grid->clearSelection();
 
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
+    xd::Structure structure = g_app->getDatabase()->describeTable(m_path);
     if (structure.isNull())
         return;
 
@@ -5465,7 +5462,7 @@ void TableDoc::showCreateDynamicField()
     {
         i++;
         column_name = wxString::Format(wxT("Field%d"), i);
-    } while (structure->getColumnExist(towstr(column_name)));
+    } while (structure.getColumnExist(towstr(column_name)));
 
 
     if (createDynamicField(column_name,
@@ -5612,12 +5609,12 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
 
     // make sure that the columns are all calculated fields
 
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
+    xd::Structure structure = g_app->getDatabase()->describeTable(m_path);
 
     std::set<wxString>::iterator it;
     for (it = cols.begin(); it != cols.end(); ++it)
     {
-        const xd::ColumnInfo& colinfo = structure->getColumnInfo(towstr(*it));
+        const xd::ColumnInfo& colinfo = structure.getColumnInfo(towstr(*it));
 
         if (colinfo.isNull())
         {
@@ -5715,16 +5712,16 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
     if (m_iter.isNull())
         return;
 
-    xd::IStructurePtr structure = m_iter->getStructure();
+    xd::Structure structure = m_iter->getStructure()->toStructure();
     if (structure.isNull())
         return;
     
-    int i, col_count = structure->getColumnCount();
+    size_t i, col_count = structure.getColumnCount();
     list.reserve(col_count);
     
     for (i = 0; i < col_count; i++)
     {
-        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = structure.getColumnInfoByIdx(i);
         
         bool in_view = false;
         int model_idx = m_grid->getColumnModelIdxByName(colinfo.name);
@@ -5771,15 +5768,15 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 
             std::wstring right_path = rel->getRightTable();
 
-            xd::IStructurePtr right_structure = db->describeTableI(right_path);
+            xd::Structure right_structure = db->describeTable(right_path);
             if (right_structure.isNull())
                 continue;
 
-            int i, col_count = right_structure->getColumnCount();
+            size_t i, col_count = right_structure.getColumnCount();
  
             for (i = 0; i < col_count; ++i)
             {
-                const xd::ColumnInfo& colinfo = right_structure->getColumnInfoByIdx(i);
+                const xd::ColumnInfo& colinfo = right_structure.getColumnInfoByIdx(i);
 
                 s = wxString::Format(wxT("%s.%s"),
                             makeProperIfNecessary(rel->getTag()).c_str(),
@@ -6327,13 +6324,13 @@ void TableDoc::onSummary(wxCommandEvent& evt)
     // if there was no selection, summarize all columns
     if (summary_columns.size() == 0)
     {
-        xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
+        xd::Structure structure = g_app->getDatabase()->describeTable(m_path);
         if (structure.isNull())
             return;
 
-        size_t i, col_count = structure->getColumnCount();
+        size_t i, col_count = structure.getColumnCount();
         for (i = 0; i < col_count; ++i)
-            summary_columns.push_back(structure->getColumnName(i));
+            summary_columns.push_back(structure.getColumnName(i));
     }
 
 
@@ -6920,14 +6917,14 @@ static std::wstring xdTypeToOutputType(int type)
 
 bool TableDoc::saveAsStructure(const wxString& path)
 {
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
+    xd::Structure structure = g_app->getDatabase()->describeTable(m_path);
     if (structure.isNull())
         return false;
 
     // build up a string that we'll save
     std::wstring result_text = L"";
 
-    int i, col_count = structure->getColumnCount();
+    int i, col_count = structure.getColumnCount();
 
     // TODO: we could use the kl::JsonNode library here instead of hand-generating the JSON
     
@@ -6938,7 +6935,7 @@ bool TableDoc::saveAsStructure(const wxString& path)
     bool first = true;
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);    
+        const xd::ColumnInfo& colinfo = structure.getColumnInfoByIdx(i);    
     
         if (!first)
             result_text += L",\n";

@@ -60,7 +60,7 @@ public:
     // returns true/false if any invalid field names exist
     // in the specified structure based on the attributes
     // of the database that is provided
-    static bool findInvalidFieldNames(xd::IStructurePtr structure,
+    static bool findInvalidFieldNames(const xd::Structure& structure,
                                       xd::IDatabasePtr db = xcm::null);
     
     // finds invalid/duplicate fields in the row checker vector,

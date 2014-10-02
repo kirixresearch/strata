@@ -1685,7 +1685,7 @@ void QueryDoc::populateTemplateFromInterface()
         tbl.alias = tbl.path.AfterLast(wxT('/'));
         box->GetPosition(&tbl.x, &tbl.y);
         box->GetSize(&tbl.width, &tbl.height);
-        tbl.structure = box->getStructure()->toStructure();
+        tbl.structure = box->getStructure();
         
         // add the source table to the template
         m_info.m_source_tables.push_back(tbl);

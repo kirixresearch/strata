@@ -123,8 +123,8 @@ public:
     void setSetPath(const wxString& set_path);
     wxString getSetPath();
     
-    void setStructure(xd::IStructurePtr s);
-    xd::IStructurePtr getStructure();
+    void setStructure(const xd::Structure& s);
+    const xd::Structure& getStructure();
     
     bool getItemExists(const wxString& expr);
     int getItemY(const wxString& expr);
@@ -164,7 +164,7 @@ private:
     
 private:
 
-    xd::IStructurePtr m_structure;
+    xd::Structure m_structure;
 
     wxString m_set_path;
     wxString m_caption;

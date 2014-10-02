@@ -255,12 +255,12 @@ RelationBox::~RelationBox()
 {
 }
 
-xd::IStructurePtr RelationBox::getStructure()
+const xd::Structure& RelationBox::getStructure()
 {
     return m_structure;
 }
 
-void RelationBox::setStructure(xd::IStructurePtr s)
+void RelationBox::setStructure(const xd::Structure& s)
 {
     m_structure = s;
     populate();
@@ -1111,13 +1111,13 @@ void RelationBox::populate()
 
     std::vector<wxString> items;
 
-    int col_count = m_structure->getColumnCount();
+    size_t col_count = m_structure.getColumnCount();
     int i;
     int item_idx = 0;
 
-    for (i = 0; i < col_count; ++i)
+    for (i = 0; i < (int)col_count; ++i)
     {
-        items.push_back(m_structure->getColumnName(i));
+        items.push_back(m_structure.getColumnName(i));
     }
 
     if (m_sort_order == RelationBox::SortAscending)
@@ -1138,7 +1138,7 @@ void RelationBox::populate()
     i = 0;
     for (it = items.begin(); it != items.end(); ++it)
     {
-        const xd::ColumnInfo& colinfo = m_structure->getColumnInfo(towstr(*it));
+        const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(towstr(*it));
 
         wxBitmap icon;
 
@@ -2098,7 +2098,7 @@ bool RelationDiagram::addBox(const wxString& path,
     if (height <= 0)
         height = BOX_DEFAULT_HEIGHT;
 
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(towstr(path));
+    xd::Structure structure = g_app->getDatabase()->describeTable(towstr(path));
     if (structure.isNull())
         return false;
 
@@ -2394,16 +2394,16 @@ void RelationDiagram::onSetStructureChanged(const wxString& set_path)
     if (!box)
         return;
     
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(towstr(set_path));
+    xd::Structure structure = g_app->getDatabase()->describeTable(towstr(set_path));
     if (structure.isNull())
         return;
     
     // populate a list of fieldnames for use below
     std::vector<wxString> fieldnames;
-    int i, count = structure->getColumnCount();
+    size_t i, count = structure.getColumnCount();
     for (i = 0; i < count; ++i)
     {
-        fieldnames.push_back(structure->getColumnName(i));
+        fieldnames.push_back(structure.getColumnName(i));
     }
     
     // check to see if we need to delete any relationship lines

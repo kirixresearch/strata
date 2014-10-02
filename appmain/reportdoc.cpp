@@ -2204,17 +2204,17 @@ void ReportDoc::getColumnListItems(std::vector<ColumnListItem>& list)
     if (data_source.Length() == 0)
         return;
 
-    xd::IStructurePtr structure;
-    structure = g_app->getDatabase()->describeTableI(towstr(data_source));
+    xd::Structure structure;
+    structure = g_app->getDatabase()->describeTable(towstr(data_source));
     if (structure.isOk())
     {
         // add the columns to the list
-        int i, col_count = structure->getColumnCount();
+        size_t i, col_count = structure.getColumnCount();
         list.reserve(col_count);
         
         for (i = 0; i < col_count; i++)
         {
-            const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& colinfo = structure.getColumnInfoByIdx(i);
 
             ColumnListItem item;
             item.text = makeProperIfNecessary(colinfo.name);

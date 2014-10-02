@@ -801,7 +801,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         row = 0;
         for (it = m_template.m_ei.tables.begin(); it != m_template.m_ei.tables.end(); ++it)
         {
-            xd::IStructurePtr structure = local_db->describeTableI(it->input_tablename);
+            xd::Structure structure = local_db->describeTable(it->input_tablename);
 
             if (structure.isNull())
             {

@@ -379,9 +379,9 @@ struct Structure
     bool isOk() const { return !columns.empty(); }
     bool isNull() const { return columns.empty(); }
 
-    size_t getColumnCount() { return columns.size(); }
-    const std::wstring& getColumnName(size_t idx) { return columns[idx].name; }
-    const ColumnInfo& getColumnInfoByIdx(size_t idx) { return columns[idx]; }
+    size_t getColumnCount() const { return columns.size(); }
+    const std::wstring& getColumnName(size_t idx) const { return columns[idx].name; }
+    const ColumnInfo& getColumnInfoByIdx(size_t idx) const { return columns[idx]; }
     const ColumnInfo& getColumnInfo(const std::wstring& column_name)
       { static xd::ColumnInfo nullcol;
         size_t idx = getColumnIdx(column_name); 

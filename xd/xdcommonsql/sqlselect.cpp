@@ -57,7 +57,7 @@ struct OrderByField
 struct SourceTable
 {
     std::wstring path;
-    xd::IStructurePtr structure;
+    xd::Structure structure;
     std::wstring alias;
     std::wstring join_expr;
     int join_type;
@@ -84,7 +84,6 @@ struct JoinInfo
 {
     std::wstring left_path;
     std::wstring right_path;
-    xd::IStructurePtr right_structure;
     xd::IIteratorPtr right_iter;
     KeyLayout left_key;
     KeyLayout right_key;
@@ -213,7 +212,7 @@ static bool isUniqueFieldName(std::vector<SourceTable>& s,
     std::vector<SourceTable>::iterator it;
     for (it = s.begin(); it != s.end(); ++it)
     {
-        if (it->structure->getColumnExist(field_name))
+        if (it->structure.getColumnExist(field_name))
         {
             if (e)
                 return false;
@@ -290,7 +289,7 @@ static xd::ColumnInfo getColumnInfoMulti(std::vector<SourceTable>& s,
     {
         for (it = s.begin(); it != s.end(); ++it)
         {
-            const xd::ColumnInfo& col_info = it->structure->getColumnInfo(field_name);
+            const xd::ColumnInfo& col_info = it->structure.getColumnInfo(field_name);
             if (col_info.isOk())
             {
                 if (tbl)
@@ -306,11 +305,11 @@ static xd::ColumnInfo getColumnInfoMulti(std::vector<SourceTable>& s,
     {
         if (!alias_part.empty())
         {
-            if (wcscasecmp(alias_part.c_str(), it->alias.c_str()) != 0)
+            if (!kl::iequals(alias_part, it->alias))
                 continue;
         }
         
-        const xd::ColumnInfo& col_info = it->structure->getColumnInfo(field_part);
+        const xd::ColumnInfo& col_info = it->structure.getColumnInfo(field_part);
         if (col_info.isOk())
         {
             if (tbl)
@@ -511,12 +510,11 @@ static std::wstring normalizeFieldNames(std::vector<SourceTable>& source_tables,
          st_it != source_tables.end();
          ++st_it)
     {
-        int col_count = st_it->structure->getColumnCount();
-        int i;
+        size_t i, col_count = st_it->structure.getColumnCount();
         
         for (i = 0; i < col_count; ++i)
         {
-            const std::wstring& colname = st_it->structure->getColumnName(i);
+            const std::wstring& colname = st_it->structure.getColumnName(i);
             std::wstring q_colname = L"[" + colname + L"]";
             std::wstring full_name;
 
@@ -572,11 +570,11 @@ static std::wstring renameJoinFields(std::vector<SourceTable>& source_tables,
          st_it != source_tables.end();
          ++st_it)
     {
-        int i, col_count = st_it->structure->getColumnCount();
+        size_t i, col_count = st_it->structure.getColumnCount();
         
         for (i = 0; i < col_count; ++i)
         {
-            const std::wstring& colname = st_it->structure->getColumnName(i);
+            const std::wstring& colname = st_it->structure.getColumnName(i);
             std::wstring q_colname = L"[" + colname + L"]";
             std::wstring replace_with = L"[" + st_it->alias + L"." + colname + L"]";
             std::wstring full_name;
@@ -626,13 +624,12 @@ static void normalizeFieldNames(std::vector<SourceTable>& source_tables,
          st_it != source_tables.end();
          ++st_it)
     {
-        int col_count = st_it->structure->getColumnCount();
-        int i;
+        size_t i, col_count = st_it->structure.getColumnCount();
 
         for (i = 0; i < col_count; ++i)
         {
             std::wstring full_name;
-            const std::wstring& colname = st_it->structure->getColumnName(i);
+            const std::wstring& colname = st_it->structure.getColumnName(i);
             std::wstring q_colname = L"[" + colname + L"]";
 
             if (isUniqueFieldName(source_tables, colname))
@@ -1408,11 +1405,11 @@ static void getReferencedFields(std::vector<SourceTable>& s,
     std::vector<SourceTable>::iterator it;
     for (it = s.begin(); it != s.end(); ++it)
     {
-        int i, cnt = it->structure->getColumnCount();
+        size_t i, cnt = it->structure.getColumnCount();
         for (i = 0; i < cnt; ++i)
         {
             std::wstring alias = it->alias;
-            const std::wstring& colname = it->structure->getColumnName(i);
+            const std::wstring& colname = it->structure.getColumnName(i);
 
             // alias.fieldname
             full_name = alias + L"." + colname;
@@ -1755,7 +1752,6 @@ static bool doJoin(xd::IDatabasePtr db,
         JoinInfo j;
         j.left_path = tbl->path;
         j.right_path = st_it->path;
-        j.right_structure = st_it->structure;
         j.left = jparse.left;
         j.right = jparse.right;
         j.join_type = st_it->join_type;
@@ -2107,11 +2103,11 @@ static bool doJoin(xd::IDatabasePtr db,
          st_it != source_tables.end();
          ++st_it)
     {
-        int i, col_count = st_it->structure->getColumnCount();
+        size_t i, col_count = st_it->structure.getColumnCount();
 
         for (i = 0; i < col_count; ++i)
         {
-            const xd::ColumnInfo& colinfo = st_it->structure->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& colinfo = st_it->structure.getColumnInfoByIdx(i);
 
             JoinField f;
 
@@ -2124,8 +2120,7 @@ static bool doJoin(xd::IDatabasePtr db,
             // try to find the field's optional output name
             for (sf_it = columns.begin(); sf_it != columns.end(); ++sf_it)
             {
-                if (0 == wcscasecmp(sf_it->expr.c_str(), f.name.c_str()) &&
-                    !sf_it->name.empty())
+                if (kl::iequals(sf_it->expr, f.name) && !sf_it->name.empty())
                 {
                     f.alias = sf_it->name;
                 }
@@ -2549,7 +2544,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
             SourceTable j;
             j.path = tbl;
-            j.structure = db->describeTableI(tbl);
+            j.structure = db->describeTable(tbl);
             j.alias = alias;
             j.join_expr = on;
             j.join_type = joinInner;
@@ -2610,7 +2605,6 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
     }
 
 
-    xd::IStructurePtr set_structure;
 
     // parse the from table
     {
@@ -2630,8 +2624,8 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
         parseTableAndAlias(set_paths[0], table, alias);
 
 
-        set_structure = db->describeTableI(table);
-        if (set_structure.isNull())
+        xd::Structure table_structure = db->describeTable(table);
+        if (table_structure.isNull())
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to open table [%ls]", table.c_str());
@@ -2643,7 +2637,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
         st.path = table;
         st.join_type = joinNone;
         st.alias = alias;
-        st.structure = set_structure;
+        st.structure = table_structure;
 
 
         source_tables.insert(source_tables.begin(), st);
@@ -2681,11 +2675,11 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
             for (st_it = source_tables.begin(); st_it != source_tables.end();  ++st_it)
             {
-                int i, col_count = st_it->structure->getColumnCount();
+                size_t i, col_count = st_it->structure.getColumnCount();
         
                 for (i = 0; i < col_count; ++i)
                 {
-                    const std::wstring& colname = st_it->structure->getColumnName(i);
+                    const std::wstring& colname = st_it->structure.getColumnName(i);
                     
                     f.name = colname;
 

@@ -57,14 +57,14 @@ int xdcmnInsert(xd::IDatabasePtr dest_db,
     xd::IRowInserter* insert = sp_insert.p;
 
     // get table structure
-    xd::IStructurePtr dest_structure = dest_db->describeTableI(dest_table);
-    xd::IStructurePtr src_structure = source_iter->getStructure();
+    xd::Structure dest_structure = dest_db->describeTable(dest_table);
+    xd::Structure src_structure = source_iter->getStructure()->toStructure();
 
     if (dest_structure.isNull() || src_structure.isNull())
         return 0;
 
 
-    int i, col_count = dest_structure->getColumnCount();
+    size_t i, col_count = dest_structure.getColumnCount();
 
     if (!insert->startInsert(L"*"))
     {
@@ -83,13 +83,13 @@ int xdcmnInsert(xd::IDatabasePtr dest_db,
 
     for (i = 0; i < col_count; i++)
     {
-        const xd::ColumnInfo& dest_colinfo = dest_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& dest_colinfo = dest_structure.getColumnInfoByIdx(i);
         if (dest_colinfo.isNull())
             continue;
         if (dest_colinfo.calculated)
             continue;
 
-        const xd::ColumnInfo& src_colinfo = src_structure->getColumnInfo(dest_colinfo.name);
+        const xd::ColumnInfo& src_colinfo = src_structure.getColumnInfo(dest_colinfo.name);
         if (src_colinfo.isNull())
             continue;
 

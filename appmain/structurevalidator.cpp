@@ -278,13 +278,13 @@ bool StructureValidator::findDuplicateObjectNames(std::vector<RowErrorChecker>& 
     return found;
 }
 
-bool StructureValidator::findInvalidFieldNames(xd::IStructurePtr structure, xd::IDatabasePtr db)
+bool StructureValidator::findInvalidFieldNames(const xd::Structure& structure, xd::IDatabasePtr db)
 {
     bool found = false;
-    size_t i, count = structure->getColumnCount();
+    size_t i, count = structure.getColumnCount();
     for (i = 0; i < count; ++i)
     {
-        if (!isValidFieldName(structure->getColumnName(i), db))
+        if (!isValidFieldName(structure.getColumnName(i), db))
         {
             found = true;
             break;

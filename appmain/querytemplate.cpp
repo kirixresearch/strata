@@ -714,7 +714,7 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
                 if (m_source_tables.size() != 1)
                     return wxEmptyString;
 
-                type == xd::typeInvalid;
+                type = xd::typeInvalid;
                 //type = m_source_tables[0].structure->getExprType(towstr(stripAllAliases(_input)));
                 if (type == xd::typeInvalid || type == xd::typeUndefined)
                     return wxEmptyString;
