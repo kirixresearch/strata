@@ -201,7 +201,7 @@ bool ClientRowInserter::startInsert(const std::wstring& col_list)
     if (m_inserting)
         return false;
 
-    m_structure = m_database->describeTableI(m_path);
+    m_structure = m_database->describeTable(m_path);
     if (m_structure.isNull())
         return false;
 
@@ -216,9 +216,9 @@ bool ClientRowInserter::startInsert(const std::wstring& col_list)
     {
         columns.clear();
 
-        int i, col_count = m_structure->getColumnCount();
+        size_t i, col_count = m_structure.getColumnCount();
         for (i = 0; i < col_count; ++i)
-            columns.push_back(m_structure->getColumnName(i));
+            columns.push_back(m_structure.getColumnName(i));
     }
 
     std::wstring scols;
@@ -235,7 +235,7 @@ bool ClientRowInserter::startInsert(const std::wstring& col_list)
 
     for (it = columns.begin(); it != columns.end(); ++it)
     {
-        const xd::ColumnInfo& col_info = m_structure->getColumnInfo(*it);
+        const xd::ColumnInfo& col_info = m_structure.getColumnInfo(*it);
         if (col_info.isNull())
             return false;
 

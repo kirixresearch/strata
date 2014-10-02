@@ -472,7 +472,7 @@ xd::IStructurePtr PgsqlIterator::getStructure()
 
 bool PgsqlIterator::refreshStructure()
 {
-    xd::IStructurePtr set_structure = m_database->describeTableI(getTable());
+    xd::Structure set_structure = m_database->describeTable(getTable());
     if (set_structure.isNull())
         return false;
 
@@ -486,7 +486,7 @@ bool PgsqlIterator::refreshStructure()
         delete m_fields[i]->expr;
         m_fields[i]->expr = NULL;
 
-        const xd::ColumnInfo& col = set_structure->getColumnInfo(m_fields[i]->name);
+        const xd::ColumnInfo& col = set_structure.getColumnInfo(m_fields[i]->name);
         if (col.isNull())
         {
             m_fields.erase(m_fields.begin() + i);
@@ -502,12 +502,12 @@ bool PgsqlIterator::refreshStructure()
     
     // find new calc fields
     
-    col_count = set_structure->getColumnCount();
+    col_count = set_structure.getColumnCount();
     
     std::vector<PgsqlDataAccessInfo*>::iterator it;
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& col = set_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col = set_structure.getColumnInfoByIdx(i);
         if (!col.calculated)
             continue;
             

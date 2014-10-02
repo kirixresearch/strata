@@ -63,7 +63,7 @@ public:
 private:
 
     ClientDatabase* m_database;
-    xd::IStructurePtr m_structure;
+    xd::Structure m_structure;
 
     std::wstring m_path;
     std::wstring m_handle;

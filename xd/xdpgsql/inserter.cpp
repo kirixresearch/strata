@@ -201,7 +201,7 @@ bool PgsqlRowInserter::putNull(xd::objhandle_t column_handle)
 
 bool PgsqlRowInserter::startInsert(const std::wstring& col_list)
 {
-    xd::IStructurePtr s = m_database->describeTableI(m_table);
+    xd::Structure s = m_database->describeTable(m_table);
     if (s.isNull())
         return false;
 
@@ -216,17 +216,17 @@ bool PgsqlRowInserter::startInsert(const std::wstring& col_list)
     {
         columns.clear();
 
-        int i, col_count = s->getColumnCount();
+        size_t i, col_count = s.getColumnCount();
 
         for (i = 0; i < col_count; ++i)
-            columns.push_back(s->getColumnName(i));
+            columns.push_back(s.getColumnName(i));
     }
 
     m_fields.clear();
 
     for (it = columns.begin(); it != columns.end(); ++it)
     {
-        const xd::ColumnInfo& col_info = s->getColumnInfo(*it);
+        const xd::ColumnInfo& col_info = s.getColumnInfo(*it);
         if (col_info.isNull())
             return false;
 

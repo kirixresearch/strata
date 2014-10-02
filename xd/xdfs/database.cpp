@@ -2565,31 +2565,6 @@ xd::Structure FsDatabase::describeTable(const std::wstring& path)
     return s.isOk() ? s->toStructure() : xd::Structure();
 }
 
-
-xd::IStructurePtr FsDatabase::describeTableI(const std::wstring& path)
-{
-    std::wstring cstr, rpath;
-    if (detectMountPoint(path, &cstr, &rpath))
-    {
-        // action takes place in a mount
-        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
-        if (db.isNull())
-            return xcm::null;
-
-        return db->describeTableI(rpath);
-    }
-
-
-    xd::FormatDefinition fi;
-    fi.format = xd::formatDefault;
-
-    IXdsqlTablePtr tbl = openSetEx(path, fi);
-    if (tbl.isNull())
-        return xcm::null;
-
-    return tbl->getStructure();
-}
-
 bool FsDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {
     std::wstring cstr, rpath;

@@ -660,16 +660,6 @@ xd::Structure SlDatabase::describeTable(const std::wstring& _path)
     return parseCreateStatement(create_stmt);
 }
 
-xd::IStructurePtr SlDatabase::describeTableI(const std::wstring& path)
-{
-    xd::Structure s = describeTable(path);
-    if (s.isNull())
-        return xcm::null;
-    
-    Structure* st = new Structure;
-    st->fromStructure(s);
-    return static_cast<xd::IStructure*>(st);
-}
 
 bool SlDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {

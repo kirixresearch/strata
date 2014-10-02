@@ -99,8 +99,8 @@ public:
 private:
 
     SlDatabase* m_database;
-    xd::IStructurePtr m_structure;
-    xd::IStructurePtr m_table_structure;
+    xd::Structure m_structure;
+    xd::Structure m_table_structure;
 
     std::vector<SlDataAccessInfo> m_columns;
 

@@ -652,11 +652,6 @@ xd::Structure SqlServerDatabase::describeTable(const std::wstring& path)
     return xd::Structure();
 }
 
-xd::IStructurePtr SqlServerDatabase::describeTableI(const std::wstring& path)
-{
-    // TODO: implement
-    return xcm::null;
-}
 
 bool SqlServerDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {

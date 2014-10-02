@@ -2142,16 +2142,16 @@ xd::IIteratorPtr OdbcDatabase::query(const xd::QueryParams& qp)
 
     if (m_db_type == xd::dbtypeAccess)
     {
-        xd::IStructurePtr s = describeTableI(qp.from);
+        xd::Structure s = describeTable(qp.from);
         if (s.isNull())
             return xcm::null;
 
-        int i, cnt = s->getColumnCount();
+        int i, cnt = s.getColumnCount();
 
         query = L"SELECT ";
         for (i = 0; i < cnt; ++i)
         {
-            const xd::ColumnInfo& colinfo  = s->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& colinfo  = s.getColumnInfoByIdx(i);
 
             if (colinfo.calculated)
                 continue;
@@ -2194,9 +2194,9 @@ xd::IIteratorPtr OdbcDatabase::query(const xd::QueryParams& qp)
     }
      else if (m_db_type == xd::dbtypeOracle)
     {
-        xd::IStructurePtr s = describeTableI(qp.from);
+        xd::Structure s = describeTable(qp.from);
 
-        int i, cnt = s->getColumnCount();
+        size_t i, cnt = s.getColumnCount();
 
         query = L"SELECT ";
         for (i = 0; i < cnt; ++i)
@@ -2204,7 +2204,7 @@ xd::IIteratorPtr OdbcDatabase::query(const xd::QueryParams& qp)
             if (i != 0)
                 query += L",";
 
-            query += s->getColumnName(i);
+            query += s.getColumnName(i);
         }
 
         query += L" FROM ";
@@ -2499,17 +2499,6 @@ xd::Structure OdbcDatabase::describeTable(const std::wstring& path)
     */
 
     return s;
-}
-
-xd::IStructurePtr OdbcDatabase::describeTableI(const std::wstring& path)
-{
-    xd::Structure s = describeTable(path);
-    if (s.isNull())
-        return xcm::null;
-    
-    Structure* st = new Structure;
-    st->fromStructure(s);
-    return static_cast<xd::IStructure*>(st);
 }
 
 bool OdbcDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)

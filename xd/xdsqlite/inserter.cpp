@@ -74,19 +74,19 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
 {
     std::vector<std::wstring> cols;
 
-    xd::IStructurePtr structure = m_database->describeTableI(m_table);
+    xd::Structure structure = m_database->describeTable(m_table);
     if (structure.isNull())
         return false;
 
-    int i, col_count;
+    size_t i, col_count;
 
     if (col_list.empty() || col_list == L"*")
     {
         //  inserting every field
-        col_count = structure->getColumnCount();
+        col_count = structure.getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            cols.push_back(structure->getColumnName(i));
+            cols.push_back(structure.getColumnName(i));
         }
     }
      else
@@ -101,10 +101,8 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
 
     for (i = 0; i < col_count; ++i)
     {
-        if (!structure->getColumnExist(cols[i]))
-        {
+        if (!structure.getColumnExist(cols[i]))
             return false;
-        }
     }
 
 
@@ -162,7 +160,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
     {
         SlRowInserterData data;
 
-        data.colinfo = structure->getColumnInfo(cols[i]);
+        data.colinfo = structure.getColumnInfo(cols[i]);
         data.type = data.colinfo.type;
         data.length = data.colinfo.width;
         data.idx = i+1;

@@ -718,7 +718,7 @@ xd::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)
     }
      else
     {
-        xd::IStructurePtr structure = describeTableI(_path);
+        format_definition.columns = describeTable(_path).columns;
     }
 
     KpgRowInserter* inserter = new KpgRowInserter(this, path, format_definition);
@@ -767,16 +767,6 @@ xd::Structure KpgDatabase::describeTable(const std::wstring& _path)
     return s;
 }
 
-xd::IStructurePtr KpgDatabase::describeTableI(const std::wstring& path)
-{
-    xd::Structure s = describeTable(path);
-    if (s.isNull())
-        return xcm::null;
-    
-    Structure* st = new Structure;
-    st->fromStructure(s);
-    return static_cast<xd::IStructure*>(st);
-}
 
 bool KpgDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {

@@ -99,7 +99,7 @@ bool SlIterator::init(const std::wstring& _query)
         // if we are iterating on a simple table, we can
         // get better type information by querying this from the db
 
-        m_table_structure = m_database->describeTableI(m_tablename);
+        m_table_structure = m_database->describeTable(m_tablename);
         if (m_table_structure.isNull())
             return false;
     }
@@ -145,7 +145,7 @@ bool SlIterator::init(const std::wstring& _query)
 
         if (m_table_structure.isOk())
         {
-            const xd::ColumnInfo& colinfo = m_table_structure->getColumnInfo(dai.name);
+            const xd::ColumnInfo& colinfo = m_table_structure.getColumnInfo(dai.name);
             if (colinfo.isOk())
             {
                 dai.xd_type = colinfo.type;
@@ -285,9 +285,11 @@ void SlIterator::goRow(const xd::rowid_t& rowid)
 xd::IStructurePtr SlIterator::getStructure()
 {
     if (m_structure.isOk())
-        return m_structure->clone();
-
-    Structure* s = new Structure;
+    {
+        Structure* s = new Structure;
+        s->fromStructure(m_structure);
+        return static_cast<xd::IStructure*>(s);
+    }
 
     std::vector<SlDataAccessInfo>::iterator it;
     for (it = m_columns.begin(); it != m_columns.end(); ++it)
@@ -298,13 +300,12 @@ xd::IStructurePtr SlIterator::getStructure()
         col.width = it->width;
         col.scale = it->scale;
         col.column_ordinal = it->col_ordinal;
-        s->createColumn(col);
+        m_structure.createColumn(col);
     }
     
-    m_structure = static_cast<xd::IStructure*>(s);
-
-    return m_structure->clone();
-
+    Structure* s = new Structure;
+    s->fromStructure(m_structure);
+    return static_cast<xd::IStructure*>(s);
 }
 
 bool SlIterator::refreshStructure()

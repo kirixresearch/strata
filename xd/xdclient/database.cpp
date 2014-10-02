@@ -582,10 +582,6 @@ xd::IRowInserterPtr ClientDatabase::bulkInsert(const std::wstring& path)
 xd::Structure ClientDatabase::describeTable(const std::wstring& path)
 {
     return xd::Structure();
-}
-
-xd::IStructurePtr ClientDatabase::describeTableI(const std::wstring& path)
-{
     ServerCallParams params;
     std::wstring sres = serverCall(path, L"describetable", &params);
 
@@ -593,11 +589,9 @@ xd::IStructurePtr ClientDatabase::describeTableI(const std::wstring& path)
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
-        return xcm::null;
+        return xd::Structure();
 
-    Structure* s = new Structure;
-    s->fromStructure(jsonToStructure(response));
-    return static_cast<xd::IStructure*>(s);
+    return jsonToStructure(response);
 }
 
 

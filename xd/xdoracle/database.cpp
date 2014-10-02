@@ -1183,12 +1183,6 @@ xd::Structure OracleDatabase::describeTable(const std::wstring& path)
     return xd::Structure();
 }
 
-xd::IStructurePtr OracleDatabase::describeTableI(const std::wstring& path)
-{
-    // TODO: implement
-    return xcm::null;
-}
-
 
 bool OracleDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {

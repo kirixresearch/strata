@@ -255,7 +255,7 @@ bool MysqlRowInserter::startInsert(const std::wstring& col_list)
     if (m_mysql == NULL)
         return false;
     
-    xd::IStructurePtr s = m_database->describeTableI(m_table);
+    xd::Structure s = m_database->describeTable(m_table);
 
     std::vector<std::wstring> columns;
     std::vector<std::wstring>::iterator it;
@@ -268,12 +268,10 @@ bool MysqlRowInserter::startInsert(const std::wstring& col_list)
     {
         columns.clear();
 
-        int col_count = s->getColumnCount();
-        int i;
-
+        size_t i, col_count = s.getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            columns.push_back(s->getColumnName(i));
+            columns.push_back(s.getColumnName(i));
         }
     }
 
@@ -281,7 +279,7 @@ bool MysqlRowInserter::startInsert(const std::wstring& col_list)
 
     for (it = columns.begin(); it != columns.end(); ++it)
     {
-        const xd::ColumnInfo& colinfo = s->getColumnInfo(*it);
+        const xd::ColumnInfo& colinfo = s.getColumnInfo(*it);
 
         if (colinfo.isNull())
             return false;

@@ -279,11 +279,11 @@ bool OdbcRowInserter::startInsert(const std::wstring& col_list)
     std::wstring quote_closechar = attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 
 
-    xd::IStructurePtr s = m_database->describeTableI(m_table);
+    xd::Structure s = m_database->describeTable(m_table);
     if (s.isNull())
         return false;
 
-    int i, col_count = s->getColumnCount();
+    size_t i, col_count = s.getColumnCount();
 
     std::wstring field_list;
     std::wstring values_list;
@@ -300,7 +300,7 @@ bool OdbcRowInserter::startInsert(const std::wstring& col_list)
             values_list += L", ";
         }
 
-        const xd::ColumnInfo& col_info = s->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& col_info = s.getColumnInfoByIdx(i);
         
         field_list += quote_openchar;
         field_list += col_info.name;

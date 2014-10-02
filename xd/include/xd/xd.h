@@ -790,7 +790,6 @@ public:
     virtual IndexInfoEnum getIndexEnum(const std::wstring& path) = 0;
 
     virtual Structure describeTable(const std::wstring& path) = 0;
-    virtual IStructurePtr describeTableI(const std::wstring& path) = 0;
 
     virtual IRowInserterPtr bulkInsert(const std::wstring& path) = 0;
 

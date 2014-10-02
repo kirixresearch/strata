@@ -939,17 +939,17 @@ bool PgsqlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 
     if (info->append)
     {
-        xd::IStructurePtr instruct = describeTableI(info->input);
-        xd::IStructurePtr outstruct = describeTableI(info->output);
+        xd::Structure instruct = describeTable(info->input);
+        xd::Structure outstruct = describeTable(info->output);
 
         std::vector<std::wstring> common_fields;
         std::vector<std::wstring>::iterator it;
 
-        int i, cnt = instruct->getColumnCount();
+        size_t i, cnt = instruct.getColumnCount();
         for (i = 0; i < cnt; ++i)
         {
-            const std::wstring& colname = instruct->getColumnName(i);
-            if (outstruct->getColumnExist(colname))
+            const std::wstring& colname = instruct.getColumnName(i);
+            if (outstruct.getColumnExist(colname))
                 common_fields.push_back(colname);
         } 
 
@@ -1719,18 +1719,6 @@ xd::Structure PgsqlDatabase::describeTable(const std::wstring& path)
 
     return s;
 }
-
-xd::IStructurePtr PgsqlDatabase::describeTableI(const std::wstring& path)
-{
-    xd::Structure s = describeTable(path);
-    if (s.isNull())
-        return xcm::null;
-    
-    Structure* st = new Structure;
-    st->fromStructure(s);
-    return static_cast<xd::IStructure*>(st);
-}
-
 
 bool PgsqlDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {

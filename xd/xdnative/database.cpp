@@ -3926,25 +3926,6 @@ xd::Structure XdnativeDatabase::describeTable(const std::wstring& path)
     return s.isOk() ? s->toStructure() : xd::Structure();
 }
 
-xd::IStructurePtr XdnativeDatabase::describeTableI(const std::wstring& path)
-{
-    std::wstring cstr, rpath;
-    if (detectMountPoint(path, &cstr, &rpath))
-    {
-        // action takes place in a mount
-        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
-        if (db.isNull())
-            return xcm::null;
-
-        return db->describeTableI(rpath);
-    }
-
-    IXdsqlTablePtr table = openTable(path);
-    if (table.isNull())
-        return xcm::null;
-
-    return table->getStructure();
-}
 
 xd::IRowInserterPtr XdnativeDatabase::bulkInsert(const std::wstring& path)
 {
