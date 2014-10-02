@@ -84,7 +84,7 @@ private:
     
     bool m_prefix_edited;
     xd::IFileInfoPtr m_finfo;
-    xd::IStructurePtr m_structure;
+    xd::Structure m_structure;
     wxString m_path;
 
     DECLARE_EVENT_TABLE()

@@ -65,7 +65,7 @@ struct QueryBuilderSourceTable
     wxString alias;
     wxString path;
     std::vector<QueryJoin> joins;
-    xd::IStructurePtr structure;
+    xd::Structure structure;
     int x, y, width, height;
 };
 

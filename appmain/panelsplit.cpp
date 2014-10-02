@@ -42,16 +42,16 @@ int SplitPanel::getSetColumnCount()
     if (m_structure.isNull())
         return 0;
         
-    return m_structure->getColumnCount();
+    return (int)m_structure.getColumnCount();
 }
 
 int SplitPanel::getSetRowWidth()
 {
     int row_width = 0;
-    int i, col_count = m_structure->getColumnCount();
+    size_t i, col_count = m_structure.getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        const xd::ColumnInfo& colinfo = m_structure->getColumnInfoByIdx(i);
+        const xd::ColumnInfo& colinfo = m_structure.getColumnInfoByIdx(i);
         if (colinfo.calculated)
             continue;
 
@@ -730,7 +730,7 @@ void SplitPanel::onSourceTableTextChanged(wxCommandEvent& evt)
     
     if (m_finfo.isOk())
     {
-        m_structure = g_app->getDatabase()->describeTableI(towstr(m_path));
+        m_structure = g_app->getDatabase()->describeTable(towstr(m_path));
         if (m_structure.isNull())
             m_finfo.clear();
     }

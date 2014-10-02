@@ -553,7 +553,7 @@ xd::ColumnInfo QueryTemplate::lookupColumnInfo(const wxString& input)
     if (!tbl)
         return xd::ColumnInfo();
 
-    return tbl->structure->getColumnInfo(towstr(fname));
+    return tbl->structure.getColumnInfo(towstr(fname));
 }
 
 wxString QueryTemplate::stripAllAliases(const wxString& input)
@@ -713,8 +713,9 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
                 // off and parse the expression to determine its type
                 if (m_source_tables.size() != 1)
                     return wxEmptyString;
-                
-                type = m_source_tables[0].structure->getExprType(towstr(stripAllAliases(_input)));
+
+                type == xd::typeInvalid;
+                //type = m_source_tables[0].structure->getExprType(towstr(stripAllAliases(_input)));
                 if (type == xd::typeInvalid || type == xd::typeUndefined)
                     return wxEmptyString;
             }
@@ -931,11 +932,11 @@ void QueryTemplate::updateValidationStructure()
     for (tbl_it = m_source_tables.begin();
          tbl_it != m_source_tables.end(); ++tbl_it)
     {
-        int i, col_count = tbl_it->structure->getColumnCount();
+        size_t i, col_count = tbl_it->structure.getColumnCount();
 
         for (i = 0; i < col_count; ++i)
         {
-            std::wstring fname = tbl_it->structure->getColumnName(i);
+            std::wstring fname = tbl_it->structure.getColumnName(i);
             kl::makeLower(fname);
 
             if (idx.find(fname) == idx.end())
@@ -947,14 +948,13 @@ void QueryTemplate::updateValidationStructure()
 
 
 
-    for (tbl_it = m_source_tables.begin();
-         tbl_it != m_source_tables.end(); ++tbl_it)
+    for (tbl_it = m_source_tables.begin(); tbl_it != m_source_tables.end(); ++tbl_it)
     {   
-        int i, col_count = tbl_it->structure->getColumnCount();
+        size_t i, col_count = tbl_it->structure.getColumnCount();
 
         for (i = 0; i < col_count; ++i)
         {
-            const xd::ColumnInfo& colinfo = tbl_it->structure->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& colinfo = tbl_it->structure.getColumnInfoByIdx(i);
 
             std::wstring alias = tbl_it->alias;
             std::wstring column = colinfo.name;
@@ -1214,7 +1214,7 @@ bool QueryTemplate::loadJson(const wxString& path)
             xd::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(query_table.path));
             if (finfo.isNull())
                 continue;
-            xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(towstr(query_table.path));
+            xd::Structure structure = g_app->getDatabase()->describeTable(towstr(query_table.path));
             if (structure.isNull())
                 continue;
 
@@ -1429,10 +1429,10 @@ bool QueryTemplate::loadJsonFromNode(const wxString& path)
             return false;
         tbl.height = height_node.getInteger();
 
-        // attempt to open the set and get it's structure
+        // attempt to get the table's structure
         {
-            xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(towstr(tbl.path));
-            if (structure)
+            xd::Structure structure = g_app->getDatabase()->describeTable(towstr(tbl.path));
+            if (structure.isOk())
                 tbl.structure = structure;
                  else
                 continue;
@@ -1629,15 +1629,15 @@ wxString QueryTemplate::quoteField(const wxString& _str)
     it_end = m_source_tables.end();
     for (it = m_source_tables.begin(); it != it_end; ++it)
     {
-        xd::IStructurePtr structure = it->structure;
+        xd::Structure& structure = it->structure;
         if (structure.isNull())
             continue;
         
-        int col_count = structure->getColumnCount();
-        for (int idx = 0; idx < col_count; ++idx)
+        size_t idx, col_count = structure.getColumnCount();
+        for (idx = 0; idx < col_count; ++idx)
         {
             wxString table_name = it->alias;
-            wxString col_name = structure->getColumnName(idx);
+            wxString col_name = structure.getColumnName(idx);
             
             table_name.MakeUpper();
             col_name.MakeUpper();

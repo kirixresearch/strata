@@ -333,8 +333,8 @@ void ColPropsPanel::populate()
     m_orig_scale = colinfo.scale;
     m_orig_expr = colinfo.expression;
 
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(m_path);
-    m_orig_existed = structure->getColumnExist(towstr(m_orig_name));
+    xd::Structure structure = g_app->getDatabase()->describeTable(m_path);
+    m_orig_existed = structure.getColumnExist(towstr(m_orig_name));
 
 
     if (m_orig_type == xd::typeCharacter || m_orig_type == xd::typeWideCharacter)
@@ -967,9 +967,9 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     }
 
     xd::StructureModify mod_params;
-    xd::IStructurePtr structure = db->describeTableI(m_path);
+    xd::Structure structure = db->describeTable(m_path);
 
-    if (structure->getColumnExist(towstr(m_orig_name)))
+    if (structure.getColumnExist(towstr(m_orig_name)))
     {
         if (!m_orig_existed)
         {

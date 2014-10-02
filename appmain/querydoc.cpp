@@ -723,30 +723,26 @@ void QueryDoc::getColumnListItems(std::vector<ColumnListItem>& items)
     for (it = m_info.m_source_tables.begin(); it != it_end; ++it)
     {
         // get the structure
-        xd::IStructurePtr structure = it->structure;
+        xd::Structure structure = it->structure;
         
         // if the structure is invalid, move on
         if (structure.isNull())
             continue;
 
         // add the columns to the list
-        int i, col_count = structure->getColumnCount();
+        size_t i, col_count = structure.getColumnCount();
         for (i = 0; i < col_count; i++)
         {
-            const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
+            const xd::ColumnInfo& colinfo = structure.getColumnInfoByIdx(i);
          
             ColumnListItem item;
             item.text = it->alias;
             item.text += ".";
             item.text += makeProperIfNecessary(colinfo.name);
             if (colinfo.calculated)
-            {
                 item.bitmap = GETBMP(gf_lightning_16);
-            }
-             else
-            {
+                 else
                 item.bitmap = GETBMP(gf_field_16);
-            }
             item.active = true;
             items.push_back(item);
         }
@@ -1156,7 +1152,7 @@ void QueryDoc::onTreeDataDropped(FsDataObject* data)
         xd::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(path));
         if (finfo.isOk() && finfo->getType() == xd::filetypeTable)
         {
-            xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(towstr(path));
+            xd::Structure structure = g_app->getDatabase()->describeTable(towstr(path));
 
             if (structure.isOk())
             {
@@ -1203,7 +1199,7 @@ void QueryDoc::onDiagramSetAdded(wxString path, bool* allow)
     if (finfo.isNull() || finfo->getType() != xd::filetypeTable)
         return;
 
-    xd::IStructurePtr structure = g_app->getDatabase()->describeTableI(towstr(path));
+    xd::Structure structure = g_app->getDatabase()->describeTable(towstr(path));
     if (structure.isNull())
         return;
 
@@ -1217,8 +1213,7 @@ void QueryDoc::onDiagramSetAdded(wxString path, bool* allow)
         bool found = false;
 
         std::vector<QueryBuilderSourceTable>::iterator it;
-        for (it = m_info.m_source_tables.begin();
-             it != m_info.m_source_tables.end(); ++it)
+        for (it = m_info.m_source_tables.begin(); it != m_info.m_source_tables.end(); ++it)
         {
             if (0 == alias.CmpNoCase(it->alias))
             {
@@ -1690,7 +1685,7 @@ void QueryDoc::populateTemplateFromInterface()
         tbl.alias = tbl.path.AfterLast(wxT('/'));
         box->GetPosition(&tbl.x, &tbl.y);
         box->GetSize(&tbl.width, &tbl.height);
-        tbl.structure = box->getStructure();
+        tbl.structure = box->getStructure()->toStructure();
         
         // add the source table to the template
         m_info.m_source_tables.push_back(tbl);
