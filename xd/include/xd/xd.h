@@ -396,6 +396,13 @@ struct Structure
       }
 
     void createColumn(const xd::ColumnInfo& col) { columns.push_back(col); m_map.clear(); }
+    bool deleteColumn(const std::wstring& column_name)
+      { size_t idx = getColumnIdx(column_name);
+        if (idx == Structure::npos) return false;
+        columns.erase(columns.begin() + idx);
+        m_map.clear();
+        return true;
+      }
     void clear() { columns.clear(); m_map.clear(); }
 
     struct cmp_nocase : std::binary_function<const std::wstring&, const std::wstring&, bool> {
