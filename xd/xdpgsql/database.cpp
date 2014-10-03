@@ -1955,3 +1955,81 @@ bool PgsqlDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
         
     return (result_status == PGRES_COMMAND_OK) ? true : false;
 }
+
+
+xd::ColumnInfo PgsqlDatabase::validateExpression(const std::wstring& expr, const xd::Structure& structure, const std::wstring& path_context)
+{
+    xd::ColumnInfo ret;
+
+    std::wstring sql;
+    sql = L"SELECT ";
+    
+    std::vector<xd::ColumnInfo>::const_iterator it, it_end = structure.columns.cend();
+    size_t idx = 0;
+    for (it = structure.columns.cbegin(); it != it_end; ++it)
+    {
+        const xd::ColumnInfo& colinfo = *it;
+
+        if (idx > 0)
+            sql += L",";
+
+
+        switch (colinfo.type)
+        {
+            case xd::typeUndefined:      return ret; // invalid
+            case xd::typeInvalid:        return ret; // invalid
+            case xd::typeCharacter:      sql += (L"''::text AS " + colinfo.name); break;
+            case xd::typeWideCharacter:  sql += (L"''::text AS " + colinfo.name); break;
+            case xd::typeBinary:         { ret.type = xd::typeInvalid; return ret; }
+            case xd::typeDouble:         sql += (L"999::double precision AS " + colinfo.name); break;
+            case xd::typeInteger:        sql += (L"999::integer AS " + colinfo.name); break;
+            case xd::typeDate:           sql += (L"'2014-01-01'::date AS " + colinfo.name); break;
+            case xd::typeDateTime:       sql += (L"'2014-01-01'::timestamp AS " + colinfo.name); break;
+            case xd::typeBoolean:        sql += (L"true::bool AS " + colinfo.name); break;
+            case xd::typeNumeric:
+            {
+                int width = colinfo.width;
+                int scale = colinfo.scale;
+                if (width == 0)
+                    width = 12;
+                sql += L"999::numeric(";
+                sql += kl::itowstring(width);
+                sql += L",";
+                sql += kl::itowstring(scale);
+                sql += (L") AS " + colinfo.name);
+                break;
+            }
+        }
+
+        idx++;
+    }
+    
+
+    sql = L"SELECT (" + expr + L") AS expr1 FROM (" + sql + L") xdalias999";
+
+
+    PGconn* conn = createConnection();
+    if (!conn)
+        return ret;
+
+    PGresult* res = PQexec(conn, kl::toUtf8(sql));
+    if (!res)
+        return ret;
+
+    if (!res || PQresultStatus(res) != PGRES_TUPLES_OK)
+    {
+        if (res)
+            PQclear(res);
+        closeConnection(conn);
+        return ret;
+    }
+
+    int pg_type = PQftype(res, 0);
+
+    PQclear(res);
+    closeConnection(conn);
+
+
+    ret.type = pgsqlToXdType(pg_type);
+    return ret;
+}
