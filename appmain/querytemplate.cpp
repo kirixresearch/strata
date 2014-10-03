@@ -680,11 +680,10 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
                                        const wxString& _input,
                                        int group_func)
 {
-    int type;
+    xd::IDatabasePtr db = g_app->getDatabase();
 
-    type = xd::typeInvalid;
-    //type = m_validation_struct.getExprType(towstr(_input));
-    
+    int type = db->validateExpression(towstr(_input), m_validation_struct).type;
+
     if (type == xd::typeInvalid || type == xd::typeUndefined)
     {
         xd::ColumnInfo colinfo = lookupColumnInfo(_input);
@@ -715,8 +714,7 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
                 if (m_source_tables.size() != 1)
                     return wxEmptyString;
 
-                type = xd::typeInvalid;
-                //type = m_source_tables[0].structure->getExprType(towstr(stripAllAliases(_input)));
+                type = db->validateExpression(towstr(stripAllAliases(_input)), m_source_tables[0].structure).type;
                 if (type == xd::typeInvalid || type == xd::typeUndefined)
                     return wxEmptyString;
             }
@@ -776,7 +774,7 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
     test += expr;
 
 
-    //if (m_validation_struct->getExprType(towstr(test)) == xd::typeBoolean)
+    if (db->validateExpression(towstr(test), m_validation_struct).type == xd::typeBoolean)
     {
         return test;
     }

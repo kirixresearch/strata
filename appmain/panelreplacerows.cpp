@@ -240,12 +240,16 @@ void ReplaceRowsPanel::checkEnableRun()
     m_expr_panel->setOKEnabled(true);
 }
 
-bool ReplaceRowsPanel::validate(bool* value)
+bool ReplaceRowsPanel::validate(bool* is_value)
 {
     bool valid = false;
 
-    if (value)
-        *value = false;
+    if (is_value)
+        *is_value = false;
+
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return false;
 
     wxString replace_value = m_replace_text->GetValue();
     wxString replace_field = m_field_choice->GetStringSelection();
@@ -253,8 +257,7 @@ bool ReplaceRowsPanel::validate(bool* value)
     const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(towstr(replace_field));
     if (colinfo.isOk())
     {
-        int type = xd::typeInvalid;
-        //int type = m_structure->getExprType(towstr(replace_value));
+        int type = db->validateExpression(towstr(replace_value), m_structure).type;
         valid = xd::isTypeCompatible(type, colinfo.type);
     }
 
@@ -263,8 +266,8 @@ bool ReplaceRowsPanel::validate(bool* value)
 
     if (!valid && isValidValue())
     {
-        if (value)
-            *value = true;
+        if (is_value)
+            *is_value = true;
 
         m_valid_control->setValidLabel(_("Value"));
         valid = true;

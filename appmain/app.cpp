@@ -1043,10 +1043,6 @@ void MainApp::setMainFrame(IFramePtr frame)
         m_frame_wnd = NULL;
 }
 
-xd::IDatabasePtr MainApp::getDatabase()
-{
-    return m_database;
-}
 
 void MainApp::setDatabase(xd::IDatabasePtr database)
 {

@@ -784,6 +784,8 @@ public:
                          xcm::IObjectPtr& result,
                          IJob* job) = 0;
 
+    virtual ColumnInfo validateExpression(const std::wstring& expr, const xd::Structure& structure = xd::Structure(), const std::wstring& path_context = L"") { return ColumnInfo(); }
+
     virtual bool groupQuery(GroupQueryParams* info, IJob* job) = 0;
 };
 

@@ -582,13 +582,18 @@ void GroupPanel::checkOverlayText()
 
 bool GroupPanel::validateGroupQuery()
 {
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return false;
+
     wxString value = m_adv_group_query->GetValue();
     value.Trim();
     if (value.Length() == 0)
         return true;
 
-    bool valid = false;
-    //bool valid = (m_structure.getExprType(towstr(value)) == xd::typeBoolean);
+    int type = db->validateExpression(towstr(value), m_structure).type;
+
+    bool valid = (type == xd::typeBoolean) ? true : false;
     m_adv_group_query_valid->setValid(valid);
 
     return valid;
@@ -752,8 +757,7 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
 
         if (func == GroupFunc_Count && input_name.length() > 0)
         {
-            int type = xd::typeInvalid;
-            //int type = m_structure.getExprType(input_name);
+            int type = db->validateExpression(input_name, m_structure).type;
 
             if (type != xd::typeBoolean)
             {

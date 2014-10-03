@@ -62,7 +62,7 @@ public:
     IFramePtr getMainFrame();
     void setMainFrame(IFramePtr frame);
 
-    xd::IDatabasePtr getDatabase();
+    xd::IDatabasePtr& getDatabase() { return m_database; }
     void setDatabase(xd::IDatabasePtr database);
 
     std::wstring getDbDriver();

@@ -198,7 +198,9 @@ public:
                  unsigned int flags,
                  xcm::IObjectPtr& result,
                  xd::IJob* job);
-                 
+
+    xd::ColumnInfo validateExpression(const std::wstring& expr, const xd::Structure& structure = xd::Structure(), const std::wstring& path_context = L"");
+
 private:
 
     bool detectMountPoint(const std::wstring& path,

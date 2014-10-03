@@ -315,8 +315,7 @@ public:
         }
 
         // get the parameter expression type
-        int param_type = xd::typeInvalid;
-        //int param_type = m_set_structure.getExprType(param);
+        int param_type = m_db->validateExpression(param, m_set_structure).type;
 
         // check if the parameter is a valid column
         if (group_func != GroupFunc_Count &&
@@ -509,7 +508,6 @@ public:
 
     std::vector<GroupResult*> m_results;
     
-    
     std::vector<GroupIndexInputInfo> m_store_fields;
     std::set<std::wstring> m_unique_store_fields;
     int m_store_size;
@@ -518,6 +516,8 @@ public:
     xd::Structure m_set_structure;
     xd::Structure m_iter_structure;
     std::vector<kscript::ExprParser*> m_to_destroy;
+
+    xd::IDatabase* m_db;
 };
 
 
@@ -587,7 +587,7 @@ bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
         if (colinfo.isNull())
         {
             result->m_type = xd::typeInvalid;
-            //result->m_type = info->m_set_structure.getExprType(result->m_param_text);
+            result->m_type = info->m_db->validateExpression(result->m_param_text, info->m_set_structure).type;
             getDefaultExprWidthAndScale(result->m_param_text, result->m_type, &result->m_width, &result->m_scale);
         }
         else
@@ -720,6 +720,8 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
 
 
     GroupQueryParams gi;
+    gi.m_db = db.p;
+
     std::vector<GroupOutputInfo> output_fields;
     kscript::ExprParser* having_parser = NULL;
     bool copy_detail = false;

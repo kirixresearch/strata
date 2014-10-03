@@ -954,7 +954,7 @@ bool ExprBuilderPanel::validate()
     
     if (m_structure.isOk())
     {
-        //type = m_structure->getExprType(towstr(text));
+        type = g_app->getDatabase()->validateExpression(towstr(text), m_structure).type;
     }
 
     wxString valid_text;

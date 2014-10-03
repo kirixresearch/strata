@@ -118,15 +118,18 @@ int StructureValidator::validateExpression(const xd::Structure& structure,
                                            const wxString& expr,
                                            int match_fieldtype)
 {
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return ExpressionInvalid;
+
     if (structure.isNull())
-        return -1;
+        return ExpressionInvalid;
 
     // right now, empty expressions are regarded as invalid
     if (expr.Length() == 0)
         return ExpressionInvalid;
     
-    int expr_type = xd::typeInvalid;
-   // int expr_type = structure.getExprType(towstr(expr));
+    int expr_type = db->validateExpression(towstr(expr), structure).type;
 
     if (expr_type == xd::typeInvalid ||
         expr_type == xd::typeUndefined)
