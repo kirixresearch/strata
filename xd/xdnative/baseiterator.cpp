@@ -627,11 +627,19 @@ bool BaseIterator::initStructure()
     // refresh iterator structure from set
 
     m_set_structure = m_set->getStructure();
+    m_iter_structure.clear();
     m_calc_fields.clear();
 
     if (m_columns == L"*")
     {
-        m_iter_structure = m_set_structure;
+        std::vector<xd::ColumnInfo>::iterator it, it_end = m_set_structure.columns.end();
+        for (it = m_set_structure.columns.begin(); it != it_end; ++it)
+        {
+            if (it->calculated)
+                m_calc_fields.push_back(*it);
+                 else
+                m_iter_structure.createColumn(*it);
+        }
     }
      else
     {

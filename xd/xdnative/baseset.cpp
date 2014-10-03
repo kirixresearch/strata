@@ -177,7 +177,7 @@ bool BaseSet::modifyCalcField(const std::wstring& _name, const xd::ColumnInfo& c
         return false;
     }
     
-    if (!colinfo.calculated)
+    if ((colinfo.mask & xd::ColumnInfo::maskCalculated) && !colinfo.calculated)
     {
         // this is a make permanent operation
         return false;
