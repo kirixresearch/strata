@@ -621,10 +621,10 @@ bool TextDoc::initFixedLengthView()
          else
         fn = m_def.data_path;
 
-    if (kl::iequals(fn.substr(0,5), L"file:"))
-        fn = urlToFilename(fn);
-         else
-        fn = getPhysPathFromDatabasePath(fn);
+    //if (kl::iequals(fn.substr(0,5), L"file:"))
+    //    fn = urlToFilename(fn);
+    //     else
+    //    fn = getPhysPathFromDatabasePath(fn);
         
     if (!m_textview->openFile(fn))
         return false;

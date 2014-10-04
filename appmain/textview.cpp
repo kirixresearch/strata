@@ -109,7 +109,6 @@ static unsigned char ebcdic2ascii(unsigned char c)
 
 TextViewModel::TextViewModel()
 {
-    m_file = 0;
     m_file_size = 0;
     m_file_name = wxT("");
     m_row_count = 0;
@@ -142,28 +141,25 @@ TextViewModel::~TextViewModel()
 
 bool TextViewModel::isOpen()
 {
-    if (!m_file)
-        return false;
-
-    return true;
+    return m_stream.isOk();
 }
 
 
-bool TextViewModel::openFile(const wxString& filename)
+bool TextViewModel::openFile(const std::wstring& filename)
 {
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return false;
+
     // we can only open one file at a time
     if (isOpen())
         return false;
 
-    std::wstring wfilename = towstr(filename);
-
-    m_file_size = xf_get_file_size(wfilename);
-    m_file = xf_open(wfilename, xfOpen, xfRead, xfShareReadWrite);
-
-    // if opening the file failed, bail out
-    if (!m_file)
+    m_stream = db->openStream(filename);
+    if (m_stream.isNull())
         return false;
 
+    m_file_size = 99999; //xf_get_file_size(wfilename);
     m_file_name = filename;
 
     // try to guess the file type
@@ -178,11 +174,7 @@ bool TextViewModel::openFile(const wxString& filename)
 
 void TextViewModel::closeFile()
 {
-    if (m_file)
-    {
-        xf_close(m_file);
-        m_file = 0;
-    }
+    m_stream.clear();
 }
 
 
@@ -201,7 +193,7 @@ int TextViewModel::guessFileType()
         if (isEof(i))
             break;
 
-        if (m_line_delimiters.Find(getCharAtOffset(i)) != -1)
+        if (m_line_delimiters.find(getCharAtOffset(i)) != m_line_delimiters.npos)
             delim_count++;
     }
 
@@ -212,7 +204,7 @@ int TextViewModel::guessFileType()
 }
 
 
-xf_off_t TextViewModel::guessRowWidth()
+long long TextViewModel::guessRowWidth()
 {
     if (m_file_type == lineDelimited)
         return guessDelimitedRowWidth();
@@ -222,14 +214,14 @@ xf_off_t TextViewModel::guessRowWidth()
     return 80;
 }
 
-xf_off_t TextViewModel::guessDelimitedRowWidth()
+long long TextViewModel::guessDelimitedRowWidth()
 {
     int i;
     int max_row_read = 200;
 
-    xf_off_t row_width = 0;
-    xf_off_t last_row_offset = 0;
-    xf_off_t max_row_width = 1;
+    long long row_width = 0;
+    long long last_row_offset = 0;
+    long long max_row_width = 1;
 
     for (i = 0; i < max_row_read; ++i)
     {
@@ -246,7 +238,7 @@ xf_off_t TextViewModel::guessDelimitedRowWidth()
     return max_row_width;
 }
 
-xf_off_t TextViewModel::guessFixedRowWidth()
+long long TextViewModel::guessFixedRowWidth()
 {
     int i;
     int max_char_read = 20000;
@@ -275,13 +267,16 @@ xf_off_t TextViewModel::guessFixedRowWidth()
 }
 
 
-wxChar TextViewModel::getCharAtOffset(xf_off_t offset)
+wchar_t TextViewModel::getCharAtOffset(long long offset)
 {
-    xf_off_t off = offset;
+    if (m_stream.isNull())
+        return (wchar_t)0;
+
+    long long off = offset;
     off += m_skip_chars;
 
     if (off >= m_file_size)
-        return wxT('\0');
+        return (wchar_t)0;
 
     // if the character is in memory, return it
     if (off >= m_chunk_offset && off < m_chunk_offset+m_chunk_size)
@@ -294,36 +289,41 @@ wxChar TextViewModel::getCharAtOffset(xf_off_t offset)
 
     m_chunk_offset = (off / TEXTVIEW_BUF_SIZE) * TEXTVIEW_BUF_SIZE;
 
-    if (!xf_seek(m_file, m_chunk_offset, xfSeekSet))
-        return wxT('\0');
+    if (!m_stream->seek(m_chunk_offset, xd::seekSet))
+        return (wchar_t)0;
 
-    m_chunk_size = xf_read(m_file, m_buf, 1, TEXTVIEW_BUF_SIZE);
+
+    unsigned long bytes_read = 0;
+    if (!m_stream->read(m_buf, TEXTVIEW_BUF_SIZE, &bytes_read))
+        return (wchar_t)0;
+
+    m_chunk_size = bytes_read;
 
     // return the character (if not beyond EOF)
     if (off >= m_chunk_offset && off < m_chunk_offset+m_chunk_size)
         return (m_char_encoding == xd::encodingEBCDIC) ? ebcdic2ascii(m_buf[off-m_chunk_offset])
                                                        : m_buf[off-m_chunk_offset];
     
-    return wxT('\0');
+    return (wchar_t)0;
 }
 
 
-bool TextViewModel::isEof(xf_off_t offset)
+bool TextViewModel::isEof(long long offset)
 {
     return (offset+m_skip_chars >= m_file_size) ? true : false;
 }
 
 
-xf_off_t TextViewModel::getCurrentRowLength()
+long long TextViewModel::getCurrentRowLength()
 {
-    xf_off_t row_off = m_cur_row_offset;
-    xf_off_t row_len = 0;
+    long long row_off = m_cur_row_offset;
+    long long row_len = 0;
 
     while (1)
     {
         if (isEof(row_off))
             break;
-        if (m_line_delimiters.Find(getCharAtOffset(row_off++)) != -1)
+        if (m_line_delimiters.find(getCharAtOffset(row_off++)) != m_line_delimiters.npos)
             break;
 
         ++row_len;
@@ -333,7 +333,7 @@ xf_off_t TextViewModel::getCurrentRowLength()
 }
 
 
-wxChar TextViewModel::getDelimitedChar(xf_off_t row, xf_off_t col)
+wchar_t TextViewModel::getDelimitedChar(long long row, long long col)
 {
     // if we want a character from the current row,
     // just get it from the buffer (and check to make
@@ -341,7 +341,7 @@ wxChar TextViewModel::getDelimitedChar(xf_off_t row, xf_off_t col)
     if (m_cur_row == row)
     {
         if (col >= m_cur_row_length)
-            return wxT('\0');
+            return (wchar_t)0;
         return getCharAtOffset(m_cur_row_offset + col);
     }
 
@@ -349,7 +349,7 @@ wxChar TextViewModel::getDelimitedChar(xf_off_t row, xf_off_t col)
     // if the desired line is ahead, we need to scroll forward,
     // otherwise we need to scroll backward
 
-    xf_off_t off = m_cur_row_offset;
+    long long off = m_cur_row_offset;
     int diff = row-m_cur_row;
 
     if (diff > 0)
@@ -361,16 +361,16 @@ wxChar TextViewModel::getDelimitedChar(xf_off_t row, xf_off_t col)
             ++off;
 
             if (isEof(off))
-                return wxT('\0');
+                return (wchar_t)0;
 
             if (++cnt >= 16384)
             {
                 // a line length of 16K or more gets increasingly improbable;
                 // return zero -- otherwise we risk a program freeze
-                return wxT('\0');
+                return (wchar_t)0;
             }
             
-            if (m_line_delimiters.Find(getCharAtOffset(off)) != -1)
+            if (m_line_delimiters.find(getCharAtOffset(off)) != m_line_delimiters.npos)
                 --diff;
             
             ++cnt;
@@ -398,10 +398,10 @@ wxChar TextViewModel::getDelimitedChar(xf_off_t row, xf_off_t col)
             {
                 // a line length of 16K or more gets increasingly improbable;
                 // return zero -- otherwise we risk a program freeze
-                return wxT('\0');
+                return (wchar_t)0;
             }
 
-            if (m_line_delimiters.Find(getCharAtOffset(off)) != -1)
+            if (m_line_delimiters.find(getCharAtOffset(off)) != m_line_delimiters.npos)
                 ++diff;
             
             ++cnt;
@@ -415,18 +415,18 @@ wxChar TextViewModel::getDelimitedChar(xf_off_t row, xf_off_t col)
 
 
     // discover row length
-    xf_off_t row_off = off;
+    long long row_off = off;
     m_cur_row_length = getCurrentRowLength();
 
     // return the desired character from the line
     if (col >= m_cur_row_length)
-        return wxT('\0');
+        return (wchar_t)0;
 
     return getCharAtOffset(m_cur_row_offset + col);
 }
 
 
-wxChar TextViewModel::getFixedChar(xf_off_t row, xf_off_t col)
+wchar_t TextViewModel::getFixedChar(long long row, long long col)
 {
     m_cur_row = row;
 
@@ -434,17 +434,17 @@ wxChar TextViewModel::getFixedChar(xf_off_t row, xf_off_t col)
 }
 
 
-wxChar TextViewModel::getChar(xf_off_t row, xf_off_t col)
+wchar_t TextViewModel::getChar(long long row, long long col)
 {
-    if (!m_file || m_row_width == 0)
-        return wxT('\0');
+    if (m_stream.isNull()|| m_row_width == 0)
+        return (wchar_t)0;
 
     if (m_file_type == lineDelimited)
         return getDelimitedChar(row, col);
      else if (m_file_type == lineFixed)
         return getFixedChar(row, col);
 
-    return wxT('\0');
+    return (wchar_t)0;
 }
 
 
@@ -453,17 +453,17 @@ wxString TextViewModel::getFilename()
     return m_file_name;
 }
 
-xf_off_t TextViewModel::getFileSize()
+long long TextViewModel::getFileSize()
 {
     return m_file_size;
 }
 
-xf_off_t TextViewModel::getColumnCount()
+long long TextViewModel::getColumnCount()
 {
     return m_row_width;
 }
 
-xf_off_t TextViewModel::getRowCount()
+long long TextViewModel::getRowCount()
 {
     // we can only accurately calculate the
     // row count on true fixed-length files
@@ -473,17 +473,17 @@ xf_off_t TextViewModel::getRowCount()
     return -1;
 }
 
-wxString TextViewModel::getLineDelimiters()
+std::wstring TextViewModel::getLineDelimiters()
 {
     return m_line_delimiters;
 }
 
-xf_off_t TextViewModel::getRowWidth()
+long long TextViewModel::getRowWidth()
 {
     return m_row_width;
 }
 
-xf_off_t TextViewModel::getSkipChars()
+long long TextViewModel::getSkipChars()
 {
     return m_skip_chars;
 }
@@ -493,7 +493,7 @@ void TextViewModel::setLineDelimiters(const wxString& line_delimiters)
     m_line_delimiters = line_delimiters;
 }
 
-void TextViewModel::setRowWidth(xf_off_t row_width)
+void TextViewModel::setRowWidth(long long row_width)
 {
     m_row_width = row_width;
     m_row_count = calcRowCount();
@@ -504,7 +504,7 @@ void TextViewModel::setCharEncoding(int char_encoding)
     m_char_encoding = char_encoding;
 }
 
-void TextViewModel::setSkipChars(xf_off_t skip_chars)
+void TextViewModel::setSkipChars(long long skip_chars)
 {
     m_skip_chars = skip_chars;
     
@@ -533,12 +533,12 @@ void TextViewModel::setFileType(int file_type)
     m_file_type = file_type;
 }
 
-xf_off_t TextViewModel::calcRowCount()
+long long TextViewModel::calcRowCount()
 {
     double fs;
     fs = m_file_size;
     fs -= m_skip_chars;
-    return (xf_off_t)ceil(fs/m_row_width);
+    return (long long)ceil(fs/m_row_width);
 }
 
 
@@ -775,7 +775,7 @@ bool TextView::openFile(const wxString& filename)
     if (filename.IsEmpty())
         return false;
 
-    bool retval = m_text_model->openFile(filename);
+    bool retval = m_text_model->openFile(towstr(filename));
 
     if (retval)
     {

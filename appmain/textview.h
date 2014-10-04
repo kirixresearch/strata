@@ -32,65 +32,65 @@ public:
     virtual ~TextViewModel();
 
     bool isOpen();
-    bool openFile(const wxString& filename);
+    bool openFile(const std::wstring& filename);
     void closeFile();
 
     wxString getFilename();
-    xf_off_t getFileSize();
+    long long getFileSize();
     int getFileType();
 
-    wxChar getChar(xf_off_t row, xf_off_t col);
-    bool isEof(xf_off_t offset);
+    wchar_t getChar(long long row, long long col);
+    bool isEof(long long offset);
 
-    xf_off_t getColumnCount();
-    xf_off_t getRowCount();
+    long long getColumnCount();
+    long long getRowCount();
 
-    wxString getLineDelimiters();
-    xf_off_t getCurrentRowLength();     // returns the current row's length based on line-delimiter
-    xf_off_t getRowWidth();             // returns the user-specified row width
-    xf_off_t getSkipChars();
+    std::wstring getLineDelimiters();
+    long long getCurrentRowLength();     // returns the current row's length based on line-delimiter
+    long long getRowWidth();             // returns the user-specified row width
+    long long getSkipChars();
     
     void setCharEncoding(int char_encoding);
     void setLineDelimiters(const wxString& line_delimiters);
-    void setRowWidth(xf_off_t row_width);
-    void setSkipChars(xf_off_t skip_chars);
+    void setRowWidth(long long row_width);
+    void setSkipChars(long long skip_chars);
     void setFileType(int file_type);
 
 private:
 
-    wxChar getCharAtOffset(xf_off_t offset);
-    wxChar getDelimitedChar(xf_off_t row, xf_off_t col);
-    wxChar getFixedChar(xf_off_t row, xf_off_t col);
+    wchar_t getCharAtOffset(long long offset);
+    wchar_t getDelimitedChar(long long row, long long col);
+    wchar_t getFixedChar(long long row, long long col);
 
     int guessFileType();
-    xf_off_t guessRowWidth();
-    xf_off_t guessDelimitedRowWidth();
-    xf_off_t guessFixedRowWidth();
+    long long guessRowWidth();
+    long long guessDelimitedRowWidth();
+    long long guessFixedRowWidth();
 
-    xf_off_t calcRowCount();
+    long long calcRowCount();
 
 private:
 
-    wxString m_file_name;       // file name
-    xf_file_t m_file;           // file handle
-    xf_off_t m_file_size;       // size of the file
+    std::wstring m_file_name;        // file name
+    xd::IStreamPtr m_stream;         // file stream
+    long long m_file_size;           // size of the file
 
-    xf_off_t m_row_count;       // number of rows in the file
-    xf_off_t m_cur_row;         // the current row that we're on
-    xf_off_t m_cur_row_offset;  // offset where the current row begins
-    xf_off_t m_cur_row_length;  // length of the current row
+    long long m_row_count;           // number of rows in the file
+    long long m_cur_row;             // the current row that we're on
+    long long m_cur_row_offset;      // offset where the current row begins
+    long long m_cur_row_length;      // length of the current row
 
-    xf_off_t m_chunk_size;      // size of data inside m_buf
-    xf_off_t m_chunk_offset;    // offset of m_buf in the file
+    long long m_chunk_size;          // size of data inside m_buf
+    long long m_chunk_offset;        // offset of m_buf in the file
 
-    int m_char_encoding;        // character encoding of the file
-    wxString m_line_delimiters; // character array containing one or more delimiters
-    xf_off_t m_row_width;       // user-specified width of each row
-    xf_off_t m_skip_chars;      // number of chars to skip at the beginning of the file
+    int m_char_encoding;             // character encoding of the file
+    std::wstring m_line_delimiters;  // character array containing one or more delimiters
+    long long m_row_width;           // user-specified width of each row
+    long long m_skip_chars;          // number of chars to skip at the beginning of the file
 
-    int m_file_type;            // fixed or line-delimited (see above)
+    int m_file_type;                 // fixed or line-delimited (see above)
 
-    unsigned char* m_buf;       // buffer which holds the data
+    unsigned char* m_buf;            // buffer which holds the data
 };
 
 
