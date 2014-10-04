@@ -87,3 +87,19 @@ bool FileStream::write(const void* buf,
     
     return true;
 }
+
+
+bool FileStream::seek(long long seek_pos, int whence)
+{
+    int xf_whence;
+
+    switch (whence)
+    {
+        default:          return false; // invalid seek value
+        case xd::seekSet: xf_whence = xfSeekSet; break;
+        case xd::seekCur: xf_whence = xfSeekCur; break;
+        case xd::seekEnd: xf_whence = xfSeekEnd; break;
+    }
+
+    return xf_seek(m_file, seek_pos, xf_whence);
+}

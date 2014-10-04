@@ -147,3 +147,10 @@ bool NodeFileStream::write(const void* buf,
     return false;
 }
 
+
+bool NodeFileStream::seek(long long seek_pos, int whence)
+{
+    // not implemented in NodeFileStream
+    return false;
+}
+

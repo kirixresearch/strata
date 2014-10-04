@@ -118,3 +118,9 @@ bool ClientStream::write(const void* pv,
     return true;
 }
 
+bool ClientStream::seek(long long seek_pos, int whence)
+{
+    // TODO: implement
+    return false;
+}
+

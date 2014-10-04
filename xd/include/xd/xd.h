@@ -289,6 +289,17 @@ enum
 
 
 
+// seek flags
+
+enum
+{
+    seekCur = 0x01,
+    seekEnd = 0x02,
+    seekSet = 0x03
+};
+
+
+
 // flags for execute()
 
 enum
@@ -573,6 +584,8 @@ public:
     virtual bool write(const void* pv,
                       unsigned long write_size,
                       unsigned long* written_count) = 0;
+
+    virtual bool seek(long long seek_pos, int whence = seekSet) = 0;
 };
 
 

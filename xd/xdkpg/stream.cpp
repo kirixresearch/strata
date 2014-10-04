@@ -145,3 +145,10 @@ bool KpgStream::write(const void* buf,
 
     return m_writer->writeBlock(buf, (int)write_size, true);
 }
+
+
+bool KpgStream::seek(long long seek_pos, int whence)
+{
+    // not implemented in KpgStream
+    return false;
+}

@@ -38,7 +38,9 @@ public:
     bool write(const void* buf,
               unsigned long write_size,
               unsigned long* written_count);
-              
+        
+    bool seek(long long seek_pos, int whence);
+        
 private:
 
     xf_file_t m_file;

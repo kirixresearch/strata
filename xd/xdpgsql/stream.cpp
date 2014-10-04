@@ -98,3 +98,23 @@ bool PgsqlStream::write(const void* buf,
     
     return true;
 }
+
+bool PgsqlStream::seek(long long seek_pos, int whence)
+{
+    int pg_whence;
+
+    switch (whence)
+    {
+        default:          return false; // invalid seek value
+        case xd::seekSet: pg_whence = 0; break;
+        case xd::seekCur: pg_whence = 1; break;
+        case xd::seekEnd: pg_whence = 2; break;
+    }
+
+    // TODO: needs to be lo_lseek64()
+    int res = lo_lseek(m_conn, m_fd, (int)seek_pos, pg_whence);
+    if (res < 0)
+        return false;
+        
+    return true;
+}
