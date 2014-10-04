@@ -3057,6 +3057,39 @@ bool XdnativeDatabase::createTable(const std::wstring& path, const xd::FormatDef
     return true;
 }
 
+bool XdnativeDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* format_info, const xd::FormatDefinition* defaults)
+{
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, &cstr, &rpath))
+    {
+        // action takes place in a mount
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return false;
+
+        return db->loadDefinition(path, format_info, defaults);
+    }
+
+    return false;
+}
+
+bool XdnativeDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefinition* format_info)
+{
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, &cstr, &rpath))
+    {
+        // action takes place in a mount
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return false;
+
+        return db->saveDefinition(path, format_info);
+    }
+
+    return false;
+}
+
+
 int XdnativeDatabase::getDatabaseType()
 {
     return xd::dbtypeXdnative;
