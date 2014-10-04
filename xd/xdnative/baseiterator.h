@@ -212,7 +212,6 @@ protected:
 
 private:
     
-    kl::mutex m_obj_mutex;
     kl::mutex m_agg_mutex;
     kl::mutex m_rel_mutex;
 

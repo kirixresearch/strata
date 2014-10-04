@@ -170,8 +170,6 @@ void BaseIterator::clearDAI()
 
 void BaseIterator::refreshDAI()
 {
-    KL_AUTO_LOCK(m_obj_mutex);
-
     // make a copy, because m_dai_entries may be modified
     // by subsequent calls to colinfo2dai
 
@@ -225,8 +223,6 @@ void BaseIterator::refreshDAI()
 
 DataAccessInfo* BaseIterator::lookupDAI(const std::wstring& expr)
 {
-    KL_AUTO_LOCK(m_obj_mutex);
-
     std::map<std::wstring, DataAccessInfo*, kl::cmp_nocase>::iterator it;
     it = m_dai_lookup.find(expr);
 
@@ -251,8 +247,6 @@ bool BaseIterator::init(XdnativeDatabase* database,
                         IXdnativeSet* set,
                         const std::wstring& columns)
 {
-    KL_AUTO_LOCK(m_obj_mutex);
-
     // store the database pointer
     m_database = database;
     m_database->ref();
@@ -600,8 +594,6 @@ xd::IIteratorPtr BaseIterator::getFilteredChildIterator(xd::IRelationPtr relatio
 
 xd::Structure BaseIterator::getStructure()
 {
-    KL_AUTO_LOCK(m_obj_mutex);
-
     xd::Structure s = m_iter_structure;
     appendCalcFields(s);
     return s;
@@ -610,8 +602,6 @@ xd::Structure BaseIterator::getStructure()
 
 void BaseIterator::appendCalcFields(xd::Structure& structure)
 {
-    KL_AUTO_LOCK(m_obj_mutex);
-
     std::vector<xd::ColumnInfo>::iterator it;
     for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
         structure.createColumn(*it);
@@ -622,8 +612,6 @@ void BaseIterator::appendCalcFields(xd::Structure& structure)
 
 bool BaseIterator::initStructure()
 {
-    KL_AUTO_LOCK(m_obj_mutex);
-
     // refresh iterator structure from set
 
     m_set_structure = m_set->getStructure();
@@ -846,8 +834,6 @@ bool BaseIterator::refreshStructure()
 
 bool BaseIterator::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
 { 
-    KL_AUTO_LOCK(m_obj_mutex);
-    
     bool done = false;
 
     if (!calcfieldsModifyStructure(mod_params,
@@ -1989,8 +1975,6 @@ xd::ColumnInfo BaseIterator::getInfo(xd::objhandle_t data_handle)
 
 xd::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
 {
-    KL_AUTO_LOCK(m_obj_mutex);
-
     if (expr.length() == 0)
         return 0;
 
