@@ -233,7 +233,7 @@ bool DelimitedTextIterator::refreshStructure()
 {
     m_fields.clear();
 
-    xd::Structure set_structure;
+    xd::Structure set_structure = m_set->getStructure();
 
     // add fields from structure
     bool default_structure_visible = false;
