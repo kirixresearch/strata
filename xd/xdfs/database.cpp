@@ -24,6 +24,7 @@
 #include "xlsxset.h"
 #include "delimitedtext.h"
 #include "rawtext.h"
+#include "../../kscript/kscript.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
@@ -2986,5 +2987,292 @@ void FsDatabase::refreshRelationInfo()
         (*rit)->unref();
     m_relations = vec;
     m_relations_mutex.unlock();
+}
+
+
+
+
+static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
+{
+    xd::Structure* structure = (xd::Structure*)hook_info.hook_param;
+    
+    if (hook_info.element_type == kscript::ExprParseHookInfo::typeIdentifier)
+    {
+        if (hook_info.expr_text.length() > 1 &&
+            hook_info.expr_text[0] == '[' &&
+            hook_info.expr_text[hook_info.expr_text.length()-1] == ']')
+        {
+            // remove brackets from identifier; i.e.:
+            //     [field] => field
+            //     table.[field] => table.field
+            //     [table].field => table.field
+            //     [table].[field] => table.field
+            
+            // get the two parts separated by the period, if there is one
+            std::wstring part1, part2;
+
+            const wchar_t* pstr = hook_info.expr_text.c_str();
+            const wchar_t* pperiod = zl_strchr((wchar_t*)pstr, '.', L"[", L"]");
+            int period_pos = pperiod ? (pperiod-pstr) : -1;
+
+            if (period_pos == -1)
+            {
+                part1 = hook_info.expr_text;
+                dequote(part1, '[', ']');
+                hook_info.expr_text = part1;
+            }
+            else
+            {
+                part1 = hook_info.expr_text.substr(0, period_pos);
+                part2 = hook_info.expr_text.substr(period_pos + 1);
+                dequote(part1, '[', ']');
+                dequote(part2, '[', ']');
+                hook_info.expr_text = part1 + L"." + part2;
+            }
+        }
+
+
+        const xd::ColumnInfo& col = structure->getColumnInfo(hook_info.expr_text);
+        if (col.isNull())
+            return false;
+        
+        kscript::Value* v = new kscript::Value;
+        v->setGetVal(xd2kscriptType(col.type), NULL, NULL);
+        hook_info.res_element = v;
+        
+        return true;
+    }
+     else if (hook_info.element_type == kscript::ExprParseHookInfo::typeFunction)
+    {
+        hook_info.res_element = NULL;
+        
+        std::wstring str = hook_info.expr_text;
+        kl::trim(str);
+
+        int len = str.length();
+        if (len == 0)
+            return true;
+
+        if (str[len-1] != L')')
+            return true;
+
+        str.resize(len-1);
+        len--;
+
+        if (len == 0)
+            return true;
+
+        std::wstring func_name = kl::beforeFirst(str, L'(');
+        std::wstring param = kl::afterFirst(str, L'(');
+
+        kl::trim(func_name);
+        kl::makeUpper(func_name);
+
+        if (func_name == L"FIRST" ||
+            func_name == L"LAST" ||
+            func_name == L"MIN" ||
+            func_name == L"MAX")
+        {
+            xd::ColumnInfo colinfo = structure->getColumnInfo(param);
+            if (colinfo.isNull())
+            {
+                // try the parameter dequoted
+                std::wstring dequoted_param = param;
+                dequote(dequoted_param, '[', ']');
+                colinfo = structure->getColumnInfo(dequoted_param);
+            }
+
+            if (colinfo.isNull())
+            {
+                kscript::Value* v = new kscript::Value;
+                if (param.find(L'.') != -1)
+                {
+                    // let child fields be valid,
+                    // even if we can't determine their type
+                    // assume character
+                    v->setString(L"");
+                    hook_info.res_element = v;
+                }
+                
+                return true;
+            }
+
+            kscript::Value* v = new kscript::Value;
+            
+            switch (colinfo.type)
+            {
+                case xd::typeCharacter:
+                case xd::typeWideCharacter:
+                    v->setString(L"");
+                    break;
+                case xd::typeNumeric:
+                case xd::typeDouble:
+                    v->setDouble(0.0);
+                    break;
+                case xd::typeInteger:
+                    v->setInteger(0);
+                    break;
+                case xd::typeBoolean:
+                    v->setBoolean(true);
+                    break;
+                case xd::typeDateTime:
+                case xd::typeDate:
+                    v->setDateTime(0,0);
+                    break;
+                case xd::typeBinary:
+                    v->setType(kscript::Value::typeBinary);
+                    break;
+                default:
+                    return true;
+            }
+
+            hook_info.res_element = v;
+
+            return true;
+        }
+         else if (func_name == L"SUM" ||
+                  func_name == L"AVG" ||
+                  func_name == L"STDDEV" ||
+                  func_name == L"VARIANCE")
+        {
+            xd::ColumnInfo colinfo = structure->getColumnInfo(param);
+
+            if (colinfo.isNull())
+            {
+                // try the parameter dequoted
+                std::wstring dequoted_param = param;
+                dequote(dequoted_param, '[', ']');
+                colinfo = structure->getColumnInfo(dequoted_param);
+            }
+
+            if (colinfo.isNull())
+            {
+                if (param.find(L'.') != -1)
+                {
+                    // let child fields be valid
+                    kscript::Value* v = new kscript::Value;
+                    v->setDouble(0.0);
+                    hook_info.res_element = v;
+                }
+                
+                return true;
+            }
+
+            if (colinfo.type != xd::typeNumeric &&
+                colinfo.type != xd::typeInteger &&
+                colinfo.type != xd::typeDouble)
+            {
+                return true;
+            }
+
+            kscript::Value* v = new kscript::Value;
+            v->setDouble(0.0);
+            hook_info.res_element = v;
+            return true;
+        }
+         else if (func_name == L"MAXDISTANCE")
+        {
+            kscript::Value* v = new kscript::Value;
+            v->setDouble(0.0);
+            hook_info.res_element = v;
+            return true;
+        }
+         else if (func_name == L"MERGE")
+        {
+            xd::ColumnInfo colinfo  = structure->getColumnInfo(param);
+
+            if (colinfo.isNull())
+            {
+                // try the parameter dequoted
+                std::wstring dequoted_param = param;
+                dequote(dequoted_param, '[', ']');
+                colinfo = structure->getColumnInfo(dequoted_param);
+            }
+
+            if (colinfo.isNull())
+            {
+                if (param.find(L'.') != -1)
+                {
+                    // let child fields be valid
+                    kscript::Value* v = new kscript::Value;
+                    v->setString(L"");
+                    hook_info.res_element = v;
+                }
+                
+                return true;
+            }
+            
+            if (colinfo.type != xd::typeCharacter &&
+                colinfo.type != xd::typeWideCharacter)
+            {
+                return true;
+            }
+
+            kscript::Value* v = new kscript::Value;
+            v->setString(L"");
+            hook_info.res_element = v;
+            return true;
+        }
+         else if (func_name == L"COUNT" ||
+                  func_name == L"GROUPID")
+        {
+            kscript::Value* v = new kscript::Value;
+            v->setDouble(0.0);
+            hook_info.res_element = v;
+            return true;
+        }
+    }
+
+    // not handled
+    return false;
+}
+
+
+
+
+
+xd::ColumnInfo FsDatabase::validateExpression(const std::wstring& expression, const xd::Structure& structure, const std::wstring& path_context)
+{
+    // if the expression is a column name, simply look it up via getColumnInfo
+    std::wstring dequoted_expression = expression;
+    dequote(dequoted_expression, '[', ']');
+    const xd::ColumnInfo& colinfo = structure.getColumnInfo(dequoted_expression);
+    if (colinfo.isOk())
+        return colinfo;
+
+
+    kscript::ExprParser* parser = createExprParser();
+    
+    // we added this here so that the expression
+    // parser in structuredoc would recognize this as a valid function;
+    // these are from xdnative/baseiterator.cpp
+    parser->addFunction(L"recno", false, NULL, false, L"f()", this);
+    parser->addFunction(L"rownum", false, NULL, false, L"f()", this);
+    parser->addFunction(L"recid", false, NULL, false, L"s()", this);
+    parser->addFunction(L"reccrc", false, NULL, false, L"x()", this);
+    
+    
+    // create field bindings and add them to the expression parser
+
+    parser->setParseHook(kscript::ExprParseHookInfo::typeFunction |
+                         kscript::ExprParseHookInfo::typeIdentifier,
+                         group_parse_hook,
+                         (void*)&structure);
+
+    if (!parser->parse(expression))
+    {
+        delete parser;
+        return xd::ColumnInfo();
+    }
+
+    int type = kscript2xdType(parser->getType());
+    delete parser;
+    if (type == xd::typeInvalid)
+        return xd::ColumnInfo();
+
+    xd::ColumnInfo ret;
+    ret.name = L"EXPR001";
+    ret.type = type;
+    return ret;
 }
 

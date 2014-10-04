@@ -798,7 +798,7 @@ bool TtbSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* jo
                 // for character values, and thus will not be changed in the
                 // writeRowInfo() call
 
-                int i, idx = -1;
+                size_t i, idx = (size_t)-1;
 
                 for (i = 0; i < col_count; ++i)
                 {
@@ -809,7 +809,7 @@ bool TtbSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* jo
                     }
                 }
 
-                if (idx == -1)
+                if (idx == (size_t)-1)
                 {
                     // column not found
                     continue;
@@ -822,7 +822,7 @@ bool TtbSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* jo
                     continue;
                 }
 
-                m_file.writeColumnInfo(idx,
+                m_file.writeColumnInfo((int)idx,
                                        it_sa->params.name,
                                        it_sa->params.type,
                                        it_sa->params.width,
