@@ -1438,20 +1438,11 @@ void FsPanel::onFsTreeItemExpanding(wxTreeEvent& evt)
     // if we are expanding a deferred folder, populate its children first
     wxTreeItemId id = evt.GetItem();
 
-    // don't try to expand the root item if it's hidden
-    bool do_expand = true;
-    if (id == m_treeview->GetRootItem() && GetWindowStyle() & wxTR_HIDE_ROOT)
-        do_expand = false;
-        
     FsItemData* data = (FsItemData*)m_treeview->GetItemData(id);
     if (data->m_deferred)
     {
         m_treeview->Freeze();
-        m_treeview->populateDeferred(id);
-        
-        if (do_expand)
-            m_treeview->Expand(id);
-            
+        m_treeview->populateDeferred(id); 
         m_treeview->Thaw();
     }
 }
