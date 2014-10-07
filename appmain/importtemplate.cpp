@@ -10,11 +10,10 @@
 
 
 #include "appmain.h"
-#include "dlgdatabasefile.h"
-#include "importwizard.h"
 #include "appcontroller.h"
 #include "jsonconfig.h"
 #include "tabledoc.h"
+#include "importtemplate.h"
 #include <kl/crypt.h>
 
 
@@ -54,19 +53,20 @@ static wxString serverTypeToString(int type)
 {
     switch (type)
     {
-        case dbtypeSqlServer:       return wxT("mssql");
-        case dbtypeMySql:           return wxT("mysql");
-        case dbtypeOracle:          return wxT("oracle");
-        case dbtypePostgres:        return wxT("postgres");
-        case dbtypeOdbc:            return wxT("odbc");
-        case dbtypeDb2:             return wxT("db2");
-        case dbtypePackage:         return wxT("package");
-        case dbtypeAccess:          return wxT("msaccess");
-        case dbtypeExcel:           return wxT("msexcel");
-        case dbtypeXbase:           return wxT("xbase");
-        case dbtypeDelimitedText:   return wxT("delimited_text");
-        case dbtypeFixedLengthText: return wxT("fixed_length_text");
-        case dbtypeSqlite:          return wxT("sqlite");
+        case xd::dbtypeSqlServer:       return "mssql";
+        case xd::dbtypeMySql:           return "mysql";
+        case xd::dbtypeOracle:          return "oracle";
+        case xd::dbtypePostgres:        return "postgres";
+        case xd::dbtypeOdbc:            return "odbc";
+        case xd::dbtypeDb2:             return "db2";
+        case xd::dbtypeKpg:             return "package";
+        case xd::dbtypeAccess:          return "msaccess";
+        case xd::dbtypeExcel:           return "msexcel";
+        case xd::dbtypeFilesystem:      return "files";
+        //case xd::dbtypeXbase:           return "xbase";
+        //case xd::dbtypeDelimitedText:   return "delimited_text";
+        //case xd::dbtypeFixedLengthText: return "fixed_length_text";
+        case xd::dbtypeSqlite:          return "sqlite";
     }
     
     return wxT("");
@@ -74,20 +74,21 @@ static wxString serverTypeToString(int type)
 
 static int stringToServerType(const wxString& str)
 {
-         if (str == wxT("mssql"))             return dbtypeSqlServer;
-    else if (str == wxT("mysql"))             return dbtypeMySql;
-    else if (str == wxT("oracle"))            return dbtypeOracle;
-    else if (str == wxT("postgres"))          return dbtypePostgres;
-    else if (str == wxT("odbc"))              return dbtypeOdbc;
-    else if (str == wxT("db2"))               return dbtypeDb2;
-    else if (str == wxT("package"))           return dbtypePackage;
-    else if (str == wxT("msaccess"))          return dbtypeAccess;
-    else if (str == wxT("msexcel"))           return dbtypeExcel;
-    else if (str == wxT("xbase"))             return dbtypeXbase;
-    else if (str == wxT("delimited_text"))    return dbtypeDelimitedText;
-    else if (str == wxT("fixed_length_text")) return dbtypeFixedLengthText;
-    else if (str == wxT("sqlite"))            return dbtypeSqlite;
-    else return dbtypeUndefined;
+         if (str == "mssql")             return xd::dbtypeSqlServer;
+    else if (str == "mysql")             return xd::dbtypeMySql;
+    else if (str == "oracle")            return xd::dbtypeOracle;
+    else if (str == "postgres")          return xd::dbtypePostgres;
+    else if (str == "odbc")              return xd::dbtypeOdbc;
+    else if (str == "db2")               return xd::dbtypeDb2;
+    else if (str == "package")           return xd::dbtypeKpg;
+    else if (str == "msaccess")          return xd::dbtypeAccess;
+    else if (str == "msexcel")           return xd::dbtypeExcel;
+    else if (str == "xbase")             return xd::dbtypeFilesystem;
+    else if (str == "delimited_text")    return xd::dbtypeFilesystem;
+    else if (str == "fixed_length_text") return xd::dbtypeFilesystem;
+    else if (str == "files")             return xd::dbtypeFilesystem;
+    else if (str == "sqlite")            return xd::dbtypeSqlite;
+    else return xd::dbtypeUndefined;
 }
 
 
@@ -683,12 +684,12 @@ bool usesConnectionPage(int type)
 {
     switch (type)
     {
-        case dbtypeSqlServer:
-        case dbtypeMySql:
-        case dbtypeOracle:
-        case dbtypePostgres:
-        case dbtypeOdbc:
-        case dbtypeDb2:
+        case xd::dbtypeSqlServer:
+        case xd::dbtypeMySql:
+        case xd::dbtypeOracle:
+        case xd::dbtypePostgres:
+        case xd::dbtypeOdbc:
+        case xd::dbtypeDb2:
             return true;
     }
     
@@ -729,7 +730,7 @@ bool ImportTemplate::save(const std::wstring& path)
         root["target_path"] = m_ii.base_path;
     }
 
-    if (m_ii.type == dbtypeDelimitedText)
+    if (m_ii.delimiters.length() > 0)
     {
         kl::JsonNode delimited_text = root["delimited_text"];
         delimited_text["delimiter"] = m_ii.delimiters;
@@ -785,7 +786,7 @@ static void readKpgMetadata(jobs::IJobPtr job)
         return;
 
     IConnectionPtr conn = createUnmanagedConnection();
-    conn->setType(dbtypePackage);
+    conn->setType(xd::dbtypeKpg);
     conn->setPath(job->getExtraValue(L"kpg"));
     conn->open();
 
@@ -869,7 +870,7 @@ jobs::IJobPtr ImportTemplate::createJob()
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.load-job");
     job->getJobInfo()->setTitle(towstr(_("Importing Data")));
 
-    if (m_ii.type == dbtypePackage)
+    if (m_ii.type == xd::dbtypeKpg)
     {
         job->setExtraValue(L"kpg", m_ii.path);
     }
@@ -911,7 +912,7 @@ jobs::IJobPtr ImportTemplate::createJob()
 
             object["overwrite"].setBoolean(true);
 
-            if (m_ii.type == dbtypeDelimitedText)
+            if (m_ii.delimiters.length() > 0)
             {
                 object["source_format"].setObject();
                 kl::JsonNode format = object["source_format"];

@@ -13,31 +13,6 @@
 #define __APP_CONNECTIONMGR_H
 
 
-// NOTE: these type numbers may NOT be changed; You may, however, add and
-// remove items from the list;  Just don't change the numbers around
-
-enum
-{
-    dbtypeUndefined = 0x01,
-    dbtypeXdnative = 0x02,
-    dbtypePackage = 0x04,
-    dbtypeAccess = 0x08,
-    dbtypeExcel = 0x10,
-    dbtypeSqlServer = 0x20,
-    dbtypeMySql = 0x40,
-    dbtypeOracle = 0x80,
-    dbtypeOdbc = 0x100,
-    dbtypeFilesystem = 0x200,
-    dbtypeXbase = 0x400,
-    dbtypeDelimitedText = 0x800,
-    dbtypeDb2 = 0x1000,
-    dbtypeFixedLengthText = 0x2000,
-    dbtypeSqlite = 0x4000,
-    dbtypePostgres = 0x8000,
-    dbtypeClient = 0x100000,
-    dbtypeAll = 0x0fffffff
-};
-
 
 xcm_interface IConnection : public xcm::IObject
 {

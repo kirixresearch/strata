@@ -16,57 +16,81 @@
 #include "connectionmgr.h"
 
 
+enum ConnectionWizardDatabaseTypes
+{
+    cwdbtypeUndefined = 0x01,
+    cwdbtypeXdnative = 0x02,
+    cwdbtypePackage = 0x04,
+    cwdbtypeAccess = 0x08,
+    cwdbtypeExcel = 0x10,
+    cwdbtypeSqlServer = 0x20,
+    cwdbtypeMySql = 0x40,
+    cwdbtypeOracle = 0x80,
+    cwdbtypeOdbc = 0x100,
+    cwdbtypeFilesystem = 0x200,
+    cwdbtypeXbase = 0x400,
+    cwdbtypeDelimitedText = 0x800,
+    cwdbtypeDb2 = 0x1000,
+    cwdbtypeFixedLengthText = 0x2000,
+    cwdbtypeSqlite = 0x4000,
+    cwdbtypePostgres = 0x8000,
+    cwdbtypeClient = 0x100000,
+    cwdbtypeFirebird = 0x200000,
+    cwdbtypeAll = 0x0fffffff
+};
+
+
 enum ConnectionTypes
 {
     conntypeImport =
     
         // excel import is windows only
         #ifdef __WXMSW__
-        dbtypeExcel |
+        cwdbtypeExcel |
         #endif
 
-        dbtypeMySql |
-        dbtypePostgres |
-        dbtypeDb2 |
-        dbtypePackage |
-        dbtypeAccess |
-        dbtypeSqlServer |
-        dbtypeOracle |
-        dbtypeOdbc |
-        dbtypeXbase |
-        dbtypeDelimitedText |
-        dbtypeFixedLengthText,
+        cwdbtypeMySql |
+        cwdbtypePostgres |
+        cwdbtypeDb2 |
+        cwdbtypePackage |
+        cwdbtypeAccess |
+        cwdbtypeSqlServer |
+        cwdbtypeOracle |
+        cwdbtypeOdbc |
+        cwdbtypeXbase |
+        cwdbtypeDelimitedText |
+        cwdbtypeFixedLengthText,
 
     conntypeExport =
     
         // excel, access, and oracle exports are windows only
         #ifdef WIN32
-        dbtypeAccess |
-        dbtypeExcel |
-        dbtypeOracle |
+        cwdbtypeAccess |
+        cwdbtypeExcel |
+        cwdbtypeOracle |
         #endif
 
-        dbtypeMySql |
-        dbtypePostgres |
-        dbtypeDb2 |
-        dbtypePackage |
-        dbtypeSqlServer |
-        dbtypeOracle |
-        dbtypeOdbc |
-        dbtypeXbase |
-        dbtypeDelimitedText |
-        dbtypeFixedLengthText,
+        cwdbtypeMySql |
+        cwdbtypePostgres |
+        cwdbtypeDb2 |
+        cwdbtypePackage |
+        cwdbtypeSqlServer |
+        cwdbtypeOracle |
+        cwdbtypeOdbc |
+        cwdbtypeXbase |
+        cwdbtypeDelimitedText |
+        cwdbtypeFixedLengthText,
 
     conntypeConnection =
     
-        dbtypeSqlServer |
-        dbtypeMySql |
-        dbtypePostgres |
-        dbtypeOracle |
-        dbtypeDb2 |
-        dbtypeOdbc |
-        dbtypeFilesystem | 
-        dbtypeClient
+        cwdbtypeSqlServer |
+        cwdbtypeMySql |
+        cwdbtypePostgres |
+        cwdbtypeOracle |
+        cwdbtypeDb2 |
+        cwdbtypeOdbc |
+        cwdbtypeFilesystem | 
+        cwdbtypeClient
 };
 
 
@@ -76,8 +100,8 @@ public:
 
     ConnectionInfo()
     {
-        type = dbtypeUndefined;
-        last_type = dbtypeUndefined;
+        type = cwdbtypeUndefined;
+        last_type = cwdbtypeUndefined;
         description = L"";
 
         server = L"";

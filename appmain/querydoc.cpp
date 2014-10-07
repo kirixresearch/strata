@@ -2213,7 +2213,7 @@ void QueryDoc::onSaveAsExternal(wxCommandEvent& evt)
     
     switch (dlg.GetFilterIndex())
     {
-        case 0: type = dbtypePackage; break;
+        case 0: type = xd::dbtypeKpg; break;
         default:
             wxFAIL_MSG(wxT("invalid filter index"));
             return;

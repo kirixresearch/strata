@@ -21,10 +21,8 @@
 #include "extensionmgr.h"
 #include "extensionpkg.h"
 #include "moduleremoveduprec.h"
+#include "importtemplate.h"
 #include "reportdoc.h"
-#include "importwizard.h"
-#include "exportwizard.h"
-#include "connectionwizard.h"
 #include "paneloptions.h"
 #include "panelmerge.h"
 #include "panelsplit.h"
@@ -2212,14 +2210,10 @@ void AppController::onCloseProject(wxCommandEvent& evt)
 
 void AppController::onImportData(wxCommandEvent& evt)
 {
-    ImportInfo info;
-    showImportWizard(info);
 }
 
 void AppController::onExportData(wxCommandEvent& evt)
 {
-    ExportInfo info;
-    showExportWizard(info);
 }
 
 void AppController::onEditOptions(wxCommandEvent& evt)
@@ -4887,9 +4881,33 @@ static void makeSafeConnectionName(xd::IDatabasePtr db, wxString& name)
     }
 }
 
-static void onImportWizardFinished(ImportWizard* dlg)
+static void onImportWizardFinished(DlgConnection* dlg)
 {
-    dlg->getTemplate().execute();
+/*
+    Connection& ci = dlg->getConnectionInfo();
+    ImportTemplate templ;
+    ImportInfo& ii = templ.m_ii;
+
+
+
+    int type;
+    std::wstring server;
+    int port;
+    std::wstring database;
+    std::wstring username;
+
+
+    std::wstring password;
+    ii.path = ci.path;
+    ii.base_path = ci.base_path;
+
+    ii.delimiters = ci.delimiters;
+    ii.text_qualifier = ci.text_qualifier;
+    ii.date_format_str = ci.date_format_str;
+    ii.first_row_header = ci.first_row_header;
+*/
+    
+    
 }
 
 
@@ -4903,7 +4921,7 @@ bool AppController::openExcel(const wxString& location, int* site_id)
         fn = getPhysPathFromDatabasePath(location);
 
     IConnectionPtr conn = createUnmanagedConnection();
-    conn->setType(dbtypeExcel);
+    conn->setType(xd::dbtypeExcel);
     conn->setPath(towstr(fn));
 
     // if we cannot open the connection, bail out
@@ -4955,7 +4973,7 @@ bool AppController::openExcel(const wxString& location, int* site_id)
                                               title.c_str());
         
         ImportTemplate templ;
-        templ.m_ii.type = dbtypeExcel;
+        templ.m_ii.type = xd::dbtypeExcel;
         templ.m_ii.path = towstr(fn);
 
         selections = dlg.GetSelections();
@@ -5002,6 +5020,10 @@ bool AppController::openExcel(const wxString& location, int* site_id)
 
 bool AppController::openAccess(const wxString& location)
 {
+    // TODO: reimplement using DlgConnection
+    return false;
+
+/*
     // convert the path of the excel file
     wxString fn;
     if (location.Left(5).CmpNoCase(wxT("file:")) == 0)
@@ -5047,10 +5069,15 @@ bool AppController::openAccess(const wxString& location)
                                              -1, -1, 540, 480);
     site->setMinSize(540, 480);
     return true;
+*/
 }
 
 bool AppController::openPackage(const wxString& location)
 {
+    // TODO: reimplement using DlgConnection
+    return false;
+
+/*
     // convert the path of the excel file
     wxString fn;
     if (location.Left(5).CmpNoCase(wxT("file:")) == 0)
@@ -5061,7 +5088,7 @@ bool AppController::openPackage(const wxString& location)
 
     {
         IConnectionPtr conn = createUnmanagedConnection();
-        conn->setType(dbtypePackage);
+        conn->setType(xd::dbtypeKpg);
         conn->setPath(towstr(fn));
         if (!conn->open())
         {
@@ -5086,7 +5113,7 @@ bool AppController::openPackage(const wxString& location)
     wizard->setMode(ImportWizard::ModeOpen);
     
     ImportTemplate& import_template = wizard->getTemplate();
-    import_template.m_ii.type = dbtypePackage;
+    import_template.m_ii.type = xd::dbtypeKpg;
     import_template.m_ii.path = fn;
     wizard->sigImportWizardFinished.connect(&onImportWizardFinished);
 
@@ -5095,6 +5122,7 @@ bool AppController::openPackage(const wxString& location)
                                              -1, -1, 540, 480);
     site->setMinSize(540, 480);
     return true;
+*/
 }
 
 bool AppController::setActiveChildByLocation(const wxString& location, int* site_id)
@@ -5615,7 +5643,7 @@ static void addDefaultItemsToProject(const wxString& project_path)
 
 
     IConnectionPtr conn = createUnmanagedConnection();
-    conn->setType(dbtypePackage);
+    conn->setType(xd::dbtypeKpg);
     conn->setPath(towstr(filename));
 
     xd::IDatabasePtr db;
@@ -5656,7 +5684,7 @@ static void addDefaultItemsToProject(const wxString& project_path)
 
 
     ImportTemplate templ;
-    templ.m_ii.type = dbtypePackage;
+    templ.m_ii.type = xd::dbtypeKpg;
     templ.m_ii.path = towstr(filename);
 
     // add the items to the import job
@@ -6294,9 +6322,8 @@ void AppController::createMountPoint(const wxString& conn_str,
 }
 
 
-static void onExportWizardFinished(ExportWizard* dlg)
+static void onExportWizardFinished(void* dlg)
 {
-    dlg->getTemplate().execute();
 }
 
 
@@ -6386,6 +6413,10 @@ void AppController::showConnectExternalTablesWizard()
 void AppController::showImportWizard(const ImportInfo& info,
                                      const wxString& location)
 {
+    DlgConnection* dlg = new DlgConnection(g_app->getMainWindow(), wxID_ANY, _("Import"));
+    dlg->sigFinished.connect(&onConnectExternalDatabaseWizardFinished);
+    dlg->Show();
+/*
     AppBusyCursor bc;
     
     IDocumentSitePtr site;
@@ -6413,12 +6444,14 @@ void AppController::showImportWizard(const ImportInfo& info,
         if (!site->getVisible())
             site->setVisible(true);
     }
+*/
 }
 
 
 void AppController::showExportWizard(const ExportInfo& info,
                                      const wxString& location)
 {
+/*
     IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("ExportWizard"));
     if (site.isNull())
@@ -6442,6 +6475,7 @@ void AppController::showExportWizard(const ExportInfo& info,
         if (!site->getVisible())
             site->setVisible(true);
     }
+*/
 }
 
 void AppController::showLicenseManager()

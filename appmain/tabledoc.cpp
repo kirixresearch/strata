@@ -1575,10 +1575,9 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
 {
     wxString filter;
 
-    // NOTE: if you add or remove items from this
-    // list, make sure you adjust the case statement
-    // below, because it affects which file type the
-    // target will be
+    // NOTE: if you add or remove items from this list, make sure you adjust
+    // the enum and case statement below, because it affects which file type
+    // the target will be
     filter += _("Package Files");
     filter += wxT(" (*.kpg)|*.kpg|");
     filter += _("Comma-Delimited Files");
@@ -1633,38 +1632,38 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
     {
         case 0: 
             export_type = exportPackage;
-            dbtype = dbtypePackage;
+            dbtype = xd::dbtypeKpg;
             break;        
         case 1:
             export_type = exportDelimitedText;
-            dbtype = dbtypeDelimitedText;
+            dbtype = xd::dbtypeFilesystem;
             delimiters = L",";
             break;
         case 2:
             export_type = exportDelimitedText;
-            dbtype = dbtypeDelimitedText;
+            dbtype = xd::dbtypeFilesystem;
             delimiters = L",";
             break;
         case 3:
             export_type = exportDelimitedText;
-            dbtype = dbtypeDelimitedText;
+            dbtype = xd::dbtypeFilesystem;
             delimiters = L"\t";
             break;
         case 4:
             export_type = exportFixedLength;
-            dbtype = dbtypeFixedLengthText;
+            dbtype = xd::dbtypeFilesystem;
             break;
         case 5:
             export_type = exportXbase;
-            dbtype = dbtypeXbase;
+            dbtype = xd::dbtypeFilesystem;
             break;
         case 6:
             export_type = exportAccess;
-            dbtype = dbtypeAccess;
+            dbtype = xd::dbtypeAccess;
             break;
         case 7:
             export_type = exportExcel;
-            dbtype = dbtypeExcel;
+            dbtype = xd::dbtypeExcel;
             break;
         case 8:
             export_type = exportStructure;
@@ -1700,20 +1699,20 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
         tbl.input_tablename = this->m_path;
         tbl.append = false;
 
-        if (dbtype == dbtypeDelimitedText)
+        if (export_type == exportDelimitedText)
         {
             templ.m_ei.delimiters = towstr(delimiters);
             templ.m_ei.text_qualifier = L"\"";
             templ.m_ei.first_row_header = true;
         }
         
-        if (dbtype == dbtypeXbase || dbtype == dbtypeDelimitedText || dbtype == dbtypeFixedLengthText)
+        if (export_type == exportXbase || export_type == exportDelimitedText || export_type == exportFixedLength)
         {
             tbl.output_tablename = towstr(dlg.GetPath());
         }
          else
         {
-            if (dbtype == dbtypeAccess || dbtype == dbtypeExcel || dbtype == dbtypePackage || dbtypeSqlite)
+            if (dbtype == xd::dbtypeAccess || dbtype == xd::dbtypeExcel || dbtype == xd::dbtypeKpg || xd::dbtypeSqlite)
                 templ.m_ei.path = towstr(dlg.GetPath());
 
             tbl.output_tablename = kl::beforeLast( kl::afterLast(this->m_path, '/'), '.');

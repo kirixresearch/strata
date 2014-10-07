@@ -12,7 +12,7 @@
 #ifndef __APP_EXPORTTEMPLATE_H
 #define __APP_EXPORTTEMPLATE_H
 
-#include "connectionwizard.h"
+#include "importtemplate.h"
 
 
 class ExportTableSelection

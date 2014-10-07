@@ -13,7 +13,6 @@
 #include "connectionmgr.h"
 
 
-// -- Connection class implementation --
 
 
 class ConnectionImpl : public IConnection
@@ -28,7 +27,7 @@ public:
 
     ConnectionImpl()
     {
-        m_type = dbtypeUndefined;
+        m_type = xd::dbtypeUndefined;
         m_description = wxT("");
         m_host = wxT("");
         m_port = 0;
@@ -77,14 +76,10 @@ public:
         }
         
 
-        {
-            KL_AUTO_LOCK(m_obj_mutex);
-
-            // if an error occurred, get an error string
-            m_error_string.clear();
-            if (m_db.isNull())
-                m_error_string = dbmgr->getErrorString();
-        }
+        // if an error occurred, get an error string
+        m_error_string.clear();
+        if (m_db.isNull())
+            m_error_string = dbmgr->getErrorString();
 
 
         return m_db.isOk();
@@ -92,39 +87,37 @@ public:
 
     std::wstring getConnectionString()
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         std::wstring cstr;
         std::wstring provider;
         std::wstring dbtype;
         
         switch (m_type)
         {
-            case dbtypeXdnative:        provider = L"xdnative"; break;
+            case xd::dbtypeXdnative:        provider = L"xdnative"; break;
 
             #ifdef WIN32
-            case dbtypeAccess:       provider = L"xdodbc"; dbtype = L"access"; break;
-            case dbtypeSqlServer:    provider = L"xdodbc"; dbtype = L"mssql"; break;
+            case xd::dbtypeAccess:       provider = L"xdodbc"; dbtype = L"access"; break;
+            case xd::dbtypeSqlServer:    provider = L"xdodbc"; dbtype = L"mssql"; break;
             #else
-            case dbtypeAccess:       provider = L"xdaccess"; break;
-            case dbtypeSqlServer:    provider = L"xdsqlserver"; break;
+            case xd::dbtypeAccess:       provider = L"xdaccess"; break;
+            case xd::dbtypeSqlServer:    provider = L"xdsqlserver"; break;
             #endif
 
-            case dbtypeExcel:        provider = L"xdodbc"; dbtype = L"excel"; break;
-            case dbtypeSqlite:       provider = L"xdsqlite"; break;
-            case dbtypeMySql:        provider = L"xdmysql"; break;
+            case xd::dbtypeExcel:        provider = L"xdodbc"; dbtype = L"excel"; break;
+            case xd::dbtypeSqlite:       provider = L"xdsqlite"; break;
+            case xd::dbtypeMySql:        provider = L"xdmysql"; break;
 
-            case dbtypePostgres:     provider = L"xdpgsql"; break;
-            case dbtypeOracle:       provider = L"xdoracle"; break;
-            case dbtypeOdbc:         provider = L"xdodbc"; dbtype = L"dsn"; break;
-            case dbtypeDb2:          provider = L"xdodbc"; dbtype = L"db2"; break;
-            case dbtypeClient:       provider = L"xdclient"; break;
-            case dbtypeFilesystem:
-            case dbtypeXbase:
-            case dbtypeDelimitedText:
-            case dbtypeFixedLengthText:
-                                     provider = L"xdfs"; break;
-            case dbtypePackage:      provider = L"xdkpg"; break;
+            case xd::dbtypePostgres:     provider = L"xdpgsql"; break;
+            case xd::dbtypeOracle:       provider = L"xdoracle"; break;
+            case xd::dbtypeOdbc:         provider = L"xdodbc"; dbtype = L"dsn"; break;
+            case xd::dbtypeDb2:          provider = L"xdodbc"; dbtype = L"db2"; break;
+            case xd::dbtypeClient:       provider = L"xdclient"; break;
+            case xd::dbtypeFilesystem:
+          //  case xd::dbtypeXbase:
+          //  case xd::dbtypeDelimitedText:
+          //  case xd::dbtypeFixedLengthText:
+                                         provider = L"xdfs"; break;
+            case xd::dbtypeKpg:          provider = L"xdkpg"; break;
             default:
                 return L"";
         }
@@ -174,7 +167,7 @@ public:
         }
          else
         {
-            if (m_type == dbtypePackage || m_type == dbtypeAccess || m_type == dbtypeSqlite || m_type == dbtypeExcel)
+            if (m_type == xd::dbtypeKpg || m_type == xd::dbtypeAccess || m_type == xd::dbtypeSqlite || m_type == xd::dbtypeExcel)
             {
                 cstr += L"database=";
                 cstr += m_path;
@@ -189,168 +182,120 @@ public:
 
     std::wstring getErrorString()
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         return m_error_string;
     }
     
     void close()
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         m_db.clear();
     }
 
     bool isOpen()
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         return m_db.isOk();
     }
 
     void setType(int new_val)
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         m_type = new_val;
     }
 
     int getType()
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         return m_type;
     }
 
     std::wstring getDescription()
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         return m_description;
     }
 
     void setDescription(const std::wstring& new_val)
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         m_description = new_val;
     }
 
     std::wstring getHost()
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         return m_host;
     }
 
     void setHost(const std::wstring& new_val)
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         m_host = new_val;
     }
 
     int getPort()
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         return m_port;
     }
 
     void setPort(int new_val)
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         m_port = new_val;
     }
 
     std::wstring getDatabase()
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         return m_database;
     }
 
     void setDatabase(const std::wstring& new_val)
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         m_database = new_val;
     }
 
     std::wstring getUsername()
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         return m_username;
     }
 
     void setUsername(const std::wstring& new_val)
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         m_username = new_val;
     }
 
     std::wstring getPassword()
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         return m_password;
     }
 
     void setPassword(const std::wstring& new_val)
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         m_password = new_val;
     }
 
     std::wstring getPath()
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         return m_path;
     }
 
     void setPath(const std::wstring& path)
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         m_path = path;
     }
 
     std::wstring getFilter()
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         return m_filter;
     }
 
     void setFilter(const std::wstring& filter)
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         m_filter = filter;
     }
 
     xd::IDatabasePtr getDatabasePtr()
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         return m_db;
     }
 
     void setDatabasePtr(xd::IDatabasePtr new_val)
     {
-        KL_AUTO_LOCK(m_obj_mutex);
-
         m_db = new_val;
     }
 
 private:
-
-    kl::mutex m_obj_mutex;
 
     int m_type;
     std::wstring m_description;

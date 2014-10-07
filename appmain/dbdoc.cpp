@@ -17,8 +17,6 @@
 #include "editordoc.h"
 #include "querydoc.h"
 #include "reportdoc.h"
-#include "importwizard.h"
-#include "exportwizard.h"
 #include "paneldatabaseinfo.h"
 #include "panelfileinfo.h"
 #include "panelrelationship.h"
@@ -28,7 +26,6 @@
 #include "dlgprojectmgr.h"
 #include "dbdoc.h"
 #include "structuredoc.h"
-#include "connectionwizard.h"
 #include "dlglinkprops.h"
 #include "bookmarkfs.h"
 
@@ -579,10 +576,10 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
         // if there is an extension filter, make sure the
         // files shown are in that filter
 
-        if (exts.size() > 0 && m_conn->getType() == dbtypeFilesystem)
+        if (exts.size() > 0 && m_conn->getType() == xd::dbtypeFilesystem)
         {
             bool ext_found = false;
-            wxString ext = item_name.AfterLast(wxT('.'));
+            wxString ext = item_name.AfterLast('.');
 
             std::vector<wxString>::iterator it;
             for (it = exts.begin(); it != exts.end(); ++it)
@@ -1420,6 +1417,8 @@ void DbDoc::onCreateTable(wxCommandEvent& evt)
 
 void DbDoc::onImportData(wxCommandEvent& evt)
 {
+    // TODO: reimplement
+/*
     IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     if (items->size() != 1)
@@ -1435,10 +1434,13 @@ void DbDoc::onImportData(wxCommandEvent& evt)
     info.base_path = getFsItemPath(item);
 
     g_app->getAppController()->showImportWizard(info);
+*/
 }
 
 void DbDoc::onExportData(wxCommandEvent& evt)
 {
+    // TODO: reimplement
+/*
     IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
 
@@ -1459,6 +1461,7 @@ void DbDoc::onExportData(wxCommandEvent& evt)
     }
 
     g_app->getAppController()->showExportWizard(info);
+*/
 }
 
 void DbDoc::onOpenProject(wxCommandEvent& evt)
@@ -1502,7 +1505,10 @@ void DbDoc::onItemProperties(wxCommandEvent& evt)
             xd::IFileInfoPtr file_info = db->getFileInfo(path);
             
             if (file_info.isOk() && file_info->isMount())
-            {   
+            {
+                // TODO: mount properties should be displayed here using DlgConnection
+              
+            /*
                 // get connection string
                 std::wstring cstr, rpath;
                 if (!db->getMountPoint(path, cstr, rpath))
@@ -1523,6 +1529,7 @@ void DbDoc::onItemProperties(wxCommandEvent& evt)
                 site->setMinSize(540,480);
                 site->setName(wxT("ConnectionPropertiesPanel"));
                 return;
+            */
             }
         }
     }
@@ -3536,6 +3543,9 @@ void DbDoc::onCopyJobFinished(jobs::IJobPtr job)
 
 void DbDoc::onSetConnectionPropertiesFinished(ConnectionWizard* dlg)
 {
+    // TODO: examine and reimplement
+
+/*
     // get the connection string
     wxString conn_str = dlg->getConnectionString();
     xd::IDatabasePtr db = getItemDatabase(m_edit_item);
@@ -3547,5 +3557,6 @@ void DbDoc::onSetConnectionPropertiesFinished(ConnectionWizard* dlg)
     
     // refresh the project
     refresh();
+*/
 }
 

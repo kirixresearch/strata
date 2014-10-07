@@ -155,13 +155,13 @@ bool ImportWizard::initDoc(IFramePtr frame,
         
         switch (m_template.m_ii.type)
         {
-            default:              type = ConnectionBar::typeFile;      break;
-            case dbtypeMySql:     type = ConnectionBar::typeMySql;     break;
-            case dbtypePostgres:  type = ConnectionBar::typePostgres;  break;
-            case dbtypeSqlServer: type = ConnectionBar::typeSqlServer; break;
-            case dbtypeDb2:       type = ConnectionBar::typeDb2;       break;
-            case dbtypeOracle:    type = ConnectionBar::typeOracle;    break;
-            case dbtypeOdbc:      type = ConnectionBar::typeOdbc;      break;
+            default:                  type = ConnectionBar::typeFile;      break;
+            case xd::dbtypeMySql:     type = ConnectionBar::typeMySql;     break;
+            case xd::dbtypePostgres:  type = ConnectionBar::typePostgres;  break;
+            case xd::dbtypeSqlServer: type = ConnectionBar::typeSqlServer; break;
+            case xd::dbtypeDb2:       type = ConnectionBar::typeDb2;       break;
+            case xd::dbtypeOracle:    type = ConnectionBar::typeOracle;    break;
+            case xd::dbtypeOdbc:      type = ConnectionBar::typeOdbc;      break;
         }
         
         

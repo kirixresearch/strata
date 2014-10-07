@@ -10,7 +10,6 @@
 
 
 #include "appmain.h"
-#include "exportwizard.h"
 #include "exporttemplate.h"
 #include "tabledoc.h"
 
@@ -41,7 +40,7 @@ static void writeKpgMetadata(jobs::IJobPtr job)
         return;
 
     IConnectionPtr conn = createUnmanagedConnection();
-    conn->setType(dbtypePackage);
+    conn->setType(xd::dbtypeKpg);
     conn->setPath(job->getExtraValue(L"kpg"));
     conn->open();
     
@@ -98,7 +97,7 @@ jobs::IJobPtr ExportTemplate::createJob()
 
     job->getJobInfo()->setTitle(towstr(_("Exporting Data")));
 
-    if (m_ei.type == dbtypePackage)
+    if (m_ei.type == xd::dbtypeKpg)
     {
         job->setExtraValue(L"kpg", m_ei.path);
     }
@@ -144,7 +143,7 @@ jobs::IJobPtr ExportTemplate::createJob()
 
         object["overwrite"].setBoolean(true);
 
-        if (m_ei.type == dbtypeDelimitedText)
+        if (m_ei.delimiters.length() > 0)
         {
             object["destination_format"].setObject();
             kl::JsonNode format = object["destination_format"];

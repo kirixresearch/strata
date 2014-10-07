@@ -224,6 +224,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
     m_last_page = 0;
     m_current_page = 0;
     m_options = options;
+    m_need_text_format = false;
 
     // toggle button sizer
 
@@ -540,13 +541,6 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
     m_tablelist_grid->setColumnSize(APPEND_IDX, 50);
 
 
-
-
-
-
-
-
-
     // create button sizer
     
     wxButton* selectall_button = new wxButton(this, ID_TableList_SelectAllButton, _("Select All"));
@@ -574,6 +568,128 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
 
 
 
+    // create text format sizer
+
+    wxStaticBox* delimiter_staticbox = new wxStaticBox(this,
+                                                       -1,
+                                                       _("Field Delimiters"));
+
+    wxStaticBox* textqualifier_staticbox = new wxStaticBox(this,
+                                                       -1,
+                                                       _("Text Qualifier"));
+    
+    wxStaticText* text = new wxStaticText(this,
+                                          -1,
+                                          _("Modify the settings below to determine how the text-delimited files should be read."));
+    resizeStaticText(text);
+
+
+    // create main delimiters sizer
+    
+    m_comma_radio = new wxRadioButton(this,
+                                      -1,
+                                      _("Comma"),
+                                      wxDefaultPosition,
+                                      wxDefaultSize,
+                                      wxRB_GROUP);
+
+    m_tab_radio = new wxRadioButton(this, -1, _("Tab "));
+    m_semicolon_radio = new wxRadioButton(this, -1, _("Semicolon"));
+    m_pipe_radio = new wxRadioButton(this, -1, _("Pipe"));
+    m_space_radio = new wxRadioButton(this, -1, _("Space"));
+    m_nodelimiters_radio = new wxRadioButton(this, -1, _("None"));
+    m_otherdelimiters_radio = new wxRadioButton(this, -1, _("Other:"));
+    m_otherdelimiters_text = new wxTextCtrl(this,
+                                            -1,
+                                            wxEmptyString,
+                                            wxDefaultPosition,
+                                            wxSize(50, 21));
+    m_otherdelimiters_text->SetMaxLength(5);
+
+    wxBoxSizer* other_delimiters_sizer = new wxBoxSizer(wxHORIZONTAL);
+    other_delimiters_sizer->Add(m_otherdelimiters_radio, 0, wxALIGN_CENTER);
+    other_delimiters_sizer->AddSpacer(5);
+    other_delimiters_sizer->Add(m_otherdelimiters_text, 0, wxEXPAND);
+
+    wxStaticBoxSizer* left_options_sizer = new wxStaticBoxSizer(delimiter_staticbox, wxVERTICAL);
+    left_options_sizer->AddSpacer(10);
+    left_options_sizer->Add(m_comma_radio, 0, wxEXPAND | wxLEFT, 10);
+    left_options_sizer->AddSpacer(10);
+    left_options_sizer->Add(m_tab_radio, 0, wxEXPAND | wxLEFT, 10);
+    left_options_sizer->AddSpacer(10);
+    left_options_sizer->Add(m_semicolon_radio, 0, wxEXPAND | wxLEFT, 10);
+    left_options_sizer->AddSpacer(10);
+    left_options_sizer->Add(m_pipe_radio, 0, wxEXPAND | wxLEFT, 10);
+    left_options_sizer->AddSpacer(10);
+    left_options_sizer->Add(m_space_radio, 0, wxEXPAND | wxLEFT, 10);
+    left_options_sizer->AddSpacer(10);
+    left_options_sizer->Add(m_nodelimiters_radio, 0, wxEXPAND | wxLEFT, 10);
+    left_options_sizer->AddSpacer(6);
+    left_options_sizer->Add(other_delimiters_sizer, 0, wxEXPAND | wxLEFT, 10);
+    left_options_sizer->AddSpacer(10);
+
+
+    // create main text qualifier sizer
+    
+    m_doublequote_radio = new wxRadioButton(this,
+                                            -1,
+                                            _("Quotation Marks (\")"),
+                                            wxDefaultPosition,
+                                            wxDefaultSize,
+                                            wxRB_GROUP);
+
+    m_singlequote_radio = new wxRadioButton(this, -1, _("Single Quote (')"));
+    m_notextqualifier_radio = new wxRadioButton(this, -1, _("None"));
+    m_othertextqualifier_radio = new wxRadioButton(this, -1, _("Other:"));
+    m_othertextqualifier_text = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(50, 21));
+    m_othertextqualifier_text->SetMaxLength(1);
+
+    wxBoxSizer* other_textqualifier_sizer = new wxBoxSizer(wxHORIZONTAL);
+    other_textqualifier_sizer->Add(m_othertextqualifier_radio, 0, wxALIGN_CENTER);
+    other_textqualifier_sizer->AddSpacer(5);
+    other_textqualifier_sizer->Add(m_othertextqualifier_text, 0, wxEXPAND);
+
+    wxStaticBoxSizer* right_options_sizer = new wxStaticBoxSizer(textqualifier_staticbox, wxVERTICAL);
+    right_options_sizer->AddSpacer(10);
+    right_options_sizer->Add(m_doublequote_radio, 0, wxEXPAND | wxLEFT, 10);
+    right_options_sizer->AddSpacer(10);
+    right_options_sizer->Add(m_singlequote_radio, 0, wxEXPAND | wxLEFT, 10);
+    right_options_sizer->AddSpacer(10);
+    right_options_sizer->Add(m_notextqualifier_radio, 0, wxEXPAND | wxLEFT, 10);
+    right_options_sizer->AddSpacer(6);
+    right_options_sizer->Add(other_textqualifier_sizer, 0, wxEXPAND | wxLEFT, 10);
+    right_options_sizer->AddSpacer(10);
+
+
+    // create horizontal settings sizer
+    wxBoxSizer* horz_sizer1 = new wxBoxSizer(wxHORIZONTAL);
+    horz_sizer1->Add(left_options_sizer, 1, wxEXPAND);
+    horz_sizer1->AddSpacer(20);
+    horz_sizer1->Add(right_options_sizer, 1, wxEXPAND);
+
+    // create first row header sizer
+    m_firstrowheader_check = new wxCheckBox(this, -1, _("First row contains field names"));
+    m_firstrowheader_check->SetValue(true);
+
+    wxBoxSizer* horz_sizer2 = new wxBoxSizer(wxHORIZONTAL);
+    horz_sizer2->Add(12,1);
+    horz_sizer2->Add(m_firstrowheader_check, 1, wxALIGN_CENTER);
+
+    // create main sizer
+    m_textformatpage_sizer = new wxBoxSizer(wxVERTICAL);
+    m_textformatpage_sizer->AddSpacer(20);
+    m_textformatpage_sizer->Add(text, 0, wxEXPAND | wxLEFT | wxRIGHT, 20);
+    m_textformatpage_sizer->AddSpacer(4);
+    m_textformatpage_sizer->Add(new wxStaticLine(this, -1, wxDefaultPosition, wxSize(1,1)),
+                    0, wxEXPAND | wxLEFT | wxRIGHT, 20);
+    m_textformatpage_sizer->AddSpacer(12);
+    m_textformatpage_sizer->Add(horz_sizer1, 0, wxEXPAND | wxLEFT | wxRIGHT, 40);
+    m_textformatpage_sizer->AddSpacer(10);
+    m_textformatpage_sizer->Add(horz_sizer2, 0, wxEXPAND | wxLEFT | wxRIGHT, 40);
+    m_textformatpage_sizer->AddStretchSpacer(1);
+
+
+
 
 
 
@@ -582,6 +698,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
     m_container_sizer->Add(m_serverpage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
     m_container_sizer->Add(m_datasourcepage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
     m_container_sizer->Add(m_tablelistpage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
+    m_container_sizer->Add(m_textformatpage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
 
 
 
@@ -796,8 +913,22 @@ void DlgConnection::onForward(wxCommandEvent& evt)
 
     if (m_current_page == pageFile)
     {
+        m_need_text_format = false;
+
         std::vector<wxString> files;
         m_file_panel->getPaths(files);
+
+
+        if (files.size() == 0)
+        {
+            // the path was empty
+            appMessageBox(_("A valid location needs to be specified to continue."),
+                          _("Invalid Location"),
+                          wxOK | wxICON_EXCLAMATION | wxCENTER,
+                          g_app->getMainWindow());
+            return;
+        }
+
 
         if (files.size() == 1 && kl::icontains(files[0].ToStdWstring(), L".mdb"))
         {
@@ -815,11 +946,25 @@ void DlgConnection::onForward(wxCommandEvent& evt)
         }
          else
         {
+            std::vector<wxString>::iterator it;
+            for (it = files.begin(); it != files.end(); ++it)
+            {
+                std::wstring wstr = it->ToStdWstring();
+                if (kl::icontains(wstr, L".icsv"))
+                    continue; // known file type
+                if (kl::icontains(wstr, L".dbf"))
+                    continue; // known file type
+
+                m_need_text_format = true;
+                break;
+            }
+
             m_ci.tables.clear();
             m_ci.port = 0;
             m_ci.type = xd::dbtypeFilesystem;
             populateTableListGrid(files);
-            setActivePage(pageTableList);
+
+            setActivePage(m_need_text_format ? pageTextFormat : pageTableList);
             return;
         }
     }
@@ -838,6 +983,36 @@ void DlgConnection::onForward(wxCommandEvent& evt)
         {
             return;
         }
+    }
+
+
+    if (m_current_page == pageTextFormat)
+    {
+        if (m_comma_radio->GetValue())
+            m_ci.delimiters = L",";
+         else if (m_tab_radio->GetValue())
+            m_ci.delimiters = L"\t";
+         else if (m_semicolon_radio->GetValue())
+            m_ci.delimiters = L";";
+         else if (m_pipe_radio->GetValue())
+            m_ci.delimiters = L"|";
+         else if (m_space_radio->GetValue())
+            m_ci.delimiters = L" ";
+         else if (m_nodelimiters_radio->GetValue())
+            m_ci.delimiters = L"";
+         else
+            m_ci.delimiters = m_otherdelimiters_text->GetValue();
+
+        if (m_doublequote_radio->GetValue())
+            m_ci.text_qualifier = L"\"";
+         else if (m_singlequote_radio->GetValue())
+            m_ci.text_qualifier = L"'";
+         else if (m_notextqualifier_radio->GetValue())
+            m_ci.text_qualifier = L"";
+         else if (m_othertextqualifier_radio->GetValue())
+            m_ci.text_qualifier = m_othertextqualifier_text->GetValue();
+
+        m_ci.first_row_header = m_firstrowheader_check->GetValue();
     }
 
 
@@ -878,6 +1053,7 @@ void DlgConnection::setActivePage(int page)
         m_container_sizer->Hide(m_serverpage_sizer);
         m_container_sizer->Hide(m_datasourcepage_sizer);
         m_container_sizer->Hide(m_tablelistpage_sizer);
+        m_container_sizer->Hide(m_textformatpage_sizer);
 
         if (m_options & optionFolder)
             showButtons(wxOK | wxCANCEL);
@@ -890,6 +1066,7 @@ void DlgConnection::setActivePage(int page)
         m_container_sizer->Show(m_serverpage_sizer);
         m_container_sizer->Hide(m_datasourcepage_sizer);
         m_container_sizer->Hide(m_tablelistpage_sizer);
+        m_container_sizer->Hide(m_textformatpage_sizer);
 
         if (m_options & optionFolder)
             showButtons(wxOK | wxCANCEL);
@@ -904,11 +1081,22 @@ void DlgConnection::setActivePage(int page)
         m_container_sizer->Hide(m_serverpage_sizer);
         m_container_sizer->Show(m_datasourcepage_sizer);
         m_container_sizer->Hide(m_tablelistpage_sizer);
+        m_container_sizer->Hide(m_textformatpage_sizer);
 
         if (m_options & optionFolder)
             showButtons(wxOK | wxCANCEL);
              else
             showButtons(wxFORWARD | wxCANCEL);
+    }
+     else if (page == pageTextFormat)
+    {
+        m_last_page = pageFile;
+        m_container_sizer->Hide(m_filepage_sizer);
+        m_container_sizer->Hide(m_serverpage_sizer);
+        m_container_sizer->Hide(m_datasourcepage_sizer);
+        m_container_sizer->Hide(m_tablelistpage_sizer);
+        m_container_sizer->Show(m_textformatpage_sizer);
+        showButtons(wxBACKWARD | wxFORWARD | wxCANCEL);
     }
      else if (page == pageTableList)
     {
@@ -916,8 +1104,10 @@ void DlgConnection::setActivePage(int page)
         m_container_sizer->Hide(m_serverpage_sizer);
         m_container_sizer->Hide(m_datasourcepage_sizer);
         m_container_sizer->Show(m_tablelistpage_sizer);
+        m_container_sizer->Hide(m_textformatpage_sizer);
         showButtons(wxBACKWARD | wxOK | wxCANCEL);
     }
+
 
     Layout();
 }
@@ -1020,9 +1210,8 @@ static void getTablesRecursive(xd::IDatabasePtr& db, const std::wstring& path, s
     if (items.isNull())
         return;
 
-    int count = items->size();
+    size_t i, count = items->size();
     int item_type;
-    int i;
 
     for (i = 0; i < count; ++i)
     {
