@@ -35,6 +35,8 @@ public:
     {
         port = 3306;
         type = xd::dbtypeMySql;
+        first_row_header = true;
+        binary_copy = true;
     }
 
     std::wstring getConnectionString();
@@ -53,6 +55,8 @@ public:
     std::wstring base_path;
 
     std::vector<ConnectionTable> tables;
+
+    bool binary_copy;
 
     // text format settings
     std::wstring delimiters;
@@ -107,11 +111,11 @@ public: // signals
 
 private:
 
-
     void populateDataSourceGrid();
     void populateTableListGrid(xd::IDatabasePtr);
     void populateTableListGrid(std::vector<wxString>& paths);
     void showButtons(int mask);
+    void saveDialogData();
 
     // event handlers
     
@@ -184,7 +188,8 @@ private:
     wxRadioButton* m_notextqualifier_radio;
     wxRadioButton* m_othertextqualifier_radio;
     wxTextCtrl*    m_othertextqualifier_text;
-    wxCheckBox*    m_firstrowheader_check;
+    wxCheckBox*    m_firstrowheader_checkbox;
+    wxCheckBox*    m_binarycopy_checkbox;
 
 
     Connection m_ci;

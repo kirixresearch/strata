@@ -197,6 +197,19 @@ bool ImportTemplate::loadJson(const std::wstring& path)
             m_ii.first_row_header = delimited_text["first_row_header"].getBoolean();
     }
     
+
+    kl::JsonNode binary_copy = root["binary_copy"];
+    if (binary_copy.isOk())
+    {
+        m_ii.binary_copy = binary_copy.getBoolean();
+    }
+     else
+    {
+        m_ii.binary_copy = false;
+    }
+
+
+
     
     kl::JsonNode objects = root["objects"];
     
@@ -912,11 +925,20 @@ jobs::IJobPtr ImportTemplate::createJob()
 
             object["overwrite"].setBoolean(true);
 
-            if (m_ii.delimiters.length() > 0)
+            if (m_ii.binary_copy)
             {
                 object["source_format"].setObject();
                 kl::JsonNode format = object["source_format"];
             
+                format["type"] = L"stream";
+            }
+             else if (m_ii.delimiters.length() > 0)
+            {
+                object["source_format"].setObject();
+                kl::JsonNode format = object["source_format"];
+            
+                format["type"] = L"table";
+                format["format"] = L"delimited_text";
                 format["delimiter"] = m_ii.delimiters;
                 format["text_qualifier"] = m_ii.text_qualifier;
                 format["header_row"].setBoolean(m_ii.first_row_header);

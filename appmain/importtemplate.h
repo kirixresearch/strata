@@ -291,6 +291,8 @@ public:
 
         kpg_compressed = true;
         kpg_version = 2;
+
+        binary_copy = false;
     }
 
     ConnectionInfo(const ConnectionInfo& c)
@@ -311,6 +313,8 @@ public:
 
         kpg_compressed = c.kpg_compressed;
         kpg_version = c.kpg_version;
+
+        binary_copy = c.binary_copy;
 
         m_conn_ptr = c.m_conn_ptr;
     }
@@ -333,6 +337,8 @@ public:
 
         kpg_compressed = c.kpg_compressed;
         kpg_version = c.kpg_version;
+
+        binary_copy = c.binary_copy;
 
         m_conn_ptr = c.m_conn_ptr;
 
@@ -361,6 +367,9 @@ public:
     // used for package files only
     bool kpg_compressed;
     int kpg_version;
+
+    // option for binary-copy import
+    bool binary_copy;
 
     // live connection ptr
     IConnectionPtr m_conn_ptr;

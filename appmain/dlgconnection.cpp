@@ -545,11 +545,12 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
     
     wxButton* selectall_button = new wxButton(this, ID_TableList_SelectAllButton, _("Select All"));
     wxButton* selectnone_button = new wxButton(this, ID_TableList_SelectNoneButton, _("Select None"));
-    
+
     wxBoxSizer* button_sizer = new wxBoxSizer(wxHORIZONTAL);
     button_sizer->Add(selectall_button);
     button_sizer->AddSpacer(5);
     button_sizer->Add(selectnone_button);
+
     
     // create main sizer
     m_tablelistpage_sizer->AddSpacer(20);
@@ -668,12 +669,12 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
     horz_sizer1->Add(right_options_sizer, 1, wxEXPAND);
 
     // create first row header sizer
-    m_firstrowheader_check = new wxCheckBox(this, -1, _("First row contains field names"));
-    m_firstrowheader_check->SetValue(true);
+    m_firstrowheader_checkbox = new wxCheckBox(this, -1, _("First row contains field names"));
+    m_firstrowheader_checkbox->SetValue(true);
 
     wxBoxSizer* horz_sizer2 = new wxBoxSizer(wxHORIZONTAL);
     horz_sizer2->Add(12,1);
-    horz_sizer2->Add(m_firstrowheader_check, 1, wxALIGN_CENTER);
+    horz_sizer2->Add(m_firstrowheader_checkbox, 1, wxALIGN_CENTER);
 
     // create main sizer
     m_textformatpage_sizer = new wxBoxSizer(wxVERTICAL);
@@ -690,9 +691,6 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
 
 
 
-
-
-
     m_container_sizer = new wxBoxSizer(wxVERTICAL);
     m_container_sizer->Add(m_filepage_sizer, 1, wxEXPAND);
     m_container_sizer->Add(m_serverpage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
@@ -702,20 +700,23 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
 
 
 
+    m_binarycopy_checkbox = new wxCheckBox(this, -1, _("Import as binary objects"));
+    m_binarycopy_checkbox->SetValue(false);
+
+
     m_forward_button = new wxButton(this, wxID_FORWARD, _("Next"));
     m_backward_button = new wxButton(this, wxID_BACKWARD, _("Previous"));
     m_ok_button = new wxButton(this, wxID_OK);
     m_cancel_button = new wxButton(this, wxID_CANCEL);
         
     m_button_sizer = new wxBoxSizer(wxHORIZONTAL);
+    m_button_sizer->AddSpacer(5);
+    m_button_sizer->Add(m_binarycopy_checkbox);
     m_button_sizer->AddStretchSpacer(1);
     m_button_sizer->Add(m_backward_button, 0, wxEXPAND | wxRIGHT, 5);
     m_button_sizer->Add(m_forward_button, 0, wxEXPAND | wxRIGHT, 5);
     m_button_sizer->Add(m_ok_button, 0, wxEXPAND | wxRIGHT, 5);
     m_button_sizer->Add(m_cancel_button, 0, wxEXPAND | wxRIGHT, 5);
-
-    //m_ok_button->SetDefault();
-
 
 
 
@@ -818,33 +819,6 @@ void DlgConnection::onOK(wxCommandEvent& evt)
         m_ci.path = m_file_panel->getPath().ToStdWstring();
     }
 
-    if (m_current_page == pageTableList)
-    {
-        m_ci.tables.clear();
-
-        wxString base_path = m_tablelist_basepath->GetValue();
-        if (base_path == "/")
-            base_path = "";
-        if (base_path.Length() > 0 && base_path[0] != '/')
-            base_path.Prepend("/");
-        if (base_path.Length() > 0 && base_path.Last() != '/')
-            base_path += "/";
-
-        int row, row_count = m_tablelist_grid->getRowCount();
-        for (row = 0; row < row_count; ++row)
-        {
-            if (m_tablelist_grid->getCellBoolean(row, ONOFF_IDX))
-            {
-                ConnectionTable t;
-                t.input_tablename = m_tablelist_grid->getCellString(row, SOURCE_TABLENAME_IDX);
-                t.output_tablename = base_path + m_tablelist_grid->getCellString(row, DEST_TABLENAME_IDX);
-                t.append = m_tablelist_grid->getCellBoolean(row, APPEND_IDX);
-                m_ci.tables.push_back(t);
-            }
-        }
-    }
-
-
     if (m_current_page == pageDataSource)
     {
         int row = m_datasource_grid->getCursorRow();
@@ -860,6 +834,7 @@ void DlgConnection::onOK(wxCommandEvent& evt)
     }
 
 
+    saveDialogData();
 
     sigFinished(this);
 
@@ -929,15 +904,17 @@ void DlgConnection::onForward(wxCommandEvent& evt)
             return;
         }
 
+        bool binary_import = m_binarycopy_checkbox->GetValue();
 
-        if (files.size() == 1 && kl::icontains(files[0].ToStdWstring(), L".mdb"))
+
+        if (!binary_import && files.size() == 1 && kl::icontains(files[0].ToStdWstring(), L".mdb"))
         {
             connect_to_database = true;
             m_ci.type = xd::dbtypeAccess;
             m_ci.port = 0;
             m_ci.path = files[0];
         }
-         else if (files.size() == 1 && kl::icontains(files[0].ToStdWstring(), L".kpg"))
+         else if (!binary_import && files.size() == 1 && kl::icontains(files[0].ToStdWstring(), L".kpg"))
         {
             connect_to_database = true;
             m_ci.type = xd::dbtypeKpg;
@@ -946,17 +923,26 @@ void DlgConnection::onForward(wxCommandEvent& evt)
         }
          else
         {
-            std::vector<wxString>::iterator it;
-            for (it = files.begin(); it != files.end(); ++it)
-            {
-                std::wstring wstr = it->ToStdWstring();
-                if (kl::icontains(wstr, L".icsv"))
-                    continue; // known file type
-                if (kl::icontains(wstr, L".dbf"))
-                    continue; // known file type
+            m_ci.path = L"";
 
-                m_need_text_format = true;
-                break;
+            // binary import only goes to the table list page,
+            // since the objects will be copied byte for byte,
+            // not imported as a table
+
+            if (!binary_import)
+            {
+                std::vector<wxString>::iterator it;
+                for (it = files.begin(); it != files.end(); ++it)
+                {
+                    std::wstring wstr = it->ToStdWstring();
+                    if (kl::icontains(wstr, L".icsv"))
+                        continue; // known file type
+                    if (kl::icontains(wstr, L".dbf"))
+                        continue; // known file type
+
+                    m_need_text_format = true;
+                    break;
+                }
             }
 
             m_ci.tables.clear();
@@ -1009,42 +995,16 @@ void DlgConnection::onForward(wxCommandEvent& evt)
             return;
         }
     }
-
-
-    if (m_current_page == pageTextFormat)
-    {
-        if (m_comma_radio->GetValue())
-            m_ci.delimiters = L",";
-         else if (m_tab_radio->GetValue())
-            m_ci.delimiters = L"\t";
-         else if (m_semicolon_radio->GetValue())
-            m_ci.delimiters = L";";
-         else if (m_pipe_radio->GetValue())
-            m_ci.delimiters = L"|";
-         else if (m_space_radio->GetValue())
-            m_ci.delimiters = L" ";
-         else if (m_nodelimiters_radio->GetValue())
-            m_ci.delimiters = L"";
-         else
-            m_ci.delimiters = m_otherdelimiters_text->GetValue();
-
-        if (m_doublequote_radio->GetValue())
-            m_ci.text_qualifier = L"\"";
-         else if (m_singlequote_radio->GetValue())
-            m_ci.text_qualifier = L"'";
-         else if (m_notextqualifier_radio->GetValue())
-            m_ci.text_qualifier = L"";
-         else if (m_othertextqualifier_radio->GetValue())
-            m_ci.text_qualifier = m_othertextqualifier_text->GetValue();
-
-        m_ci.first_row_header = m_firstrowheader_check->GetValue();
-    }
 }
 
 
 
 void DlgConnection::setActivePage(int page)
 {
+    // binary copy checkbox is only shown on the first page
+    m_button_sizer->Show(m_binarycopy_checkbox, page == pageFile);
+
+
     m_last_page = m_current_page;
     m_current_page = page;
 
@@ -1091,6 +1051,7 @@ void DlgConnection::setActivePage(int page)
     }
      else if (page == pageTableList)
     {
+        m_last_page = pageFile;
         m_container_sizer->Hide(m_filepage_sizer);
         m_container_sizer->Hide(m_serverpage_sizer);
         m_container_sizer->Hide(m_datasourcepage_sizer);
@@ -1100,7 +1061,6 @@ void DlgConnection::setActivePage(int page)
     }
      else if (page == pageTextFormat)
     {
-        m_last_page = pageFile;
         m_container_sizer->Hide(m_filepage_sizer);
         m_container_sizer->Hide(m_serverpage_sizer);
         m_container_sizer->Hide(m_datasourcepage_sizer);
@@ -1121,6 +1081,65 @@ void DlgConnection::showButtons(int mask)
     m_button_sizer->Show(m_forward_button, (mask & wxFORWARD) ? true:false);
 }
 
+
+void DlgConnection::saveDialogData()
+{
+    // table selection page
+
+    m_ci.tables.clear();
+
+    wxString base_path = m_tablelist_basepath->GetValue();
+    if (base_path == "/")
+        base_path = "";
+    if (base_path.Length() > 0 && base_path[0] != '/')
+        base_path.Prepend("/");
+    if (base_path.Length() > 0 && base_path.Last() != '/')
+        base_path += "/";
+
+    int row, row_count = m_tablelist_grid->getRowCount();
+    for (row = 0; row < row_count; ++row)
+    {
+        if (m_tablelist_grid->getCellBoolean(row, ONOFF_IDX))
+        {
+            ConnectionTable t;
+            t.input_tablename = m_tablelist_grid->getCellString(row, SOURCE_TABLENAME_IDX);
+            t.output_tablename = base_path + m_tablelist_grid->getCellString(row, DEST_TABLENAME_IDX);
+            t.append = m_tablelist_grid->getCellBoolean(row, APPEND_IDX);
+            m_ci.tables.push_back(t);
+        }
+    }
+
+    m_ci.binary_copy = m_binarycopy_checkbox->GetValue();
+
+
+    // text settings page
+
+    if (m_comma_radio->GetValue())
+        m_ci.delimiters = L",";
+    else if (m_tab_radio->GetValue())
+        m_ci.delimiters = L"\t";
+    else if (m_semicolon_radio->GetValue())
+        m_ci.delimiters = L";";
+    else if (m_pipe_radio->GetValue())
+        m_ci.delimiters = L"|";
+    else if (m_space_radio->GetValue())
+        m_ci.delimiters = L" ";
+    else if (m_nodelimiters_radio->GetValue())
+        m_ci.delimiters = L"";
+    else
+        m_ci.delimiters = m_otherdelimiters_text->GetValue();
+
+    if (m_doublequote_radio->GetValue())
+        m_ci.text_qualifier = L"\"";
+    else if (m_singlequote_radio->GetValue())
+        m_ci.text_qualifier = L"'";
+    else if (m_notextqualifier_radio->GetValue())
+        m_ci.text_qualifier = L"";
+    else if (m_othertextqualifier_radio->GetValue())
+        m_ci.text_qualifier = m_othertextqualifier_text->GetValue();
+
+    m_ci.first_row_header = m_firstrowheader_checkbox->GetValue();
+}
 
 void DlgConnection::onFilePanelItemActivated(kcl::FilePanelEvent& evt)
 {

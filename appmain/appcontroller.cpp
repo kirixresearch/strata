@@ -4888,31 +4888,39 @@ static void makeSafeConnectionName(xd::IDatabasePtr db, wxString& name)
 
 static void onImportWizardFinished(DlgConnection* dlg)
 {
-/*
     Connection& ci = dlg->getConnectionInfo();
     ImportTemplate templ;
     ImportInfo& ii = templ.m_ii;
 
+    ii.type = ci.type;
+    ii.server = ci.server;
+    ii.port = ci.port;
+    ii.database = ci.database;
+    ii.username = ci.username;
+    ii.password = ci.password;
 
-
-    int type;
-    std::wstring server;
-    int port;
-    std::wstring database;
-    std::wstring username;
-
-
-    std::wstring password;
     ii.path = ci.path;
     ii.base_path = ci.base_path;
+
+    ii.binary_copy = ci.binary_copy;
 
     ii.delimiters = ci.delimiters;
     ii.text_qualifier = ci.text_qualifier;
     ii.date_format_str = ci.date_format_str;
     ii.first_row_header = ci.first_row_header;
-*/
-    
-    
+
+    std::vector<ConnectionTable>::iterator it;
+    for (it = ci.tables.begin(); it != ci.tables.end(); ++it)
+    {
+        ImportTableSelection t;
+        t.append = it->append;
+        t.selected = true;
+        t.input_tablename = it->input_tablename;
+        t.output_tablename = it->output_tablename;
+        ii.tables.push_back(t);
+    }
+
+    templ.execute();
 }
 
 
@@ -6418,7 +6426,7 @@ void AppController::showConnectExternalTablesWizard()
 void AppController::showImportWizard(const ImportInfo& info, const wxString& location)
 {
     DlgConnection* dlg = new DlgConnection(g_app->getMainWindow(), wxID_ANY, _("Import"));
-    dlg->sigFinished.connect(&onConnectExternalDatabaseWizardFinished);
+    dlg->sigFinished.connect(&onImportWizardFinished);
     dlg->Show();
 /*
     AppBusyCursor bc;

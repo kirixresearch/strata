@@ -3410,11 +3410,13 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
             object["overwrite"].setBoolean(true);
 
             /*
-            if (database_type == dbtypeDelimitedText)
+            if (m_ii.delimiters.length() > 0)
             {
                 object["source_format"].setObject();
                 kl::JsonNode format = object["source_format"];
             
+                format["type"] = L"table";
+                format["format"] = L"delimited_text";
                 format["delimiter"] = m_ii.delimiters;
                 format["text_qualifier"] = m_ii.text_qualifier;
                 format["header_row"].setBoolean(m_ii.first_row_header);
@@ -3620,17 +3622,19 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
 
             object["overwrite"].setBoolean(true);
 
-            /*
-            if (database_type == dbtypeDelimitedText)
+/*
+            if (m_ii.delimiters.length() > 0)
             {
                 object["source_format"].setObject();
                 kl::JsonNode format = object["source_format"];
-            
+
+                format["type"] = L"table";
+                format["format"] = L"delimited_text";
                 format["delimiter"] = m_ii.delimiters;
                 format["text_qualifier"] = m_ii.text_qualifier;
                 format["header_row"].setBoolean(m_ii.first_row_header);
             }
-            */
+*/
         }
 
         job->setParameters(params.toString());

@@ -136,7 +136,49 @@ int LoadJob::runJob()
         }
 
 
-        if (finfo->getType() == xd::filetypeStream)
+        bool binary_import = (finfo->getType() == xd::filetypeStream) ? true : false;
+
+
+
+        xd::QueryParams qp;
+        qp.from = source_path;
+        qp.format.determine_structure = true; // for csvs where we don't know the structure, perform a full scan to get correct metrics
+
+        if (object.childExists("source_format"))
+        {
+            kl::JsonNode format_node = object["source_format"];
+
+            std::wstring type = format_node.getChild("type").getString();
+            std::wstring format = format_node.getChild("format").getString();
+
+            if (type == L"stream")
+            {
+                binary_import = true;
+            }
+             else
+            {
+                if (format == L"delimited_text")
+                {
+                    qp.format.format = xd::formatDelimitedText;
+                    qp.format.delimiters = format_node.getChild("delimiter").getString();
+                    qp.format.text_qualifiers = format_node.getChild("text_qualifier").getString();
+                    qp.format.first_row_column_names = format_node.getChild("header_row").getBoolean();
+                }
+                 else
+                {
+                    // unknown format type
+                    if (finfo.isNull())
+                    {
+                        m_job_info->setState(jobStateFailed);
+                        return 0;
+                    }
+                }
+            }
+        }
+
+
+
+        if (binary_import)
         {
             xd::IStreamPtr instream = source_db->openStream(source_path);
             if (instream.isNull())
@@ -194,20 +236,6 @@ int LoadJob::runJob()
 
 
 
-
-        xd::QueryParams qp;
-        qp.from = source_path;
-        qp.format.determine_structure = true; // for csvs where we don't know the structure, perform a full scan to get correct metrics
-
-        if (object.childExists("source_format"))
-        {
-            kl::JsonNode format = object["source_format"];
-
-            qp.format.format = xd::formatDelimitedText;
-            qp.format.delimiters = format.getChild("delimiter").getString();
-            qp.format.text_qualifiers = format.getChild("text_qualifier").getString();
-            qp.format.first_row_column_names = format.getChild("header_row").getBoolean();
-        }
 
         xd::IIteratorPtr source_iter = source_db->query(qp);
 
