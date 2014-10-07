@@ -6894,24 +6894,6 @@ bool TableDoc::saveAsPdf(const wxString& path)
     return false;
 }
 
-static std::wstring xdTypeToOutputType(int type)
-{
-    switch (type)
-    {
-        default:
-        case xd::typeUndefined:     return L"undefined";
-        case xd::typeInvalid:       return L"invalid";
-        case xd::typeCharacter:     return L"character";
-        case xd::typeWideCharacter: return L"widecharacter";
-        case xd::typeNumeric:       return L"numeric";
-        case xd::typeDouble:        return L"double";
-        case xd::typeInteger:       return L"integer";
-        case xd::typeDate:          return L"date";
-        case xd::typeDateTime:      return L"datetime";
-        case xd::typeBoolean:       return L"boolean";
-        case xd::typeBinary:        return L"binary";
-    }
-}
 
 bool TableDoc::saveAsStructure(const wxString& path)
 {
@@ -6941,7 +6923,7 @@ bool TableDoc::saveAsStructure(const wxString& path)
  
         // initial tab space (use spaces instead of tab)
         std::wstring name = colinfo.name;
-        std::wstring type = xdTypeToOutputType(colinfo.type);
+        std::wstring type = xd::dbtypeToString(colinfo.type);
 
         wchar_t buf[30];
         swprintf(buf, 30, L"%d", colinfo.width);

@@ -123,25 +123,7 @@ int DbType::toXdType(kscript::Value* val)
 {
     if (val->isString())
     {
-        std::wstring str = val->getString();
-        if (str == L"character")
-            return xd::typeCharacter;
-        else if (str == L"widecharacter")
-            return xd::typeWideCharacter;
-        else if (str == L"binary")
-            return xd::typeBinary;
-        else if (str == L"numeric")
-            return xd::typeNumeric;
-        else if (str == L"double")
-            return xd::typeDouble;
-        else if (str == L"integer")
-            return xd::typeInteger;
-        else if (str == L"date")
-            return xd::typeDate;
-        else if (str == L"datetime")
-            return xd::typeDateTime;
-        else if (str == L"boolean")
-            return xd::typeBoolean;
+        return xd::stringToDbtype(val->getString());
     }
      else
     {

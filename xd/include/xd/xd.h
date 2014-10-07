@@ -310,6 +310,21 @@ enum
 
 
 
+// utility classes
+
+struct xdcmpnocase : std::binary_function<const std::wstring&, const std::wstring&, bool>
+{
+    bool operator()(const std::wstring& lhs,  const std::wstring& rhs) const {
+#ifdef _MSC_VER
+        return (wcsicmp(lhs.c_str(), rhs.c_str()) < 0);
+#else
+        return (wcscasecmp(lhs.c_str(), rhs.c_str()) < 0);
+#endif
+    }
+};
+
+
+
 
 struct DatabaseEntry
 {
@@ -402,7 +417,7 @@ struct Structure
             for (std::vector<xd::ColumnInfo>::const_iterator it = columns.begin(), cend = columns.end(); it != cend; ++it)
                 ((Structure*)this)->m_map[it->name] = i++;
         }
-        std::map<std::wstring, int, cmp_nocase>::const_iterator it = m_map.find(name);
+        std::map<std::wstring, int, xdcmpnocase>::const_iterator it = m_map.find(name);
         return (it == m_map.end() ? -1 : it->second);
       }
 
@@ -416,18 +431,8 @@ struct Structure
       }
     void clear() { columns.clear(); m_map.clear(); }
 
-    struct cmp_nocase : std::binary_function<const std::wstring&, const std::wstring&, bool> {
-        bool operator()(const std::wstring& lhs,  const std::wstring& rhs) const {
-            #ifdef _MSC_VER
-            return (wcsicmp(lhs.c_str(), rhs.c_str()) < 0);
-            #else
-            return (wcscasecmp(lhs.c_str(), rhs.c_str()) < 0);
-            #endif
-        }
-    };
-
     std::vector<ColumnInfo> columns;
-    std::map<std::wstring, int, cmp_nocase> m_map;
+    std::map<std::wstring, int, xdcmpnocase> m_map;
 };
 
 

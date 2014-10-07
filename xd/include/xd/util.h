@@ -488,17 +488,6 @@ protected:
 
 
 
-struct xdcmpnocase : std::binary_function<const std::wstring&, const std::wstring&, bool>
-{
-    bool operator()(const std::wstring& lhs,  const std::wstring& rhs) const
-    {
-#ifdef _MSC_VER
-        return (wcsicmp(lhs.c_str(), rhs.c_str()) < 0);
-#else
-        return (wcscasecmp(lhs.c_str(), rhs.c_str()) < 0);
-#endif
-    }
-};
 
 
 inline std::wstring xdtrim(const std::wstring& s)
