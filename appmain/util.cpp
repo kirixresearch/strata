@@ -672,8 +672,7 @@ wxString makeValidFieldName(const wxString& str,
     return work_str;
 }
 
-wxString makeValidObjectName(const wxString& str,
-                             xd::IDatabasePtr db)
+wxString makeValidObjectName(const wxString& str, xd::IDatabasePtr db)
 {
     if (db.isNull())
         db = g_app->getDatabase();

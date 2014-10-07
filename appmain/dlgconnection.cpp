@@ -533,6 +533,11 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
     cellprops.editable = false;
     m_tablelist_grid->setModelColumnProperties(SOURCE_TABLENAME_IDX, &cellprops);
     
+    cellprops.mask = kcl::CellProperties::cpmaskEditable;
+    cellprops.editable = true;
+    m_tablelist_grid->setModelColumnProperties(DEST_TABLENAME_IDX, &cellprops);
+    
+
     m_tablelist_grid->setRowLabelSize(0);
     m_tablelist_grid->createDefaultView();
     m_tablelist_grid->setColumnSize(ONOFF_IDX, 23);
@@ -710,7 +715,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
     m_cancel_button = new wxButton(this, wxID_CANCEL);
         
     m_button_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_button_sizer->AddSpacer(5);
+    m_button_sizer->AddSpacer(8);
     m_button_sizer->Add(m_binarycopy_checkbox);
     m_button_sizer->AddStretchSpacer(1);
     m_button_sizer->Add(m_backward_button, 0, wxEXPAND | wxRIGHT, 5);
@@ -1160,6 +1165,10 @@ void DlgConnection::onDataSourceLeftDClick(kcl::GridEvent& evt)
              else
             onForward(e);
     }
+     else
+    {
+        evt.Skip();
+    }
 }
 
 void DlgConnection::populateDataSourceGrid()
@@ -1303,7 +1312,16 @@ void DlgConnection::populateTableListGrid(std::vector<wxString>& tables)
         std::wstring out_tablename = kl::afterLast(src_tablename, PATH_SEPARATOR_CHAR);
         bool append = false;
 
-        //out_tablename = makeValidObjectName(out_tablename, db).ToStdWstring();
+
+        xd::IDatabasePtr& db = g_app->getDatabase();
+
+        if (db->getDatabaseType() != xd::dbtypeFilesystem)
+        {
+            if (out_tablename.find('.') != out_tablename.npos)
+                out_tablename = kl::beforeLast(out_tablename, '.');
+            out_tablename = makeValidObjectName(out_tablename, db).ToStdWstring();
+        }
+
 
         // correlate with the template
         if (m_ci.tables.size() > 0)
@@ -1382,7 +1400,14 @@ void DlgConnection::populateTableListGrid(xd::IDatabasePtr db)
              else
             out_tablename = kl::afterLast(*it, '/');
 
-        out_tablename = makeValidObjectName(out_tablename, db).ToStdWstring();
+        xd::IDatabasePtr& db = g_app->getDatabase();
+
+        if (db->getDatabaseType() != xd::dbtypeFilesystem)
+        {
+            if (out_tablename.find('.') != out_tablename.npos)
+                out_tablename = kl::beforeLast(out_tablename, '.');
+            out_tablename = makeValidObjectName(out_tablename, db).ToStdWstring();
+        }
 
         // correlate with the template
         if (m_ci.tables.size() > 0)
