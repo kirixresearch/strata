@@ -22,6 +22,7 @@
 #include "extensionpkg.h"
 #include "moduleremoveduprec.h"
 #include "importtemplate.h"
+#include "exporttemplate.h"
 #include "reportdoc.h"
 #include "paneloptions.h"
 #include "panelmerge.h"
@@ -2210,10 +2211,14 @@ void AppController::onCloseProject(wxCommandEvent& evt)
 
 void AppController::onImportData(wxCommandEvent& evt)
 {
+    ImportInfo info;
+    showImportWizard(info);
 }
 
 void AppController::onExportData(wxCommandEvent& evt)
 {
+    ExportInfo info;
+    showExportWizard(info);
 }
 
 void AppController::onEditOptions(wxCommandEvent& evt)
@@ -6410,8 +6415,7 @@ void AppController::showConnectExternalTablesWizard()
 }
 
 
-void AppController::showImportWizard(const ImportInfo& info,
-                                     const wxString& location)
+void AppController::showImportWizard(const ImportInfo& info, const wxString& location)
 {
     DlgConnection* dlg = new DlgConnection(g_app->getMainWindow(), wxID_ANY, _("Import"));
     dlg->sigFinished.connect(&onConnectExternalDatabaseWizardFinished);

@@ -734,6 +734,16 @@ void FilePanel::onFileCtrlItemActivated(wxListEvent& evt)
     }
 }
 
+
+static wxString quoteFilenameIfNecessary(const wxString& fn)
+{
+    if (fn.find(' ') != fn.npos)
+        return "\"" + fn + "\"";
+         else
+        return fn;
+}
+
+
 void FilePanel::onFileCtrlItemSelected(wxListEvent& evt)
 {
     std::vector<FileInfo> files;
@@ -748,12 +758,12 @@ void FilePanel::onFileCtrlItemSelected(wxListEvent& evt)
         if (m_folder_only)
         {
             if (files[0].folder)
-                path_value = files[0].name;
+                path_value = quoteFilenameIfNecessary(files[0].name);
         }
          else
         {
             if (!files[0].folder)
-                path_value = files[0].name;
+                path_value = quoteFilenameIfNecessary(files[0].name);
         }
     }
      else
@@ -764,9 +774,7 @@ void FilePanel::onFileCtrlItemSelected(wxListEvent& evt)
                 continue;
             if (path_value.length() > 0)
                 path_value += " ";
-            path_value += '"';
-            path_value += it->name;
-            path_value += '"';
+            path_value += quoteFilenameIfNecessary(it->name);
         }
     }
 

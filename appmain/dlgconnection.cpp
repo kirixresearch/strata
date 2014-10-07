@@ -964,9 +964,15 @@ void DlgConnection::onForward(wxCommandEvent& evt)
             m_ci.type = xd::dbtypeFilesystem;
             populateTableListGrid(files);
 
-            setActivePage(m_need_text_format ? pageTextFormat : pageTableList);
+            setActivePage(pageTableList);
             return;
         }
+    }
+
+    if (m_current_page == pageTableList)
+    {
+        if (m_need_text_format)
+            setActivePage(pageTextFormat);
     }
 
 
@@ -977,7 +983,26 @@ void DlgConnection::onForward(wxCommandEvent& evt)
         {
             m_ci.type = xd::dbtypeOdbc;
             m_ci.database = m_datasource_grid->getCellString(row, 0);
-            connect_to_database = true;
+
+
+            xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
+            if (dbmgr.isNull())
+                return;
+
+            xd::IDatabasePtr db = dbmgr->open(m_ci.getConnectionString());
+            if (db.isNull())
+            {
+                wxString msg = _("There was an error connecting to the specified database.");
+                msg += wxT("  ");
+                msg += dbmgr->getErrorString();
+            
+                ::wxMessageBox(msg, _("Connection failed"),  wxOK | wxICON_EXCLAMATION | wxCENTER, wxTheApp->GetTopWindow());
+                return;
+            }
+
+            populateTableListGrid(db);
+            
+            setActivePage(pageTableList);
         }
          else
         {
@@ -1014,30 +1039,6 @@ void DlgConnection::onForward(wxCommandEvent& evt)
 
         m_ci.first_row_header = m_firstrowheader_check->GetValue();
     }
-
-
-    if (connect_to_database)
-    {
-        xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
-        if (dbmgr.isNull())
-            return;
-
-        xd::IDatabasePtr db = dbmgr->open(m_ci.getConnectionString());
-        if (db.isNull())
-        {
-            wxString msg = _("There was an error connecting to the specified database.");
-            msg += wxT("  ");
-            msg += dbmgr->getErrorString();
-            
-            ::wxMessageBox(msg, _("Connection failed"),  wxOK | wxICON_EXCLAMATION | wxCENTER, wxTheApp->GetTopWindow());
-            return;
-        }
-
-        populateTableListGrid(db);
-    }
-
-
-    setActivePage(pageTableList);
 }
 
 
@@ -1088,6 +1089,15 @@ void DlgConnection::setActivePage(int page)
              else
             showButtons(wxFORWARD | wxCANCEL);
     }
+     else if (page == pageTableList)
+    {
+        m_container_sizer->Hide(m_filepage_sizer);
+        m_container_sizer->Hide(m_serverpage_sizer);
+        m_container_sizer->Hide(m_datasourcepage_sizer);
+        m_container_sizer->Show(m_tablelistpage_sizer);
+        m_container_sizer->Hide(m_textformatpage_sizer);
+        showButtons(wxBACKWARD | (m_need_text_format ? wxFORWARD : wxOK) | wxCANCEL);
+    }
      else if (page == pageTextFormat)
     {
         m_last_page = pageFile;
@@ -1096,18 +1106,8 @@ void DlgConnection::setActivePage(int page)
         m_container_sizer->Hide(m_datasourcepage_sizer);
         m_container_sizer->Hide(m_tablelistpage_sizer);
         m_container_sizer->Show(m_textformatpage_sizer);
-        showButtons(wxBACKWARD | wxFORWARD | wxCANCEL);
-    }
-     else if (page == pageTableList)
-    {
-        m_container_sizer->Hide(m_filepage_sizer);
-        m_container_sizer->Hide(m_serverpage_sizer);
-        m_container_sizer->Hide(m_datasourcepage_sizer);
-        m_container_sizer->Show(m_tablelistpage_sizer);
-        m_container_sizer->Hide(m_textformatpage_sizer);
         showButtons(wxBACKWARD | wxOK | wxCANCEL);
     }
-
 
     Layout();
 }
