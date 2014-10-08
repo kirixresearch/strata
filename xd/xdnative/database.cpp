@@ -3067,7 +3067,7 @@ bool XdnativeDatabase::loadDefinition(const std::wstring& path, xd::FormatDefini
         if (db.isNull())
             return false;
 
-        return db->loadDefinition(path, format_info, defaults);
+        return db->loadDefinition(rpath, format_info, defaults);
     }
 
     return false;
@@ -3083,7 +3083,7 @@ bool XdnativeDatabase::saveDefinition(const std::wstring& path, const xd::Format
         if (db.isNull())
             return false;
 
-        return db->saveDefinition(path, format_info);
+        return db->saveDefinition(rpath, format_info);
     }
 
     return false;

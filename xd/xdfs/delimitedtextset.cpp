@@ -181,8 +181,8 @@ xd::IIteratorPtr DelimitedTextSet::createIterator(const std::wstring& columns,
 {
     if (order.empty())
     {
-        DelimitedTextIterator* iter = new DelimitedTextIterator;
-        if (!iter->init(m_database, this, columns))
+        DelimitedTextIterator* iter = new DelimitedTextIterator(m_database);
+        if (!iter->init(this, columns))
         {
             delete iter;
             return xcm::null;

@@ -19,11 +19,10 @@
 #include "delimitedtext.h"
 
 
-// -- DelimitedTextDataAccessInfo struct declaration --
 
 struct DelimitedTextDataAccessInfo
 {
-    // -- metadata --
+    // metadata
     std::wstring name;
     int type;
     int width;
@@ -68,8 +67,7 @@ struct DelimitedTextDataAccessInfo
 };
 
 
-// -- DelimitedTextIterator class declaration --
-
+class FsDatabase;
 class DelimitedSourceBindInfo;
 
 class DelimitedTextIterator : public CommonBaseIterator
@@ -82,19 +80,18 @@ friend class DelimitedTextSet;
         XCM_INTERFACE_ENTRY(xd::IIteratorRelation)
     XCM_END_INTERFACE_MAP()
 
-    xd::IDatabase* cmniterGetDatabase() { return m_database.p; }
+    xd::IDatabase* cmniterGetDatabase() { return (xd::IDatabase*)m_database; }
 
 public:
 
-    DelimitedTextIterator();
+    DelimitedTextIterator(FsDatabase* db);
     ~DelimitedTextIterator();
 
-    bool init(xd::IDatabasePtr db, DelimitedTextSet* set, const std::wstring& columns);
+    bool init(DelimitedTextSet* set, const std::wstring& columns);
 
     void setTable(const std::wstring& tbl);
     std::wstring getTable();
     xd::rowpos_t getRowCount();
-    xd::IDatabasePtr getDatabase();
     xd::IIteratorPtr clone();
 
     unsigned int getIteratorFlags();
@@ -132,7 +129,7 @@ public:
 
 private:
 
-    xd::IDatabasePtr m_database;
+    FsDatabase* m_database;
     DelimitedTextSet* m_set;
     std::wstring m_columns;
     

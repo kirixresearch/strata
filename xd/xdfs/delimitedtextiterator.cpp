@@ -40,8 +40,10 @@ public:
 
 // -- DelimitedTextIterator class implementation --
 
-DelimitedTextIterator::DelimitedTextIterator()
+DelimitedTextIterator::DelimitedTextIterator(FsDatabase* db)
 {
+    m_database = db;
+    m_database->ref();
     m_set = NULL;
 }
 
@@ -72,16 +74,15 @@ DelimitedTextIterator::~DelimitedTextIterator()
         m_set->unref();
         m_set = NULL;
     }
+
+    m_database->unref();
 }
 
-bool DelimitedTextIterator::init(xd::IDatabasePtr db,
-                                 DelimitedTextSet* set,
-                                 const std::wstring& columns)
+bool DelimitedTextIterator::init(DelimitedTextSet* set, const std::wstring& columns)
 {
     if (!m_file.openFile(set->m_file.getFilename()))
         return false;
 
-    m_database = db;
     m_set = set;
     m_set->ref();
     m_columns = columns;
@@ -112,25 +113,17 @@ std::wstring DelimitedTextIterator::getTable()
     return m_set->getObjectPath();
 }
 
-
 xd::rowpos_t DelimitedTextIterator::getRowCount()
 {
     return 0;
 }
 
-xd::IDatabasePtr DelimitedTextIterator::getDatabase()
-{
-    return m_database;
-}
-
 xd::IIteratorPtr DelimitedTextIterator::clone()
 {
-    DelimitedTextIterator* iter = new DelimitedTextIterator;
+    DelimitedTextIterator* iter = new DelimitedTextIterator(m_database);
     
-    if (!iter->init(m_database, m_set, m_file.getFilename()))
-    {
+    if (!iter->init(m_set, m_file.getFilename()))
         return xcm::null;
-    }
     
     xd::rowid_t rowid = m_file.getRowOffset();
     iter->goRow(rowid);
