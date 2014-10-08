@@ -95,6 +95,7 @@ public:
 
     virtual const std::wstring& getName() = 0;
     virtual int getType() = 0;
+    virtual void setType(int type) = 0;
 
     virtual const std::wstring& getString() = 0;
     virtual void setString(const std::wstring& value) = 0;

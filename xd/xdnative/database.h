@@ -163,7 +163,7 @@ public:
     std::wstring getSetIdFromPath(const std::wstring& set_path);
     std::wstring getSetPathFromId(const std::wstring& set_id);
     xd::IStreamPtr openStream(const std::wstring& path);
-    IXdsqlTablePtr openTable(const std::wstring& path);
+    IXdsqlTablePtr openTable(const std::wstring& path, const xd::FormatDefinition* format_info = NULL);
 
     bool deleteSet(const std::wstring& ofs_path);
     bool deleteStream(const std::wstring& ofs_path);

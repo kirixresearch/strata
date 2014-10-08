@@ -1811,7 +1811,7 @@ xd::IStreamPtr FsDatabase::openStream(const std::wstring& path)
     return static_cast<xd::IStream*>(stream);
 }
 
-IXdsqlTablePtr FsDatabase::openTable(const std::wstring& path)
+IXdsqlTablePtr FsDatabase::openTable(const std::wstring& path, const xd::FormatDefinition* format_info)
 {
     xd::FormatDefinition fi;
     fi.format = xd::formatDefault;

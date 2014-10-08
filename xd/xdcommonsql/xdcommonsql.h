@@ -35,7 +35,7 @@ xcm_interface IXdsqlDatabase : public xcm::IObject
 
 public:
 
-    virtual IXdsqlTablePtr openTable(const std::wstring& path) = 0;
+    virtual IXdsqlTablePtr openTable(const std::wstring& path, const xd::FormatDefinition* format_info = NULL) = 0;
 };
 
 

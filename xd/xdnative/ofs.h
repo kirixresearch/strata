@@ -68,6 +68,7 @@ public:
     // INodeValue interface
     const std::wstring& getName();
     int getType();
+    void setType(int type);
 
     const std::wstring& getString();
     void setString(const std::wstring& value);

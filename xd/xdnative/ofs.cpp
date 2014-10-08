@@ -64,6 +64,14 @@ int OfsValue::getType()
     return m_iv->m_type;
 }
 
+void OfsValue::setType(int type)
+{
+    KL_AUTO_LOCK(m_iv->m_object_mutex);
+
+    m_iv->m_type = type;
+}
+
+
 const std::wstring& OfsValue::getName()
 {
     KL_AUTO_LOCK(m_iv->m_object_mutex);

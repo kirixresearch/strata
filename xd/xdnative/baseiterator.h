@@ -208,7 +208,7 @@ protected:
     std::wstring m_columns;
     xd::Structure m_iter_structure;  // iter structure
     xd::Structure m_set_structure;   // set structure
-    IXdnativeSetPtr m_set;               // set internal ptr
+    IXdnativeSetPtr m_set;           // set internal ptr
 
 private:
     

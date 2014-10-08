@@ -1298,6 +1298,7 @@ INodeValuePtr XdnativeDatabase::openNodeFile(const std::wstring& path)
     }
 
     INodeValuePtr result = file->getRootNode();
+    if (result.isOk()) result->setType(file->getType());
     file->unref();
     return result;
 }
@@ -3310,8 +3311,11 @@ std::wstring XdnativeDatabase::getSetPathFromId(const std::wstring& set_id)
 
 
 
-IXdsqlTablePtr XdnativeDatabase::openTable(const std::wstring& path)
+IXdsqlTablePtr XdnativeDatabase::openTable(const std::wstring& path, const xd::FormatDefinition* format_info)
 {
+    if (path.empty())
+        return xcm::null;
+
     // check for ptr sets
     if (path.substr(0, 12) == L"/.temp/.ptr/")
     {
@@ -3321,11 +3325,38 @@ IXdsqlTablePtr XdnativeDatabase::openTable(const std::wstring& path)
         return sptr;
     }
 
-    std::wstring set_id = getSetIdFromPath(path);
-    if (set_id.empty())
+    // fix up set name problems
+    std::wstring fixed_name = path;
+    kl::trim(fixed_name);
+
+    // open up set file
+    INodeValuePtr set_file = openNodeFile(fixed_name);
+    if (!set_file)
         return xcm::null;
 
-    return openSetById(set_id);
+    // if we find a set id, open the table with the id
+    int file_type = set_file->getType();
+
+    if (file_type == xd::filetypeTable)
+    {
+        INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
+        if (setid_node.isNull())
+            return xcm::null;
+
+        std::wstring set_id = setid_node->getString();
+        if (set_id.empty())
+            return xcm::null;
+
+        return openSetById(set_id);
+    }
+     else if (file_type == xd::filetypeStream)
+    {
+        return xcm::null;
+    }
+     else
+    {
+        return xcm::null;
+    }
 }
 
 
@@ -3862,8 +3893,8 @@ xd::IndexInfo XdnativeDatabase::createIndex(const std::wstring& path,
 
 
 bool XdnativeDatabase::renameIndex(const std::wstring& path,
-                           const std::wstring& name,
-                           const std::wstring& new_name)
+                                   const std::wstring& name,
+                                   const std::wstring& new_name)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
