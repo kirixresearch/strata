@@ -62,6 +62,7 @@
 #include <wx/stopwatch.h>
 #include <wx/paper.h>
 #include <wx/print.h>
+#include <wx/stdpaths.h>
 #include <kl/utf8.h>
 #include <kl/thread.h>
 #include <kl/url.h>
@@ -4888,6 +4889,10 @@ static void makeSafeConnectionName(xd::IDatabasePtr db, wxString& name)
 
 static void onImportWizardFinished(DlgConnection* dlg)
 {
+    // save import wizard's path location
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    prefs->setString("import_wizard.default_location", dlg->getFilePanelDirectory());
+
     Connection& ci = dlg->getConnectionInfo();
     ImportTemplate templ;
     ImportInfo& ii = templ.m_ii;
@@ -6425,7 +6430,16 @@ void AppController::showConnectExternalTablesWizard()
 
 void AppController::showImportWizard(const ImportInfo& info, const wxString& location)
 {
+    wxStandardPaths& paths = wxStandardPaths::Get();
+    wxString documents_dir = paths.GetDocumentsDir();
+
+    // save import wizard's path location
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    wxString default_directory = prefs->getString("import_wizard.default_location", documents_dir);
+
     DlgConnection* dlg = new DlgConnection(g_app->getMainWindow(), wxID_ANY, _("Import"));
+    if (xf_get_directory_exist(towstr(default_directory)))
+        dlg->setFilePanelDirectory(default_directory);
     dlg->sigFinished.connect(&onImportWizardFinished);
     dlg->Show();
 /*

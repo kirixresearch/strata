@@ -594,6 +594,10 @@ void FilePanel::setDirectory(const wxString& value)
     m_file_ctrl->goToDir(value);
 }
 
+wxString FilePanel::getDirectory()
+{
+    return m_file_ctrl->getDir();
+}
 
 void FilePanel::onTreeSelectionChanging(wxTreeEvent& evt)
 {

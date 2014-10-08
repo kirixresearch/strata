@@ -106,6 +106,9 @@ public:
     void setActivePage(int page);
     Connection& getConnectionInfo() { return m_ci; }
 
+    wxString getFilePanelDirectory();
+    void setFilePanelDirectory(const wxString& path);
+
 public: // signals
     xcm::signal1<DlgConnection*> sigFinished;
 

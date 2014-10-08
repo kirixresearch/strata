@@ -45,6 +45,7 @@ public:
              long style = wxLC_LIST);
 
     bool goToDir(const wxString& dir);
+    wxString getDir() const { return m_curdir; }
     void setWildcard(const wxString& value);
     void setFolderOnly(bool value);
 
@@ -96,6 +97,7 @@ public:
     void setFilterIndex(int value);
 
     void setDirectory(const wxString& value);
+    wxString getDirectory();
 
     wxString getFilename();
     void getFilenames(std::vector<wxString>& result);

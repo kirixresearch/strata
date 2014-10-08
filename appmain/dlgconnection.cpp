@@ -747,6 +747,18 @@ DlgConnection::~DlgConnection()
 }
 
 
+wxString DlgConnection::getFilePanelDirectory()
+{
+    return m_file_panel->getDirectory();
+}
+
+void DlgConnection::setFilePanelDirectory(const wxString& path)
+{
+    m_file_panel->setDirectory(path);
+}
+
+
+
 void DlgConnection::onServerParameterChanged(wxCommandEvent& evt)
 {
     switch (evt.GetId())
