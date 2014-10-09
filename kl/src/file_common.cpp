@@ -167,6 +167,7 @@ std::wstring xf_get_mimetype_from_extension(const std::wstring& filename)
          if (ext == L"bmp")                        return L"image/x-ms-bmp";
     else if (ext == L"css")                        return L"text/css";
     else if (ext == L"csv")                        return L"text/csv";
+    else if (ext == L"dbf")                        return L"application/dbf";
     else if (ext == L"icsv")                       return L"application/vnd.interchange-csv";
     else if (ext == L"tsv")                        return L"text/tab-separated-values";
     else if (ext == L"gif")                        return L"image/gif";
@@ -200,6 +201,10 @@ std::wstring xf_get_extension_from_mimetype(const std::wstring& mime_type)
     else if (mime_type == L"text/css")                                                                     return L"css";
     else if (mime_type == L"text/csv")                                                                     return L"csv";
     else if (mime_type == L"application/vnd.interchange-csv")                                              return L"icsv";
+    else if (mime_type == L"application/dbf")                                                              return L"dbf";
+    else if (mime_type == L"application/dbase")                                                            return L"dbf";
+    else if (mime_type == L"application/x-dbf")                                                            return L"dbf";
+    else if (mime_type == L"application/x-dbase")                                                          return L"dbf";
     else if (mime_type == L"text/tab-separated-values")                                                    return L"tsv";
     else if (mime_type == L"image/gif")                                                                    return L"gif";
     else if (mime_type == L"application/x-gzip")                                                           return L"gz";
