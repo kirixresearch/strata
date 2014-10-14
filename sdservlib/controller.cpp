@@ -100,6 +100,8 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
         return;
     }
 
+    fflush(stdout);
+
     req.setContentType("application/json");
 
     //     if (method == L"login")                 apiLogin(req);

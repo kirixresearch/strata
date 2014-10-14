@@ -736,13 +736,16 @@ std::wstring HttpRequestInfo::getURI()
          if (m_strip_path > 0)
          {
             const char* p = m_req->uri;
+            const char* q = strchr(p, '?');
             for (int i = 0; i < m_strip_path; ++i)
             {
                 p = strchr(p+1, '/');
-                if (!p)
+                if (!p || (q && p > q))
                 {
                     m_uri = L"/";
-                    break;
+                    if (q)
+                        m_uri += kl::towstring(q);
+                    return m_uri;
                 }
             }
 
