@@ -63,7 +63,7 @@ function fetchPort(group, callback, error)
         var ls = process.spawn(cmd, args);
         
         ls.stdout.on('data', function (data) {
-            console.log(data);
+            console.log(''+data);
 			if ((''+data).indexOf("*** sdserv ready") != -1)
 			{
 				// set status to running
