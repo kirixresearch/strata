@@ -8,7 +8,7 @@ var g_sdserv_cmd = "D:\\build32\\src\\trunk\\releaseu\\sdserv.exe";
 var g_map = {};
 var g_next_port = 9000;
 
-function fetchPort(group, callback)
+function fetchPort(group, callback, error)
 {
     var info;
     
@@ -31,6 +31,7 @@ function fetchPort(group, callback)
      else if (info.status == 'l')
     {
         var flagCheck = setInterval(function() {
+			console.log("waiting..."+Date());
             if (info.status == 'r') {
                 clearInterval(flagCheck);
                 callback(info.port);
@@ -48,7 +49,7 @@ function fetchPort(group, callback)
         
         var cmdline = g_sdserv_cmd + " -d " + group + " -p " + info.port + " --idle-quit 3000 ";
         
-        var cmd = "D:\\build32\\src\\trunk\\debugu\\sdserv.exe";
+        var cmd = "D:\\build32\\src\\trunk\\releaseu\\sdserv.exe";
         var args = [ "-d", group, "-p", info.port, "--idle-quit", "3000" ];
 
         
@@ -61,13 +62,13 @@ function fetchPort(group, callback)
         var ls = process.spawn(cmd, args);
         
         ls.stdout.on('data', function (data) {
+            console.log('stdout: ' + data);
 			if ((''+data).indexOf("*** sdserv ready") != -1)
 			{
 				// set status to running
 			    info.status = 'r';
 				callback(info.port);
 			}
-            console.log('stdout: ' + data);
         });
         ls.stderr.on('data', function (data) {
             console.log('stderr: ' + data);
@@ -84,7 +85,7 @@ function fetchPort(group, callback)
 }
 
 
-var proxy = http_proxy.createProxyServer({});
+var proxy = http_proxy.createProxyServer({agent:false});
 
 
 var http_callback = function (request, response) {
@@ -107,7 +108,7 @@ var http_callback = function (request, response) {
             return;
         }
         
-        console.log(request.url);
+        console.log(Date() + " - " + request.url +  " " + request.httpVersion + " " + JSON.stringify(request.headers));
         
         var question = request.url.indexOf('?');
         
