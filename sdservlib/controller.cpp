@@ -1118,8 +1118,6 @@ void Controller::apiRead(RequestInfo& req)
     bool use_handle = ((!create_handle && !handle.empty()) ? true : false);
     SessionQueryResult* so = NULL;
 
-    if (limit < 0)
-        limit = 0;
 
     if (handle.empty() || create_handle)
     {
@@ -1155,10 +1153,34 @@ void Controller::apiRead(RequestInfo& req)
             req.setContentType(kl::tostring(finfo->getMimeType()).c_str());
             req.setContentLength(-1);
 
+			int left = limit;
+
             char buf[4096];
             unsigned long len;
             while (stream->read(buf, 4096, &len))
-                req.writePiece(buf, len);
+			{
+                if (limit < 0)
+                {
+                    req.writePiece(buf, len);
+                }
+                 else
+                {
+				    if (left < (int)len)
+				    {
+                        req.writePiece(buf, left);
+					    left = 0;
+				    }
+                     else
+                    {
+				        req.writePiece(buf, len);
+                        left -= len;
+                    }
+
+                    if (left == 0)
+                        break;
+                }
+            }
+
             return;
         }
 
@@ -1226,6 +1248,11 @@ void Controller::apiRead(RequestInfo& req)
         }
     }
     
+
+    if (limit < 0)
+        limit = 0;
+
+
     std::wstring str;
     str.reserve((limit>0?limit:100)*180);
     
