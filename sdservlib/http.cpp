@@ -121,6 +121,7 @@ HttpRequestInfo::HttpRequestInfo(struct mg_connection* conn, const struct mg_req
     m_post_hook = NULL;
     m_request_post_read_invoked = false;
     m_error = false;
+    m_strip_path = 0;
 }
 
 HttpRequestInfo::~HttpRequestInfo()
@@ -729,7 +730,27 @@ std::wstring HttpRequestInfo::getHost()
 
 std::wstring HttpRequestInfo::getURI()
 {
-    return kl::towstring(m_req->uri);
+    if (m_uri.length() == 0)
+    {
+         m_uri = kl::towstring(m_req->uri);
+         if (m_strip_path > 0)
+         {
+            const char* p = m_req->uri;
+            for (int i = 0; i < m_strip_path; ++i)
+            {
+                p = strchr(p+1, '/');
+                if (!p)
+                {
+                    m_uri = L"/";
+                    break;
+                }
+            }
+
+            m_uri = kl::towstring(p);
+         }
+    }
+
+    return m_uri;
 }
 
 std::wstring HttpRequestInfo::getQuery()
@@ -999,6 +1020,7 @@ HttpServer::HttpServer(Sdserv* sdserv)
 {
     m_sdserv = sdserv;
     m_options_arr_size = 0;
+    m_strip_path = 0;
 }
 
 //static
@@ -1010,6 +1032,7 @@ int HttpServer::request_callback(struct mg_connection* conn)
     server->m_sdserv->updateLastAccessTimestamp();
 
     HttpRequestInfo req(conn, request_info);
+    req.m_strip_path = server->m_strip_path;
     req.read();
 
     if (!server->m_sdserv->m_controller->onRequest(req))
@@ -1061,7 +1084,12 @@ bool HttpServer::run()
     }
     strcpy(m_ports, kl::tostring(tmps).c_str());
     
-    
+    std::wstring strip_path = m_sdserv->getOption(L"http.strip_path");
+    if (strip_path.length() == 0)
+        m_strip_path = 0;
+         else
+        m_strip_path = kl::wtoi(strip_path);
+
     // set listening ports
     m_options[m_options_arr_size++] = "listening_ports";
     m_options[m_options_arr_size++] = m_ports;

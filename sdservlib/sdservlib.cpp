@@ -305,6 +305,10 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
         {
             setOption(L"http.port", kl::towstring(argv[i+1]));
         }
+         else if (0 == strcmp(argv[i], "-s") && i+1 < argc)
+        {
+            setOption(L"http.strip_path", kl::towstring(argv[i+1]));
+        }
     }
 
 

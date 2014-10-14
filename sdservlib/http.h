@@ -40,6 +40,8 @@ public:
 
 class HttpRequestInfo : public RequestInfo
 {
+friend class HttpServer;
+
 public:
 
     HttpRequestInfo(struct mg_connection* conn, const struct mg_request_info* ri);
@@ -72,7 +74,7 @@ public:
     void addHeader(const char* header);
     void addCookie(ResponseCookie& cookie);
     void addCookie(const std::string& name, const std::string& value, time_t expire_time);
-    
+
     size_t write(const void* ptr, size_t length);
     size_t write(const std::string& str);
     size_t write(const std::wstring& str);
@@ -106,7 +108,8 @@ private:
 
     std::vector<std::string> m_headers;
     std::vector<ResponseCookie> m_response_cookies;  
-    std::string m_content_type;    
+    std::string m_content_type;   
+    std::wstring m_uri; 
       
     int m_status_code;
     int m_content_length;
@@ -120,6 +123,8 @@ private:
 
     char* m_boundary;
     size_t m_boundary_length;
+
+    int m_strip_path;
 
     bool m_error;
 };
@@ -144,6 +149,8 @@ private:
 
     const char* m_options[255];
     size_t m_options_arr_size;
+
+    int m_strip_path;
 };
 
 
