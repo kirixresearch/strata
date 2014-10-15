@@ -2036,7 +2036,7 @@ xd::IIteratorPtr FsDatabase::query(const xd::QueryParams& qp)
 }
 
 
-bool FsDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* def, const xd::FormatDefinition* defaults)
+bool FsDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* def, const xd::FormatDefinition* defaults, xd::IJob* job)
 {
     std::wstring phys_path = makeFullPath(path);
 
