@@ -1341,7 +1341,7 @@ xd::IndexInfo lookupIndex(const xd::IndexInfoEnum& idx_enum, const std::wstring&
 
             for (j = 0; j < col_count; ++j)
             {
-                // -- try to find it in the idx columns --
+                // try to find it in the idx columns
                 
                 bool found = false;
 
@@ -1396,7 +1396,7 @@ kl::JsonNode createSortFilterJobParams(const std::wstring& path,
             std::wstring field = xd::dequoteIdentifier(g_app->getDatabase(), it->first);
 
             kl::JsonNode order_field_node = params["order"].appendElement();
-            order_field_node["expression"] = it->first;
+            order_field_node["expression"] = field;
             if (it->second)
                 order_field_node["direction"] = L"DESC";
         }
