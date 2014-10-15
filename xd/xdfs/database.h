@@ -98,7 +98,7 @@ public:
     IXdsqlTablePtr openTable(const std::wstring& path, const xd::FormatDefinition* format_info = NULL);
     IXdsqlTablePtr openSetEx(const std::wstring& path, const xd::FormatDefinition& fi);
 
-    bool loadDefinition(const std::wstring& path, xd::FormatDefinition* format_info, const xd::FormatDefinition* defaults = NULL);
+    bool loadDefinition(const std::wstring& path, xd::FormatDefinition* format_info, const xd::FormatDefinition* defaults = NULL, xd::IJob* job = NULL);
     bool saveDefinition(const std::wstring& path, const xd::FormatDefinition& format_info);
 
     bool createFolder(const std::wstring& path);

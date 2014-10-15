@@ -156,7 +156,7 @@ public:
     bool createStream(const std::wstring& path, const std::wstring& mime_type);
     bool createTable(const std::wstring& path, const xd::FormatDefinition& format_definition);
     
-    bool loadDefinition(const std::wstring& path, xd::FormatDefinition* format_info, const xd::FormatDefinition* defaults);
+    bool loadDefinition(const std::wstring& path, xd::FormatDefinition* format_info, const xd::FormatDefinition* defaults, xd::IJob* job = NULL);
     bool saveDefinition(const std::wstring& path, const xd::FormatDefinition& format_info);
 
     IXdnativeSetPtr openSetById(const std::wstring& set_id);
