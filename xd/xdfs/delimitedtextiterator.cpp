@@ -778,6 +778,10 @@ xd::datetime_t DelimitedTextIterator::getDateTime(xd::objhandle_t data_handle)
 
 inline double implicitStringToDouble(const wchar_t* str)
 {
+    while (::iswspace(*str))
+        ++str;
+    while (*str == '$' || *str == (wchar_t)0xa3 /* pound sign */ || *str == (wchar_t)0x20ac /* euro sign */)
+        ++str;
     return kl::nolocale_wtof(str);
 }
 
