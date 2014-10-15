@@ -794,7 +794,7 @@ bool TextDoc::save()
         
         xd::FormatDefinition def = m_def;
         def.data_path = m_path;
-        if (!db->saveDefinition(new_path, &def))
+        if (!db->saveDefinition(new_path, def))
             return false;
 
         // reload to get any changes database made
@@ -806,7 +806,7 @@ bool TextDoc::save()
     } 
      else
     {
-        if (!db->saveDefinition(towstr(m_path), &m_def))
+        if (!db->saveDefinition(towstr(m_path), m_def))
             return false;
     }
 

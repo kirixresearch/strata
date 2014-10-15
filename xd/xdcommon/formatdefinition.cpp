@@ -18,13 +18,13 @@
 
 
 
-std::wstring saveDefinitionToString(const xd::FormatDefinition* def)
+std::wstring saveDefinitionToString(const xd::FormatDefinition& def)
 {
     kl::JsonNode root;
     
-    root["object_id"] = def->object_id;
+    root["object_id"] = def.object_id;
     
-    switch (def->object_type)
+    switch (def.object_type)
     {
         default:
         case xd::filetypeTable:            root["object_type"] = "table";         break;
@@ -33,7 +33,7 @@ std::wstring saveDefinitionToString(const xd::FormatDefinition* def)
     }
 
 
-    switch (def->format)
+    switch (def.format)
     {
         default:
         case xd::formatDefault:            root["format"] = "default";            break;
@@ -44,7 +44,7 @@ std::wstring saveDefinitionToString(const xd::FormatDefinition* def)
         case xd::formatTypedDelimitedText: root["format"] = "typeddelimitedtext"; break;
     }
 
-    switch (def->encoding)
+    switch (def.encoding)
     {
         default:
         case xd::encodingInvalid:          root["encoding"] = "invalid";          break;
@@ -62,35 +62,35 @@ std::wstring saveDefinitionToString(const xd::FormatDefinition* def)
     }
 
 
-    root["data_connection_string"] = xdcommon::encryptConnectionStringPassword(def->data_connection_string);
-    root["data_path"] = def->data_path;
+    root["data_connection_string"] = xdcommon::encryptConnectionStringPassword(def.data_connection_string);
+    root["data_path"] = def.data_path;
 
-    if (def->format == xd::formatDelimitedText)
+    if (def.format == xd::formatDelimitedText)
     {
         kl::JsonNode delimitedtext = root["delimitedtext"];
-        delimitedtext["text_qualifiers"] = def->text_qualifiers;
-        delimitedtext["delimiters"] = def->delimiters;
-        delimitedtext["line_delimiters"] = def->line_delimiters;
-        delimitedtext["header_row"].setBoolean(def->first_row_column_names);
+        delimitedtext["text_qualifiers"] = def.text_qualifiers;
+        delimitedtext["delimiters"] = def.delimiters;
+        delimitedtext["line_delimiters"] = def.line_delimiters;
+        delimitedtext["header_row"].setBoolean(def.first_row_column_names);
     }
 
 
-    if (def->format == xd::formatFixedLengthText)
+    if (def.format == xd::formatFixedLengthText)
     {
         kl::JsonNode fixedlengthtext = root["fixedlengthtext"];
-        fixedlengthtext["start_offset"].setInteger(def->fixed_start_offset);
-        fixedlengthtext["row_width"].setInteger(def->fixed_row_width);
-        fixedlengthtext["line_delimited"].setBoolean(def->fixed_line_delimited);
+        fixedlengthtext["start_offset"].setInteger(def.fixed_start_offset);
+        fixedlengthtext["row_width"].setInteger(def.fixed_row_width);
+        fixedlengthtext["line_delimited"].setBoolean(def.fixed_line_delimited);
     }
 
 
-    if (def->columns.size() > 0)
+    if (def.columns.size() > 0)
     {
         kl::JsonNode columns_node = root["columns"];
         columns_node.setArray();
 
-        std::vector<xd::ColumnInfo>::const_iterator it, it_end = def->columns.cend();
-        for (it = def->columns.cbegin(); it != it_end; ++it)
+        std::vector<xd::ColumnInfo>::const_iterator it, it_end = def.columns.cend();
+        for (it = def.columns.cbegin(); it != it_end; ++it)
         {
             kl::JsonNode col = columns_node.appendElement();
             col.setObject();
@@ -103,7 +103,7 @@ std::wstring saveDefinitionToString(const xd::FormatDefinition* def)
             if (it->expression.length() > 0)
                 col["expression"] = it->expression;
 
-            if (def->format == xd::formatFixedLengthText)
+            if (def.format == xd::formatFixedLengthText)
             {
                 col["source_offset"].setInteger(it->source_offset);
                 col["source_width"].setInteger(it->source_width);
@@ -222,7 +222,7 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def
 }
 
 
-bool saveDefinitionToFile(const std::wstring& path, const xd::FormatDefinition* def)
+bool saveDefinitionToFile(const std::wstring& path, const xd::FormatDefinition& def)
 {
     std::wstring str = saveDefinitionToString(def);
     if (str.length() == 0)

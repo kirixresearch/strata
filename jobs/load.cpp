@@ -142,7 +142,6 @@ int LoadJob::runJob()
 
         xd::QueryParams qp;
         qp.from = source_path;
-        qp.format.determine_structure = true; // for csvs where we don't know the structure, perform a full scan to get correct metrics
 
         if (object.childExists("source_format"))
         {
@@ -163,6 +162,12 @@ int LoadJob::runJob()
                     qp.format.delimiters = format_node.getChild("delimiter").getString();
                     qp.format.text_qualifiers = format_node.getChild("text_qualifier").getString();
                     qp.format.first_row_column_names = format_node.getChild("header_row").getBoolean();
+
+                    if (qp.columns.length() == 0)
+                    {
+                        // for csvs where we don't know the structure, perform a full scan to get correct metrics
+                        qp.format.determine_structure = true; 
+                    }
                 }
                  else
                 {

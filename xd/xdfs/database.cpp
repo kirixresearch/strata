@@ -997,7 +997,7 @@ bool FsDatabase::setMountPoint(const std::wstring& path,
         fd.data_path = L"";
 
 
-    return saveDefinitionToFile(phys_path, &fd);
+    return saveDefinitionToFile(phys_path, fd);
 }
                               
 bool FsDatabase::getMountPoint(const std::wstring& path,
@@ -2063,7 +2063,7 @@ bool FsDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* 
     }
 }
 
-bool FsDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefinition* def)
+bool FsDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefinition& def)
 {
     std::wstring phys_path = makeFullPath(path) + L".xddef";
     
@@ -2072,12 +2072,12 @@ bool FsDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefini
     if (!xf_get_directory_exist(dir))
         _mkdirTree(dir);
 
-    if (def->object_id.empty())
+    if (def.object_id.empty())
     {
         // add an object id
-        xd::FormatDefinition fd = *def;
+        xd::FormatDefinition fd = def;
         fd.object_id = kl::getUniqueString();
-        return saveDefinitionToFile(phys_path, &fd);
+        return saveDefinitionToFile(phys_path, fd);
     }
      else
     {

@@ -96,7 +96,7 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
             if (db->loadDefinition(kl::filenameToUrl(it->input_tablename), &fi))
             {
                 fi.data_path = kl::filenameToUrl(it->input_tablename);
-                db->saveDefinition(it->output_tablename, &fi);
+                db->saveDefinition(it->output_tablename, fi);
             }
         }
          else
@@ -104,7 +104,7 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
             xd::FormatDefinition fi;
             fi.data_connection_string = cstr;
             fi.data_path = it->input_tablename;
-            db->saveDefinition(it->output_tablename, &fi);
+            db->saveDefinition(it->output_tablename, fi);
         }
 
     }
@@ -145,7 +145,7 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
 
         xd::FormatDefinition fi;
         fi.data_path = fullpath;
-        db->saveDefinition(key, &fi);
+        db->saveDefinition(key, fi);
     }
 
 

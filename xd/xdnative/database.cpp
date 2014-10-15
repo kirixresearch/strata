@@ -3074,7 +3074,7 @@ bool XdnativeDatabase::loadDefinition(const std::wstring& path, xd::FormatDefini
     return false;
 }
 
-bool XdnativeDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefinition* format_info)
+bool XdnativeDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefinition& format_info)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))

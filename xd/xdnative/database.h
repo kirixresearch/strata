@@ -157,7 +157,7 @@ public:
     bool createTable(const std::wstring& path, const xd::FormatDefinition& format_definition);
     
     bool loadDefinition(const std::wstring& path, xd::FormatDefinition* format_info, const xd::FormatDefinition* defaults);
-    bool saveDefinition(const std::wstring& path, const xd::FormatDefinition* format_info);
+    bool saveDefinition(const std::wstring& path, const xd::FormatDefinition& format_info);
 
     IXdnativeSetPtr openSetById(const std::wstring& set_id);
     std::wstring getSetIdFromPath(const std::wstring& set_path);

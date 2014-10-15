@@ -761,7 +761,7 @@ public:
     virtual bool createTable(const std::wstring& path, const FormatDefinition& format_info) = 0;
 
     virtual bool loadDefinition(const std::wstring& path, FormatDefinition* format_info, const FormatDefinition* defaults = NULL) { return false; }
-    virtual bool saveDefinition(const std::wstring& path, const FormatDefinition* format_info) { return false; }
+    virtual bool saveDefinition(const std::wstring& path, const FormatDefinition& format_info) { return false; }
 
     virtual IDatabasePtr getMountDatabase(const std::wstring& path) = 0;
     virtual bool setMountPoint(const std::wstring& path, const std::wstring& connection_str,  const std::wstring& remote_path) = 0;
