@@ -460,7 +460,7 @@ bool DelimitedTextSet::determineIfFirstRowIsHeader()
 }
 
 
-static bool isDelimitedStringNumeric(const std::wstring& str, int* num_decimals)
+static bool isDelimitedStringNumeric(const std::wstring& str, int* field_width, int* num_decimals)
 {
     int i, len = (int)str.length();
     if (len == 0)
@@ -517,6 +517,37 @@ static bool isDelimitedStringNumeric(const std::wstring& str, int* num_decimals)
     if (num_decimals)
         *num_decimals = num_dec;
     
+    // discover width -- start with string width, and deduct
+    // leading zeros before decimal place and trailing zeros
+    // after decimal place
+
+    int width = (int)str.length();
+    for (i = 0; i < len; ++i)
+    {
+        if (str[i] == ' ' || str[i] == '$' || str[i] == '%')
+            continue;
+        if (str[i] == '0') // leading zero
+            width--;
+             else
+            break;
+    }
+
+    if (found_dec)
+    {
+        for (i = len-1; i >= 0; --i)
+        {
+            if (str[i] == ' ' || str[i] == '$' || str[i] == '%')
+                continue;
+            if (str[i] == '0') // leading zero
+                width--;
+                 else
+                break;
+        }
+    }
+
+    *field_width = (width <= 0 ? 1 : width);
+      
+
     return true;
 }
 
@@ -679,12 +710,14 @@ struct DetermineColumnInfo
     std::wstring name;
     int type;
     int max_width;
+    int max_numeric_width;
     int max_scale;
     
     DetermineColumnInfo()
     {
         type = xd::typeDate;
         max_width = 1;
+        max_numeric_width = 10; // numeric fields should at least be 10 wide when auto-sensing
         max_scale = 0;
     }
     
@@ -693,6 +726,7 @@ struct DetermineColumnInfo
         name = c.name;
         type = c.type;
         max_width = c.max_width;
+        max_numeric_width = c.max_numeric_width;
         max_scale = c.max_scale;
     }
     
@@ -701,6 +735,7 @@ struct DetermineColumnInfo
         name = c.name;
         type = c.type;
         max_width = c.max_width;
+        max_numeric_width = c.max_numeric_width;
         max_scale = c.max_scale;
         return *this;
     }
@@ -820,8 +855,7 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
             // statistical gathering of column widths and types
             if (m_def.first_row_column_names == false || rows_read > 0)
             {
-                int scale = 0;
-                
+
                 if (col_stats[j].type == xd::typeDate)
                 {
                     // check if the field value is a date
@@ -834,11 +868,18 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
                 
                 if (col_stats[j].type == xd::typeNumeric)
                 {
-                    if (isDelimitedStringNumeric(str, &scale))
+                    int numeric_width = 0;
+                    int numeric_scale = 0;
+                    
+                    if (isDelimitedStringNumeric(str, &numeric_width, &numeric_scale))
                     {
                         // see if our max_scale needs to be increased
-                        if (scale > col_stats[j].max_scale)
-                            col_stats[j].max_scale = scale;
+                        if (numeric_width > col_stats[j].max_numeric_width)
+                            col_stats[j].max_numeric_width = numeric_width;
+
+                        // see if our max_scale needs to be increased
+                        if (numeric_scale > col_stats[j].max_scale)
+                            col_stats[j].max_scale = numeric_scale;
                     }
                      else
                     {
@@ -899,6 +940,8 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
         {
             if (col_stats[i].max_width <= 0)
                 col_stats[i].max_width = 1;
+            if (col_stats[i].max_numeric_width <= 10)
+                col_stats[i].max_numeric_width = 10;
         }
     }
 
@@ -907,7 +950,7 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
     {
         if (col_stats[i].type == xd::typeNumeric)
         {
-            if (col_stats[i].max_width > xd::max_numeric_width)
+            if (col_stats[i].max_numeric_width > xd::max_numeric_width)
             {
                 col_stats[i].type = xd::typeDouble;
             }
@@ -939,7 +982,16 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
     {
         col.name = it->name;
         col.type = it->type;
-        col.width = it->max_width;
+
+        if (it->type == xd::typeNumeric || it->type == xd::typeDouble)
+        {
+            col.width = it->max_numeric_width;
+        }
+         else
+        {
+            col.width = it->max_width;
+        }
+
         col.scale = it->max_scale;
         col.nulls_allowed = false;
         m_def.columns.push_back(col);
