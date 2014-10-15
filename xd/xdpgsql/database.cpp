@@ -34,7 +34,7 @@
 
 
 
-#define FOLDER_SEPARATOR L"__"
+#define FOLDER_SEPARATOR L"$$"
 
 
 const wchar_t* sql92_keywords =
@@ -1634,7 +1634,11 @@ xd::IRowInserterPtr PgsqlDatabase::bulkInsert(const std::wstring& path)
 xd::Structure PgsqlDatabase::describeTable(const std::wstring& path)
 {
     xd::Structure s;
+
     std::wstring tbl = pgsqlGetTablenameFromPath(path);
+
+    if (tbl.empty())
+        return s;
 
     std::wstring query;
     query += L"select attname,atttypid,atttypmod from pg_attribute where ";
@@ -1672,9 +1676,17 @@ xd::Structure PgsqlDatabase::describeTable(const std::wstring& path)
         
         if (xd_type == xd::typeNumeric || xd_type == xd::typeDouble)
         {
-            type_mod -= 4;
-            col_width = (type_mod >> 16);
-            col_scale = (type_mod & 0xffff);
+            if (type_mod == -1)
+            {
+                col_width = 12;
+                col_scale = 4;
+            }
+             else
+            {
+                type_mod -= 4;
+                col_width = (type_mod >> 16);
+                col_scale = (type_mod & 0xffff);
+            }
         }
          else if (xd_type == xd::typeCharacter || xd_type == xd::typeWideCharacter)
         {
