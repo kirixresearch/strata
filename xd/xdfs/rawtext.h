@@ -16,67 +16,6 @@
 #include <kl/file.h>
 
 
-
-class BufferedFile
-{
-private:
-
-    enum
-    {
-        bfBufSize = 13000
-    };
-    
-    enum
-    {
-        boDefault = 1,   // default = 8bit
-        boUCS2LE = 2,    // UCS-2 little endian
-    };
-
-public:
-
-    BufferedFile();
-    ~BufferedFile();
-    
-    bool openFile(const std::wstring& filename,
-                  int xf_open_flags = xfReadWrite,
-                  int xf_share_flags = xfShareReadWrite);
-    void closeFile();
-    bool isOpen() const { return (m_file != 0) ? true : false; }
-    bool isUnicode();
-    
-    bool rewind();
-
-    wchar_t getChar(xf_off_t offset, bool* eof = NULL);
-    bool isPositionEof(xf_off_t offset);
-    
-    bool appendData(wchar_t* buf, size_t char_count);
-    
-private:
-
-    xf_off_t getFileSize();
-        
-    // getByte is used internally to fetch a byte from the file
-    unsigned char getByte(xf_off_t offset, bool* eof = NULL);
-    
-private:
-
-    std::wstring m_filename;
-    xf_file_t m_file;
-    xf_off_t m_filesize;
-    xf_off_t m_buf_offset;
-    unsigned char* m_buf;
-    int m_buf_size;
-    int m_byte_order;
-    int m_skip_bytes;
-};
-
-
-
-
-
-
-
-
 class BufferedTextFile
 {
 public:

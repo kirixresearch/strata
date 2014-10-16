@@ -220,12 +220,11 @@ static int find_max(int a, int b, int c = 0, int d = 0, int e = 0, int f = 0,
                        std::max(i, j)))))))));
 }
 
-static bool determineSetFormatInfo(const std::wstring& path,
-                                   FsSetFormatInfo* info)
+static bool determineSetFormatInfo(const std::wstring& path, FsSetFormatInfo* info)
 {
-    BufferedFile f;
+    BufferedTextFile f;
         
-    if (!f.openFile(path, xfRead, xfShareReadWrite))
+    if (!f.openFile(path))
     {
         info->format = xd::formatDefault;
         return false;
@@ -242,10 +241,12 @@ static bool determineSetFormatInfo(const std::wstring& path,
 
     for (i = 0; i < 4096; ++i)
     {
-        ch = f.getChar(i, &eof);
-        if (eof)
+        if (f.eof())
             break;
-        
+
+        ch = f.getChar();
+        f.skip(1);
+
         if (ch == 0x0d)
             continue;
         
@@ -264,7 +265,7 @@ static bool determineSetFormatInfo(const std::wstring& path,
     if (line.length() > 0)
         lines.push_back(line);
     
-    f.closeFile();
+    f.close();
     
     
     // there's nothing in the file, bail out
