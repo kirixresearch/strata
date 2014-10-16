@@ -3311,7 +3311,7 @@ std::wstring XdnativeDatabase::getSetPathFromId(const std::wstring& set_id)
 
 
 
-IXdsqlTablePtr XdnativeDatabase::openTable(const std::wstring& path, const xd::FormatDefinition* format_info)
+IXdsqlTablePtr XdnativeDatabase::openTable(const std::wstring& path, const xd::FormatDefinition& format_definition, xd::IJob* job)
 {
     if (path.empty())
         return xcm::null;

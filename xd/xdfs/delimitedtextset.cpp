@@ -44,7 +44,7 @@ DelimitedTextSet::~DelimitedTextSet()
         m_file.closeFile();
 }
 
-bool DelimitedTextSet::init(const std::wstring& filename, const xd::FormatDefinition& def)
+bool DelimitedTextSet::init(const std::wstring& filename, const xd::FormatDefinition& def, xd::IJob* job)
 {
     if (!m_file.openFile(filename))
         return false;
@@ -117,29 +117,37 @@ bool DelimitedTextSet::init(const std::wstring& filename, const xd::FormatDefini
 
     if (m_def.columns.size() == 0)
     {
-        // check as many rows as we can in 7 seconds or less
-        int rows_to_check = -1;
-        int max_seconds = 7;
-
-        // if the file is small (<= 2MB), just read in the whole
-        // file to make sure we have a good structure
-        if (xf_get_file_size(filename) < 2000000)
+        if (m_def.determine_structure)
         {
-            rows_to_check = -1;
-            max_seconds = -1;
+            // determine csv structure thoroughly by scanning entire file
+            determineColumns(-1, -1, job);
         }
+         else
+        {
+            // check as many rows as we can in 7 seconds or less
+            int rows_to_check = -1;
+            int max_seconds = 7;
 
-        // originally, if we couldn't define the structure of the file, we
-        // would bail out; now simply try to determine the structure, but
-        // don't bail out if we can't determine it; the reason for this is
-        // that sometimes we need to create a set and then define the
-        // structure afterwards, such as when exporting to a text delimited
-        // file; in this case, trying to determine the rows ahead of time
-        // will cause the export to fail since the file we're exporting to
-        // doesn't have rows until after the structure is set and the
-        // row written out
+            // if the file is small (<= 2MB), just read in the whole
+            // file to make sure we have a good structure
+            if (xf_get_file_size(filename) < 2000000)
+            {
+                rows_to_check = -1;
+                max_seconds = -1;
+            }
 
-        determineColumns(rows_to_check, max_seconds, NULL);
+            // originally, if we couldn't define the structure of the file, we
+            // would bail out; now simply try to determine the structure, but
+            // don't bail out if we can't determine it; the reason for this is
+            // that sometimes we need to create a set and then define the
+            // structure afterwards, such as when exporting to a text delimited
+            // file; in this case, trying to determine the rows ahead of time
+            // will cause the export to fail since the file we're exporting to
+            // doesn't have rows until after the structure is set and the
+            // row written out
+
+            determineColumns(rows_to_check, max_seconds, job);
+        }
     }
 
     return true;

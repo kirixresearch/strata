@@ -1204,7 +1204,7 @@ bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 
     if (info->append)
     {
-        IXdsqlTablePtr output = openSetEx(info->output, info->output_format);
+        IXdsqlTablePtr output = openTable(info->output, info->output_format);
         if (output.isNull())
             return false;
     }
@@ -1811,16 +1811,9 @@ xd::IStreamPtr FsDatabase::openStream(const std::wstring& path)
     return static_cast<xd::IStream*>(stream);
 }
 
-IXdsqlTablePtr FsDatabase::openTable(const std::wstring& path, const xd::FormatDefinition* format_info)
+IXdsqlTablePtr FsDatabase::openTable(const std::wstring& path, const xd::FormatDefinition& format_definition, xd::IJob* job)
 {
-    xd::FormatDefinition fi;
-    fi.format = xd::formatDefault;
-    return openSetEx(path, fi);
-}
-
-IXdsqlTablePtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatDefinition& _fi)
-{
-    const xd::FormatDefinition* fi = &_fi;
+    const xd::FormatDefinition* fi = &format_definition;
     xd::FormatDefinition deffi;
 
     // check for ptr sets
@@ -1996,7 +1989,7 @@ xd::IIteratorPtr FsDatabase::query(const xd::QueryParams& qp)
     if (qp.where.length() > 0)
     {
         // create an iterator for the table we are interested in
-        IXdsqlTablePtr table = openSetEx(qp.from, qp.format);
+        IXdsqlTablePtr table = openTable(qp.from, qp.format);
         if (table.isNull())
             return xcm::null;
         xd::IIteratorPtr iter = table->createIterator(L"", L"", NULL);
@@ -2028,7 +2021,7 @@ xd::IIteratorPtr FsDatabase::query(const xd::QueryParams& qp)
     }
 
 
-    IXdsqlTablePtr tbl = openSetEx(qp.from, qp.format);
+    IXdsqlTablePtr tbl = openTable(qp.from, qp.format);
     if (tbl.isNull())
         return xcm::null;
 
@@ -2045,12 +2038,12 @@ bool FsDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* 
 
     if (xf_get_file_exist(phys_path))
     {
-        IXdfsSetPtr set;
+        xd::FormatDefinition fd;
         if (defaults)
-            set = openSetEx(path, *defaults);
-             else
-            set = openTable(path);
+            fd = *defaults;
+        fd.determine_structure = true;
 
+        IXdfsSetPtr set = openTable(path, fd);
         if (set.isNull())
             return false;
 
@@ -2520,7 +2513,7 @@ xd::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
     xd::FormatDefinition fi;
     fi.format = xd::formatDefault;
 
-    IXdsqlTablePtr set = openSetEx(path, fi);
+    IXdsqlTablePtr set = openTable(path, fi);
     if (set.isNull())
         return xcm::null;
         
@@ -2548,7 +2541,7 @@ xd::Structure FsDatabase::describeTable(const std::wstring& path)
     xd::FormatDefinition fi;
     fi.format = xd::formatDefault;
 
-    IXdsqlTablePtr tbl = openSetEx(path, fi);
+    IXdsqlTablePtr tbl = openTable(path, fi);
     if (tbl.isNull())
         return xd::Structure();
 

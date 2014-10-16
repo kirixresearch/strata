@@ -95,8 +95,7 @@ public:
 
     xd::IJobPtr createJob();
 
-    IXdsqlTablePtr openTable(const std::wstring& path, const xd::FormatDefinition* format_info = NULL);
-    IXdsqlTablePtr openSetEx(const std::wstring& path, const xd::FormatDefinition& fi);
+    IXdsqlTablePtr openTable(const std::wstring& path, const xd::FormatDefinition& format_definition = xd::FormatDefinition(), xd::IJob* job = NULL);
 
     bool loadDefinition(const std::wstring& path, xd::FormatDefinition* format_info, const xd::FormatDefinition* defaults = NULL, xd::IJob* job = NULL);
     bool saveDefinition(const std::wstring& path, const xd::FormatDefinition& format_info);
