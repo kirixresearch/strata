@@ -375,7 +375,7 @@ bool KpgDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
         deleteFile(info->output);
 
         xd::FormatDefinition fd;
-        fd.columns = structure.columns;
+        fd.columns = structure;
 
         if (!createTable(info->output, fd))
             return false;
@@ -687,9 +687,7 @@ xd::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)
     it = m_create_tables.find(path);
     if (it != m_create_tables.end())
     {
-        xd::Structure s;
-        s.columns = it->second.columns;
-        inserter = new KpgRowInserter(this, path, s);
+        inserter = new KpgRowInserter(this, path, it->second.columns);
     }
      else
     {

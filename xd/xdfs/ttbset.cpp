@@ -91,7 +91,7 @@ xd::Structure TtbSet::getStructure()
 bool TtbSet::getFormatDefinition(xd::FormatDefinition* def)
 {
     *def = xd::FormatDefinition();
-    def->columns = getStructure().columns;
+    def->columns = getStructure();
     return true;
 }
 

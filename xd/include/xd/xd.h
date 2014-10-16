@@ -431,6 +431,19 @@ struct Structure
       }
     void clear() { columns.clear(); m_map.clear(); }
 
+    // stl compatibility
+    void push_back(const xd::ColumnInfo& col) { columns.push_back(col); m_map.clear(); }
+    void insert(std::vector<ColumnInfo>::const_iterator it, const xd::ColumnInfo& col) { columns.insert(it, col); m_map.clear(); }
+    void erase(std::vector<ColumnInfo>::const_iterator it) { columns.erase(it); m_map.clear(); }
+    size_t size() const { return columns.size(); }
+    std::vector<ColumnInfo>::iterator begin() { return columns.begin(); }
+    std::vector<ColumnInfo>::iterator end() { return columns.end(); }
+    std::vector<ColumnInfo>::const_iterator cbegin() const { return columns.cbegin(); }
+    std::vector<ColumnInfo>::const_iterator cend() const { return columns.cend(); }
+    xd::ColumnInfo& operator[](size_t idx) { return columns[idx]; }
+    const xd::ColumnInfo& operator[](size_t idx) const { return columns[idx]; }
+    Structure& operator=(const std::vector<ColumnInfo>& cols) { columns = cols; m_map.clear(); return *this; }
+
     std::vector<ColumnInfo> columns;
     std::map<std::wstring, int, xdcmpnocase> m_map;
 };
@@ -471,7 +484,7 @@ struct FormatDefinition
     bool fixed_line_delimited;
 
     // structure
-    std::vector<ColumnInfo> columns;
+    Structure columns;
 
     // helper functions
     void createColumn(const xd::ColumnInfo& params) { columns.push_back(params); }

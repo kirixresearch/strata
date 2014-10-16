@@ -278,7 +278,7 @@ int LoadJob::runJob()
             destination_db->deleteFile(destination_path);
 
             xd::Structure structure = source_iter->getStructure();
-            destination_format.columns = structure.columns;
+            destination_format.columns = structure;
 
             if (!destination_db->createTable(destination_path, destination_format))
             {

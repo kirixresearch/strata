@@ -2190,7 +2190,7 @@ bool FsDatabase::createTable(const std::wstring& path, const xd::FormatDefinitio
         if (!kl::icontains(phys_path, L".ttb"))
             phys_path += L".ttb";
 
-        return TtbTable::create(phys_path, format_definition.columns);
+        return TtbTable::create(phys_path, format_definition.columns.columns);
     }
      else if (format == xd::formatXbase)
     {
@@ -2348,7 +2348,7 @@ bool FsDatabase::createTable(const std::wstring& path, const xd::FormatDefinitio
         bool unicode_data_found = false;
 
         std::vector<xd::ColumnInfo>::const_iterator it;
-        for (it = format_definition.columns.begin(); it != format_definition.columns.end(); ++it)
+        for (it = format_definition.columns.cbegin(); it != format_definition.columns.cend(); ++it)
         {
             if (it->type == xd::typeWideCharacter)
                 unicode_data_found = true;

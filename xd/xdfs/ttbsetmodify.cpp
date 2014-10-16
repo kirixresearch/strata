@@ -893,7 +893,7 @@ bool TtbSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* jo
     temp_tbl_filename += L".tmp";
 
     // create the table
-    if (!TtbTable::create(temp_tbl_filename, output_structure.columns))
+    if (!TtbTable::create(temp_tbl_filename, output_structure.columns.columns))
     {
         if (ijob.isOk())
         {

@@ -1581,7 +1581,7 @@ bool XdnativeDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
         deleteFile(info->output);
 
         xd::FormatDefinition fd = info->output_format;
-        fd.columns = structure.columns;
+        fd.columns = structure;
 
         if (!createTable(info->output, fd))
             return false;
