@@ -8,12 +8,6 @@
  *
  */
 
-
-#ifdef _MSC_VER
-#pragma warning(disable : 4786)
-#endif
-
-
 #include <xd/xd.h>
 #include "util.h"
 #include <kl/string.h>

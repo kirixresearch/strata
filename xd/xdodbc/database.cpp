@@ -9,9 +9,6 @@
  */
 
 
-#ifdef _MSC_VER
-#pragma warning(disable : 4786)
-#endif
 
 #ifdef WIN32
 #define NOMINMAX

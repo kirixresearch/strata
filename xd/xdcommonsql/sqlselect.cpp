@@ -9,11 +9,6 @@
  */
 
 
-#ifdef _MSC_VER
-#pragma warning(disable : 4786)
-#endif
-
-
 #include <kl/portable.h>
 #include <kl/string.h>
 #include <kl/regex.h>

@@ -13,11 +13,6 @@
 #define __KCL_GRIDMEMMODEL_H
 
 
-#ifdef _MSC_VER
-#pragma warning(disable : 4786)
-#endif
-
-
 #include "grid.h"
 #include <kl/xcm.h>
 #include <list>

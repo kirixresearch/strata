@@ -9,12 +9,6 @@
  */
 
 
-#ifdef _MSC_VER
-#pragma warning(disable : 4786)
-#endif
-
-
-
 #include "appmain.h"
 #include <kl/thread.h>
 #include <queue>

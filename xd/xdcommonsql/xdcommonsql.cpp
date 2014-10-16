@@ -9,11 +9,6 @@
  */
 
 
-#ifdef _MSC_VER
-#pragma warning(disable : 4786)
-#endif
-
-
 #include <xd/xd.h>
 #include "../xdcommon/xd_private.h"
 #include "../xdcommon/errorinfo.h"

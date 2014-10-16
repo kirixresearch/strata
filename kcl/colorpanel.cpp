@@ -9,11 +9,6 @@
  */
 
 
-#ifdef _MSC_VER
-#pragma warning(disable : 4786)
-#endif
-
-
 #include <wx/wx.h>
 #include <wx/statline.h>
 #include <wx/colordlg.h>

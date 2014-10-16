@@ -10,7 +10,6 @@
 
 
 #ifdef _MSC_VER
-#pragma warning(disable : 4786)
 #define _CRT_SECURE_NO_DEPRECATE 1
 #endif
 

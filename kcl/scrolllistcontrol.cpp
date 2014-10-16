@@ -9,11 +9,6 @@
  */
 
 
-#ifdef _MSC_VER
-#pragma warning(disable : 4786)
-#endif
-
-
 #include <wx/tokenzr.h>
 #include "scrolllistcontrol.h"
 #include "util.h"

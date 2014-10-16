@@ -9,11 +9,6 @@
  */
 
 
-#ifdef _MSC_VER
-#pragma warning(disable : 4786)
-#endif
-
-
 #include <xd/xd.h>
 #include "xd_private.h"
 #include <kl/portable.h>

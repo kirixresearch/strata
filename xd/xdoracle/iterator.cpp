@@ -9,11 +9,6 @@
  */
 
 
-#ifdef _MSC_VER
-#pragma warning(disable : 4786)
-#endif
-
-
 #include <kl/klib.h>
 #include <oci.h>
 #include <xd/xd.h>

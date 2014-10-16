@@ -9,11 +9,6 @@
  */
 
 
-#ifdef _MSC_VER
-#pragma warning(disable : 4786)
-#endif
-
-
 #include "xdfs.h"
 #include "database.h"
 #include "../xdcommon/connectionstr.h"

@@ -9,11 +9,6 @@
  */
 
 
-#ifdef _MSC_VER
-#pragma warning(disable : 4786)
-#endif
-
-
 #include <ctime>
 #include <kl/utf8.h>
 #include <kl/json.h>

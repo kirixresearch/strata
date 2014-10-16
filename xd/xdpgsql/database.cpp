@@ -9,11 +9,6 @@
  */
 
 
-#ifdef _MSC_VER
-#pragma warning(disable : 4786)
-#endif
-
-
 #include "libpq-fe.h"
 #include "libpq/libpq-fs.h"
 #include <xd/xd.h>
