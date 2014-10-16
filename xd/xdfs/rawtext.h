@@ -40,7 +40,6 @@ public:
     bool openFile(const std::wstring& filename,
                   int xf_open_flags = xfReadWrite,
                   int xf_share_flags = xfShareReadWrite);
-    bool openOrCreateFile(const std::wstring& filename);
     void closeFile();
     bool isOpen() const { return (m_file != 0) ? true : false; }
     bool isUnicode();

@@ -20,9 +20,6 @@
 
 
 
-// -- BufferedFile class implementation --
-
-
 BufferedFile::BufferedFile()
 {
     m_file = NULL;
@@ -70,31 +67,6 @@ bool BufferedFile::openFile(const std::wstring& filename, int open_flags, int sh
         m_skip_bytes += 2;
     }
     
-    return true;
-}
-
-bool BufferedFile::openOrCreateFile(const std::wstring& filename)
-{
-    if (xf_get_file_exist(filename))
-    {
-        return openFile(filename);
-    }
-        
-    // try to open the file
-    m_file = xf_open(filename, xfCreate, xfReadWrite, xfShareReadWrite);
-    if (m_file == NULL)
-        return false;
-    
-    m_filename = filename;
-    m_filesize = 0;
-    
-    // create the buffer
-    m_buf = new unsigned char[bfBufSize];
-    
-    m_buf_size = 0;
-    m_buf_offset = 0;
-    m_byte_order = boDefault;
-
     return true;
 }
 
