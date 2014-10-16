@@ -118,3 +118,15 @@ bool PgsqlStream::seek(long long seek_pos, int whence)
         
     return true;
 }
+
+
+long long PgsqlStream::getSize()
+{
+    // TODO: needs to be lo_lseek64() and tell64
+    long long saved_pos = lo_tell(m_conn, m_fd);
+    lo_lseek(m_conn, m_fd, 0, /*seek_end*/ 2);
+    long long ret = lo_tell(m_conn, m_fd);
+    lo_lseek(m_conn, m_fd, saved_pos, /*seek_set*/ 0);
+    return ret;
+}
+

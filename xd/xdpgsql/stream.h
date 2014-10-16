@@ -37,6 +37,8 @@ public:
                unsigned long* written_count);
 
     bool seek(long long seek_pos, int whence);
+
+    long long getSize();
               
 private:
 

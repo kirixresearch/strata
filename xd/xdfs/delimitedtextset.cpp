@@ -44,9 +44,13 @@ DelimitedTextSet::~DelimitedTextSet()
         m_file.closeFile();
 }
 
-bool DelimitedTextSet::init(const std::wstring& filename, const xd::FormatDefinition& def, xd::IJob* job)
+bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition& def, xd::IJob* job)
 {
-    if (!m_file.openFile(filename))
+    // enforce url
+    if (url.find(L"://") == url.npos)
+        return false;
+
+    if (!m_file.openFile(url))
         return false;
 
     // try to load field information from the file header (for example, icsv)
@@ -65,9 +69,9 @@ bool DelimitedTextSet::init(const std::wstring& filename, const xd::FormatDefini
         
         // look for an extension -- if no extension, assume csv
         std::wstring ext;
-        int ext_pos = filename.find_last_of(L'.');
+        int ext_pos = url.find_last_of(L'.');
         if (ext_pos >= 0)
-            ext = filename.substr(ext_pos+1);
+            ext = url.substr(ext_pos+1);
              else
             ext = L"csv";
         kl::makeLower(ext);
@@ -93,7 +97,7 @@ bool DelimitedTextSet::init(const std::wstring& filename, const xd::FormatDefini
             
             // however, many csv files also use other delimiters, like semicolons
             FsSetFormatInfo info;
-            if (m_database->getFileFormat(filename,
+            if (m_database->getFileFormat(url,
                                           &info,
                                           FsSetFormatInfo::maskFormat |
                                           FsSetFormatInfo::maskDelimiters))
@@ -130,7 +134,7 @@ bool DelimitedTextSet::init(const std::wstring& filename, const xd::FormatDefini
 
             // if the file is small (<= 2MB), just read in the whole
             // file to make sure we have a good structure
-            if (xf_get_file_size(filename) < 2000000)
+            if (xf_get_file_size(url) < 2000000)
             {
                 rows_to_check = -1;
                 max_seconds = -1;

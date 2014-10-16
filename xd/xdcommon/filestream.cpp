@@ -76,8 +76,8 @@ bool FileStream::read(void* buf,
 }
                   
 bool FileStream::write(const void* buf,
-          unsigned long write_size,
-          unsigned long* written_count)
+                       unsigned long write_size,
+                       unsigned long* written_count)
 {
     unsigned long w = (unsigned long)xf_write(m_file, buf, 1, write_size);
     if (written_count)
@@ -102,4 +102,14 @@ bool FileStream::seek(long long seek_pos, int whence)
     }
 
     return xf_seek(m_file, seek_pos, xf_whence);
+}
+
+
+long long FileStream::getSize()
+{
+    xf_off_t saved_pos = xf_get_file_pos(m_file);
+    xf_seek(m_file, 0, xfSeekEnd);
+    xf_off_t ret = xf_get_file_pos(m_file);
+    xf_seek(m_file, saved_pos, xfSeekSet);
+    return ret;
 }

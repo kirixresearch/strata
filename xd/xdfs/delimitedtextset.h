@@ -44,7 +44,7 @@ public:
     DelimitedTextSet(FsDatabase* database);
     ~DelimitedTextSet();
 
-    bool init(const std::wstring& filename, const xd::FormatDefinition& def, xd::IJob* job = NULL);
+    bool init(const std::wstring& url, const xd::FormatDefinition& def, xd::IJob* job = NULL);
     
     std::wstring getSetId();
 
@@ -80,7 +80,6 @@ private:
     DelimitedTextFile m_file;
     std::wstring m_path;
     xd::FormatDefinition m_def;
-    
 };
 
 

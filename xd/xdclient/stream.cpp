@@ -124,3 +124,10 @@ bool ClientStream::seek(long long seek_pos, int whence)
     return false;
 }
 
+
+long long ClientStream::getSize()
+{
+    // TODO: implement
+    return 0;
+}
+

@@ -152,3 +152,11 @@ bool KpgStream::seek(long long seek_pos, int whence)
     // not implemented in KpgStream
     return false;
 }
+
+
+long long KpgStream::getSize()
+{
+    // not implemented in KpgStream
+    return 0;
+}
+

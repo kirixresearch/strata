@@ -35,6 +35,8 @@ public:
 
     bool seek(long long seek_pos, int whence);
 
+    long long getSize();
+
 private:
 
     ClientDatabase* m_database;

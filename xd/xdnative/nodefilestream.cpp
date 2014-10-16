@@ -154,3 +154,9 @@ bool NodeFileStream::seek(long long seek_pos, int whence)
     return false;
 }
 
+
+long long NodeFileStream::getSize()
+{
+    // not implemented in NodeFileStream
+    return 0;
+}
