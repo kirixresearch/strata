@@ -12,7 +12,7 @@
 #include "delimitedtext.h"
 #include "rawtext.h"
 #include "../xdcommon/filestream.h"
-
+#include <kl/hex.h>
 
 
 
@@ -78,11 +78,19 @@ DelimitedTextFile::~DelimitedTextFile()
 }
 
 
-bool DelimitedTextFile::open(const std::wstring& filename, int encoding)
+bool DelimitedTextFile::open(const std::wstring& path, int encoding)
 {
+    if (path.substr(0, 12) == L"streamptr://")
+    {
+        unsigned long l = (unsigned long)kl::hexToUint64(path.substr(12));
+        xd::IStream* ptr = (xd::IStream*)l;
+        return open(ptr, encoding);
+    }
+
+
     FileStream* f = new FileStream;
     f->ref();
-    if (!f->open(filename))
+    if (!f->open(path))
     {
         f->unref();
         return false;
