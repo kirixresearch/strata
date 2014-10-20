@@ -86,11 +86,16 @@ PgsqlIterator::~PgsqlIterator()
         m_database->unref();
 }
 
-bool PgsqlIterator::init(const std::wstring& query)
+bool PgsqlIterator::init(const std::wstring& query, PGconn* conn_to_use)
 {
     bool use_server_side_cursor = true;
 
-    PGconn* conn = m_database->createConnection();
+    PGconn* conn;
+    if (conn_to_use)
+        conn = conn_to_use;
+         else
+        conn = m_database->createConnection();
+
     if (!conn)
         return false;
 

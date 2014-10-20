@@ -2302,7 +2302,7 @@ bool TableDoc::open(const std::wstring& _path,
     if (file_info.isNull())
     {
         file_info = db->getFileInfo(path);
-        if (file_info.isNull() || file_info->getType() != xd::filetypeTable)
+        if (file_info.isNull())
             return false;
     }
 

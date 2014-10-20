@@ -123,7 +123,7 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
 
             // if the file is small (<= 2MB), just read in the whole
             // file to make sure we have a good structure
-            if (xf_get_file_size(url) < 2000000)
+            if (m_file.getStream()->getSize() < 2000000)
             {
                 rows_to_check = -1;
                 max_seconds = -1;

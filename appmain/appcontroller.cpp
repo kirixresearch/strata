@@ -4584,7 +4584,7 @@ bool AppController::openTable(const wxString& _location, int* site_id)
 
     int format = fileinfo->getFormat();
 
-    if (format == xd::formatDelimitedText || format == xd::formatFixedLengthText)
+    if (fileinfo->getType() == xd::filetypeStream || format == xd::formatDelimitedText || format == xd::formatFixedLengthText)
     {
         // open text set
         createTextDoc(location, NULL, site_id);

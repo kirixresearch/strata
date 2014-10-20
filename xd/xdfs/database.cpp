@@ -385,6 +385,13 @@ bool FsDatabase::getFileFormat(const std::wstring& path,
                                xd::FormatDefinition* info,
                                bool discover_delimiters)
 {
+    if (stream == NULL && path.substr(0, 12) == L"streamptr://")
+    {
+        unsigned long l = (unsigned long)kl::hexToUint64(path.substr(12));
+        stream = (xd::IStream*)l;
+    }
+
+
     // find the file extenstion
 
     std::wstring ext;
@@ -425,6 +432,7 @@ bool FsDatabase::getFileFormat(const std::wstring& path,
      else if (ext == L"ebc")
     {
         info->format = xd::formatFixedLengthText;
+        return true;
     }
      else if (isTextFileExtension(ext))
     {
@@ -461,10 +469,30 @@ bool FsDatabase::getFileFormat(const std::wstring& path,
 
         return true;
     }
+     else
+    {
+        xd::IStream* s = stream;
+        if (s)
+        {
+            s->ref();
+        }
+         else
+        {
+            FileStream* f = new FileStream;
+            f->ref();
+            if (!f->open(path))
+            {
+                f->unref();
+                info->format = xd::formatFixedLengthText;
+                return true;
+            }
+            s = f;
+        }
 
-
-    info->format = xd::formatFixedLengthText;
-    return true;
+        determineSetFormatInfo(s, info);
+        s->unref();
+        return true;
+    }
 }
 
 void FsDatabase::close()

@@ -1460,7 +1460,49 @@ xd::IIteratorPtr PgsqlDatabase::query(const xd::QueryParams& qp)
     std::wstring tbl = pgsqlGetTablenameFromPath(qp.from);
 
 
-    std::wstring query;
+    PGconn* conn = createConnection();
+    PGresult* res;
+    if (!conn)
+        return xcm::null;
+
+    std::wstring query = L"select attname from pg_attribute where attrelid = (select oid from pg_class where relname='"+tbl+L"') and attnum >= 1 and attname='xdpgsql_stream'";
+    res = PQexec(conn, kl::toUtf8(query));
+    if (!res || PQresultStatus(res) != PGRES_TUPLES_OK)
+    {
+        PQclear(res);
+        closeConnection(conn);
+        return xcm::null;
+    }
+    bool is_stream = (PQntuples(res) == 1);
+    PQclear(res);
+
+    // (we will re-use this connection in the iterator)
+
+
+    if (is_stream)
+    {
+        closeConnection(conn);
+        xd::IStreamPtr stream = openStream(qp.from);
+        if (stream.isNull())
+            return xcm::null;
+
+        if (m_xdfs.isNull())
+        {
+            xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
+            if (dbmgr.isNull())
+                return xcm::null;
+            m_xdfs = dbmgr->open(L"xdprovider=xdfs");
+            if (m_xdfs.isNull())
+                return xcm::null;            
+        }
+
+        wchar_t buf[80];
+        swprintf(buf, 80, L"streamptr://%p", (void*)static_cast<xd::IStream*>(stream.p));
+        xd::QueryParams newqp = qp;
+        newqp.from = buf;
+        return m_xdfs->query(newqp);
+    }
+
 
 
     query = L"SELECT * FROM ";
@@ -1483,7 +1525,7 @@ xd::IIteratorPtr PgsqlDatabase::query(const xd::QueryParams& qp)
     // create an iterator based on our select statement
     PgsqlIterator* iter = new PgsqlIterator(this);
 
-    if (!iter->init(query))
+    if (!iter->init(query, conn))
     {
         delete iter;
         return xcm::null;
@@ -1646,10 +1688,33 @@ xd::Structure PgsqlDatabase::describeTable(const std::wstring& path)
 
     PGresult* res = PQexec(conn, kl::toUtf8(query));
 
-    if (!res || PQresultStatus(res) != PGRES_TUPLES_OK)
+    if (!res || PQresultStatus(res) != PGRES_TUPLES_OK || PQntuples(res) == 0)
     {
         PQclear(res);
         return xd::Structure();
+    }
+
+
+    if (0 == strcmp(PQgetvalue(res, 0, 0), "xdpgsql_stream"))
+    {
+        closeConnection(conn);
+        xd::IStreamPtr stream = openStream(path);
+        if (stream.isNull())
+            return xd::Structure();
+
+        if (m_xdfs.isNull())
+        {
+            xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
+            if (dbmgr.isNull())
+                return xd::Structure();
+            m_xdfs = dbmgr->open(L"xdprovider=xdfs");
+            if (m_xdfs.isNull())
+                return xd::Structure();          
+        }
+
+        wchar_t buf[80];
+        swprintf(buf, 80, L"streamptr://%p", (void*)static_cast<xd::IStream*>(stream.p));
+        return m_xdfs->describeTable(buf);
     }
 
 

@@ -138,6 +138,7 @@ private:
 
 private:
 
+    xd::IDatabasePtr m_xdfs;
     xd::IAttributesPtr m_attr;
 
     int m_port;

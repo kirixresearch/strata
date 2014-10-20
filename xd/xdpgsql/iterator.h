@@ -113,7 +113,7 @@ public:
     PgsqlIterator(PgsqlDatabase* database);
     ~PgsqlIterator();
     
-    bool init(const std::wstring& query);
+    bool init(const std::wstring& query, PGconn* conn_to_use = NULL);
     bool init(PGconn* conn, PGresult* res);
 
     // xd::IIterator
