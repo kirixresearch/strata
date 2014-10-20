@@ -78,6 +78,7 @@ private:
 private:
 
     DelimitedTextFile m_file;
+    std::wstring m_file_url;
     std::wstring m_path;
     xd::FormatDefinition m_def;
 };

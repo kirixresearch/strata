@@ -107,7 +107,7 @@ public:
     void closeFile();
     bool isUnicode();
 
-    const std::wstring& getFilename();
+    //const std::wstring& getFilename();
     
     bool bof() const { return m_bof; }
     bool eof() const { return m_eof; }

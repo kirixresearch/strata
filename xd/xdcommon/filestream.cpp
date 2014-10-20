@@ -17,6 +17,7 @@
 FileStream::FileStream()
 {
     m_file = 0;
+    m_read_only = false;
 }
 
 FileStream::~FileStream()
@@ -30,6 +31,7 @@ FileStream::~FileStream()
 
 bool FileStream::create(const std::wstring& filename)
 {
+    m_read_only = false;
     m_file = xf_open(filename, xfCreate, xfReadWrite, xfShareReadWrite);
     if (!m_file)
     {
@@ -41,6 +43,7 @@ bool FileStream::create(const std::wstring& filename)
 
 bool FileStream::open(const std::wstring& filename)
 {
+    m_read_only = false;
     m_file = xf_open(filename, xfOpen, xfReadWrite, xfShareReadWrite);
     if (!m_file)
     {
@@ -48,6 +51,7 @@ bool FileStream::open(const std::wstring& filename)
         m_file = xf_open(filename, xfOpen, xfRead, xfShareReadWrite);
         if (!m_file)
             return false;
+        m_read_only = true;
     }
     
     return true;
@@ -55,14 +59,12 @@ bool FileStream::open(const std::wstring& filename)
 
 
 bool FileStream::read(void* buf,
-          unsigned long read_size,
-          unsigned long* read_count)
+                      unsigned long read_size,
+                      unsigned long* read_count)
 {
     unsigned long r = (unsigned long)xf_read(m_file, buf, 1, read_size);
     if (read_count)
-    {
         *read_count = r;
-    }
     
     if (read_size > 0 && r == 0)
         return false;
@@ -74,11 +76,16 @@ bool FileStream::write(const void* buf,
                        unsigned long write_size,
                        unsigned long* written_count)
 {
+    if (m_read_only)
+    {
+        if (written_count)
+            *written_count = 0;
+        return false;
+    }
+
     unsigned long w = (unsigned long)xf_write(m_file, buf, 1, write_size);
     if (written_count)
-    {
         *written_count = w;
-    }
     
     return true;
 }

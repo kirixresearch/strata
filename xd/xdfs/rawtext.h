@@ -13,9 +13,6 @@
 #define __XDFS_RAWTEXT_H
 
 
-#include <kl/file.h>
-
-
 class BufferedTextFile
 {
 public:
@@ -29,11 +26,11 @@ public:
         encodingUTF16BE = 4
     };
     
-    static const xf_off_t BUFFER_SIZE;
-    static const xf_off_t WRITE_BUFFER_SIZE;
-    static const xf_off_t SEEK_BUFFER_SIZE;
-    static const xf_off_t FILE_BOF;
-    static const xf_off_t FILE_EOF;
+    static const long long BUFFER_SIZE;
+    static const long long WRITE_BUFFER_SIZE;
+    static const long long SEEK_BUFFER_SIZE;
+    static const long long FILE_BOF;
+    static const long long FILE_EOF;
     
 public:
 
@@ -41,7 +38,8 @@ public:
     ~BufferedTextFile();
     
     bool openFile(const std::wstring& filename, int encoding = encodingDefault);
-    bool isOpen() const { return (m_file != 0) ? true : false; }
+    bool openStream(xd::IStream* stream, int encoding = encodingDefault);
+    bool isOpen() const { return m_stream ? true : false; }
     bool isReadOnly() const { return m_read_only; }
     int getEncoding() const { return m_encoding; }
     void close();
@@ -50,8 +48,8 @@ public:
     wchar_t getChar();
     void skip(int delta);
     
-    xf_off_t getOffset() const;
-    void goOffset(xf_off_t offset);
+    long long getOffset() const;
+    void goOffset(long long offset);
 
     bool bof() const { return (m_buf_offset < 0) ? true : false; }
     bool eof() const { return (m_buf_offset >= m_buf_length) ? true : false; }
@@ -77,9 +75,9 @@ protected:
     
 private:
 
-    xf_file_t m_file;
-    xf_off_t m_data_start_offset;
-    xf_off_t m_buf_start_offset;
+    xd::IStream* m_stream;
+    long long m_data_start_offset;
+    long long m_buf_start_offset;
     
     unsigned char* m_buf;
     int m_buf_length;

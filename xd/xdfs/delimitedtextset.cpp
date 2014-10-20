@@ -42,8 +42,8 @@ DelimitedTextSet::~DelimitedTextSet()
 bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition& def, xd::IJob* job)
 {
     // enforce url
-    if (url.find(L"://") == url.npos)
-        return false;
+    //if (url.find(L"://") == url.npos)
+    //    return false;
 
     if (!m_file.openFile(url))
         return false;
@@ -91,11 +91,8 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
             m_def.first_row_column_names = determineIfFirstRowIsHeader();
             
             // however, many csv files also use other delimiters, like semicolons
-            FsSetFormatInfo info;
-            if (m_database->getFileFormat(url,
-                                          &info,
-                                          FsSetFormatInfo::maskFormat |
-                                          FsSetFormatInfo::maskDelimiters))
+            xd::FormatDefinition info;
+            if (m_database->getFileFormat(url, &info, true /* discover_delimiters */))
             {
                 m_def.delimiters = info.delimiters;
             }
@@ -158,7 +155,7 @@ std::wstring DelimitedTextSet::getSetId()
     std::wstring set_id;
     
     set_id = L"xdfs:";
-    set_id += xf_get_network_path(m_file.getFilename());
+    set_id += xf_get_network_path(m_file_url);
     
 #ifdef WIN32
     // win32's filenames are case-insensitive, so

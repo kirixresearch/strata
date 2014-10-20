@@ -46,6 +46,7 @@ public:
 private:
 
     xf_file_t m_file;
+    bool m_read_only;
 };
 
 

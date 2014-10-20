@@ -12,6 +12,7 @@
 #include <cmath>
 #include <cstring>
 #include "rawtext.h"
+#include "../xdcommon/filestream.h"
 
 
 
@@ -32,15 +33,15 @@ static const unsigned char utf8_sequence_lengths[256] =
 
 
 
-const xf_off_t BufferedTextFile::BUFFER_SIZE = 1000000;
-const xf_off_t BufferedTextFile::WRITE_BUFFER_SIZE = 50000;
-const xf_off_t BufferedTextFile::SEEK_BUFFER_SIZE = 1024;
-const xf_off_t BufferedTextFile::FILE_BOF = -1;
-const xf_off_t BufferedTextFile::FILE_EOF = -2;
+const long long BufferedTextFile::BUFFER_SIZE = 1000000;
+const long long BufferedTextFile::WRITE_BUFFER_SIZE = 50000;
+const long long BufferedTextFile::SEEK_BUFFER_SIZE = 1024;
+const long long BufferedTextFile::FILE_BOF = -1;
+const long long BufferedTextFile::FILE_EOF = -2;
 
 BufferedTextFile::BufferedTextFile()
 {
-    m_file = (xf_file_t)0;
+    m_stream = NULL;
     m_data_start_offset = 0;
     m_buf_start_offset = 0;
     m_buf = NULL;
@@ -54,37 +55,34 @@ BufferedTextFile::BufferedTextFile()
 
 BufferedTextFile::~BufferedTextFile()
 {
-    if (m_file)
-        xf_close(m_file);
+    if (m_stream)
+        m_stream->unref();
     delete[] m_buf;
     delete[] m_write_buf;
 }
 
 bool BufferedTextFile::openFile(const std::wstring& filename, int encoding)
 {
-    if (m_file)
+    if (m_stream)
         close();
+    
+    FileStream* f = new FileStream;
+    if (!f->open(filename))
+        return false;
+
+
+    m_stream = f;
+    m_read_only = false;
+    m_encoding = encoding;
     
     m_buf = new unsigned char[BUFFER_SIZE];
     if (!m_buf)
         return false;
 
-    m_read_only = false;
-    m_file = xf_open(filename, xfOpen, xfReadWrite, xfShareReadWrite);
-    if (!m_file)
-    {
-        m_file = xf_open(filename, xfOpen, xfRead, xfShareReadWrite);
-        if (!m_file)
-            return false;
-        m_read_only = true;
-    }
-
-    m_encoding = encoding;
-    
     int bom_encoding = encodingDefault;
     unsigned char bom[4];
     memset(bom, 0, 4);
-    xf_read(m_file, bom, 1, 4);
+    m_stream->read(bom, 4, NULL);
     if (bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf)
     {
         bom_encoding = encodingUTF8;
@@ -128,12 +126,15 @@ bool BufferedTextFile::openFile(const std::wstring& filename, int encoding)
 
 void BufferedTextFile::close()
 {
-    if (m_file)
-        xf_close(m_file);
+    if (m_stream)
+    {
+        m_stream->unref();
+        m_stream = NULL;
+    }
+
     delete[] m_buf;
     delete[] m_write_buf;
     
-    m_file = (xf_file_t)0;
     m_data_start_offset = 0;
     m_buf_start_offset = 0;
     m_buf = NULL;
@@ -147,16 +148,21 @@ void BufferedTextFile::close()
 int BufferedTextFile::detectEncoding()
 {
     int encoding = encodingISO88591;
-            
-    xf_seek(m_file, m_data_start_offset, xfSeekSet);
-    int r = xf_read(m_file, m_buf, 1, 16384);
-    if (r <= 1)
-        return encoding;
     
+    if (!m_stream)
+        return encoding;
+            
+    m_stream->seek(m_data_start_offset, xd::seekSet);
+
+    unsigned long bytes_read = 0;
+    m_stream->read(m_buf, 16384, &bytes_read);
+    if (bytes_read <= 1)
+        return encoding;
+
     // check for utf8
     int cnt_utf8 = 0;
     int cnt_8bit = 0;
-    for (int i = 0; i < r-1; ++i)
+    for (unsigned long i = 0; i < bytes_read-1; ++i)
     {
         if (m_buf[i] >= 0x80)
             cnt_8bit++;
@@ -192,9 +198,12 @@ void BufferedTextFile::rewind()
         memset(m_buf, 0, BUFFER_SIZE);
     }
     
-    if (xf_seek(m_file, m_data_start_offset, xfSeekSet))
+    if (m_stream->seek(m_data_start_offset, xd::seekSet))
     {
-        m_buf_length = (size_t)xf_read(m_file, m_buf, 1, BUFFER_SIZE);
+        unsigned long bytes_read = 0;
+
+        m_stream->read(m_buf, BUFFER_SIZE, &bytes_read);
+        m_buf_length = bytes_read;
         m_buf_offset = 0;
         m_buf_start_offset = 0;
     }
@@ -331,14 +340,17 @@ size_t BufferedTextFile::getBytes(unsigned char* p, size_t len)
 {
     if (m_buf_offset + (int)len > m_buf_length)
     {
-        // out of buffer range -- fetch bytes from disk
-        if (!xf_seek(m_file, m_data_start_offset + m_buf_start_offset + m_buf_offset, xfSeekSet))
+        // requested data is out of buffer range -- fetch a new block from stream
+        if (!m_stream->seek(m_data_start_offset + m_buf_start_offset + m_buf_offset, xd::seekSet))
             return 0;
-        return xf_read(m_file, p, 1, len);
+
+        unsigned long bytes_read = 0;
+        m_stream->read(p, len, &bytes_read);
+        return bytes_read;
     }
      else
     {
-        // in buffer range -- fetch bytes from buffer
+        // requested data is in buffer range -- copy bytes from buffer
         memcpy(p, m_buf + m_buf_offset, len);
         return len;
     }
@@ -384,9 +396,9 @@ void BufferedTextFile::skipByte(int delta)
         // the appropriate location, read the data into
         // the buffer and return the appropriate char
         
-        xf_off_t new_file_offset = m_buf_start_offset + (xf_off_t)new_offset;
-        xf_off_t buf_offset_mod = new_file_offset % BUFFER_SIZE;
-        xf_off_t new_buf_offset = (new_file_offset / BUFFER_SIZE) * BUFFER_SIZE;
+        long long new_file_offset = m_buf_start_offset + (long long)new_offset;
+        long long buf_offset_mod = new_file_offset % BUFFER_SIZE;
+        long long new_buf_offset = (new_file_offset / BUFFER_SIZE) * BUFFER_SIZE;
 
 
         memset(m_buf, 0, BUFFER_SIZE);
@@ -400,9 +412,12 @@ void BufferedTextFile::skipByte(int delta)
             return;
         }
         
-        if (xf_seek(m_file, m_data_start_offset + new_buf_offset, xfSeekSet))
+        if (m_stream->seek(m_data_start_offset + new_buf_offset, xd::seekSet))
         {
-            m_buf_length = (size_t)xf_read(m_file, m_buf, 1, BUFFER_SIZE);
+            unsigned long bytes_read = 0;
+            m_stream->read(m_buf, BUFFER_SIZE, &bytes_read);
+            
+            m_buf_length = bytes_read;
             m_buf_offset = (int)buf_offset_mod;
             m_buf_start_offset = new_buf_offset;
         }
@@ -416,16 +431,19 @@ void BufferedTextFile::skipByte(int delta)
     }
 }
 
-xf_off_t BufferedTextFile::getOffset() const
+long long BufferedTextFile::getOffset() const
 {
-    return m_buf_start_offset + (xf_off_t)m_buf_offset;
+    return m_buf_start_offset + (long long)m_buf_offset;
 }
 
-void BufferedTextFile::goOffset(xf_off_t offset)
+void BufferedTextFile::goOffset(long long offset)
 {
-    if (xf_seek(m_file, m_data_start_offset + offset, xfSeekSet))
+    if (m_stream->seek(m_data_start_offset + offset, xd::seekSet))
     {
-        m_buf_length = (size_t)xf_read(m_file, m_buf, 1, SEEK_BUFFER_SIZE);
+        unsigned long bytes_read = 0;
+        m_stream->read(m_buf, SEEK_BUFFER_SIZE, &bytes_read);
+        
+        m_buf_length = bytes_read;
         m_buf_offset = 0;
         m_buf_start_offset = offset;
     }
@@ -505,8 +523,12 @@ bool BufferedTextFile::write(const std::wstring& str)
         
         if (i+1 >= cnt || (m_write_buf_length > WRITE_BUFFER_SIZE-10))
         {
-            xf_seek(m_file, 0, xfSeekEnd);
-            if (m_write_buf_length == xf_write(m_file, m_write_buf, 1, m_write_buf_length))
+            m_stream->seek(0, xd::seekEnd);
+
+            unsigned long bytes_written = 0;
+            bool res = m_stream->write(m_write_buf, m_write_buf_length, &bytes_written);
+
+            if (res && m_write_buf_length == bytes_written)
             {
                 m_write_buf_length = 0;
                 dest = m_write_buf;

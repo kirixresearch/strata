@@ -75,7 +75,7 @@ DelimitedTextIterator::~DelimitedTextIterator()
 
 bool DelimitedTextIterator::init(DelimitedTextSet* set, const std::wstring& columns)
 {
-    if (!m_file.openFile(set->m_file.getFilename()))
+    if (!m_file.openFile(set->m_file_url))
         return false;
 
     m_set = set;
@@ -117,7 +117,7 @@ xd::IIteratorPtr DelimitedTextIterator::clone()
 {
     DelimitedTextIterator* iter = new DelimitedTextIterator(m_database);
     
-    if (!iter->init(m_set, m_file.getFilename()))
+    if (!iter->init(m_set, m_set->m_file_url))
         return xcm::null;
     
     xd::rowid_t rowid = m_file.getRowOffset();

@@ -21,32 +21,6 @@ class JobInfo;
 class RelationInfo;
 
 
-// small container class for the set's format info
-
-class FsSetFormatInfo
-{
-public:
-
-    enum
-    {
-        maskFormat     = 1 << 0,
-        maskDelimiters = 1 << 1
-    };
-
-    FsSetFormatInfo()
-    {
-        format = -1;
-        delimiters = L"";
-    }
-    
-public:
-
-    int format;
-    std::wstring delimiters;
-};
-
-
-
 
 class FsDatabase : public xd::IDatabase,
                    public IXdsqlDatabase,
@@ -71,8 +45,8 @@ public:
     // xd::IDatabase
     
     bool getFileFormat(const std::wstring& phys_path,
-                       FsSetFormatInfo* info,
-                       int info_mask);
+                       xd::FormatDefinition* info,
+                       bool discover_delimiters = false);
     std::wstring getTempFileDirectory();
     std::wstring getDefinitionDirectory();
     

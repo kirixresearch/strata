@@ -220,7 +220,7 @@ static int find_max(int a, int b, int c = 0, int d = 0, int e = 0, int f = 0,
                        std::max(i, j)))))))));
 }
 
-static bool determineSetFormatInfo(const std::wstring& path, FsSetFormatInfo* info)
+static bool determineSetFormatInfo(const std::wstring& path, xd::FormatDefinition* info)
 {
     BufferedTextFile f;
         
@@ -232,12 +232,9 @@ static bool determineSetFormatInfo(const std::wstring& path, FsSetFormatInfo* in
     
     std::vector<std::wstring> lines;
     
-    
     size_t i;
     wchar_t ch;
-    bool eof = false;
     std::wstring line;
-    line.reserve(4096);
 
     for (i = 0; i < 4096; ++i)
     {
@@ -260,15 +257,13 @@ static bool determineSetFormatInfo(const std::wstring& path, FsSetFormatInfo* in
         line += ch;
     }
     
-    
     // if we have one last string in the buffer, add it to the vector of lines
     if (line.length() > 0)
         lines.push_back(line);
     
     f.close();
     
-    
-    // there's nothing in the file, bail out
+    // there's nothing in the file, return that it is a fixed-length file
     if (lines.size() == 0)
     {
         info->format = xd::formatFixedLengthText;
@@ -371,39 +366,32 @@ static bool determineSetFormatInfo(const std::wstring& path, FsSetFormatInfo* in
 
 static bool isTextFileExtension(const std::wstring& _ext)
 {
-    std::wstring ext = _ext;
+    std::string ext = kl::tostring(_ext);
     kl::makeUpper(ext);
-    std::string aext = kl::tostring(ext);
     
     static const char* text_types[] = { "ASP", "C", "CC", "CPP", "CS", "CXX",
                                         "H", "HPP", "JAVA", "JS", "JSP", "PL", "PHP", "PHTML", "RC", "SQL",
                                         (const char*)0 };
     
     for (size_t i = 0; text_types[i] != NULL; ++i)
-        if (aext == text_types[i])
+        if (ext == text_types[i])
             return true;
     
     return false;
 }
 
 
-bool FsDatabase::getFileFormat(const std::wstring& phys_path,
-                               FsSetFormatInfo* info,
-                               int info_mask)
+bool FsDatabase::getFileFormat(const std::wstring& path,
+                               xd::FormatDefinition* info,
+                               bool discover_delimiters)
 {
-    if (!xf_get_file_exist(phys_path))
-    {
-        info->format = xd::formatDefault;
-        return false;
-    }
-
-    // format the file extenstion
+    // find the file extenstion
 
     std::wstring ext;
-    size_t ext_pos = phys_path.find_last_of('.');
-    if (ext_pos != phys_path.npos)
+    size_t ext_pos = path.find_last_of('.');
+    if (ext_pos != path.npos)
     {
-        ext = phys_path.substr(ext_pos+1);
+        ext = path.substr(ext_pos+1);
         kl::makeLower(ext);
     }
 
@@ -423,6 +411,12 @@ bool FsDatabase::getFileFormat(const std::wstring& phys_path,
         info->format = xd::formatTypedDelimitedText;
         return true;
     }
+     else if (ext == L"tsv")
+    {
+        info->format = xd::formatDelimitedText;
+        info->delimiters = L"\t";
+        return true;
+    }
      else if (ext == L"xlsx")
     {
         info->format = xd::formatXLSX;
@@ -439,86 +433,31 @@ bool FsDatabase::getFileFormat(const std::wstring& phys_path,
     }
     
 
-    // figure out the config file name
-    xd::IAttributesPtr attr = getAttributes();
-    std::wstring definition_path = 
-        attr->getStringAttribute(xd::dbattrDefinitionDirectory);
-    std::wstring configfile_path =
-        ExtFileInfo::getConfigFilenameFromPath(definition_path, phys_path);
-
-    ExtFileInfo fileinfo;
-    if (fileinfo.load(configfile_path))
-    {
-        std::wstring format_str, delims;
-        format_str = fileinfo.getGroup(L"file_info").getChildContents(L"type");
-        delims = fileinfo.getGroup(L"file_info").getChild(L"settings").getChildContents(L"field_delimiters");
-        
-        // see if a text definition file defined the format
-        if (format_str == L"text/delimited" ||
-            format_str == L"text/csv" ||
-            format_str == L"text_delimited")
-        {
-            info->format = xd::formatDelimitedText;
-            
-            if (delims.length() > 0)
-                info->delimiters = delims;
-                 else
-                info->delimiters = L",";
-            
-            return true;
-        }
-         else if (format_str == L"text/fixed" ||
-                  format_str == L"fixed_length")
-        {
-            info->format = xd::formatFixedLengthText;
-            return true;
-        }
-         else if (format_str == L"text/plain")
-        {
-            info->format = xd::formatText;
-            return true;
-        }
-    }
-
-
-    // if a format is not specified in the ExtFileInfo,
-    // use the file extension to determine the format
-
-    if (ext == L"tsv")
-    {
-        info->format = xd::formatDelimitedText;
-        info->delimiters = L"\t";
-        return true;
-    }
-     else if (ext == L"csv")
+    if (ext == L"csv")
     {
         info->format = xd::formatDelimitedText;
         info->delimiters = L",";
         
         
-        if (info_mask == FsSetFormatInfo::maskFormat)
+        if (discover_delimiters)
         {
-            // caller only wanted to know the format
-            // so we can return immediately
-            return true;
+            // the delimiter is almost certainly a comma, but
+            // sometimes is something else, such as a semicolon
+            bool res = determineSetFormatInfo(path, info);
+        
+            // because the file extension is csv, don't let determineSetFormatInfo
+            // guess anything different (happens sometimes with one-column csv's,
+            // because there are no delimiters)
+        
+            info->format = xd::formatDelimitedText;
         }
-        
 
-        // the delimiter is almost certainly a comma, but
-        // sometimes is something else, such as a semicolon
-        bool res = determineSetFormatInfo(phys_path, info);
-        
-        // because the file extension is csv, don't let determineSetFormatInfop
-        // guess anything different (happens sometimes with one-column csv's,
-        // because there are no delimiters)
-        
-        info->format = xd::formatDelimitedText;
         return res;
     }
 
 
     // read some of the file to see if we can determine the format
-    return determineSetFormatInfo(phys_path, info);
+    return determineSetFormatInfo(path, info);
 }
 
 void FsDatabase::close()
@@ -1386,8 +1325,8 @@ public:
             return format;
             
         // get the format and cache the result
-        FsSetFormatInfo info;
-        db->getFileFormat(phys_path, &info, FsSetFormatInfo::maskFormat);
+        xd::FormatDefinition info;
+        db->getFileFormat(phys_path, &info);
         format = info.format;
         
         return format;
@@ -1812,11 +1751,11 @@ IXdsqlTablePtr FsDatabase::openTable(const std::wstring& path, const xd::FormatD
     const xd::FormatDefinition* fi = &format_definition;
     xd::FormatDefinition deffi;
 
-    // check for ptr sets
+    // check for table ptr sets
     if (path.substr(0, 12) == L"/.temp/.ptr/")
     {
         std::wstring ptr_string = kl::afterLast(path, L'/');
-        unsigned long l = (unsigned long)kl::hexToUint64(ptr_string.c_str());
+        unsigned long l = (unsigned long)kl::hexToUint64(ptr_string);
         IXdsqlTablePtr sptr = (IXdsqlTable*)l;
         return sptr;
     }
@@ -1851,106 +1790,113 @@ IXdsqlTablePtr FsDatabase::openTable(const std::wstring& path, const xd::FormatD
     // determine the format from the text definition or the file extension
     if (format == xd::formatDefault)
     {
-        FsSetFormatInfo info;
-        getFileFormat(phys_path, &info, FsSetFormatInfo::maskFormat | FsSetFormatInfo::maskDelimiters);
+        xd::FormatDefinition info;
+        getFileFormat(phys_path, &info, true /* discover_delimiters */);
         format = info.format;
         delimiters = info.delimiters;
     }
 
 
-    
-    IXdsqlTablePtr set;
-    
+
     // open the set in the appropriate format
     if (format == xd::formatXbase) // dbf
     {
-        XbaseSet* rawset = new XbaseSet(this);
-        rawset->setObjectPath(path);
-        rawset->ref();
-        if (!rawset->init(phys_path))
+        XbaseSet* rawtable = new XbaseSet(this);
+        rawtable->setObjectPath(path);
+        rawtable->ref();
+        if (!rawtable->init(phys_path))
         {
-            rawset->unref();
+            rawtable->unref();
             return xcm::null;
         }
 
-        set = static_cast<IXdfsSet*>(rawset);
-        rawset->unref();
+        IXdsqlTablePtr table = static_cast<IXdfsSet*>(rawtable);
+        rawtable->unref();
+        return table;
     }
      else if (format == xd::formatTTB) // ttb
     {
-        TtbSet* rawset = new TtbSet(this);
-        rawset->setObjectPath(path);
-        rawset->ref();
-        if (!rawset->init(phys_path))
+        TtbSet* rawtable = new TtbSet(this);
+        rawtable->setObjectPath(path);
+        rawtable->ref();
+        if (!rawtable->init(phys_path))
         {
-            rawset->unref();
+            rawtable->unref();
             return xcm::null;
         }
 
-        set = static_cast<IXdfsSet*>(rawset);
-        rawset->unref();
+        IXdsqlTablePtr table = static_cast<IXdfsSet*>(rawtable);
+        rawtable->unref();
+        return table;
     }
      else if (format == xd::formatTypedDelimitedText) // icsv
     {
         xd::FormatDefinition default_format;
         default_format.format = xd::formatDefault;
 
-        DelimitedTextSet* rawset = new DelimitedTextSet(this);
-        rawset->setObjectPath(path);
-        rawset->ref();
-        if (!rawset->init(phys_path, default_format))
+        DelimitedTextSet* rawtable = new DelimitedTextSet(this);
+        rawtable->ref();
+        rawtable->setObjectPath(path);
+        if (!rawtable->init(phys_path, default_format))
         {
-            rawset->unref();
+            rawtable->unref();
             return xcm::null;
         }
     
-        set = static_cast<IXdfsSet*>(rawset);
-        rawset->unref();
+        IXdsqlTablePtr table = static_cast<IXdfsSet*>(rawtable);
+        rawtable->unref();
+        return table;
     }
      else if (format == xd::formatDelimitedText)      // csv or tsv
     {
-        DelimitedTextSet* rawset = new DelimitedTextSet(this);
-        rawset->setObjectPath(path);
-        rawset->ref();
-        if (!rawset->init(phys_path, *fi))
+        DelimitedTextSet* rawtable = new DelimitedTextSet(this);
+        rawtable->ref();
+        rawtable->setObjectPath(path);
+        if (!rawtable->init(phys_path, *fi))
         {
-            rawset->unref();
+            rawtable->unref();
             return xcm::null;
         }
     
-        set = static_cast<IXdfsSet*>(rawset);
-        rawset->unref();
+        IXdsqlTablePtr table = static_cast<IXdfsSet*>(rawtable);
+        rawtable->unref();
+        return table;
     }       
      else if (format == xd::formatFixedLengthText) // fixed length
     {
-        FixedLengthTextSet* rawset = new FixedLengthTextSet(this);
-        rawset->ref();
-        rawset->setObjectPath(path);
-        if (!rawset->init(phys_path, *fi))
+        FixedLengthTextSet* rawtable = new FixedLengthTextSet(this);
+        rawtable->ref();
+        rawtable->setObjectPath(path);
+        if (!rawtable->init(phys_path, *fi))
         {
-            rawset->unref();
+            rawtable->unref();
             return xcm::null;
         }
 
-        set = static_cast<IXdfsSet*>(rawset);
-        rawset->unref();
+        IXdsqlTablePtr table = static_cast<IXdfsSet*>(rawtable);
+        rawtable->unref();
+        return table;
     }
      else if (format == xd::formatXLSX) // XLSX spreadsheet
     {
-        XlsxSet* rawset = new XlsxSet(this);
-        rawset->setObjectPath(path);
-        rawset->ref();
-        if (!rawset->init(phys_path))
+        XlsxSet* rawtable = new XlsxSet(this);
+        rawtable->ref();
+        rawtable->setObjectPath(path);
+        if (!rawtable->init(phys_path))
         {
-            rawset->unref();
+            rawtable->unref();
             return xcm::null;
         }
 
-        set = static_cast<IXdfsSet*>(rawset);
-        rawset->unref();
+        IXdsqlTablePtr table = static_cast<IXdfsSet*>(rawtable);
+        rawtable->unref();
+        return table;
     }
-
-    return set;
+     else
+    {
+        // unknown format
+        return xcm::null;
+    }
 }
 
 
@@ -2037,7 +1983,6 @@ bool FsDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* 
         xd::FormatDefinition fd;
         if (defaults)
             fd = *defaults;
-        fd.determine_structure = true;
 
         IXdfsSetPtr set = openTable(path, fd);
         if (set.isNull())

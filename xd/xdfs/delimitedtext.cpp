@@ -188,11 +188,6 @@ bool DelimitedTextFile::isUnicode()
     return (m_file.getEncoding() == BufferedTextFile::encodingDefault) ? false : true;
 }
 
-const std::wstring& DelimitedTextFile::getFilename()
-{
-    return m_filename;
-}
-
 void DelimitedTextFile::setDelimiters(const std::wstring& val)
 {
     m_delimiters = val;
