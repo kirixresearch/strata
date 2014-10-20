@@ -450,9 +450,11 @@ bool FsDatabase::getFileFormat(const std::wstring& path,
             // because there are no delimiters)
         
             info->format = xd::formatDelimitedText;
+
+            return res;
         }
 
-        return res;
+        return true;
     }
 
 
