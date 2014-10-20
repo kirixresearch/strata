@@ -96,8 +96,8 @@ public:
     DelimitedTextFile();
     ~DelimitedTextFile();
 
-    bool openFile(const std::wstring& filename,
-                  int encoding = encodingDefault);
+    bool open(const std::wstring& filename, int encoding = encodingDefault);
+    bool open(xd::IStream* stream, int encoding = encodingDefault);
 
     bool createFile(const std::wstring& filename,
                     const std::vector<std::wstring>& fields,
@@ -107,8 +107,8 @@ public:
     void closeFile();
     bool isUnicode();
 
-    //const std::wstring& getFilename();
-    
+    xd::IStream* getStream() { return m_file.getStream(); }
+
     bool bof() const { return m_bof; }
     bool eof() const { return m_eof; }
     
@@ -134,7 +134,7 @@ public:
     bool rewind();
     void skip(int delta);
     void goOffset(xf_off_t offset);
-    double getPos() const;
+    double getPos();
     
 private:
 

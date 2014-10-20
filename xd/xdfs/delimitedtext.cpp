@@ -11,7 +11,7 @@
 #include "xdfs.h"
 #include "delimitedtext.h"
 #include "rawtext.h"
-
+#include "../xdcommon/filestream.h"
 
 
 
@@ -77,7 +77,29 @@ DelimitedTextFile::~DelimitedTextFile()
         closeFile();
 }
 
-bool DelimitedTextFile::openFile(const std::wstring& filename, int encoding)
+
+bool DelimitedTextFile::open(const std::wstring& filename, int encoding)
+{
+    FileStream* f = new FileStream;
+    f->ref();
+    if (!f->open(filename))
+    {
+        f->unref();
+        return false;
+    }
+
+    if (!open(f, encoding))
+    {
+        f->unref();
+        return false;
+    }
+
+    f->unref();
+    return true;
+}
+
+
+bool DelimitedTextFile::open(xd::IStream* stream, int encoding)
 {
     closeFile();
     
@@ -94,9 +116,8 @@ bool DelimitedTextFile::openFile(const std::wstring& filename, int encoding)
             return false;
     }
     
-    if (m_file.openFile(filename, f_encoding))
+    if (m_file.open(stream, f_encoding))
     {
-        m_filename = filename;
         m_eof = false;
         m_bof = false;
         m_row.clear();
@@ -155,7 +176,7 @@ bool DelimitedTextFile::createFile(const std::wstring& filename,
     xf_close(f);
     
     
-    if (!openFile(filename))
+    if (!open(filename))
         return false;
     
     if (fields.size() > 0)
@@ -437,10 +458,10 @@ void DelimitedTextFile::goOffset(xf_off_t offset)
 }
 
 
-double DelimitedTextFile::getPos() const
+double DelimitedTextFile::getPos()
 {
     double offset = (double)m_file.getOffset();
-    double file_size = (double)xf_get_file_size(m_filename);
+    double file_size = (double)m_file.getStream()->getSize();
 
     if (kl::dblcompare(file_size, 0.0) == 0)
         return 0.0;

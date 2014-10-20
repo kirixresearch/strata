@@ -19,8 +19,12 @@
 namespace kl
 {
 
+// determines whether a string is a url or not
 
-// determines whether a string is a file url or not
+bool isUrl(const std::wstring& s);
+
+
+// determines whether a string is a file:// url or not
 
 bool isFileUrl(const std::wstring& s);
 

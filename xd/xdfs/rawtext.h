@@ -37,11 +37,12 @@ public:
     BufferedTextFile();
     ~BufferedTextFile();
     
-    bool openFile(const std::wstring& filename, int encoding = encodingDefault);
-    bool openStream(xd::IStream* stream, int encoding = encodingDefault);
+    bool open(const std::wstring& filename, int encoding = encodingDefault);
+    bool open(xd::IStream* stream, int encoding = encodingDefault);
     bool isOpen() const { return m_stream ? true : false; }
     bool isReadOnly() const { return m_read_only; }
     int getEncoding() const { return m_encoding; }
+    xd::IStream* getStream() { return m_stream; }
     void close();
     void rewind();
     

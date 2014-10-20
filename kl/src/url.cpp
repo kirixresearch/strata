@@ -17,6 +17,12 @@ namespace kl
 {
 
 
+bool isUrl(const std::wstring& s)
+{
+    return (s.find(L"://") != s.npos ? true : false);
+}
+
+
 bool isFileUrl(const std::wstring& s)
 {
     std::wstring temps = s;

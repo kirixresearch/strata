@@ -220,11 +220,10 @@ static int find_max(int a, int b, int c = 0, int d = 0, int e = 0, int f = 0,
                        std::max(i, j)))))))));
 }
 
-static bool determineSetFormatInfo(const std::wstring& path, xd::FormatDefinition* info)
+static bool determineSetFormatInfo(xd::IStream* stream, xd::FormatDefinition* info)
 {
     BufferedTextFile f;
-        
-    if (!f.openFile(path))
+    if (!f.open(stream))
     {
         info->format = xd::formatDefault;
         return false;
@@ -382,6 +381,7 @@ static bool isTextFileExtension(const std::wstring& _ext)
 
 
 bool FsDatabase::getFileFormat(const std::wstring& path,
+                               xd::IStream* stream,
                                xd::FormatDefinition* info,
                                bool discover_delimiters)
 {
@@ -431,19 +431,23 @@ bool FsDatabase::getFileFormat(const std::wstring& path,
         info->format = xd::formatText;
         return true;
     }
-    
-
-    if (ext == L"csv")
+     else if (ext == L"csv")
     {
         info->format = xd::formatDelimitedText;
         info->delimiters = L",";
         
-        
-        if (discover_delimiters)
+        if (stream && discover_delimiters)
         {
+            FileStream* f = NULL;
+            if (!stream)
+            {
+                f = new FileStream;
+                stream = f;
+            }
+
             // the delimiter is almost certainly a comma, but
             // sometimes is something else, such as a semicolon
-            bool res = determineSetFormatInfo(path, info);
+            bool res = determineSetFormatInfo(stream, info);
         
             // because the file extension is csv, don't let determineSetFormatInfo
             // guess anything different (happens sometimes with one-column csv's,
@@ -451,6 +455,7 @@ bool FsDatabase::getFileFormat(const std::wstring& path,
         
             info->format = xd::formatDelimitedText;
 
+            delete f;
             return res;
         }
 
@@ -458,8 +463,8 @@ bool FsDatabase::getFileFormat(const std::wstring& path,
     }
 
 
-    // read some of the file to see if we can determine the format
-    return determineSetFormatInfo(path, info);
+    info->format = xd::formatFixedLengthText;
+    return true;
 }
 
 void FsDatabase::close()
@@ -1328,7 +1333,7 @@ public:
             
         // get the format and cache the result
         xd::FormatDefinition info;
-        db->getFileFormat(phys_path, &info);
+        db->getFileFormat(phys_path, NULL, &info);
         format = info.format;
         
         return format;
@@ -1764,40 +1769,49 @@ IXdsqlTablePtr FsDatabase::openTable(const std::wstring& path, const xd::FormatD
 
 
     // if the file doesn't exist, bail out
-    std::wstring phys_path = makeFullPath(path);
+    std::wstring phys_path;
+    
 
-    if (xf_get_file_exist(phys_path + L".xddef"))
+    if (path.substr(0, 12) == L"streamptr://")
     {
-        if (!loadDefinition(path, &deffi))
+        phys_path = path;
+    }
+     else
+    {
+        phys_path = makeFullPath(path);
+
+        if (xf_get_file_exist(phys_path + L".xddef"))
+        {
+            if (!loadDefinition(path, &deffi))
+                return xcm::null;
+            if (deffi.format != xd::formatDefault)
+                fi = &deffi;
+            phys_path = makeFullPath(deffi.data_path);
+        }
+
+        if (xf_get_file_exist(phys_path + L".ttb"))
+        {
+            phys_path += L".ttb";
+        }
+
+        if (!xf_get_file_exist(phys_path))
             return xcm::null;
-        if (deffi.format != xd::formatDefault)
-            fi = &deffi;
-        phys_path = makeFullPath(deffi.data_path);
     }
 
-    if (xf_get_file_exist(phys_path + L".ttb"))
-    {
-        phys_path += L".ttb";
-    }
 
-    if (!xf_get_file_exist(phys_path))
-        return xcm::null;
-    
-    std::wstring delimiters = L"";
-    
+
+
+        
     int format = fi->format;
-
 
     // if the native format was passed, have the database do it's best to
     // determine the format from the text definition or the file extension
     if (format == xd::formatDefault)
     {
         xd::FormatDefinition info;
-        getFileFormat(phys_path, &info, true /* discover_delimiters */);
+        getFileFormat(phys_path, NULL, &info, false);
         format = info.format;
-        delimiters = info.delimiters;
     }
-
 
 
     // open the set in the appropriate format

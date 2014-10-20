@@ -75,7 +75,7 @@ DelimitedTextIterator::~DelimitedTextIterator()
 
 bool DelimitedTextIterator::init(DelimitedTextSet* set, const std::wstring& columns)
 {
-    if (!m_file.openFile(set->m_file_url))
+    if (!m_file.open(set->m_file_url))
         return false;
 
     m_set = set;

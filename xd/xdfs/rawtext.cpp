@@ -61,7 +61,7 @@ BufferedTextFile::~BufferedTextFile()
     delete[] m_write_buf;
 }
 
-bool BufferedTextFile::openFile(const std::wstring& filename, int encoding)
+bool BufferedTextFile::open(const std::wstring& filename, int encoding)
 {
     if (m_stream)
         close();
@@ -70,18 +70,34 @@ bool BufferedTextFile::openFile(const std::wstring& filename, int encoding)
     if (!f->open(filename))
         return false;
 
+    bool res = open(static_cast<xd::IStream*>(f));
+    if (!res)
+    {
+        delete f;
+        return false;
+    }
 
-    m_stream = f;
-    m_read_only = false;
-    m_encoding = encoding;
-    
+    return true;
+}
+
+
+bool BufferedTextFile::open(xd::IStream* stream, int encoding)
+{
     m_buf = new unsigned char[BUFFER_SIZE];
     if (!m_buf)
         return false;
 
+    m_stream = stream;
+    m_stream->ref();
+    m_read_only = false;
+    m_encoding = encoding;
+    
+
+
     int bom_encoding = encodingDefault;
     unsigned char bom[4];
     memset(bom, 0, 4);
+    m_stream->seek(0, xd::seekSet);
     m_stream->read(bom, 4, NULL);
     if (bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf)
     {
@@ -123,6 +139,8 @@ bool BufferedTextFile::openFile(const std::wstring& filename, int encoding)
     rewind();
     return true;
 }
+
+
 
 void BufferedTextFile::close()
 {

@@ -45,6 +45,7 @@ public:
     // xd::IDatabase
     
     bool getFileFormat(const std::wstring& phys_path,
+                       xd::IStream* stream,
                        xd::FormatDefinition* info,
                        bool discover_delimiters = false);
     std::wstring getTempFileDirectory();

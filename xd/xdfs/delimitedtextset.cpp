@@ -41,12 +41,9 @@ DelimitedTextSet::~DelimitedTextSet()
 
 bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition& def, xd::IJob* job)
 {
-    // enforce url
-    //if (url.find(L"://") == url.npos)
-    //    return false;
-
-    if (!m_file.openFile(url))
+    if (!m_file.open(url))
         return false;
+    m_file_url = url;
 
     // try to load field information from the file header (for example, icsv)
     if (loadConfigurationFromDataFile())
@@ -92,7 +89,7 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
             
             // however, many csv files also use other delimiters, like semicolons
             xd::FormatDefinition info;
-            if (m_database->getFileFormat(url, &info, true /* discover_delimiters */))
+            if (m_database->getFileFormat(url, m_file.getStream(), &info, true /* discover_delimiters */))
             {
                 m_def.delimiters = info.delimiters;
             }
