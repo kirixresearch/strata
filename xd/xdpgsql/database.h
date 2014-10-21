@@ -82,6 +82,8 @@ public:
                        std::wstring& connection_str,
                        std::wstring& remote_path);
 
+    bool detectStreamFormat(const std::wstring& path, xd::FormatDefinition* format_info, const xd::FormatDefinition* defaults = NULL, xd::IJob* job = NULL);
+
     bool createFolder(const std::wstring& path);
     bool renameFile(const std::wstring& path, const std::wstring& new_name);
     bool moveFile(const std::wstring& path, const std::wstring& new_location);

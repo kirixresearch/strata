@@ -3053,7 +3053,13 @@ bool XdnativeDatabase::createTable(const std::wstring& path, const xd::FormatDef
     return true;
 }
 
-bool XdnativeDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* format_info, const xd::FormatDefinition* defaults, xd::IJob* job)
+bool XdnativeDatabase::detectStreamFormat(const std::wstring& path, xd::FormatDefinition* format_info, const xd::FormatDefinition* defaults, xd::IJob* job)
+{
+    return false;
+}
+
+
+bool XdnativeDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* format_info)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
@@ -3063,7 +3069,7 @@ bool XdnativeDatabase::loadDefinition(const std::wstring& path, xd::FormatDefini
         if (db.isNull())
             return false;
 
-        return db->loadDefinition(rpath, format_info, defaults);
+        return db->loadDefinition(rpath, format_info);
     }
 
     return false;

@@ -775,11 +775,8 @@ public:
     virtual bool createStream(const std::wstring& path, const std::wstring& mime_type) = 0;
     virtual bool createTable(const std::wstring& path, const FormatDefinition& format_info) = 0;
 
-    virtual bool loadDefinition(const std::wstring& path, FormatDefinition* format_info, const FormatDefinition* defaults = NULL, IJob* job = NULL)
-                { xd::FormatDefinition ret; ret.columns = describeTable(path);
-                  if (ret.columns.isNull()) return false;
-                  *format_info = ret;
-                  return true; }
+    virtual bool detectStreamFormat(const std::wstring& path, FormatDefinition* format_info, const FormatDefinition* defaults = NULL, IJob* job = NULL) { return false; }
+    virtual bool loadDefinition(const std::wstring& path, FormatDefinition* format_info) { return false; }
     virtual bool saveDefinition(const std::wstring& path, const FormatDefinition& format_info) { return false; }
 
     virtual IDatabasePtr getMountDatabase(const std::wstring& path) = 0;

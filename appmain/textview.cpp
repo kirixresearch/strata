@@ -159,7 +159,7 @@ bool TextViewModel::openFile(const std::wstring& filename)
     if (m_stream.isNull())
         return false;
 
-    m_file_size = 99999; //xf_get_file_size(wfilename);
+    m_file_size = m_stream->getSize();
     m_file_name = filename;
 
     // try to guess the file type

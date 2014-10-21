@@ -72,7 +72,8 @@ public:
 
     IXdsqlTablePtr openTable(const std::wstring& path, const xd::FormatDefinition& format_definition = xd::FormatDefinition(), xd::IJob* job = NULL);
 
-    bool loadDefinition(const std::wstring& path, xd::FormatDefinition* format_info, const xd::FormatDefinition* defaults = NULL, xd::IJob* job = NULL);
+    bool detectStreamFormat(const std::wstring& path, xd::FormatDefinition* format_info, const xd::FormatDefinition* defaults = NULL, xd::IJob* job = NULL);
+    bool loadDefinition(const std::wstring& path, xd::FormatDefinition* format_info);
     bool saveDefinition(const std::wstring& path, const xd::FormatDefinition& format_info);
 
     bool createFolder(const std::wstring& path);

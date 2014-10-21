@@ -740,15 +740,27 @@ bool TextDoc::open(const wxString& filename)
         return false;
 
     // get the format of the file from the database
-    xd::IFileInfoPtr file_info = db->getFileInfo(towstr(filename));
-    if (file_info.isNull())
+    xd::IFileInfoPtr finfo = db->getFileInfo(towstr(filename));
+    if (finfo.isNull())
         return false;
 
-    m_def = xd::FormatDefinition();
-    if (!db->loadDefinition(towstr(filename), &m_def))
-        return false;
+
+
     m_path = filename;
-    m_path_is_datafile = file_info->isMount() ? false : true;
+    m_path_is_datafile = finfo->isMount() ? false : true;
+
+    m_def = xd::FormatDefinition();
+    if (m_path_is_datafile)
+    {
+        if (!db->detectStreamFormat(towstr(filename), &m_def, NULL, NULL))
+            return false;
+    }
+     else
+    {
+        if (!db->loadDefinition(towstr(filename), &m_def))
+            return false;
+    }
+
 
     if (m_def.format == xd::formatDelimitedText)
         m_view = TextDoc::TextDelimitedView;
@@ -1730,6 +1742,7 @@ void TextDoc::onFixedLengthRowWidthSpun(wxSpinEvent& evt)
     m_textview->setRowWidth(m_def.fixed_row_width);
     m_textview->refresh();
 
+    /*
     // repopulate the TransformationDoc from the destination structure
     if (def_changed)
     {
@@ -1745,6 +1758,7 @@ void TextDoc::onFixedLengthRowWidthSpun(wxSpinEvent& evt)
     {
         tabledoc->open(towstr(m_path));
     }
+    */
 
     updateColumnList();
     updateStatusBar();
@@ -1807,8 +1821,9 @@ void TextDoc::onTextDelimitedFieldDelimiterTextEnter(wxCommandEvent& evt)
     defaults.columns.clear();
 
     wxBusyCursor bc;
-    db->loadDefinition(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
 
+    db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
+        
 
     refreshGrid();
     refreshDocuments();
@@ -1844,7 +1859,7 @@ void TextDoc::onTextDelimitedTextQualifierTextEnter(wxCommandEvent& evt)
     defaults.columns.clear();
 
     wxBusyCursor bc;
-    db->loadDefinition(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
+    db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
 
 
     refreshGrid();
@@ -1914,7 +1929,7 @@ void TextDoc::onTextDelimitedFieldDelimiterCombo(wxCommandEvent& evt)
     defaults.columns.clear();
 
     wxBusyCursor bc;
-    db->loadDefinition(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
+    db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
 
     refreshGrid();
     refreshDocuments();
@@ -1957,7 +1972,7 @@ void TextDoc::onTextDelimitedTextQualifierCombo(wxCommandEvent& evt)
     defaults.columns.clear();
 
     wxBusyCursor bc;
-    db->loadDefinition(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
+    db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
 
 
     refreshGrid();
@@ -1991,7 +2006,7 @@ void TextDoc::onTextDelimitedFirstRowFieldNamesChecked(wxCommandEvent& evt)
             defaults.columns.clear();
 
             wxBusyCursor bc;
-            db->loadDefinition(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def_frc, &defaults);
+            db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def_frc, &defaults);
         }
 
         m_def.columns = m_def_frc.columns;
@@ -2005,7 +2020,7 @@ void TextDoc::onTextDelimitedFirstRowFieldNamesChecked(wxCommandEvent& evt)
             defaults.columns.clear();
 
             wxBusyCursor bc;
-            db->loadDefinition(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def_nofrc, &defaults);
+            db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def_nofrc, &defaults);
         }
 
         m_def.columns = m_def_nofrc.columns;

@@ -653,6 +653,29 @@ bool PgsqlDatabase::getMountPoint(const std::wstring& path,
     return false;
 }
 
+bool PgsqlDatabase::detectStreamFormat(const std::wstring& path, xd::FormatDefinition* format_info, const xd::FormatDefinition* defaults, xd::IJob* job)
+{
+    xd::IStreamPtr stream = openStream(path);
+    if (stream.isNull())
+        return false;
+
+    if (m_xdfs.isNull())
+    {
+        xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
+        if (dbmgr.isNull())
+            return xcm::null;
+        m_xdfs = dbmgr->open(L"xdprovider=xdfs");
+        if (m_xdfs.isNull())
+            return xcm::null;            
+    }
+
+    wchar_t buf[80];
+    swprintf(buf, 80, L"streamptr://%p", (void*)static_cast<xd::IStream*>(stream.p));
+
+    return m_xdfs->detectStreamFormat(buf, format_info, defaults, job);
+}
+
+
 bool PgsqlDatabase::createFolder(const std::wstring& path)
 {
     deleteFile(path);

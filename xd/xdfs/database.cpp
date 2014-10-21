@@ -643,6 +643,12 @@ std::wstring FsDatabase::makeFullPath(const std::wstring& _path)
     {
         file_path = kl::urlToFilename(_path);
     }
+
+    if (kl::isUrl(file_path))
+    {
+        // we don't support other urls
+        return _path;
+    }
     
     
     // convert /.appdata to /xdfs/appdata
@@ -2015,31 +2021,45 @@ xd::IIteratorPtr FsDatabase::query(const xd::QueryParams& qp)
 }
 
 
-bool FsDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* def, const xd::FormatDefinition* defaults, xd::IJob* job)
+bool FsDatabase::detectStreamFormat(const std::wstring& path, xd::FormatDefinition* format_definition, const xd::FormatDefinition* defaults, xd::IJob* job)
 {
     std::wstring phys_path = makeFullPath(path);
 
-    if (xf_get_file_exist(phys_path + L".xddef"))
-        return loadDefinitionFromFile(phys_path + L".xddef", def);
+    if (!kl::isUrl(path) && xf_get_file_exist(phys_path + L".xddef"))
+        return loadDefinitionFromFile(phys_path + L".xddef", format_definition);
 
-    if (xf_get_file_exist(phys_path))
+    if (path.substr(0, 12) == L"streamptr://" || xf_get_file_exist(phys_path))
     {
         xd::FormatDefinition fd;
         if (defaults)
             fd = *defaults;
 
-        IXdfsSetPtr set = openTable(path, fd);
+        IXdfsSetPtr set = openTable(path, fd, job);
         if (set.isNull())
             return false;
 
-        set->getFormatDefinition(def);
+        set->getFormatDefinition(format_definition);
         return true;
     }
      else
     {
         return false;
     }
+
+    return false;
 }
+
+
+bool FsDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* def)
+{
+    std::wstring phys_path = makeFullPath(path);
+
+    if (xf_get_file_exist(phys_path + L".xddef"))
+        return loadDefinitionFromFile(phys_path + L".xddef", def);
+         else;
+        return false;
+}
+
 
 bool FsDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefinition& def)
 {
