@@ -1033,10 +1033,12 @@ int HttpServer::request_callback(struct mg_connection* conn)
     const struct mg_request_info* request_info = mg_get_request_info(conn);
     HttpServer* server = (HttpServer*)request_info->user_data;
 
+    /*
     std::string reply;
     reply += "HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nHI";
     mg_write(conn, reply.c_str(), reply.length());
     return 1;
+    */
 
     server->m_sdserv->updateLastAccessTimestamp();
 
