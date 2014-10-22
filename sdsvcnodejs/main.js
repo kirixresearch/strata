@@ -109,7 +109,7 @@ var server = bouncy(function (request, response, bounce)
 	
 		
 	console.log(new Date().toISOString() + " - " + request.url + " HTTP " + request.httpVersion);
-	console.log(JSON.stringify(request.headers,null,4));
+	//console.log(JSON.stringify(request.headers,null,4));
 	
 /*
 	var question = request.url.indexOf('?');

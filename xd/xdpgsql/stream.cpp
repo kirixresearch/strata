@@ -75,6 +75,9 @@ bool PgsqlStream::read(void* buf,
     if (r < 0)
         return false;
 
+    if (r == 0 && read_size > 0)
+        return false;
+
     if (read_count)
         *read_count = (unsigned long)r;
 
