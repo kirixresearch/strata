@@ -222,6 +222,26 @@ static int find_max(int a, int b, int c = 0, int d = 0, int e = 0, int f = 0,
 
 static bool determineSetFormatInfo(xd::IStream* stream, xd::FormatDefinition* info)
 {
+    // first look for magic numbers
+
+    if (stream->seek(0))
+    {
+        unsigned char signature[8] = { 0x50,0x4B,0x03,0x04,0x14,0x00,0x06,0x00 };
+        unsigned char buf[8];
+        
+        memset(buf, 0, 8);
+        if (stream->read(buf, 8, NULL))
+        {
+            if (0 == memcmp(buf, signature, 8))
+            {
+                // XLSX file
+                info->format = xd::formatXLSX;
+                return true;
+            }
+        }
+    }
+
+
     BufferedTextFile f;
     if (!f.open(stream))
     {

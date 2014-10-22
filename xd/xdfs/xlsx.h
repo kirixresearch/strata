@@ -13,7 +13,7 @@
 #define __XDFS_XLSX_H
 
 
-#include <kl/klib.h>
+#include <xd/xd.h>
 #include <map>
 #include <string>
 
@@ -178,11 +178,12 @@ public:
     XlsxFile();
     ~XlsxFile();
 
-    bool openFile(const std::wstring& filename);
-    bool createFile(const std::wstring& filename,
-                    const std::vector<XlsxField>& fields);
+    bool open(const std::wstring& filename);
+    bool open(xd::IStream* stream);
+
+    bool create(const std::wstring& filename, const std::vector<XlsxField>& fields);
     bool isOpen();
-    void closeFile();
+    void close();
 
     const std::wstring& getFilename();
     
@@ -218,17 +219,15 @@ public:
 
 private:
 
-    bool readSharedStrings();
-    bool readSheet();
+    bool readSharedStrings(struct zip* zip);
+    bool readSheet(struct zip* zip);
     bool flush();
 
 private:
 
-    struct zip* m_zip;
-    struct zip_file* m_sheet;
-
     XlsxStore* m_store;
     XlsxStoreRow m_currow;
+    bool m_open;
     std::map<int, std::wstring> m_shared_strings;
 
     std::wstring m_filename;

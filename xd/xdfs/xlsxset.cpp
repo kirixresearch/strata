@@ -31,12 +31,12 @@ XlsxSet::XlsxSet(FsDatabase* database) : XdfsBaseSet(database)
 XlsxSet::~XlsxSet()
 {
     if (m_file.isOpen())
-        m_file.closeFile();
+        m_file.close();
 }
 
 bool XlsxSet::init(const std::wstring& filename)
 {
-    if (!m_file.openFile(filename))
+    if (!m_file.open(filename))
         return false;
 
     // set the set info filename

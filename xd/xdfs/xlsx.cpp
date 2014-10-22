@@ -12,6 +12,9 @@
 #include <ctime>
 #include <kl/utf8.h>
 #include <kl/json.h>
+#include <kl/file.h>
+#include <kl/string.h>
+#include <kl/hex.h>
 #include "xlsx.h"
 #include "../xdcommon/util.h"
 #include "zip.h"
@@ -239,7 +242,6 @@ static XlsxDateTime EMPTY_XLSX_DATE = XlsxDateTime();
 
 XlsxFile::XlsxFile()
 {
-    m_zip = NULL;
     m_store = new XlsxStore;
     m_col_count = 0;
     m_row_count = 0;
@@ -247,36 +249,67 @@ XlsxFile::XlsxFile()
 
 XlsxFile::~XlsxFile()
 {
-    closeFile();
     delete m_store;
 }
 
-bool XlsxFile::openFile(const std::wstring& filename)
+bool XlsxFile::open(const std::wstring& path)
 {
-    //if (!m_file.openFile(filename))
-    //    return false;
+    if (path.substr(0, 12) == L"streamptr://")
+    {
+        unsigned long l = (unsigned long)kl::hexToUint64(path.substr(12));
+        xd::IStream* ptr = (xd::IStream*)l;
+        return open(ptr);
+    }
 
-    m_zip = zip_open(kl::toUtf8(filename), 0, NULL);
-    if (!m_zip)
+    struct zip* zip = zip_open(kl::toUtf8(path), 0, NULL);
+    if (!zip)
         return false;
 
-    if (!readSharedStrings())
+    if (!readSharedStrings(zip))
     {
-        zip_close(m_zip);
+        zip_close(zip);
         return false;
     }
 
-    if (!readSheet())
+    if (!readSheet(zip))
     {
-        zip_close(m_zip);
+        zip_close(zip);
         return false;
     }
 
+    m_open = true;
+    zip_close(zip);
     goRow(1);
 
     return true;
 }
 
+
+bool XlsxFile::open(xd::IStream* stream)
+{
+    std::wstring tempf = xf_get_temp_filename(L"xstrm", L"xlsx");
+
+    xf_file_t file = xf_open(tempf, xfCreate, xfReadWrite, xfShareNone);
+    if (!file)
+    {
+        xf_remove(tempf);
+        return false;
+    }
+
+    stream->seek(0, xd::seekSet);
+    char buf[8192];
+    unsigned long cnt = 0;
+    while (stream->read(buf, 8192, &cnt))
+        xf_write(file, buf, 1, cnt);
+
+    xf_close(file);
+
+    bool res = open(tempf);
+
+    xf_remove(tempf);
+
+    return res;
+}
 
 
 
@@ -323,11 +356,11 @@ static void sharedStringCharData(void* user_data, const XML_Char* s, int len)
 
 
 
-bool XlsxFile::readSharedStrings()
+bool XlsxFile::readSharedStrings(struct zip* zip)
 {
     // read in shared strings file
 
-    struct zip_file* sf = zip_fopen(m_zip, "xl/sharedStrings.xml", 0);
+    struct zip_file* sf = zip_fopen(zip, "xl/sharedStrings.xml", 0);
     if (!sf)
         return false;
 
@@ -457,11 +490,11 @@ static void sheetCharData(void* user_data, const XML_Char* s, int len)
 
 
 
-bool XlsxFile::readSheet()
+bool XlsxFile::readSheet(struct zip* zip)
 {
     // read in sheet file
 
-    struct zip_file* sf = zip_fopen(m_zip, "xl/worksheets/sheet1.xml", 0);
+    struct zip_file* sf = zip_fopen(zip, "xl/worksheets/sheet1.xml", 0);
     if (!sf)
         return false;
     
@@ -513,21 +546,21 @@ bool XlsxFile::readSheet()
 
 
 
-bool XlsxFile::createFile(const std::wstring& filename,
-                          const std::vector<XlsxField>& fields)
+bool XlsxFile::create(const std::wstring& filename, const std::vector<XlsxField>& fields)
 {
     return true;
 }
 
 bool XlsxFile::isOpen()
 {
-    return (m_zip ? true : false);
+    return m_open;
 }
 
-void XlsxFile::closeFile()
+void XlsxFile::close()
 {
-    zip_close(m_zip);
-    m_zip = NULL;
+    delete m_store;
+    m_store = new XlsxStore;
+    m_open = false;
 }
 
 const std::wstring& XlsxFile::getFilename()
