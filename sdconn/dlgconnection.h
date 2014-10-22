@@ -35,6 +35,8 @@ public:
     {
         port = 3306;
         type = xd::dbtypeMySql;
+        first_row_header = true;
+        binary_copy = true;
     }
 
     std::wstring getConnectionString();
@@ -53,6 +55,14 @@ public:
     std::wstring base_path;
 
     std::vector<ConnectionTable> tables;
+
+    bool binary_copy;
+
+    // text format settings
+    std::wstring delimiters;
+    std::wstring text_qualifier;
+    std::wstring date_format_str;
+    bool first_row_header;
 };
 
 
@@ -96,16 +106,19 @@ public:
     void setActivePage(int page);
     Connection& getConnectionInfo() { return m_ci; }
 
+    wxString getFilePanelDirectory();
+    void setFilePanelDirectory(const wxString& path);
+
 public: // signals
     xcm::signal1<DlgConnection*> sigFinished;
 
 private:
 
-
     void populateDataSourceGrid();
     void populateTableListGrid(xd::IDatabasePtr);
     void populateTableListGrid(std::vector<wxString>& paths);
     void showButtons(int mask);
+    void saveDialogData();
 
     // event handlers
     
@@ -133,12 +146,14 @@ private:
     int m_last_page;
     int m_current_page;
     int m_options;
+    bool m_need_text_format;
 
     wxSizer* m_container_sizer;
     wxSizer* m_filepage_sizer;
     wxSizer* m_serverpage_sizer;
     wxSizer* m_datasourcepage_sizer;
     wxSizer* m_tablelistpage_sizer;
+    wxSizer* m_textformatpage_sizer;
 
     wxSizer* m_button_sizer;
 
@@ -161,6 +176,24 @@ private:
     // table list page controls
     kcl::RowSelectionGrid* m_tablelist_grid;
     wxTextCtrl* m_tablelist_basepath;
+
+    // text format page controls
+    wxRadioButton* m_comma_radio;
+    wxRadioButton* m_tab_radio;
+    wxRadioButton* m_semicolon_radio;
+    wxRadioButton* m_pipe_radio;
+    wxRadioButton* m_space_radio;
+    wxRadioButton* m_nodelimiters_radio;
+    wxRadioButton* m_otherdelimiters_radio;
+    wxTextCtrl*    m_otherdelimiters_text;
+    wxRadioButton* m_doublequote_radio;
+    wxRadioButton* m_singlequote_radio;
+    wxRadioButton* m_notextqualifier_radio;
+    wxRadioButton* m_othertextqualifier_radio;
+    wxTextCtrl*    m_othertextqualifier_text;
+    wxCheckBox*    m_firstrowheader_checkbox;
+    wxCheckBox*    m_binarycopy_checkbox;
+
 
     Connection m_ci;
 
