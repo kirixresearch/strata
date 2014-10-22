@@ -23,6 +23,7 @@
     <ClCompile Include="http.cpp" />
     <ClCompile Include="mongoose.c" />
     <ClCompile Include="sdservlib.cpp" />
+    <ClCompile Include="webserv.c" />
     <ClCompile Include="websockets.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +32,7 @@
     <ClInclude Include="mongoose.h" />
     <ClInclude Include="request.h" />
     <ClInclude Include="sdservlib.h" />
+    <ClInclude Include="webserv.h" />
     <ClInclude Include="websockets.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

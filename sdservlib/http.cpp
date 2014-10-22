@@ -13,6 +13,7 @@
 #include "http.h"
 #include "mongoose.h"
 #include "controller.h"
+#include "webserv.h"
 #include <kl/portable.h>
 #include <kl/url.h>
 #include <kl/md5.h>
@@ -1155,6 +1156,10 @@ bool HttpServer::run()
     
     m_sdserv->signalServerReady();
 
+
+    //wsrv_start();
+
+
     int counter = 0;
 
     while (1)
@@ -1179,7 +1184,8 @@ bool HttpServer::run()
             }
         }
     }
-    
+
+
     // causing a hang right now.  Maybe has something to do with keep alive?
     //mg_stop(ctx);
 
