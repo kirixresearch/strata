@@ -9,9 +9,16 @@
  */
 
 
+#include <xd/xd.h>
+#include "../xdcommon/filestream.h"
+#include <kl/file.h>
+#include <kl/portable.h>
+#include <kl/string.h>
+#include <kl/math.h>
+#include <kl/hex.h>
 #include <ctime>
 #include "xbase.h"
-#include <xd/xd.h>
+
 #include "../xdcommon/util.h"
 
 
@@ -22,7 +29,6 @@ static XbaseField EMPTY_XBASE_FIELD = XbaseField();
 static XbaseDate EMPTY_XBASE_DATE = XbaseDate();
 
 
-// -- utility functions --
 
 void checkXbaseField(XbaseField* f)
 {
@@ -107,12 +113,14 @@ void checkXbaseField(XbaseField* f)
 }
 
 
-// -- XbaseFile class implementation --
+
+
+
+
 
 XbaseFile::XbaseFile()
 {
-    m_file = NULL;
-    m_filename = L"";
+    m_stream = NULL;
     
     m_buf = NULL;
     m_buf_rows = 0;
@@ -132,28 +140,27 @@ XbaseFile::XbaseFile()
 
 XbaseFile::~XbaseFile()
 {
-    closeFile();
+    close();
 }
 
-bool XbaseFile::openFile(const std::wstring& filename)
+
+bool XbaseFile::open(xd::IStream* stream)
 {
-    m_file = xf_open(filename, xfOpen, xfReadWrite, xfShareReadWrite);
-    
-    if (m_file == NULL)
-        return false;
+    m_stream = stream;
+    m_stream->ref();
 
-    m_filename = filename;
-
-    // read xBase header
-    if (!xf_seek(m_file, 0, xfSeekSet))
+    // read xbase header
+    if (!m_stream->seek(0))
         return false;
 
     unsigned char buf[32];
 
-    if (xf_read(m_file, buf, 32, 1) != 1)
+    unsigned long read_bytes = 0;
+    m_stream->read(buf, 32, &read_bytes);
+    if (read_bytes != 32)
     {
-        xf_close(m_file);
-        m_file = NULL;
+        m_stream->unref();
+        m_stream = NULL;
         return false;
     }
 
@@ -163,8 +170,8 @@ bool XbaseFile::openFile(const std::wstring& filename)
 
     if (m_row_width == 0)
     {
-        xf_close(m_file);
-        m_file = NULL;
+        m_stream->unref();
+        m_stream = NULL;
         return false;
     }
 
@@ -174,15 +181,17 @@ bool XbaseFile::openFile(const std::wstring& filename)
     size_t col_ordinal = 0;
     while (temp_offset < m_header_len)
     {
-        if (xf_read(m_file, buf, 32, 1) != 1)
+        m_stream->read(buf, 32, &read_bytes);
+
+        if (read_bytes != 32)
         {
             // if we just created the file with no records, the last read
             // of the header will only be 1 byte (not 32), which is fine
             // as long as that byte is a terminator character
             if (buf[0] != 0x0d)
             {
-                xf_close(m_file);
-                m_file = NULL;
+                m_stream->unref();
+                m_stream = NULL;
                 return false;
             }
         }
@@ -217,29 +226,57 @@ bool XbaseFile::openFile(const std::wstring& filename)
     return true;
 }
 
-bool XbaseFile::createFile(const std::wstring& filename,
-                           const std::vector<XbaseField>& fields)
+bool XbaseFile::open(const std::wstring& path)
 {
-    m_file = xf_open(filename, xfOpen, xfRead, xfShareRead);
-
-    // we're trying to create a file which already exists,
-    // so delete the existing one first
-    if (m_file)
+    if (path.substr(0, 12) == L"streamptr://")
     {
-        xf_close(m_file);
-        xf_remove(filename);
+        unsigned long l = (unsigned long)kl::hexToUint64(path.substr(12));
+        xd::IStream* ptr = (xd::IStream*)l;
+        return open(ptr);
     }
-    
-    // create xbase file
-    m_file = xf_open(filename, xfCreate, xfReadWrite, xfShareReadWrite);
-    
-    if (m_file == NULL)
-        return false;
 
-    m_filename = filename;
+    FileStream* f = new FileStream;
+    f->ref();
+    if (!f->open(path))
+    {
+        f->unref();
+        return false;
+    }
+
+    if (!open(f))
+    {
+        f->unref();
+        return false;
+    }
+
+    f->unref();
+    return true;
+}
+
+bool XbaseFile::create(const std::wstring& filename, const std::vector<XbaseField>& fields)
+{
+    if (isOpen())
+        close();
+
+    if (xf_get_file_exist(filename))
+        xf_remove(filename);
+
+    FileStream* f = new FileStream;
+    f->ref();
+
+    if (!f->create(filename))
+    {
+        f->unref();
+        return false;
+    }
+
+    m_stream = f;
+    
+    
 
     unsigned char header[32];
     unsigned char* flds;
+    unsigned long written = 0;
 
     // fill out field array
     //size_t field_arr_len = (fields.size() * 32)+264;  // Visual FoxPro
@@ -326,25 +363,34 @@ bool XbaseFile::createFile(const std::wstring& filename,
     header[29] = 0x03;                          // (windows ansi codepage)
 
     // write out the header info
-    xf_seek(m_file, 0, xfSeekSet);
-    if (xf_write(m_file, header, 32, 1) != 1)
+    m_stream->seek(0);
+
+
+    m_stream->write(header, 32, &written);
+
+    if (written != 32)
     {
         // something went wrong, so close the file,
         // and delete the file we just tried to create
-        closeFile();
-        xf_remove(m_filename);
+        m_stream->unref();
+        m_stream = NULL;
+        xf_remove(filename);
 
         delete[] flds;
         return false;
     }
 
     // write out field array info
-    if (xf_write(m_file, flds, field_arr_len, 1) != 1)
+    written = 0;
+    m_stream->write(flds, field_arr_len, &written);
+
+    if (written == field_arr_len)
     {
         // something went wrong, so close the file,
         // and delete the file we just tried to create
-        closeFile();
-        xf_remove(m_filename);
+        m_stream->unref();
+        m_stream = NULL;
+        xf_remove(filename);
         
         delete[] flds;
         return false;
@@ -353,40 +399,40 @@ bool XbaseFile::createFile(const std::wstring& filename,
     delete[] flds;
     
     // go to the end of the file
-    xf_seek(m_file, -1, xfSeekEnd);
+    m_stream->seek(-1, xd::seekEnd);
 
     // is there an EOF marker?
     char ch = 0;
-    xf_read(m_file, &ch, 1, 1);
+    m_stream->read(&ch, 1, NULL);
 
     if (ch == 0x1a)
     {
-        xf_seek(m_file, -1, xfSeekEnd);
+        m_stream->seek(-1, xd::seekEnd);
     }
      else
     {
-        xf_seek(m_file, 0, xfSeekEnd);
+        m_stream->seek(0, xd::seekEnd);
     }
     
     // write out the file terminator to the file
     unsigned char end_char[1];
     end_char[0] = 0x1a;
-    xf_write(m_file, end_char, 1, 1);
-    
+    m_stream->write(end_char, 1, NULL);
+
     return true;
 }
 
 bool XbaseFile::isOpen()
 {
-    return m_file ? true : false;
+    return m_stream ? true : false;
 }
 
-void XbaseFile::closeFile()
+void XbaseFile::close()
 {
-    if (m_file != NULL)
+    if (m_stream)
     {
-        xf_close(m_file);
-        m_file = NULL;
+        m_stream->unref();
+        m_stream = NULL;
     }
     
     if (m_buf)
@@ -394,11 +440,6 @@ void XbaseFile::closeFile()
         delete[] m_buf;
         m_buf = NULL;
     }
-}
-
-const std::wstring& XbaseFile::getFilename()
-{
-    return m_filename;
 }
 
 size_t XbaseFile::getHeaderLength()
@@ -426,10 +467,8 @@ const XbaseField& XbaseFile::getFieldInfo(const std::string& name)
     std::vector<XbaseField>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if (strcasecmp(name.c_str(), it->name.c_str()) == 0)
-        {
+        if (kl::iequals(name, it->name))
             return (*it);
-        }
     }
     
     return EMPTY_XBASE_FIELD;
@@ -440,10 +479,8 @@ size_t XbaseFile::getFieldIdx(const std::string& name)
     std::vector<XbaseField>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if (strcasecmp(name.c_str(), it->name.c_str()) == 0)
-        {
+        if (kl::iequals(name, it->name))
             return it->ordinal;
-        }
     }
     
     return -1;
@@ -934,15 +971,16 @@ bool XbaseFile::writeRow()
     size_t row_offset = m_row_width*(m_currow_num-1);
     
     // go to the correct location in the file
-    xf_seek(m_file, m_header_len+row_offset, xfSeekSet);
+    m_stream->seek(m_header_len+row_offset, xd::seekSet);
     
     // write out the row data to the file
-    xf_write(m_file, m_buf, 1, m_row_width);
+    unsigned long written = 0;
+    m_stream->write(m_buf, m_row_width, &written);
     
     // clear out the buffer for the next set of rows
     memset(m_buf, ' ', m_buf_maxrows*m_row_width);
     
-    return true;
+    return (written == m_row_width ? true : false);
 }
 
 bool XbaseFile::startInsert()
@@ -994,34 +1032,38 @@ bool XbaseFile::flush()
     if (m_buf_rows == 0)
         return true;
 
+    unsigned long read_bytes;
+    unsigned long written;
+
     // go to the end of the file
-    xf_seek(m_file, -1, xfSeekEnd);
+    m_stream->seek(-1, xd::seekEnd);
 
     // is there an EOF marker?
     char ch = 0;
-    xf_read(m_file, &ch, 1, 1);
+    m_stream->read(&ch, 1, NULL);
 
     if (ch == 0x1a)
     {
-        xf_seek(m_file, -1, xfSeekEnd);
+        m_stream->seek(-1, xd::seekEnd);
     }
      else
     {
-        xf_seek(m_file, 0, xfSeekEnd);
+        m_stream->seek(0, xd::seekEnd);
     }
 
     // write out the row data to the file
-    xf_write(m_file, m_buf, 1, m_buf_rows*m_row_width);
+    m_stream->write(m_buf, m_buf_rows*m_row_width, &written);
     
     // write out the file terminator to the file
     unsigned char end_char[1];
     end_char[0] = 0x1a;
-    xf_write(m_file, end_char, 1, 1);
+    m_stream->write(end_char, 1, NULL);
 
     // update record count in header
     unsigned char buf[4];
-    xf_seek(m_file, 4, xfSeekSet);
-    xf_read(m_file, buf, 4, 1);
+    m_stream->seek(4);
+    m_stream->read(buf, 4, &read_bytes);
+
     unsigned int row_count = buf[0] +
                              (buf[1]*256) +
                              (buf[2]*65536) +
@@ -1031,8 +1073,8 @@ bool XbaseFile::flush()
     buf[1] = (row_count & 0x0000ff00) >> 8;
     buf[2] = (row_count & 0x00ff0000) >> 16;
     buf[3] = (row_count & 0xff000000) >> 24;
-    xf_seek(m_file, 4, xfSeekSet);
-    xf_write(m_file, buf, 4, 1);
+    m_stream->seek(4);
+    m_stream->write(buf, 4, &written);
 
     // clear out the buffer for the next set of rows
     memset(m_buf, ' ', m_buf_maxrows*m_row_width);
@@ -1072,9 +1114,7 @@ void XbaseFile::goRow(size_t row)
     {
         m_buf_maxrows = m_read_ahead;
         if (m_buf)
-        {
             delete[] m_buf;
-        }
         m_buf = new unsigned char[m_buf_maxrows*m_row_width];
         memset(m_buf, ' ', m_buf_maxrows*m_row_width);
     }
@@ -1085,11 +1125,13 @@ void XbaseFile::goRow(size_t row)
     pos *= m_row_width;
     pos += m_header_len;
 
-    xf_seek(m_file, pos, xfSeekSet);
-    xf_read(m_file, m_buf, m_row_width, m_buf_maxrows);
-    m_buf_firstrow = row;
+    unsigned long read_bytes = 0;
+    m_stream->seek(pos);
+    m_stream->read(m_buf, m_row_width * m_buf_maxrows, &read_bytes);
 
+    m_buf_firstrow = row;
     m_currow_ptr = m_buf;
+
     return;
 }
 

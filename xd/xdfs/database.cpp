@@ -223,20 +223,30 @@ static int find_max(int a, int b, int c = 0, int d = 0, int e = 0, int f = 0,
 static bool determineSetFormatInfo(xd::IStream* stream, xd::FormatDefinition* info)
 {
     // first look for magic numbers
+    unsigned char buf[8];
+    memset(buf, 0, 8);
+
 
     if (stream->seek(0))
     {
-        unsigned char signature[8] = { 0x50,0x4B,0x03,0x04,0x14,0x00,0x06,0x00 };
-        unsigned char buf[8];
-        
-        memset(buf, 0, 8);
         if (stream->read(buf, 8, NULL))
         {
-            if (0 == memcmp(buf, signature, 8))
+            // XLSX file
+            unsigned char xlsx[8] = { 0x50,0x4B,0x03,0x04,0x14,0x00,0x06,0x00 };
+            if (0 == memcmp(buf, xlsx, 8))
             {
-                // XLSX file
                 info->format = xd::formatXLSX;
                 return true;
+            }
+
+            if (buf[0] == 0x03 || buf[0] == 0x30 || buf[0] == 0x31 || buf[0] == 0x32 || buf[0] == 0x43 || buf[0] == 0x63 || buf[0] == 0x83 || buf[0] == 0x8B)
+            {
+                // check the MMDD of the YYMMDD signature for valid values
+                if (buf[2] <= 12 && buf[3] <= 31)
+                {
+                    info->format = xd::formatXbase;
+                    return true;
+                }
             }
         }
     }
@@ -2241,9 +2251,9 @@ bool FsDatabase::createTable(const std::wstring& path, const xd::FormatDefinitio
 
         // create the xbase file
         XbaseFile file;
-        if (!file.createFile(phys_path, fields))
+        if (!file.create(phys_path, fields))
             return false;
-        file.closeFile();
+        file.close();
         
         return xf_get_file_exist(phys_path);
     }

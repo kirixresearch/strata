@@ -14,6 +14,7 @@
 #include "xlsxset.h"
 #include "xlsxiterator.h"
 #include "../xdcommon/util.h"
+#include <kl/portable.h>
 
 
 const std::string empty_string = "";
@@ -383,7 +384,7 @@ xd::objhandle_t XlsxIterator::getHandle(const std::wstring& expr)
     std::vector<XlsxDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if (!wcscasecmp((*it)->name.c_str(), expr.c_str()))
+        if (kl::iequals((*it)->name, expr))
             return (xd::objhandle_t)(*it);
     }
 

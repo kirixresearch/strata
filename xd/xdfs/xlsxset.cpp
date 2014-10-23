@@ -246,7 +246,7 @@ xd::objhandle_t XlsxRowInserter::getHandle(const std::wstring& column_name)
     std::vector<XlsxField*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if (strcasecmp(asc_col_name.c_str(), (*it)->name.c_str()) == 0)
+        if (kl::iequals(asc_col_name, (*it)->name))
         {
             return (xd::objhandle_t)(*it);
         }

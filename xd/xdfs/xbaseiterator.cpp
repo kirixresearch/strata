@@ -14,6 +14,7 @@
 #include "xbaseset.h"
 #include "xbaseiterator.h"
 #include "../xdcommon/util.h"
+#include <kl/portable.h>
 
 
 const std::string empty_string = "";
@@ -42,7 +43,7 @@ XbaseIterator::~XbaseIterator()
 
     if (m_file.isOpen())
     {
-        m_file.closeFile();
+        m_file.close();
     }
 
     if (m_set)
@@ -51,10 +52,9 @@ XbaseIterator::~XbaseIterator()
     m_database->unref();
 }
 
-bool XbaseIterator::init(XbaseSet* set,
-                         const std::wstring& filename)
+bool XbaseIterator::init(XbaseSet* set, const std::wstring& filename)
 {
-    if (!m_file.openFile(filename))
+    if (!m_file.open(filename))
         return false;
 
     m_set = set;
@@ -92,11 +92,9 @@ xd::IIteratorPtr XbaseIterator::clone()
 {
     XbaseIterator* iter = new XbaseIterator(m_database);
     
-    if (!iter->init(m_set, m_file.getFilename()))
-    {
+    if (!iter->init(m_set, m_set->m_filename))
         return xcm::null;
-    }
-    
+
     iter->goRow(m_current_row);
     
     return static_cast<xd::IIterator*>(iter);
@@ -391,7 +389,7 @@ xd::objhandle_t XbaseIterator::getHandle(const std::wstring& expr)
     std::vector<XbaseDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if (!wcscasecmp((*it)->name.c_str(), expr.c_str()))
+        if (kl::iequals((*it)->name, expr))
             return (xd::objhandle_t)(*it);
     }
 

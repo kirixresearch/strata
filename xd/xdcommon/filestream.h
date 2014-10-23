@@ -39,7 +39,7 @@ public:
               unsigned long write_size,
               unsigned long* written_count);
         
-    bool seek(long long seek_pos, int whence);
+    bool seek(long long seek_pos, int whence = xd::seekSet);
 
     long long getSize();
         
@@ -50,6 +50,4 @@ private:
 };
 
 
-
 #endif
-

@@ -31,13 +31,15 @@ XbaseSet::XbaseSet(FsDatabase* database) : XdfsBaseSet(database)
 XbaseSet::~XbaseSet()
 {
     if (m_file.isOpen())
-        m_file.closeFile();
+        m_file.close();
 }
 
 bool XbaseSet::init(const std::wstring& filename)
 {
-    if (!m_file.openFile(filename))
+    if (!m_file.open(filename))
         return false;
+    
+    m_filename = filename;
 
     // set the set info filename
     xd::IAttributesPtr attr = m_database->getAttributes();
@@ -54,7 +56,7 @@ std::wstring XbaseSet::getSetId()
     std::wstring set_id;
     
     set_id = L"xdfs:";
-    set_id += xf_get_network_path(m_file.getFilename());
+    set_id += xf_get_network_path(m_filename);
 
 #ifdef WIN32
     // win32's filenames are case-insensitive, so
@@ -133,7 +135,7 @@ xd::IIteratorPtr XbaseSet::createIterator(const std::wstring& columns,
     if (order.empty())
     {
         XbaseIterator* iter = new XbaseIterator(m_database);
-        if (!iter->init(this, m_file.getFilename()))
+        if (!iter->init(this, m_filename))
         {
             delete iter;
             return xcm::null;
@@ -302,10 +304,8 @@ xd::objhandle_t XbaseRowInserter::getHandle(const std::wstring& column_name)
     std::vector<XbaseField*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if (strcasecmp(asc_col_name.c_str(), (*it)->name.c_str()) == 0)
-        {
+        if (kl::iequals(asc_col_name, (*it)->name))
             return (xd::objhandle_t)(*it);
-        }
     }
 
     return (xd::objhandle_t)0;

@@ -13,7 +13,7 @@
 #define __XDFS_XBASE_H
 
 
-#include <kl/klib.h>
+#include <xd/xd.h>
 
 
 // -- XbaseDate struct declaration --
@@ -155,14 +155,12 @@ public:
     XbaseFile();
     ~XbaseFile();
 
-    bool openFile(const std::wstring& filename);
-    bool createFile(const std::wstring& filename,
-                    const std::vector<XbaseField>& fields);
+    bool open(const std::wstring& filename);
+    bool open(xd::IStream* stream);
+    bool create(const std::wstring& filename, const std::vector<XbaseField>& fields);
     bool isOpen();
-    void closeFile();
+    void close();
 
-    const std::wstring& getFilename();
-    
     size_t getHeaderLength();
     size_t getRowWidth();
     size_t getRowCount();
@@ -210,8 +208,7 @@ private:
 
 private:
 
-    xf_file_t m_file;
-    std::wstring m_filename;
+    xd::IStream* m_stream;
 
     unsigned char* m_buf;           // buffer for rows
     size_t m_buf_rows;              // number of rows in m_buf

@@ -63,6 +63,7 @@ class XbaseSet : public XdfsBaseSet,
                  public IXdsqlTable
 {
 friend class FsDatabase;
+friend class XbaseIterator;
 friend class XbaseRowInserter;
 
     XCM_CLASS_NAME("xdfs.XbaseSet")
@@ -104,6 +105,7 @@ public:
 private:
 
     XbaseFile m_file;
+    std::wstring m_filename;
 };
 
 
