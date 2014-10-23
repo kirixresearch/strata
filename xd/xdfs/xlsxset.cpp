@@ -69,6 +69,9 @@ std::wstring XlsxSet::getSetId()
 
 static std::wstring getSpreadsheetColumnName(int idx)
 {
+    if (idx == 0)
+        return L"A";
+
     std::wstring res;
     int n;
 
