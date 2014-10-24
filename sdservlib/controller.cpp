@@ -2137,7 +2137,7 @@ void Controller::apiImportLoad(RequestInfo& req)
     std::wstring handle = req.getValue(L"handle");
     std::wstring target_path = req.getValue(L"target_path");
     std::wstring target_format = req.getValue(L"target_format");
-    std::wstring operation = req.getValue(L"operation");
+    std::wstring target_disposition = req.getValue(L"target_disposition");
 
 
     xd::IDatabasePtr db = getSessionDatabase(req);
@@ -2190,7 +2190,7 @@ void Controller::apiImportLoad(RequestInfo& req)
         object["destination_connection"] = L"Xdprovider=xdfs";
         object["source_path"] = handle;
         object["destination_path"] = kl::filenameToUrl(datafile);
-        object["overwrite"] = (operation == L"append" ? false : true);
+        object["overwrite"] = (target_disposition == L"append" ? false : true);
 
         job->setParameters(params.toString());
         job->setDatabase(db);
