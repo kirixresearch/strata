@@ -223,13 +223,13 @@ static int find_max(int a, int b, int c = 0, int d = 0, int e = 0, int f = 0,
 static bool determineSetFormatInfo(xd::IStream* stream, xd::FormatDefinition* info)
 {
     // first look for magic numbers
-    unsigned char buf[8];
-    memset(buf, 0, 8);
+    unsigned char buf[64];
+    memset(buf, 0, sizeof(buf));
 
 
     if (stream->seek(0))
     {
-        if (stream->read(buf, 8, NULL))
+        if (stream->read(buf, 64, NULL))
         {
             // XLSX file
             unsigned char xlsx[8] = { 0x50,0x4B,0x03,0x04,0x14,0x00,0x06,0x00 };
@@ -239,13 +239,21 @@ static bool determineSetFormatInfo(xd::IStream* stream, xd::FormatDefinition* in
                 return true;
             }
 
+            // xbase files -- first check for one of the possible file signatures
             if (buf[0] == 0x03 || buf[0] == 0x30 || buf[0] == 0x31 || buf[0] == 0x32 || buf[0] == 0x43 || buf[0] == 0x63 || buf[0] == 0x83 || buf[0] == 0x8B)
             {
-                // check the MMDD of the YYMMDD signature for valid values
-                if (buf[2] <= 12 && buf[3] <= 31)
+                if (buf[2] <= 12 && buf[3] <= 31) // check the MMDD of the YYMMDD signature for valid values
                 {
-                    info->format = xd::formatXbase;
-                    return true;
+                    // look at the first field entry and make sure it conforms to the dbf format
+                    if (strchr("BCDFGILMNTY@+0", buf[43]))
+                    {
+                        // check to make sure field decimals byte is < 20
+                        if (buf[49] <= 20)
+                        {
+                            info->format = xd::formatXbase;
+                            return true;
+                        }
+                    }
                 }
             }
         }

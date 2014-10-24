@@ -211,6 +211,8 @@ bool XbaseFile::open(xd::IStream* stream)
         field.offset = row_offset;
         field.ordinal = col_ordinal++;
 
+        kl::makeUpper(field.name);
+
         row_offset += int(buf[16]);
         temp_offset += 32;
 
@@ -304,6 +306,7 @@ bool XbaseFile::create(const std::wstring& filename, const std::vector<XbaseFiel
         checkXbaseField(&f);
         
         // field name
+        kl::makeUpper(f.name);
         strncpy((char*)entry_ptr, f.name.c_str(), 10);
         entry_ptr[10] = 0;
 
