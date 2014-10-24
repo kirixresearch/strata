@@ -239,6 +239,13 @@ static bool determineSetFormatInfo(xd::IStream* stream, xd::FormatDefinition* in
                 return true;
             }
 
+            // ttb files
+            if (buf[0] == 0x99 && buf[1] == 0x22 && buf[2] == 0xaa && buf[3] == 0xdd)
+            {
+                info->format = xd::formatTTB;
+                return true;
+            }
+
             // xbase files -- first check for one of the possible file signatures
             if (buf[0] == 0x03 || buf[0] == 0x30 || buf[0] == 0x31 || buf[0] == 0x32 || buf[0] == 0x43 || buf[0] == 0x63 || buf[0] == 0x83 || buf[0] == 0x8B)
             {
