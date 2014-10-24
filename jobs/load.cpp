@@ -272,7 +272,7 @@ int LoadJob::runJob()
 
 
         
-        // if 'append' is not set or is false, drop the destination table
+
         if (object.childExists("overwrite") && object.getChild("overwrite").getBoolean())
         {
             destination_db->deleteFile(destination_path);
