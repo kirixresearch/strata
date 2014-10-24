@@ -267,6 +267,14 @@ static bool determineSetFormatInfo(xd::IStream* stream, xd::FormatDefinition* in
     }
 
 
+    if (false)
+    {
+        info->format = xd::formatFixedLengthText;
+        info->encoding = xd::encodingEBCDIC;
+        return true;
+    }
+
+
     BufferedTextFile f;
     if (!f.open(stream))
     {
