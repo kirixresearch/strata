@@ -123,7 +123,8 @@ public:
         if (!m_xd_jobinfo->getCancelAllowed())
             return false;
 
-        m_xd_jobinfo->xdjob->cancel();
+        if (m_xd_jobinfo->xdjob.isOk())
+            m_xd_jobinfo->xdjob->cancel();
 
         return JobBase::cancel();
     }

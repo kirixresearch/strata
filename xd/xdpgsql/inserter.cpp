@@ -75,14 +75,15 @@ bool PgsqlRowInserter::putString(xd::objhandle_t column_handle,
 {
     PgsqlInsertFieldData* f = (PgsqlInsertFieldData*)column_handle;
     if (!f)
-    {
         return false;
-    }
 
-    if (value.length() > f->m_width)
+    if ((int)value.length() > f->m_width)
         f->m_value = kl::towstring(value.substr(0,f->m_width));
          else
         f->m_value = kl::towstring(value);
+
+    if (f->m_value.find(L'\\') != std::wstring::npos)
+        kl::replaceStr(f->m_value, L"\\", L"\\\\");
 
     return true;
 }
@@ -92,14 +93,15 @@ bool PgsqlRowInserter::putWideString(xd::objhandle_t column_handle,
 {
     PgsqlInsertFieldData* f = (PgsqlInsertFieldData*)column_handle;
     if (!f)
-    {
         return false;
-    }
 
-    if (value.length() > f->m_width)
+    if ((int)value.length() > f->m_width)
         f->m_value = value.substr(0,f->m_width);
          else
         f->m_value = value;
+
+    if (f->m_value.find(L'\\') != std::wstring::npos)
+        kl::replaceStr(f->m_value, L"\\", L"\\\\");
 
     return true;
 }
@@ -109,9 +111,7 @@ bool PgsqlRowInserter::putDouble(xd::objhandle_t column_handle,
 {
     PgsqlInsertFieldData* f = (PgsqlInsertFieldData*)column_handle;
     if (!f)
-    {
         return false;
-    }
 
     wchar_t buf[64];
     swprintf(buf, 63, L"%.*f", f->m_scale, value);
@@ -125,9 +125,7 @@ bool PgsqlRowInserter::putInteger(xd::objhandle_t column_handle,
 {
     PgsqlInsertFieldData* f = (PgsqlInsertFieldData*)column_handle;
     if (!f)
-    {
         return false;
-    }
 
     wchar_t buf[64];
     swprintf(buf, 63, L"%d", value);
@@ -141,10 +139,7 @@ bool PgsqlRowInserter::putBoolean(xd::objhandle_t column_handle,
 {
     PgsqlInsertFieldData* f = (PgsqlInsertFieldData*)column_handle;
     if (!f)
-    {
         return false;
-    }
-
 
     f->m_value = value ? 'T' : 'F';
 
