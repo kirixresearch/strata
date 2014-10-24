@@ -2190,7 +2190,7 @@ void Controller::apiImportLoad(RequestInfo& req)
         object["destination_connection"] = L"Xdprovider=xdfs";
         object["source_path"] = handle;
         object["destination_path"] = kl::filenameToUrl(datafile);
-        object["overwrite"] = (target_disposition == L"append" ? false : true);
+        object["overwrite"] = false;
 
         job->setParameters(params.toString());
         job->setDatabase(db);
@@ -2219,7 +2219,7 @@ void Controller::apiImportLoad(RequestInfo& req)
         object["destination_connection"] = m_connection_string;
         object["source_path"] = datafile;
         object["destination_path"] = target_path;
-        object["overwrite"] = true;
+        object["overwrite"] = (target_disposition == L"append" ? false : true);
 
         job->setParameters(params.toString());
         job->setDatabase(db);
