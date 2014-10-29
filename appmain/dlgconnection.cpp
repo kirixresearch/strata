@@ -956,7 +956,9 @@ void DlgConnection::onForward(wxCommandEvent& evt)
                         continue; // known file type
                     if (kl::icontains(wstr, L".dbf"))
                         continue; // known file type
-
+                    if (kl::icontains(wstr, L".xlsx"))
+                        continue; // known file type
+                    
                     m_need_text_format = true;
                     break;
                 }
@@ -1130,32 +1132,41 @@ void DlgConnection::saveDialogData()
 
 
     // text settings page
+    if (m_need_text_format)
+    {
+        if (m_comma_radio->GetValue())
+            m_ci.delimiters = L",";
+        else if (m_tab_radio->GetValue())
+            m_ci.delimiters = L"\t";
+        else if (m_semicolon_radio->GetValue())
+            m_ci.delimiters = L";";
+        else if (m_pipe_radio->GetValue())
+            m_ci.delimiters = L"|";
+        else if (m_space_radio->GetValue())
+            m_ci.delimiters = L" ";
+        else if (m_nodelimiters_radio->GetValue())
+            m_ci.delimiters = L"";
+        else
+            m_ci.delimiters = m_otherdelimiters_text->GetValue();
 
-    if (m_comma_radio->GetValue())
-        m_ci.delimiters = L",";
-    else if (m_tab_radio->GetValue())
-        m_ci.delimiters = L"\t";
-    else if (m_semicolon_radio->GetValue())
-        m_ci.delimiters = L";";
-    else if (m_pipe_radio->GetValue())
-        m_ci.delimiters = L"|";
-    else if (m_space_radio->GetValue())
-        m_ci.delimiters = L" ";
-    else if (m_nodelimiters_radio->GetValue())
+        if (m_doublequote_radio->GetValue())
+            m_ci.text_qualifier = L"\"";
+        else if (m_singlequote_radio->GetValue())
+            m_ci.text_qualifier = L"'";
+        else if (m_notextqualifier_radio->GetValue())
+            m_ci.text_qualifier = L"";
+        else if (m_othertextqualifier_radio->GetValue())
+            m_ci.text_qualifier = m_othertextqualifier_text->GetValue();
+
+        m_ci.first_row_header = m_firstrowheader_checkbox->GetValue();
+    }
+     else
+    {
         m_ci.delimiters = L"";
-    else
-        m_ci.delimiters = m_otherdelimiters_text->GetValue();
-
-    if (m_doublequote_radio->GetValue())
-        m_ci.text_qualifier = L"\"";
-    else if (m_singlequote_radio->GetValue())
-        m_ci.text_qualifier = L"'";
-    else if (m_notextqualifier_radio->GetValue())
         m_ci.text_qualifier = L"";
-    else if (m_othertextqualifier_radio->GetValue())
-        m_ci.text_qualifier = m_othertextqualifier_text->GetValue();
-
-    m_ci.first_row_header = m_firstrowheader_checkbox->GetValue();
+        m_ci.date_format_str = L"";
+        m_ci.first_row_header = false;
+    }
 }
 
 void DlgConnection::onFilePanelItemActivated(kcl::FilePanelEvent& evt)
