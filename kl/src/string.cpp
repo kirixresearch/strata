@@ -246,8 +246,9 @@ std::wstring getUniqueString()
     long long tt = (long long)time(NULL);
     long long cc = (long long)clock();
     int i;
-    char buf[32];
-    snprintf(buf, 32, "%lld,%lld,%d,%d", tt, cc, rand(), counter);
+    char buf[64];
+    snprintf(buf, 64, "%lld,%lld,%d,%d", tt, cc, rand(), counter);
+    buf[63] = 0;
 
     kl::md5result_t mres;
     kl::md5((const unsigned char*)buf, strlen(buf), &mres);
@@ -259,17 +260,18 @@ std::wstring getUniqueString()
         bits |= std::bitset<128>((int)mres.buf[i]);
     }
 
-    std::wstring res(16, ' ');
+    #define UNIQUE_STRING_LEN 20
+    std::wstring res(UNIQUE_STRING_LEN, ' ');
 
     const wchar_t* c = L"0123456789abcdfghjklmnpqrstvwxyz";
-    for (i = 0; i < 20; ++i)
+    for (i = 0; i < UNIQUE_STRING_LEN; ++i)
     {
         // get five bits
         std::bitset<128> piece = (bits & std::bitset<128>(0x1f));
         bits >>= 5;
 
         unsigned long v = piece.to_ulong();
-        res[15-i] = *(c+v);
+        res[UNIQUE_STRING_LEN-i-1] = *(c+v);
     }
 
     // make sure first digit is a letter; this is good for database identifiers, etc
