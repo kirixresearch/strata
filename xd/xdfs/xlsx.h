@@ -185,6 +185,8 @@ public:
     bool isOpen();
     void close();
 
+    void tableize();  // read xlsx as if it were a table; (check for header row, skip blank rows, etc)
+
     const std::wstring& getFilename();
     
     size_t getRowCount();
