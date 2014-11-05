@@ -24,6 +24,7 @@
 #include "toolbars.h"
 #include "dlgdatabasefile.h"
 #include "dlgprojectmgr.h"
+#include "importtemplate.h"
 #include "dbdoc.h"
 #include "structuredoc.h"
 #include "dlglinkprops.h"
@@ -1417,8 +1418,6 @@ void DbDoc::onCreateTable(wxCommandEvent& evt)
 
 void DbDoc::onImportData(wxCommandEvent& evt)
 {
-    // TODO: reimplement
-/*
     IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     if (items->size() != 1)
@@ -1434,7 +1433,6 @@ void DbDoc::onImportData(wxCommandEvent& evt)
     info.base_path = getFsItemPath(item);
 
     g_app->getAppController()->showImportWizard(info);
-*/
 }
 
 void DbDoc::onExportData(wxCommandEvent& evt)

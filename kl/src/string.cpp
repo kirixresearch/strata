@@ -12,10 +12,13 @@
 #include "kl/string.h"
 #include "kl/math.h"
 #include "kl/portable.h"
+#include "kl/thread.h"
+#include "kl/md5.h"
 #include <cstdio>
 #include <cstdarg>
 #include <ctime>
 #include <cstring>
+#include <bitset>
 
 namespace kl
 {
@@ -227,29 +230,53 @@ std::wstring formattedNumber(double d, int dec_places)
 
 // this function is also used for creating unique strings;
 // the current length of the strings this function returns
-// is presently set at 32
+// is presently set at 20
+
+static int g_unique_string_counter = 0;
+kl::mutex g_unique_string_counter_mutex;
+
+
 
 std::wstring getUniqueString()
 {
+    g_unique_string_counter_mutex.lock();
+    int counter = ++g_unique_string_counter;
+    g_unique_string_counter_mutex.unlock();
+
+    long long tt = (long long)time(NULL);
+    long long cc = (long long)clock();
     int i;
-    wchar_t temp[33];
-    memset(temp, 0, 33 * sizeof(wchar_t));
-    
-    for (i = 0; i < 8; i++)
+    char buf[32];
+    snprintf(buf, 32, "%lld,%lld,%d,%d", tt, cc, rand(), counter);
+
+    kl::md5result_t mres;
+    kl::md5((const unsigned char*)buf, strlen(buf), &mres);
+
+    std::bitset<128> bits;
+    for (i = 0; i < 16; ++i)
     {
-        temp[i] = L'a' + (rand() % 26);
+        bits <<= 8;
+        bits |= std::bitset<128>((int)mres.buf[i]);
     }
 
-    unsigned int t = (unsigned int)time(NULL);
-    unsigned int div = 308915776;    // 26^6;
-    for (i = 8; i < 15; i++)
+    std::wstring res(16, ' ');
+
+    const wchar_t* c = L"0123456789abcdfghjklmnpqrstvwxyz";
+    for (i = 0; i < 20; ++i)
     {
-        temp[i] = L'a' + (t/div);
-        t -= ((t/div)*div);
-        div /= 26;
+        // get five bits
+        std::bitset<128> piece = (bits & std::bitset<128>(0x1f));
+        bits >>= 5;
+
+        unsigned long v = piece.to_ulong();
+        res[15-i] = *(c+v);
     }
 
-    return temp;
+    // make sure first digit is a letter; this is good for database identifiers, etc
+    if (::iswdigit(res[0]))
+        res[0] = c[(res[0] - L'0') + 10];
+
+    return res;
 }
 
 size_t stringFrequency(const std::wstring& haystack, wchar_t needle)
