@@ -1445,8 +1445,10 @@ bool PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& m
 
     Oid oid = lo_creat(conn, 0);
     if (oid < 0)
+    {
+        closeConnection(conn);
         return false;
-
+    }
 
     sql = L"INSERT INTO %tbl% (xdpgsql_stream, mime_type, blob_id) VALUES ('', '%mimetype%', %oid%)";
     kl::replaceStr(sql, L"%tbl%", tbl);
