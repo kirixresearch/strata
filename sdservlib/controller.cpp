@@ -1761,7 +1761,7 @@ void Controller::apiAlter(RequestInfo& req)
     
     std::wstring path = req.getValue(L"path");
     std::wstring s_actions = req.getValue(L"actions");
-    
+    std::wstring handle = req.getValue(L"handle");
     
     xd::Structure structure = db->describeTable(path);
     if (structure.isNull())
@@ -1836,9 +1836,22 @@ void Controller::apiAlter(RequestInfo& req)
 
     }
     
-    
-    bool res = db->modifyStructure(path, mod_params, NULL);
-    
+    bool res = false;
+
+    if (handle.length() > 0)
+    {
+        // iterator handle
+        SessionQueryResult* so = (SessionQueryResult*)getServerSessionObject(handle, "SessionQueryResult");
+        if (so && so->iter.isOk())
+        {
+            res = so->iter->modifyStructure(mod_params, NULL);
+        }
+    }
+     else
+    {
+        res = db->modifyStructure(path, mod_params, NULL);
+    }
+     
     // return success/failure to caller
     kl::JsonNode response;
     response["success"].setBoolean(res);
