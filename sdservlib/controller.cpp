@@ -1747,19 +1747,13 @@ void Controller::apiAlter(RequestInfo& req)
     }
 
     
-    if (!req.getValueExists(L"path"))
-    {
-        returnApiError(req, "Missing path parameter");
-        return;
-    }
-    
     if (!req.getValueExists(L"actions"))
     {
         returnApiError(req, "Missing actions parameter");
         return;
     }
     
-    std::wstring path = req.getValue(L"path");
+    std::wstring path = req.getURI();
     std::wstring s_actions = req.getValue(L"actions");
     std::wstring handle = req.getValue(L"handle");
     
