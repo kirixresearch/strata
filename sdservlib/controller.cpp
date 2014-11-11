@@ -60,7 +60,10 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
     time_t t = time(NULL);
     
     if (t-last_time >= 2) // if more than two seconds have passed, add a blank line
+    {
         printf("\n");
+        fflush(stdout);
+    }
     last_time = t;
     
 
@@ -97,6 +100,7 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
     {
         end = clock();
         printf("%5d %4dms\n", req.getContentLength(), (end-start));
+        fflush(stdout);
         return;
     }
 
@@ -134,6 +138,7 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
 
     end = clock();
     printf("%5d %4dms\n", req.getContentLength(), (end-start));
+    fflush(stdout);
 
 }
 
@@ -1756,14 +1761,35 @@ void Controller::apiAlter(RequestInfo& req)
     std::wstring path = req.getURI();
     std::wstring s_actions = req.getValue(L"actions");
     std::wstring handle = req.getValue(L"handle");
-    
-    xd::Structure structure = db->describeTable(path);
-    if (structure.isNull())
+    SessionQueryResult* so = NULL;
+
+    if (handle.length() > 0)
     {
-        returnApiError(req, "Could not access table");
-        return;
+        // iterator handle
+        so = (SessionQueryResult*)getServerSessionObject(handle, "SessionQueryResult");
+        if (!so)
+        {
+            returnApiError(req, "Invalid handle");
+            return;
+        }
     }
+
+    xd::Structure structure;
     
+    if (so)
+    {
+        structure = so->iter->getStructure();
+    }
+     else
+    {
+        structure = db->describeTable(path);
+        if (structure.isNull())
+        {
+            returnApiError(req, "Could not access table");
+            return;
+        }
+    }
+
 
     
     xd::StructureModify mod_params;
@@ -1832,14 +1858,11 @@ void Controller::apiAlter(RequestInfo& req)
     
     bool res = false;
 
-    if (handle.length() > 0)
+    if (so)
     {
         // iterator handle
-        SessionQueryResult* so = (SessionQueryResult*)getServerSessionObject(handle, "SessionQueryResult");
-        if (so && so->iter.isOk())
-        {
-            res = so->iter->modifyStructure(mod_params, NULL);
-        }
+        res = so->iter->modifyStructure(mod_params, NULL);
+        so->columns.clear();
     }
      else
     {
