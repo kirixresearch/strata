@@ -1529,7 +1529,6 @@ xd::IIteratorPtr PgsqlDatabase::query(const xd::QueryParams& qp)
     }
 
 
-
     query = L"SELECT * FROM ";
     query += pgsqlQuoteIdentifierIfNecessary(tbl);
 
@@ -1550,11 +1549,12 @@ xd::IIteratorPtr PgsqlDatabase::query(const xd::QueryParams& qp)
     // create an iterator based on our select statement
     PgsqlIterator* iter = new PgsqlIterator(this);
 
-    if (!iter->init(query, conn))
+    if (!iter->init(query, &qp.format, conn))
     {
         delete iter;
         return xcm::null;
     }
+    
 
     return static_cast<xd::IIterator*>(iter);
 }

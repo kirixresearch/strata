@@ -86,7 +86,7 @@ PgsqlIterator::~PgsqlIterator()
         m_database->unref();
 }
 
-bool PgsqlIterator::init(const std::wstring& query, PGconn* conn_to_use)
+bool PgsqlIterator::init(const std::wstring& query, const xd::FormatDefinition* fd, PGconn* conn_to_use)
 {
     bool use_server_side_cursor = true;
 
@@ -169,7 +169,7 @@ bool PgsqlIterator::init(const std::wstring& query, PGconn* conn_to_use)
 
 
 
-        return init(conn, res);
+        return init(conn, res, fd);
     } 
     
     if (!use_server_side_cursor)
@@ -185,7 +185,7 @@ bool PgsqlIterator::init(const std::wstring& query, PGconn* conn_to_use)
             return false;
         }
 
-        if (!init(conn, res))
+        if (!init(conn, res, fd))
             return false;
     }
 
@@ -193,7 +193,7 @@ bool PgsqlIterator::init(const std::wstring& query, PGconn* conn_to_use)
 }
 
 
-bool PgsqlIterator::init(PGconn* conn, PGresult* res)
+bool PgsqlIterator::init(PGconn* conn, PGresult* res, const xd::FormatDefinition* fd)
 {
     m_conn = conn;
     m_res = res;
@@ -251,7 +251,24 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res)
     }
 
 
-    refreshStructure();
+    if (fd && fd->columns.size() > 0)
+    {
+        std::vector<xd::ColumnInfo>::const_iterator it;
+
+        for (it = fd->columns.cbegin(); it != fd->columns.cend(); ++it)
+        {
+            PgsqlDataAccessInfo* dai = new PgsqlDataAccessInfo;
+            dai->name = it->name;
+            dai->type = it->type;
+            dai->width = it->width;
+            dai->scale = it->scale;
+            dai->ordinal = m_fields.size();
+            dai->expr_text = it->expression;
+            dai->expr = parse(it->expression);
+                
+            m_fields.push_back(dai);
+        }
+    }
     
     return true;
 }
