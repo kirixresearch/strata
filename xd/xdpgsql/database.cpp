@@ -509,17 +509,7 @@ PGconn* PgsqlDatabase::createConnection()
 {
     m_error.clearError();
 
-    std::wstring connstr;
-    connstr += L"host='" + m_server + L"'";
-
-    int port = m_port; if (port == 0) port = 5432;
-    connstr += L" port='" + kl::itowstring(port) + L"'";
-
-    connstr += L" dbname='" + m_database + L"'";
-    connstr += L" user='" + m_username + L"'";
-    connstr += L" password='" + m_password + L"'";
-
-    PGconn* conn = PQconnectdb(kl::toUtf8(connstr));
+    PGconn* conn = PQconnectdb(m_pgsql_connection_str.c_str());
     if (!conn)
         return NULL;
 
@@ -562,9 +552,26 @@ bool PgsqlDatabase::open(const std::wstring& server,
     m_username = username;
     m_password = password;
 
+
+    // build connection string
+    std::wstring connstr;
+    connstr += L"host='" + m_server + L"'";
+
+    int portint = m_port; if (portint== 0) portint = 5432;
+    connstr += L" port='" + kl::itowstring(portint) + L"'";
+
+    connstr += L" dbname='" + m_database + L"'";
+    connstr += L" user='" + m_username + L"'";
+    connstr += L" password='" + m_password + L"'";
+
+    m_pgsql_connection_str = kl::toUtf8(connstr);
+
+
+    // test connection
     PGconn* conn = createConnection();
     if (!conn)
     {
+        m_pgsql_connection_str = "";
         return false;
     }
 

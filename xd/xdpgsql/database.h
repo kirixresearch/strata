@@ -149,6 +149,7 @@ private:
     std::wstring m_username;
     std::wstring m_password;
     std::wstring m_path;
+    std::string m_pgsql_connection_str;
     
     kl::mutex m_jobs_mutex;
     int m_last_job;
