@@ -82,9 +82,9 @@ bool DelimitedTextIterator::init(DelimitedTextSet* set, const std::wstring& colu
     m_set->ref();
     m_columns = columns;
         
-    m_file.setDelimiters(m_set->m_def.delimiters);
-    m_file.setLineDelimiters(m_set->m_def.line_delimiters);
-    m_file.setTextQualifiers(m_set->m_def.text_qualifiers);
+    m_file.setDelimiters(m_set->m_def.delimiter);
+    m_file.setLineDelimiters(m_set->m_def.line_delimiter);
+    m_file.setTextQualifiers(m_set->m_def.text_qualifier);
 
     if (m_set->m_def.header_row)
     {

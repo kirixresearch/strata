@@ -36,12 +36,12 @@ std::wstring saveDefinitionToString(const xd::FormatDefinition& def)
     switch (def.format)
     {
         default:
-        case xd::formatDefault:            root["format"] = "default";            break;
-        case xd::formatXbase:              root["format"] = "xbase";              break;
-        case xd::formatDelimitedText:      root["format"] = "delimitedtext";      break;
-        case xd::formatFixedLengthText:    root["format"] = "fixedlengthtext";    break;
-        case xd::formatText:               root["format"] = "text";               break;
-        case xd::formatTypedDelimitedText: root["format"] = "typeddelimitedtext"; break;
+        case xd::formatDefault:            root["format"] = "default";              break;
+        case xd::formatXbase:              root["format"] = "xbase";                break;
+        case xd::formatDelimitedText:      root["format"] = "delimited_text";       break;
+        case xd::formatFixedLengthText:    root["format"] = "fixed_length_text";    break;
+        case xd::formatText:               root["format"] = "text";                 break;
+        case xd::formatTypedDelimitedText: root["format"] = "typed_delimited_text"; break;
     }
 
     switch (def.encoding)
@@ -68,9 +68,9 @@ std::wstring saveDefinitionToString(const xd::FormatDefinition& def)
     if (def.format == xd::formatDelimitedText)
     {
         kl::JsonNode delimitedtext = root["delimitedtext"];
-        delimitedtext["text_qualifiers"] = def.text_qualifiers;
-        delimitedtext["delimiters"] = def.delimiters;
-        delimitedtext["line_delimiters"] = def.line_delimiters;
+        delimitedtext["text_qualifier"] = def.text_qualifier;
+        delimitedtext["delimiter"] = def.delimiter;
+        delimitedtext["line_delimiter"] = def.line_delimiter;
         delimitedtext["header_row"].setBoolean(def.header_row);
     }
 
@@ -130,34 +130,34 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def
     def->object_id = root["object_id"];
 
     std::wstring object_type = root["object_type"];
-         if (object_type == L"folder")               def->object_type = xd::filetypeFolder;
-    else if (object_type == L"stream")               def->object_type = xd::filetypeStream;
-    else if (object_type == L"table")                def->object_type = xd::filetypeTable;
-    else                                             def->object_type = xd::filetypeTable;
+         if (object_type == L"folder")                def->object_type = xd::filetypeFolder;
+    else if (object_type == L"stream")                def->object_type = xd::filetypeStream;
+    else if (object_type == L"table")                 def->object_type = xd::filetypeTable;
+    else                                              def->object_type = xd::filetypeTable;
 
     std::wstring format_str = root["format"];
-         if (format_str == L"default")               def->format = xd::formatDefault;
-    else if (format_str == L"xbase")                 def->format = xd::formatXbase;
-    else if (format_str == L"delimitedtext")         def->format = xd::formatDelimitedText;
-    else if (format_str == L"fixedlengthtext")       def->format = xd::formatFixedLengthText;
-    else if (format_str == L"text")                  def->format = xd::formatText;
-    else if (format_str == L"typeddelimitedtext")    def->format = xd::formatTypedDelimitedText;
-    else                                             def->format = xd::formatDefault;
+         if (format_str == L"default")                def->format = xd::formatDefault;
+    else if (format_str == L"xbase")                  def->format = xd::formatXbase;
+    else if (format_str == L"delimited_text")         def->format = xd::formatDelimitedText;
+    else if (format_str == L"fixed_length_text")      def->format = xd::formatFixedLengthText;
+    else if (format_str == L"text")                   def->format = xd::formatText;
+    else if (format_str == L"typed_delimited_text")   def->format = xd::formatTypedDelimitedText;
+    else                                              def->format = xd::formatDefault;
 
     std::wstring encoding_str = root["encoding"];
-         if (encoding_str == L"invalid")             def->encoding = xd::encodingInvalid;
-    else if (encoding_str == L"undefined")           def->encoding = xd::encodingUndefined;
-    else if (encoding_str == L"ascii")               def->encoding = xd::encodingASCII;
-    else if (encoding_str == L"utf8")                def->encoding = xd::encodingUTF8;
-    else if (encoding_str == L"utf16")               def->encoding = xd::encodingUTF16;
-    else if (encoding_str == L"utf32")               def->encoding = xd::encodingUTF32;
-    else if (encoding_str == L"ucs2")                def->encoding = xd::encodingUCS2;
-    else if (encoding_str == L"utf16be")             def->encoding = xd::encodingUTF16BE;
-    else if (encoding_str == L"iso8859_1")           def->encoding = xd::encodingISO8859_1;
-    else if (encoding_str == L"ebcdic")              def->encoding = xd::encodingEBCDIC;
-    else if (encoding_str == L"comp")                def->encoding = xd::encodingCOMP;
-    else if (encoding_str == L"comp3")               def->encoding = xd::encodingCOMP3;
-    else                                             def->encoding = xd::encodingUndefined;
+         if (encoding_str == L"invalid")              def->encoding = xd::encodingInvalid;
+    else if (encoding_str == L"undefined")            def->encoding = xd::encodingUndefined;
+    else if (encoding_str == L"ascii")                def->encoding = xd::encodingASCII;
+    else if (encoding_str == L"utf8")                 def->encoding = xd::encodingUTF8;
+    else if (encoding_str == L"utf16")                def->encoding = xd::encodingUTF16;
+    else if (encoding_str == L"utf32")                def->encoding = xd::encodingUTF32;
+    else if (encoding_str == L"ucs2")                 def->encoding = xd::encodingUCS2;
+    else if (encoding_str == L"utf16be")              def->encoding = xd::encodingUTF16BE;
+    else if (encoding_str == L"iso8859_1")            def->encoding = xd::encodingISO8859_1;
+    else if (encoding_str == L"ebcdic")               def->encoding = xd::encodingEBCDIC;
+    else if (encoding_str == L"comp")                 def->encoding = xd::encodingCOMP;
+    else if (encoding_str == L"comp3")                def->encoding = xd::encodingCOMP3;
+    else                                              def->encoding = xd::encodingUndefined;
 
 
     def->data_connection_string = xdcommon::decryptConnectionStringPassword(root["data_connection_string"]);
@@ -167,9 +167,9 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def
     if (root.childExists("delimitedtext"))
     {
         kl::JsonNode delimitedtext = root["delimitedtext"];
-        def->text_qualifiers = delimitedtext["text_qualifiers"];
-        def->delimiters = delimitedtext["delimiters"];
-        def->line_delimiters = delimitedtext["line_delimiters"];
+        def->text_qualifier = delimitedtext["text_qualifier"];
+        def->delimiter = delimitedtext["delimiter"];
+        def->line_delimiter = delimitedtext["line_delimiter"];
         def->header_row = delimitedtext["header_row"].getBoolean();
     }
 

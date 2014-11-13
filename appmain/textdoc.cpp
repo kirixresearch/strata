@@ -693,10 +693,10 @@ bool TextDoc::initDelimitedTextView()
     m_loading_definition = true;
 
     // set the field delimiter dropdown
-    setDelimitersComboBoxSelection(m_delimiters_combobox, m_def.delimiters);
+    setDelimitersComboBoxSelection(m_delimiters_combobox, m_def.delimiter);
 
     // set the text qualifier dropdown
-    setTextQualifierComboBoxSelection(m_textqualifier_combobox, m_def.text_qualifiers);
+    setTextQualifierComboBoxSelection(m_textqualifier_combobox, m_def.text_qualifier);
 
     // set the first row field names checkbox
     m_firstrowfieldnames_checkbox->SetValue(m_def.header_row);
@@ -707,8 +707,8 @@ bool TextDoc::initDelimitedTextView()
     // or values have changed
     m_last_textqualifier_sel = m_textqualifier_combobox->GetSelection();
     m_last_delimiters_sel = m_delimiters_combobox->GetSelection();
-    m_last_textqualifier = m_def.text_qualifiers;
-    m_last_delimiters = m_def.delimiters;
+    m_last_textqualifier = m_def.text_qualifier;
+    m_last_delimiters = m_def.delimiter;
     
     // set up the grid for the text-delimited set
     xd::QueryParams qp;
@@ -1817,7 +1817,7 @@ void TextDoc::onTextDelimitedFieldDelimiterTextEnter(wxCommandEvent& evt)
     m_def_nofrc = xd::FormatDefinition();
 
     xd::FormatDefinition defaults = m_def;
-    defaults.delimiters = towstr(s);
+    defaults.delimiter = towstr(s);
     defaults.columns.clear();
 
     wxBusyCursor bc;
@@ -1855,7 +1855,7 @@ void TextDoc::onTextDelimitedTextQualifierTextEnter(wxCommandEvent& evt)
     m_def_nofrc = xd::FormatDefinition();
 
     xd::FormatDefinition defaults = m_def;
-    defaults.text_qualifiers = towstr(s);
+    defaults.text_qualifier = towstr(s);
     defaults.columns.clear();
 
     wxBusyCursor bc;
@@ -1925,7 +1925,7 @@ void TextDoc::onTextDelimitedFieldDelimiterCombo(wxCommandEvent& evt)
     m_def_nofrc = xd::FormatDefinition();
 
     xd::FormatDefinition defaults = m_def;
-    defaults.delimiters = towstr(getFieldDelimiters());
+    defaults.delimiter = towstr(getFieldDelimiters());
     defaults.columns.clear();
 
     wxBusyCursor bc;
@@ -1968,7 +1968,7 @@ void TextDoc::onTextDelimitedTextQualifierCombo(wxCommandEvent& evt)
     m_def_nofrc = xd::FormatDefinition();
 
     xd::FormatDefinition defaults = m_def;
-    defaults.text_qualifiers = towstr(getTextQualifier());
+    defaults.text_qualifier = towstr(getTextQualifier());
     defaults.columns.clear();
 
     wxBusyCursor bc;

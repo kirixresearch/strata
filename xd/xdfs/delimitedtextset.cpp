@@ -75,23 +75,23 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
             // has a .tsv extension, we simply assume without any further investigation
             // that the file is tab delimited
             m_def.format = xd::formatDelimitedText;
-            m_def.delimiters = L"\t";
-            m_def.text_qualifiers = L"";
+            m_def.delimiter = L"\t";
+            m_def.text_qualifier = L"";
             m_def.header_row = determineIfFirstRowIsHeader();
         }
          else
         {
             // these settings follows the "csv" standard
             m_def.format = xd::formatDelimitedText;
-            m_def.delimiters = L",";
-            m_def.text_qualifiers = L"\"";
+            m_def.delimiter = L",";
+            m_def.text_qualifier = L"\"";
             m_def.header_row = determineIfFirstRowIsHeader();
             
             // however, many csv files also use other delimiters, like semicolons
             xd::FormatDefinition info;
             if (m_database->getFileFormat(url, m_file.getStream(), &info, true /* discover_delimiters */))
             {
-                m_def.delimiters = info.delimiters;
+                m_def.delimiter = info.delimiter;
             }
         }
 
@@ -103,9 +103,9 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
 
         
     // make sure the text-delimited file class is updated
-    m_file.setDelimiters(m_def.delimiters);
-    m_file.setLineDelimiters(m_def.line_delimiters);
-    m_file.setTextQualifiers(m_def.text_qualifiers);
+    m_file.setDelimiters(m_def.delimiter);
+    m_file.setLineDelimiters(m_def.line_delimiter);
+    m_file.setTextQualifiers(m_def.text_qualifier);
 
 
     if (m_def.columns.size() == 0)
@@ -344,8 +344,8 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
     
 
     m_def.format = xd::formatTypedDelimitedText;
-    m_def.delimiters = L",";
-    m_def.text_qualifiers = L"\"";
+    m_def.delimiter = L",";
+    m_def.text_qualifier = L"\"";
     m_def.header_row = true;
     m_def.columns = fields;
 
@@ -770,9 +770,9 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
 
 
     // pass through file metadata to the DelimitedTextFile class
-    m_file.setDelimiters(m_def.delimiters);
-    m_file.setLineDelimiters(m_def.line_delimiters);
-    m_file.setTextQualifiers(m_def.text_qualifiers);
+    m_file.setDelimiters(m_def.delimiter);
+    m_file.setLineDelimiters(m_def.line_delimiter);
+    m_file.setTextQualifiers(m_def.text_qualifier);
 
     // get the database keywords and invalid column characters
     // for use in the makeValidFieldName() function below

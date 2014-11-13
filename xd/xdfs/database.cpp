@@ -394,17 +394,17 @@ static bool determineSetFormatInfo(xd::IStream* stream, xd::FormatDefinition* in
     if (max > 0 && lines.size() > 1 && max >= (int)(lines.size()/2))
     {
         if (max == comma_line_count)
-            info->delimiters = L",";
+            info->delimiter = L",";
          else if (max == tab_line_count)
-            info->delimiters = L"\t";
+            info->delimiter = L"\t";
          else if (max == semicolon_line_count)
-            info->delimiters = L";";
+            info->delimiter = L";";
          else if (max == colon_line_count)
-            info->delimiters = L":";
+            info->delimiter = L":";
          else if (max == pipe_line_count)
-            info->delimiters = L"|";
+            info->delimiter = L"|";
          else if (max == tilde_line_count)
-            info->delimiters = L"~";
+            info->delimiter = L"~";
          
         info->format = xd::formatDelimitedText;
         return true;
@@ -474,7 +474,7 @@ bool FsDatabase::getFileFormat(const std::wstring& path,
      else if (ext == L"tsv")
     {
         info->format = xd::formatDelimitedText;
-        info->delimiters = L"\t";
+        info->delimiter = L"\t";
         return true;
     }
      else if (ext == L"xlsx")
@@ -495,7 +495,7 @@ bool FsDatabase::getFileFormat(const std::wstring& path,
      else if (ext == L"csv")
     {
         info->format = xd::formatDelimitedText;
-        info->delimiters = L",";
+        info->delimiter = L",";
         
         if (stream && discover_delimiters)
         {
@@ -2392,12 +2392,12 @@ bool FsDatabase::createTable(const std::wstring& path, const xd::FormatDefinitio
         {
             // use the csv defaults as specified in
             // the DelimitedTextFile constructor
-            if (format_definition.line_delimiters.length() > 0)
-                file.setLineDelimiters(format_definition.line_delimiters);
-            if (format_definition.delimiters.length() > 0)
-                file.setDelimiters(format_definition.delimiters);
-            if (format_definition.text_qualifiers.length() > 0)
-                file.setTextQualifiers(format_definition.text_qualifiers);
+            if (format_definition.line_delimiter.length() > 0)
+                file.setLineDelimiters(format_definition.line_delimiter);
+            if (format_definition.delimiter.length() > 0)
+                file.setDelimiters(format_definition.delimiter);
+            if (format_definition.text_qualifier.length() > 0)
+                file.setTextQualifiers(format_definition.text_qualifier);
         }
         
         

@@ -147,10 +147,10 @@ int LoadJob::runJob()
         {
             kl::JsonNode format_node = object["source_format"];
 
-            std::wstring type = format_node.getChild("type").getString();
+            std::wstring object_type = format_node.getChild("object_type").getString();
             std::wstring format = format_node.getChild("format").getString();
 
-            if (type == L"stream")
+            if (object_type == L"stream")
             {
                 binary_import = true;
             }
@@ -159,8 +159,8 @@ int LoadJob::runJob()
                 if (format == L"delimited_text")
                 {
                     qp.format.format = xd::formatDelimitedText;
-                    qp.format.delimiters = format_node.getChild("delimiter").getString();
-                    qp.format.text_qualifiers = format_node.getChild("text_qualifier").getString();
+                    qp.format.delimiter = format_node.getChild("delimiter").getString();
+                    qp.format.text_qualifier = format_node.getChild("text_qualifier").getString();
                     qp.format.header_row = format_node.getChild("header_row").getBoolean();
 
                     if (qp.columns.length() == 0)
@@ -265,8 +265,8 @@ int LoadJob::runJob()
             if (kl::icontains(destination_path, L".icsv"))
                 destination_format.format = xd::formatTypedDelimitedText;
 
-            destination_format.delimiters = format.getChild("delimiter").getString();
-            destination_format.text_qualifiers = format.getChild("text_qualifier").getString();
+            destination_format.delimiter = format.getChild("delimiter").getString();
+            destination_format.text_qualifier = format.getChild("text_qualifier").getString();
             destination_format.header_row = format.getChild("header_row").getBoolean();
         }
 

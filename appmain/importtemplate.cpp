@@ -928,20 +928,20 @@ jobs::IJobPtr ImportTemplate::createJob()
             if (m_ii.binary_copy)
             {
                 object["source_format"].setObject();
-                kl::JsonNode format = object["source_format"];
+                kl::JsonNode source_format = object["source_format"];
             
-                format["type"] = L"stream";
+                source_format["object_type"] = L"stream";
             }
              else if (m_ii.delimiters.length() > 0)
             {
                 object["source_format"].setObject();
-                kl::JsonNode format = object["source_format"];
+                kl::JsonNode source_format = object["source_format"];
             
-                format["type"] = L"table";
-                format["format"] = L"delimited_text";
-                format["delimiter"] = m_ii.delimiters;
-                format["text_qualifier"] = m_ii.text_qualifier;
-                format["header_row"].setBoolean(m_ii.first_row_header);
+                source_format["object_type"] = L"table";
+                source_format["format"] = L"delimited_text";
+                source_format["delimiter"] = m_ii.delimiters;
+                source_format["text_qualifier"] = m_ii.text_qualifier;
+                source_format["header_row"].setBoolean(m_ii.first_row_header);
             }
         }
     }

@@ -472,9 +472,9 @@ struct FormatDefinition
     std::wstring data_path;               // project relative path, or file:/// url
     
     // delimited files parameters (when format = formatDelimitedText)
-    std::wstring text_qualifiers;
-    std::wstring delimiters;
-    std::wstring line_delimiters;
+    std::wstring text_qualifier;
+    std::wstring delimiter;
+    std::wstring line_delimiter;
     bool header_row;
     bool determine_structure;
 

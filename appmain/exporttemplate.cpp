@@ -148,6 +148,8 @@ jobs::IJobPtr ExportTemplate::createJob()
             object["destination_format"].setObject();
             kl::JsonNode format = object["destination_format"];
             
+            format["object_type"] = L"table";
+            format["format"] = L"delimited_text";
             format["delimiter"] = m_ei.delimiters;
             format["text_qualifier"] = m_ei.text_qualifier;
             format["header_row"].setBoolean(m_ei.first_row_header);
