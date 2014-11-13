@@ -77,7 +77,7 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
             m_def.format = xd::formatDelimitedText;
             m_def.delimiters = L"\t";
             m_def.text_qualifiers = L"";
-            m_def.first_row_column_names = determineIfFirstRowIsHeader();
+            m_def.header_row = determineIfFirstRowIsHeader();
         }
          else
         {
@@ -85,7 +85,7 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
             m_def.format = xd::formatDelimitedText;
             m_def.delimiters = L",";
             m_def.text_qualifiers = L"\"";
-            m_def.first_row_column_names = determineIfFirstRowIsHeader();
+            m_def.header_row = determineIfFirstRowIsHeader();
             
             // however, many csv files also use other delimiters, like semicolons
             xd::FormatDefinition info;
@@ -346,7 +346,7 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
     m_def.format = xd::formatTypedDelimitedText;
     m_def.delimiters = L",";
     m_def.text_qualifiers = L"\"";
-    m_def.first_row_column_names = true;
+    m_def.header_row = true;
     m_def.columns = fields;
 
     return true;
@@ -821,8 +821,8 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
             if (colname.empty())
                 colname = temps;
             
-            // set the column's name based on the m_first_row_column_names flag
-            if (m_def.first_row_column_names)
+            // set the column's name based on the m_header_row flag
+            if (m_def.header_row)
                 colname = makeValidFieldName(colname, keyword_list, invalid_col_chars);
                  else
                 colname = temps;
@@ -854,7 +854,7 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
             
             // if the first row contains column names, don't use it during
             // statistical gathering of column widths and types
-            if (m_def.first_row_column_names == false || rows_read > 0)
+            if (m_def.header_row == false || rows_read > 0)
             {
 
                 if (col_stats[j].type == xd::typeDate)

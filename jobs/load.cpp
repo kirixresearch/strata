@@ -161,7 +161,7 @@ int LoadJob::runJob()
                     qp.format.format = xd::formatDelimitedText;
                     qp.format.delimiters = format_node.getChild("delimiter").getString();
                     qp.format.text_qualifiers = format_node.getChild("text_qualifier").getString();
-                    qp.format.first_row_column_names = format_node.getChild("header_row").getBoolean();
+                    qp.format.header_row = format_node.getChild("header_row").getBoolean();
 
                     if (qp.columns.length() == 0)
                     {
@@ -267,7 +267,7 @@ int LoadJob::runJob()
 
             destination_format.delimiters = format.getChild("delimiter").getString();
             destination_format.text_qualifiers = format.getChild("text_qualifier").getString();
-            destination_format.first_row_column_names = format.getChild("header_row").getBoolean();
+            destination_format.header_row = format.getChild("header_row").getBoolean();
         }
 
 

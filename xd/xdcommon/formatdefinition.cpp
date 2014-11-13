@@ -71,7 +71,7 @@ std::wstring saveDefinitionToString(const xd::FormatDefinition& def)
         delimitedtext["text_qualifiers"] = def.text_qualifiers;
         delimitedtext["delimiters"] = def.delimiters;
         delimitedtext["line_delimiters"] = def.line_delimiters;
-        delimitedtext["header_row"].setBoolean(def.first_row_column_names);
+        delimitedtext["header_row"].setBoolean(def.header_row);
     }
 
 
@@ -170,7 +170,7 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def
         def->text_qualifiers = delimitedtext["text_qualifiers"];
         def->delimiters = delimitedtext["delimiters"];
         def->line_delimiters = delimitedtext["line_delimiters"];
-        def->first_row_column_names = delimitedtext["header_row"].getBoolean();
+        def->header_row = delimitedtext["header_row"].getBoolean();
     }
 
     if (root.childExists("fixedlengthtext"))

@@ -2355,9 +2355,9 @@ bool FsDatabase::createTable(const std::wstring& path, const xd::FormatDefinitio
         if (csv_encoding == -1)
             return false; // unknown encoding
         
-        if (!format_definition.first_row_column_names)
+        if (!format_definition.header_row)
         {
-            // no field names
+            // no field names in the first row
             fields.clear();
         }
 
@@ -2433,7 +2433,7 @@ bool FsDatabase::createTable(const std::wstring& path, const xd::FormatDefinitio
             return false; // unknown encoding
         
 
-        if (!format_definition.first_row_column_names)
+        if (!format_definition.header_row)
         {
             // no field names
             fields.clear();
@@ -2468,7 +2468,7 @@ bool FsDatabase::createTable(const std::wstring& path, const xd::FormatDefinitio
                 tset->setDelimiters(format_info->delimiters, false);
             if (format_info && format_info->text_qualifiers.length() > 0)
                 tset->setTextQualifier(format_info->text_qualifiers, false);
-            if (format_info && !format_info->first_row_column_names)
+            if (format_info && !format_info->header_row)
                 tset->setFirstRowColumnNames(false);
         }
 

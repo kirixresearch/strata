@@ -86,7 +86,7 @@ bool DelimitedTextIterator::init(DelimitedTextSet* set, const std::wstring& colu
     m_file.setLineDelimiters(m_set->m_def.line_delimiters);
     m_file.setTextQualifiers(m_set->m_def.text_qualifiers);
 
-    if (m_set->m_def.first_row_column_names)
+    if (m_set->m_def.header_row)
     {
         // read past the first row
         m_file.skip(1);
@@ -140,7 +140,7 @@ void DelimitedTextIterator::goFirst()
 {
     m_file.rewind();
 
-    if (m_set->m_def.first_row_column_names)
+    if (m_set->m_def.header_row)
     {
         // read past the first row
         m_file.skip(1);

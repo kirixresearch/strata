@@ -699,7 +699,7 @@ bool TextDoc::initDelimitedTextView()
     setTextQualifierComboBoxSelection(m_textqualifier_combobox, m_def.text_qualifiers);
 
     // set the first row field names checkbox
-    m_firstrowfieldnames_checkbox->SetValue(m_def.first_row_column_names);
+    m_firstrowfieldnames_checkbox->SetValue(m_def.header_row);
 
     m_loading_definition = false;
 
@@ -1990,7 +1990,7 @@ void TextDoc::onTextDelimitedFirstRowFieldNamesChecked(wxCommandEvent& evt)
         return;
 
     // first, make a backup of the definition the way it was
-    if (m_def.first_row_column_names)
+    if (m_def.header_row)
         m_def_frc = m_def;
          else
         m_def_nofrc = m_def;
@@ -1999,7 +1999,7 @@ void TextDoc::onTextDelimitedFirstRowFieldNamesChecked(wxCommandEvent& evt)
 
     if (first_row_field_names)
     {
-        m_def.first_row_column_names = true;
+        m_def.header_row = true;
         if (m_def_frc.format == xd::formatDefault)
         {
             xd::FormatDefinition defaults = m_def;
@@ -2013,7 +2013,7 @@ void TextDoc::onTextDelimitedFirstRowFieldNamesChecked(wxCommandEvent& evt)
     }
      else
     {
-        m_def.first_row_column_names = false;
+        m_def.header_row = false;
         if (m_def_nofrc.format == xd::formatDefault)
         {
             xd::FormatDefinition defaults = m_def;
@@ -2160,7 +2160,7 @@ bool TextDoc::saveLayoutTemplate(const wxString& path)
         root["type"] = wxT("delimited");
         root["delimiters"] = towstr(m_last_delimiters);
         root["line_delimiters"] = wxT("\n");
-        root["first_row_column_names"] = m_firstrowfieldnames_checkbox->GetValue() ? true : false;
+        root["header_row"] = m_firstrowfieldnames_checkbox->GetValue() ? true : false;
 
         kl::JsonNode fields = root["fields"];
 

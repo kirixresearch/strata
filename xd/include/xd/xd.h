@@ -456,7 +456,7 @@ struct FormatDefinition
         format = formatDefault;
         object_type = filetypeTable;
         encoding = encodingUndefined;
-        first_row_column_names = true;
+        header_row = true;
         determine_structure = false;
         fixed_start_offset = 0;
         fixed_row_width = 0;
@@ -475,7 +475,7 @@ struct FormatDefinition
     std::wstring text_qualifiers;
     std::wstring delimiters;
     std::wstring line_delimiters;
-    bool first_row_column_names;
+    bool header_row;
     bool determine_structure;
 
     // fixed length parameters (when format = formatFixedLengthText)
