@@ -85,12 +85,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../sdservlib;../kl/include;../supp/openssl/inc32;../xd/include;../supp/libwebsockets/lib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../sdservlib;../kl/include;../supp/openssl/inc32;../xd/include;../supp/libwebsockets/lib;../supp/zlib</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;../sdservlib/lib/sdservlibud.lib;../kl/lib/klud.lib;../jobs/lib/jobsud.lib;../supp/openssl/out32.dbg/libeay32.lib;../supp/openssl/out32.dbg/ssleay32.lib;../supp/libwebsockets/lib/Debug/websockets_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;../sdservlib/lib/sdservlibud.lib;../kl/lib/klud.lib;../jobs/lib/jobsud.lib;../supp/openssl/out32.dbg/libeay32.lib;../supp/openssl/out32.dbg/ssleay32.lib;../supp/libwebsockets/lib/Debug/websockets_static.lib;../supp/zlib/zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -124,7 +124,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;../sdservlib/lib/sdservlibu.lib;../kl/lib/klu.lib;../jobs/lib/jobsu.lib;../supp/openssl/out32/libeay32.lib;../supp/openssl/out32/ssleay32.lib;../supp/libwebsockets/lib/Release/websockets_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;../sdservlib/lib/sdservlibu.lib;../kl/lib/klu.lib;../jobs/lib/jobsu.lib;../supp/openssl/out32/libeay32.lib;../supp/openssl/out32/ssleay32.lib;../supp/libwebsockets/lib/Release/websockets_static.lib;../supp/zlib/zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

@@ -11,6 +11,7 @@
 #include "sdservlib.h"
 #include "controller.h"
 #include "http.h"
+#include "zlib.h"
 #include <ctime>
 #include <kl/portable.h>
 #include <kl/regex.h>
@@ -1115,6 +1116,7 @@ static void quotedAppend(std::wstring& str, const std::wstring& cell)
 void Controller::apiRead(RequestInfo& req)
 {
     std::wstring handle = req.getValue(L"handle");
+    std::wstring definition = req.getValue(L"definition");
     std::vector<SessionQueryResultColumn>* evalvec = NULL;
     int start = kl::wtoi(req.getValue(L"start", L"-1"));
     int limit = kl::wtoi(req.getValue(L"limit", L"-1"));
@@ -1173,6 +1175,12 @@ void Controller::apiRead(RequestInfo& req)
         qp.columns = req.getValue(L"columns");
         qp.where = req.getValue(L"where");
         qp.order = req.getValue(L"order");
+
+        if (definition.length() > 0)
+        {
+            qp.format.fromString(definition);
+        }
+
 
         xd::IIteratorPtr iter = db->query(qp);
         if (!iter.isOk())

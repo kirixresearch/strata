@@ -24,7 +24,7 @@ struct wsrv_context* wsrv_start()
     struct sockaddr_in svr_addr, cli_addr;
     socklen_t sin_len = sizeof(cli_addr);
     char buf[8192];
-    int bytes_received;
+    //int bytes_received;
 
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0)
