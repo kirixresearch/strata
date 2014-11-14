@@ -268,6 +268,8 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res, const xd::FormatDefinition
                 
             m_fields.push_back(dai);
         }
+
+        m_structure.clear();
     }
     
     return true;
