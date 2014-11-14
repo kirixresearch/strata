@@ -14,7 +14,7 @@
 #define __XDCOMMON_FORMATDEFINITION_H
 
 
-std::wstring saveDefinitionToString(const xd::FormatDefinition* def);
+std::wstring saveDefinitionToString(const xd::FormatDefinition& def);
 bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def);
 
 bool saveDefinitionToFile(const std::wstring& path, const xd::FormatDefinition& def);

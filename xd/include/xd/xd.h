@@ -323,6 +323,34 @@ struct xdcmpnocase : std::binary_function<const std::wstring&, const std::wstrin
     }
 };
 
+xcm_interface IXdUtil : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("xd.IXdUtil")
+
+public:
+
+    virtual std::wstring saveDefinitionToString(const xd::FormatDefinition& def) = 0;
+    virtual bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def) = 0;
+};
+XCM_DECLARE_SMARTPTR(IXdUtil)
+
+
+namespace Util
+{
+    inline IXdUtilPtr getImpl() {
+        static IXdUtilPtr res;
+        if (res.isNull()) res.create_instance("xdfs.XdUtil");
+        return res;
+    }
+
+    inline std::wstring saveDefinitionToString(const xd::FormatDefinition& def) { return getImpl()->saveDefinitionToString(def); }
+    inline bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def) { return getImpl()->loadDefinitionFromString(str, def); }
+};
+
+
+
+
+
 
 
 
@@ -488,6 +516,8 @@ struct FormatDefinition
 
     // helper functions
     void createColumn(const xd::ColumnInfo& params) { columns.push_back(params); }
+    std::wstring toString() const { return Util::saveDefinitionToString(*this); }
+    bool fromString(const std::wstring& str) { return Util::loadDefinitionFromString(str, this); }
 };
 
 

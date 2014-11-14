@@ -12,6 +12,7 @@
 #include "xdfs.h"
 #include "database.h"
 #include "../xdcommon/connectionstr.h"
+#include "../xdcommon/formatdefinition.h"
 
 
 /*
@@ -131,12 +132,30 @@ public:
 
 
 
+
+class XdUtil : public xd::IXdUtil
+{
+    XCM_CLASS_NAME("xdfs.XdUtil")
+    XCM_BEGIN_INTERFACE_MAP(XdUtil)
+        XCM_INTERFACE_ENTRY(xd::IXdUtil)
+    XCM_END_INTERFACE_MAP()
+
+public:
+
+    std::wstring saveDefinitionToString(const xd::FormatDefinition& def) { return ::saveDefinitionToString(def); }
+    bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def) { return ::loadDefinitionFromString(str, def); }
+
+};
+
+
+
 // -- these are the publicly creatable classes --
 
 XCM_BEGIN_DYNAMIC_MODULE(xdfs)
     XCM_BEGIN_CLASS_MAP()
         XCM_CLASS_ENTRY(DatabaseMgr)
         XCM_CLASS_ENTRY(FsDatabase)
+        XCM_CLASS_ENTRY(XdUtil)
     XCM_END_CLASS_MAP()
 XCM_END_DYNAMIC_MODULE(xdfs)
 
