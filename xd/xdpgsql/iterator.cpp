@@ -267,6 +267,11 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res, const xd::FormatDefinition
             dai->expr = parse(it->expression);
                 
             m_fields.push_back(dai);
+
+            // parse() uses getStructure(), and m_structure needs to be
+            // cleared out so that one calcfield can reference another calcfield
+
+            m_structure.clear(); 
         }
 
         m_structure.clear();
