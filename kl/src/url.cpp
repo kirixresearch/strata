@@ -254,7 +254,7 @@ static std::wstring doDecode(const std::wstring& input)
         }
          else if (*ch == '+')
         {
-            result += *ch;
+            result += ' ';
             ++ch;
         }
         

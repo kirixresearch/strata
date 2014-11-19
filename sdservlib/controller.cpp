@@ -1335,7 +1335,7 @@ void Controller::apiRead(RequestInfo& req)
     
     int row = 0, col, rowcnt = 0;
     for (row = 0; (limit >= 0 ? row < limit : true); ++row)
-    {
+    { 
         if (iter->eof())
             break;
         
