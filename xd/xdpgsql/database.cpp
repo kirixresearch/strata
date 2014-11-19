@@ -1166,8 +1166,23 @@ xd::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
     if (!res || PQresultStatus(res) != PGRES_TUPLES_OK || PQntuples(res) != 1)
     {
         PQclear(res);
-        closeConnection(conn);
-        return xcm::null;
+
+
+        // try views
+        command = L"select v.viewname as name, coalesce(d.description,'') as type from pg_views v "
+                  L"inner join pg_class as c on c.relname=v.viewname "
+                  L"left outer join pg_description as d on c.oid=d.objoid "
+                  L"where v.schemaname <> 'pg_catalog' and v.schemaname <> 'information_schema' and c.relname='%tbl%'";
+                          
+        kl::replaceStr(command, L"%tbl%", tbl);
+
+
+        res = PQexec(conn, kl::toUtf8(command));
+        if (!res || PQresultStatus(res) != PGRES_TUPLES_OK || PQntuples(res) != 1)
+        {
+            closeConnection(conn);
+            return xcm::null;
+        }
     }
 
     std::wstring type = kl::towstring(PQgetvalue(res, 0, 1));
