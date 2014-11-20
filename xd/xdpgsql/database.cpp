@@ -1571,7 +1571,7 @@ xd::IIteratorPtr PgsqlDatabase::query(const xd::QueryParams& qp)
     // create an iterator based on our select statement
     PgsqlIterator* iter = new PgsqlIterator(this);
 
-    if (!iter->init(query, &qp.format, conn))
+    if (!iter->init(conn, query, &qp.format))
     {
         delete iter;
         return xcm::null;
@@ -1856,6 +1856,15 @@ bool PgsqlDatabase::execute(const std::wstring& command,
         ++p;
     }
 
+
+
+    PGconn* conn = createConnection();
+    if (!conn)
+        return xcm::null;
+
+
+
+
     if (kl::iequals(first_word, L"SELECT"))
     {
         // create an iterator based on our select statement
@@ -1870,7 +1879,7 @@ bool PgsqlDatabase::execute(const std::wstring& command,
             bool res = execute(command2, 0, resobj, job);
             if (res)
             {
-                if (!iter->init(L"SELECT * FROM " + tbl))
+                if (!iter->init(conn, L"SELECT * FROM " + tbl))
                 {
                     delete iter;
                     return false;
@@ -1886,7 +1895,7 @@ bool PgsqlDatabase::execute(const std::wstring& command,
         }
          else
         {
-            if (!iter->init(command))
+            if (!iter->init(conn, command))
             {
                 delete iter;
                 return false;
@@ -1894,14 +1903,12 @@ bool PgsqlDatabase::execute(const std::wstring& command,
         }
 
         result = static_cast<xcm::IObject*>(static_cast<xd::IIterator*>(iter));
+
+        // iterator will release connection
         return true;
     }
      else
     {
-        PGconn* conn = createConnection();
-        if (!conn)
-            return false;
-
         if (job)
         {
             IPgsqlJobInfoPtr pjob = job;
@@ -1912,7 +1919,10 @@ bool PgsqlDatabase::execute(const std::wstring& command,
 
         PGresult* res = PQexec(conn, kl::toUtf8(command));
         if (!res)
+        {
+            closeConnection(conn);
             return false;
+        }
 
         int result_status = PQresultStatus(res);
 

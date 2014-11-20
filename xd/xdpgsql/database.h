@@ -35,6 +35,20 @@ std::wstring pgsqlQuoteIdentifierIfNecessary(const std::wstring& str);
 class PgsqlJobInfo;
 
 
+
+class PgsqlConnection
+{
+    kl::mutex mutex;
+    PGconn* conn;
+
+    void lock() { mutex.lock(); }
+    void unlock() { mutex.unlock(); }
+    void close() { PQfinish(conn); conn = NULL; }
+};
+
+
+
+
 class PgsqlDatabase : public xd::IDatabase
 {
 friend class PgsqlRowInserter;

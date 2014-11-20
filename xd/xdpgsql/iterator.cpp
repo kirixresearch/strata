@@ -86,23 +86,56 @@ PgsqlIterator::~PgsqlIterator()
         m_database->unref();
 }
 
-bool PgsqlIterator::init(const std::wstring& query, const xd::FormatDefinition* fd, PGconn* conn_to_use)
+bool PgsqlIterator::init(PGconn* conn, const std::wstring& query, const xd::FormatDefinition* fd)
 {
     bool use_server_side_cursor = true;
-
-    PGconn* conn;
-    if (conn_to_use)
-        conn = conn_to_use;
-         else
-        conn = m_database->createConnection();
-
-    if (!conn)
-        return false;
 
     if (use_server_side_cursor)
     {
         PGresult* res;
         int status;
+
+        // first, get a rough feel for how many rows are in the result
+        std::wstring command = L"explain " + query;
+        const char* info = NULL;
+        res = PQexec(conn, kl::toUtf8(command));
+        xd::rowpos_t rowcnt = (xd::rowpos_t)-1;
+
+        if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) > 0)
+        {
+            info = PQgetvalue(res, 0, 0);
+            const char* rows = strstr(info, "rows=");
+            if (rows)
+                rowcnt = atoi(rows+5);
+        }
+        PQclear(res);
+
+
+        if (rowcnt < 10000)
+        {
+            m_server_side_cursor = false;
+
+            PGresult* res = PQexec(conn, kl::toUtf8(query));
+            if (!res)
+                return false;
+
+            if (PQresultStatus(res) != PGRES_TUPLES_OK)
+            {
+                PQclear(res);
+                m_database->closeConnection(conn);
+                return false;
+            }
+
+            // don't need the connection anymore, since we have the entire rowset
+            m_database->closeConnection(conn);
+            conn = NULL;
+            m_row_count = PQntuples(res);
+
+            return init(NULL, res, fd);
+        }
+
+
+
 
 
         res = PQexec(conn, "BEGIN");
@@ -129,51 +162,45 @@ bool PgsqlIterator::init(const std::wstring& query, const xd::FormatDefinition* 
         }
 
 
-        
-        std::wstring command = L"explain " + query;
-        const char* info = NULL;
-        res = PQexec(conn, kl::toUtf8(command));
-        if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) > 0)
+        if (rowcnt != (xd::rowpos_t)-1)
         {
-            info = PQgetvalue(res, 0, 0);
-            const char* rows = strstr(info, "rows=");
-            if (rows)
+            if (rowcnt <= 2000000)
             {
-                xd::rowpos_t rowcnt = atoi(rows+5);
-                if (rowcnt <= 2000000)
-                {
-                    m_row_count = rowcnt;
-                }
-                if (rowcnt < 200000)
-                {
-                    PQclear(res);
-                    res = PQexec(conn, "MOVE 210000 in xdpgsqlcursor");
-                    info = PQcmdStatus(res);
-                    if (PQresultStatus(res) == PGRES_COMMAND_OK && info)
-                        m_row_count = atoi(info+5);
-                    PQclear(res);
-                    res = PQexec(conn, "MOVE ABSOLUTE 0 in xdpgsqlcursor");
-                }
+                // for tables under 2,000,000 rows, use the approximation
+                m_row_count = rowcnt;
             }
+
+            if (rowcnt < 200000)
+            {
+                // if there are under 200,000 rows approximately, find out the precise number
+                // by scrolling to the end of the cursor
+
+                res = PQexec(conn, "MOVE 210000 in xdpgsqlcursor");
+                info = PQcmdStatus(res);
+                if (PQresultStatus(res) == PGRES_COMMAND_OK && info)
+                    m_row_count = atoi(info+5);
+                PQclear(res);
+                res = PQexec(conn, "MOVE ABSOLUTE 0 in xdpgsqlcursor");
+            }
+
         }
-        PQclear(res);
+        
 
-
-
-
-        res = PQexec(conn, "FETCH 1 from xdpgsqlcursor");
-        m_block_start = 1;
-        m_block_row = 0;
-        m_block_rowcount = PQntuples(res);
-        m_server_side_cursor = true;
-
-
+        if (use_server_side_cursor)
+        {
+            res = PQexec(conn, "FETCH 1 from xdpgsqlcursor");
+            m_block_start = 1;
+            m_block_row = 0;
+            m_block_rowcount = PQntuples(res);
+            m_server_side_cursor = true;
+        }
 
         return init(conn, res, fd);
     } 
-    
-    if (!use_server_side_cursor)
+     else
     {
+        m_server_side_cursor = false;
+
         PGresult* res = PQexec(conn, kl::toUtf8(query));
         if (!res)
             return false;
