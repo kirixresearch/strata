@@ -111,7 +111,7 @@ bool PgsqlIterator::init(PGconn* conn, const std::wstring& query, const xd::Form
         PQclear(res);
 
 
-        if (rowcnt < 10000)
+        if (rowcnt != (xd::rowpos_t)-1 && rowcnt < 10000)
         {
             m_server_side_cursor = false;
 
@@ -182,7 +182,6 @@ bool PgsqlIterator::init(PGconn* conn, const std::wstring& query, const xd::Form
                 PQclear(res);
                 res = PQexec(conn, "MOVE ABSOLUTE 0 in xdpgsqlcursor");
             }
-
         }
         
 

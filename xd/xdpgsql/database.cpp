@@ -1196,13 +1196,36 @@ xd::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
     {
         f->type = xd::filetypeStream;
 
-        type = kl::afterFirst(type, L';');
-        type = kl::beforeFirst(type, L';');
-        kl::trim(type);
+        std::wstring mime_type;
+        std::wstring encoding;
+
+        size_t begin, semicolon = type.find(';');
+        if (semicolon != type.npos)
+        {
+            begin = semicolon+1;
+            semicolon = type.find(';', begin);
+            if (semicolon != type.npos)
+            {
+                mime_type = type.substr(begin, semicolon-begin);
+                
+                begin = semicolon+1;
+                semicolon = type.find(';', begin);
+
+                if (semicolon != type.npos)
+                    encoding = type.substr(begin, semicolon-begin);
+                     else
+                    encoding = type.substr(begin);
+            }
+             else
+            {
+                mime_type = type.substr(begin);
+            }
+        }
+
+        kl::trim(mime_type);
+        kl::trim(encoding);
 
         f->mime_type = type;
-
-        kl::trim(f->mime_type);
     }
      else if (type.substr(0, 7) == L"folder;")
     {
@@ -1441,6 +1464,7 @@ bool PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& m
 {
     deleteFile(path);
 
+    std::wstring encoding = L"default";
 
     PGconn* conn = createConnection();
     PGresult* res;
@@ -1453,7 +1477,7 @@ bool PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& m
     std::wstring sql, tbl;
 
     tbl = pgsqlGetTablenameFromPath(path);
-    sql = L"CREATE TABLE %tbl% (xdpgsql_stream VARCHAR(80), mime_type VARCHAR(80), blob_id oid)";
+    sql = L"CREATE TABLE %tbl% (xdpgsql_stream VARCHAR(80), mime_type VARCHAR(80), encoding VARCHAR(80), blob_id oid)";
     kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(tbl));
 
     res = PQexec(conn, kl::toUtf8(sql));
@@ -1472,9 +1496,10 @@ bool PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& m
         return false;
     }
 
-    sql = L"INSERT INTO %tbl% (xdpgsql_stream, mime_type, blob_id) VALUES ('', '%mimetype%', %oid%)";
+    sql = L"INSERT INTO %tbl% (xdpgsql_stream, mime_type, encoding, blob_id) VALUES ('', '%mimetype%', '%encoding%', %oid%)";
     kl::replaceStr(sql, L"%tbl%", tbl);
     kl::replaceStr(sql, L"%mimetype%", mime_type);
+    kl::replaceStr(sql, L"%encoding%", encoding);
     kl::replaceStr(sql, L"%oid%", kl::stdswprintf(L"%u", (unsigned int)oid));
 
     res = PQexec(conn, kl::toUtf8(sql));
@@ -1485,9 +1510,10 @@ bool PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& m
     }
 
 
-    sql = L"COMMENT ON TABLE %tbl% IS 'stream; %mimetype%'";
+    sql = L"COMMENT ON TABLE %tbl% IS 'stream; %mimetype%; %encoding%'";
     kl::replaceStr(sql, L"%tbl%", tbl);
     kl::replaceStr(sql, L"%mimetype%", mime_type);
+    kl::replaceStr(sql, L"%encoding%", encoding);
 
     res = PQexec(conn, kl::toUtf8(sql));
     if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
