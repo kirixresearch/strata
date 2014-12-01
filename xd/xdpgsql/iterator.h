@@ -99,6 +99,17 @@ class PgsqlIterator : public CommonBaseIterator,
 {
     friend class PgsqlDatabase;
 
+    enum
+    {
+        modeResult = 1,
+        modeOffsetLimit = 2,
+        modePagingTable = 3,
+        modeSequenceTable = 4,
+        modeRowidPager = 5,
+        modeCursor = 6
+    };
+
+
     XCM_CLASS_NAME("xdpgsql.Iterator")
     XCM_BEGIN_INTERFACE_MAP(PgsqlIterator)
         XCM_INTERFACE_ENTRY(xd::IIterator)
@@ -113,6 +124,7 @@ public:
     PgsqlIterator(PgsqlDatabase* database);
     ~PgsqlIterator();
     
+    bool init(PGconn* conn, const xd::QueryParams& qp, const xd::FormatDefinition* fd = NULL);
     bool init(PGconn* conn, const std::wstring& query, const xd::FormatDefinition* fd = NULL);
     bool init(PGconn* conn, PGresult* res, const xd::FormatDefinition* fd = NULL);
 
@@ -179,15 +191,22 @@ private:
     xd::Structure m_structure;
     PGconn* m_conn;
     PGresult* m_res;
+    std::wstring m_path;
+
+    int m_mode;
+    std::wstring m_table;
+    std::wstring m_pager;
+    std::wstring m_primary_key;
+
+    PGresult* m_pager_res;
+    int m_pager_step;
 
     LocalRowCache m_cache;
     LocalRow m_cache_row;
     bool m_cache_active;
     xd::rowpos_t m_cache_dbrowpos;
     xd::rowpos_t m_row_count;
-    
-    bool m_server_side_cursor;
- 
+     
     bool m_eof;
     xd::rowpos_t m_row_pos;
 
@@ -195,9 +214,6 @@ private:
     int m_block_row;
     int m_block_rowcount;
 
-
-
-    std::wstring m_path;
 };
 
 

@@ -31,6 +31,7 @@ PgsqlIterator::PgsqlIterator(PgsqlDatabase* database)
 {
     m_conn = NULL;
     m_res = NULL;
+    m_pager_res = NULL;
 
     m_database = database;
     m_database->ref();
@@ -39,7 +40,7 @@ PgsqlIterator::PgsqlIterator(PgsqlDatabase* database)
     m_block_row = 0;
     m_eof = false;
     
-    m_server_side_cursor = false;
+    m_mode = modeResult;
     
     m_cache_active = false;
     m_cache_dbrowpos = 0;
@@ -75,15 +76,328 @@ PgsqlIterator::~PgsqlIterator()
     if (m_res)
         PQclear(m_res);
 
+    if (m_pager_res)
+        PQclear(m_pager_res);
+
     if (m_conn)
     {
-        if (m_server_side_cursor)
+        if (m_mode == modeCursor)
             PQexec(m_conn, "END");
         m_database->closeConnection(m_conn);
     }
 
     if (m_database)
         m_database->unref();
+}
+
+
+
+bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::FormatDefinition* fd)
+{
+    PGresult* res;
+
+    m_conn = conn;
+
+    m_table = pgsqlGetTablenameFromPath(qp.from);
+
+
+    // create a sql query
+
+    std::wstring query = L"SELECT * FROM ";
+    query += pgsqlQuoteIdentifierIfNecessary(m_table);
+
+    if (qp.where.length() > 0)
+    {
+        query += L" WHERE ";
+        query += qp.where;
+    }
+
+    if (qp.order.length() > 0)
+    {
+        query += L" ORDER BY ";
+        query += qp.order;
+    }
+
+    // first, get a rough feel for how many rows are in the result
+    std::wstring command = L"explain " + query;
+    const char* info = NULL;
+    res = PQexec(conn, kl::toUtf8(command));
+    xd::rowpos_t rowcnt = (xd::rowpos_t)-1;
+
+    if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) > 0)
+    {
+        info = PQgetvalue(res, 0, 0);
+        const char* rows = strstr(info, "rows=");
+        if (rows)
+            rowcnt = atoi(rows+5);
+    }
+    PQclear(res);
+
+
+
+    // check if the results will be less than 50000 rows; if so, then
+    // pull the entire result set down to a PGresult
+
+    if (rowcnt != (xd::rowpos_t)-1 && rowcnt <= 50000)
+    {
+        // there is a manageable amount of rows -- just run the query
+        m_mode = modeResult;
+
+        PGresult* res = PQexec(conn, kl::toUtf8(query));
+        if (!res)
+            return false;
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+            return false;
+        }
+
+        return init(conn, res, fd);
+    }
+
+
+
+    // find the primary key for this table, if any
+    {
+        std::wstring prikey;
+
+        command = L"SELECT pg_attribute.attname, format_type(pg_attribute.atttypid, pg_attribute.atttypmod) FROM pg_index, pg_class, pg_attribute WHERE "
+                  L"pg_class.oid = '" + m_table + L"'::regclass AND indrelid = pg_class.oid AND pg_attribute.attrelid = pg_class.oid AND pg_attribute.attnum = any(pg_index.indkey) AND indisprimary";
+        res = PQexec(conn, kl::toUtf8(command));
+        if (!res)
+            return false;
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+            return false;
+        }
+
+        if (PQntuples(res) == 1)
+            m_primary_key = kl::towstring(PQgetvalue(res, 0, 0));
+             else
+            m_primary_key = L"ctid";
+
+        PQclear(res);
+    }
+
+
+
+
+
+    // just using start/limit with primary key works pretty well on tables <= 400,000 records
+    if (rowcnt != (xd::rowpos_t)-1 && rowcnt <= 400000 && qp.where.length() == 0 && qp.order.length() == 0)
+    {
+        if (rowcnt != (xd::rowpos_t)-1 && rowcnt <= 3000000)
+        {
+            command = L"SELECT count(*) from " + m_table;
+            res = PQexec(conn, kl::toUtf8(command));
+            if (PQresultStatus(res) != PGRES_TUPLES_OK || PQntuples(res) < 1)
+            {
+                PQclear(res);
+                return false;
+            }
+
+            m_row_count = atoi(PQgetvalue(res,0,0));
+        }
+
+        m_mode = modeOffsetLimit;
+
+        m_block_start = 1;
+        m_block_row = 0;
+        m_block_rowcount = 0;
+        goFirst();
+
+        return init(conn, m_res, fd);
+    }
+     else if (rowcnt != (xd::rowpos_t)-1 && rowcnt <= 40000000 && m_primary_key != L"ctid" && qp.where.length() == 0 && qp.order.length() == 0)
+    {
+        m_mode = modePagingTable;
+
+        m_pager_step = 5000;
+
+        std::wstring pagertbl = xd::getTemporaryPath();
+        
+        command = L"SELECT key from (SELECT row_number() OVER (ORDER BY " + m_primary_key + L") AS rownum, " +
+                    m_primary_key + L" AS key FROM " + m_table + L") a WHERE ((rownum-1) % " + kl::itowstring(m_pager_step) + L") = 0";
+
+        m_pager_res = PQexec(conn, kl::toUtf8(command));
+
+        // grab the number of rows
+
+        int ntuples = PQntuples(m_pager_res);
+        if (ntuples == 0)
+        {
+            PQclear(res);
+            PQclear(m_pager_res);
+            m_pager_res = NULL;
+
+            return false;
+        }
+
+        m_row_count = ((xd::rowpos_t)(ntuples-1) * m_pager_step);
+
+        command = L"SELECT COUNT(*) FROM " + m_table + L" WHERE " + m_primary_key + L" >= " + kl::towstring(PQgetvalue(m_pager_res, ntuples-1, 0));
+        PGresult* res = PQexec(conn, kl::toUtf8(command));
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+            PQclear(m_pager_res);
+            m_pager_res = NULL;
+            return false;
+        }
+
+        m_row_count += atoi(PQgetvalue(res, 0, 0));
+        PQclear(res);
+
+        m_block_start = 1;
+        m_block_row = 0;
+        m_block_rowcount = 0;
+        goFirst();
+
+        return init(conn, m_res, fd);
+    }
+     else
+    {
+        m_mode = modeRowidPager;
+
+        m_pager_step = 1;
+
+        std::wstring pagertbl = xd::getTemporaryPath();
+        std::wstring sql;
+        
+        sql = L"SELECT ctid from " + m_table;
+
+        if (qp.where.length() > 0)
+        {
+            sql += L" WHERE ";
+            sql += qp.where;
+        }
+
+        if (qp.order.length() > 0)
+        {
+            sql += L" ORDER BY ";
+            sql += qp.order;
+        }
+
+        m_pager_res = PQexec(conn, kl::toUtf8(sql));
+
+        // grab the number of rows
+        m_row_count = PQntuples(m_pager_res);
+
+        m_block_start = 1;
+        m_block_row = 0;
+        m_block_rowcount = 0;
+        goFirst();
+
+        return init(conn, m_res, fd);
+    }
+
+/*
+        m_mode = modeSequenceTable;
+
+        std::wstring pagertbl = xd::getTemporaryPath();
+        std::wstring command = L"CREATE TABLE " + pagertbl + L" AS SELECT (row_number() OVER (ORDER BY " + m_primary_key + L"))-1 AS xdpgsql_rownum, " + m_primary_key + L" AS xdpgsql_key FROM " + m_table;
+
+        res = PQexec(conn, kl::toUtf8(command));
+        if (PQresultStatus(res) != PGRES_COMMAND_OK)
+        {
+            PQclear(res);
+            return false;
+        }
+
+        // grab the number of rows
+
+        const char* rows_affected = PQcmdTuples(res);
+
+        if (strlen(rows_affected) > 0)
+            m_row_count = atoi(rows_affected);
+        PQclear(res);
+
+
+        res = PQexec(conn, kl::toUtf8(L"ALTER TABLE " + pagertbl + L" ADD PRIMARY KEY (xdpgsql_rownum)"));
+        if (PQresultStatus(res) != PGRES_COMMAND_OK)
+        {
+            PQclear(res);
+            return false;
+        }
+        PQclear(res);
+
+
+
+        m_pager = pagertbl;
+
+        m_block_start = 1;
+        m_block_row = 0;
+        m_block_rowcount = 0;
+        goFirst();
+
+        return init(conn, m_res, fd);
+    */
+
+
+
+    /*
+        m_mode = modePagingTable;
+
+        std::wstring pagertbl = xd::getTemporaryPath();
+        std::wstring command = L"CREATE TABLE " + pagertbl + L" AS SELECT xdpgsql_rownum-1 as xdpgsql_rownum, xdpgsql_key from (SELECT row_number() OVER (ORDER BY " + m_primary_key + L") AS xdpgsql_rownum, " +
+                               m_primary_key + L" AS xdpgsql_key FROM " + m_table + L") a WHERE ((xdpgsql_rownum-1) % 10000) = 0";
+
+        res = PQexec(conn, kl::toUtf8(command));
+        if (PQresultStatus(res) != PGRES_COMMAND_OK)
+        {
+            PQclear(res);
+            return false;
+        }
+
+        // grab the number of rows
+
+
+        const char* rows_affected = PQcmdTuples(res);
+
+        if (strlen(rows_affected) > 0)
+        {
+            unsigned int rows = (atoi(rows_affected)-1) * 10000;
+            PQclear(res);
+
+            command = L"SELECT COUNT(*) FROM " + m_table + L" WHERE " + m_primary_key + L" >= (SELECT MAX(xdpgsql_key) FROM " + pagertbl + L")";
+            res = PQexec(conn, kl::toUtf8(command));
+            if (PQresultStatus(res) != PGRES_TUPLES_OK)
+            {
+                PQclear(res);
+                return false;
+            }
+
+            rows += atoi(PQgetvalue(res, 0, 0));
+
+            m_row_count = rows;
+        }
+         else
+        {
+            PQclear(res);
+        }
+
+        
+        res = PQexec(conn, kl::toUtf8(L"ALTER TABLE " + pagertbl + L" ADD PRIMARY KEY (xdpgsql_rownum)"));
+        if (PQresultStatus(res) != PGRES_COMMAND_OK)
+        {
+            PQclear(res);
+            return false;
+        }
+
+        m_pager = pagertbl;
+
+        m_block_start = 1;
+        m_block_row = 0;
+        m_block_rowcount = 0;
+        goFirst();
+
+        return init(conn, m_res, fd);
+        */
+
+
 }
 
 bool PgsqlIterator::init(PGconn* conn, const std::wstring& query, const xd::FormatDefinition* fd)
@@ -111,9 +425,9 @@ bool PgsqlIterator::init(PGconn* conn, const std::wstring& query, const xd::Form
         PQclear(res);
 
 
-        if (rowcnt != (xd::rowpos_t)-1 && rowcnt < 10000)
+        if (rowcnt != (xd::rowpos_t)-1 && rowcnt < 20000)
         {
-            m_server_side_cursor = false;
+            m_mode = modeResult;
 
             PGresult* res = PQexec(conn, kl::toUtf8(query));
             if (!res)
@@ -191,14 +505,14 @@ bool PgsqlIterator::init(PGconn* conn, const std::wstring& query, const xd::Form
             m_block_start = 1;
             m_block_row = 0;
             m_block_rowcount = PQntuples(res);
-            m_server_side_cursor = true;
+            m_mode = modeCursor;
         }
 
         return init(conn, res, fd);
     } 
      else
     {
-        m_server_side_cursor = false;
+        m_mode = modeResult;
 
         PGresult* res = PQexec(conn, kl::toUtf8(query));
         if (!res)
@@ -354,16 +668,16 @@ void PgsqlIterator::skip(int delta)
 {
     m_row_pos += delta;
 
-    if (m_server_side_cursor)
+    if (m_row_pos >= m_block_start && m_row_pos < m_block_start + m_block_rowcount)
     {
         m_eof = false;
+        m_block_row = (int)(m_row_pos - m_block_start);
+        return;
+    }
 
-        if (m_row_pos >= m_block_start && m_row_pos < m_block_start + m_block_rowcount)
-        {
-            m_block_row = (int)(m_row_pos - m_block_start);
-            return;
-        }
-
+    if (m_mode == modeCursor)
+    {
+        m_eof = false;
 
         if (m_row_pos == m_block_start + m_block_rowcount)
         {
@@ -380,6 +694,7 @@ void PgsqlIterator::skip(int delta)
          else
         {
             PQclear(m_res);
+            m_res = NULL;
 
             // reposition
             char q[80];
@@ -395,44 +710,280 @@ void PgsqlIterator::skip(int delta)
                 m_eof = true;
        }
     }
-     else
+     else if (m_mode == modeResult)
     {
         m_block_row += delta;
         m_eof = (m_block_row >= PQntuples(m_res));
+    }
+     else if (m_mode == modeOffsetLimit)
+    {
+        PQclear(m_res);
+        m_res = NULL;
+
+        std::wstring sql = L"SELECT * from " + m_table + L" ORDER BY " + m_primary_key + L" OFFSET " + kl::itowstring(m_row_pos-1) + L" LIMIT 100";
+
+        PGconn* conn = m_database->createConnection();
+        m_res = PQexec(conn, kl::toUtf8(sql));
+        m_database->closeConnection(conn);
+
+        m_block_start = m_row_pos;
+        m_block_rowcount = PQntuples(m_res);
+        m_block_row = 0;
+        if (m_block_rowcount == 0)
+            m_eof = true;
+    }
+     else if (m_mode == modePagingTable)
+    {
+        PQclear(m_res);
+        m_res = NULL;
+        
+        PGconn* conn = m_database->createConnection();
+
+        int start_block = (m_row_pos-1) / m_pager_step;
+        int start_offset = (m_row_pos-1) % m_pager_step;
+
+        if (start_block < PQntuples(m_pager_res))
+        {
+            const char* key = PQgetvalue(m_pager_res, start_block, 0);
+
+            std::wstring sql = L"SELECT * from " + m_table + L" WHERE " + m_primary_key + L" >= " + kl::towstring(key) + L" ORDER BY " + m_primary_key + L" OFFSET " + kl::itowstring(start_offset) + L" LIMIT 100";
+
+            m_res = PQexec(conn, kl::toUtf8(sql));
+            m_block_start = m_row_pos;
+            m_block_rowcount = PQntuples(m_res);
+            m_block_row = 0;
+            if (m_block_rowcount == 0)
+                m_eof = true;
+
+        }
+         else
+        {
+            m_block_start = m_row_pos;
+            m_block_rowcount = 0;
+            m_block_row = 0;
+            m_eof = true;
+        }
+
+        m_database->closeConnection(conn);
+    }
+     else if (m_mode == modeRowidPager)
+    {
+        PQclear(m_res);
+        m_res = NULL;
+
+        int i;
+        int row_start = m_row_pos-1;
+        int row_end = row_start + 100;
+
+//SELECT tbl.* from (VALUES ('(0,1)'::tid,0),('(0,2)'::tid,1),('(0,3)'::tid,2),('(0,4)'::tid,3),('(0,5)'::tid,4),('(0,6)'::tid,5)) AS rows (rowid, ordering) INNER JOIN (SELECT *, ctid AS xdpgsql_rowid FROM aa WHERE ctid IN ('(0,1)'::tid,'(0,2)'::tid,'(0,3)'::tid,'(0,4)'::tid,'(0,5)'::tid,'(0,6)'::tid)) AS tbl on rows.rowid=tbl.xdpgsql_rowid ORDER BY rows.ordering;
+        
+        std::wstring sql = L"SELECT tbl.* FROM (VALUES ";
+
+        for (i = row_start; i < row_end; ++i)
+        {
+            const char* val = PQgetvalue(m_pager_res, i, 0);
+            if (!val)
+            {
+                row_end = i;
+                break;
+            }
+
+            if (i > row_start)
+                sql += L",";
+            sql += (L"('" + kl::towstring(val) + L"'::tid," + kl::itowstring(i-row_start) + L")");
+        }
+
+        sql += L")  AS rows (rowid, ordering) INNER JOIN (SELECT *, ctid AS xdpgsql_rowid FROM " + m_table + L" WHERE ctid IN (";
+        for (i = row_start; i < row_end; ++i)
+        {
+            if (i > row_start)
+                sql += L",";
+            sql += L"'" + kl::towstring(PQgetvalue(m_pager_res, i, 0)) + L"'::tid";
+        }
+
+        sql += L")) AS tbl on rows.rowid=tbl.xdpgsql_rowid ORDER BY rows.ordering";
+
+        PGconn* conn = m_database->createConnection();
+        m_res = PQexec(conn, kl::toUtf8(sql));
+        m_database->closeConnection(conn);
+
+        m_block_start = m_row_pos;
+        m_block_rowcount = PQntuples(m_res);
+        m_block_row = 0;
+        if (m_block_rowcount == 0)
+            m_eof = true;
+
+        /*
+    (1,1),
+    (3,2),
+    (2,3),
+    (4,4)
+) as x (id, ordering) on c.id = x.id
+order by x.ordering
+        */
+
+        /*
+        if (start_block < PQntuples(m_pager_res))
+        {
+            const char* key = PQgetvalue(m_pager_res, start_block, 0);
+
+
+            m_res = PQexec(conn, kl::toUtf8(sql));
+            m_block_start = m_row_pos;
+            m_block_rowcount = PQntuples(m_res);
+            m_block_row = 0;
+            if (m_block_rowcount == 0)
+                m_eof = true;
+
+        }
+         else
+        {
+            m_block_start = m_row_pos;
+            m_block_rowcount = 0;
+            m_block_row = 0;
+            m_eof = true;
+        }
+        */
+
+
+    }
+
+    /*
+     else if (m_mode == modePagingTable)
+    {
+        PQclear(m_res);
+        m_res = NULL;
+        
+        PGconn* conn = m_database->createConnection();
+
+
+        int start_offset = (m_row_pos-1) % 10000;
+        int start_block = ((m_row_pos-1) - start_offset);
+
+        std::wstring sql = L"SELECT xdpgsql_rownum from " + m_pager + L" WHERE xdpgsql_rownum=" + kl::itowstring(start_block);
+        PGresult* res = PQexec(conn, kl::toUtf8(sql));
+        bool found = ((PQresultStatus(res) == PGRES_TUPLES_OK) && PQntuples(res) == 1) ? true : false;
+        PQclear(res);
+
+        if (found)
+        {
+            sql = L"SELECT * from " + m_table + L" WHERE " + m_primary_key + L" >= (SELECT xdpgsql_key FROM " + m_pager + L" WHERE xdpgsql_rownum=" + kl::itowstring(start_block) + 
+                  L") ORDER BY " + m_primary_key + L" OFFSET " + kl::itowstring(start_offset) + L" LIMIT 100";
+
+            m_res = PQexec(conn, kl::toUtf8(sql));
+            m_block_start = m_row_pos;
+            m_block_rowcount = PQntuples(m_res);
+            m_block_row = 0;
+            if (m_block_rowcount == 0)
+                m_eof = true;
+        }
+         else
+        {
+            m_block_start = m_row_pos;
+            m_block_rowcount = 0;
+            m_block_row = 0;
+            m_eof = true;
+        }
+
+
+
+        m_database->closeConnection(conn);
+    }
+    */
+     else if (m_mode = modeSequenceTable)
+    {
+        PQclear(m_res);
+
+        int start_row = m_row_pos-1;
+        int end_row = m_row_pos + 100;
+
+        //std::wstring sql = L"SELECT t.* from " + m_table + L" t INNER JOIN " + m_pager + L" pager ON pager.xdpgsql_key = t." + m_primary_key +
+        //                 L" WHERE pager.xdpgsql_rownum >= " + kl::itowstring(start_row) + L" AND pager.xdpgsql_rownum < " + kl::itowstring(end_row);
+        //                 L" ORDER BY pager.xdpgsql_rownum";
+
+        std::wstring sql = L"SELECT t.* from " + m_table + L" t WHERE " + m_primary_key + L" IN (SELECT xdpgsql_key FROM " + m_pager + 
+                           L" WHERE xdpgsql_rownum >= " + kl::itowstring(start_row) + L" AND xdpgsql_rownum < " + kl::itowstring(end_row) + L") ORDER BY " + m_primary_key;
+
+
+        PGconn* conn = m_database->createConnection();
+        m_res = PQexec(m_conn, kl::toUtf8(sql));
+        m_database->closeConnection(conn);
+
+        m_block_start = m_row_pos;
+        m_block_rowcount = PQntuples(m_res);
+        m_block_row = 0;
+        if (m_block_rowcount == 0)
+            m_eof = true;
     }
 }
 
 void PgsqlIterator::goFirst()
 {
-    if (m_server_side_cursor)
+    if (m_block_start == 1 && m_block_rowcount > 0)
     {
         m_row_pos = 1;
+        m_block_row = 0;
+        m_eof = false;
+        return;
+    }
 
-        if (m_block_start == 1 && m_block_rowcount > 0)
-        {
-            m_block_row = 0;
-            m_eof = false;
-            return;
-        }
-
-
+    if (m_mode == modeCursor)
+    {
         PQclear(m_res);
 
         m_res = PQexec(m_conn, "MOVE ABSOLUTE 0 from xdpgsqlcursor");
         PQclear(m_res);
 
         m_res = PQexec(m_conn, "FETCH 100 from xdpgsqlcursor");
+        m_row_pos = 1;
         m_block_start = 1;
         m_block_rowcount = PQntuples(m_res);
         m_block_row = 0;
         m_eof = (m_block_row >= PQntuples(m_res));
     }
-     else
+     else if (m_mode == modeResult)
     {
         m_row_pos = 1;
         m_block_row = 0;
         m_eof = (m_block_row >= PQntuples(m_res));
     }
+     else if (m_mode == modeOffsetLimit)
+    {
+        std::wstring sql = L"SELECT * from " + m_table + L" ORDER BY " + m_primary_key + L" OFFSET 0 LIMIT 100";
+        PGconn* conn = m_database->createConnection();
+        m_res = PQexec(conn, kl::toUtf8(sql));
+        m_database->closeConnection(conn);
+
+        m_row_pos = 1;
+        m_block_row = 0;
+        m_eof = (m_block_row >= PQntuples(m_res));
+    }
+     else
+    {
+        skip(1 - m_row_pos);
+    }
+
+    /*
+     else if (m_mode = modePagingTable)
+    {
+        PQclear(m_res);
+
+        int start_row = m_row_pos;
+        int end_row = m_row_pos + 100;
+
+        std::wstring sql = L"SELECT t.* from " + m_table + L" t INNER JOIN " + m_pager + L" pager ON pager.xdpgsql_key = t." + m_primary_key +
+                           L" WHERE pager.xdpgsql_rownum >= 1 AND pager.xdpgsql_rownum < 100 "
+                           L" ORDER BY pager.xdpgsql_rownum";
+
+        PGconn* conn = m_database->createConnection();
+        m_res = PQexec(m_conn, kl::toUtf8(sql));
+        m_database->closeConnection(conn);
+
+        m_row_pos = 1;
+        m_block_row = 0;
+        m_eof = (m_block_row >= PQntuples(m_res));
+    }
+    */
 }
 
 void PgsqlIterator::goLast()
@@ -486,6 +1037,10 @@ xd::Structure PgsqlIterator::getStructure()
     std::vector<PgsqlDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
+        // skip internal field names
+        if ((*it)->name.substr(0, 8) == L"xdpgsql_")
+            continue;
+
         if ((*it)->isCalculated())
         {
             xd::ColumnInfo col;

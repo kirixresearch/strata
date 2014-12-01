@@ -1576,7 +1576,7 @@ xd::IIteratorPtr PgsqlDatabase::query(const xd::QueryParams& qp)
         return m_xdfs->query(newqp);
     }
 
-
+    /*
     query = L"SELECT * FROM ";
     query += pgsqlQuoteIdentifierIfNecessary(tbl);
 
@@ -1592,12 +1592,12 @@ xd::IIteratorPtr PgsqlDatabase::query(const xd::QueryParams& qp)
         query += L" ORDER BY ";
         query += qp.order;
     }
-    
+    */
 
     // create an iterator based on our select statement
     PgsqlIterator* iter = new PgsqlIterator(this);
 
-    if (!iter->init(conn, query, &qp.format))
+    if (!iter->init(conn, qp, &qp.format))
     {
         delete iter;
         return xcm::null;
