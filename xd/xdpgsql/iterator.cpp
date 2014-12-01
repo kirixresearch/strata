@@ -153,6 +153,8 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
             return false;
         }
 
+        m_row_count = PQntuples(res);
+
         return init(conn, res, fd);
     }
 
