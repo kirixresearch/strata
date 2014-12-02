@@ -133,10 +133,10 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
 
 
 
-    // check if the results will be less than 50000 rows; if so, then
+    // check if the results will be less than 80000 rows; if so, then
     // pull the entire result set down to a PGresult
 
-    if (rowcnt != (xd::rowpos_t)-1 && rowcnt <= 50000)
+    if (rowcnt != (xd::rowpos_t)-1 && rowcnt <= 80000)
     {
         // there is a manageable amount of rows -- just run the query
         m_mode = modeResult;
@@ -676,18 +676,16 @@ xd::IIteratorPtr PgsqlIterator::clone()
 void PgsqlIterator::skip(int delta)
 {
     m_row_pos += delta;
+    m_eof = false;
 
     if (m_row_pos >= m_block_start && m_row_pos < m_block_start + m_block_rowcount)
     {
-        m_eof = false;
         m_block_row = (int)(m_row_pos - m_block_start);
         return;
     }
 
     if (m_mode == modeCursor)
     {
-        m_eof = false;
-
         if (m_row_pos == m_block_start + m_block_rowcount)
         {
             // no need to reposition, just get the next block
@@ -738,8 +736,7 @@ void PgsqlIterator::skip(int delta)
         m_block_start = m_row_pos;
         m_block_rowcount = PQntuples(m_res);
         m_block_row = 0;
-        if (m_block_rowcount == 0)
-            m_eof = true;
+        m_eof = (m_block_rowcount == 0 ? true : false);
     }
      else if (m_mode == modePagingTable)
     {
@@ -761,9 +758,7 @@ void PgsqlIterator::skip(int delta)
             m_block_start = m_row_pos;
             m_block_rowcount = PQntuples(m_res);
             m_block_row = 0;
-            if (m_block_rowcount == 0)
-                m_eof = true;
-
+            m_eof = (m_block_rowcount == 0 ? true : false);
         }
          else
         {
@@ -819,8 +814,8 @@ void PgsqlIterator::skip(int delta)
         m_block_start = m_row_pos;
         m_block_rowcount = PQntuples(m_res);
         m_block_row = 0;
-        if (m_block_rowcount == 0)
-            m_eof = true;
+        m_eof = (m_block_rowcount == 0 ? true : false);
+
 
         /*
     (1,1),
@@ -921,8 +916,7 @@ order by x.ordering
         m_block_start = m_row_pos;
         m_block_rowcount = PQntuples(m_res);
         m_block_row = 0;
-        if (m_block_rowcount == 0)
-            m_eof = true;
+        m_eof = (m_block_rowcount == 0 ? true : false);
     }
 }
 
