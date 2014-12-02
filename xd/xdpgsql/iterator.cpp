@@ -97,9 +97,7 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
     PGresult* res;
 
     m_conn = conn;
-
     m_table = pgsqlGetTablenameFromPath(qp.from);
-
 
     // create a sql query
 
@@ -447,7 +445,7 @@ bool PgsqlIterator::init(PGconn* conn, const std::wstring& query, const xd::Form
             conn = NULL;
             m_row_count = PQntuples(res);
 
-            return init(NULL, res, fd);
+            return init(conn, res, fd);
         }
 
 
@@ -619,6 +617,15 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res, const xd::FormatDefinition
         m_structure.clear();
     }
     
+
+
+    // close the connection unless we need it (server-side cursor)
+    if (m_conn && m_mode != modeCursor)
+    {
+        m_database->closeConnection(m_conn);
+        m_conn = NULL;
+    }
+
     return true;
 }
 
@@ -908,7 +915,7 @@ order by x.ordering
 
 
         PGconn* conn = m_database->createConnection();
-        m_res = PQexec(m_conn, kl::toUtf8(sql));
+        m_res = PQexec(conn, kl::toUtf8(sql));
         m_database->closeConnection(conn);
 
         m_block_start = m_row_pos;
@@ -978,7 +985,7 @@ void PgsqlIterator::goFirst()
                            L" ORDER BY pager.xdpgsql_rownum";
 
         PGconn* conn = m_database->createConnection();
-        m_res = PQexec(m_conn, kl::toUtf8(sql));
+        m_res = PQexec(conn, kl::toUtf8(sql));
         m_database->closeConnection(conn);
 
         m_row_pos = 1;
