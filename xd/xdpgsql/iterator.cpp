@@ -719,7 +719,7 @@ void PgsqlIterator::skip(int delta)
     }
      else if (m_mode == modeResult)
     {
-        m_block_row += delta;
+        m_block_row = (m_row_pos-1);
         m_eof = (m_block_row >= PQntuples(m_res));
     }
      else if (m_mode == modeOffsetLimit)
