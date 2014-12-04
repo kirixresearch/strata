@@ -1083,7 +1083,7 @@ void Controller::apiDescribeTable(RequestInfo& req)
 
 static void quotedAppend(std::wstring& str, const std::wstring& cell)
 {
-    str += '"';
+    str += L'"';
 
     const wchar_t* ch = cell.c_str();
     unsigned int i;
@@ -1105,6 +1105,38 @@ static void quotedAppend(std::wstring& str, const std::wstring& cell)
          else
         {
             str += *ch;
+        }
+
+        ch++;
+    }
+
+    str += L'"';
+}
+
+static void quotedAppend(std::string& str, const std::wstring& cell)
+{
+    str += '"';
+
+    const wchar_t* ch = cell.c_str();
+    unsigned int i;
+
+    while (*ch)
+    {
+        if (*ch == '"' || *ch == '\\')
+            str += '\\';
+
+        i = *ch;
+        if (i > 65535)
+        {
+            // omit high unicode
+        }
+         else if (i > 127)
+        {
+            str += kl::stdsprintf("\\u%04x", i);
+        }
+         else
+        {
+            str += (char)(unsigned char)*ch;
         }
 
         ch++;
@@ -1239,9 +1271,6 @@ void Controller::apiRead(RequestInfo& req)
         }
     }
     
-    std::wstring str;
-    str.reserve((limit>0?limit:100)*180);
-    
 
     if (start == -1)
     {
@@ -1267,15 +1296,16 @@ void Controller::apiRead(RequestInfo& req)
         }
     }
 
-    str = L"";
-
+    std::string str;
+    str.reserve((limit>0?limit:100)*180);
+    
     if (handle.empty())
-        str += L"{\"success\": true,";
+        str += "{\"success\": true,";
          else
-        str += L"{\"success\": true,\"handle\": \"" + handle + L"\",";
+        str += "{\"success\": true,\"handle\": \"" + kl::tostring(handle) + "\",";
 
     if (so->rowcount != -1)
-        str += L"\"total_count\": \"" +  kl::itowstring((int)so->rowcount) + L"\", ";
+        str += "\"total_count\": \"" +  kl::itostring((int)so->rowcount) + "\", ";
 
     if (metadata)
     {
@@ -1283,7 +1313,7 @@ void Controller::apiRead(RequestInfo& req)
         if (structure.isOk())
         {
             // set the items
-            str += L"\"columns\":[";
+            str += "\"columns\":[";
 
             size_t idx, count = structure.getColumnCount();
             for (idx = 0; idx < count; ++idx)
@@ -1291,19 +1321,19 @@ void Controller::apiRead(RequestInfo& req)
                 const xd::ColumnInfo& info = structure.getColumnInfoByIdx(idx);
 
                 if (idx > 0)
-                    str += L",";
+                    str += ",";
 
-                str += L"{\"name\":";
+                str += "{\"name\":";
                 quotedAppend(str, info.name);
-                str += L",\"type\":\"" +  xd::dbtypeToString(info.type) + L"\"";
-                str += L",\"width\":" + kl::itowstring(info.width);
-                str += L",\"scale\":" + kl::itowstring(info.scale);
-                str += L",\"expression\":";
+                str += ",\"type\":\"" +  kl::tostring(xd::dbtypeToString(info.type)) + "\"";
+                str += ",\"width\":" + kl::itostring(info.width);
+                str += ",\"scale\":" + kl::itostring(info.scale);
+                str += ",\"expression\":";
                 quotedAppend(str, info.expression);
-                str += L"}";
+                str += "}";
             }
 
-            str += L"],";
+            str += "],";
         }
     }
 
@@ -1331,7 +1361,7 @@ void Controller::apiRead(RequestInfo& req)
     }
 
 
-    str += L"\"rows\":[";
+    str += "\"rows\":[";
     
     int row = 0, col, rowcnt = 0;
     for (row = 0; (limit >= 0 ? row < limit : true); ++row)
@@ -1340,9 +1370,9 @@ void Controller::apiRead(RequestInfo& req)
             break;
         
         if (rowcnt > 0)
-            str += L"},{";
+            str += "},{";
              else
-            str += L"{";
+            str += "{";
         
         rowcnt++;
         
@@ -1351,10 +1381,10 @@ void Controller::apiRead(RequestInfo& req)
             column = &(*columns)[col];
 
             if (col > 0)
-                str += L",";
+                str += ",";
             
             quotedAppend(str, column->name);
-            str += L":";
+            str += ":";
 
             switch (column->type)
             {
@@ -1363,41 +1393,50 @@ void Controller::apiRead(RequestInfo& req)
                     break;
                 
                 case xd::typeInteger:
-                    str += kl::itowstring(iter->getInteger(column->handle));
+                    str += kl::itostring(iter->getInteger(column->handle));
                     break;
                 
                 case xd::typeBoolean:
-                    quotedAppend(str, iter->getBoolean(column->handle) ? L"true" : L"false");
-                    break;
+                {
+                    if (iter->getBoolean(column->handle))
+                        str += "true";
+                         else
+                        str += "false";
+                }
+                break;
                 
                 case xd::typeNumeric:
                 case xd::typeDouble:
                 {
-                    wchar_t buf[64];
-                    swprintf(buf, 64, L"%.*f", column->scale, iter->getDouble(column->handle));
+                    char buf[64];
+                    snprintf(buf, 64, "%.*f", column->scale, iter->getDouble(column->handle));
                     str += buf;
                 }
                 break;
                 
                 case xd::typeDate:
                 {
-                    wchar_t buf[16];
+                    char buf[16];
                     buf[0] = 0;
                     xd::DateTime dt = iter->getDateTime(column->handle);
                     if (!dt.isNull())
-                        swprintf(buf, 16, L"%04d-%02d-%02d", dt.getYear(), dt.getMonth(), dt.getDay());
-                    quotedAppend(str, buf);
+                        snprintf(buf, 16, "%04d-%02d-%02d", dt.getYear(), dt.getMonth(), dt.getDay());
+                    str += "\"";
+                    str += buf;
+                    str += "\"";
                 }
                 break;
                 
                 case xd::typeDateTime:
                 {
-                    wchar_t buf[32];
+                    char buf[32];
                     buf[0] = 0;
                     xd::DateTime dt = iter->getDateTime(column->handle);
                     if (!dt.isNull())
-                        swprintf(buf, 32, L"%04d-%02d-%02d %02d:%02d:%02d", dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
-                    quotedAppend(str, buf);
+                        snprintf(buf, 32, "%04d-%02d-%02d %02d:%02d:%02d", dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
+                    str += "\"";
+                    str += buf;
+                    str += "\"";
                 }
                 break;
             }
@@ -1408,9 +1447,9 @@ void Controller::apiRead(RequestInfo& req)
     }
     
     if (rowcnt == 0)
-        str += L"]}";
+        str += "]}";
          else
-        str += L"}]}";
+        str += "}]}";
     
     if (evalvec)
     {
@@ -1431,7 +1470,7 @@ void Controller::apiRead(RequestInfo& req)
             delete so;
     }
 
-    req.write(kl::tostring(str));
+    req.write(str);
 }
 
 

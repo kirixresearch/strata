@@ -552,7 +552,13 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res, const xd::FormatDefinition
 
     for (i = 0; i < col_count; ++i)
     {
-        col_name = kl::towstring(PQfname(m_res, i));
+        const char* pg_col_name = PQfname(m_res, i);
+
+        // skip internal field names
+        if (0 == strncmp(pg_col_name, "xdpgsql_", 8))
+            continue;
+
+        col_name = kl::towstring(pg_col_name);
         col_pg_type = PQftype(m_res, i);
         col_xd_type = pgsqlToXdType(col_pg_type);
         col_width = 255;
@@ -719,7 +725,7 @@ void PgsqlIterator::skip(int delta)
     }
      else if (m_mode == modeResult)
     {
-        m_block_row = (m_row_pos-1);
+        m_block_row = (int)(m_row_pos-1);
         m_eof = (m_block_row >= PQntuples(m_res));
     }
      else if (m_mode == modeOffsetLimit)
@@ -727,7 +733,7 @@ void PgsqlIterator::skip(int delta)
         PQclear(m_res);
         m_res = NULL;
 
-        std::wstring sql = L"SELECT * from " + m_table + L" ORDER BY " + m_primary_key + L" OFFSET " + kl::itowstring(m_row_pos-1) + L" LIMIT 100";
+        std::wstring sql = L"SELECT * from " + m_table + L" ORDER BY " + m_primary_key + L" OFFSET " + kl::itowstring((int)(m_row_pos-1)) + L" LIMIT 100";
 
         PGconn* conn = m_database->createConnection();
         m_res = PQexec(conn, kl::toUtf8(sql));
@@ -745,8 +751,8 @@ void PgsqlIterator::skip(int delta)
         
         PGconn* conn = m_database->createConnection();
 
-        int start_block = (m_row_pos-1) / m_pager_step;
-        int start_offset = (m_row_pos-1) % m_pager_step;
+        int start_block = (int)((m_row_pos-1) / m_pager_step);
+        int start_offset = (int)((m_row_pos-1) % m_pager_step);
 
         if (start_block < PQntuples(m_pager_res))
         {
@@ -776,7 +782,7 @@ void PgsqlIterator::skip(int delta)
         m_res = NULL;
 
         int i;
-        int row_start = m_row_pos-1;
+        int row_start = (int)(m_row_pos-1);
         int row_end = row_start + 100;
 
 //SELECT tbl.* from (VALUES ('(0,1)'::tid,0),('(0,2)'::tid,1),('(0,3)'::tid,2),('(0,4)'::tid,3),('(0,5)'::tid,4),('(0,6)'::tid,5)) AS rows (rowid, ordering) INNER JOIN (SELECT *, ctid AS xdpgsql_rowid FROM aa WHERE ctid IN ('(0,1)'::tid,'(0,2)'::tid,'(0,3)'::tid,'(0,4)'::tid,'(0,5)'::tid,'(0,6)'::tid)) AS tbl on rows.rowid=tbl.xdpgsql_rowid ORDER BY rows.ordering;
@@ -898,8 +904,8 @@ order by x.ordering
     {
         PQclear(m_res);
 
-        int start_row = m_row_pos-1;
-        int end_row = m_row_pos + 100;
+        int start_row = (int)(m_row_pos-1);
+        int end_row = start_row + 100;
 
         //std::wstring sql = L"SELECT t.* from " + m_table + L" t INNER JOIN " + m_pager + L" pager ON pager.xdpgsql_key = t." + m_primary_key +
         //                 L" WHERE pager.xdpgsql_rownum >= " + kl::itowstring(start_row) + L" AND pager.xdpgsql_rownum < " + kl::itowstring(end_row);
@@ -963,7 +969,7 @@ void PgsqlIterator::goFirst()
     }
      else
     {
-        skip(1 - m_row_pos);
+        skip((int)(1 - m_row_pos));
     }
 
     /*
@@ -1040,10 +1046,6 @@ xd::Structure PgsqlIterator::getStructure()
     std::vector<PgsqlDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        // skip internal field names
-        if ((*it)->name.substr(0, 8) == L"xdpgsql_")
-            continue;
-
         if ((*it)->isCalculated())
         {
             xd::ColumnInfo col;
