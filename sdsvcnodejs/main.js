@@ -1,7 +1,7 @@
 
 
 var http = require('http');
-var http_proxy = require('http-proxy');
+//var http_proxy = require('http-proxy');
 var bouncy = require('bouncy');
 var url = require('url');
 var process = require('child_process');
