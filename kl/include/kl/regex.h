@@ -2124,7 +2124,7 @@ private:
                 if (!rp)
                 {
                     delete ror;
-                    return false;
+                    return NULL;
                 }
 
                 ror->parts.push_back(rp);
@@ -2174,7 +2174,7 @@ private:
             {
                 // if there is a parse error, return --
                 if (error)
-                    return false;
+                    return NULL;
 
                 break;
             }
@@ -2259,7 +2259,7 @@ private:
                         matchname_begin = term_start+3;
                         matchname_end = quickStrchr<charT>(matchname_begin, close);
                         if (!matchname_end || matchname_end-matchname_begin < 1)
-                            return false;
+                            return NULL;
                         subexpr_begin = matchname_end+1;
                         backref = true;
                     }
@@ -2293,7 +2293,7 @@ private:
                         }
 
                         if (!modifier_end)
-                            return false;
+                            return NULL;
 
                         if (type == 0 || type == 1)
                         {
@@ -2327,7 +2327,7 @@ private:
                         {
                             part = parseConditional(seq, term_start, next);
                             if (!part)
-                                return false;
+                                return NULL;
 
                             if (seq->m_parts.size() > 0)
                                 seq->m_parts[seq->m_parts.size() - 1]->setNextPart(part);
@@ -2394,7 +2394,7 @@ private:
             {
                 part = parseCharClass(seq, term.c_str());
                 if (part == NULL)
-                    return false;
+                    return NULL;
             }
              else if (term.length() == 1 && term[0] == L'.')
             {
@@ -2415,12 +2415,12 @@ private:
             {
                 part = parseEscapeSequence(seq, term.c_str());
                 if (part == NULL)
-                    return false;
+                    return NULL;
             }
              else if (quickStrchr<wchar_t>(L"\\^$|.?*+()[", term[0]))
             {
                 // operators, etc, don't belong as the first char --
-                return false;
+                return NULL;
             }
              else if (term.length() > 0)
             {
@@ -2442,7 +2442,7 @@ private:
                 if (error)
                 {
                     // return parse error
-                    return false;
+                    return NULL;
                 }
             }
 
@@ -2492,7 +2492,7 @@ private:
                         break;
                     }
                     default:
-                        return false;
+                        return NULL;
                 }
 
 
