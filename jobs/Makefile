@@ -12,7 +12,7 @@
 include ../top.mak
 
 
-INCLUDES = -I../kl/include -I../tango/include -I../xcm/include
+INCLUDES = -I../kl/include -I../xd/include -I../kl/include
 DEFINES = -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES
 CFLAGS = -fPIC
 LIBS = 
@@ -30,6 +30,7 @@ OBJECTS = \
 	index.o \
 	jobbase.o \
 	jobinfo.o \
+	jobqueue.o \
 	jobs.o \
 	jobspch.o \
 	load.o \

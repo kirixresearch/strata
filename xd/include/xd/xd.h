@@ -466,8 +466,8 @@ struct Structure
     size_t size() const { return columns.size(); }
     std::vector<ColumnInfo>::iterator begin() { return columns.begin(); }
     std::vector<ColumnInfo>::iterator end() { return columns.end(); }
-    std::vector<ColumnInfo>::const_iterator cbegin() const { return columns.cbegin(); }
-    std::vector<ColumnInfo>::const_iterator cend() const { return columns.cend(); }
+    std::vector<ColumnInfo>::const_iterator cbegin() const { return columns.begin(); }
+    std::vector<ColumnInfo>::const_iterator cend() const { return columns.end(); }
     xd::ColumnInfo& operator[](size_t idx) { return columns[idx]; }
     const xd::ColumnInfo& operator[](size_t idx) const { return columns[idx]; }
     Structure& operator=(const std::vector<ColumnInfo>& cols) { columns = cols; m_map.clear(); return *this; }
