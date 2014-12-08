@@ -81,11 +81,11 @@ IIndex* createExternalIndex(xd::IDatabasePtr db,
                             xd::IJob* job)
 {
     if (table_path.empty())
-        return false;
+        return NULL;
 
     xd::IFileInfoPtr finfo = db->getFileInfo(table_path);
     if (finfo.isNull())
-        return false;
+        return NULL;
 
     // job information
     IJobInternalPtr ijob;

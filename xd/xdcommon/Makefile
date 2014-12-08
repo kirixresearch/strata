@@ -31,14 +31,12 @@ OBJECTS = block.o \
 	extfileinfo.o \
 	fileinfo.o \
 	filestream.o \
+	formatdefinition.o \
 	idxutil.o \
-	indexinfo.o \
 	jobinfo.o \
 	keylayout.o \
 	localrowcache.o \
 	rowidarray.o \
-	setconfigfile.o \
-	structure.o \
 	util.o \
 	xdcommon.o \
 

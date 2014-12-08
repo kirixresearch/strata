@@ -32,7 +32,6 @@ OBJECTS = baseiterator.o \
 	bitmapfile.o \
 	database.o \
 	dbmgr.o \
-	groupqueryex.o \
 	nativetbl.o \
 	ofs.o \
 	query.o \
