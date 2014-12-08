@@ -21,10 +21,8 @@ OBJECTS = block.o \
 	cmnbaseiterator.o \
 	cmnbaseset.o \
 	cmndynamicset.o \
-	columninfo.o \
 	connectionstr.o \
 	dbattr.o \
-	dbentry.o \
 	dbfuncs.o \
 	errorinfo.o \
 	exindex.o \

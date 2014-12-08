@@ -461,8 +461,8 @@ struct Structure
 
     // stl compatibility
     void push_back(const xd::ColumnInfo& col) { columns.push_back(col); m_map.clear(); }
-    void insert(std::vector<ColumnInfo>::const_iterator it, const xd::ColumnInfo& col) { columns.insert(it, col); m_map.clear(); }
-    void erase(std::vector<ColumnInfo>::const_iterator it) { columns.erase(it); m_map.clear(); }
+    void insert(std::vector<ColumnInfo>::iterator it, const xd::ColumnInfo& col) { columns.insert(it, col); m_map.clear(); }
+    void erase(std::vector<ColumnInfo>::iterator it) { columns.erase(it); m_map.clear(); }
     size_t size() const { return columns.size(); }
     std::vector<ColumnInfo>::iterator begin() { return columns.begin(); }
     std::vector<ColumnInfo>::iterator end() { return columns.end(); }

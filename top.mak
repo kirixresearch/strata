@@ -88,6 +88,7 @@ TOP_CFLAGS := $(TOP_CFLAGS) $(OPTIMIZATION_FLAGS)
 endif
 
 TOP_CFLAGS := $(TOP_CFLAGS) $(THREADING_DEFINES)
+TOP_CFLAGS := $(TOP_CFLAGS) $(THREADING_DEFINES) --std=c++11
 
 
 
@@ -96,7 +97,8 @@ TOP_CFLAGS := $(TOP_CFLAGS) $(THREADING_DEFINES)
 SUPP_DIR := $(BASE_DIR)/supp
 
 ifeq ($(BUILD_MODE),DEBUG)
-WX_DIR := ${SUPP_DIR}/wxWidgetsDebug
+WX_DIR := ${SUPP_DIR}/wxWidgets
+#WX_DIR := ${SUPP_DIR}/wxWidgetsDebug
 else
 WX_DIR := ${SUPP_DIR}/wxWidgets
 endif
