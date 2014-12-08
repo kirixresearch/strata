@@ -15,12 +15,12 @@ all:
 	cd kl && $(MAKE) -w
 	cd paladin && $(MAKE) -w
 	cd kscript && $(MAKE) -w
-	cd tango/xdcommon && $(MAKE) -w
-	cd tango/xdfs && $(MAKE) -w
-	cd tango/xdnative && $(MAKE) -w
-	cd tango/xdodbc && $(MAKE) -w
-#	cd tango/xdoracle && $(MAKE) -w
-#	cd tango/xddrizzle && $(MAKE) -w
+	cd xd/xdcommon && $(MAKE) -w
+	cd xd/xdfs && $(MAKE) -w
+	cd xd/xdnative && $(MAKE) -w
+	cd xd/xdodbc && $(MAKE) -w
+#	cd xd/xdoracle && $(MAKE) -w
+#	cd xd/xddrizzle && $(MAKE) -w
 	cd jobs && $(MAKE) -w
 	cd kcl && $(MAKE) -w
 	cd webconnect && $(MAKE) -w
@@ -32,12 +32,12 @@ clean:
 	cd kl && $(MAKE) -w clean
 	cd paladin && $(MAKE) -w clean
 	cd kscript && $(MAKE) -w clean
-	cd tango/xdcommon && $(MAKE) -w clean
-	cd tango/xdfs && $(MAKE) -w clean
-	cd tango/xdnative && $(MAKE) -w clean
-	cd tango/xdodbc && $(MAKE) -w clean
-#	cd tango/xdoracle && $(MAKE) -w clean
-#	cd tango/xddrizzle && $(MAKE) -w clean
+	cd xd/xdcommon && $(MAKE) -w clean
+	cd xd/xdfs && $(MAKE) -w clean
+	cd xd/xdnative && $(MAKE) -w clean
+	cd xd/xdodbc && $(MAKE) -w clean
+#	cd xd/xdoracle && $(MAKE) -w clean
+#	cd xd/xddrizzle && $(MAKE) -w clean
 	cd jobs && $(MAKE) -w clean
 	cd kcl && $(MAKE) -w clean
 	cd webconnect && $(MAKE) -w clean
