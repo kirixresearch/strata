@@ -5607,7 +5607,7 @@ ExprElement* ExprParser::parseStatement(ExprParserEnv* penv,
                 m_error_loc = p;
                 m_error_code = errorUnexpectedToken;
                 m_error_text = L"";
-                return false;
+                return NULL;
             }
             p += 6; // length of "strict";
             while (isWhiteSpaceOrLS(*p))
@@ -5652,7 +5652,7 @@ ExprElement* ExprParser::parseStatement(ExprParserEnv* penv,
                     m_error_loc = p;
                     m_error_code = errorUnexpectedToken;
                     m_error_text = L"";
-                    return false;
+                    return NULL;
                 }
             }
             
