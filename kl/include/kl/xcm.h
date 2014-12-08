@@ -14,7 +14,9 @@
 
 
 #include <vector>
+#include <cstring>
 #include <string>
+#include <algorithm>
 #include <kl/thread.h>
 #include <kl/signal.h>
 
