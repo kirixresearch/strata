@@ -12,6 +12,8 @@
 #ifndef __KCL_FILEPANEL_H
 #define __KCL_FILEPANEL_H
 
+#include <wx/wx.h>
+#include <wx/listctrl.h>
 #include <vector>
 class wxTreeCtrl;
 class wxTreeEvent;

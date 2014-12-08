@@ -10,7 +10,7 @@
 
 #include <wx/wx.h>
 
-#if wxCHECK_VERSION(2,9,0)
+#if defined(__WXMSW__) && wxCHECK_VERSION(2,9,0)
 #include "wx/msw/dc.h"
 #endif
 

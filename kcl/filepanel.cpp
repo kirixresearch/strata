@@ -12,6 +12,7 @@
 
 #include <wx/wx.h>
 #include <wx/statline.h>
+#include <wx/filename.h>
 #include <wx/filectrl.h>
 #include <wx/treectrl.h>
 #include <wx/dir.h>
@@ -43,7 +44,7 @@ namespace kcl
 {
 
 /* XPM */
-static char* goparent_xpm[] = {
+static const char* goparent_xpm[] = {
 "16 16 5 1",
 "  c None",
 ". c Black",
@@ -337,7 +338,7 @@ enum
 };
 
 
-BEGIN_EVENT_TABLE(FilePanel, wxNavigationEnabled<wxPanel>)
+BEGIN_EVENT_TABLE(FilePanel, wxPanel)
     EVT_TREE_SEL_CHANGING(ID_Location_TreeCtrl, FilePanel::onTreeSelectionChanging)
     EVT_TREE_SEL_CHANGED(ID_Location_TreeCtrl, FilePanel::onTreeSelectionChanged)
     EVT_LIST_ITEM_SELECTED(ID_File_Ctrl, FilePanel::onFileCtrlItemSelected)
@@ -375,6 +376,7 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
     wxString desktop_dir = home_dir + "/Desktop";
     wxString downloads_dir = home_dir + "/Downloads";
     wxString music_dir = home_dir + "/Music";
+    wxString pictures_dir = home_dir + "/Pictures";
     wxString videos_dir = home_dir + "/Videos";
 #endif
 
@@ -470,7 +472,7 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
         drive += _tcslen(drive)+1;
     }
 #else
-    m_location_tree->AppendItem(computer_id, drive_names[i], drive_icons[i],  -1, new LocationTreeData(drives[i]));
+//    m_location_tree->AppendItem(computer_id, drive_names[i], drive_icons[i],  -1, new LocationTreeData(drives[i]));
 #endif
 /*
     wxArrayString drives, drive_names;

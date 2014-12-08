@@ -451,7 +451,7 @@ public:
     void Notify()
     {
         // the user is no longer dragging data, so stop the timer notification
-        if (!::wxGetMouseState().LeftDown())
+        if (!::wxGetMouseState().LeftIsDown())
             Stop();
 
         if (!m_drop_target)
@@ -651,7 +651,7 @@ void GridDataDropTarget::OnLeave()
         
     // if we're leaving the drop target and the left mouse button
     // is down, begin the scroll timer for grid scrolling
-    if (::wxGetMouseState().LeftDown())
+    if (::wxGetMouseState().LeftIsDown())
         m_scroll_timer->beginNotify();
 }
 

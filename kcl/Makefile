@@ -25,13 +25,14 @@ LIBS = ${WX_LIBS}
 
 OBJECTS = \
 	bannercontrol.o \
-    bitmapcombo.o \
+	bitmapcombo.o \
+	borderpanel.o \
 	button.o \
 	buttonbar.o \
 	colordropdown.o \
-	borderpanel.o \
 	colorpanel.o \
-    colorselector.o \
+	colorselector.o \
+	filepanel.o \
 	grid.o \
 	griddnd.o \
 	gridmemmodel.o \
@@ -40,9 +41,9 @@ OBJECTS = \
 	rowselectiongrid.o \
 	rulercontrol.o \
 	scrolllistcontrol.o \
+	util.o \
 	validcontrol.o \
-	wizard.o \
-	xmdi.o
+	wizard.o 
 
 all: libkcl.a
 
