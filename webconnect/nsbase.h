@@ -12,6 +12,7 @@
 #ifndef __WXWEBCONNECT_NSBASE_H
 #define __WXWEBCONNECT_NSBASE_H
 
+
     
 #ifdef WIN32
 #define XP_WIN
@@ -35,6 +36,28 @@ class nsILocalFile;
 struct nsStringContainer;
 struct nsCStringContainer;
 
+#ifdef _MSC_VER
+typedef unsigned long long uint64_t;
+typedef long long int64_t;
+typedef int int32_t;
+typedef unsigned int uint32_t;
+typedef short int int16_t;
+typedef short int char16_t;
+typedef unsigned short int uint16_t;
+typedef unsigned char uint8_t;
+typedef signed char int8_t;
+#else
+typedef unsigned long long uint64_t;
+typedef long int int64_t;
+typedef int int32_t;
+typedef unsigned int uint32_t;
+typedef short int int16_t;
+typedef short int char16_t;
+typedef unsigned short int uint16_t;
+typedef unsigned char uint8_t;
+typedef signed char int8_t;
+#endif
+
 
 typedef int PRBool;
 typedef unsigned char PRUint8;
@@ -44,7 +67,7 @@ typedef short int PRInt16;
 typedef unsigned int PRUint32;
 typedef int PRInt32;
 typedef size_t PRSize;
-typedef long long PRInt64;
+typedef int64_t PRInt64;
 typedef unsigned long long PRUint64;
 typedef PRUint64 PRTime;
 
@@ -52,16 +75,6 @@ typedef PRUint32 nsresult;
 typedef unsigned long nsrefcnt;
 
 
-#ifdef _MSC_VER
-typedef unsigned long long uint64_t;
-typedef long long int64_t;
-typedef int int32_t;
-typedef unsigned int uint32_t;
-typedef short int int16_t;
-typedef unsigned short int uint16_t;
-typedef unsigned char uint8_t;
-typedef char int8_t;
-#endif
 
 #define PR_CALLBACK
 

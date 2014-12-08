@@ -2105,7 +2105,7 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 
-BEGIN_EVENT_TABLE(wxWebControl, wxNavigationEnabled<wxControl>)
+BEGIN_EVENT_TABLE(wxWebControl, wxControl)
     EVT_SIZE(wxWebControl::OnSize)
     EVT_SET_FOCUS(wxWebControl::OnSetFocus)
     EVT_KILL_FOCUS(wxWebControl::OnKillFocus)
