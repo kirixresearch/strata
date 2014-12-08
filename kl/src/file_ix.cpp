@@ -264,7 +264,7 @@ bool xf_trylock(xf_file_t fileh, xf_off_t offset, xf_off_t len, int milliseconds
 bool xf_truncate(xf_file_t fileh)
 {
     fseek((FILE*)fileh, 0, SEEK_SET);
-    return (ftruncate(fileno((FILE*)fp), 0) == 0 ? true : false);
+    return (ftruncate(fileno((FILE*)fileh), 0) == 0 ? true : false);
 }
 
 xf_off_t xf_get_file_pos(xf_file_t fileh)
