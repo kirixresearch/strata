@@ -25,12 +25,31 @@ std::wstring Uint64ToHex(unsigned long long num)
     return buf;
 }
 
+// wcsrev is not available on linux, so we'll use our own
+static wchar_t* klwcsrev(wchar_t* s)
+{
+    wchar_t *p1, *p2;
+    wchar_t tmp;
+
+    if (!s || !*s)
+        return s;
+
+    for (p1 = s, p2 = s + wcslen(s) - 1; p2 > p1; ++p1, --p2)
+    {
+        tmp = *p1;
+        *p1 = *p2;
+        *p2 = tmp;
+    }
+
+    return s;
+}
+
 unsigned long long hexToUint64(const std::wstring& _code)
 {
     static const wchar_t* hexchars = L"0123456789ABCDEF";
 
     wchar_t* code = wcsdup(_code.c_str());
-    wcsrev(code);
+    klwcsrev(code);
 
     unsigned long long retval = 0;
     unsigned long long multiplier = 1;
