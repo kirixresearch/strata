@@ -65,8 +65,8 @@ std::wstring xf_get_file_contents(const std::wstring& path, bool* success)
 bool xf_put_file_contents(const std::wstring& path, const std::wstring& contents)
 {
     bool is_unicode = false;
-    std::wstring::const_iterator it, it_end = contents.cend();
-    for (it = contents.cbegin(); it != it_end; ++it)
+    std::wstring::const_iterator it, it_end = contents.end();
+    for (it = contents.begin(); it != it_end; ++it)
     {
         if (*it > (wchar_t)127)
         {
@@ -304,8 +304,8 @@ bool exclusive_file::putContents(const std::wstring& contents)
     xf_truncate(m_f);
 
     bool is_unicode = false;
-    std::wstring::const_iterator it, it_end = contents.cend();
-    for (it = contents.cbegin(); it != it_end; ++it)
+    std::wstring::const_iterator it, it_end = contents.end();
+    for (it = contents.begin(); it != it_end; ++it)
     {
         if (*it > (wchar_t)127)
         {

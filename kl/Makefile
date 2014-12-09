@@ -20,13 +20,19 @@ LIBS =
 
 OBJECTS = \
 	base64.o \
+	config.o \
+	crc.o \
 	crypt.o \
+	file_common.o \
 	file_ix.o \
+	hex.o \
 	json.o \
 	math.o \
 	md5.o \
 	memory.o \
 	string.o \
+	system.o \
+	thread.o \
 	url.o \
 	utf8.o \
 	xcm.o \
