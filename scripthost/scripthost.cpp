@@ -23,7 +23,6 @@
 #include "base64.h"
 #include "crypt.h"
 #include "hash.h"
-#include "process.h"
 #include <kl/utf8.h>
 #include <kl/thread.h>
 #include <kl/file.h>
