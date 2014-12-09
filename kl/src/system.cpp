@@ -26,7 +26,7 @@ void millisleep(int milliseconds)
 #ifdef WIN32
     ::Sleep(milliseconds);
 #else
-    ::usleep(milliseonds*1000);
+    ::usleep(milliseconds*1000);
 #endif
 }
 
