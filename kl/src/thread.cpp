@@ -25,8 +25,10 @@ namespace kl
 
 #ifdef WIN32
 unsigned int g_mainthread_id = ::GetCurrentThreadId();
+#define STDCALL __stdcall
 #else
 unsigned int g_mainthread_id = 0;   // TODO: implement
+#define STDCALL 
 #endif
 
 // define use of C runtime library
@@ -36,7 +38,7 @@ unsigned int g_mainthread_id = 0;   // TODO: implement
 #endif
 
 
-static unsigned int __stdcall thread_entry_proxy(void* t)
+static unsigned int STDCALL thread_entry_proxy(void* t)
 {
     thread* lthread = static_cast<thread*>(t);
     lthread->entry();
