@@ -142,7 +142,7 @@ WX_CONFIG := ${WX_DIR}/wx-config
 WX_CFLAGS := $(shell ${WX_CONFIG} --prefix=${WX_DIR} --cppflags)
 WX_CFLAGSBASE := $(shell ${WX_CONFIG} --prefix=${WX_DIR} --cflags base)
 
-WX_LIBS := $(shell ${WX_CONFIG} --prefix=${WX_DIR} --libs aui,stc,html,adv,net,xml,core,base)
+WX_LIBS := $(shell ${WX_CONFIG} --prefix=${WX_DIR} --libs aui,webview,stc,html,adv,net,xml,core,base)
 WX_LIBSNONET := $(shell ${WX_CONFIG} --prefix=${WX_DIR} --libs aui,stc,html,adv,xml,core,base)
 WX_LIBSBASE := $(shell ${WX_CONFIG} --prefix=${WX_DIR} --libs base)
 

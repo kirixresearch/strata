@@ -22,6 +22,7 @@ all:
 #	cd xd/xdoracle && $(MAKE) -w
 #	cd xd/xddrizzle && $(MAKE) -w
 	cd jobs && $(MAKE) -w
+	cd scripthost && $(MAKE) -w
 	cd kcl && $(MAKE) -w
 	cd webconnect && $(MAKE) -w
 	cd kcanvas && $(MAKE) -w
@@ -39,6 +40,7 @@ clean:
 #	cd xd/xdoracle && $(MAKE) -w clean
 #	cd xd/xddrizzle && $(MAKE) -w clean
 	cd jobs && $(MAKE) -w clean
+	cd scripthost && $(MAKE) -w clean
 	cd kcl && $(MAKE) -w clean
 	cd webconnect && $(MAKE) -w clean
 	cd kcanvas && $(MAKE) -w clean

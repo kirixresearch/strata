@@ -25,9 +25,9 @@ LDINFO =
 endif
 
 
-INCLUDES = -I./config -I../appmain -I../xcm/include -I../kl/include -I../tango/include -I${WX_DIR}/include -I${WX_DIR}/contrib/include 
-CFLAGS = $(TOP_CFLAGS) $(WX_CFLAGS) $(CURL_CFLAGS) 
-LIBS = -L../kcanvas -L../cfw -L../kcl -L../webconnect -L../kscript -L../paladin -L../kl -lkcanvas -lcfw -lkcl -lwebconnect -lkscript -lpaladin -lkl $(WXSTC_LIBS) $(WX_LIBS) $(CURL_LIBS) $(HARU_LIBS)
+INCLUDES = -I./config -I../appmain -I../xcm/include -I../kl/include -I../xd/include -I${WX_DIR}/include -I${WX_DIR}/contrib/include 
+CFLAGS = $(TOP_CFLAGS) $(WX_CFLAGS) $(GTK_CFLAGS) $(CURL_CFLAGS) 
+LIBS = -L../kcanvas -L../cfw -L../kcl -L../webconnect -L../jobs -L../scripthost -L../kscript -L../paladin -L../kl -lkcanvas -lkcl -lwebconnect -ljobs -lscripthost -lkscript -lpaladin -lkl $(WXSTC_LIBS) $(WX_LIBS) $(CURL_LIBS) $(HARU_LIBS)
 
 
 
@@ -39,7 +39,8 @@ endif
 DEPENDLIBS = \
 	../paladin/libpaladin.a \
 	../kcl/libkcl.a \
-	../cfw/libcfw.a \
+	../jobs/libjobs.a \
+	../scripthost/libscripthost.a \
 	../kcanvas/libkcanvas.a \
 	../webconnect/libwebconnect.a
 
@@ -48,58 +49,50 @@ APPOBJECTS = \
 
 OBJECTS = \
 	app.o \
+	appconfig.o \
 	appcontroller.o \
 	appprefs.o \
 	appprint.o \
-	apputil.o \
+	artprovider.o \
 	bitmapmgr.o \
-	bookmark.o \
 	bookmarkfs.o \
 	commandmgr.o \
 	commands.o \
 	connectionmgr.o \
-	connectionpages.o \
-	connectionwizard.o \
 	curlutil.o \
 	dbcombo.o \
 	dbdoc.o \
 	dlgauth.o \
+	dlgconnection.o \
+	dlgcustomprompt.o \
 	dlgdatabasefile.o \
 	dlglinkprops.o \
 	dlgpagesetup.o \
 	dlgprojectmgr.o \
 	dlgreportprops.o \
+	dlgshareview.o \
 	editordoc.o \
-	exportpages.o \
-	exportwizard.o \
+	exporttemplate.o \
 	exprbuilder.o \
 	extensionmgr.o \
 	extensionpkg.o \
 	feedparser.o \
 	fieldlistcontrol.o \
 	fieldtypechoice.o \
-	importpages.o \
+	framework.o \
+	fsitems.o \
+	fspanel.o \
+	fspanellistview.o \
+	fspaneltreeview.o \
 	importtemplate.o \
-	importwizard.o \
 	inetauth.o \
-	jobappend.o \
-	jobcopy.o \
-	jobexport.o \
-	jobexportpkg.o \
-	jobgroup.o \
 	jobfindinfiles.o \
-	jobimport.o \
-	jobimportpkg.o \
-	jobindex.o \
-	jobmodifystruct.o \
-	jobquery.o \
+	jobqueue.o \
 	jobscheduler.o \
 	jobscript.o \
-	jobsplit.o \
 	jsonconfig.o \
 	linkbar.o \
 	moduleremoveduprec.o \
-	mongoose.o \
 	panelcolordoc.o \
 	panelcolprops.o \
 	panelcolumnlist.o \
@@ -120,7 +113,7 @@ OBJECTS = \
 	paneloptions.o \
 	panelsplit.o \
 	panelview.o \
-	pkgfile.o \
+	prefs.o \
 	querydoc.o \
 	querytemplate.o \
 	relationdiagram.o \
@@ -129,60 +122,50 @@ OBJECTS = \
 	reportengine.o \
 	reportlayout.o \
 	reportmodel.o \
-	reportstore.o \
 	scriptapp.o \
 	scriptbanner.o \
-	scriptbase64.o \
 	scriptbitmap.o \
 	scriptbutton.o \
 	scriptcombo.o \
-	scriptcrypt.o \
-	scriptdb.o \
 	scriptdlg.o \
-	scriptenvironment.o \
-	scriptfile.o \
-	scriptfiletransfer.o \
 	scriptfont.o \
 	scriptgraphics.o \
 	scriptgui.o \
-	scripthash.o \
 	scripthost.o \
 	scripthostapp.o \
-	scripthttp.o \
 	scriptlayout.o \
 	scriptlist.o \
 	scriptlistview.o \
-	scriptmemory.o \
 	scriptmenu.o \
-	scriptnative.o \
 	scriptprocess.o \
 	scriptprogress.o \
 	scriptreport.o \
 	scriptslider.o \
 	scriptspin.o \
 	scriptstatusbar.o \
-	scriptsystem.o \
+	scriptsystemgui.o \
 	scripttable.o \
 	scripttext.o \
 	scripttoolbar.o \
 	scripttreeview.o \
 	scriptwebbrowser.o \
 	scriptwebdom.o \
-	scriptxml.o \
 	sqldoc.o \
+	statusbar.o \
 	structuredoc.o \
 	structurevalidator.o \
 	tabledoc.o \
 	tabledocapi.o \
 	tabledocmodel.o \
-	tangogridmodel.o \
 	textdoc.o \
 	textview.o \
 	toolbars.o \
 	transformationdoc.o \
 	updater.o \
+	util.o \
 	webdoc.o \
-	webserver.o
+	xdgridmodel.o 
+
 
 ifeq ($(X_ARCH), MAC)
 MACREZDEP=macrez

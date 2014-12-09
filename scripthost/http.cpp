@@ -176,14 +176,14 @@ HttpRequest::HttpRequest()
     
     // see http://curl.haxx.se/lxr/source/docs/examples/https.c
     // these are necessary unless we want to include a certificate bundle
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_result = curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 0);
     curl_result = curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0);
     
     // follow redirects
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_FOLLOWLOCATION, TRUE);
+    curl_result = curl_easy_setopt(m_curl, CURLOPT_FOLLOWLOCATION, 1);
     
     // when redirecting, set the referer
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_AUTOREFERER, TRUE);
+    curl_result = curl_easy_setopt(m_curl, CURLOPT_AUTOREFERER, 1);
     
     // set the maximimum number of redirects to infinity
     curl_result = curl_easy_setopt(m_curl, CURLOPT_MAXREDIRS, -1);
@@ -199,7 +199,7 @@ HttpRequest::HttpRequest()
     curl_result = curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, "");
     
     // include headers in body output
-    //curl_result = curl_easy_setopt(m_curl, CURLOPT_HEADER, TRUE);
+    //curl_result = curl_easy_setopt(m_curl, CURLOPT_HEADER, 1);
     
     curl_version_info_data* a = curl_version_info(CURLVERSION_NOW);
 }
@@ -1334,14 +1334,14 @@ void HttpRequest::doSend()
         return;
 
     //  get the full body 
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_NOBODY, FALSE);
+    curl_result = curl_easy_setopt(m_curl, CURLOPT_NOBODY, 0);
     if (curl_result != CURLE_OK)
         return;
 
     if (m_method == methodGet)
     { 
         // set the GET option
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPGET, TRUE);
+        curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPGET, 1);
         if (curl_result != CURLE_OK)
             return;
     }
@@ -1357,7 +1357,7 @@ void HttpRequest::doSend()
          else
         {
             // set the POST option
-            curl_result = curl_easy_setopt(m_curl, CURLOPT_POST, TRUE);
+            curl_result = curl_easy_setopt(m_curl, CURLOPT_POST, 1);
             if (curl_result != CURLE_OK)
                 return;
                 
@@ -1369,12 +1369,12 @@ void HttpRequest::doSend()
      else if (m_method == methodHead)
     {
         // set the GET option
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPGET, TRUE);
+        curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPGET, 1);
         if (curl_result != CURLE_OK)
             return;
 
         // only get the header
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_NOBODY, TRUE);
+        curl_result = curl_easy_setopt(m_curl, CURLOPT_NOBODY, 1);
         if (curl_result != CURLE_OK)
             return;
     }
@@ -1439,12 +1439,12 @@ void HttpRequest::doGet(kscript::ExprEnv* env, kscript::Value* retval)
         return;
 
     // set the GET option 
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPGET, TRUE);
+    curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPGET, 1);
     if (curl_result != CURLE_OK)
         return;
 
     // get the full body
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_NOBODY, FALSE);
+    curl_result = curl_easy_setopt(m_curl, CURLOPT_NOBODY, 0);
     if (curl_result != CURLE_OK)
         return;
     
@@ -1495,12 +1495,12 @@ void HttpRequest::doHead(kscript::ExprEnv* env, kscript::Value* retval)
         return;
         
     // set the GET option
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPGET, TRUE);
+    curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPGET, 1);
     if (curl_result != CURLE_OK)
         return;
 
     // only get the header
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_NOBODY, TRUE);
+    curl_result = curl_easy_setopt(m_curl, CURLOPT_NOBODY, 1);
     if (curl_result != CURLE_OK)
         return;
     
@@ -1537,7 +1537,7 @@ void HttpRequest::doPost(kscript::ExprEnv* env, kscript::Value* retval)
      else
     {
         // set the POST option
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_POST, TRUE);
+        curl_result = curl_easy_setopt(m_curl, CURLOPT_POST, 1);
         if (curl_result != CURLE_OK)
             return;
             
@@ -1632,7 +1632,7 @@ void HttpRequest::clearFormFields()
 
     // reset the form fields
     curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPPOST, NULL);
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_POST, FALSE);
+    curl_result = curl_easy_setopt(m_curl, CURLOPT_POST, 0);
     
     m_post_multipart = false;
     m_post_string = "";

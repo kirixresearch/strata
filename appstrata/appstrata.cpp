@@ -24,11 +24,19 @@ void apphookInitMenuBar(wxMenuBar* menubar)
 {
 }
 
+void apphookAppStartup()
+{
+}
+
 void apphookAppReady()
 {
 }
 
 void apphookPostOpenProject()
+{
+}
+
+void apphookOpenWeb(const wxString& location, bool* handled)
 {
 }
 

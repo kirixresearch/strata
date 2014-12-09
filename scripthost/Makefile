@@ -19,7 +19,6 @@ LIBS =
 
 
 OBJECTS = \
-	app.o \
 	base64.o \
 	crypt.o \
 	db.o \

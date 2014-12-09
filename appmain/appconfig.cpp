@@ -360,8 +360,8 @@ IAppConfigPtr createAppConfigObject()
     {
         // access LocalSystem's HKCU\Software\<company>\<product> tree
 
+#ifdef __WXMSW__
         AppConfigRegImpl* res = new AppConfigRegImpl;
-
         if (true)
         {
             std::wstring reg_root;
@@ -373,6 +373,9 @@ IAppConfigPtr createAppConfigObject()
 
             res->setRegRoot(wxRegKey::HKUSR, reg_root);
         };
+#else
+        AppConfigGenericImpl* res = new AppConfigGenericImpl;
+#endif
 
         return static_cast<IAppConfig*>(res);
     }

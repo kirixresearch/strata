@@ -27,7 +27,7 @@ endif
 
 INCLUDES = -I./config -I../xcm/include -I../kl/include -I../xd/include -I${WX_DIR}/include -I${WX_DIR}/contrib/include 
 CFLAGS = $(TOP_CFLAGS) $(WX_CFLAGS) $(GTK_CFLAGS) $(CURL_CFLAGS) 
-LIBS = -L../kcanvas -L../kcl -L../webconnect -L../kscript -L../paladin -L../kl -lkcanvas -lkcl -lwebconnect -lkscript -lpaladin -lkl $(WXSTC_LIBS) $(WX_LIBS) $(CURL_LIBS) $(HARU_LIBS)
+LIBS = -L../kcanvas -L../kcl -L../webconnect -L../jobs -L../scripthost -L../kscript -L../paladin -L../kl -lkcanvas -lkcl -lwebconnect -ljobs -lscripthost -lkscript -lpaladin -lkl $(WXSTC_LIBS) $(WX_LIBS) $(CURL_LIBS) $(HARU_LIBS)
 
 
 
@@ -40,6 +40,7 @@ DEPENDLIBS = \
 	../paladin/libpaladin.a \
 	../kcl/libkcl.a \
 	../jobs/libjobs.a \
+	../scripthost/libscripthost.a \
 	../kcanvas/libkcanvas.a \
 	../webconnect/libwebconnect.a
 
@@ -49,6 +50,7 @@ OBJECTS = \
 	appmain.o \
 	appprefs.o \
 	appprint.o \
+	artprovider.o \
 	bitmapmgr.o \
 	bookmarkfs.o \
 	commandmgr.o \
@@ -75,6 +77,10 @@ OBJECTS = \
 	feedparser.o \
 	fieldlistcontrol.o \
 	fieldtypechoice.o \
+	fsitems.o \
+	fspanel.o \
+	fspanellistview.o \
+	fspaneltreeview.o \
 	importtemplate.o \
 	inetauth.o \
 	jobfindinfiles.o \
@@ -104,6 +110,7 @@ OBJECTS = \
 	paneloptions.o \
 	panelsplit.o \
 	panelview.o \
+	prefs.o \
 	querydoc.o \
 	querytemplate.o \
 	relationdiagram.o \
@@ -141,6 +148,7 @@ OBJECTS = \
 	scriptwebbrowser.o \
 	scriptwebdom.o \
 	sqldoc.o \
+	statusbar.o \
 	structuredoc.o \
 	structurevalidator.o \
 	tabledoc.o \

@@ -243,13 +243,13 @@ void FileTransfer::doAction()
     res = curl_easy_setopt(m_curl, CURLOPT_URL, m_url.c_str());
     if (m_upload)
     {
-        curl_easy_setopt(m_curl, CURLOPT_UPLOAD, TRUE);
+        curl_easy_setopt(m_curl, CURLOPT_UPLOAD, 1);
         curl_easy_setopt(m_curl, CURLOPT_READFUNCTION, transfer_reader_func);
         curl_easy_setopt(m_curl, CURLOPT_READDATA, &info);
     }
      else
     {
-        curl_easy_setopt(m_curl, CURLOPT_UPLOAD, FALSE);
+        curl_easy_setopt(m_curl, CURLOPT_UPLOAD, 0);
         curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, transfer_writer_func);
         curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, &info);
     }
