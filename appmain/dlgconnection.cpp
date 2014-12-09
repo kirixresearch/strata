@@ -1331,7 +1331,7 @@ void DlgConnection::populateTableListGrid(std::vector<wxString>& tables)
     for (it = tables.begin(); it != tables.end(); ++it)
     {
         bool selected = true;
-        std::wstring src_tablename = *it;
+        std::wstring src_tablename = towstr(*it);
         std::wstring out_tablename = kl::afterLast(src_tablename, PATH_SEPARATOR_CHAR);
         bool append = false;
 

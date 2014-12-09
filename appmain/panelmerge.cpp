@@ -444,7 +444,7 @@ void MergePanel::onOK(wxCommandEvent& evt)
     int row = 0, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        std::wstring table_path = m_grid->getCellString(row, 0);
+        std::wstring table_path = towstr(m_grid->getCellString(row, 0));
         if (!isValidTable(table_path))
         {
             wxString message = wxString::Format(_("'%s' could not be opened.  Please make sure this is a valid table."), table_path.c_str());

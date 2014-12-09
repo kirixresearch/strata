@@ -4,15 +4,15 @@ UNAME=`uname`
 if [ "$UNAME" == "Darwin" ]; then
 
 
-RELEASE_CONFIGURE="./configure --with-mac --with-expat --disable-debug --enable-unicode --enable-postscript --enable-miniframe --enable-aui --disable-shared --disable-precomp-headers --disable-exceptions --disable-iff --disable-pcx --disable-joystick --disable-accessibility --without-libtiff --without-regex --disable-display --disable-fswatcher"
+RELEASE_CONFIGURE="./configure --with-mac --with-expat --disable-debug --enable-unicode --enable-postscript --enable-miniframe --enable-aui --enable-webview --enable-webviewwebkit --disable-shared --disable-precomp-headers --disable-exceptions --disable-iff --disable-pcx --disable-joystick --disable-accessibility --without-libtiff --without-regex --disable-display --disable-fswatcher"
 
-DEBUG_CONFIGURE="./configure --with-mac --with-expat --enable-debug --enable-unicode --enable-postscript --enable-miniframe --enable-aui --disable-shared --disable-precomp-headers --disable-exceptions --disable-iff --disable-pcx --disable-joystick --disable-accessibility --without-libtiff  --without-regex --disable-display --disable-fswatcher"
+DEBUG_CONFIGURE="./configure --with-mac --with-expat --enable-debug --enable-unicode --enable-postscript --enable-miniframe --enable-aui --enable-webview --enable-webviewwebkit --disable-shared --disable-precomp-headers --disable-exceptions --disable-iff --disable-pcx --disable-joystick --disable-accessibility --without-libtiff  --without-regex --disable-display --disable-fswatcher"
 
 else
 
-RELEASE_CONFIGURE="./configure --with-gtk --with-expat --disable-debug --enable-unicode --enable-postscript --enable-miniframe --enable-aui --disable-shared --disable-precomp-headers --disable-exceptions --disable-iff --disable-pcx --disable-joystick --disable-accessibility --without-libtiff --with-gnomeprint --without-regex --disable-display --disable-fswatcher"
+RELEASE_CONFIGURE="./configure --with-gtk --with-expat --disable-debug --enable-unicode --enable-postscript --enable-miniframe --enable-aui --enable-webview --enable-webviewwebkit --disable-shared --disable-precomp-headers --disable-exceptions --disable-iff --disable-pcx --disable-joystick --disable-accessibility --without-libtiff --with-gnomeprint --without-regex --disable-display --disable-fswatcher"
 
-DEBUG_CONFIGURE="./configure --with-gtk --with-expat --enable-debug --enable-unicode --enable-postscript --enable-miniframe --enable-aui --disable-shared --disable-precomp-headers --disable-exceptions --disable-iff --disable-pcx --disable-joystick --disable-accessibility --without-libtiff --with-gnomeprint --without-regex --disable-display --disable-fswatcher"
+DEBUG_CONFIGURE="./configure --with-gtk --with-expat --enable-debug --enable-unicode --enable-postscript --enable-miniframe --enable-aui --enable-webview --enable-webviewwebkit --disable-webviewie --disable-shared --disable-precomp-headers --disable-exceptions --disable-iff --disable-pcx --disable-joystick --disable-accessibility --without-libtiff --with-gnomeprint --without-regex --disable-display --disable-fswatcher"
 
 fi
 
@@ -43,7 +43,7 @@ if [ "$1" == "debug" ] || [ "$1" == "both" ]; then
 
     $DEBUG_CONFIGURE
 
-    if [ "$2"  == "configure"]; then
+    if [ "$2"  == "configure" ]; then
         exit
     fi
 
@@ -58,7 +58,7 @@ if [ "$1" == "release" ] || [ "$1" == "both" ]; then
 
     $RELEASE_CONFIGURE
 
-    if [ "$2"  == "configure"]; then
+    if [ "$2"  == "configure" ]; then
         exit
     fi
 

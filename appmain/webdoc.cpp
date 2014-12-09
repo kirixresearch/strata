@@ -23,14 +23,18 @@
 #include "linkbar.h"
 #include "dlgcustomprompt.h"
 #include "../webconnect/webcontrol.h"
+#include <wx/webview.h>
 #include <wx/fs_inet.h>
 #include <wx/stdpaths.h>
 #include <wx/artprov.h>
-#include <wx/webview.h>
 #include <kl/regex.h>
 #include <kl/md5.h>
 #include <kl/thread.h>
 
+
+#ifdef __WXGTK__
+#include <dlfcn.h>
+#endif
 
 const int wxID_WEB = 9001;
 const int wxID_WEBVIEW = 9002;

@@ -26,7 +26,7 @@ static std::wstring getTableMetadataLocation()
     if (!g_tabledocmodel_path.empty())
         return g_tabledocmodel_path;
 
-    std::wstring path = g_app->getAppDataPath();
+    std::wstring path = towstr(g_app->getAppDataPath());
     path += PATH_SEPARATOR_CHAR;
     path += L"Metadata";
 
@@ -1151,11 +1151,12 @@ bool TableDocModel::loadJson()
     {
         kl::JsonNode views_node = node["views"];
 
-        size_t i, child_count = views_node.getChildCount();
-        for (i = 0; i < child_count; ++i)
+        std::vector<kl::JsonNode> children = views_node.getChildren();
+        std::vector<kl::JsonNode>::iterator it;
+        for (it = children.begin(); it != children.end(); ++it)
         {
             TableDocView* obj = new TableDocView;
-            obj->readFromNode(views_node[i]);
+            obj->readFromNode(*it);
             m_views.push_back(static_cast<ITableDocObject*>(obj));
         }
     }
@@ -1164,11 +1165,12 @@ bool TableDocModel::loadJson()
     {
         kl::JsonNode marks_node = node["marks"];
 
-        size_t i, child_count = marks_node.getChildCount();
-        for (i = 0; i < child_count; ++i)
+        std::vector<kl::JsonNode> children = marks_node.getChildren();
+        std::vector<kl::JsonNode>::iterator it;
+        for (it = children.begin(); it != children.end(); ++it)
         {
             TableDocMark* obj = new TableDocMark;
-            obj->readFromNode(marks_node[i]);
+            obj->readFromNode(*it);
             m_marks.push_back(static_cast<ITableDocObject*>(obj));
         }
     }
@@ -1229,7 +1231,7 @@ std::wstring TableDocModel::toJson()
         std::wstring json;
 
         if (!readStreamTextFile(db, path, json))
-            return false;
+            return L"";
         
         return json;
     }

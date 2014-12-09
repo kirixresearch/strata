@@ -171,5 +171,5 @@ CURL_LIBS := -lcurl -lssh2 -lssl -lcrypto
 # haru configuration
 #
 HARU_INCLUDE = -I${SUPP_DIR}/haru/include
-HARU_LIBS = ${SUPP_DIR}/haru/src/.libs/libhpdf.a
+HARU_LIBS = ${SUPP_DIR}/haru/libhpdf.a
 

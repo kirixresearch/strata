@@ -435,7 +435,7 @@ public:
         
             // 'Last Open Project' dropdown item was selected; set
             // the startup connection based on the current project's location
-            std::wstring project_loc = g_app->getDatabaseLocation();
+            std::wstring project_loc = towstr(g_app->getDatabaseLocation());
             std::vector<ProjectInfo>::iterator it;
             for (it = m_projects.begin(); it != m_projects.end(); ++it)
             {

@@ -955,7 +955,7 @@ void QueryTemplate::updateValidationStructure()
         {
             const xd::ColumnInfo& colinfo = tbl_it->structure.getColumnInfoByIdx(i);
 
-            std::wstring alias = tbl_it->alias;
+            std::wstring alias = towstr(tbl_it->alias);
             std::wstring column = colinfo.name;
 
             xd::ColumnInfo newcol;

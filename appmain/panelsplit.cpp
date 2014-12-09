@@ -354,8 +354,8 @@ void SplitPanel::onOK(wxCommandEvent& event)
     }
 
     // create the split info for the split job
-    std::wstring prefix = m_prefix_textctrl->GetValue();
-    std::wstring expression = m_expression_textctrl->GetValue();
+    std::wstring prefix = towstr(m_prefix_textctrl->GetValue());
+    std::wstring expression = towstr(m_expression_textctrl->GetValue());
 
     long row_count, table_count;
     m_rowcount_textctrl->GetValue().ToLong(&row_count);

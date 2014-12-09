@@ -1825,7 +1825,7 @@ void RelationDiagram::clearLineSelection()
         line_it->selected = false;
     }
     
-    m_selected_line = false;
+    m_selected_line = NULL;
 }
 
 void RelationDiagram::getLines(const wxString& left_path, 

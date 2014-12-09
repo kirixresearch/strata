@@ -3259,7 +3259,7 @@ static void extractAlterJobInfo(kl::JsonNode params,
 
         if (action == L"modify")
         {
-            std::pair<wxString,wxString> p;
+            std::pair<std::wstring,std::wstring> p;
 
             if (it->childExists("column"))
                 p.first = it->getChild("column").getString();
@@ -3276,7 +3276,7 @@ static void extractAlterJobInfo(kl::JsonNode params,
 
         if (action == L"add")
         {
-            std::pair<wxString,int> p;
+            std::pair<std::wstring,int> p;
 
             if (it->childExists("column"))
                 p.first = it->getChild("column").getString();

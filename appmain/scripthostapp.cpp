@@ -28,7 +28,7 @@
 #include "panelconsole.h"
 #include <kl/url.h>
 #include <kl/thread.h>
-#include <../kscript/json.h>
+#include "../kscript/json.h"
 
 
 
@@ -1665,7 +1665,7 @@ public:
             if (!node.fromString(towstr(m_target)))
                 return 0;
             kl::JsonNode metadata = node["metadata"];
-            wxString mime_type = metadata["type"];
+            wxString mime_type = metadata["type"].getString();
             
             // write out temporary template
             writeStreamTextFile(db, towstr(path), towstr(m_target), towstr(mime_type));
