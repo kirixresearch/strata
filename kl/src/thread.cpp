@@ -195,7 +195,7 @@ bool thread_ismain()
 #else
 
 int thread_create(thread_t *thread, const thread_t *attr,
-                  void *(*start_routine) (void *), void *arg)
+                  unsigned (KLTHREAD_CALLING_CONVENTION *start_routine) (void *), void *arg)
 {
     // TODO: implement
 }

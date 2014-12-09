@@ -27,7 +27,7 @@ all:
 	cd webconnect && $(MAKE) -w
 	cd kcanvas && $(MAKE) -w
 	cd img && $(MAKE) -w
-	cd appmain && $(MAKE) -w
+	cd appstrata && $(MAKE) -w
 
 clean:
 	cd kl && $(MAKE) -w clean
@@ -46,7 +46,7 @@ clean:
 	cd kcanvas && $(MAKE) -w clean
 	cd webconnect && $(MAKE) -w clean
 	cd img && $(MAKE) -w clean
-	cd appmain && $(MAKE) -w clean
+	cd appstrata && $(MAKE) -w clean
 
 cleanwx:
 	cd kcl && $(MAKE) -w clean
@@ -54,6 +54,6 @@ cleanwx:
 	cd kcanvas && $(MAKE) -w clean
 	cd webconnect && $(MAKE) -w clean
 	cd img && $(MAKE) -w clean
-	cd appmain && $(MAKE) -w clean
+	cd appstrata && $(MAKE) -w clean
 
 
