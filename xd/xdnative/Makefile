@@ -30,9 +30,11 @@ endif
 OBJECTS = baseiterator.o \
 	baseset.o \
 	bitmapfile.o \
+	bufiterator.o \
 	database.o \
 	dbmgr.o \
 	nativetbl.o \
+	nodefilestream.o \
 	ofs.o \
 	query.o \
 	tableset.o \
