@@ -288,7 +288,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
     m_server_type = new wxChoice(this,
                                  ID_Server_Type,
                                  wxDefaultPosition,
-                                 wxSize(200,21),
+                                 wxSize(200,-1),
                                  0,
                                  NULL);
     
@@ -318,7 +318,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                        ID_Server_Server, 
                                        m_ci.server,
                                        wxDefaultPosition,
-                                       wxSize(200,21));
+                                       wxSize(200,-1));
     
     wxSizer* server_sizer = new wxBoxSizer(wxHORIZONTAL);
     server_sizer->Add(80,23);
@@ -332,7 +332,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                          ID_Server_Database,
                                          m_ci.database,
                                          wxDefaultPosition,
-                                         wxSize(200,21));
+                                         wxSize(200,-1));
     
     wxSizer* database_sizer = new wxBoxSizer(wxHORIZONTAL);
     database_sizer->Add(80,23);
@@ -346,7 +346,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                    ID_Server_Port, 
                                    wxString::Format("%d", m_ci.port),
                                    wxDefaultPosition,
-                                   wxSize(200,21));
+                                   wxSize(200,-1));
     
     wxSizer* port_sizer = new wxBoxSizer(wxHORIZONTAL);
     port_sizer->Add(80,23);
@@ -360,7 +360,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                          ID_Server_Username,
                                          m_ci.username,
                                          wxDefaultPosition,
-                                         wxSize(200,21));
+                                         wxSize(200,-1));
     
     wxSizer* username_sizer = new wxBoxSizer(wxHORIZONTAL);
     username_sizer->Add(80,23);
@@ -377,7 +377,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                          ID_Server_Password,
                                          m_ci.password,
                                          wxDefaultPosition,
-                                         wxSize(200,21),
+                                         wxSize(200,-1),
                                          wxTE_PASSWORD | wxTE_PROCESS_ENTER);
     
     wxSizer* password_sizer = new wxBoxSizer(wxHORIZONTAL);
@@ -491,7 +491,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                          ID_TableList_BasePathTextCtrl,
                                          wxEmptyString,
                                          wxDefaultPosition,
-                                         wxSize(200,21));
+                                         wxSize(200,-1));
     m_tablelist_basepath->SetValue(m_ci.base_path);
     
     wxButton* browse_button = new wxButton(this, ID_TableList_BasePathBrowseButton, _("Browse..."));
@@ -609,7 +609,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                             -1,
                                             wxEmptyString,
                                             wxDefaultPosition,
-                                            wxSize(50, 21));
+                                            wxSize(50, -1));
     m_otherdelimiters_text->SetMaxLength(5);
 
     wxBoxSizer* other_delimiters_sizer = new wxBoxSizer(wxHORIZONTAL);
@@ -647,7 +647,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
     m_singlequote_radio = new wxRadioButton(this, -1, _("Single Quote (')"));
     m_notextqualifier_radio = new wxRadioButton(this, -1, _("None"));
     m_othertextqualifier_radio = new wxRadioButton(this, -1, _("Other:"));
-    m_othertextqualifier_text = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(50, 21));
+    m_othertextqualifier_text = new wxTextCtrl(this, -1, wxEmptyString, wxDefaultPosition, wxSize(50, -1));
     m_othertextqualifier_text->SetMaxLength(1);
 
     wxBoxSizer* other_textqualifier_sizer = new wxBoxSizer(wxHORIZONTAL);
