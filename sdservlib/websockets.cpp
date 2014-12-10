@@ -14,6 +14,7 @@
 #include "controller.h"
 #include "websockets.h"
 #include "libwebsockets.h"
+#include <cstdio>
 #include <kl/url.h>
 #include <kl/json.h>
 #include <kl/thread.h>
@@ -487,7 +488,7 @@ bool WebSocketsClient::run(const std::string& server, int port, bool ssl, const 
             // connect failed, try again
             try_count++;
             printf("Could not connect, trying again. Try %d\n", try_count);
-            ::Sleep(5000);
+            sleep(5);
         }
 
 

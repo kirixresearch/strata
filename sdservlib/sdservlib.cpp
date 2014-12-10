@@ -13,11 +13,12 @@
 #include "http.h"
 #include "controller.h"
 #include "websockets.h"
+#include <cstdio>
 #include <kl/json.h>
 #include <kl/file.h>
 
 #ifdef WIN32
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 
@@ -135,6 +136,7 @@ std::wstring Sdserv::getDatabaseConnectionString(const std::wstring& database_na
 
 void Sdserv::signalServerReady()
 {
+#ifdef WIN32
     std::wstring ready_evtid = getOption(L"sdserv.win32evt_ready");
 
     if (ready_evtid.length() > 0)
@@ -146,6 +148,7 @@ void Sdserv::signalServerReady()
             CloseHandle(evt_ready);
         }
     }
+#endif
 
     printf("*** sdserv ready\n");
     fflush(stdout);
@@ -154,6 +157,7 @@ void Sdserv::signalServerReady()
 
 void Sdserv::signalServerNotReady()
 {
+#ifdef WIN32
     std::wstring notready_evtid = getOption(L"sdserv.win32evt_notready");
 
     if (notready_evtid.length() > 0)
@@ -165,6 +169,8 @@ void Sdserv::signalServerNotReady()
             CloseHandle(evt_notready);
         }
     }
+#endif
+
 }
 
 void Sdserv::updateLastAccessTimestamp()

@@ -139,7 +139,7 @@ public:
     bool run();
 
 private:
-    static int HttpServer::request_callback(struct mg_connection* conn);
+    static int request_callback(struct mg_connection* conn);
 
 private:
 
