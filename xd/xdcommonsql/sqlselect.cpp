@@ -138,6 +138,7 @@ static void quoteField(std::wstring& str)
 }
 
 
+/*
 static bool isSamePath(const std::wstring& path1, const std::wstring& path2)
 {
     std::wstring s1 = path1, s2 = path2;
@@ -150,6 +151,7 @@ static bool isSamePath(const std::wstring& path1, const std::wstring& path2)
 
     return (s1 == s2) ? true : false;
 }
+*/
 
 static bool isSameField(const std::wstring& f1, const std::wstring& f2)
 {
