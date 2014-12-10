@@ -38,7 +38,7 @@ int main(int argc, const char** argv)
         home_cfg_file += _wgetenv(L"HOMEPATH");
         home_cfg_file += L"\\sdserv.conf";
         #else
-        home_cfg_file  = _wgetenv(L"HOME");
+        home_cfg_file  = kl::towstring(getenv("HOME"));
         home_cfg_file += L"/.sdservrc";
         #endif
 
