@@ -16,7 +16,7 @@ INCLUDES = -I../include -I../../kl/include
 DEFINES =  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES
 CFLAGS = -fPIC $(TOP_CFLAGS)
 LIBDIRS = -L../../kscript -L../../kl
-LIBS = ../xdcommon/libxdcommon.a -lkscript -lkl -lpthread
+LIBS = ../xdcommonsql/libxdcommonsql.a ../xdcommon/libxdcommon.a -lkscript -lkl -lpthread
 
 
 ifeq ($(X_ARCH),LINUX)

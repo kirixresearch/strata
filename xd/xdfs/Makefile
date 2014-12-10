@@ -13,11 +13,11 @@ include ../../top.mak
 
 
 CFLAGS = -fPIC $(TOP_CFLAGS)
-INCLUDES = -I../include -I../../xcm/include -I../../kl/include
+INCLUDES = -I../include -I../../xcm/include -I../../kl/include -I../../supp/libzip/lib
 DEFINES =  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES
 LINKFLAGS = --pipe -mdll
-LIBDIRS = -L../../kscript -L../../kl
-LIBS = ../xdcommon/libxdcommon.a -lkscript -lkl -lpthread
+LIBDIRS = -L../../kscript -L../../kl 
+LIBS = ../xdcommonsql/libxdcommonsql.a ../xdcommon/libxdcommon.a -lkscript -lkl -lpthread
 
 ifeq ($(X_ARCH), LINUX)
 LINKFLAGS = -shared -Wl,-soname,libxdfs.so.1 -fPIC
@@ -28,24 +28,35 @@ LINKFLAGS = -dynamiclib
 endif
 
 
-OBJECTS = database.o \
+OBJECTS = baseset.o \
+	database.o \
 	delimitedtext.o \
-	fixedlengthtextiterator.o \
-	fixedlengthtextset.o \
 	delimitedtextiterator.o \
 	delimitedtextset.o \
+	fixedlength.o \
+	fixedlengthtextiterator.o \
+	fixedlengthtextset.o \
 	rawtext.o \
+	ttbfile.o \
+	ttbiterator.o \
+	ttbset.o \
+	ttbsetmodify.o \
 	xbase.o \
 	xbaseiterator.o \
 	xbaseset.o \
-	xdfs.o
+	xdfs.o \
+	xlsx.o \
+	xlsxiterator.o \
+	xlsxset.o 
+
+COBJECTS = sqlite3.o
 
 
 VPATH=$(OUTPUT_DIR)
 
 all: xdfs.so
 
-xdfs.so:	$(OBJECTS)
+xdfs.so:	$(OBJECTS) $(COBJECTS)
 		$(CPP) $^ $(LINKFLAGS) $(LIBDIRS) $(LIBS) -o $(OUTPUT_DIR)/xdfs.so
 
 clean:
@@ -54,4 +65,8 @@ clean:
 $(OBJECTS): %.o : %.cpp
 	@echo $<
 	@$(CPP) $(CFLAGS) $(INCLUDES) $(DEFINES) -c $<
+
+$(COBJECTS): %.o : %.c
+	@echo $<
+	gcc -fPIC $(INCLUDES) $(DEFINES) -c $<
 
