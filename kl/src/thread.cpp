@@ -16,6 +16,11 @@
 #include <process.h>
 #else
 #include <pthread.h>
+#include <unistd.h>
+#endif
+
+#ifdef __linux__
+#include <sys/syscall.h>
 #endif
 
 
@@ -178,12 +183,6 @@ unsigned int thread_getcurrentid()
     return ::GetCurrentThreadId();
 }
 
-unsigned int thread_getid(thread_t *thread)
-{
-    // TODO: implement
-    return 0;
-}
-
 bool thread_ismain()
 {
     if (g_mainthread_id == thread_getcurrentid())
@@ -197,27 +196,22 @@ bool thread_ismain()
 int thread_create(thread_t* thread, const thread_t* attr,
                   unsigned (KLTHREAD_CALLING_CONVENTION *start_routine) (void*), void* arg)
 {
-    pthread_create((pthread_t*)thread, NULL, start_routine, arg);
+    pthread_create((pthread_t*)thread, NULL, (void*(*)(void*))start_routine, arg);
 }
 
 void thread_sleep(unsigned int milliseconds)
 {
-    // TODO: implement
+    ::usleep(milliseconds*1000);
 }
 
 unsigned int thread_getcurrentid()
 {
-    
-}
-
-unsigned int thread_getid(thread_t* thread)
-{
-    return (unsigned int)thread;
+    return syscall(SYS_gettid); 
 }
 
 bool thread_ismain()
 {
-    // TODO: implement
+    return (syscall(SYS_gettid)  == syscall(SYS_getpid)) ? true : false;
 }
 
 #endif
