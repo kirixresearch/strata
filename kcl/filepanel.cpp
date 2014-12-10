@@ -384,7 +384,7 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
                                  ID_Path_TextCtrl, 
                                  "",
                                  wxDefaultPosition,
-                                 wxSize(200,23),
+                                 wxSize(200,-1),
                                  wxTE_PROCESS_ENTER);
 
     wxBitmapButton* goparent_button = new wxBitmapButton(this, ID_GoParent_Button, wxBitmap(goparent_xpm), wxDefaultPosition, wxSize(24,24));
@@ -493,13 +493,13 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
                                  ID_Filename_TextCtrl, 
                                  "",
                                  wxDefaultPosition,
-                                 wxSize(200,23),
+                                 wxSize(200,-1),
                                  wxTE_PROCESS_ENTER);
 
     m_filter_ctrl = new wxChoice(this,
                                  ID_Filter_Choice,
                                  wxDefaultPosition,
-                                 wxSize(185,21),
+                                 wxSize(185,-1),
                                  0,
                                  NULL);
     
