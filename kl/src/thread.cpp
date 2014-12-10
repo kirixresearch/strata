@@ -153,7 +153,7 @@ void mutex::unlock()
 #ifdef WIN32
 
 int thread_create(thread_t* thread, const thread_t* attr,
-                  unsigned (KLTHREAD_CALLING_CONVENTION *start_routine) (void *), void* arg)
+                  unsigned (KLTHREAD_CALLING_CONVENTION *start_routine) (void*), void* arg)
 {
     // use of the c runtime library should use a _beginthreadex instead
     // of CreateThread; see: http://support.microsoft.com/kb/104641/en-us
@@ -194,10 +194,10 @@ bool thread_ismain()
 
 #else
 
-int thread_create(thread_t *thread, const thread_t *attr,
-                  unsigned (KLTHREAD_CALLING_CONVENTION *start_routine) (void *), void *arg)
+int thread_create(thread_t* thread, const thread_t* attr,
+                  unsigned (KLTHREAD_CALLING_CONVENTION *start_routine) (void*), void* arg)
 {
-    // TODO: implement
+    pthread_create((pthread_t*)thread, NULL, start_routine, arg);
 }
 
 void thread_sleep(unsigned int milliseconds)
@@ -207,12 +207,12 @@ void thread_sleep(unsigned int milliseconds)
 
 unsigned int thread_getcurrentid()
 {
-    // TODO: implement
+    
 }
 
-unsigned int thread_getid(thread_t *thread)
+unsigned int thread_getid(thread_t* thread)
 {
-    // TODO: implement
+    return (unsigned int)thread;
 }
 
 bool thread_ismain()
