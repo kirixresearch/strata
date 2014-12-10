@@ -110,8 +110,7 @@ bool PgsqlStream::seek(long long seek_pos, int whence)
         case xd::seekEnd: pg_whence = 2; break;
     }
 
-    // TODO: needs to be lo_lseek64()
-    int res = lo_lseek(m_conn, m_fd, (int)seek_pos, pg_whence);
+    long long res = lo_lseek64(m_conn, m_fd, (int)seek_pos, pg_whence);
     if (res < 0)
         return false;
         
@@ -121,11 +120,10 @@ bool PgsqlStream::seek(long long seek_pos, int whence)
 
 long long PgsqlStream::getSize()
 {
-    // TODO: needs to be lo_lseek64() and tell64
-    long long saved_pos = lo_tell(m_conn, m_fd);
-    lo_lseek(m_conn, m_fd, 0, /*seek_end*/ 2);
-    long long ret = lo_tell(m_conn, m_fd);
-    lo_lseek(m_conn, m_fd, saved_pos, /*seek_set*/ 0);
+    long long saved_pos = lo_tell64(m_conn, m_fd);
+    lo_lseek64(m_conn, m_fd, 0, /*seek_end*/ 2);
+    long long ret = lo_tell64(m_conn, m_fd);
+    lo_lseek64(m_conn, m_fd, saved_pos, /*seek_set*/ 0);
     return ret;
 }
 
