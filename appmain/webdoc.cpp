@@ -3872,36 +3872,51 @@ void WebDoc::onUpdateUI(wxUpdateUIEvent& evt)
             evt.Enable(false);
             break;
 
+        case ID_Edit_Delete:
         case ID_Edit_Cut:
-            evt.Enable(m_webcontrol->CanCutSelection());
+            if (m_webcontrol)
+                evt.Enable(m_webcontrol->CanCutSelection());
+            else if (m_webview)
+                evt.Enable(m_webview->CanCut());
+            else
+                evt.Enable(false);
             break;
             
         case ID_Edit_Copy:
-            evt.Enable(m_webcontrol->CanCopySelection());
+            if (m_webcontrol)
+                evt.Enable(m_webcontrol->CanCopySelection());
+            else if (m_webview)
+                evt.Enable(m_webview->CanCopy());
+            else
+                evt.Enable(false);
             break;
             
         case ID_Edit_CopyLink:
-            evt.Enable(m_webcontrol->CanCopyLinkLocation());
+            if (m_webcontrol)
+                evt.Enable(m_webcontrol->CanCopyLinkLocation());
+                 else
+                evt.Enable(false);
             break;
             
         case ID_Edit_Paste:
-            evt.Enable(m_webcontrol->CanPaste());
-            break;
-
-        case ID_Edit_Delete:
-            evt.Enable(m_webcontrol->CanCutSelection());
+            if (m_webcontrol)
+                evt.Enable(m_webcontrol->CanPaste());
+            else if (m_webview)
+                evt.Enable(m_webview->CanPaste());
+            else
+                evt.Enable(false);
             break;
             
         case ID_Edit_SelectAll:
-            evt.Enable(true);
+            evt.Enable((m_webcontrol || m_webview) ? true : false);
             break;
             
         case ID_Edit_SelectNone:
-            evt.Enable(true);
+            evt.Enable((m_webcontrol || m_webview) ? true : false);
             break;
             
         case ID_Edit_Find:
-            evt.Enable(true);
+            evt.Enable((m_webcontrol || m_webview) ? true : false);
             break;
             
         case ID_Edit_FindPrev:
@@ -3924,7 +3939,7 @@ void WebDoc::onUpdateUI(wxUpdateUIEvent& evt)
             break;
 
         case ID_File_Reload:
-            evt.Enable(true);
+            evt.Enable((m_webcontrol || m_webview) ? true : false);
             break;
 
         case ID_ImportTable:
@@ -3934,7 +3949,7 @@ void WebDoc::onUpdateUI(wxUpdateUIEvent& evt)
             
         // TODO: enable only if site loading
         case ID_File_Stop:
-            evt.Enable(true);
+            evt.Enable((m_webcontrol || m_webview) ? true : false);
             break;
       
         default:
