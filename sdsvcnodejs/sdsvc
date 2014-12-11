@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd /srv/sdsvc
+exec nodejs ./main.js >> /var/log/sdsvc.log 2>> /var/log/sdsvc_error.log

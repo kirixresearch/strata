@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+NAME=sdsvc
+DESC="Sdserv service"
+RETVAL=0
+EXE=/srv/sdsvc/sdsvc
+
+start() {
+        start-stop-daemon --start --quiet --background --make-pidfile \
+                --pidfile /var/run/$NAME.pid --exec $EXE >> /var/log/sdsvc.log 2>> /var/log/sdsvc_error.log
+}
+
+stop() {
+        start-stop-daemon --stop --quiet --pidfile /var/run/$NAME.pid --retry 30
+        rm -f /var/run/$NAME.pid
+}
+
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+start)
+  start
+;;
+stop)
+  stop
+;;
+restart)
+  restart
+;;
+*)
+
+echo $"Usage: $0 {start|stop|restart}"
+exit 1
+esac
+
+exit $RETVAL  
+
