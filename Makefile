@@ -16,6 +16,7 @@ all:
 	cd paladin && $(MAKE) -w
 	cd kscript && $(MAKE) -w
 	cd xd/xdcommon && $(MAKE) -w
+	cd xd/xdcommonsql && $(MAKE) -w
 	cd xd/xdfs && $(MAKE) -w
 	cd xd/xdnative && $(MAKE) -w
 	cd xd/xdodbc && $(MAKE) -w
@@ -34,6 +35,7 @@ clean:
 	cd paladin && $(MAKE) -w clean
 	cd kscript && $(MAKE) -w clean
 	cd xd/xdcommon && $(MAKE) -w clean
+	cd xd/xdcommonsql && $(MAKE) -w clean
 	cd xd/xdfs && $(MAKE) -w clean
 	cd xd/xdnative && $(MAKE) -w clean
 	cd xd/xdodbc && $(MAKE) -w clean
