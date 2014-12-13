@@ -92,6 +92,7 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
     char timestamp[255];
     strftime(timestamp, 255, "%H:%M:%S", &tm);
     printf("%s %-13ls %-44ls", timestamp, method.c_str(), str.c_str());
+    fflush(stdout);
     // end debugging code
  
 
@@ -100,7 +101,12 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
     if (handled)
     {
         end = clock();
-        printf("%5d %4dms\n", req.getContentLength(), (end-start));
+
+        double ms = (end-start);
+        ms /= CLOCKS_PER_SEC;
+        ms *= 1000;
+        
+        printf("%5d %4dms\n", req.getContentLength(), (int)ms);
         fflush(stdout);
         return;
     }
@@ -138,7 +144,12 @@ void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, 
     else if (method == L"initdb")                apiInitDb(req);
 
     end = clock();
-    printf("%5d %4dms\n", req.getContentLength(), (end-start));
+
+    double ms = (end-start);
+    ms /= CLOCKS_PER_SEC;
+    ms *= 1000;
+
+    printf("%5d %4dms\n", req.getContentLength(), (int)ms);
     fflush(stdout);
 
 }

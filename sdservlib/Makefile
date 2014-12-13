@@ -29,8 +29,8 @@ VPATH=src:lib
 
 all: libsdserv.a
 
-libsdserv.a:	$(OBJECTS)
-	ar rc libsdserv.a $(OBJECTS)
+libsdserv.a:	$(OBJECTS) $(COBJECTS)
+	ar rc libsdserv.a $(OBJECTS) $(COBJECTS)
 	ranlib libsdserv.a
 
 clean:
