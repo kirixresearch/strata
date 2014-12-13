@@ -17,7 +17,7 @@ INCLUDES = -I../include -I../../xcm/include -I../../kl/include -I../../supp/libz
 DEFINES =  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES
 LINKFLAGS = --pipe -mdll
 LIBDIRS = -L../../kscript -L../../kl 
-LIBS = ../xdcommonsql/libxdcommonsql.a ../xdcommon/libxdcommon.a -lkscript -lkl -lpthread
+LIBS = ../xdcommonsql/libxdcommonsql.a ../xdcommon/libxdcommon.a ../../supp/libzip/lib/.libs/libzip.a -lkscript -lkl -lpthread -lz -lexpat
 
 ifeq ($(X_ARCH), LINUX)
 LINKFLAGS = -shared -Wl,-soname,libxdfs.so.1 -fPIC

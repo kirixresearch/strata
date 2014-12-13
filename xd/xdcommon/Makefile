@@ -32,6 +32,7 @@ OBJECTS = block.o \
 	fileinfo.o \
 	filestream.o \
 	formatdefinition.o \
+	groupquery.o \
 	idxutil.o \
 	jobinfo.o \
 	keylayout.o \

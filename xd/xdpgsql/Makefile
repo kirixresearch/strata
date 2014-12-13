@@ -1,10 +1,10 @@
 #/*!
 # *
-# * Copyright (c) 2008-2013, Kirix Research, LLC.  All rights reserved.
+# * Copyright (c) 2004-2013, Kirix Research, LLC.  All rights reserved.
 # *
 # * Project:  XD Database Library
-# * Author:   Benjamin I. Williams
-# * Created:  2008-08-13
+# * Author:   Aaron L. Williams
+# * Created:  2004-12-23
 # *
 # */
 
@@ -12,30 +12,44 @@
 include ../../top.mak
 
 
-INCLUDES = -I../include -I../../xcm/include -I../../kl/include
+CFLAGS = -fPIC $(TOP_CFLAGS)
+INCLUDES = -I../include -I../../xcm/include -I../../kl/include -I../../supp/postgres/src/interfaces/libpq -I../../supp/postgres/src/include
 DEFINES =  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES
-CFLAGS = -fPIC $(TOP_CFLAGS) $(GLIB_CFLAGS)
-LIBDIRS = -L../../kscript
-LIBS = ../xdcommon/libxdcommon.a -lkscript $(GLIB_LIBS) -lpthread
-LINKFLAGS = -shared -fPIC -Wl,-soname,libxdpgsql.so.1
+LINKFLAGS = --pipe -mdll
+LIBDIRS = -L../../kscript -L../../kl 
+LIBS = ../xdcommonsql/libxdcommonsql.a ../xdcommon/libxdcommon.a -lkscript -lkl  ../../supp/postgres/src/interfaces/libpq/libpq.a -lpthread
 
-OBJECTS = \
-	database.o \
+ifeq ($(X_ARCH), LINUX)
+LINKFLAGS = -shared -Wl,-soname,libxdpgsql.so.1 -fPIC
+endif
+
+ifeq ($(X_ARCH), MAC)
+LINKFLAGS = -dynamiclib
+endif
+
+
+OBJECTS = database.o \
+	inserter.o \
 	iterator.o \
-	set.o \
+	stream.o \
+	util.o \
 	xdpgsql.o
 
-VPATH=../../bin
+VPATH=$(OUTPUT_DIR)
 
 all: xdpgsql.so
 
-xdpgsql.so:	$(OBJECTS)
-		$(CPP) $(LINKFLAGS) $^ -o ../../bin/xdpgsql.so $(LIBDIRS) $(LIBS)
+xdpgsql.so:	$(OBJECTS) $(COBJECTS)
+		$(CPP) $^ $(LINKFLAGS) $(LIBDIRS) $(LIBS) -o $(OUTPUT_DIR)/xdpgsql.so
 
 clean:
-	rm -f *.o xdpgsql.so ../../bin/xdpgsql.so
+	rm -f *.o xdpgsql.so $(OUTPUT_DIR)/xdpgsql.so
 
 $(OBJECTS): %.o : %.cpp
 	@echo $<
-	$(CPP) $(CFLAGS) $(INCLUDES) $(DEFINES) -c $<
+	@$(CPP) $(CFLAGS) $(INCLUDES) $(DEFINES) -c $<
+
+$(COBJECTS): %.o : %.c
+	@echo $<
+	gcc -fPIC $(INCLUDES) $(DEFINES) -c $<
 
