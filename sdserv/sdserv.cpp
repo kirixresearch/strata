@@ -11,7 +11,14 @@
 
 #include "sdserv.h"
 #include "../sdservlib/sdservlib.h"
+#include <cstdio>
 #include <kl/file.h>
+
+#ifdef __linux__
+#include <sys/prctl.h>
+#include <sys/signal.h>
+#endif
+
 
 
 int main(int argc, const char** argv)
@@ -24,6 +31,13 @@ int main(int argc, const char** argv)
         return 0;
     }
 
+
+    #ifdef __linux__
+    // on linux, the following line causes this
+    // process to be sent a hangup signal when
+    // its parent process dies
+    prctl(PR_SET_PDEATHSIG, SIGHUP);
+    #endif
 
     std::wstring config_file = sdserv.getOption(L"sdserv.config_file");
 
@@ -38,17 +52,18 @@ int main(int argc, const char** argv)
         home_cfg_file += _wgetenv(L"HOMEPATH");
         home_cfg_file += L"\\sdserv.conf";
         #else
-        home_cfg_file  = kl::towstring(getenv("HOME"));
-        home_cfg_file += L"/.sdservrc";
+        home_cfg_file = L"/etc/sdserv.conf";
         #endif
 
         if (xf_get_file_exist(home_cfg_file))
         {
+            config_file = home_cfg_file;
             sdserv.setOption(L"sdserv.config_file", home_cfg_file);
         }
     }
 
 
+    printf("reading configuration file %ls\n", config_file.c_str());
 
     sdserv.runServer();
 

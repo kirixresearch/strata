@@ -11,7 +11,7 @@
 
 # These two settings need to be adjusted to your build environment
 
-EXENAME = sdserv 
+EXENAME = ../debugu/sdserv 
 INCLUDES = -I../kl/include -I../xd/include
 CPP = g++
 CFLAGS = 
