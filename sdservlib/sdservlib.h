@@ -22,6 +22,7 @@
 #include "request.h"
 
 class Controller;
+class HttpServer;
 class WebSocketsClient;
 class Sdserv
 {
@@ -64,6 +65,7 @@ public:
 private:
 
     WebSocketsClient* m_ws_client;
+    HttpServer* m_http;
     Controller* m_controller;
 
     int m_idle_quit;

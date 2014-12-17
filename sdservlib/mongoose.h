@@ -158,6 +158,8 @@ struct mg_context *mg_start(const struct mg_callbacks *callbacks,
                             const char **configuration_options);
 
 
+int mg_get_listener_info(const struct mg_context *ctx, int idx, int* port, int* is_ssl);
+
 // Stop the web server.
 //
 // Must be called last, when an application wants to stop the web server and

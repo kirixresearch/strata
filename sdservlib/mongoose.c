@@ -4513,7 +4513,7 @@ static int parse_port_string(const struct vec *vec, struct socket *so) {
   } else if (sscanf(vec->ptr, "%d%n", &port, &len) != 1 ||
              len <= 0 ||
              len > (int) vec->len ||
-             port < 1 ||
+             port < 0 ||
              port > 65535 ||
              (vec->ptr[len] && vec->ptr[len] != 's' &&
               vec->ptr[len] != 'r' && vec->ptr[len] != ',')) {
@@ -5393,4 +5393,25 @@ struct mg_context *mg_start(const struct mg_callbacks *callbacks,
   }
 
   return ctx;
+}
+
+
+int mg_get_listener_info(const struct mg_context *ctx, int idx, int* port, int* is_ssl)
+{
+    struct sockaddr_in sin;
+    socklen_t socklen;
+
+    if (idx >= ctx->num_listening_sockets)
+        return 0;
+    
+
+    socklen = sizeof(sin);
+
+    if (0 != getsockname(ctx->listening_sockets[idx].sock, (struct sockaddr*)&sin, &socklen))
+        return 0;
+
+    *port = ntohs(sin.sin_port);
+    *is_ssl = ctx->listening_sockets[idx].is_ssl ? 1 : 0;
+
+    return 1;
 }

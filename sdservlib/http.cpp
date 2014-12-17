@@ -1161,6 +1161,26 @@ bool HttpServer::run()
         return false;
     }
     
+
+    // get list of ports we are listening on
+    int idx = 0;
+    int port = 0;
+    int ssl = 0;
+        
+    while (true)
+    {
+        if (!mg_get_listener_info(ctx, idx++, &port, &ssl))
+            break;
+
+        HttpListeningPort lp;
+        lp.port = port;
+        lp.ssl = ssl ? true : false;
+
+        m_listening_ports.push_back(lp);
+    }
+
+
+
     m_sdserv->signalServerReady();
 
 

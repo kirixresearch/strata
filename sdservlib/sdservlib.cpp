@@ -45,6 +45,10 @@ Sdserv::Sdserv()
 
 Sdserv::~Sdserv()
 {
+    std::wstring run_file = getOption(L"sdserv.run_file");
+    if (run_file.length() > 0)
+        xf_remove(run_file);
+
     delete m_controller;
 }
 
@@ -150,8 +154,39 @@ void Sdserv::signalServerReady()
     }
 #endif
 
+    std::wstring run_file_contents = L"";
+    std::wstring run_file = getOption(L"sdserv.run_file");
+
+    if (m_http)
+    {
+        const std::vector<HttpListeningPort>& ports = m_http->getListeningPorts();
+        std::vector<HttpListeningPort>::const_iterator it;
+
+        kl::JsonNode root;
+        root["ports"].setArray();
+
+        for (it = ports.begin(); it != ports.end(); ++it)
+        {
+            kl::JsonNode element = root["ports"].appendElement();
+            element.setObject();
+            element["port"] = it->port;
+            element["ssl"].setBoolean(it->ssl);
+        }
+
+        run_file_contents = root.toString();
+    }
+
+
+    if (run_file.length() > 0)
+    {
+        xf_put_file_contents(run_file, run_file_contents);
+    }
+
+
+
     printf("*** sdserv ready\n");
     fflush(stdout);
+
 }
 
 
@@ -225,7 +260,9 @@ int Sdserv::runServer()
     if (server_type == L"http")
     {
         HttpServer http(this);
+        m_http = &http;
         http.run();
+        m_http = NULL;
     }
      else if (server_type == L"websockets")
     {
@@ -298,6 +335,10 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
         {
             setOption(L"sdserv.idle_quit", kl::towstring(argv[i+1]));
         }
+         else if (0 == strcmp(argv[i], "-r") && i+1 < argc)
+        {
+            setOption(L"sdserv.run_file", kl::towstring(argv[i+1]));
+        }
          else if (0 == strcmp(argv[i], "--ws") && i+1 < argc)
         {
             setOption(L"sdserv.server_type", L"websockets");
@@ -315,6 +356,7 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
         {
             setOption(L"http.strip_path", kl::towstring(argv[i+1]));
         }
+
     }
 
 

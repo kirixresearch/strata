@@ -130,6 +130,11 @@ private:
 };
 
 
+struct HttpListeningPort
+{
+    int port;
+    bool ssl;
+};
 
 class HttpServer
 {
@@ -137,6 +142,7 @@ public:
 
     HttpServer(Sdserv* sdserv);
     bool run();
+    const std::vector<HttpListeningPort>& getListeningPorts() { return m_listening_ports; }
 
 private:
     static int request_callback(struct mg_connection* conn);
@@ -151,6 +157,8 @@ private:
     size_t m_options_arr_size;
 
     int m_strip_path;
+
+    std::vector<HttpListeningPort> m_listening_ports;
 };
 
 
