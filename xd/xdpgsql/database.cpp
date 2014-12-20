@@ -167,6 +167,22 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
 
             return buf;
         }
+
+        case xd::typeSerial:
+        {
+            swprintf(buf, 255, L"%ls serial primary key",
+                                name.c_str());
+
+            return buf;
+        }
+
+        case xd::typeBigSerial:
+        {
+            swprintf(buf, 255, L"%ls bigserial primary key",
+                                name.c_str());
+
+            return buf;
+        }
     }
 
     return L"";

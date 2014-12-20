@@ -185,7 +185,9 @@ enum
     typeDate = 7,
     typeDateTime = 8,
     typeBoolean = 9,
-    typeWideCharacter = 10
+    typeWideCharacter = 10,
+    typeSerial = 80,
+    typeBigSerial = 81
 };
 
 

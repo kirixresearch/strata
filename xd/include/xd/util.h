@@ -75,7 +75,9 @@ inline std::wstring dbtypeToString(int type)
         case xd::typeDate:          return L"date";         
         case xd::typeDateTime:      return L"datetime";     
         case xd::typeBoolean:       return L"boolean";      
-        case xd::typeBinary:        return L"binary";       
+        case xd::typeBinary:        return L"binary";
+        case xd::typeSerial:        return L"serial";
+        case xd::typeBigSerial:     return L"bigserial";     
     }
 }
 
@@ -92,6 +94,8 @@ inline int stringToDbtype(const std::wstring& type)
     else if (type == L"datetime")      return xd::typeDateTime;
     else if (type == L"boolean")       return xd::typeBoolean;
     else if (type == L"binary")        return xd::typeBinary;
+    else if (type == L"serial")        return xd::typeSerial;
+    else if (type == L"bigserial")     return xd::typeBigSerial;
     else return xd::typeUndefined;
 }
 
