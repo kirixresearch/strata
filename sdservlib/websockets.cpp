@@ -488,7 +488,11 @@ bool WebSocketsClient::run(const std::string& server, int port, bool ssl, const 
             // connect failed, try again
             try_count++;
             printf("Could not connect, trying again. Try %d\n", try_count);
+#ifdef WIN32
+            ::Sleep(5000);
+#else
             sleep(5);
+#endif
         }
 
 
