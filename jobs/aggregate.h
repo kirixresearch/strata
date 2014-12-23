@@ -96,7 +96,7 @@ public:
         double pct = curjob->getPercentage();
         if (m_job_count == 1)
             return pct;
-        return (((double)(m_job_count*100)) / ((double)m_job_count)) + (pct/((double)m_job_count));
+        return (((double)(m_job_idx*100)) / ((double)m_job_count)) + (pct/((double)m_job_count));
     }
 
 public:
