@@ -489,21 +489,45 @@ void Controller::apiCreateTable(RequestInfo& req)
     
     xd::FormatDefinition fd;
 
+
+    // add serial / primary key column
+    {
+        xd::ColumnInfo col;
+        col.name = L"xdrowid";
+        col.type = xd::typeBigSerial;
+        col.width = 18;
+        col.scale = 0;
+        col.column_ordinal = 0;
+        col.expression = L"";
+        col.calculated = false;
+        fd.createColumn(col);
+    }
+
+
     int i, cnt = columns.getChildCount();
     for (i = 0; i < cnt; ++i)
     {
         kl::JsonNode column = columns[i];
+        std::wstring name = column["name"];
         std::wstring type = column["type"];
         int ntype = xd::stringToDbtype(type);
 
+        if (kl::iequals(name.substr(0, 8), L"xdpgsql_"))
+        {
+            // skip any columns that start with xdpgsql_
+            continue;
+        }
+
         xd::ColumnInfo col;
-        col.name = column["name"];
+        col.name = name;
         col.type = ntype;
         col.width = column["width"].getInteger();
         col.scale = column["scale"].getInteger();
-        col.column_ordinal = i;
+        col.column_ordinal = i+1;
         col.expression = column["expression"];
         col.calculated = (col.expression.length() > 0) ? true : false;
+
+
 
         fd.createColumn(col);
     }
@@ -2307,7 +2331,8 @@ void Controller::apiImportLoad(RequestInfo& req)
         object["destination_connection"] = m_connection_string;
         object["source_path"] = datafile;
         object["destination_path"] = target_path;
-        object["overwrite"] = (target_disposition == L"append" ? false : true);
+        object["overwrite"].setBoolean((target_disposition == L"append") ? false : true);
+        object["add_xdrowid"].setBoolean(true);
 
         job->setParameters(params.toString());
         job->setDatabase(db);

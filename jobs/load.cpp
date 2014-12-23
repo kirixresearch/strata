@@ -276,30 +276,34 @@ int LoadJob::runJob()
         if (object.childExists("overwrite") && object.getChild("overwrite").getBoolean())
         {
             destination_db->deleteFile(destination_path);
+        }
 
+        if (!destination_db->getFileExist(destination_path))
+        {
             xd::Structure structure = source_iter->getStructure();
-            destination_format.columns = structure;
+            destination_format.columns = structure.columns;
+
+
+            destination_format.columns.deleteColumn(L"xdrowid");
+
+            if (object.childExists("add_xdrowid") && object.getChild("overwrite").getBoolean())
+            {
+                xd::ColumnInfo col;
+                col.name = L"xdrowid";
+                col.type = xd::typeBigSerial;
+                col.width = 18;
+                col.scale = 0;
+                col.column_ordinal = 0;
+                col.expression = L"";
+                col.calculated = false;
+                destination_format.columns.insert(destination_format.columns.begin(), col);
+            }
 
             if (!destination_db->createTable(destination_path, destination_format))
             {
                 // could not create output file
                 m_job_info->setState(jobStateFailed);
                 return 0;
-            }
-        }
-         else
-        {
-            if (!destination_db->getFileExist(destination_path))
-            {
-                xd::Structure structure = source_iter->getStructure();
-                destination_format.columns = structure.columns;
-
-                if (!destination_db->createTable(destination_path, destination_format))
-                {
-                    // could not create output file
-                    m_job_info->setState(jobStateFailed);
-                    return 0;
-                }
             }
         }
 

@@ -555,7 +555,7 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res, const xd::FormatDefinition
         const char* pg_col_name = PQfname(m_res, i);
 
         // skip internal field names
-        if (0 == strncmp(pg_col_name, "xdpgsql_", 8))
+        if (0 == strcmp(pg_col_name, "xdrowid") || 0 == strncmp(pg_col_name, "xdpgsql_", 8))
             continue;
 
         col_name = kl::towstring(pg_col_name);

@@ -1818,7 +1818,12 @@ xd::Structure PgsqlDatabase::describeTable(const std::wstring& path)
     int i, rows = PQntuples(res);
     for (i = 0; i < rows; ++i)
     {
-        colname = kl::towstring(PQgetvalue(res, i, 0));
+        const char* pg_col_name = PQgetvalue(res, i, 0);
+
+        if (0 == strcmp(pg_col_name, "xdrowid") || 0 == strncmp(pg_col_name, "xdpgsql_", 8))
+            continue;
+
+        colname = kl::towstring(pg_col_name);
         pg_type = atoi(PQgetvalue(res, i, 1));
         type_mod = atoi(PQgetvalue(res, i, 2));
         xd_type = pgsqlToXdType(pg_type);

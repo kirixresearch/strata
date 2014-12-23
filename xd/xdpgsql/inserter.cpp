@@ -181,7 +181,7 @@ bool PgsqlRowInserter::putDateTime(xd::objhandle_t column_handle,
     }
      else
     {
-        f->m_value = L"";
+        f->m_value = L"\\N";
     }
 
     return true;
@@ -220,7 +220,11 @@ bool PgsqlRowInserter::startInsert(const std::wstring& col_list)
         size_t i, col_count = s.getColumnCount();
 
         for (i = 0; i < col_count; ++i)
-            columns.push_back(s.getColumnName(i));
+        {
+            const std::wstring& colname = s.getColumnName(i);
+            if (colname != L"xdrowid")
+                columns.push_back(s.getColumnName(i));
+        }
     }
 
     m_fields.clear();
@@ -236,7 +240,7 @@ bool PgsqlRowInserter::startInsert(const std::wstring& col_list)
         d.m_xd_type = col_info.type;
         d.m_width = col_info.width;
         d.m_scale = col_info.scale;
-        d.m_value = L"";
+        d.m_value = L"\\N";
 
         m_fields.push_back(d);
     }
@@ -283,6 +287,9 @@ bool PgsqlRowInserter::insertRow()
         if (it != begin_it)
             m_wdata += L"\t";
         m_wdata += it->m_value;
+
+        // reset value for the next row
+        it->m_value = L"\\N";
     }
 
     m_buf_rows++;
