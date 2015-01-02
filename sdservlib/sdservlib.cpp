@@ -225,28 +225,41 @@ void Sdserv::updateAssetInformation()
 
 int Sdserv::runServer()
 {
-    std::wstring database = getOption(L"sdserv.database");
-    if (database.length() > 0)
+    std::wstring cstr;
+
+    std::wstring host = getOption(L"sdserv.database.host");
+    if (host.length() > 0)
     {
-        m_database.clear();
 
-        std::wstring cstr = getDatabaseConnectionString(database);
-        if (cstr.empty())
+    }
+     else
+    {
+
+        std::wstring database = getOption(L"sdserv.database.database");
+        if (database.length() > 0)
         {
-            printf("Unknown database '%ls'.  Exiting...\n", database.c_str());
-            signalServerNotReady();
-            return 1;
-        }
+            m_database.clear();
+
+            cstr = getDatabaseConnectionString(database);
+            if (cstr.empty())
+            {
+                printf("Unknown database '%ls'.  Exiting...\n", database.c_str());
+                signalServerNotReady();
+                return 1;
+            }
 
 
-        xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
-        if (dbmgr)
-        {
-            m_database = dbmgr->open(cstr);
+            xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
+            if (dbmgr)
+            {
+                m_database = dbmgr->open(cstr);
+            }
+
         }
+    }
+
 
         m_controller->setConnectionString(cstr);
-    }
 
 
 
@@ -319,9 +332,25 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
         {
             setOption(L"sdserv.config_file", kl::towstring(argv[i+1]));
         }
-         else if (0 == strcmp(argv[i], "-d") && i+1 < argc)
+         else if ((0 == strcmp(argv[i], "-t") || 0 == strcmp(argv[i], "--database-type")) && i+1 < argc)
         {
-            setOption(L"sdserv.database", kl::towstring(argv[i+1]));
+            setOption(L"sdserv.database.type", kl::towstring(argv[i+1]));
+        }
+         else if ((0 == strcmp(argv[i], "-h") || 0 == strcmp(argv[i], "--host")) && i+1 < argc)
+        {
+            setOption(L"sdserv.database.host", kl::towstring(argv[i+1]));
+        }
+         else if ((0 == strcmp(argv[i], "-d") || 0 == strcmp(argv[i], "--database")) && i+1 < argc)
+        {
+            setOption(L"sdserv.database.database", kl::towstring(argv[i+1]));
+        }
+         else if ((0 == strcmp(argv[i], "-u") || 0 == strcmp(argv[i], "--user")) && i+1 < argc)
+        {
+            setOption(L"sdserv.database.user", kl::towstring(argv[i+1]));
+        }
+         else if ((0 == strcmp(argv[i], "-p") || 0 == strcmp(argv[i], "--password")) && i+1 < argc)
+        {
+            setOption(L"sdserv.database.password", kl::towstring(argv[i+1]));
         }
          else if (0 == strcmp(argv[i], "--win32evt-ready") && i+1 < argc)
         {
@@ -331,11 +360,11 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
         {
             setOption(L"sdserv.win32evt_notready", kl::towstring(argv[i+1]));
         }
-         else if (0 == strcmp(argv[i], "--idle-quit") && i+1 < argc)
+         else if ((0 == strcmp(argv[i], "-i") || 0 == strcmp(argv[i], "--idle-quit")) && i+1 < argc)
         {
             setOption(L"sdserv.idle_quit", kl::towstring(argv[i+1]));
         }
-         else if (0 == strcmp(argv[i], "-r") && i+1 < argc)
+         else if ((0 == strcmp(argv[i], "-r") || 0 == strcmp(argv[i], "--run-file")) && i+1 < argc)
         {
             setOption(L"sdserv.run_file", kl::towstring(argv[i+1]));
         }
@@ -348,11 +377,11 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
         {
             setOption(L"websockets.ssl", L"true");
         }
-         else if (0 == strcmp(argv[i], "-p") && i+1 < argc)
+         else if (0 == strcmp(argv[i], "--port") && i+1 < argc)
         {
             setOption(L"http.port", kl::towstring(argv[i+1]));
         }
-         else if (0 == strcmp(argv[i], "-s") && i+1 < argc)
+         else if ((0 == strcmp(argv[i], "-s") || 0 == strcmp(argv[i], "--strip-path")) && i+1 < argc)
         {
             setOption(L"http.strip_path", kl::towstring(argv[i+1]));
         }
