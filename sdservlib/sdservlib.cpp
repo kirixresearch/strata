@@ -230,7 +230,15 @@ int Sdserv::runServer()
     std::wstring host = getOption(L"sdserv.database.host");
     if (host.length() > 0)
     {
+        int port = kl::wtoi(getOption(L"sdserv.database.post"));
+        std::wstring database = getOption(L"sdserv.database.database");
+        std::wstring user = getOption(L"sdserv.database.user");
+        std::wstring password = getOption(L"sdserv.database.password");
 
+        xd::ConnectionString cs;
+        cs.setParameters(xd::dbtypePostgres, host, port, database, user, password);
+
+        cstr = cs.getConnectionString();
     }
      else
     {
@@ -259,7 +267,7 @@ int Sdserv::runServer()
     }
 
 
-        m_controller->setConnectionString(cstr);
+    m_controller->setConnectionString(cstr);
 
 
 
@@ -326,52 +334,74 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
 #endif
 
     int i;
+    std::wstring value;
+
     for (i = 1; i < argc; ++i)
     {
+        const char* eq = strchr(argv[i], '=');
+        if (eq)
+        {
+            value = kl::afterFirst(kl::towstring(argv[i]), '=');
+        }
+         else
+        {
+            if (i+1 < argc)
+            {
+                value = kl::towstring(argv[i+1]);
+                if (value.length() > 0 && value[0] == L'-')
+                    value = L"";
+            }
+        }
+
+
         if (0 == strcmp(argv[i], "-f") && i+1 < argc)
         {
-            setOption(L"sdserv.config_file", kl::towstring(argv[i+1]));
+            setOption(L"sdserv.config_file", value);
         }
-         else if ((0 == strcmp(argv[i], "-t") || 0 == strcmp(argv[i], "--database-type")) && i+1 < argc)
+         else if ((0 == strcmp(argv[i], "-t") || 0 == strncmp(argv[i], "--database-type", 15)) && i+1 < argc)
         {
-            setOption(L"sdserv.database.type", kl::towstring(argv[i+1]));
+            setOption(L"sdserv.database.type", value);
         }
-         else if ((0 == strcmp(argv[i], "-h") || 0 == strcmp(argv[i], "--host")) && i+1 < argc)
+         else if ((0 == strcmp(argv[i], "-h") || 0 == strncmp(argv[i], "--host", 6)) && i+1 < argc)
         {
-            setOption(L"sdserv.database.host", kl::towstring(argv[i+1]));
+            setOption(L"sdserv.database.host", value);
         }
-         else if ((0 == strcmp(argv[i], "-d") || 0 == strcmp(argv[i], "--database")) && i+1 < argc)
+         else if ((0 == strcmp(argv[i], "-P") || 0 == strncmp(argv[i], "--port", 6)) && i+1 < argc)
         {
-            setOption(L"sdserv.database.database", kl::towstring(argv[i+1]));
+            setOption(L"sdserv.database.port", value);
         }
-         else if ((0 == strcmp(argv[i], "-u") || 0 == strcmp(argv[i], "--user")) && i+1 < argc)
+         else if ((0 == strcmp(argv[i], "-d") || 0 == strncmp(argv[i], "--database", 10)) && i+1 < argc)
         {
-            setOption(L"sdserv.database.user", kl::towstring(argv[i+1]));
+            setOption(L"sdserv.database.database", value);
         }
-         else if ((0 == strcmp(argv[i], "-p") || 0 == strcmp(argv[i], "--password")) && i+1 < argc)
+         else if ((0 == strcmp(argv[i], "-u") || 0 == strncmp(argv[i], "--user", 6)) && i+1 < argc)
         {
-            setOption(L"sdserv.database.password", kl::towstring(argv[i+1]));
+            setOption(L"sdserv.database.user", value);
+        }
+         else if ((0 == strcmp(argv[i], "-p") || 0 == strncmp(argv[i], "--password", 10)) && i+1 < argc)
+        {
+            setOption(L"sdserv.database.password", value);
         }
          else if (0 == strcmp(argv[i], "--win32evt-ready") && i+1 < argc)
         {
-            setOption(L"sdserv.win32evt_ready", kl::towstring(argv[i+1]));
+            setOption(L"sdserv.win32evt_ready", value);
         }
          else if (0 == strcmp(argv[i], "--win32evt-notready") && i+1 < argc)
         {
-            setOption(L"sdserv.win32evt_notready", kl::towstring(argv[i+1]));
+            setOption(L"sdserv.win32evt_notready", value);
         }
-         else if ((0 == strcmp(argv[i], "-i") || 0 == strcmp(argv[i], "--idle-quit")) && i+1 < argc)
+         else if ((0 == strcmp(argv[i], "-i") || 0 == strncmp(argv[i], "--idle-quit", 11)) && i+1 < argc)
         {
-            setOption(L"sdserv.idle_quit", kl::towstring(argv[i+1]));
+            setOption(L"sdserv.idle_quit", value);
         }
-         else if ((0 == strcmp(argv[i], "-r") || 0 == strcmp(argv[i], "--run-file")) && i+1 < argc)
+         else if ((0 == strcmp(argv[i], "-r") || 0 == strncmp(argv[i], "--run-file", 10)) && i+1 < argc)
         {
-            setOption(L"sdserv.run_file", kl::towstring(argv[i+1]));
+            setOption(L"sdserv.run_file", value);
         }
          else if (0 == strcmp(argv[i], "--ws") && i+1 < argc)
         {
             setOption(L"sdserv.server_type", L"websockets");
-            setOption(L"websockets.server", kl::towstring(argv[i+1]));
+            setOption(L"websockets.server", value);
         }
          else if (0 == strcmp(argv[i], "--wsssl"))
         {
@@ -379,11 +409,11 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
         }
          else if (0 == strcmp(argv[i], "--port") && i+1 < argc)
         {
-            setOption(L"http.port", kl::towstring(argv[i+1]));
+            setOption(L"http.port", value);
         }
-         else if ((0 == strcmp(argv[i], "-s") || 0 == strcmp(argv[i], "--strip-path")) && i+1 < argc)
+         else if ((0 == strcmp(argv[i], "-s") || 0 == strncmp(argv[i], "--strip-path", 12)) && i+1 < argc)
         {
-            setOption(L"http.strip_path", kl::towstring(argv[i+1]));
+            setOption(L"http.strip_path", value);
         }
 
     }
