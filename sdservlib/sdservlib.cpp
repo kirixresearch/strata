@@ -358,27 +358,27 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
         {
             setOption(L"sdserv.config_file", value);
         }
-         else if ((0 == strcmp(argv[i], "-t") || 0 == strncmp(argv[i], "--database-type", 15)) && i+1 < argc)
+         else if (0 == strcmp(argv[i], "-t") || 0 == strncmp(argv[i], "--database-type", 15))
         {
             setOption(L"sdserv.database.type", value);
         }
-         else if ((0 == strcmp(argv[i], "-h") || 0 == strncmp(argv[i], "--host", 6)) && i+1 < argc)
+         else if (0 == strcmp(argv[i], "-h") || 0 == strncmp(argv[i], "--host", 6))
         {
             setOption(L"sdserv.database.host", value);
         }
-         else if ((0 == strcmp(argv[i], "-P") || 0 == strncmp(argv[i], "--port", 6)) && i+1 < argc)
+         else if (0 == strcmp(argv[i], "-P") || 0 == strncmp(argv[i], "--port", 6))
         {
             setOption(L"sdserv.database.port", value);
         }
-         else if ((0 == strcmp(argv[i], "-d") || 0 == strncmp(argv[i], "--database", 10)) && i+1 < argc)
+         else if (0 == strcmp(argv[i], "-d") || 0 == strncmp(argv[i], "--database", 10))
         {
             setOption(L"sdserv.database.database", value);
         }
-         else if ((0 == strcmp(argv[i], "-u") || 0 == strncmp(argv[i], "--user", 6)) && i+1 < argc)
+         else if (0 == strcmp(argv[i], "-u") || 0 == strncmp(argv[i], "--user", 6))
         {
             setOption(L"sdserv.database.user", value);
         }
-         else if ((0 == strcmp(argv[i], "-p") || 0 == strncmp(argv[i], "--password", 10)) && i+1 < argc)
+         else if (0 == strcmp(argv[i], "-p") || 0 == strncmp(argv[i], "--password", 10))
         {
             setOption(L"sdserv.database.password", value);
         }
@@ -390,11 +390,11 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
         {
             setOption(L"sdserv.win32evt_notready", value);
         }
-         else if ((0 == strcmp(argv[i], "-i") || 0 == strncmp(argv[i], "--idle-quit", 11)) && i+1 < argc)
+         else if (0 == strcmp(argv[i], "-i") || 0 == strncmp(argv[i], "--idle-quit", 11))
         {
             setOption(L"sdserv.idle_quit", value);
         }
-         else if ((0 == strcmp(argv[i], "-r") || 0 == strncmp(argv[i], "--run-file", 10)) && i+1 < argc)
+         else if (0 == strcmp(argv[i], "-r") || 0 == strncmp(argv[i], "--run-file", 10))
         {
             setOption(L"sdserv.run_file", value);
         }
@@ -407,11 +407,11 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
         {
             setOption(L"websockets.ssl", L"true");
         }
-         else if (0 == strcmp(argv[i], "--port") && i+1 < argc)
+         else if (0 == strncmp(argv[i], "--http-port", 11))
         {
             setOption(L"http.port", value);
         }
-         else if ((0 == strcmp(argv[i], "-s") || 0 == strncmp(argv[i], "--strip-path", 12)) && i+1 < argc)
+         else if (0 == strcmp(argv[i], "-s") || 0 == strncmp(argv[i], "--strip-path", 12))
         {
             setOption(L"http.strip_path", value);
         }

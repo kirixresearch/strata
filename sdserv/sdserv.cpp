@@ -40,8 +40,9 @@ int main(int argc, const char** argv)
     #endif
 
     std::wstring config_file = sdserv.getOption(L"sdserv.config_file");
+    std::wstring host = sdserv.getOption(L"sdserv.database.host");
 
-    if (config_file.empty())
+    if (host.empty() && config_file.empty())
     {
         std::wstring home_cfg_file;
 
@@ -62,8 +63,8 @@ int main(int argc, const char** argv)
         }
     }
 
-
-    printf("reading configuration file %ls\n", config_file.c_str());
+    if (!config_file.empty())
+        printf("reading configuration file %ls\n", config_file.c_str());
 
     sdserv.runServer();
 

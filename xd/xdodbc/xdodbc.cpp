@@ -42,7 +42,7 @@ public:
 
     bool createDatabase(const std::wstring& connection_str)
     {
-        xd::ConnectionStringParser c(connection_str);
+        xd::ConnectionString c(connection_str);
         std::wstring provider = c.getLowerValue(L"xdprovider");
         if (provider.empty())
             return false;
@@ -168,7 +168,7 @@ public:
     
     xd::IDatabasePtr open(const std::wstring& connection_str)
     {
-        xd::ConnectionStringParser c(connection_str);
+        xd::ConnectionString c(connection_str);
         std::wstring provider = c.getLowerValue(L"xdprovider");
         if (provider.empty())
             return xcm::null;

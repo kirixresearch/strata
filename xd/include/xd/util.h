@@ -504,15 +504,15 @@ inline std::wstring xdtrim(const std::wstring& s)
         return s.substr(first, last - first + 1);
 }
 
-class ConnectionStringParser
+class ConnectionString
 {
 public:
 
-    ConnectionStringParser()
+    ConnectionString()
     {
     }
 
-    ConnectionStringParser(const std::wstring& str)
+    ConnectionString(const std::wstring& str)
     {
         parse(str);
     }
@@ -623,6 +623,54 @@ public:
     
         return result;
     }
+
+
+    bool setParameters(int dbtype,
+                       const std::wstring& host,
+                       int port,
+                       const std::wstring& database,
+                       const std::wstring& user,
+                       const std::wstring& password)
+    {
+        wchar_t port_s[25];
+        swprintf(port_s, 24, L"%d", port);
+
+        switch (dbtype)
+        {
+            case xd::dbtypeXdnative:     this->setValue(L"xdprovider", L"xdnative");                                       break;
+
+            #ifdef WIN32
+            case xd::dbtypeAccess:       this->setValue(L"xdprovider", L"xdodbc"); this->setValue(L"xddbtype", L"access"); break;
+            case xd::dbtypeSqlServer:    this->setValue(L"xdprovider", L"xdodbc"); this->setValue(L"xddbtype", L"mssql");  break;
+            #else
+            case xd::dbtypeAccess:       this->setValue(L"xdprovider", L"xdaccess");                                       break;
+            case xd::dbtypeSqlServer:    this->setValue(L"xdprovider", L"xdsqlserver");                                    break;
+            #endif
+
+            case xd::dbtypeExcel:        this->setValue(L"xdprovider", L"xdodbc"); this->setValue(L"xddbtype", L"excel");  break;
+            case xd::dbtypeSqlite:       this->setValue(L"xdprovider", L"xdsqlite");                                       break;
+            case xd::dbtypeMySql:        this->setValue(L"xdprovider", L"xdmysql");                                        break;
+                                                                                                                           
+            case xd::dbtypePostgres:     this->setValue(L"xdprovider", L"xdpgsql");                                        break;
+            case xd::dbtypeOracle:       this->setValue(L"xdprovider", L"xdoracle");                                       break;
+            case xd::dbtypeOdbc:         this->setValue(L"xdprovider", L"xdodbc"); this->setValue(L"xddbtype", L"dsn");    break;
+            case xd::dbtypeDb2:          this->setValue(L"xdprovider", L"xdodbc"); this->setValue(L"xddbtype", L"db2");    break;
+            case xd::dbtypeClient:       this->setValue(L"xdprovider", L"xdclient");                                       break;
+            case xd::dbtypeFilesystem:   this->setValue(L"xdprovider", L"xdfs");                                           break;                    
+            case xd::dbtypeKpg:          this->setValue(L"xdprovider", L"xdkpg");                                          break;
+            default:
+                return false;
+        }
+
+        this->setValue(L"host", host);
+        this->setValue(L"port", port_s);
+        this->setValue(L"user id", user);
+        this->setValue(L"password", password);
+        this->setValue(L"database", database);
+
+        return true;
+    }
+
 
 private:
 

@@ -19,7 +19,7 @@
 
 bool DatabaseMgr::createDatabase(const std::wstring& connection_str)
 {
-    xd::ConnectionStringParser c(connection_str);
+    xd::ConnectionString c(connection_str);
     std::wstring provider = c.getLowerValue(L"xdprovider");
     if (provider.empty())
         return false;
@@ -77,7 +77,7 @@ xd::IDatabasePtr DatabaseMgr::open(const std::wstring& _connection_str)
     }
 
 
-    xd::ConnectionStringParser c(connection_str);
+    xd::ConnectionString c(connection_str);
     std::wstring provider = c.getLowerValue(L"xdprovider");
     if (provider.empty())
         return xcm::null;

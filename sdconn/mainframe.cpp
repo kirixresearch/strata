@@ -242,7 +242,7 @@ void MainFrame::refreshList()
             }
              else if (kl::icontains(def.data_connection_string, L"xdprovider=xdfs"))
             {
-                xd::ConnectionStringParser parser(def.data_connection_string);
+                xd::ConnectionString parser(def.data_connection_string);
                 data_path_name = parser.getValue(L"database");
             }
              else
@@ -419,7 +419,7 @@ std::wstring getLocationString(xd::FormatDefinition def)
         return getPhysPathFromDatabasePath(def.data_path).ToStdWstring();
     }
     
-    xd::ConnectionStringParser parser(def.data_connection_string);
+    xd::ConnectionString parser(def.data_connection_string);
 
     std::wstring provider = parser.getLowerValue(L"xdprovider");
     std::wstring dbtype = parser.getLowerValue(L"xddbtype");

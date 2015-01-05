@@ -1073,6 +1073,8 @@ bool HttpServer::run()
     kl::parseDelimitedList(m_sdserv->getOption(L"http.port"), arr, ',');
     for (it = arr.begin(); it != arr.end(); ++it)
     {
+        if (it->empty())
+            continue;
         if (tmps.length() > 0)
             tmps += L",";
         tmps += *it;
@@ -1081,6 +1083,8 @@ bool HttpServer::run()
     kl::parseDelimitedList(m_sdserv->getOption(L"http.ssl_port"), arr, ',');
     for (it = arr.begin(); it != arr.end(); ++it)
     {
+        if (it->empty())
+            continue;
         if (tmps.length() > 0)
             tmps += L",";
         tmps += *it;
