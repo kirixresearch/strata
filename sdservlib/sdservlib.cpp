@@ -243,7 +243,6 @@ int Sdserv::runServer()
     }
      else
     {
-
         std::wstring database = getOption(L"sdserv.database.database");
         if (database.length() > 0)
         {
@@ -256,9 +255,6 @@ int Sdserv::runServer()
                 signalServerNotReady();
                 return 1;
             }
-
-
-
         }
     }
 
@@ -274,7 +270,6 @@ int Sdserv::runServer()
     std::wstring idle_quit = getOption(L"sdserv.idle_quit");
     if (idle_quit.length() > 0)
         m_idle_quit = kl::wtoi(idle_quit);
-
 
 
     std::wstring server_type = getOption(L"sdserv.server_type");
@@ -313,15 +308,12 @@ int Sdserv::runServer()
 }
 
 
-
 bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
 {
     //const char *options[40] = { "listening_ports",   LISTENING_PORT,
     //                            "enable_keep_alive", "yes",
     //                            NULL };
     
-
-
     std::wstring cfg_file;
     std::wstring database;
     std::wstring home_cfg_file;
@@ -415,13 +407,10 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
         {
             setOption(L"http.strip_path", value);
         }
-
     }
-
 
     return true;
 }
-
 
 
 void Sdserv::setOption(const std::wstring& option, const std::wstring& value)
