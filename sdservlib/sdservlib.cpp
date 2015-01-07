@@ -180,6 +180,7 @@ void Sdserv::signalServerReady()
     if (run_file.length() > 0)
     {
         xf_put_file_contents(run_file, run_file_contents);
+        printf("%ls\n", run_file_contents.c_str());
     }
 
 
@@ -257,18 +258,17 @@ int Sdserv::runServer()
             }
 
 
-            xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
-            if (dbmgr)
-            {
-                m_database = dbmgr->open(cstr);
-            }
 
         }
     }
 
-
     m_controller->setConnectionString(cstr);
 
+    xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
+    if (dbmgr)
+    {
+        m_database = dbmgr->open(cstr);
+    }
 
 
     std::wstring idle_quit = getOption(L"sdserv.idle_quit");
