@@ -15,25 +15,28 @@ include ../../top.mak
 INCLUDES = -I../include -I../../xcm/include -I../../kl/include
 DEFINES =  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES
 CFLAGS = -fPIC $(TOP_CFLAGS) $(GLIB_CFLAGS)
-LIBDIRS = -L../../kscript
-LIBS = ../xdcommon/libxdcommon.a -lkscript $(GLIB_LIBS) -lpthread
-LINKFLAGS = -shared -fPIC -Wl,-soname,libxdpgsql.so.1
+LIBDIRS = -L../../kscript -L../../kl
+LIBS = ../xdcommonsql/libxdcommonsql.a ../xdcommon/libxdcommon.a -lkscript -lkl -lpthread -lz
+LINKFLAGS = -shared -fPIC -Wl,-soname,libxdkpg.so.1
 
 OBJECTS = \
 	database.o \
+	inserter.o \
 	iterator.o \
-	set.o \
-	xdpgsql.o
+	pkgfile.o \
+	stream.o \
+	util.o \
+	xdkpg.o
 
-VPATH=../../bin
+VPATH=$(OUTPUT_DIR)
 
-all: xdpgsql.so
+all: xdkpg.so
 
-xdpgsql.so:	$(OBJECTS)
-		$(CPP) $(LINKFLAGS) $^ -o ../../bin/xdpgsql.so $(LIBDIRS) $(LIBS)
+xdkpg.so:	$(OBJECTS)
+		$(CPP) $(LINKFLAGS) $^ -o $(OUTPUT_DIR)/xdkpg.so $(LIBDIRS) $(LIBS)
 
 clean:
-	rm -f *.o xdpgsql.so ../../bin/xdpgsql.so
+	rm -f *.o xdpgsql.so $(OUTPUT_DIR)/xdkpg.so
 
 $(OBJECTS): %.o : %.cpp
 	@echo $<
