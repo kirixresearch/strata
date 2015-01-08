@@ -762,7 +762,6 @@ void DlgConnection::setFilePanelDirectory(const wxString& path)
 
 void DlgConnection::onServerParameterChanged(wxCommandEvent& evt)
 {
-    saveDialogData();
 }
 
 void DlgConnection::onServerPasswordEnterPressed(wxCommandEvent& evt)
