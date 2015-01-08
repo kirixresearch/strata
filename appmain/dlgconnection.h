@@ -90,6 +90,14 @@ private:
 
     enum
     {
+        tabFile = 1,
+        tabFolder,
+        tabServer,
+        tabDataSource
+    };
+
+    enum
+    {
         pageFile = 1,
         pageFolder,
         pageServer,
@@ -144,6 +152,7 @@ private:
     wxToggleButton* m_togglebutton_datasources;
 
     int m_last_page;
+    int m_current_tab;
     int m_current_page;
     int m_options;
     bool m_need_text_format;
@@ -169,6 +178,9 @@ private:
     wxChoice* m_server_type;
     wxTextCtrl* m_server_server;
     wxTextCtrl* m_server_port;
+    wxTextCtrl* m_server_database;
+    wxTextCtrl* m_server_username;
+    wxTextCtrl* m_server_password;
 
     // data source page controls
     kcl::Grid* m_datasource_grid;

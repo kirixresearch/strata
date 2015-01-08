@@ -222,6 +222,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                                           wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
     m_last_page = 0;
+    m_current_tab = tabFile;
     m_current_page = 0;
     m_options = options;
     m_need_text_format = false;
@@ -328,7 +329,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
     
     // create the database sizer
     wxStaticText* database_label = new wxStaticText(this,  -1,  _("Database:"));
-    wxTextCtrl* database_textctrl = new wxTextCtrl(this, 
+    m_server_database = new wxTextCtrl(this, 
                                          ID_Server_Database,
                                          m_ci.database,
                                          wxDefaultPosition,
@@ -337,7 +338,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
     wxSizer* database_sizer = new wxBoxSizer(wxHORIZONTAL);
     database_sizer->Add(80,23);
     database_sizer->Add(database_label, 0, wxALIGN_CENTER);
-    database_sizer->Add(database_textctrl, 1, wxALIGN_CENTER);
+    database_sizer->Add(m_server_database, 1, wxALIGN_CENTER);
     database_sizer->Add(80,23);
 
     // create the port number sizer
@@ -356,7 +357,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
 
     // create the username sizer
     wxStaticText* username_label = new wxStaticText(this, -1, _("User Name:"));
-    wxTextCtrl* username_textctrl = new wxTextCtrl(this, 
+    m_server_username = new wxTextCtrl(this, 
                                          ID_Server_Username,
                                          m_ci.username,
                                          wxDefaultPosition,
@@ -365,7 +366,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
     wxSizer* username_sizer = new wxBoxSizer(wxHORIZONTAL);
     username_sizer->Add(80,23);
     username_sizer->Add(username_label, 0, wxALIGN_CENTER);
-    username_sizer->Add(username_textctrl, 1, wxALIGN_CENTER);
+    username_sizer->Add(m_server_username, 1, wxALIGN_CENTER);
     username_sizer->Add(80,23);
 
     // create the password sizer
@@ -373,7 +374,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                                     -1,
                                                     _("Password:"));
 
-    wxTextCtrl* password_textctrl = new wxTextCtrl(this,
+    m_server_password = new wxTextCtrl(this,
                                          ID_Server_Password,
                                          m_ci.password,
                                          wxDefaultPosition,
@@ -383,7 +384,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
     wxSizer* password_sizer = new wxBoxSizer(wxHORIZONTAL);
     password_sizer->Add(80,23);
     password_sizer->Add(password_label, 0, wxALIGN_CENTER);
-    password_sizer->Add(password_textctrl, 1, wxALIGN_CENTER);
+    password_sizer->Add(m_server_password, 1, wxALIGN_CENTER);
     password_sizer->Add(80,23);
 
     // measure the label widths
@@ -761,28 +762,7 @@ void DlgConnection::setFilePanelDirectory(const wxString& path)
 
 void DlgConnection::onServerParameterChanged(wxCommandEvent& evt)
 {
-    switch (evt.GetId())
-    {
-        case ID_Server_Type:
-            m_ci.type = (long)m_server_type->GetClientData(m_server_type->GetSelection());
-            switch (m_ci.type)
-            {
-                case xd::dbtypeMySql:      m_ci.port = 3306; break;
-                case xd::dbtypeSqlServer:  m_ci.port = 1433; break;
-                case xd::dbtypeOracle:     m_ci.port = 1521; break;
-                case xd::dbtypePostgres:   m_ci.port = 5432; break;
-                case xd::dbtypeDb2:        m_ci.port = 50000; break;
-            }
-
-            m_server_port->SetValue(wxString::Format("%d", m_ci.port));
-            break;
-
-        case ID_Server_Server:    m_ci.server = evt.GetString().ToStdWstring(); break;
-        case ID_Server_Database:  m_ci.database = evt.GetString().ToStdWstring(); break;
-        case ID_Server_Username:  m_ci.username = evt.GetString().ToStdWstring(); break;
-        case ID_Server_Password:  m_ci.password = evt.GetString().ToStdWstring(); break;
-        case ID_Server_Port:      m_ci.port = wxAtoi(evt.GetString()); break;
-    }
+    saveDialogData();
 }
 
 void DlgConnection::onServerPasswordEnterPressed(wxCommandEvent& evt)
@@ -829,28 +809,6 @@ void DlgConnection::onTableListSelectNone(wxCommandEvent& evt)
 
 void DlgConnection::onOK(wxCommandEvent& evt)
 {
-    if (m_current_page == pageFile)
-    {
-        m_ci.type = xd::dbtypeFilesystem;
-        m_ci.port = 0;
-        m_ci.path = m_file_panel->getPath().ToStdWstring();
-    }
-
-    if (m_current_page == pageDataSource)
-    {
-        int row = m_datasource_grid->getCursorRow();
-        if (row >= 0 && row < m_datasource_grid->getRowCount())
-        {
-            m_ci.type = xd::dbtypeOdbc;
-            m_ci.database = m_datasource_grid->getCellString(row, 0);
-        }
-         else
-        {
-            return;
-        }
-    }
-
-
     saveDialogData();
 
     sigFinished(this);
@@ -881,10 +839,10 @@ void DlgConnection::onToggleButton(wxCommandEvent& evt)
 {
     switch (evt.GetId())
     {
-        case ID_ToggleButton_Folder:     setActivePage(pageFolder); break;
-        case ID_ToggleButton_File:       setActivePage(pageFile); break;
-        case ID_ToggleButton_Server:     setActivePage(pageServer); break;
-        case ID_ToggleButton_DataSource: setActivePage(pageDataSource); break;
+        case ID_ToggleButton_Folder:     m_current_tab = tabFolder;     setActivePage(pageFolder); break;
+        case ID_ToggleButton_File:       m_current_tab = tabFile;       setActivePage(pageFile); break;
+        case ID_ToggleButton_Server:     m_current_tab = tabServer;     setActivePage(pageServer); break;
+        case ID_ToggleButton_DataSource: m_current_tab = tabDataSource; setActivePage(pageDataSource); break;
     }
 }
 
@@ -896,11 +854,37 @@ void DlgConnection::onBackward(wxCommandEvent& evt)
 
 void DlgConnection::onForward(wxCommandEvent& evt)
 {
-    bool connect_to_database = false;
+    xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
+    if (dbmgr.isNull())
+        return;
+    xd::IDatabasePtr db;
+
+    saveDialogData();
 
     if (m_current_page == pageServer)
     {
-        connect_to_database = true;
+        xd::ConnectionString cstr;
+        cstr.setParameters(m_ci.type, m_ci.server, m_ci.port, m_ci.database, m_ci.username, m_ci.password);
+
+
+        {
+            wxBusyCursor bc;
+            db = dbmgr->open(m_ci.getConnectionString());
+        }
+
+        if (db.isNull())
+        {
+            wxString msg = _("There was an error connecting to the specified database.");
+            msg += wxT("  ");
+            msg += dbmgr->getErrorString();
+            
+            ::wxMessageBox(msg, _("Connection failed"),  wxOK | wxICON_EXCLAMATION | wxCENTER, wxTheApp->GetTopWindow());
+            return;
+        }
+
+        populateTableListGrid(db);
+            
+        setActivePage(pageTableList);
     }
 
     if (m_current_page == pageFile)
@@ -909,7 +893,6 @@ void DlgConnection::onForward(wxCommandEvent& evt)
 
         std::vector<wxString> files;
         m_file_panel->getPaths(files);
-
 
         if (files.size() == 0)
         {
@@ -926,17 +909,31 @@ void DlgConnection::onForward(wxCommandEvent& evt)
 
         if (!binary_import && files.size() == 1 && kl::icontains(files[0].ToStdWstring(), L".mdb"))
         {
-            connect_to_database = true;
             m_ci.type = xd::dbtypeAccess;
             m_ci.port = 0;
             m_ci.path = files[0];
         }
          else if (!binary_import && files.size() == 1 && kl::icontains(files[0].ToStdWstring(), L".kpg"))
         {
-            connect_to_database = true;
             m_ci.type = xd::dbtypeKpg;
             m_ci.port = 0;
             m_ci.path = files[0];
+
+            db = dbmgr->open(L"xdprovider=xdkpg;database=" + m_ci.path);
+
+            if (db.isNull())
+            {
+                wxString msg = _("There was an error connecting to the specified package file.");
+                msg += wxT("  ");
+                msg += dbmgr->getErrorString();
+            
+                ::wxMessageBox(msg, _("Alert"),  wxOK | wxICON_EXCLAMATION | wxCENTER, wxTheApp->GetTopWindow());
+                return;
+            }
+
+            populateTableListGrid(db);
+            
+            setActivePage(pageTableList);
         }
          else
         {
@@ -989,12 +986,7 @@ void DlgConnection::onForward(wxCommandEvent& evt)
             m_ci.type = xd::dbtypeOdbc;
             m_ci.database = m_datasource_grid->getCellString(row, 0);
 
-
-            xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
-            if (dbmgr.isNull())
-                return;
-
-            xd::IDatabasePtr db = dbmgr->open(m_ci.getConnectionString());
+            db = dbmgr->open(m_ci.getConnectionString());
             if (db.isNull())
             {
                 wxString msg = _("There was an error connecting to the specified database.");
@@ -1070,7 +1062,6 @@ void DlgConnection::setActivePage(int page)
     }
      else if (page == pageTableList)
     {
-        m_last_page = pageFile;
         m_container_sizer->Hide(m_filepage_sizer);
         m_container_sizer->Hide(m_serverpage_sizer);
         m_container_sizer->Hide(m_datasourcepage_sizer);
@@ -1103,6 +1094,70 @@ void DlgConnection::showButtons(int mask)
 
 void DlgConnection::saveDialogData()
 {
+    // server page
+
+    if (m_current_tab == tabFile)
+    {
+        bool binary_import = m_binarycopy_checkbox->GetValue();
+
+        std::vector<wxString> files;
+        m_file_panel->getPaths(files);
+
+        if (!binary_import && files.size() == 1 && kl::icontains(files[0].ToStdWstring(), L".mdb"))
+        {
+            m_ci.type = xd::dbtypeAccess;
+            m_ci.port = 0;
+            m_ci.path = files[0];
+        }
+         else if (!binary_import && files.size() == 1 && kl::icontains(files[0].ToStdWstring(), L".kpg"))
+        {
+            m_ci.type = xd::dbtypeKpg;
+            m_ci.port = 0;
+            m_ci.path = files[0];
+        }
+         else
+        {
+            m_ci.type = xd::dbtypeFilesystem;
+            m_ci.port = 0;
+            m_ci.path = m_file_panel->getPath().ToStdWstring();
+        }
+    }
+     else
+    {
+        m_ci.type = (long)m_server_type->GetClientData(m_server_type->GetSelection());
+        switch (m_ci.type)
+        {
+            case xd::dbtypeMySql:      m_ci.port = 3306; break;
+            case xd::dbtypeSqlServer:  m_ci.port = 1433; break;
+            case xd::dbtypeOracle:     m_ci.port = 1521; break;
+            case xd::dbtypePostgres:   m_ci.port = 5432; break;
+            case xd::dbtypeDb2:        m_ci.port = 50000; break;
+        }
+    }
+
+
+    m_ci.server = m_server_server->GetValue().ToStdWstring();
+    m_ci.port = wxAtoi(m_server_port->GetValue());
+    m_ci.database = m_server_database->GetValue().ToStdWstring();
+    m_ci.username = m_server_username->GetValue().ToStdWstring();
+    m_ci.password = m_server_password->GetValue().ToStdWstring();
+
+
+    if (m_current_tab == tabDataSource)
+    {
+        m_ci.type = xd::dbtypeOdbc;
+
+        int row = m_datasource_grid->getCursorRow();
+        if (row >= 0 && row < m_datasource_grid->getRowCount())
+        {
+            m_ci.database = m_datasource_grid->getCellString(row, 0);
+        }
+         else
+        {
+            m_ci.database = L"";
+        }
+    }
+
     // table selection page
 
     m_ci.tables.clear();
