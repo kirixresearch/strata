@@ -22,7 +22,7 @@ const char xf_path_separator_char = '\\';
 const wchar_t xf_path_separator_wchar = L'\\';
 #else
 const char xf_path_separator_char = '/';
-const wchar_t xf_path_separator_wchar = L'\\';
+const wchar_t xf_path_separator_wchar = L'/';
 #endif
 
 
