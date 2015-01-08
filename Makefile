@@ -18,10 +18,11 @@ all:
 	cd xd/xdcommon && $(MAKE) -w
 	cd xd/xdcommonsql && $(MAKE) -w
 	cd xd/xdfs && $(MAKE) -w
+	cd xd/xdkpg && $(MAKE) -w
 	cd xd/xdnative && $(MAKE) -w
 	cd xd/xdodbc && $(MAKE) -w
+	cd xd/xdpgsql && $(MAKE) -w
 #	cd xd/xdoracle && $(MAKE) -w
-#	cd xd/xddrizzle && $(MAKE) -w
 	cd jobs && $(MAKE) -w
 	cd scripthost && $(MAKE) -w
 	cd kcl && $(MAKE) -w
@@ -37,10 +38,11 @@ clean:
 	cd xd/xdcommon && $(MAKE) -w clean
 	cd xd/xdcommonsql && $(MAKE) -w clean
 	cd xd/xdfs && $(MAKE) -w clean
+	cd xd/xdkpg && $(MAKE) -w clean
 	cd xd/xdnative && $(MAKE) -w clean
 	cd xd/xdodbc && $(MAKE) -w clean
+	cd xd/xdpgsql && $(MAKE) -w clean
 #	cd xd/xdoracle && $(MAKE) -w clean
-#	cd xd/xddrizzle && $(MAKE) -w clean
 	cd jobs && $(MAKE) -w clean
 	cd scripthost && $(MAKE) -w clean
 	cd kcl && $(MAKE) -w clean
