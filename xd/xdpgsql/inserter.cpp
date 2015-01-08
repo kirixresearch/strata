@@ -121,6 +121,16 @@ bool PgsqlRowInserter::putDouble(xd::objhandle_t column_handle,
 
     wchar_t buf[64];
     swprintf(buf, 63, L"%.*f", f->m_scale, value);
+
+    // make this work even in european locales, where the decimal is often a comma
+    for (int i = 0; i < sizeof(buf); ++i)
+    {
+        if (!buf[i])
+            break;
+        if (buf[i] == ',')
+            buf[i] = '.';
+    }
+    
     f->m_value = buf;
 
     return true;
