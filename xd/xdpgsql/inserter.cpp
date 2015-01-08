@@ -22,9 +22,6 @@
 
 PgsqlRowInserter::PgsqlRowInserter(PgsqlDatabase* db, const std::wstring& table)
 {
-    printf("constructing\n");
-    fflush(stdout);
-
     m_database = db;
     m_database->ref();
     
@@ -45,9 +42,6 @@ PgsqlRowInserter::PgsqlRowInserter(PgsqlDatabase* db, const std::wstring& table)
 
 PgsqlRowInserter::~PgsqlRowInserter()
 {
-    printf("destructing\n");
-    fflush(stdout);
-
     if (m_utf8data)
         free(m_utf8data);
 
