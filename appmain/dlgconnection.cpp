@@ -293,16 +293,16 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                  0,
                                  NULL);
     
-    m_server_type->Append(_("MySQL"),      (void*)xd::dbtypeMySql);     
-    m_server_type->Append(_("SQL Server"), (void*)xd::dbtypeSqlServer);
-    m_server_type->Append(_("Oracle"),     (void*)xd::dbtypeOracle);    
-    m_server_type->Append(_("PostgreSQL"), (void*)xd::dbtypePostgres);
-    m_server_type->Append(_("DB2"),        (void*)xd::dbtypeDb2);       
+    m_server_type->Append(_("MySQL"),      (void*)(long)xd::dbtypeMySql);     
+    m_server_type->Append(_("SQL Server"), (void*)(long)xd::dbtypeSqlServer);
+    m_server_type->Append(_("Oracle"),     (void*)(long)xd::dbtypeOracle);    
+    m_server_type->Append(_("PostgreSQL"), (void*)(long)xd::dbtypePostgres);
+    m_server_type->Append(_("DB2"),        (void*)(long)xd::dbtypeDb2);       
     
     // set combo setting from m_ci
     for (size_t idx = 0; idx < m_server_type->GetCount(); ++idx)
     {
-        if (m_server_type->GetClientData(idx) == (void*)m_ci.type)
+        if (m_server_type->GetClientData(idx) == (void*)(long)m_ci.type)
             m_server_type->SetSelection(idx);
     }
 
@@ -1124,7 +1124,7 @@ void DlgConnection::saveDialogData()
     }
      else
     {
-        m_ci.type = (long)m_server_type->GetClientData(m_server_type->GetSelection());
+        m_ci.type = (int)(long)m_server_type->GetClientData(m_server_type->GetSelection());
         switch (m_ci.type)
         {
             case xd::dbtypeMySql:      m_ci.port = 3306; break;
