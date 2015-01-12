@@ -1219,21 +1219,38 @@ void Controller::apiRead(RequestInfo& req)
         }
          else if (finfo->getType() == xd::filetypeStream)
         {
-            xd::IStreamPtr stream = db->openStream(req.getURI());
-            if (stream.isNull())
+            std::wstring mode = req.getValue(L"mode");
+            
+            if (mode != L"table")
             {
-                req.sendNotFoundError();
+                xd::IStreamPtr stream = db->openStream(req.getURI());
+                if (stream.isNull())
+                {
+                    req.sendNotFoundError();
+                    return;
+                }
+
+                req.setContentType(kl::tostring(finfo->getMimeType()).c_str());
+                req.setContentLength(-1);
+
+                char buf[4096];
+                unsigned long len;
+                while (stream->read(buf, 4096, &len))
+                    req.writePiece(buf, len);
                 return;
             }
-
-            req.setContentType(kl::tostring(finfo->getMimeType()).c_str());
-            req.setContentLength(-1);
-
-            char buf[4096];
-            unsigned long len;
-            while (stream->read(buf, 4096, &len))
-                req.writePiece(buf, len);
-            return;
+             else
+            {
+                xd::FormatDefinition fd;
+                fd.object_type = xd::filetypeTable;
+                xd::ColumnInfo col;
+                col.name = L"data";
+                col.type = xd::typeWideCharacter;
+                col.width = 2048;
+                col.scale = 0;
+                fd.columns.createColumn(col);
+                definition = fd.toString();
+            }
         }
 
 
