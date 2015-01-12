@@ -1219,9 +1219,7 @@ void Controller::apiRead(RequestInfo& req)
         }
          else if (finfo->getType() == xd::filetypeStream)
         {
-            std::wstring mode = req.getValue(L"mode");
-            
-            if (mode != L"table")
+            if (!create_handle)
             {
                 xd::IStreamPtr stream = db->openStream(req.getURI());
                 if (stream.isNull())
@@ -1243,6 +1241,8 @@ void Controller::apiRead(RequestInfo& req)
             {
                 xd::FormatDefinition fd;
                 fd.object_type = xd::filetypeTable;
+                fd.format = xd::formatDelimitedText;
+                fd.header_row = false;
                 xd::ColumnInfo col;
                 col.name = L"data";
                 col.type = xd::typeWideCharacter;

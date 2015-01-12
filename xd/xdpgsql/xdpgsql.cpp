@@ -90,6 +90,9 @@ public:
         std::wstring password = c.getValue(L"password");
         
 
+        if (port.empty() || port == L"0")
+            port = L"5432"; // default pgsql port;
+
         std::wstring pgcmd;
         pgcmd += L"host='" + host + L"'";
         pgcmd += L" port='" + port + L"'";

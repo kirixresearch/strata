@@ -46,12 +46,12 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
     m_file_url = url;
 
     // try to load field information from the file header (for example, icsv)
-    if (loadConfigurationFromDataFile())
+    if (def.format == xd::formatDefault && loadConfigurationFromDataFile())
     {
-        m_def.format = xd::formatTypedDelimitedText;
+        // we were able to determine an implicit definition from the file's data
         return true;
     }
-    
+
     m_def = def;
 
     if (m_def.format == xd::formatDefault)
