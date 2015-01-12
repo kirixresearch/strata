@@ -50,9 +50,10 @@ function fetchPort(group, callback, error)
         
         var cmdline = g_sdserv_cmd + " -d " + group + " -p " + info.port + " --idle-quit 3000 ";
         
+	
         var cmd = "D:\\build32\\src\\trunk\\releaseu\\sdserv.exe";
-        var args = [ "-d", group, "-p", info.port, "-s", 1 /* strip off first part of url */, "--idle-quit", "3000" ];
-
+        var args = [ "--host=pdb001b.c1bah52kyx7w.us-east-1.rds.amazonaws.com", "--port=5432", "--user=flexio", "--password=flexio", "--database="+group, "--http-port="+info.port, "--strip-path=1", "--idle-quit=28800" ];
+		
         
         //var cmd = "c:\\Program Files\\nodejs\\node.exe";
         //var args = [ "D:\\build32\\src\\trunk\\sdsvcnodejs\\test.js", info.port ];
