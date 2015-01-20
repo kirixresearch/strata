@@ -2391,7 +2391,9 @@ void Controller::apiRunJob(RequestInfo& req)
     }
 
     std::wstring job_type = root["metadata"]["type"];
-    if (!(job_type == L"application/vnd.kx.group-job"))
+    if (!(job_type == L"application/vnd.kx.group-job" ||
+          job_type == L"application/vnd.kx.query-job" ||
+          job_type == L"application/vnd.kx.view-job"))
     {
         returnApiError(req, "Invalid job type");
         return;        

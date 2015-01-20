@@ -500,7 +500,7 @@ void HttpRequestInfo::readMultipart()
 
                         std::string data((const char*)curpart->getData(), curpart->getDataSize());
                         RequestPostInfo& info = m_post[curpart->getName()];
-                        info.value = kl::url_decodeURI(kl::towstring(data));
+                        info.value = kl::towstring(data);
                     }
                 }
 

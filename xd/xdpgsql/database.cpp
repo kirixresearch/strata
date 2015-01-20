@@ -1912,7 +1912,7 @@ bool PgsqlDatabase::execute(const std::wstring& command,
 
 
 
-    if (kl::iequals(first_word, L"SELECT"))
+    if (kl::iequals(first_word, L"SELECT") && !kl::icontains(command, L" INTO "))
     {
         // create an iterator based on our select statement
         PgsqlIterator* iter = new PgsqlIterator(this);
