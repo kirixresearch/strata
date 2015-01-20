@@ -43,7 +43,11 @@ bool QueryJob::isInputValid()
         "params":
         {
             "input" : <path>,
-            "output" : <path>
+            "output" : <path>,
+            "columns" : [],
+            "where" : "",
+            "order" : [{ "expression": "inv_no", "direction": "asc" }],
+            distinct : false
         }
     }
 */

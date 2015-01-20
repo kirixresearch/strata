@@ -45,8 +45,8 @@ bool GroupJob::isInputValid()
         {
             "input" : <path>,
             "output" : <path>,
-            "group" : <array>,
-            "columns" : <array>,
+            "group" : [ "vend_no", "inv_no" ],
+            "columns" : [ { "name": "total_amount", "expression": "sum(line_amt)" } ],
             "where" : <string>,      // not required; default = ""
             "having" : <string>,     // not required; default = ""
             "unique" : <boolean>     // not required; default = false
