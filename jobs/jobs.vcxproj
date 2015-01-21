@@ -42,6 +42,7 @@
     <ClCompile Include="summarize.cpp" />
     <ClCompile Include="update.cpp" />
     <ClCompile Include="util.cpp" />
+    <ClCompile Include="view.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aggregate.h" />
@@ -64,6 +65,7 @@
     <ClInclude Include="summarize.h" />
     <ClInclude Include="update.h" />
     <ClInclude Include="util.h" />
+    <ClInclude Include="view.h" />
     <ClInclude Include="xdjobbase.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
