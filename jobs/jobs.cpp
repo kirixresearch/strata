@@ -26,6 +26,7 @@
 #include "relationship.h"
 #include "summarize.h"
 #include "update.h"
+#include "view.h"
 
 
 namespace jobs
@@ -62,6 +63,8 @@ IJobPtr createJob(const std::wstring& job_class)
         return static_cast<IJob*>(new LoadJob);
     if (job_class == L"application/vnd.kx.update-job")
         return static_cast<IJob*>(new UpdateJob);
+    if (job_class == L"application/vnd.kx.view-job")
+        return static_cast<IJob*>(new ViewJob);
 
     return xcm::null;
 }
