@@ -1544,6 +1544,77 @@ bool PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& m
     return true;
 }
 
+bool PgsqlDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* format_info)
+{
+    return false;
+}
+
+bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefinition& format_info)
+{
+    if (format_info.data_path.length() == 0)
+        return false;
+
+    std::wstring sql = L"CREATE VIEW %tbl% AS SELECT ";
+
+    std::wstring col;
+
+    std::vector<xd::ColumnInfo>::const_iterator it;
+    for (it = format_info.columns.columns.begin(); it != format_info.columns.columns.end(); ++it)
+    {
+        if (it->name.empty())
+            return false;
+
+        if (it->name == L"*")
+        {
+            col = L"*";
+        }
+         else
+        {
+            if (it->expression.length() > 0)
+            {
+                col = L"(";
+                col += it->expression;
+                col += L") AS ";
+                col += it->name;
+            }
+             else
+            {
+                col += it->name;
+            }
+        }
+
+        if (it != format_info.columns.columns.begin())
+            sql += L",";
+        sql += col;
+    }
+
+
+    sql += L" FROM ";
+    sql += pgsqlGetTablenameFromPath(format_info.data_path);
+
+
+    PGconn* conn = createConnection();
+    PGresult* res;
+    if (!conn)
+        return false;
+
+
+    kl::replaceStr(sql, L"%tbl%", pgsqlGetTablenameFromPath(path));
+
+    res = PQexec(conn, kl::toUtf8(sql));
+    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        closeConnection(conn);
+        return false;
+    }
+
+
+    closeConnection(conn);
+    return true;
+}
+
+
+
 xd::IIteratorPtr PgsqlDatabase::query(const xd::QueryParams& qp)
 {
     std::wstring tbl = pgsqlGetTablenameFromPath(qp.from);

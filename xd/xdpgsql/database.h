@@ -113,6 +113,9 @@ public:
     xd::IStreamPtr openStream(const std::wstring& path);
     bool createStream(const std::wstring& path, const std::wstring& mime_type);
 
+    bool loadDefinition(const std::wstring& path, xd::FormatDefinition* format_info);
+    bool saveDefinition(const std::wstring& path, const xd::FormatDefinition& format_info);
+
     xd::IIteratorPtr query(const xd::QueryParams& qp);
 
     xd::IndexInfo createIndex(const std::wstring& path,

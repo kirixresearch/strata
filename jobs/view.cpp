@@ -89,23 +89,30 @@ int ViewJob::runJob()
 
 
     // get the input
-    xd::CopyParams info;
-    info.input = params_node["input"].getString();
-    info.output = params_node["output"].getString();
+    std::wstring input = params_node["input"].getString();
+    std::wstring output = params_node["output"].getString();
+    kl::JsonNode columns_node = params_node["columns"];
 
-    if (params_node.childExists("input_iterator"))
+    xd::FormatDefinition fd;
+    fd.data_path = input;
+    
+    int i, cnt = columns_node.getChildCount();
+    for (i = 0; i < cnt; ++i)
     {
-        info.iter_input = (xd::IIterator*)(unsigned long)(kl::hexToUint64(params_node["input_iterator"].getString()));
-        info.input = L"";
+        kl::JsonNode column_node = columns_node[i];
+        
+        xd::ColumnInfo colinfo;
+        colinfo.name = column_node["name"];
+        colinfo.type = xd::stringToDbtype(column_node["type"]);
+        colinfo.width = column_node["width"].getInteger();
+        colinfo.scale = column_node["scale"].getInteger();
+        colinfo.expression = column_node["expression"];
+
+        fd.createColumn(colinfo);
     }
 
 
-    if (params_node.childExists("order"))
-        info.order = params_node["order"].getString();
-    if (params_node.childExists("where"))
-        info.where = params_node["where"].getString();
-
-    m_db->copyData(&info, xd_job.p);
+    m_db->saveDefinition(output, fd);
 
     return 0;
 }
