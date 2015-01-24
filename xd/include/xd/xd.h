@@ -124,7 +124,8 @@ enum
     filetypeNode =   0x00,
     filetypeFolder = 0x01,
     filetypeTable =  0x02,
-    filetypeStream = 0x04
+    filetypeStream = 0x04,
+    filetypeView =   0x08
 };
 
 

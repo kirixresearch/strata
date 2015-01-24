@@ -578,6 +578,11 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res, const xd::FormatDefinition
                 col_scale = (fmod & 0xffff);
             }
         }
+         else if (col_xd_type == xd::typeInteger)
+        {
+            col_width = 14;
+            col_scale = 0;
+        }
          else if (col_xd_type == xd::typeCharacter || col_xd_type == xd::typeWideCharacter)
         {
             col_width = fmod - 4;

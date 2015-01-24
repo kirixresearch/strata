@@ -1178,6 +1178,8 @@ xd::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
     kl::replaceStr(command, L"%tbl%", tbl);
 
 
+    bool is_view = false;
+
     PGresult* res = PQexec(conn, kl::toUtf8(command));
     if (!res || PQresultStatus(res) != PGRES_TUPLES_OK || PQntuples(res) != 1)
     {
@@ -1199,6 +1201,8 @@ xd::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
             closeConnection(conn);
             return xcm::null;
         }
+
+        is_view = true;
     }
 
     std::wstring type = kl::towstring(PQgetvalue(res, 0, 1));
@@ -1207,6 +1211,8 @@ xd::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
     f->name = name;
     f->type = xd::filetypeTable;
     f->format = xd::formatDefault;
+    if (is_view)
+        f->type = xd::filetypeView;
 
     if (type.substr(0, 7) == L"stream;")
     {
