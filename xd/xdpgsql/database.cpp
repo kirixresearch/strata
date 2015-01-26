@@ -1044,7 +1044,9 @@ bool PgsqlDatabase::deleteFile(const std::wstring& path)
     if (info.isNull())
         return false;
 
-    if (info->getType() == xd::filetypeStream)
+    int obj_type = info->getType();
+
+    if (obj_type == xd::filetypeStream)
     {
         PGconn* conn = createConnection();
         if (!conn)
@@ -1082,46 +1084,72 @@ bool PgsqlDatabase::deleteFile(const std::wstring& path)
 
         return true;
     }
-
-
-    PGresult* res;
-    PGconn* conn = createConnection();
-    if (!conn)
-        return false;
-
-    res = PQexec(conn, "BEGIN");
-    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+     else if (obj_type == xd::filetypeView)
     {
+        PGresult* res;
+        PGconn* conn = createConnection();
+        if (!conn)
+            return false;
+
+        std::wstring command;
+        command = L"DROP VIEW " + pgsqlGetTablenameFromPath(path);
+        res = PQexec(conn, kl::toUtf8(command));
+        if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+        {
+            PQexec(conn, "ROLLBACK");
+            closeConnection(conn);
+            return false;
+        }
+
+        res = PQexec(conn, "COMMIT");
         closeConnection(conn);
+    }
+     else if (obj_type == xd::filetypeTable)
+    {
+        PGresult* res;
+        PGconn* conn = createConnection();
+        if (!conn)
+            return false;
+
+        res = PQexec(conn, "BEGIN");
+        if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+        {
+            closeConnection(conn);
+            return false;
+        }
+
+
+        std::wstring command;
+        std::wstring tbl = pgsqlGetTablenameFromPath(path);
+
+        command = L"LOCK TABLE " + pgsqlQuoteIdentifierIfNecessary(tbl) + L" IN ACCESS EXCLUSIVE MODE NOWAIT";
+        res = PQexec(conn, kl::toUtf8(command));
+        if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+        {
+            PQexec(conn, "ROLLBACK");
+            closeConnection(conn);
+            return false;
+        }
+
+        command = L"DROP TABLE " + pgsqlQuoteIdentifierIfNecessary(tbl);
+        res = PQexec(conn, kl::toUtf8(command));
+        if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+        {
+            PQexec(conn, "ROLLBACK");
+            closeConnection(conn);
+            return false;
+        }
+
+        res = PQexec(conn, "COMMIT");
+        closeConnection(conn);
+
+        return true;
+    }
+     else
+    {
         return false;
     }
 
-
-    std::wstring command;
-    std::wstring tbl = pgsqlGetTablenameFromPath(path);
-
-    command = L"LOCK TABLE " + pgsqlQuoteIdentifierIfNecessary(tbl) + L" IN ACCESS EXCLUSIVE MODE NOWAIT";
-    res = PQexec(conn, kl::toUtf8(command));
-    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
-    {
-        PQexec(conn, "ROLLBACK");
-        closeConnection(conn);
-        return false;
-    }
-
-    command = L"DROP TABLE " + pgsqlQuoteIdentifierIfNecessary(tbl);
-    res = PQexec(conn, kl::toUtf8(command));
-    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
-    {
-        PQexec(conn, "ROLLBACK");
-        closeConnection(conn);
-        return false;
-    }
-
-    res = PQexec(conn, "COMMIT");
-    closeConnection(conn);
-
-    return true;
 }
 
 bool PgsqlDatabase::getFileExist(const std::wstring& path)
@@ -1613,6 +1641,16 @@ bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDef
         closeConnection(conn);
         return false;
     }
+
+
+    // set comment to json definition
+    std::string json = kl::tostring(format_info.toString());
+    char* esc = PQescapeLiteral(conn, json.c_str(), json.length());
+    sql = L"COMMENT ON VIEW %tbl% IS ";
+    kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(path));
+    sql += kl::towstring(esc);
+    PQfreemem(esc);
+    PQexec(conn, kl::toUtf8(sql));
 
 
     closeConnection(conn);
