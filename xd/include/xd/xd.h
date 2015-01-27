@@ -501,6 +501,7 @@ struct FormatDefinition
 
     std::wstring data_connection_string;  // optional connection string associated with data_file
     std::wstring data_path;               // project relative path, or file:/// url
+    std::wstring base_table;              // associated concrete base table (used for cascading views)
     
     // delimited files parameters (when format = formatDelimitedText)
     std::wstring text_qualifier;
