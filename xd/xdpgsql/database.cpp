@@ -2131,12 +2131,44 @@ bool PgsqlDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
         std::wstring fld = kl::beforeFirst(*it, '=');
         std::wstring expr = kl::afterFirst(*it, '=');
 
-        std::wstring func = kl::beforeFirst(expr, '(');
-        kl::makeLower(func);
+        std::wstring func;
+        
+        if (expr.find(L'(') != expr.npos)
+        {
+            func = kl::beforeFirst(expr, '(');
+            kl::makeLower(func);
+        }
+
         if (func == L"first")
         {
             expr.erase(0,5);
             dequote(expr, '(', ')');
+            func = L"";
+        }
+        
+        
+        if (func == L"")
+        {
+            std::vector<std::wstring>::iterator cit;
+            bool found_in_group_fields = false;
+            for (cit = group_parts.begin(); cit != group_parts.end(); ++cit)
+            {
+                if (kl::iequals(*cit, expr))
+                {
+                    found_in_group_fields = true;
+                    break;
+                }
+            }
+
+            if (found_in_group_fields)
+            {
+                // we don't need to qualify this field with any aggregate function,
+                // because we are using the field in the GROUP BY clause
+            }
+             else
+            {
+                expr = L"MAX(" + expr + L")";
+            }
         }
          else if (func == L"groupid")
         {
