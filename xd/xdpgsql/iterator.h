@@ -189,6 +189,7 @@ private:
 
     PgsqlDatabase* m_database;
     xd::Structure m_structure;
+    xd::FormatDefinition m_view_definition;
     PGconn* m_conn;
     PGresult* m_res;
     std::wstring m_path;
@@ -213,13 +214,6 @@ private:
     xd::rowpos_t m_block_start;
     int m_block_row;
     int m_block_rowcount;
-
 };
 
-
 #endif
-
-
-
-
-

@@ -64,6 +64,8 @@ std::wstring saveDefinitionToString(const xd::FormatDefinition& def)
 
     root["data_connection_string"] = xdcommon::encryptConnectionStringPassword(def.data_connection_string);
     root["data_path"] = def.data_path;
+    if (!def.base_table.empty())
+        root["base_table"] = def.base_table;
 
     if (def.format == xd::formatDelimitedText)
     {
@@ -162,7 +164,8 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def
 
     def->data_connection_string = xdcommon::decryptConnectionStringPassword(root["data_connection_string"]);
     def->data_path = root["data_path"]; 
-
+    if (root.childExists("base_table"))
+        def->base_table = root["base_table"];
 
     if (root.childExists("delimitedtext"))
     {

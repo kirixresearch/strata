@@ -99,9 +99,12 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
     m_conn = conn;
     m_table = pgsqlGetTablenameFromPath(qp.from);
 
+    std::wstring query, command, description;
+
+
     // create a sql query
 
-    std::wstring query = L"SELECT * FROM ";
+    query = L"SELECT * FROM ";
     query += pgsqlQuoteIdentifierIfNecessary(m_table);
 
     if (qp.where.length() > 0)
@@ -116,8 +119,28 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
         query += qp.order;
     }
 
+
+    // get the comment from this table/view
+    command = L"select description from pg_description where objoid = (select oid from pg_class where relname='"+m_table+L"')";
+    res = PQexec(conn, kl::toUtf8(command));
+    if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) > 0)
+    {
+        description = kl::towstring(PQgetvalue(res, 0, 0));
+        kl::trim(description);
+        if (description.substr(0,1) == L"{")
+        {
+            m_view_definition.fromString(description);
+        }
+    }
+     else
+    {
+        description = L"";
+    }
+    PQclear(res);
+
+
     // first, get a rough feel for how many rows are in the result
-    std::wstring command = L"explain " + query;
+    command = L"explain " + query;
     const char* info = NULL;
     res = PQexec(conn, kl::toUtf8(command));
     xd::rowpos_t rowcnt = (xd::rowpos_t)-1;
