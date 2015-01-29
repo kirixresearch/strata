@@ -1580,16 +1580,48 @@ bool PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& m
 
 bool PgsqlDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinition* format_info)
 {
+    xd::IFileInfoPtr finfo = getFileInfo(path);
+    if (finfo.isNull())
+        return false;
+
+    // for now, check if the object is a view
+    if (finfo->getType() != xd::filetypeView)
+        return false;
+
+    PGconn* conn = createConnection();
+    PGresult* res;
+    if (!conn)
+        return false;
+
+
+    std::wstring tbl = pgsqlGetTablenameFromPath(path);
+    std::wstring sql = L"select description from pg_description where objoid = (select oid from pg_class where relname='"+tbl+L"')";
+    res = PQexec(conn, kl::toUtf8(sql));
+    if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) > 0)
+    {
+        std::wstring description = kl::towstring(PQgetvalue(res, 0, 0));
+        kl::trim(description);
+
+        if (description.substr(0,1) == L"{")
+        {
+            PQclear(res);
+            closeConnection(conn);
+            return format_info->fromString(description);
+        }
+    }
+
+    PQclear(res);
+    closeConnection(conn);
+
     return false;
 }
 
 bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefinition& format_info)
 {
-    if (format_info.data_path.length() == 0)
+    if (format_info.data_path.length() == 0 || path.length() == 0)
         return false;
 
     std::wstring sql = L"CREATE VIEW %tbl% AS SELECT ";
-
     std::wstring col;
 
     std::vector<xd::ColumnInfo>::const_iterator it;
