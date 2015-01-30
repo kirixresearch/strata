@@ -250,7 +250,7 @@ xd::ColumnInfo pgsqlCreateColInfo(const std::wstring& col_name,
     col.column_ordinal = 0;
 
     if (col_expr.length() > 0)
-        col.expression = true;
+        col.calculated = true;
         
     return col;
 }
@@ -1150,6 +1150,7 @@ bool PgsqlDatabase::deleteFile(const std::wstring& path)
         return false;
     }
 
+    return false;
 }
 
 bool PgsqlDatabase::getFileExist(const std::wstring& path)

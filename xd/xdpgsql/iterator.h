@@ -38,6 +38,7 @@ struct PgsqlDataAccessInfo
     int ordinal;
     bool nulls_allowed;
     std::wstring expr_text;
+    std::wstring view_expr;
 
     // expression stuff
     kscript::ExprParser* expr;

@@ -621,6 +621,18 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res, const xd::FormatDefinition
         field->scale = col_scale;
         field->ordinal = i;
 
+
+        if (m_view_definition.columns.size() > 0)
+        {
+            const xd::ColumnInfo& view_col = m_view_definition.columns.getColumnInfo(col_name);
+            if (view_col.isOk() && view_col.expression.length() > 0)
+            {
+                field->view_expr = view_col.expression;
+            }
+
+        }
+
+
         m_fields.push_back(field);
     }
 
@@ -1074,7 +1086,7 @@ xd::Structure PgsqlIterator::getStructure()
     std::vector<PgsqlDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if ((*it)->isCalculated())
+        if ((*it)->expr_text.length() > 0)
         {
             xd::ColumnInfo col;
 
@@ -1096,7 +1108,7 @@ xd::Structure PgsqlIterator::getStructure()
                                                     (*it)->pg_type,
                                                     (*it)->width,
                                                     (*it)->scale,
-                                                    (*it)->expr_text,
+                                                    (*it)->view_expr,
                                                     -1);
 
             col.column_ordinal = (*it)->ordinal - 1;
