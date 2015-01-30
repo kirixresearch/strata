@@ -627,6 +627,9 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res, const xd::FormatDefinition
             const xd::ColumnInfo& view_col = m_view_definition.columns.getColumnInfo(col_name);
             if (view_col.isOk() && view_col.expression.length() > 0)
             {
+                field->type = view_col.type;
+                field->width = view_col.width;
+                field->scale = view_col.scale;
                 field->view_expr = view_col.expression;
             }
 
