@@ -87,16 +87,27 @@ int ViewJob::runJob()
     kl::JsonNode params_node;
     params_node.fromString(getParameters());
 
-
-    // get the input
     std::wstring input = params_node["input"].getString();
     std::wstring output = params_node["output"].getString();
     kl::JsonNode columns_node = params_node["columns"];
 
     xd::FormatDefinition fd;
     fd.data_path = input;
-    
-    int i, cnt = columns_node.getChildCount();
+    int i, cnt;
+
+
+    // first, read the base format definition and add any calc fields to the new definition
+    xd::FormatDefinition base_fd;
+    m_db->loadDefinition(input, &base_fd);
+
+    std::vector<xd::ColumnInfo>::iterator it;
+    for (it = base_fd.columns.begin(); it != base_fd.columns.end(); ++it)
+    {
+        if (it->calculated)
+            fd.createColumn(*it);
+    }
+
+    cnt = columns_node.getChildCount();
     for (i = 0; i < cnt; ++i)
     {
         kl::JsonNode column_node = columns_node[i];
@@ -107,6 +118,14 @@ int ViewJob::runJob()
         colinfo.width = column_node["width"].getInteger();
         colinfo.scale = column_node["scale"].getInteger();
         colinfo.expression = column_node["expression"];
+
+        int colidx = fd.columns.getColumnIdx(colinfo.name);
+        if (colidx != -1)
+        {
+            // column already exists from base definition; overwrite it
+            fd.columns.columns[colidx] = colinfo;
+            fd.columns.m_map.clear();
+        }
 
         fd.createColumn(colinfo);
     }
