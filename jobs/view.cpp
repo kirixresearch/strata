@@ -98,13 +98,17 @@ int ViewJob::runJob()
 
     // first, read the base format definition and add any calc fields to the new definition
     xd::FormatDefinition base_fd;
-    m_db->loadDefinition(input, &base_fd);
-
-    std::vector<xd::ColumnInfo>::iterator it;
-    for (it = base_fd.columns.begin(); it != base_fd.columns.end(); ++it)
+    if (m_db->loadDefinition(input, &base_fd))
     {
-        if (it->calculated)
-            fd.createColumn(*it);
+        // use the base path of the base definition
+        fd.data_path = base_fd.data_path;
+
+        std::vector<xd::ColumnInfo>::iterator it;
+        for (it = base_fd.columns.begin(); it != base_fd.columns.end(); ++it)
+        {
+            if (it->calculated)
+                fd.createColumn(*it);
+        }
     }
 
     cnt = columns_node.getChildCount();

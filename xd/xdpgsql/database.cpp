@@ -1617,16 +1617,42 @@ bool PgsqlDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinitio
     return false;
 }
 
-bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefinition& format_info)
+
+bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefinition& _format_info)
 {
-    if (format_info.data_path.length() == 0 || path.length() == 0)
+    if (_format_info.data_path.length() == 0 || path.length() == 0)
         return false;
+
+    xd::FormatDefinition fd = _format_info;
+    std::wstring fd_string = fd.toString();
+    std::vector<xd::ColumnInfo>::iterator it, it2;
+
+
+    // rewrite fields
+
+    int pos;
+
+    for (it = fd.columns.begin(); it != fd.columns.begin(); ++it)
+    {
+        for (it2 = fd.columns.begin(); it2 != fd.columns.begin(); ++it2)
+        {
+            pos = kl::ifind(it->expression, it2->name);
+            if (pos != std::wstring::npos)
+            {
+                it->expression.erase(pos, it2->name.length());
+                it->expression.insert(pos, L"(" + it2->expression + L")");
+            }
+        } 
+    }
+
+
+
 
     std::wstring sql = L"CREATE VIEW %tbl% AS SELECT ";
     std::wstring col;
 
-    std::vector<xd::ColumnInfo>::const_iterator it;
-    for (it = format_info.columns.columns.begin(); it != format_info.columns.columns.end(); ++it)
+    
+    for (it = fd.columns.begin(); it != fd.columns.begin(); ++it)
     {
         if (it->name.empty())
             return false;
@@ -1650,14 +1676,14 @@ bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDef
             }
         }
 
-        if (it != format_info.columns.columns.begin())
+        if (it != fd.columns.begin())
             sql += L",";
         sql += col;
     }
 
 
     sql += L" FROM ";
-    sql += pgsqlGetTablenameFromPath(format_info.data_path);
+    sql += pgsqlGetTablenameFromPath(fd.data_path);
 
 
     PGconn* conn = createConnection();
@@ -1677,7 +1703,7 @@ bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDef
 
 
     // set comment to json definition
-    std::string json = kl::tostring(format_info.toString());
+    std::string json = kl::tostring(fd_string);
     char* esc = PQescapeLiteral(conn, json.c_str(), json.length());
     sql = L"COMMENT ON VIEW %tbl% IS ";
     kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(path));

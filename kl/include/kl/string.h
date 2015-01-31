@@ -197,6 +197,10 @@ bool iequals(const std::wstring& s1, const std::string& s2);
 bool icontains(const std::wstring& s1, const std::wstring& s2);
 bool icontains(const std::string& s1, const std::string& s2);
 
+size_t ifind(const std::string& s1, const std::string& s2);
+size_t ifind(const std::wstring& s1, const std::wstring& s2);
+
+
 void parseDelimitedList(const std::wstring& s,
                         std::vector<std::wstring>& vec,
                         wchar_t delimiter,

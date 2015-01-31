@@ -628,6 +628,30 @@ bool icontains(const std::string& _s1, const std::string& _s2)
 }
 
 
+size_t ifind(const std::string& _s1, const std::string& _s2)
+{
+    std::string s1 = _s1;
+    std::string s2 = _s2;
+
+    kl::makeLower(s1);
+    kl::makeLower(s2);
+
+    return s1.find(s2);
+}
+
+
+size_t ifind(const std::wstring& _s1, const std::wstring& _s2)
+{
+    std::wstring s1 = _s1;
+    std::wstring s2 = _s2;
+
+    kl::makeLower(s1);
+    kl::makeLower(s2);
+
+    return s1.find(s2);
+}
+
+
 
 
 
