@@ -512,7 +512,7 @@ void Controller::apiCreateTable(RequestInfo& req)
         std::wstring type = column["type"];
         int ntype = xd::stringToDbtype(type);
 
-        if (kl::iequals(name.substr(0, 8), L"xdpgsql_"))
+        if (kl::iequals(name.substr(0, 8), L"xdpgsql_") || kl::iequals(name, L"xdrowid"))
         {
             // skip any columns that start with xdpgsql_
             continue;
@@ -1621,11 +1621,29 @@ void Controller::apiInsertRows(RequestInfo& req)
             return;
         }
 
-
-        std::vector<SessionRowInserterColumn> columns;
-
         std::vector<std::wstring> colvec;
-        kl::parseDelimitedList(columns_param, colvec, ',');
+
+        if (columns_param.empty() || columns_param == L"*")
+        {
+            // assume we want to insert every column
+            std::vector<xd::ColumnInfo>::iterator colit;
+            for (colit = structure.begin(); colit != structure.end(); ++colit)
+            {
+                if (kl::iequals(colit->name.substr(0, 8), L"xdpgsql_") || kl::iequals(colit->name, L"xdrowid"))
+                {
+                    // skip any columns that start with xdpgsql_
+                    continue;
+                }
+
+                colvec.push_back(colit->name);
+            }
+        }
+         else
+        {
+            kl::parseDelimitedList(columns_param, colvec, ',');
+        }
+
+
         std::vector<std::wstring>::iterator it;
         for (it = colvec.begin(); it != colvec.end(); ++it)
         {
@@ -1649,14 +1667,19 @@ void Controller::apiInsertRows(RequestInfo& req)
             columns.push_back(ric);
         }
 
+        p_columns = &(columns);
 
 
         // add object to session
-        handle = createHandle();
-        SessionRowInserter* so = new SessionRowInserter;
-        so->inserter = sp_inserter;
-        so->columns = columns;
-        addServerSessionObject(handle, so);
+        if (handle == L"create")
+        {
+            handle = createHandle();
+            SessionRowInserter* so = new SessionRowInserter;
+            so->inserter = sp_inserter;
+            so->columns = columns;
+            addServerSessionObject(handle, so);
+            p_columns = &(so->columns);
+        }
     }
      else
     {
