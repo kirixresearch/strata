@@ -1662,8 +1662,14 @@ bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDef
 
     for (it = fd.columns.begin(); it != fd.columns.end(); ++it)
     {
+        if (it->name == L"*")
+            continue;
+
         for (it2 = fd.columns.begin(); it2 != fd.columns.end(); ++it2)
         {
+            if (it2->name == L"*")
+                continue;
+            
             pos = findToken(it->expression, it2->name);
             if (pos != std::wstring::npos)
             {
