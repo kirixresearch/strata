@@ -1632,9 +1632,9 @@ bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDef
 
     int pos;
 
-    for (it = fd.columns.begin(); it != fd.columns.begin(); ++it)
+    for (it = fd.columns.begin(); it != fd.columns.end(); ++it)
     {
-        for (it2 = fd.columns.begin(); it2 != fd.columns.begin(); ++it2)
+        for (it2 = fd.columns.begin(); it2 != fd.columns.end(); ++it2)
         {
             pos = kl::ifind(it->expression, it2->name);
             if (pos != std::wstring::npos)
@@ -1652,7 +1652,7 @@ bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDef
     std::wstring col;
 
     
-    for (it = fd.columns.begin(); it != fd.columns.begin(); ++it)
+    for (it = fd.columns.begin(); it != fd.columns.end(); ++it)
     {
         if (it->name.empty())
             return false;
