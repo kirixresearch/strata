@@ -1618,6 +1618,34 @@ bool PgsqlDatabase::loadDefinition(const std::wstring& path, xd::FormatDefinitio
 }
 
 
+
+static size_t findToken(const std::wstring& _haystack, const std::wstring& _needle)
+{
+    std::wstring haystack = _haystack, needle = _needle;
+    kl::makeLower(haystack);
+    kl::makeLower(needle);
+
+    size_t pos = 0;
+    size_t haystack_length = haystack.length();
+    size_t needle_length = needle.length();
+
+    while (true)
+    {
+        pos = haystack.find(needle, pos);
+        if (pos == std::wstring::npos)
+            return std::wstring::npos;
+
+        // if there is an alphanumeric 
+        if (pos > 0 && ::iswalnum(haystack[pos-1]))
+            continue;
+        if (pos+needle_length >= haystack_length && ::iswalnum(haystack[pos+needle_length]))
+            continue;
+
+        return pos;
+    }
+}
+
+
 bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDefinition& _format_info)
 {
     if (_format_info.data_path.length() == 0 || path.length() == 0)
@@ -1636,7 +1664,7 @@ bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDef
     {
         for (it2 = fd.columns.begin(); it2 != fd.columns.end(); ++it2)
         {
-            pos = kl::ifind(it->expression, it2->name);
+            pos = findToken(it->expression, it2->name);
             if (pos != std::wstring::npos)
             {
                 it->expression.erase(pos, it2->name.length());
@@ -1672,7 +1700,7 @@ bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDef
             }
              else
             {
-                col += it->name;
+                col = it->name;
             }
         }
 
@@ -1697,10 +1725,11 @@ bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDef
     res = PQexec(conn, kl::toUtf8(sql));
     if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
     {
+        PQclear(res);
         closeConnection(conn);
         return false;
     }
-
+    PQclear(res);
 
     // set comment to json definition
     std::string json = kl::tostring(fd_string);
@@ -1709,7 +1738,8 @@ bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDef
     kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(path));
     sql += kl::towstring(esc);
     PQfreemem(esc);
-    PQexec(conn, kl::toUtf8(sql));
+    res = PQexec(conn, kl::toUtf8(sql));
+    PQclear(res);
 
 
     closeConnection(conn);
