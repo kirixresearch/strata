@@ -1659,6 +1659,7 @@ bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDef
     // rewrite fields
 
     int pos;
+    std::wstring embedded_expr;
 
     for (it = fd.columns.begin(); it != fd.columns.end(); ++it)
     {
@@ -1673,8 +1674,15 @@ bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDef
             pos = findToken(it->expression, it2->name);
             if (pos != std::wstring::npos)
             {
+                embedded_expr = L"(" + it2->expression + L")";
+
+                if (it2->type == xd::typeNumeric || it2->type == xd::typeDouble)
+                {
+                    embedded_expr = L"(" + embedded_expr + kl::stdswprintf(L"::numeric(%d,%d))", it2->width, it2->scale);
+                }
+
                 it->expression.erase(pos, it2->name.length());
-                it->expression.insert(pos, L"(" + it2->expression + L")");
+                it->expression.insert(pos, embedded_expr);
             }
         } 
     }
