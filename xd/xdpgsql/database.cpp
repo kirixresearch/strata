@@ -1276,7 +1276,7 @@ xd::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
         kl::trim(mime_type);
         kl::trim(encoding);
 
-        f->mime_type = type;
+        f->mime_type = mime_type;
     }
      else if (type.substr(0, 7) == L"folder;")
     {
