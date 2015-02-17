@@ -111,18 +111,32 @@ int LoadJob::runJob()
     std::map<std::wstring, xd::IDatabasePtr> connection_pool;
     std::vector<LoadObject> load_objects;
 
+    std::vector<kl::JsonNode> nodes;
+    std::vector<kl::JsonNode>::iterator node_it;
+    nodes.push_back(params_node);
+
+
     kl::JsonNode objects_node = params_node["objects"];
     size_t i, cnt = objects_node.getChildCount();
     for (i = 0; i < cnt; ++i)
     {
+        nodes.push_back(objects_node[i]);
+    }
+
+
+    for (node_it = nodes.begin(); node_it != nodes.end(); ++node_it)
+    {
+        kl::JsonNode& object = *node_it;
         LoadObject lo;
-        kl::JsonNode object = objects_node[i];
 
         lo.input = object["input"];
         lo.input_connection = object["input_connection"];
         
         lo.output = object["output"];
         lo.output_connection = object["output_connection"];
+
+        if (lo.input.empty())
+            continue;
 
         if (lo.input_connection.empty())
         {

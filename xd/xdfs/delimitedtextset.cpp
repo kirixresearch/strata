@@ -302,6 +302,7 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
             
             colinfo.type = xd::typeCharacter;
             colinfo.width = width;
+            colinfo.scale = 0;
         }
          else if (params[0] == L"N")
         {
@@ -314,7 +315,8 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
             
             colinfo.type = xd::typeNumeric;
             colinfo.width = width;
-            
+            colinfo.scale = 0;
+           
             if (params.size() >= 3)
             {
                 int scale = kl::wtoi(params[2]);
@@ -327,16 +329,26 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
         {
             colinfo.type = xd::typeDate;
             colinfo.width = 4;
+            colinfo.scale = 0;
         }
          else if (params[0] == L"T")
         {
             colinfo.type = xd::typeDateTime;
             colinfo.width = 8;
+            colinfo.scale = 0;
         }
          else if (params[0] == L"B")
         {
             colinfo.type = xd::typeBoolean;
             colinfo.width = 1;
+            colinfo.scale = 0;
+        }
+         else
+        {
+            // unknown type
+            colinfo.type = xd::typeCharacter;
+            colinfo.width = 80;
+            colinfo.scale = 0;
         }
 
         fields.push_back(colinfo);
