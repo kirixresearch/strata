@@ -181,11 +181,9 @@ int LoadJob::runJob()
         }
 
 
-        lo.binary_load = (lo.input_fileinfo->getType() == xd::filetypeStream) ? true : false;
-
-
         // set up query params
         lo.query_params.from = lo.input;
+        lo.binary_load = false; // by default, no binary load
 
 
         if (object.childExists("input_format"))
@@ -214,14 +212,25 @@ int LoadJob::runJob()
                         lo.query_params.format.determine_structure = true; 
                     }
                 }
+                 else if (format == L"typed_delimited_text")
+                {
+                    lo.query_params.format.format = xd::formatTypedDelimitedText;
+                }
                  else
                 {
                     // unknown format
                     m_job_info->setState(jobStateFailed);
                     return 0;
                 }
+
             }
         }
+         else
+        {
+            // if there is no format specified, we'll do a binary load if the input file is a stream
+            lo.binary_load = (lo.input_fileinfo->getType() == xd::filetypeStream) ? true : false;
+        }
+
 
 
 
