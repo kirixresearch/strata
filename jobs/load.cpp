@@ -63,6 +63,27 @@ bool LoadJob::isInputValid()
     return true;
 }
 
+
+struct LoadObject
+{
+    std::wstring input;
+    std::wstring input_connection;
+    xd::IDatabasePtr input_db;
+    xd::IFileInfoPtr input_fileinfo;
+    xd::QueryParams query_params;
+
+    std::wstring output;
+    std::wstring output_connection;
+    xd::IDatabasePtr output_db;
+    xd::FormatDefinition output_format;
+
+    bool binary_load;
+    bool overwrite;
+    bool add_xdrowid;
+};
+
+
+
 int LoadJob::runJob()
 {
     // make sure we have a valid input
@@ -88,117 +109,171 @@ int LoadJob::runJob()
     }
 
     std::map<std::wstring, xd::IDatabasePtr> connection_pool;
+    std::vector<LoadObject> load_objects;
 
     kl::JsonNode objects_node = params_node["objects"];
     size_t i, cnt = objects_node.getChildCount();
     for (i = 0; i < cnt; ++i)
     {
+        LoadObject lo;
         kl::JsonNode object = objects_node[i];
 
+        lo.input = object["input"];
+        lo.input_connection = object["input_connection"];
+        
+        lo.output = object["output"];
+        lo.output_connection = object["output_connection"];
 
-        std::wstring source_connection = object["source_connection"];
-        std::wstring destination_connection = object["destination_connection"];
-
-        std::wstring source_path = object["source_path"];
-        std::wstring destination_path = object["destination_path"];
-
-
-        xd::IDatabasePtr source_db;
-        xd::IDatabasePtr destination_db;
-
-        source_db = connection_pool[source_connection];
-        if (source_db.isNull())
+        if (lo.input_connection.empty())
         {
-            source_db = dbmgr->open(source_connection);
-            connection_pool[source_connection] = source_db;
+            lo.input_db = m_db;
+        }
+         else
+        {
+            lo.input_db = connection_pool[lo.input_connection];
+            if (lo.input_db.isNull())
+            {
+                lo.input_db = dbmgr->open(lo.input_connection);
+                connection_pool[lo.input_connection] = lo.input_db;
+            }
         }
 
-        destination_db = connection_pool[destination_connection];
-        if (destination_db.isNull())
+        if (lo.output_connection.empty())
         {
-            destination_db = dbmgr->open(destination_connection);
-            connection_pool[destination_connection] = destination_db;
+            lo.output_db = m_db;
+        }
+         else
+        {
+            lo.output_db = connection_pool[lo.output_connection];
+            if (lo.output_db.isNull())
+            {
+                lo.output_db = dbmgr->open(lo.output_connection);
+                connection_pool[lo.output_connection] = lo.output_db;
+            }
         }
 
-
-        if (source_db.isNull() || destination_db.isNull())
+        if (lo.input_db.isNull() || lo.output_db.isNull())
         {
             m_job_info->setState(jobStateFailed);
             return 0;
         }
 
 
-        xd::IFileInfoPtr finfo = source_db->getFileInfo(source_path);
-        if (finfo.isNull())
+        lo.input_fileinfo = lo.input_db->getFileInfo(lo.input);
+        if (lo.input_fileinfo.isNull())
         {
             m_job_info->setState(jobStateFailed);
             return 0;
         }
 
 
-        bool binary_import = (finfo->getType() == xd::filetypeStream) ? true : false;
+        lo.binary_load = (lo.input_fileinfo->getType() == xd::filetypeStream) ? true : false;
 
 
+        // set up query params
+        lo.query_params.from = lo.input;
 
-        xd::QueryParams qp;
-        qp.from = source_path;
 
-        if (object.childExists("source_format"))
+        if (object.childExists("input_format"))
         {
-            kl::JsonNode format_node = object["source_format"];
+            kl::JsonNode format_node = object["input_format"];
 
             std::wstring object_type = format_node.getChild("object_type").getString();
             std::wstring format = format_node.getChild("format").getString();
 
             if (object_type == L"stream")
             {
-                binary_import = true;
+                lo.binary_load = true;
             }
              else
             {
                 if (format == L"delimited_text")
                 {
-                    qp.format.format = xd::formatDelimitedText;
-                    qp.format.delimiter = format_node.getChild("delimiter").getString();
-                    qp.format.text_qualifier = format_node.getChild("text_qualifier").getString();
-                    qp.format.header_row = format_node.getChild("header_row").getBoolean();
+                    lo.query_params.format.format = xd::formatDelimitedText;
+                    lo.query_params.format.delimiter = format_node.getChild("delimiter").getString();
+                    lo.query_params.format.text_qualifier = format_node.getChild("text_qualifier").getString();
+                    lo.query_params.format.header_row = format_node.getChild("header_row").getBoolean();
 
-                    if (qp.columns.length() == 0)
+                    if (lo.query_params.columns.length() == 0)
                     {
                         // for csvs where we don't know the structure, perform a full scan to get correct metrics
-                        qp.format.determine_structure = true; 
+                        lo.query_params.format.determine_structure = true; 
                     }
                 }
                  else
                 {
-                    // unknown format type
-                    if (finfo.isNull())
-                    {
-                        m_job_info->setState(jobStateFailed);
-                        return 0;
-                    }
+                    // unknown format
+                    m_job_info->setState(jobStateFailed);
+                    return 0;
                 }
             }
         }
 
 
 
-        if (binary_import)
+
+        if (object.childExists("output_format"))
         {
-            xd::IStreamPtr instream = source_db->openStream(source_path);
+            kl::JsonNode format = object["output_format"];
+
+            lo.output_format.format = xd::formatDelimitedText;
+            if (kl::icontains(lo.output, L".icsv"))
+                lo.output_format.format = xd::formatTypedDelimitedText;
+
+            lo.output_format.delimiter = format.getChild("delimiter").getString();
+            lo.output_format.text_qualifier = format.getChild("text_qualifier").getString();
+            lo.output_format.header_row = format.getChild("header_row").getBoolean();
+        }
+
+
+        if (object.childExists("overwrite") && object.getChild("overwrite").getBoolean())
+        {
+            lo.overwrite = true;
+        }
+         else
+        {
+            lo.overwrite = false;
+        }
+
+
+        if (object.childExists("add_xdrowid") && object.getChild("add_xdrowid").getBoolean())
+        {
+            lo.add_xdrowid = true;
+        }
+         else
+        {
+            lo.add_xdrowid = false;
+        }
+
+        load_objects.push_back(lo);
+    }
+
+
+
+
+
+    // perform the import
+
+    std::vector<LoadObject>::iterator it;
+
+    for (it = load_objects.begin(); it != load_objects.end(); ++it)
+    {
+        if (it->binary_load)
+        {
+            xd::IStreamPtr instream = it->input_db->openStream(it->input);
             if (instream.isNull())
             {
                 m_job_info->setState(jobStateFailed);
                 return 0;
             }
 
-            if (!destination_db->createStream(destination_path, finfo->getMimeType()))
+            if (!it->output_db->createStream(it->output, it->input_fileinfo->getMimeType()))
             {
                 m_job_info->setState(jobStateFailed);
                 return 0;
             }
 
-            xd::IStreamPtr outstream = destination_db->openStream(destination_path);
+            xd::IStreamPtr outstream = it->output_db->openStream(it->output);
             if (outstream.isNull())
             {
                 m_job_info->setState(jobStateFailed);
@@ -228,7 +303,7 @@ int LoadJob::runJob()
                         delete[] buf;
                         instream.clear();
                         outstream.clear();
-                        destination_db->deleteFile(destination_path);
+                        it->output_db->deleteFile(it->output);
                         m_job_info->setState(jobStateFailed);
                         return 0;
                     }
@@ -236,13 +311,13 @@ int LoadJob::runJob()
             }
 
             delete[] buf;
-            return 0;
+            continue;
         }
 
 
 
 
-        xd::IIteratorPtr source_iter = source_db->query(qp);
+        xd::IIteratorPtr source_iter = it->input_db->query(it->query_params);
 
         if (source_iter.isNull())
         {
@@ -255,38 +330,23 @@ int LoadJob::runJob()
 
         // create the destination table
 
-        xd::FormatDefinition destination_format;
 
-        if (object.childExists("destination_format"))
+        if (it->overwrite)
         {
-            kl::JsonNode format = object["destination_format"];
-
-            destination_format.format = xd::formatDelimitedText;
-            if (kl::icontains(destination_path, L".icsv"))
-                destination_format.format = xd::formatTypedDelimitedText;
-
-            destination_format.delimiter = format.getChild("delimiter").getString();
-            destination_format.text_qualifier = format.getChild("text_qualifier").getString();
-            destination_format.header_row = format.getChild("header_row").getBoolean();
+            it->output_db->deleteFile(it->output);
         }
 
-
-        
-
-        if (object.childExists("overwrite") && object.getChild("overwrite").getBoolean())
+        if (!it->output_db->getFileExist(it->output))
         {
-            destination_db->deleteFile(destination_path);
-        }
+            xd::FormatDefinition output_format = it->output_format;
 
-        if (!destination_db->getFileExist(destination_path))
-        {
             xd::Structure structure = source_iter->getStructure();
-            destination_format.columns = structure.columns;
+            output_format.columns = structure.columns;
 
 
-            destination_format.columns.deleteColumn(L"xdrowid");
+            output_format.columns.deleteColumn(L"xdrowid");
 
-            if (object.childExists("add_xdrowid") && object.getChild("overwrite").getBoolean())
+            if (it->add_xdrowid)
             {
                 xd::ColumnInfo col;
                 col.name = L"xdrowid";
@@ -296,10 +356,10 @@ int LoadJob::runJob()
                 col.column_ordinal = 0;
                 col.expression = L"";
                 col.calculated = false;
-                destination_format.columns.insert(destination_format.columns.begin(), col);
+                output_format.columns.insert(output_format.columns.begin(), col);
             }
 
-            if (!destination_db->createTable(destination_path, destination_format))
+            if (!it->output_db->createTable(it->output, output_format))
             {
                 // could not create output file
                 m_job_info->setState(jobStateFailed);
@@ -312,14 +372,14 @@ int LoadJob::runJob()
 
         xd::CopyParams info;
         info.iter_input = source_iter;
-        info.output = destination_path;
+        info.output = it->output;
         info.append = true;
         
         // TODO: add copy loop here
-        xd::IJobPtr xd_job = destination_db->createJob();
+        xd::IJobPtr xd_job = it->output_db->createJob();
         setXdJob(xd_job);
 
-        destination_db->copyData(&info, xd_job);
+        it->output_db->copyData(&info, xd_job);
 
         
         if (xd_job->getCancelled())

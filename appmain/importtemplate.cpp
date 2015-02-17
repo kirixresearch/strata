@@ -917,31 +917,31 @@ jobs::IJobPtr ImportTemplate::createJob()
         {
             kl::JsonNode object = objects.appendElement();
 
-            object["source_connection"] = source_connection;
-            object["destination_connection"] = destination_connection;
+            object["input_connection"] = source_connection;
+            object["output_connection"] = destination_connection;
 
-            object["source_path"] = it->input_tablename;
-            object["destination_path"] = it->output_tablename;
+            object["input"] = it->input_tablename;
+            object["output"] = it->output_tablename;
 
             object["overwrite"].setBoolean(true);
 
             if (m_ii.binary_copy)
             {
-                object["source_format"].setObject();
-                kl::JsonNode source_format = object["source_format"];
+                object["input_format"].setObject();
+                kl::JsonNode input_format = object["input_format"];
             
-                source_format["object_type"] = L"stream";
+                input_format["object_type"] = L"stream";
             }
              else if (m_ii.delimiters.length() > 0)
             {
-                object["source_format"].setObject();
-                kl::JsonNode source_format = object["source_format"];
+                object["input_format"].setObject();
+                kl::JsonNode input_format = object["input_format"];
             
-                source_format["object_type"] = L"table";
-                source_format["format"] = L"delimited_text";
-                source_format["delimiter"] = m_ii.delimiters;
-                source_format["text_qualifier"] = m_ii.text_qualifier;
-                source_format["header_row"].setBoolean(m_ii.first_row_header);
+                input_format["object_type"] = L"table";
+                input_format["format"] = L"delimited_text";
+                input_format["delimiter"] = m_ii.delimiters;
+                input_format["text_qualifier"] = m_ii.text_qualifier;
+                input_format["header_row"].setBoolean(m_ii.first_row_header);
             }
         }
     }
