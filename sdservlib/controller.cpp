@@ -2338,11 +2338,11 @@ void Controller::apiImportLoad(RequestInfo& req)
 
         // add our table to the import object
         kl::JsonNode object = objects.appendElement();
-        object["source_connection"] = m_connection_string;
-        object["destination_connection"] = L"Xdprovider=xdfs";
-        object["source_path"] = handle;
-        object["destination_path"] = kl::filenameToUrl(datafile);
-        object["overwrite"] = false;
+        object["input_connection"] = m_connection_string;
+        object["output_connection"] = L"Xdprovider=xdfs";
+        object["input"] = handle;
+        object["output"] = kl::filenameToUrl(datafile);
+        object["load_type"] = "binary";
 
         job->setParameters(params.toString());
         job->setDatabase(db);
@@ -2367,11 +2367,12 @@ void Controller::apiImportLoad(RequestInfo& req)
 
         // add our table to the import object
         kl::JsonNode object = objects.appendElement();
-        object["source_connection"] = L"Xdprovider=xdfs";
-        object["destination_connection"] = m_connection_string;
-        object["source_path"] = datafile;
-        object["destination_path"] = target_path;
+        object["input_connection"] = L"Xdprovider=xdfs";
+        object["output_connection"] = m_connection_string;
+        object["input"] = datafile;
+        object["output"] = target_path;
         object["overwrite"].setBoolean((target_disposition == L"append") ? false : true);
+        object["load_type"] = "table";
         object["add_xdrowid"].setBoolean(true);
 
         job->setParameters(params.toString());
@@ -2416,6 +2417,7 @@ void Controller::apiRunJob(RequestInfo& req)
     std::wstring job_type = root["metadata"]["type"];
     if (!(job_type == L"application/vnd.kx.group-job" ||
           job_type == L"application/vnd.kx.query-job" ||
+          job_type == L"application/vnd.kx.load-job" ||
           job_type == L"application/vnd.kx.view-job"))
     {
         returnApiError(req, "Invalid job type");

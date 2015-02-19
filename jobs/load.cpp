@@ -227,8 +227,29 @@ int LoadJob::runJob()
         }
          else
         {
-            // if there is no format specified, we'll do a binary load if the input file is a stream
-            lo.binary_load = (lo.input_fileinfo->getType() == xd::filetypeStream) ? true : false;
+            std::wstring load_type;
+
+            if (object.childExists("load_type"))
+            {
+                load_type = object["load_type"];
+            }
+
+
+            if (load_type == L"table")
+            {
+                lo.binary_load = false;
+            }
+             else if (load_type == L"binary")
+            {
+                lo.binary_load = true;
+            }
+             else
+            {
+                // if "load_type" is not specified, the object will import in the form of the
+                // object type specified in "input";  i.e. if the database senses the input type
+                // is a stream, it will import as a stream, otherwise it will import as a table
+                lo.binary_load = (lo.input_fileinfo->getType() == xd::filetypeStream) ? true : false;
+            }
         }
 
 
@@ -249,23 +270,23 @@ int LoadJob::runJob()
         }
 
 
-        if (object.childExists("overwrite") && object.getChild("overwrite").getBoolean())
+        if (object.childExists("overwrite"))
         {
-            lo.overwrite = true;
+            lo.overwrite = object.getChild("overwrite").getBoolean();
         }
          else
         {
-            lo.overwrite = false;
+            lo.overwrite = true;   // default
         }
 
 
-        if (object.childExists("add_xdrowid") && object.getChild("add_xdrowid").getBoolean())
+        if (object.childExists("add_xdrowid"))
         {
-            lo.add_xdrowid = true;
+            lo.add_xdrowid = object.getChild("add_xdrowid").getBoolean();
         }
          else
         {
-            lo.add_xdrowid = false;
+            lo.add_xdrowid = false; // default
         }
 
         load_objects.push_back(lo);
