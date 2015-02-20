@@ -2087,11 +2087,38 @@ public:
 			}
             if (m_database.isNull())
                 return false;
-            std::wstring mime_type = xf_get_mimetype_from_extension(this->getFilename());
-            m_database->deleteFile(m_target_path);
-            if (!m_database->createStream(m_target_path, mime_type))
-                return false;
-            m_stream = m_database->openStream(m_target_path);
+            if (m_req.getValue(L"mode") == L"append")
+            {
+                xd::IFileInfoPtr finfo = m_database->getFileInfo(m_target_path);
+                if (finfo.isNull())
+                {
+                    std::wstring mime_type = xf_get_mimetype_from_extension(this->getFilename());
+                    m_database->deleteFile(m_target_path);
+                    if (!m_database->createStream(m_target_path, mime_type))
+                        return false;
+                    m_stream = m_database->openStream(m_target_path);
+                }
+                 else
+                {
+                    // exists, is it a stream? if so, open it
+                    if (finfo->getType() != xd::filetypeStream)
+                        return false;
+                    m_stream = m_database->openStream(m_target_path);
+                    if (m_stream.isOk())
+                    {
+                        m_stream->seek(0, xd::seekEnd);
+                    }
+                }
+            }
+             else
+            {
+                std::wstring mime_type = xf_get_mimetype_from_extension(this->getFilename());
+                m_database->deleteFile(m_target_path);
+                if (!m_database->createStream(m_target_path, mime_type))
+                    return false;
+                m_stream = m_database->openStream(m_target_path);
+            }
+
             if (m_stream.isNull())
                 return false;
         }
@@ -2135,7 +2162,7 @@ public:
     
     PostValueBase* onPostValue(const std::wstring& key, const std::wstring& filename)
     {
-        if (filename.length() > 0)
+        if (key == L"file" || key == L"data")
             return new ImportUploadPostValue(m_controller->getSessionDatabase(m_req), m_req);
 
         return NULL;
