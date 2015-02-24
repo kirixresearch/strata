@@ -103,7 +103,6 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
 
 
     // create a sql query
-
     query = L"SELECT * FROM ";
     query += pgsqlQuoteIdentifierIfNecessary(m_table);
 
@@ -139,47 +138,6 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
     PQclear(res);
 
 
-    // first, get a rough feel for how many rows are in the result
-    command = L"explain " + query;
-    const char* info = NULL;
-    res = PQexec(conn, kl::toUtf8(command));
-    xd::rowpos_t rowcnt = (xd::rowpos_t)-1;
-
-    if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) > 0)
-    {
-        info = PQgetvalue(res, 0, 0);
-        const char* rows = strstr(info, "rows=");
-        if (rows)
-            rowcnt = atoi(rows+5);
-    }
-    PQclear(res);
-
-
-
-    // check if the results will be less than 80000 rows; if so, then
-    // pull the entire result set down to a PGresult
-
-    if (rowcnt != (xd::rowpos_t)-1 && rowcnt <= 80000)
-    {
-        // there is a manageable amount of rows -- just run the query
-        m_mode = modeResult;
-
-        PGresult* res = PQexec(conn, kl::toUtf8(query));
-        if (!res)
-            return false;
-
-        if (PQresultStatus(res) != PGRES_TUPLES_OK)
-        {
-            PQclear(res);
-            return false;
-        }
-
-        m_row_count = PQntuples(res);
-
-        return init(conn, res, fd);
-    }
-
-
 
     // find the primary key for this table, if any
     {
@@ -205,42 +163,71 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
         PQclear(res);
     }
 
+    
 
 
 
 
-    // just using start/limit with primary key works pretty well on tables <= 400,000 records
-    if (rowcnt != (xd::rowpos_t)-1 && rowcnt <= 400000 && qp.where.length() == 0 && qp.order.length() == 0)
+    // get a rough feel for how many rows are in the result
+    command = L"explain " + query;
+    const char* info = NULL;
+    res = PQexec(conn, kl::toUtf8(command));
+    xd::rowpos_t rowcnt = (xd::rowpos_t)-1;
+
+    if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) > 0)
     {
-        if (rowcnt != (xd::rowpos_t)-1 && rowcnt <= 3000000)
-        {
-            command = L"SELECT count(*) from " + m_table;
-            res = PQexec(conn, kl::toUtf8(command));
-            if (PQresultStatus(res) != PGRES_TUPLES_OK || PQntuples(res) < 1)
-            {
-                PQclear(res);
-                return false;
-            }
+        info = PQgetvalue(res, 0, 0);
+        const char* rows = strstr(info, "rows=");
+        if (rows)
+            rowcnt = atoi(rows+5);
+    }
+    PQclear(res);
 
-            m_row_count = atoi(PQgetvalue(res,0,0));
+
+
+
+    // check if the results will be less than 80000 rows; if so, then
+    // pull the entire result set down to a PGresult
+
+    if (rowcnt != (xd::rowpos_t)-1 && rowcnt <= 80000)
+    {
+        // there is a manageable amount of rows -- just run the query
+        m_mode = modeResult;
+
+
+        // if there is no order specified and we have a primary key, use the primary
+        // key as a sort order to return stable results
+        if (qp.order.empty())
+        {
+            query += L" ORDER BY ";
+            query += m_primary_key;
         }
 
-        m_mode = modeOffsetLimit;
 
-        m_block_start = 1;
-        m_block_row = 0;
-        m_block_rowcount = 0;
-        goFirst();
+        PGresult* res = PQexec(conn, kl::toUtf8(query));
+        if (!res)
+            return false;
 
-        return init(conn, m_res, fd);
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+            return false;
+        }
+
+        m_row_count = PQntuples(res);
+
+        return init(conn, res, fd);
     }
-     else if (rowcnt != (xd::rowpos_t)-1 && rowcnt <= 40000000 && m_primary_key != L"ctid" && qp.where.length() == 0 && qp.order.length() == 0)
+
+
+
+
+
+    if (m_primary_key != L"ctid" && qp.where.length() == 0 && qp.order.length() == 0)
     {
         m_mode = modePagingTable;
 
-        m_pager_step = 5000;
-
-        std::wstring pagertbl = xd::getTemporaryPath();
+        m_pager_step = 10000;
         
         command = L"SELECT key from (SELECT row_number() OVER (ORDER BY " + m_primary_key + L") AS rownum, " +
                     m_primary_key + L" AS key FROM " + m_table + L") a WHERE ((rownum-1) % " + kl::itowstring(m_pager_step) + L") = 0";
@@ -273,6 +260,32 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
 
         m_row_count += atoi(PQgetvalue(res, 0, 0));
         PQclear(res);
+
+        m_block_start = 1;
+        m_block_row = 0;
+        m_block_rowcount = 0;
+        goFirst();
+
+        return init(conn, m_res, fd);
+    }
+     else if (rowcnt != (xd::rowpos_t)-1 && rowcnt <= 400000 && qp.where.length() == 0 && qp.order.length() == 0)
+    {
+        // just using start/limit with primary key works pretty well on tables <= 400,000 records
+
+
+        // first, get precise row count
+        command = L"SELECT count(*) from " + m_table;
+        res = PQexec(conn, kl::toUtf8(command));
+        if (PQresultStatus(res) != PGRES_TUPLES_OK || PQntuples(res) < 1)
+        {
+            PQclear(res);
+            return false;
+        }
+        PQclear(res);
+        m_row_count = atoi(PQgetvalue(res,0,0));
+
+
+        m_mode = modeOffsetLimit;
 
         m_block_start = 1;
         m_block_row = 0;

@@ -298,7 +298,7 @@ bool PgsqlRowInserter::insertRow()
 
     m_buf_rows++;
 
-    if (m_buf_rows == 1000)
+    if (m_buf_rows == 5000)
     {
         flush();
     }
@@ -326,11 +326,17 @@ void PgsqlRowInserter::finishInsert()
         m_utf8data_len = 0;
     }
 
-    if (m_conn)
-    {
-        m_database->closeConnection(m_conn);
-        m_conn = NULL;
-    }
+
+    // analyze table for row count estimates
+    std::wstring command = L"ANALYZE " + pgsqlQuoteIdentifierIfNecessary(m_table);
+    res = PQexec(m_conn, kl::toUtf8(command));
+    PQclear(res);
+
+
+
+    // close connection
+    m_database->closeConnection(m_conn);
+    m_conn = NULL;
 }
 
 bool PgsqlRowInserter::flush()
