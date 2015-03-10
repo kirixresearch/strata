@@ -100,6 +100,7 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
     m_table = pgsqlGetTablenameFromPath(qp.from);
 
     std::wstring query, command, description;
+    bool is_view = false;
 
 
     // create a sql query
@@ -129,6 +130,7 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
         if (description.substr(0,1) == L"{")
         {
             m_view_definition.fromString(description);
+            is_view = true;
         }
     }
      else
@@ -142,9 +144,16 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
     // find the primary key for this table, if any
     {
         std::wstring prikey;
+        std::wstring tbl;
+
+        if (is_view && m_view_definition.base_table.length() > 0)
+            tbl = m_view_definition.base_table;
+             else
+            tbl = m_table;
+
 
         command = L"SELECT pg_attribute.attname, format_type(pg_attribute.atttypid, pg_attribute.atttypmod) FROM pg_index, pg_class, pg_attribute WHERE "
-                  L"pg_class.oid = '" + m_table + L"'::regclass AND indrelid = pg_class.oid AND pg_attribute.attrelid = pg_class.oid AND pg_attribute.attnum = any(pg_index.indkey) AND indisprimary";
+                  L"pg_class.oid = '" + tbl + L"'::regclass AND indrelid = pg_class.oid AND pg_attribute.attrelid = pg_class.oid AND pg_attribute.attnum = any(pg_index.indkey) AND indisprimary";
         res = PQexec(conn, kl::toUtf8(command));
         if (!res)
             return false;
@@ -156,9 +165,16 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
         }
 
         if (PQntuples(res) == 1)
+        {
             m_primary_key = kl::towstring(PQgetvalue(res, 0, 0));
-             else
-            m_primary_key = L"ctid";
+        }
+         else
+        {
+            if (is_view)
+                m_primary_key = L"";
+                 else
+                m_primary_key = L"ctid";
+        }
 
         PQclear(res);
     }
@@ -197,7 +213,7 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
 
         // if there is no order specified and we have a primary key, use the primary
         // key as a sort order to return stable results
-        if (qp.order.empty())
+        if (qp.order.empty() && m_primary_key.length() > 0)
         {
             query += L" ORDER BY ";
             query += m_primary_key;
