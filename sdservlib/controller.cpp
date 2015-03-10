@@ -752,6 +752,14 @@ void Controller::apiOpenStream(RequestInfo& req)
         return;
     }
     
+
+    // get size
+    wchar_t sizebuf[64];
+    long long llsize = stream->getSize();
+    swprintf(sizebuf, 64, L"%lld", llsize);
+
+
+
     // add object to session
     std::wstring handle = createHandle();
     SessionStream* so = new SessionStream;
@@ -761,6 +769,7 @@ void Controller::apiOpenStream(RequestInfo& req)
     // return success to caller
     kl::JsonNode response;
     response["success"].setBoolean(true);
+    response["size"] = sizebuf;
     response["handle"] = handle;
     
     req.write(response.toString());
@@ -783,15 +792,17 @@ void Controller::apiReadStream(RequestInfo& req)
         return;
     }
    
-    if (!req.getValueExists(L"read_size"))
+    if (!req.getValueExists(L"length"))
     {
-        returnApiError(req, "Missing read_size parameter");
+        returnApiError(req, "Missing length parameter");
         return;
     }
+
     
     std::wstring handle = req.getValue(L"handle");
-    std::wstring read_size = req.getValue(L"read_size");
-    
+    std::wstring length = req.getValue(L"length");
+    std::wstring format = req.getValue(L"format");
+
     SessionStream* so = (SessionStream*)getServerSessionObject(handle, "SessionStream");
     if (!so)
     {
@@ -799,15 +810,18 @@ void Controller::apiReadStream(RequestInfo& req)
         return;
     }
 
-
-    xd::IStreamPtr stream = so->stream;
-
-
-    unsigned long read_size_n = (unsigned long)kl::wtoi(read_size);
+    unsigned long read_size_n = (unsigned long)kl::wtoi(length);
     char* raw_buf = new char[read_size_n];
     unsigned long raw_buf_len = 0;
-    bool res = stream->read(raw_buf, read_size_n, &raw_buf_len);
+    bool res = so->stream->read(raw_buf, read_size_n, &raw_buf_len);
     
+    if (format == L"raw")
+    {
+        req.write(raw_buf, raw_buf_len);
+        delete[] raw_buf;
+        return;
+    }
+
     if (!res || raw_buf_len == 0)
     {
         delete[] raw_buf;
@@ -815,6 +829,8 @@ void Controller::apiReadStream(RequestInfo& req)
         return;
     }
     
+
+
     char* base64_buf = new char[(raw_buf_len+2)*4];
     
     kl::base64_encodestate state;
@@ -1125,8 +1141,20 @@ static void quotedAppend(std::wstring& str, const std::wstring& cell)
 
     while (*ch)
     {
-        if (*ch == '"' || *ch == '\\')
+        if (*ch >= 0x07 && *ch <= 0x0b)
+        {
+            static wchar_t* escapers = L"abtnvfr";
             str += L'\\';
+            str += escapers[(*ch)-7];
+            continue;
+        }
+        
+        if (*ch == '"' || *ch == '\\')
+        {
+            str += L'\\';
+            str += *ch;
+            continue;
+        }
 
         i = *ch;
         if (i > 65535)
@@ -1157,8 +1185,23 @@ static void quotedAppend(std::string& str, const std::wstring& cell)
 
     while (*ch)
     {
-        if (*ch == '"' || *ch == '\\')
+        if (*ch >= 0x07 && *ch <= 0x0b)
+        {
+            static char* escapers = "abtnvfr";
             str += '\\';
+            str += escapers[(*ch)-7];
+            ++ch;
+            continue;
+        }
+        
+        if (*ch == '"' || *ch == '\\')
+        {
+            str += '\\';
+            str += (char)(unsigned char)*ch;
+            ++ch;
+            continue;
+        }
+
 
         i = *ch;
         if (i > 65535)
@@ -1174,7 +1217,7 @@ static void quotedAppend(std::string& str, const std::wstring& cell)
             str += (char)(unsigned char)*ch;
         }
 
-        ch++;
+        ++ch;
     }
 
     str += '"';
