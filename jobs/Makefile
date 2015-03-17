@@ -38,7 +38,8 @@ OBJECTS = \
 	relationship.o \
 	summarize.o \
 	update.o \
-	util.o 
+	util.o \
+	view.o
  
 
 VPATH=src:lib
