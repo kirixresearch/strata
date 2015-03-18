@@ -230,7 +230,10 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
             return false;
         }
 
-        m_row_count = PQntuples(res);
+        m_block_start = 1;
+        m_block_row = 0;
+        m_block_rowcount = PQntuples(m_res);
+        m_row_count = m_block_rowcount;
 
         return init(conn, res, fd);
     }
@@ -297,8 +300,8 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
             PQclear(res);
             return false;
         }
-        PQclear(res);
         m_row_count = atoi(PQgetvalue(res,0,0));
+        PQclear(res);
 
 
         m_mode = modeOffsetLimit;
