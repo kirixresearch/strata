@@ -21,6 +21,7 @@
 #include <kl/base64.h>
 #include <kl/file.h>
 #include <kl/json.h>
+#include <kl/system.h>
 #include <kl/url.h>
 
 
@@ -398,7 +399,6 @@ void Controller::apiFolderInfo(RequestInfo& req)
 }
 
 
-
 void Controller::apiFileInfo(RequestInfo& req)
 {
     xd::IDatabasePtr db = getSessionDatabase(req);
@@ -423,9 +423,10 @@ void Controller::apiFileInfo(RequestInfo& req)
         switch (finfo->getType())
         {
             case xd::filetypeFolder: file_info["type"] = "folder"; break;
-            case xd::filetypeNode: file_info["type"] = "node";     break;
-            case xd::filetypeTable: file_info["type"] = "table";     break;
+            case xd::filetypeNode:   file_info["type"] = "node";   break;
+            case xd::filetypeTable:  file_info["type"] = "table";  break;
             case xd::filetypeStream: file_info["type"] = "stream"; break;
+            case xd::filetypeView:   file_info["type"] = "view";   break;
             default: file_info["type"] = "unknown"; break;
         }
 
@@ -2135,7 +2136,9 @@ public:
                 xd::IFileInfoPtr finfo = m_database->getFileInfo(m_target_path);
                 if (finfo.isNull())
                 {
-                    std::wstring mime_type = xf_get_mimetype_from_extension(this->getFilename());
+                    std::wstring mime_type = m_req.getValue(L"mime_type");
+                    if (mime_type.empty())
+                        mime_type = xf_get_mimetype_from_extension(this->getFilename());
                     m_database->deleteFile(m_target_path);
                     if (!m_database->createStream(m_target_path, mime_type))
                         return false;
@@ -2542,9 +2545,11 @@ void Controller::apiJobInfo(RequestInfo& req)
     }
 
     size_t idx = (size_t)kl::wtoi(req.getValue(L"job_id"));
+    int wait = kl::wtoi(req.getValue(L"wait"));
 
 
     jobs::IJobInfoPtr job_info;
+    int job_state;
 
     m_job_info_mutex.lock();
     if (idx < m_job_info_vec.size())
@@ -2560,9 +2565,38 @@ void Controller::apiJobInfo(RequestInfo& req)
         return;
     }
 
+
+    if (wait > 0)
+    {
+        if (wait > 20)
+            wait = 20;
+
+        clock_t c1 = clock();
+        clock_t expire_time = c1 + (CLOCKS_PER_SEC * wait);
+        while (clock() < expire_time)
+        {
+            job_state = job_info->getState();
+
+            if (job_state != jobs::jobStateRunning && job_state != jobs::jobStatePaused)
+                break;
+            kl::millisleep(200);
+        }
+    }
+
+
+
+
+
+
+
+
+    job_state = job_info->getState();
+
     std::wstring status_string = L"running";
-    if (job_info->getState() == jobs::jobStateFinished)
+    if (job_state == jobs::jobStateFinished)
         status_string = L"finished";
+    else if (job_state == jobs::jobStateCancelled)
+        status_string = L"cancelled";
 
     // return success/failure to caller
     kl::JsonNode response;
