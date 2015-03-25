@@ -40,6 +40,7 @@
     <ClCompile Include="query.cpp" />
     <ClCompile Include="relationship.cpp" />
     <ClCompile Include="summarize.cpp" />
+    <ClCompile Include="uncompress.cpp" />
     <ClCompile Include="update.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="view.cpp" />
@@ -63,6 +64,7 @@
     <ClInclude Include="query.h" />
     <ClInclude Include="relationship.h" />
     <ClInclude Include="summarize.h" />
+    <ClInclude Include="uncompress.h" />
     <ClInclude Include="update.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="view.h" />
