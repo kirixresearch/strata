@@ -27,7 +27,7 @@
 #include "summarize.h"
 #include "update.h"
 #include "view.h"
-
+#include "uncompress.h"
 
 namespace jobs
 {
@@ -65,6 +65,8 @@ IJobPtr createJob(const std::wstring& job_class)
         return static_cast<IJob*>(new UpdateJob);
     if (job_class == L"application/vnd.kx.view-job")
         return static_cast<IJob*>(new ViewJob);
+    if (job_class == L"application/vnd.kx.uncompress-job")
+        return static_cast<IJob*>(new UncompressJob);
 
     return xcm::null;
 }
