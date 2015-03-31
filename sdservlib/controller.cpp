@@ -23,6 +23,7 @@
 #include <kl/json.h>
 #include <kl/system.h>
 #include <kl/url.h>
+#include <kl/utf8.h>
 
 
 
@@ -1234,8 +1235,13 @@ void Controller::apiRead(RequestInfo& req)
     bool metadata = (req.getValue(L"metadata") == L"true" ? true : false);
     bool create_handle = (handle == L"create" ? true : false);
     bool use_handle = ((!create_handle && !handle.empty()) ? true : false);
+    bool output_raw = (req.getValue(L"output") == L"raw" ? true : false);
     SessionQueryResult* so = NULL;
 
+
+    if (output_raw)
+        return apiReadRaw(req);
+    
     if (limit < 0)
         limit = 0;
 
@@ -1273,11 +1279,11 @@ void Controller::apiRead(RequestInfo& req)
                 }
 
                 req.setContentType(kl::tostring(finfo->getMimeType()).c_str());
-                req.setContentLength(-1);
+                req.setContentLength(stream->getSize());
 
-                char buf[4096];
+                char buf[16384];
                 unsigned long len;
-                while (stream->read(buf, 4096, &len))
+                while (stream->read(buf, 16384, &len))
                     req.writePiece(buf, len);
                 return;
             }
@@ -1417,7 +1423,7 @@ void Controller::apiRead(RequestInfo& req)
                 const xd::ColumnInfo& info = structure.getColumnInfoByIdx(idx);
 
                 if (idx > 0)
-                    str += ",";
+                    str += ',';
 
                 str += "{\"name\":";
                 quotedAppend(str, info.name);
@@ -1426,7 +1432,7 @@ void Controller::apiRead(RequestInfo& req)
                 str += ",\"scale\":" + kl::itostring(info.scale);
                 str += ",\"expression\":";
                 quotedAppend(str, info.expression);
-                str += "}";
+                str += '}';
             }
 
             str += "],";
@@ -1468,7 +1474,7 @@ void Controller::apiRead(RequestInfo& req)
         if (rowcnt > 0)
             str += "},{";
              else
-            str += "{";
+            str += '{';
         
         rowcnt++;
         
@@ -1477,10 +1483,10 @@ void Controller::apiRead(RequestInfo& req)
             column = &(*columns)[col];
 
             if (col > 0)
-                str += ",";
+                str += ',';
             
             quotedAppend(str, column->name);
-            str += ":";
+            str += ':';
 
             switch (column->type)
             {
@@ -1517,9 +1523,9 @@ void Controller::apiRead(RequestInfo& req)
                     xd::DateTime dt = iter->getDateTime(column->handle);
                     if (!dt.isNull())
                         snprintf(buf, 16, "%04d-%02d-%02d", dt.getYear(), dt.getMonth(), dt.getDay());
-                    str += "\"";
+                    str += '\"';
                     str += buf;
-                    str += "\"";
+                    str += '\"';
                 }
                 break;
                 
@@ -1530,9 +1536,9 @@ void Controller::apiRead(RequestInfo& req)
                     xd::DateTime dt = iter->getDateTime(column->handle);
                     if (!dt.isNull())
                         snprintf(buf, 32, "%04d-%02d-%02d %02d:%02d:%02d", dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
-                    str += "\"";
+                    str += '\"';
                     str += buf;
-                    str += "\"";
+                    str += '\"';
                 }
                 break;
             }
@@ -1570,6 +1576,213 @@ void Controller::apiRead(RequestInfo& req)
 }
 
 
+
+static void escapedAppendCsv(std::string& str, const std::wstring& cell)
+{
+    bool quotes_present = (cell.find('"') != cell.npos ? true : false);
+
+    if (!quotes_present && cell.find('\n') == cell.npos)
+    {
+        str += kl::toUtf8(cell);
+        return;
+    }
+
+    str += '"';
+
+    if (quotes_present)
+    {
+        kl::toUtf8 s(cell);
+        const char* p = (const char*)s;
+
+        while (*p)
+        {
+            if (*p == '"')
+                str += *p; // add extra quote
+            str += *p;
+            ++p;
+        }
+    }
+     else
+    {
+        str += kl::toUtf8(cell);
+    }
+
+    str += '"';
+}
+
+void Controller::apiReadRaw(RequestInfo& req)
+{
+    xd::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+    {
+        returnApiError(req, "Could not connect to database");
+        return;
+    }
+
+    xd::IFileInfoPtr finfo = db->getFileInfo(req.getURI());
+    if (finfo.isNull())
+    {
+        req.sendNotFoundError();
+        return;
+    }
+
+    int file_type = finfo->getType();
+    if (file_type == xd::filetypeFolder)
+    {
+        return;
+    }
+     else if (file_type == xd::filetypeStream)
+    {
+        xd::IStreamPtr stream = db->openStream(req.getURI());
+        if (stream.isNull())
+        {
+            req.sendNotFoundError();
+            return;
+        }
+
+        req.setContentType(kl::tostring(finfo->getMimeType()).c_str());
+        req.setContentLength(stream->getSize());
+
+        char buf[16384];
+        unsigned long len;
+        while (stream->read(buf, 16384, &len))
+            req.writePiece(buf, len);
+        return;
+    }
+     else if (file_type == xd::filetypeTable || file_type == xd::filetypeView)
+    {
+        xd::QueryParams qp;
+        qp.from = req.getURI();
+        qp.columns = req.getValue(L"columns");
+        qp.where = req.getValue(L"where");
+        qp.order = req.getValue(L"order");
+
+        std::wstring definition = req.getValue(L"definition");
+        if (definition.length() > 0)
+            qp.format.fromString(definition);
+
+        xd::IIteratorPtr iter = db->query(qp);
+        if (!iter.isOk())
+        {
+            req.sendNotFoundError();
+            return;
+        }
+        
+
+        req.setContentType("text/csv");
+        req.setContentLength(-1);
+
+
+
+        iter->goFirst();
+
+
+        xd::Structure structure = iter->getStructure();
+        std::vector<xd::objhandle_t> handles;
+
+        std::string str;
+
+        int col, col_count = (int)structure.getColumnCount();
+        for (col = 0; col < col_count; ++col)
+        {  
+            const xd::ColumnInfo& info = structure.getColumnInfoByIdx(col);
+
+            if (col > 0)
+                str += ',';
+
+            escapedAppendCsv(str, info.name);
+            handles.push_back(iter->getHandle(info.name));
+        }
+
+        req.writePiece((void*)str.c_str(), str.length());
+
+
+
+        xd::ColumnInfo* column;
+
+        while (!iter->eof())
+        {
+
+            for (col = 0; col < col_count; ++col)
+            {
+                column = &(structure.columns[col]);
+
+                if (col > 0)
+                    str += ',';
+            
+
+                switch (column->type)
+                {
+                    default:
+                        escapedAppendCsv(str, iter->getWideString(handles[col]));
+                        break;
+                
+                    case xd::typeInteger:
+                        str += kl::itostring(iter->getInteger(handles[col]));
+                        break;
+                
+                    case xd::typeBoolean:
+                    {
+                        if (iter->getBoolean(handles[col]))
+                            str += "true";
+                             else
+                            str += "false";
+                    }
+                    break;
+                
+                    case xd::typeNumeric:
+                    case xd::typeDouble:
+                    {
+                        char buf[64];
+                        snprintf(buf, 64, "%.*f", column->scale, iter->getDouble(handles[col]));
+                        str += buf;
+                    }
+                    break;
+                
+                    case xd::typeDate:
+                    {
+                        char buf[16];
+                        buf[0] = 0;
+                        xd::DateTime dt = iter->getDateTime(handles[col]);
+                        if (!dt.isNull())
+                            snprintf(buf, 16, "%04d-%02d-%02d", dt.getYear(), dt.getMonth(), dt.getDay());
+                        str += buf;
+                    }
+                    break;
+                
+                    case xd::typeDateTime:
+                    {
+                        char buf[32];
+                        buf[0] = 0;
+                        xd::DateTime dt = iter->getDateTime(handles[col]);
+                        if (!dt.isNull())
+                            snprintf(buf, 32, "%04d-%02d-%02d %02d:%02d:%02d", dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
+                        str += buf;
+                    }
+                    break;
+                }
+            }
+        
+            iter->skip(1);
+
+
+            str += "\r\n";
+            if (str.length() > 100000)
+            {
+                req.writePiece((void*)str.c_str(), str.length());
+                str.clear();
+            }
+        }
+
+        if (str.length() > 0)
+        {
+            req.writePiece((void*)str.c_str(), str.length());
+        }
+
+        for (col = 0; col < col_count; ++col)
+            iter->releaseHandle(handles[col]);
+    }
+}
 
 
 static xd::datetime_t parseDateTime(const std::wstring& wstr)
@@ -2491,7 +2704,8 @@ void Controller::apiRunJob(RequestInfo& req)
     if (!(job_type == L"application/vnd.kx.group-job" ||
           job_type == L"application/vnd.kx.query-job" ||
           job_type == L"application/vnd.kx.load-job" ||
-          job_type == L"application/vnd.kx.view-job"))
+          job_type == L"application/vnd.kx.view-job" ||
+          job_type == L"application/vnd.kx.uncompress-job"))
     {
         returnApiError(req, "Invalid job type");
         return;        

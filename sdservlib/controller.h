@@ -126,6 +126,7 @@ private:
     void apiDescribeTable(RequestInfo& req);
     void apiGetData(RequestInfo& req);
     void apiRead(RequestInfo& req);
+    void apiReadRaw(RequestInfo& req);
     void apiInsertRows(RequestInfo& req);
     void apiClone(RequestInfo& req);
     void apiClose(RequestInfo& req);
