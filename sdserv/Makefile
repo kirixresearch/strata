@@ -15,7 +15,7 @@ EXENAME = ../debugu/sdserv
 INCLUDES = -I../kl/include -I../xd/include
 CPP = g++
 CFLAGS = 
-LIBS = -L../sdservlib -L../jobs -L../kl -lsdserv -ljobs -lkl ../supp/libwebsockets/build/lib/libwebsockets.a -lssl -lcrypto -lpthread -ldl
+LIBS = -L../sdservlib -L../jobs -L../kl -lsdserv -ljobs -lkl ../supp/libwebsockets/build/lib/libwebsockets.a ../supp/libzip/lib/.libs/libzip.a -lssl -lcrypto -lz -lpthread -ldl
 DEPENDLIBS = ../sdservlib/libsdserv.a 
 
 OBJECTS = sdserv.o
