@@ -1145,7 +1145,7 @@ static void quotedAppend(std::wstring& str, const std::wstring& cell)
     {
         if (*ch >= 0x07 && *ch <= 0x0b)
         {
-            static wchar_t* escapers = L"abtnvfr";
+            static const wchar_t* escapers = L"abtnvfr";
             str += L'\\';
             str += escapers[(*ch)-7];
             continue;
@@ -1189,7 +1189,7 @@ static void quotedAppend(std::string& str, const std::wstring& cell)
     {
         if (*ch >= 0x07 && *ch <= 0x0b)
         {
-            static char* escapers = "abtnvfr";
+            static const char* escapers = "abtnvfr";
             str += '\\';
             str += escapers[(*ch)-7];
             ++ch;
