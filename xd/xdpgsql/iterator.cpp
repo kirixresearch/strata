@@ -232,7 +232,7 @@ bool PgsqlIterator::init(PGconn* conn, const xd::QueryParams& qp, const xd::Form
 
         m_block_start = 1;
         m_block_row = 0;
-        m_block_rowcount = PQntuples(m_res);
+        m_block_rowcount = PQntuples(res);
         m_row_count = m_block_rowcount;
 
         return init(conn, res, fd);
