@@ -12,7 +12,7 @@
 include ../top.mak
 
 
-INCLUDES = -I../kl/include -I../xd/include -I../kl/include
+INCLUDES = -I../kl/include -I../xd/include -I../kl/include -I../supp/libzip/lib
 DEFINES = -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES
 CFLAGS = -fPIC
 LIBS = 
@@ -37,6 +37,7 @@ OBJECTS = \
 	query.o \
 	relationship.o \
 	summarize.o \
+	uncompress.o \
 	update.o \
 	util.o \
 	view.o
