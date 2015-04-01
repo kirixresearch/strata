@@ -29,6 +29,8 @@ all:
 	cd webconnect && $(MAKE) -w
 	cd kcanvas && $(MAKE) -w
 	cd img && $(MAKE) -w
+	cd sdservlib && $(MAKE) -w
+	cd sdserv && $(MAKE) -w
 	cd appstrata && $(MAKE) -w
 
 clean:
@@ -50,6 +52,8 @@ clean:
 	cd kcanvas && $(MAKE) -w clean
 	cd webconnect && $(MAKE) -w clean
 	cd img && $(MAKE) -w clean
+	cd sdservlib && $(MAKE) -w clean
+	cd sdserv && $(MAKE) -w clean
 	cd appstrata && $(MAKE) -w clean
 
 cleanwx:
