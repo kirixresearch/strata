@@ -27,7 +27,7 @@ endif
 
 INCLUDES = -I./config -I../appmain -I../xcm/include -I../kl/include -I../xd/include -I${WX_DIR}/include -I${WX_DIR}/contrib/include 
 CFLAGS = $(TOP_CFLAGS) $(WX_CFLAGS) $(GTK_CFLAGS) $(CURL_CFLAGS) 
-LIBS = -L../kcanvas -L../cfw -L../kcl -L../webconnect -L../jobs -L../scripthost -L../kscript -L../paladin -L../kl -lkcanvas -lkcl -lwebconnect -ljobs -lscripthost -lkscript -lpaladin -lkl $(WXSTC_LIBS) $(WX_LIBS) $(CURL_LIBS) $(HARU_LIBS)
+LIBS = -L../kcanvas -L../cfw -L../kcl -L../webconnect -L../jobs -L../scripthost -L../kscript -L../paladin -L../kl -lkcanvas -lkcl -lwebconnect -ljobs -lscripthost -lkscript -lpaladin -lkl ../supp/libzip/lib/.libs/libzip.a -lz $(WXSTC_LIBS) $(WX_LIBS) $(CURL_LIBS) $(HARU_LIBS)
 
 
 
