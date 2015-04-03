@@ -676,6 +676,20 @@ bool PgsqlDatabase::getMountPoint(const std::wstring& path,
     return false;
 }
 
+
+// turn a stream ptr into streamptr://24c74abc454...
+
+std::wstring makeStreamReference(xd::IStream* stream)
+{
+    wchar_t buf[80];
+    if (sizeof(void*) == 8)
+        swprintf(buf, 80, L"streamptr://%llX", (void*)stream);
+         else
+        swprintf(buf, 80, L"streamptr://%X", (void*)stream);
+    return buf;
+}
+
+
 bool PgsqlDatabase::detectStreamFormat(const std::wstring& path, xd::FormatDefinition* format_info, const xd::FormatDefinition* defaults, xd::IJob* job)
 {
     xd::IStreamPtr stream = openStream(path);
@@ -692,10 +706,7 @@ bool PgsqlDatabase::detectStreamFormat(const std::wstring& path, xd::FormatDefin
             return xcm::null;            
     }
 
-    wchar_t buf[80];
-    swprintf(buf, 80, L"streamptr://%p", (void*)static_cast<xd::IStream*>(stream.p));
-
-    return m_xdfs->detectStreamFormat(buf, format_info, defaults, job);
+    return m_xdfs->detectStreamFormat(makeStreamReference(stream), format_info, defaults, job);
 }
 
 
@@ -1803,10 +1814,8 @@ xd::IIteratorPtr PgsqlDatabase::query(const xd::QueryParams& qp)
                 return xcm::null;            
         }
 
-        wchar_t buf[80];
-        swprintf(buf, 80, L"streamptr://%p", (void*)static_cast<xd::IStream*>(stream.p));
         xd::QueryParams newqp = qp;
-        newqp.from = buf;
+        newqp.from = makeStreamReference(stream);
         return m_xdfs->query(newqp);
     }
 
@@ -2019,9 +2028,7 @@ xd::Structure PgsqlDatabase::describeTable(const std::wstring& path)
                 return xd::Structure();          
         }
 
-        wchar_t buf[80];
-        swprintf(buf, 80, L"streamptr://%p", (void*)static_cast<xd::IStream*>(stream.p));
-        return m_xdfs->describeTable(buf);
+        return m_xdfs->describeTable(makeStreamReference(stream));
     }
 
 
