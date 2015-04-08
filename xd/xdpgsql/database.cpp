@@ -2293,7 +2293,11 @@ bool PgsqlDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
         if (cnt > 0)
             sql += L",";
 
-        dequote(fld, '"', '"');
+        if (fld.find(' ') == fld.npos)
+        {
+            // if there are no spaces in the field name, dequote it
+            dequote(fld, '"', '"');
+        }
 
         sql += expr + L" AS " + fld;
         cnt++;

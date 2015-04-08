@@ -672,8 +672,8 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
         return;
     }
     
-    std::set<std::wstring> orig_field_set;
-    std::set<std::wstring> output_field_set;
+    std::set<std::wstring, kl::cmp_nocase> orig_field_set;
+    std::set<std::wstring, kl::cmp_nocase> output_field_set;
     int func;
     
     std::wstring input_name;
@@ -690,8 +690,6 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
         for (i = 0; i < col_count; ++i)
         {
             std::wstring s = m_structure.getColumnName(i);
-            kl::makeUpper(s);
-            kl::trim(s);
 
             orig_field_set.insert(s);
             output_field_set.insert(s);
@@ -701,11 +699,9 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
     for (i = 0; i < row_count; ++i)
     {
         input_name = towstr(m_grid->getCellString(i, GroupCol_InputExpr));
-        kl::makeUpper(input_name);
         kl::trim(input_name);
 
         output_name = towstr(m_grid->getCellString(i, GroupCol_OutputField));
-        kl::makeUpper(output_name);
         kl::trim(output_name);
 
         func = m_grid->getCellComboSel(i, GroupCol_GroupFunc);
@@ -838,7 +834,6 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
             continue;
 
         std::wstring input_colname = towstr(m_grid->getCellString(i, GroupCol_InputExpr));
-        kl::makeUpper(input_colname);
         kl::trim(input_colname);
 
         std::wstring quoted_colname = xd::quoteIdentifierIfNecessary(g_app->getDatabase(), input_colname);
@@ -858,11 +853,9 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
         // already taken care of by the 'include detail' function
 
         std::wstring groupcol_inputfield = towstr(m_grid->getCellString(i, GroupCol_InputExpr));
-        kl::makeUpper(groupcol_inputfield);
         kl::trim(groupcol_inputfield);
 
         std::wstring groupcol_outputfield = towstr(m_grid->getCellString(i, GroupCol_OutputField));
-        kl::makeUpper(groupcol_outputfield);
         kl::trim(groupcol_outputfield);
 
         if (include_detail &&
