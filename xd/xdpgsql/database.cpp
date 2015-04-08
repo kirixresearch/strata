@@ -2209,6 +2209,10 @@ bool PgsqlDatabase::execute(const std::wstring& command,
 
 bool PgsqlDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 {
+    xd::Structure structure = describeTable(info->input);
+    if (structure.isNull())
+        return false;
+
     bool detail_rows = false;
     size_t grouped_column_count = 0;
 
@@ -2231,6 +2235,27 @@ bool PgsqlDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
             detail_rows = true;
             break;
         }
+    }
+
+    // build group expression
+    std::wstring group_expr;
+    for (it = group_parts.begin(); it != group_parts.end(); ++it)
+    {
+        std::wstring fld = *it;
+        dequote(fld, '"', '"');
+
+        xd::ColumnInfo ci = structure.getColumnInfo(fld);
+        if (ci.isNull())
+        {
+            // unknown group field
+            return false;
+        }
+
+        *it = ci.name;
+
+        if (group_expr.length() > 0)
+            group_expr += L',';
+        group_expr += pgsqlQuoteIdentifierIfNecessary(*it);
     }
 
 
@@ -2292,6 +2317,15 @@ bool PgsqlDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 
         if (cnt > 0)
             sql += L",";
+        
+
+        // do field correction (for instance, if a field has a space in it and isn't quoted)
+        xd::ColumnInfo ci = structure.getColumnInfo(expr);
+        if (ci.isOk())
+        {
+            expr = pgsqlQuoteIdentifierIfNecessary(ci.name);
+        }
+
 
         if (fld.find(' ') == fld.npos)
         {
@@ -2325,8 +2359,10 @@ bool PgsqlDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
     if (info->where.length() > 0)
         sql += L" WHERE " + info->where;
     
-    if (info->group.length() > 0)
-        sql += L" GROUP BY " + info->group;
+    if (group_expr.length() > 0)
+    {
+        sql += L" GROUP BY " + group_expr;
+    }
         
     if (info->having.length() > 0)
         sql += L" HAVING " + info->having;
