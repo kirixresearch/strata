@@ -5560,6 +5560,12 @@ jobs::IJobPtr AppController::execute(const wxString& location)
                 return xcm::null;
             
             jobs::IJobPtr job = appCreateJob(mime_type);
+            if (job.isNull())
+            {
+                // bad job type
+                return xcm::null;
+            }
+
             job->setParameters(params.toString());
 
             g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
