@@ -224,7 +224,6 @@ std::wstring mysqlGetTablenameFromPath(const std::wstring& path)
 
     kl::replaceStr(res, L"/", FOLDER_SEPARATOR);
     kl::replaceStr(res, L"\"", L"");
-    kl::makeLower(res);
 
     return res;
 }
@@ -237,7 +236,6 @@ std::wstring mysqlQuoteIdentifier(const std::wstring& str)
     kl::replaceStr(res, L"\"", L"");
     kl::replaceStr(res, L"/*", L"");
     kl::replaceStr(res, L"-", L"");
-    kl::makeLower(res);
 
     return L"`" + res + L"`";
 }
@@ -250,7 +248,6 @@ std::wstring mysqlQuoteIdentifierIfNecessary(const std::wstring& str)
     kl::replaceStr(res, L"\"", L"");
     kl::replaceStr(res, L"/*", L"");
     kl::replaceStr(res, L"-", L"");
-    kl::makeLower(res);
 
     if (res.find(' ') == str.npos)
         return res;
@@ -293,7 +290,6 @@ public:
         hashsrc += m_db->getServer() + L";";
         hashsrc += m_db->getActiveUid() + L";";
         hashsrc += name;
-        kl::makeLower(hashsrc);
         object_id = kl::md5str(hashsrc);
         return object_id;
     }
@@ -975,7 +971,13 @@ xd::Structure MysqlDatabase::describeTable(const std::wstring& path)
             i++;
         }
 
+
         mysql_free_result(res);
+    }
+     else
+    {
+        const char* err = mysql_error(db);
+        int i = 5;
     }
 
     mysql_close(db);
