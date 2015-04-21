@@ -2587,7 +2587,7 @@ void Controller::apiImportLoad(RequestInfo& req)
 
 
     xd::IFileInfoPtr finfo = db->getFileInfo(handle);
-    if (finfo.isNull() || finfo->getType() != xd::filetypeStream)
+    if (finfo.isNull()) // || finfo->getType() != xd::filetypeStream)
     {
         returnApiError(req, "Invalid handle");
         return;

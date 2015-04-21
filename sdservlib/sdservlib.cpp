@@ -17,6 +17,7 @@
 #include <kl/json.h>
 #include <kl/file.h>
 
+
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -228,16 +229,32 @@ int Sdserv::runServer()
 {
     std::wstring cstr;
 
-    std::wstring host = getOption(L"sdserv.database.host");
-    if (host.length() > 0)
+    std::wstring dbtype = getOption(L"sdserv.database.type");
+    if (dbtype == L"postgres")
     {
         int port = kl::wtoi(getOption(L"sdserv.database.post"));
+        std::wstring host = getOption(L"sdserv.database.host");
         std::wstring database = getOption(L"sdserv.database.database");
         std::wstring user = getOption(L"sdserv.database.user");
         std::wstring password = getOption(L"sdserv.database.password");
 
         xd::ConnectionString cs;
         cs.setParameters(xd::dbtypePostgres, host, port, database, user, password);
+
+        cstr = cs.getConnectionString();
+    }
+     else if (dbtype == L"filesystem")
+    {
+        std::wstring path = getOption(L"sdserv.database.path");
+        if (path.length() == 0)
+            return 1;
+        
+        if (!xf_get_directory_exist(path))
+            xf_mkdir(path);
+
+        xd::ConnectionString cs;
+        cs.setValue(L"xdprovider", L"xdfs");
+        cs.setValue(L"database", path);
 
         cstr = cs.getConnectionString();
     }
@@ -373,6 +390,10 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
          else if (0 == strcmp(argv[i], "-p") || 0 == strncmp(argv[i], "--password", 10))
         {
             setOption(L"sdserv.database.password", value);
+        }
+         else if (0 == strcmp(argv[i], "-P") || 0 == strncmp(argv[i], "--path", 6))
+        {
+            setOption(L"sdserv.database.path", value);
         }
          else if (0 == strcmp(argv[i], "--win32evt-ready") && i+1 < argc)
         {
