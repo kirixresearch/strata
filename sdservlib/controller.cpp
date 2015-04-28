@@ -2597,7 +2597,7 @@ void Controller::apiImportLoad(RequestInfo& req)
     std::wstring extension = xf_get_extension_from_mimetype(mime_type);
     if (extension == L"")
         extension = L"bin";
-    std::wstring datafile = xf_get_temp_filename(L"impload", extension);
+   // std::wstring datafile = xf_get_temp_filename(L"impload", extension);
 
 
 
@@ -2608,6 +2608,7 @@ void Controller::apiImportLoad(RequestInfo& req)
 
 
     // add a job to export the stream
+    /*
     job = job_thread->addJob(L"application/vnd.kx.load-job");
     if (job.isNull())
     {
@@ -2633,7 +2634,7 @@ void Controller::apiImportLoad(RequestInfo& req)
         job->setParameters(params.toString());
         job->setDatabase(db);
     }
-
+    */
 
 
     // add an import job
@@ -2653,9 +2654,9 @@ void Controller::apiImportLoad(RequestInfo& req)
 
         // add our table to the import object
         kl::JsonNode object = objects.appendElement();
-        object["input_connection"] = L"Xdprovider=xdfs";
-        object["output_connection"] = m_connection_string;
-        object["input"] = datafile;
+        //object["input_connection"] = m_connection_string;
+        //object["output_connection"] = m_connection_string;
+        object["input"] = handle;
         object["output"] = target_path;
         object["overwrite"].setBoolean((target_disposition == L"append") ? false : true);
         object["load_type"] = "table";
@@ -2671,7 +2672,7 @@ void Controller::apiImportLoad(RequestInfo& req)
     m_job_info_vec.push_back(job_thread->getJobInfo());
     m_job_info_mutex.unlock();
 
-    job_thread->addFileToDelete(datafile);
+    //job_thread->addFileToDelete(datafile);
     job_thread->create();
 
     // return success/failure to caller
