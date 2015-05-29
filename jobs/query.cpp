@@ -174,7 +174,7 @@ int QueryJob::runJob()
                 if (columns_str.length() > 0)
                     columns_str += L",";
                 if (colit->name != L"xdrowid")
-                    columns_str += colit->name;
+                    columns_str += xd::quoteIdentifierIfNecessary(m_db, colit->name);
             }
         }
 

@@ -137,7 +137,6 @@ bool JobServer::run()
     job_thread->create();
 
 
-
     int job_state;
     double percentage;
     double max_count;
@@ -157,13 +156,13 @@ bool JobServer::run()
         cur_count = job_info->getCurrentCount();
         max_count = job_info->getMaxCount();
 
-        printf("running;%.2f;%.0f;%.0f\n", percentage, cur_count, max_count);
+        printf("running;%.0f;%.0f;%.0f\n", percentage, cur_count, max_count);
         fflush(stdout);
     }
 
     cur_count = job_info->getCurrentCount();
     max_count = job_info->getMaxCount();
-    printf("finished;100.00;%.0f;%.0f\n",  cur_count, max_count);
+    printf("finished;100;%.0f;%.0f\n",  cur_count, max_count);
     fflush(stdout);
 
     return true;
