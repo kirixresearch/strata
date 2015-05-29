@@ -101,6 +101,13 @@ int QueryJob::runJob()
         input_str.erase(0, 1);
     
 
+
+    // get columns
+    std::wstring columns_str;
+    if (columns_node.isOk())
+        columns_str = columns_node.getString();
+
+
     std::wstring order_str;
     std::vector<kl::JsonNode> order_children_node = order_node.getChildren();
     std::vector<kl::JsonNode>::iterator it;
@@ -121,8 +128,8 @@ int QueryJob::runJob()
     {
         xd::QueryParams qp;
         qp.from = input_str;
-        qp.columns = columns_node.isOk() ? columns_node.getString() : L"";
-        qp.order = order_node.isOk() ? order_str : L"";
+        qp.columns = columns_str;
+        qp.order = order_str;
         qp.where = where_node.isOk() ? where_node.getString() : L"";
         qp.job = m_db->createJob();
 
@@ -154,7 +161,25 @@ int QueryJob::runJob()
             sql += L" DISTINCT ";
         }
 
-        sql += L" * ";
+
+        if (columns_str.empty() || columns_str == L"*")
+        {
+            xd::Structure structure = m_db->describeTable(input_str);
+            if (structure.isNull())
+                return 0;
+
+            std::vector<xd::ColumnInfo>::iterator colit;
+            for (colit = structure.begin(); colit != structure.end(); ++colit)
+            {
+                if (columns_str.length() > 0)
+                    columns_str += L",";
+                if (colit->name != L"xdrowid")
+                    columns_str += colit->name;
+            }
+        }
+
+        sql += columns_str;
+
 
         if (output_str.length() > 0)
         {

@@ -13,6 +13,7 @@
 #include "http.h"
 #include "controller.h"
 #include "websockets.h"
+#include "jobserver.h"
 #include <cstdio>
 #include <kl/json.h>
 #include <kl/file.h>
@@ -227,6 +228,8 @@ void Sdserv::updateAssetInformation()
 
 int Sdserv::runServer()
 {
+    //kl::thread_sleep(12000);
+
     std::wstring cstr;
 
     std::wstring dbtype = getOption(L"sdserv.database.type");
@@ -315,6 +318,11 @@ int Sdserv::runServer()
         ws.run(server, port, ssl, path);
         m_ws_client = NULL;
     }
+     else if (server_type == L"job")
+    {
+        JobServer job_server(this);
+        job_server.run();
+    }
      else
     {
         printf("unknown sdserv server mode\n");
@@ -337,9 +345,21 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
     std::string port;
 
 #ifdef WIN32
-    home_cfg_file  = _wgetenv(L"HOMEDRIVE");
-    home_cfg_file += _wgetenv(L"HOMEPATH");
-    home_cfg_file += L"\\sdserv.conf";
+    const wchar_t* penv = _wgetenv(L"HOMEDRIVE");
+    if (penv)
+    {
+        home_cfg_file = penv;
+        penv = _wgetenv(L"HOMEPATH");
+        if (penv)
+        {
+            home_cfg_file += penv;
+            home_cfg_file += L"\\sdserv.conf";
+        }
+         else
+        {
+            home_cfg_file = L"";
+        }
+    }
 #endif
 
     int i;
@@ -410,6 +430,11 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
          else if (0 == strcmp(argv[i], "-r") || 0 == strncmp(argv[i], "--run-file", 10))
         {
             setOption(L"sdserv.run_file", value);
+        }
+         else if (0 == strcmp(argv[i], "-j") || 0 == strncmp(argv[i], "--job-file", 10))
+        {
+            setOption(L"sdserv.server_type", L"job");
+            setOption(L"sdserv.job_file", value);
         }
          else if (0 == strcmp(argv[i], "--ws") && i+1 < argc)
         {

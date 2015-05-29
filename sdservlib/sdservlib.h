@@ -24,10 +24,13 @@
 class Controller;
 class HttpServer;
 class WebSocketsClient;
+class JobServer;
+
 class Sdserv
 {
     friend class HttpServer;
     friend class WebSocketsClient;
+    friend class JobServer;
     friend class WebSocketsRequestThread;
     friend class Controller;
 
