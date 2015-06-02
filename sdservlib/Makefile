@@ -20,6 +20,7 @@ LIBS =
 
 OBJECTS = controller.o \
 	http.o \
+	jobserver.o \
 	sdservlib.o \
 	websockets.o
 
