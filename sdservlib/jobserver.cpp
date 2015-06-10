@@ -63,6 +63,14 @@ public:
 
         size_t job_idx = 0;
 
+
+		if (m_agg_jobinfo.isOk())
+        {
+			jobs::IJobInfoPtr j = m_agg_jobinfo;
+            j->setState(jobs::jobStateRunning);
+            j->setStartTime(time(NULL));
+        }
+
         for (it = m_jobs.begin(); it != m_jobs.end(); ++it, ++job_idx)
         {
 			jobs::IJobInfoPtr jobinfo = (*it)->getJobInfo();
@@ -74,6 +82,8 @@ public:
 				m_agg_jobinfo->setCurrentJobInfo(jobinfo);
             }
 
+            jobinfo->setStartTime(time(NULL));
+            jobinfo->setState(jobs::jobStateRunning);
             (*it)->runJob();
             (*it)->runPostJob();
             jobinfo->setState(jobs::jobStateFinished);

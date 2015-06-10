@@ -117,7 +117,7 @@ int QueryJob::runJob()
         if (it != order_children_node.begin())
             order_str += L",";
 
-        order_str += xd::quoteIdentifierIfNecessary(m_db, (*it)["expression"]);
+        order_str += xd::quoteIdentifier(m_db, (*it)["expression"]);
         
         if (it->childExists("direction") && 0 == wcscasecmp((*it)["direction"].getString().c_str(), L"DESC"))
             order_str += L" DESC";
@@ -174,7 +174,7 @@ int QueryJob::runJob()
                 if (columns_str.length() > 0)
                     columns_str += L",";
                 if (colit->name != L"xdrowid")
-                    columns_str += xd::quoteIdentifierIfNecessary(m_db, colit->name);
+                    columns_str += xd::quoteIdentifier(m_db, colit->name);
             }
         }
 
