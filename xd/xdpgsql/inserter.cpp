@@ -82,8 +82,12 @@ bool PgsqlRowInserter::putString(xd::objhandle_t column_handle,
          else
         f->m_value = kl::towstring(value);
 
-    if (f->m_value.find(L'\\') != std::wstring::npos)
+    if (f->m_value.find_first_of(L"\n\t\\") != std::wstring::npos)
+    {
         kl::replaceStr(f->m_value, L"\\", L"\\\\");
+        kl::replaceStr(f->m_value, L"\n", L"\\n");
+        kl::replaceStr(f->m_value, L"\t", L"\\t");
+    }
 
     return true;
 }
@@ -100,8 +104,12 @@ bool PgsqlRowInserter::putWideString(xd::objhandle_t column_handle,
          else
         f->m_value = value;
 
-    if (f->m_value.find(L'\\') != std::wstring::npos)
+    if (f->m_value.find_first_of(L"\n\t\\") != std::wstring::npos)
+    {
         kl::replaceStr(f->m_value, L"\\", L"\\\\");
+        kl::replaceStr(f->m_value, L"\n", L"\\n");
+        kl::replaceStr(f->m_value, L"\t", L"\\t");
+    }
 
     return true;
 }
