@@ -360,7 +360,7 @@ int LoadJob::runJob()
 
 
 
-
+        it->query_params.format.determine_structure = true;
         xd::IIteratorPtr source_iter = it->input_db->query(it->query_params);
 
         if (source_iter.isNull())
@@ -372,7 +372,13 @@ int LoadJob::runJob()
         source_iter->goFirst();
 
 
-        // create the destination table
+        // create the destination table and copy the data
+
+        xd::CopyParams info;
+        info.iter_input = source_iter;
+        info.output = it->output;
+        info.append = true;
+
 
 
         if (it->overwrite)
@@ -385,9 +391,37 @@ int LoadJob::runJob()
             xd::FormatDefinition output_format = it->output_format;
 
             xd::Structure structure = source_iter->getStructure();
+
+
+            // rename badly named columns to something that will work in all databases
+
+            std::vector<xd::ColumnInfo>::iterator cit;
+            for (cit = structure.begin(); cit != structure.end(); ++cit)
+            {
+                std::wstring orig_name = cit->name;
+
+                if (cit->name.find('#') != cit->name.npos)
+                    kl::replaceStr(cit->name, L"#", L"no");
+                if (cit->name.find('%') != cit->name.npos)
+                    kl::replaceStr(cit->name, L"%", L"pct");
+                if (cit->name.find('-') != cit->name.npos)
+                    kl::replaceStr(cit->name, L"-", L"_");
+                if (cit->name.find('\t') != cit->name.npos)
+                    kl::replaceStr(cit->name, L"\t", L" ");
+                size_t i,len = cit->name.length();
+                for (i = 0; i < len; ++i)
+                {
+                    if (!isalnum(cit->name[i]) && cit->name[i] != ' ')
+                        cit->name[i] = '_';
+                }
+
+                info.addCopyColumn(orig_name, cit->name);
+           }
+
+
+
+
             output_format.columns = structure.columns;
-
-
             output_format.columns.deleteColumn(L"xdrowid");
 
             if (it->add_xdrowid)
@@ -412,14 +446,15 @@ int LoadJob::runJob()
         }
 
 
-        // right now there is no transformation happening -- just copy the whole table
 
-        xd::CopyParams info;
-        info.iter_input = source_iter;
-        info.output = it->output;
-        info.append = true;
+
         
-        // TODO: add copy loop here
+
+
+
+
+
+
         xd::IJobPtr xd_job = it->output_db->createJob();
         setXdJob(xd_job);
 

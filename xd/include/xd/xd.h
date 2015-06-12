@@ -596,6 +596,11 @@ struct CopyParams
     std::wstring order;
     int limit;
     xd::FormatDefinition output_format;
+
+    std::vector< std::pair<std::wstring, std::wstring> > copy_columns;
+
+    void addCopyColumn(const std::wstring& dest_column, const std::wstring& src_column)
+    { copy_columns.push_back(std::pair<std::wstring, std::wstring>(dest_column, src_column)); }
 };
 
 struct QueryParams

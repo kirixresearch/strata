@@ -18,9 +18,7 @@
 
 struct InsertInfo
 {
-    bool copy;
     int src_type;
-    int src_width;
     xd::objhandle_t src_handle;
 
     int dest_type;
@@ -35,6 +33,7 @@ struct InsertInfo
 int xdcmnInsert(xd::IDatabasePtr dest_db,
                 xd::IIteratorPtr sp_source_iter,
                 const std::wstring& dest_table,
+                const std::vector< std::pair<std::wstring, std::wstring> >& columns,
                 const std::wstring& constraint,
                 int max_rows,
                 xd::IJob* job)
@@ -50,9 +49,8 @@ int xdcmnInsert(xd::IDatabasePtr dest_db,
 
     xd::IRowInserterPtr sp_insert = dest_db->bulkInsert(dest_table);
     if (sp_insert.isNull())
-    {
         return 0;
-    }
+
 
     xd::IRowInserter* insert = sp_insert.p;
 
@@ -78,51 +76,78 @@ int xdcmnInsert(xd::IDatabasePtr dest_db,
 
     // allocate column arrays
 
-    int out_idx;
-    out_idx = 0;
 
-    for (i = 0; i < col_count; i++)
+    if (columns.size() > 0)
     {
-        const xd::ColumnInfo& dest_colinfo = dest_structure.getColumnInfoByIdx(i);
-        if (dest_colinfo.isNull())
-            continue;
-        if (dest_colinfo.calculated)
-            continue;
-
-        const xd::ColumnInfo& src_colinfo = src_structure.getColumnInfo(dest_colinfo.name);
-        if (src_colinfo.isNull())
-            continue;
-
-        insert_info[out_idx].src_handle = source_iter->getHandle(dest_colinfo.name);
-        if (!insert_info[out_idx].src_handle)
+        // fetch column instructions from columns array
+        int out_idx = 0;
+        std::vector< std::pair<std::wstring, std::wstring> >::const_iterator it;
+        for (it = columns.begin(); it != columns.end(); ++it)
         {
-            delete[] insert_info;
-            return 0;
+            insert_info[out_idx].src_handle = source_iter->getHandle(it->first);
+            if (!insert_info[out_idx].src_handle)
+            {
+                delete[] insert_info;
+                return 0;
+            }
+
+            const xd::ColumnInfo& src_colinfo = src_structure.getColumnInfo(it->first);
+            if (src_colinfo.isOk())
+                insert_info[out_idx].src_type = src_colinfo.type;
+                 else
+                insert_info[out_idx].src_type = source_iter->getType(insert_info[out_idx].src_handle);
+
+            const xd::ColumnInfo& dest_colinfo = dest_structure.getColumnInfo(it->second);
+            if (dest_colinfo.isNull())
+                continue;
+            if (dest_colinfo.calculated)
+                continue;
+
+            insert_info[out_idx].dest_handle = insert->getHandle(dest_colinfo.name);
+            insert_info[out_idx].dest_type = dest_colinfo.type;
+            insert_info[out_idx].dest_width = dest_colinfo.width;
+            insert_info[out_idx].buf = NULL;
+
+            ++out_idx;
         }
 
-        insert_info[out_idx].src_type = src_colinfo.type;
-        insert_info[out_idx].src_width = src_colinfo.width;
-
-        insert_info[out_idx].dest_handle = insert->getHandle(dest_colinfo.name);
-        insert_info[out_idx].dest_type = dest_colinfo.type;
-        insert_info[out_idx].dest_width = dest_colinfo.width;
-
-        if (insert_info[out_idx].src_type == insert_info[out_idx].dest_type &&
-            insert_info[out_idx].src_width == insert_info[out_idx].dest_width)
-        {
-            insert_info[out_idx].copy = true;
-        }
-         else
-        {
-            insert_info[out_idx].copy = false;
-        }
-
-        insert_info[out_idx].buf = NULL;
-
-        ++out_idx;
+        col_count = out_idx;
     }
+     else
+    {
+        // no columns array was specified; copy all columns, fetching them from the structure
 
-    col_count = out_idx;
+        int out_idx = 0;
+        for (i = 0; i < col_count; i++)
+        {
+            const xd::ColumnInfo& dest_colinfo = dest_structure.getColumnInfoByIdx(i);
+            if (dest_colinfo.isNull())
+                continue;
+            if (dest_colinfo.calculated)
+                continue;
+
+            const xd::ColumnInfo& src_colinfo = src_structure.getColumnInfo(dest_colinfo.name);
+            if (src_colinfo.isNull())
+                continue;
+
+            insert_info[out_idx].src_handle = source_iter->getHandle(dest_colinfo.name);
+            if (!insert_info[out_idx].src_handle)
+            {
+                delete[] insert_info;
+                return 0;
+            }
+
+            insert_info[out_idx].src_type = src_colinfo.type;
+            insert_info[out_idx].dest_handle = insert->getHandle(dest_colinfo.name);
+            insert_info[out_idx].dest_type = dest_colinfo.type;
+            insert_info[out_idx].dest_width = dest_colinfo.width;
+            insert_info[out_idx].buf = NULL;
+
+            ++out_idx;
+        }
+
+        col_count = out_idx;
+    }
 
 
     // set up job

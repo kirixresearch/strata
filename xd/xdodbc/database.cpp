@@ -1563,7 +1563,8 @@ bool OdbcDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
         }
 
         // iterator copy - use xdcmnInsert
-        xdcmnInsert(static_cast<xd::IDatabase*>(this), info->iter_input, info->output, info->where, info->limit, job);
+
+        xdcmnInsert(static_cast<xd::IDatabase*>(this), info->iter_input, info->output, info->copy_columns, info->where, info->limit, job);
         return true;
     }
      else

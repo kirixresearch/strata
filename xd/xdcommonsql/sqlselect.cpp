@@ -2259,8 +2259,9 @@ bool convertToNativeTables(xd::IDatabasePtr db,
         if (iter.isNull())
             return false;
         iter->goFirst();
-            
-        xdcmnInsert(db, iter, output_path,  L"",  0,  job);
+        
+        std::vector<std::pair<std::wstring,std::wstring> > default_columns;
+        xdcmnInsert(db, iter, output_path, default_columns, L"",  0,  job);
 
         if (mainset == st_it->set)
             mainset = set;
@@ -3466,7 +3467,8 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
             ijob->startPhase();
         }
 
-        xdcmnInsert(db, iter, output_path,  L"",  0,  job);
+        std::vector<std::pair<std::wstring,std::wstring> > default_columns;
+        xdcmnInsert(db, iter, output_path, default_columns,  L"",  0,  job);
 
         if (job && job->getCancelled())
         {

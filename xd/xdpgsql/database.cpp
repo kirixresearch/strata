@@ -898,8 +898,7 @@ bool PgsqlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
                 return false;
         }
 
-
-        xdcmnInsert(static_cast<xd::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
+        xdcmnInsert(static_cast<xd::IDatabase*>(this), iter, info->output, info->copy_columns, info->where, info->limit, job);
         return true;
     }
 

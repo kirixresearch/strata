@@ -16,6 +16,7 @@
 int xdcmnInsert(xd::IDatabasePtr db,
                 xd::IIteratorPtr sp_source_iter,
                 const std::wstring& dest_table,
+                const std::vector< std::pair<std::wstring, std::wstring> >& columns,
                 const std::wstring& filter,
                 int max_rows,
                 xd::IJob* job);

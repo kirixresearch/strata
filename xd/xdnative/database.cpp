@@ -1590,11 +1590,11 @@ bool XdnativeDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
         if (db.isNull())
             return false;
 
-        xdcmnInsert(db, iter, rpath, info->where, info->limit, job);
+        xdcmnInsert(db, iter, rpath, info->copy_columns, info->where, info->limit, job);
     }
      else
     {
-        xdcmnInsert(static_cast<xd::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
+        xdcmnInsert(static_cast<xd::IDatabase*>(this), iter, info->output, info->copy_columns, info->where, info->limit, job);
     }
 
     return true;

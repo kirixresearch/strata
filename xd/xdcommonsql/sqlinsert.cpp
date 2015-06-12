@@ -112,7 +112,9 @@ bool sqlInsert(xd::IDatabasePtr db,
         }
 
         src_iter->goFirst();
-        xdcmnInsert(db, src_iter, table,  L"",  0,  NULL);
+
+        std::vector<std::pair<std::wstring,std::wstring> > default_columns;
+        xdcmnInsert(db, src_iter, table, default_columns, L"",  0,  NULL);
 
         return true;
     }
