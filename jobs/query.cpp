@@ -161,12 +161,14 @@ int QueryJob::runJob()
             sql += L" DISTINCT ";
         }
 
-
+        bool add_xdrowid = true;
         if (columns_str.empty() || columns_str == L"*")
         {
             xd::Structure structure = m_db->describeTable(input_str);
             if (structure.isNull())
                 return 0;
+
+            //add_xdrowid = structure.getColumnExist(L"xdrowid");
 
             std::vector<xd::ColumnInfo>::iterator colit;
             for (colit = structure.begin(); colit != structure.end(); ++colit)
@@ -207,13 +209,29 @@ int QueryJob::runJob()
         setXdJob(xd_job);
 
         xcm::IObjectPtr result;
-        m_db->execute(sql, xd::sqlPassThrough, result, xd_job);
+        if (!m_db->execute(sql, xd::sqlPassThrough, result, xd_job))
+        {
+            setResultObject(result);
+            m_job_info->setState(jobStateFailed);
+            return 0;
+        }
+
         setResultObject(result);
 
         if (xd_job->getCancelled())
         {
             m_job_info->setState(jobStateCancelling);
             return 0;
+        }
+
+        if (add_xdrowid)
+        {
+            xcm::IObjectPtr result;
+            sql = L"ALTER TABLE " + q_output_str + L" ADD COLUMN xdrowid SERIAL";
+            m_db->execute(sql, xd::sqlPassThrough, result, NULL);
+
+            sql = L"CREATE INDEX ON " + q_output_str + L" (xdrowid)";
+            m_db->execute(sql, xd::sqlPassThrough, result, NULL);
         }
     }
 
