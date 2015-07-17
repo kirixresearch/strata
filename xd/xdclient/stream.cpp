@@ -131,3 +131,9 @@ long long ClientStream::getSize()
     return 0;
 }
 
+std::wstring ClientStream::getMimeType()
+{
+    // TODO: implement
+    return L"";
+}
+

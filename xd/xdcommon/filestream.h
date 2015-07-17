@@ -42,10 +42,12 @@ public:
     bool seek(long long seek_pos, int whence = xd::seekSet);
 
     long long getSize();
+    std::wstring getMimeType();
         
 private:
 
     xf_file_t m_file;
+    std::wstring m_mime_type;
     bool m_read_only;
 };
 

@@ -77,7 +77,7 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
             m_def.format = xd::formatDelimitedText;
             m_def.delimiter = L"\t";
             m_def.text_qualifier = L"";
-            m_def.header_row = determineIfFirstRowIsHeader();
+            m_def.header_row = true;
         }
          else
         {
@@ -85,7 +85,7 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
             m_def.format = xd::formatDelimitedText;
             m_def.delimiter = L",";
             m_def.text_qualifier = L"\"";
-            m_def.header_row = determineIfFirstRowIsHeader();
+            m_def.header_row = true;
             
             // however, many csv files also use other delimiters, like semicolons
             xd::FormatDefinition info;
@@ -100,6 +100,25 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
     }
 
 
+
+    
+
+    // if a definition was specified, but the values are empty, specify defaults
+    if (m_def.delimiter.empty())
+    {
+        xd::FormatDefinition info;
+        if (m_database->getFileFormat(url, m_file.getStream(), &info, true /* discover_delimiters */))
+        {
+            m_def.delimiter = info.delimiter;
+        }
+    }
+
+    if (m_def.line_delimiter.empty())
+    {
+        m_def.line_delimiter = L"\n";
+    }
+
+    
 
         
     // make sure the text-delimited file class is updated

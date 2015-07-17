@@ -1494,7 +1494,7 @@ xd::IStreamPtr PgsqlDatabase::openStream(const std::wstring& path)
     PQexec(conn, "BEGIN");
 
     std::wstring tbl = pgsqlGetTablenameFromPath(path);
-    std::wstring sql = L"select blob_id from %tbl%";
+    std::wstring sql = L"select blob_id, mime_type, encoding from %tbl%";
     kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(tbl));
 
     PGresult* res = PQexec(conn, kl::toUtf8(sql));
@@ -1507,12 +1507,13 @@ xd::IStreamPtr PgsqlDatabase::openStream(const std::wstring& path)
     }
 
     Oid oid = atoi(PQgetvalue(res, 0, 0));
-    
+    std::wstring mime_type = kl::towstring(PQgetvalue(res, 0, 1));
+
     PQclear(res);
 
 
     PgsqlStream* pstream = new PgsqlStream(this);
-    if (!pstream->init(oid, conn))
+    if (!pstream->init(oid, mime_type, conn))
     {
         delete pstream;
         return xcm::null;

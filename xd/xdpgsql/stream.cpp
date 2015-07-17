@@ -20,6 +20,7 @@ PgsqlStream::PgsqlStream(PgsqlDatabase* database)
 {
     m_conn = NULL;
     m_fd = -1;
+    m_mime_type = L"application/octet-stream";
 
     m_database = database;
     m_database->ref();
@@ -41,7 +42,7 @@ PgsqlStream::~PgsqlStream()
     m_database->unref();
 }
 
-bool PgsqlStream::init(Oid id, PGconn* conn)
+bool PgsqlStream::init(Oid id, const std::wstring& mime_type, PGconn* conn)
 {
     if (conn)
     {
@@ -61,6 +62,8 @@ bool PgsqlStream::init(Oid id, PGconn* conn)
         m_conn = NULL;
         return false;
     }
+
+    m_mime_type = mime_type;
 
     return true;
 }
@@ -127,3 +130,7 @@ long long PgsqlStream::getSize()
     return ret;
 }
 
+std::wstring PgsqlStream::getMimeType()
+{
+    return m_mime_type;
+}

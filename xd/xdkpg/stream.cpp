@@ -155,3 +155,8 @@ long long KpgStream::getSize()
     return 0;
 }
 
+std::wstring KpgStream::getMimeType()
+{
+    // not implemented in KpgStream
+    return L"";
+}

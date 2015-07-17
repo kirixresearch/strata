@@ -11,6 +11,7 @@
 
 #include <xd/xd.h>
 #include "filestream.h"
+#include <kl/file.h>
 
 
 
@@ -18,6 +19,7 @@ FileStream::FileStream()
 {
     m_file = 0;
     m_read_only = false;
+    m_mime_type = L"application/octet-stream";
 }
 
 FileStream::~FileStream()
@@ -32,6 +34,7 @@ FileStream::~FileStream()
 bool FileStream::create(const std::wstring& filename)
 {
     m_read_only = false;
+    m_mime_type = xf_get_mimetype_from_extension(filename);
     m_file = xf_open(filename, xfCreate, xfReadWrite, xfShareReadWrite);
     if (!m_file)
     {
@@ -44,6 +47,7 @@ bool FileStream::create(const std::wstring& filename)
 bool FileStream::open(const std::wstring& filename)
 {
     m_read_only = false;
+    m_mime_type = xf_get_mimetype_from_extension(filename);
     m_file = xf_open(filename, xfOpen, xfReadWrite, xfShareReadWrite);
     if (!m_file)
     {
@@ -114,4 +118,9 @@ long long FileStream::getSize()
     xf_off_t ret = xf_get_file_pos(m_file);
     xf_seek(m_file, saved_pos, xfSeekSet);
     return ret;
+}
+
+std::wstring FileStream::getMimeType()
+{
+    return m_mime_type;
 }

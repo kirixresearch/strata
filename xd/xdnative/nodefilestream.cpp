@@ -155,3 +155,9 @@ long long NodeFileStream::getSize()
     // not implemented in NodeFileStream
     return 0;
 }
+
+std::wstring NodeFileStream::getMimeType()
+{
+    // not implemented in KpgStream
+    return L"";
+}

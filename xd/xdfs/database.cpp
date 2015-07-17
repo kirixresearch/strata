@@ -438,22 +438,25 @@ bool FsDatabase::getFileFormat(const std::wstring& path,
                                xd::FormatDefinition* info,
                                bool discover_delimiters)
 {
+    std::wstring ext;
+
     if (stream == NULL && path.substr(0, 12) == L"streamptr://")
     {
         unsigned long l = (unsigned long)kl::hexToUint64(path.substr(12));
         stream = (xd::IStream*)l;
+        ext = xf_get_extension_from_mimetype(stream->getMimeType());
     }
-
-
-    // find the file extenstion
-
-    std::wstring ext;
-    size_t ext_pos = path.find_last_of('.');
-    if (ext_pos != path.npos)
+     else
     {
-        ext = path.substr(ext_pos+1);
-        kl::makeLower(ext);
+        // find the file extenstion
+        size_t ext_pos = path.find_last_of('.');
+        if (ext_pos != path.npos)
+        {
+            ext = path.substr(ext_pos+1);
+            kl::makeLower(ext);
+        }
     }
+
 
     // certain extensions indicate a file format unambiguously
     if (ext == L"ttb")

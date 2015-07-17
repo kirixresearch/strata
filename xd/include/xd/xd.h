@@ -645,6 +645,7 @@ public:
     virtual bool seek(long long seek_pos, int whence = seekSet) = 0;
 
     virtual long long getSize() = 0;
+    virtual std::wstring getMimeType() = 0;
 };
 
 

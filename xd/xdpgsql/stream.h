@@ -26,7 +26,7 @@ public:
     PgsqlStream(PgsqlDatabase* database);
     ~PgsqlStream();
 
-    bool init(Oid oid, PGconn* conn = NULL);
+    bool init(Oid oid, const std::wstring& mime_type = L"application/octet-stream", PGconn* conn = NULL);
 
     bool read(void* buf,
               unsigned long read_size,
@@ -39,11 +39,13 @@ public:
     bool seek(long long seek_pos, int whence);
 
     long long getSize();
+    std::wstring getMimeType();
               
 private:
 
     PgsqlDatabase* m_database;
     PGconn* m_conn;
+    std::wstring m_mime_type;
     int m_fd;
 };
 
