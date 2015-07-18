@@ -53,7 +53,7 @@
 const wchar_t* xdfs_keywords =
                 L"ADD,ALL,ALTER,AND,ANY,AS,ASC,BEGIN,BETWEEN,BOOL,BOOLEAN,"
                 L"BOTH,BREAK,BY,CASE,CHAR,CHARACTER,CHECK,CLOSE,COLLATE,"
-                L"COLUMN,COMMIT,CONNECT,CONTINUE,CREATE,CURRENT,CURSOR,"
+                L"COLUMN,COMMIT,CONNECT,CONTINUE,COUNT,CREATE,CURRENT,CURSOR,"
                 L"DATE,DATETIME,DECIMAL,DECLARE,DEFAULT,DELETE,DESC,"
                 L"DESCRIBE,DISTINCT,DO,DOUBLE,DROP,ELSE,ELSEIF,END,EXISTS,"
                 L"FALSE,FETCH,FLOAT,FOR,FOREIGN,FROM,FULL,FUNCTION,GOTO,"
@@ -68,8 +68,10 @@ const wchar_t* xdfs_keywords =
 
 const wchar_t* xdfs_keywords2 = L"";
 
+//const wchar_t* xdfs_invalid_column_chars =
+//                           L"~!@#$%^&*()+{}|:\"<>?`-=[]\\;',./";
 const wchar_t* xdfs_invalid_column_chars =
-                             L"~!@#$%^&*()+{}|:\"<>?`-=[]\\;',./";
+                             L"*|:\"<>()[]{}?\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF";
 
 
 
@@ -97,16 +99,16 @@ FsDatabase::FsDatabase()
     m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 80);
     m_attr->setStringAttribute(xd::dbattrKeywords, kws);    
     m_attr->setStringAttribute(xd::dbattrColumnInvalidChars,
-                               L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
+                               xdfs_invalid_column_chars);
     m_attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars,
-                               L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
+                               xdfs_invalid_column_chars);
     m_attr->setStringAttribute(xd::dbattrTableInvalidChars,
-                               L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
+                               xdfs_invalid_column_chars);
     m_attr->setStringAttribute(xd::dbattrTableInvalidStartingChars,
-                               L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
+                               xdfs_invalid_column_chars);
     m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"[");
     m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"]");
-    m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");    
+    m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.'\"");    
 
     std::wstring temp_path = xf_get_temp_path();
     m_attr->setStringAttribute(xd::dbattrTempDirectory, temp_path);

@@ -365,9 +365,7 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
          else
         {
             // unknown type
-            colinfo.type = xd::typeCharacter;
-            colinfo.width = 80;
-            colinfo.scale = 0;
+            return false;
         }
 
         fields.push_back(colinfo);
@@ -433,31 +431,62 @@ static std::wstring makeValidFieldName(const std::wstring& name,
             keywords.push_back(vec[i]);
     }
     
-    const wchar_t* bad_col_chars = invalid_col_chars.c_str();
-    wchar_t* buf = wcsdup(name.c_str());
-    wchar_t* ch = buf;
-    while (*ch)
-    {
-        if (wcschr(bad_col_chars, *ch))
-            *ch = L'_';
-        ++ch;
-    }
+    int i, count;
 
-    std::wstring result = buf;
-    free(buf);
-    
-    // make sure the field name is not a keyword
-    size_t i, count = keywords.size();
+    std::wstring result = name;
+    count = (int)result.length();
+
+    // if it's an empty string, return empty
+    if (count == 0)
+        return result;
+
+
     for (i = 0; i < count; ++i)
     {
-        if (0 == wcscasecmp(result.c_str(), keywords[i].c_str()))
+        if (wcschr(invalid_col_chars.c_str(), result[i]))
         {
-            result += L"_";
+            // if the character is the first or the last character in the string, delete it
+            if (i == 0 || i == (count-1))
+            {
+                result.erase(i,1);
+                if (result.empty())
+                    return result;
+                count--;
+                i--;
+                continue;
+            }
+
+            // if the previous character is an underscore or a space, don't duplicate
+            // the underscore; rather delete the special character
+            if (i > 0 && (result[i-1] == '_' || ::iswspace(result[i-1])))
+            {
+                result.erase(i,1);
+                if (result.empty())
+                    return result;
+                count--;
+                i--;
+                continue;
+            }
+
+            result[i] = '_';
+        }
+    }
+
+
+
+
+    // make sure the field name is not a keyword
+    count = (int)keywords.size();
+    for (i = 0; i < count; ++i)
+    {
+        if (kl::iequals(result, keywords[i]))
+        {
+            result = L"f_" + result;
             break;
         }
     }
-    
-    
+
+    kl::trim(result);
     return result;
 }
 
@@ -995,6 +1024,30 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
             {
                 col_stats[i].max_scale = xd::max_numeric_scale;
             }
+        }
+    }
+
+    // check fields for duplicate names
+    std::map<std::wstring, int, kl::cmp_nocase> field_map;
+    std::map<std::wstring, int, kl::cmp_nocase> field_map_counter;
+    std::map<std::wstring, int, kl::cmp_nocase>::iterator field_map_iter;
+
+    for (i = 0; i < col_count; ++i)
+    {
+        field_map_iter = field_map.find(col_stats[i].name);
+        if (field_map_iter == field_map.end())
+            field_map[col_stats[i].name] = 1;
+             else
+            field_map_iter->second++;
+    }
+
+    for (i = 0; i < col_count; ++i)
+    {
+        field_map_iter = field_map.find(col_stats[i].name);
+        if (field_map_iter->second > 1)
+        {
+            int cnt = ++field_map_counter[col_stats[i].name];
+            col_stats[i].name = col_stats[i].name + kl::itowstring(cnt);
         }
     }
 
