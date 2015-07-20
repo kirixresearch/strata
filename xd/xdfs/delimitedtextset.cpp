@@ -434,6 +434,7 @@ static std::wstring makeValidFieldName(const std::wstring& name,
     int i, count;
 
     std::wstring result = name;
+    kl::trim(result);
     count = (int)result.length();
 
     // if it's an empty string, return empty
@@ -445,20 +446,22 @@ static std::wstring makeValidFieldName(const std::wstring& name,
     {
         if (wcschr(invalid_col_chars.c_str(), result[i]))
         {
+            bool delete_char = false;
+
             // if the character is the first or the last character in the string, delete it
             if (i == 0 || i == (count-1))
-            {
-                result.erase(i,1);
-                if (result.empty())
-                    return result;
-                count--;
-                i--;
-                continue;
-            }
+                delete_char = true;
 
             // if the previous character is an underscore or a space, don't duplicate
             // the underscore; rather delete the special character
             if (i > 0 && (result[i-1] == '_' || ::iswspace(result[i-1])))
+                delete_char = true;
+
+            // if the next character is an underscore, delete the special character
+            if (i < (count-1) && result[i+1] == '_')
+                delete_char = true;
+
+            if (delete_char)
             {
                 result.erase(i,1);
                 if (result.empty())
@@ -485,6 +488,17 @@ static std::wstring makeValidFieldName(const std::wstring& name,
             break;
         }
     }
+
+
+    // rename badly named columns to something that will work in all databases
+
+    if (result.find('#') != result.npos)
+        kl::replaceStr(result, L"#", L"no");
+    if (result.find('%') != result.npos)
+        kl::replaceStr(result, L"%", L"pct");
+    if (result.find('-') != result.npos)
+        kl::replaceStr(result, L"-", L"_");
+
 
     kl::trim(result);
     return result;
@@ -846,6 +860,9 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
     
     std::wstring invalid_col_chars;
     invalid_col_chars = attr->getStringAttribute(xd::dbattrColumnInvalidChars);
+
+    // for now, don't allow spaces in csv file field names
+    invalid_col_chars += L' ';
     
     bool cancelled = false;
     int i, j, width, col_count = 0;

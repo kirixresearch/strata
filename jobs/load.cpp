@@ -390,38 +390,10 @@ int LoadJob::runJob()
         {
             xd::FormatDefinition output_format = it->output_format;
 
-            xd::Structure structure = source_iter->getStructure();
+            xd::Structure output_structure = source_iter->getStructure();
 
 
-            // rename badly named columns to something that will work in all databases
-
-            std::vector<xd::ColumnInfo>::iterator cit;
-            for (cit = structure.begin(); cit != structure.end(); ++cit)
-            {
-                std::wstring orig_name = cit->name;
-
-                if (cit->name.find('#') != cit->name.npos)
-                    kl::replaceStr(cit->name, L"#", L"no");
-                if (cit->name.find('%') != cit->name.npos)
-                    kl::replaceStr(cit->name, L"%", L"pct");
-                if (cit->name.find('-') != cit->name.npos)
-                    kl::replaceStr(cit->name, L"-", L"_");
-                if (cit->name.find('\t') != cit->name.npos)
-                    kl::replaceStr(cit->name, L"\t", L" ");
-                size_t i,len = cit->name.length();
-                for (i = 0; i < len; ++i)
-                {
-                    if (!isalnum(cit->name[i]) && cit->name[i] != ' ')
-                        cit->name[i] = '_';
-                }
-
-                info.addCopyColumn(orig_name, cit->name);
-           }
-
-
-
-
-            output_format.columns = structure.columns;
+            output_format.columns = output_structure.columns;
             output_format.columns.deleteColumn(L"xdrowid");
 
             if (it->add_xdrowid)
