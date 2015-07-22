@@ -1473,9 +1473,9 @@ static std::wstring num2str(Value* num,
     wchar_t res[255];
     
     if (scale == -1)
-        swprintf(fmt, 32, L"%%%s%s%d%c", left_justify ? "-" : "", zero_padded ? "0" : "", pad, fmt_char);
+        swprintf(fmt, 32, L"%%%s%s%d%c", left_justify ? L"-" : L"", zero_padded ? L"0" : L"", pad, fmt_char);
          else
-        swprintf(fmt, 32, L"%%%s%s%d.%d%c", left_justify ? "-" : "", zero_padded ? "0" : "", pad, scale, fmt_char);
+        swprintf(fmt, 32, L"%%%s%s%d.%d%c", left_justify ? L"-" : L"", zero_padded ? L"0" : L"", pad, scale, fmt_char);
     
     if (fmt_char == 'd' || fmt_char == 'u')
         swprintf(res, 255, fmt, num->getInteger());

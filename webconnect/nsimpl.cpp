@@ -438,7 +438,7 @@ void wx2ns(const wxString& wxstr, nsEmbedString& nsstr)
     size_t i, len = wxstr.Length();
     char16_t* buf = new char16_t[len+1];
     for (i = 0; i < len; ++i)
-        buf[i] = wxstr.GetChar(i);
+        buf[i] = (char16_t)(wchar_t)wxstr.GetChar(i);
     nsstr.Assign(buf, len);
     delete[] buf;
 }
@@ -453,7 +453,7 @@ char16_t* wxToUnichar(const wxString& wxstr)
     size_t i,len = wxstr.Length();
     char16_t* ret = (char16_t*)NS_Alloc((len+1) * sizeof(char16_t));
     for (i = 0; i < len; ++i)
-        *(ret+i) = (char16_t)wxstr.GetChar(i);
+        *(ret+i) = (char16_t)(wchar_t)wxstr.GetChar(i);
     *(ret+len) = 0;
     return ret;
 }

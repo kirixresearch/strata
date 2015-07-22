@@ -60,7 +60,7 @@ void MenuItem::setWxMenuItem(wxMenuItem* item)
 {
     m_ctrl = item;
     m_id = item->GetId();
-    m_label = item->GetLabel();
+    m_label = item->GetItemLabelText();
     m_help_str = item->GetHelp();
 }
 
@@ -166,7 +166,7 @@ void MenuItem::setLabel(kscript::ExprEnv* env, kscript::Value* retval)
     m_label = env->getParam(0)->getString();
 
     if (m_ctrl)
-        m_ctrl->SetText(m_label);
+        m_ctrl->SetItemLabel(m_label);
 }
 
 // (METHOD) MenuItem.getLabel

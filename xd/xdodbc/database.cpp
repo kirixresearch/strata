@@ -324,7 +324,7 @@ std::wstring createOdbcFieldString(const std::wstring& name,
                     width = 255;
             }
 
-            swprintf(buf, 255, L"%ls varchar (%d)%ls%ls",
+            swprintf(buf, 255, L"%ls varchar (%d)%ls%ls%ls",
                                 name.c_str(),
                                 width,
                                 character_set ? L" CHARACTER SET UTF8" : L"",
@@ -1097,9 +1097,7 @@ bool OdbcDatabase::open(int type,
                 swprintf(conn_buf, 4096,
                          L"Driver={SQL Server};Server=%ls;Database=%ls;Trusted_Connection=Yes;ExtendedAnsiSQL=1",
                          server.c_str(),
-                         database.c_str(),
-                         username.c_str(),
-                         password.c_str());
+                         database.c_str());
             }
             
             m_conn_str = conn_buf;

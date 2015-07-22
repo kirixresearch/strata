@@ -685,7 +685,7 @@ std::wstring makeStreamReference(xd::IStream* stream)
     if (sizeof(void*) == 8)
         swprintf(buf, 80, L"streamptr://%llX", (long long)(void*)stream);
          else
-        swprintf(buf, 80, L"streamptr://%X", (void*)stream);
+        swprintf(buf, 80, L"streamptr://%X", (unsigned int)(void*)stream);
     return buf;
 }
 
