@@ -3055,6 +3055,17 @@ bool XdnativeDatabase::createTable(const std::wstring& path, const xd::FormatDef
 
 bool XdnativeDatabase::detectStreamFormat(const std::wstring& path, xd::FormatDefinition* format_info, const xd::FormatDefinition* defaults, xd::IJob* job)
 {
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, &cstr, &rpath))
+    {
+        // action takes place in a mount
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return false;
+
+        return db->detectStreamFormat(path, format_info, defaults, job);
+    }
+
     return false;
 }
 
