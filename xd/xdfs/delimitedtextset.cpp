@@ -476,8 +476,6 @@ static std::wstring makeValidFieldName(const std::wstring& name,
     }
 
 
-
-
     // make sure the field name is not a keyword
     count = (int)keywords.size();
     for (i = 0; i < count; ++i)
@@ -489,6 +487,9 @@ static std::wstring makeValidFieldName(const std::wstring& name,
         }
     }
 
+    // if the field starts with a number, prefix it with f_
+    if (::iswdigit(result[0]))
+        result = L"f_" + result;
 
     // rename badly named columns to something that will work in all databases
 
