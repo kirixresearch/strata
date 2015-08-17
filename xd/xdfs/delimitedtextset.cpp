@@ -938,7 +938,7 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
                 if (col_stats[j].type == xd::typeDate)
                 {
                     // check if the field value is a date
-                    if (!parseDelimitedStringDate(str))
+                    if (str.length() > 0 && !parseDelimitedStringDate(str))
                     {
                         // if not, then fall back to a numeric
                         col_stats[j].type = xd::typeNumeric;
@@ -962,9 +962,12 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
                     }
                      else
                     {
-                        // field is no longer numeric 
-                        col_stats[j].type = (m_file.isUnicode() ? xd::typeWideCharacter : xd::typeCharacter);
-                        col_stats[j].max_scale = 0;
+                        if (str.length() > 0)
+                        {
+                            // field is no longer numeric 
+                            col_stats[j].type = (m_file.isUnicode() ? xd::typeWideCharacter : xd::typeCharacter);
+                            col_stats[j].max_scale = 0;
+                        }
                     }
                 }
             }
