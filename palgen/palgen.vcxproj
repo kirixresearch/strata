@@ -111,7 +111,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;rpcrt4.lib;wxbase30ud.lib;wxbase30ud_net.lib;wxmsw30ud_core.lib;wxmsw30ud_adv.lib;wxpngd.lib;wxzlibd.lib;../paladin/lib/paladinud.lib;../kcl/lib/kclud.lib;../kl/lib/klud.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;rpcrt4.lib;wxbase31ud.lib;wxbase31ud_net.lib;wxmsw31ud_core.lib;wxmsw31ud_adv.lib;wxpngd.lib;wxzlibd.lib;../paladin/lib/paladinud.lib;../kcl/lib/kclud.lib;../kl/lib/klud.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -122,6 +122,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -202,7 +203,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;comctl32.lib;rpcrt4.lib;wxbase29u.lib;wxbase29u_net.lib;wxmsw29u_core.lib;wxmsw29u_adv.lib;wxpng.lib;wxzlib.lib;../kcl/lib/kclu.lib;../kl/lib/klu.lib;../paladin/lib/paladinu.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;comctl32.lib;rpcrt4.lib;wxbase31u.lib;wxbase31u_net.lib;wxmsw31u_core.lib;wxmsw31u_adv.lib;wxpng.lib;wxzlib.lib;../kcl/lib/kclu.lib;../kl/lib/klu.lib;../paladin/lib/paladinu.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>../releaseu/palgen.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
