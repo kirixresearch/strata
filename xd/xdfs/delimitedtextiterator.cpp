@@ -892,6 +892,20 @@ bool DelimitedTextIterator::isNull(xd::objhandle_t data_handle)
         return true;
     }
 
+
+    const std::wstring& str = m_file.getString(dai->ordinal);
+
+    if (dai->type == xd::typeDate || dai->type == xd::typeDateTime || dai->type == xd::typeNumeric)
+    {
+        if (str == L"null" || str == L"\\N" || str == L"")
+            return true;
+    }
+     else
+    {
+        if (str == L"\\N")
+            return true;
+    }
+
     return false;
 }
 
