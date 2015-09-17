@@ -1263,9 +1263,9 @@ bool JsonNodeValidator::checkType(JsonNode& data, JsonNode& schema)
         return false;
     }
 
-    // type is specified, but it's not a string or an array; 
-    // handle as if type isn't defined
-    return true;
+    // type is specified, but it's not a string or an array;
+    // handle it as if type isn't recognized
+    return false;
 }
 
 bool JsonNodeValidator::checkTypeDisallowed(JsonNode& data, JsonNode& schema)
