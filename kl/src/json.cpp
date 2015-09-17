@@ -1215,23 +1215,23 @@ bool JsonNodeValidator::checkTypePrimitive(JsonNode& data, const std::wstring& t
 {
     if (type == L"any")
         return true;
-    if (type == L"null" && !data.isNull())
-        return false;
-    if (type == L"boolean" && !data.isBoolean())
-        return false;
-    if (type == L"integer" && !data.isInteger())
-        return false;
-    if (type == L"number" && !(data.isInteger() || data.isDouble()))
-        return false;
-    if (type == L"string" && !data.isString())
-        return false;
-    if (type == L"object" && !data.isObject())
-        return false;
-    if (type == L"array" && !data.isArray())
-        return false;
+    if (type == L"null" && data.isNull())
+        return true;
+    if (type == L"boolean" && data.isBoolean())
+        return true;
+    if (type == L"integer" && data.isInteger())
+        return true;
+    if (type == L"number" && (data.isInteger() || data.isDouble()))
+        return true;
+    if (type == L"string" && data.isString())
+        return true;
+    if (type == L"object" && data.isObject())
+        return true;
+    if (type == L"array" && data.isArray())
+        return true;
 
-    // something not in this list, so any value is allowed
-    return true;
+    // unrecognized type; return false
+    return false;
 }
 
 bool JsonNodeValidator::checkType(JsonNode& data, JsonNode& schema)
