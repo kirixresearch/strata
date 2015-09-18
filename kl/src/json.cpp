@@ -1696,7 +1696,7 @@ bool JsonNodeValidator::isJsonNodeValueEqual(JsonNode& node1, JsonNode& node2)
             return false;
 
         // handle "no element" case
-        if (node1_childcount == 0 && node2_childcount)
+        if (node1_childcount == 0 && node2_childcount == 0)
             return true;
 
         std::vector<JsonNode> node1_children = node1.getChildren();
