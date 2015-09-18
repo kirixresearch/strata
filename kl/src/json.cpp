@@ -1735,7 +1735,7 @@ bool JsonNodeValidator::isJsonNodeValueEqual(JsonNode& node1, JsonNode& node2)
             return false;
 
         // handle "no element" case
-        if (node1_childcount == 0 && node2_childcount)
+        if (node1_childcount == 0 && node2_childcount == 0)
             return true;
 
         // same number of non-zero elements; key's and values must match, but
