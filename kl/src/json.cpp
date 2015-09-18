@@ -1715,6 +1715,8 @@ bool JsonNodeValidator::isJsonNodeValueEqual(JsonNode& node1, JsonNode& node2)
             // the arrays aren't equal
             if (!isJsonNodeValueEqual(node1_child, node2_child))
                 return false;
+
+            idx++;
         }
 
         // same number of array elements and values in the same position
