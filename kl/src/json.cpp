@@ -1667,11 +1667,15 @@ bool JsonNodeValidator::isPrimitiveValueEqual(JsonNode& node1, JsonNode& node2)
     if (node1.isString() && node2.isString())
         return (node1.getString() == node2.getString());
 
-    // we're comparing two primitive types of mixed boolean, number,
-    // or string types; if they are numerically equivalent, the 
-    // values match
-    if (node1.getDouble() == node2.getDouble())
-        return true;
+    // if we have two booleans, returns the results of comparing
+    // them directly
+    if (node1.isBoolean() && node2.isBoolean())
+        return (node1.getBoolean() == node2.getBoolean());
+
+    // if we have two numeric types, return the results of comparing
+    // them based on their converted numeric values
+    if ((node1.isDouble() || node1.isInteger()) && (node2.isDouble() || node2.isInteger()))
+        return (node1.getDouble() == node2.getDouble());
 
     // values don't match
     return false;
