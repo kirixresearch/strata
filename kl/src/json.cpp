@@ -1258,9 +1258,6 @@ bool JsonNodeValidator::checkType(JsonNode& data, JsonNode& schema)
 
             // TODO: need to handle case where type in array is a schema
         }
-
-        // type doesn't match any of the children
-        return false;
     }
 
     // type is specified, but it's not a string or an array;
@@ -1417,34 +1414,6 @@ bool JsonNodeValidator::checkNumberValue(JsonNode& data, JsonNode& schema)
     return true;
 }
 
-bool JsonNodeValidator::checkEnumValue(JsonNode& data, JsonNode& schema)
-{
-    // if the enum value doesn't exist, nothing to validate
-    if (!schema.childExists("enum"))
-        return true;
-
-    // the enumeration has to be an array; if it isn't, the
-    // data passes the test
-    JsonNode enum_node = schema[L"enum"];
-    if (!enum_node.isArray())
-        return true;
-
-    // an enumeration exists; compare the values in the enumeration
-    // against the object
-    std::vector<JsonNode> enum_children = enum_node.getChildren();
-    std::vector<JsonNode>::iterator it, it_end;
-    it_end = enum_children.end();
-
-    for (it = enum_children.begin(); it != it_end; ++it)
-    {
-        if (isJsonNodeValueEqual(data, *it))
-            return true;
-    }
-
-    // none of the objects match
-    return false;
-}
-
 bool JsonNodeValidator::checkStringValue(JsonNode& data, JsonNode& schema)
 {
     // if the data type isn't a string, nothing to validate
@@ -1494,6 +1463,34 @@ bool JsonNodeValidator::checkStringValue(JsonNode& data, JsonNode& schema)
     }
 
     return true;
+}
+
+bool JsonNodeValidator::checkEnumValue(JsonNode& data, JsonNode& schema)
+{
+    // if the enum value doesn't exist, nothing to validate
+    if (!schema.childExists("enum"))
+        return true;
+
+    // the enumeration has to be an array; if it isn't, it's a bad
+    // parameter, so return false
+    JsonNode enum_node = schema[L"enum"];
+    if (!enum_node.isArray())
+        return false;
+
+    // an enumeration exists; compare the values in the enumeration
+    // against the object
+    std::vector<JsonNode> enum_children = enum_node.getChildren();
+    std::vector<JsonNode>::iterator it, it_end;
+    it_end = enum_children.end();
+
+    for (it = enum_children.begin(); it != it_end; ++it)
+    {
+        if (isJsonNodeValueEqual(data, *it))
+            return true;
+    }
+
+    // none of the objects match
+    return false;
 }
 
 bool JsonNodeValidator::checkArraySize(JsonNode& data, JsonNode& schema)
