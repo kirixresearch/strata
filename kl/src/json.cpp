@@ -1207,27 +1207,6 @@ bool JsonNodeValidator::checkJsonNode(JsonNode& data, JsonNode& schema)
     return true;
 }
 
-bool JsonNodeValidator::checkTypePrimitive(JsonNode& data, const std::wstring& type)
-{
-    if (type == L"null" && data.isNull())
-        return true;
-    if (type == L"boolean" && data.isBoolean())
-        return true;
-    if (type == L"integer" && data.isInteger())
-        return true;
-    if (type == L"number" && (data.isInteger() || data.isDouble()))
-        return true;
-    if (type == L"string" && data.isString())
-        return true;
-    if (type == L"object" && data.isObject())
-        return true;
-    if (type == L"array" && data.isArray())
-        return true;
-
-    // unrecognized type; return false
-    return false;
-}
-
 bool JsonNodeValidator::checkType(JsonNode& data, JsonNode& schema)
 {
     // if the type doesn't exist in the schema, any type is valid
@@ -1236,7 +1215,7 @@ bool JsonNodeValidator::checkType(JsonNode& data, JsonNode& schema)
 
     // type has to be either a string or an array
     if (schema[L"type"].isString())
-        return checkTypePrimitive(data, schema[L"type"].getString());
+        return isPrimitiveType(data, schema[L"type"].getString());
 
     if (schema[L"type"].isArray())
     {
@@ -1247,10 +1226,8 @@ bool JsonNodeValidator::checkType(JsonNode& data, JsonNode& schema)
         bool match = false;
         for (it = children.begin(); it != it_end; ++it)
         {
-            if (checkTypePrimitive(data, it->getString()))
+            if (isPrimitiveType(data, it->getString()))
                 return true;
-
-            // TODO: need to handle case where type in array is a schema
         }
     }
 
@@ -1618,6 +1595,27 @@ bool JsonNodeValidator::checkObjectValues(JsonNode& data, JsonNode& schema)
 
     // all tests pass
     return true;
+}
+
+bool JsonNodeValidator::isPrimitiveType(JsonNode& data, const std::wstring& type)
+{
+    if (type == L"null" && data.isNull())
+        return true;
+    if (type == L"boolean" && data.isBoolean())
+        return true;
+    if (type == L"integer" && data.isInteger())
+        return true;
+    if (type == L"number" && (data.isInteger() || data.isDouble()))
+        return true;
+    if (type == L"string" && data.isString())
+        return true;
+    if (type == L"object" && data.isObject())
+        return true;
+    if (type == L"array" && data.isArray())
+        return true;
+
+    // unrecognized type; return false
+    return false;
 }
 
 bool JsonNodeValidator::isPrimitiveValueEqual(JsonNode& node1, JsonNode& node2)
