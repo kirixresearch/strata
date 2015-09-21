@@ -1373,25 +1373,25 @@ bool JsonNodeValidator::checkNumberValue(JsonNode& data, JsonNode& schema)
         // if maximum is something else, don't do anything
     }
 
-    if (schema.childExists(L"divisibleBy"))
+    if (schema.childExists(L"multipleOf"))
     {
-        JsonNode constraint_node = schema[L"divisibleBy"];
+        JsonNode constraint_node = schema[L"multipleOf"];
 
         if (constraint_node.isDouble())
         {
-            double divisibleby = constraint_node.getDouble();
-            if (divisibleby != 0 && data.isDouble() && (fmod(data.getDouble(),divisibleby) != 0))
+            double multipleof = constraint_node.getDouble();
+            if (multipleof != 0 && data.isDouble() && (fmod(data.getDouble(),multipleof) != 0))
                 return false;
-            if (divisibleby != 0 && data.isInteger() && (fmod(data.getInteger(),divisibleby) != 0))
+            if (multipleof != 0 && data.isInteger() && (fmod(data.getInteger(),multipleof) != 0))
                 return false;
         }
 
         if (constraint_node.isInteger())
         {
-            int divisibleby = constraint_node.getInteger();
-            if (divisibleby != 0 && data.isDouble() && (fmod(data.getDouble(),(double)divisibleby) != 0))
+            int multipleof = constraint_node.getInteger();
+            if (multipleof != 0 && data.isDouble() && (fmod(data.getDouble(),(double)multipleof) != 0))
                 return false;
-            if (divisibleby != 0 && data.isInteger() && (data.getInteger() % divisibleby != 0))
+            if (multipleof != 0 && data.isInteger() && (data.getInteger() % multipleof != 0))
                 return false;
         }
     }
