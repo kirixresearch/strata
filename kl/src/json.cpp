@@ -1213,8 +1213,6 @@ bool JsonNodeValidator::checkJsonNode(JsonNode& data, JsonNode& schema)
 
 bool JsonNodeValidator::checkTypePrimitive(JsonNode& data, const std::wstring& type)
 {
-    if (type == L"any")
-        return true;
     if (type == L"null" && data.isNull())
         return true;
     if (type == L"boolean" && data.isBoolean())
