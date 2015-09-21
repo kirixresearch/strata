@@ -1162,10 +1162,6 @@ bool JsonNodeValidator::checkJsonNode(JsonNode& data, JsonNode& schema)
     if (!checkType(data, schema))
         flagError(data, L"Error: node type is not one of allowed types near '%s'");
 
-    // validate the object type based on disallowed types
-    if (!checkTypeDisallowed(data, schema))
-        flagError(data, L"Error: node type is disallowed near '%s'");
-
     // validate any numeric value
     if (!checkNumberValue(data, schema))
         flagError(data, L"Error: number value invalid near '%s'");
@@ -1261,15 +1257,6 @@ bool JsonNodeValidator::checkType(JsonNode& data, JsonNode& schema)
     // type is specified, but it's not a string or an array;
     // handle it as if type isn't recognized
     return false;
-}
-
-bool JsonNodeValidator::checkTypeDisallowed(JsonNode& data, JsonNode& schema)
-{
-    // TODO: fill out
-
-    // disallow
-
-    return true;
 }
 
 bool JsonNodeValidator::checkNumberValue(JsonNode& data, JsonNode& schema)

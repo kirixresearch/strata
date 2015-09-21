@@ -189,7 +189,6 @@ private:
     bool checkJsonNode(JsonNode& data, JsonNode& schema);
     bool checkTypePrimitive(JsonNode& data, const std::wstring& type);
     bool checkType(JsonNode& data, JsonNode& schema);
-    bool checkTypeDisallowed(JsonNode& data, JsonNode& schema);
     bool checkNumberValue(JsonNode& data, JsonNode& schema);
     bool checkEnumValue(JsonNode& data, JsonNode& schema);
     bool checkStringValue(JsonNode& data, JsonNode& schema);
