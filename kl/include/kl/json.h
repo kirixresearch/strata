@@ -168,6 +168,14 @@ private:
 
 class JsonNodeValidator
 {
+    // this class is a partial implementation of the draft 4 JSON schema
+    // validation specification:
+    // http://tools.ietf.org/html/draft-fge-json-schema-validation-00
+
+    // for additional information, see here:
+    // https://github.com/json-schema/json-schema
+    // http://json-schema.org/
+
 public:
 
     JsonNodeValidator();
