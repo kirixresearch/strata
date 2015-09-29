@@ -114,6 +114,7 @@ private:
     void onFileCtrlItemSelected(wxListEvent& evt);
     void onFileCtrlItemActivated(wxListEvent& evt);
     void onPathCtrlEnterPressed(wxCommandEvent& evt);
+    void onFilenameCtrlEnterPressed(wxCommandEvent& evt);
     void onFilterChoice(wxCommandEvent& evt);
     void onGoParentClicked(wxCommandEvent& evt);
     void onChildFocus(wxChildFocusEvent& evt);
@@ -132,6 +133,7 @@ private:
     int m_filter_index;
     std::vector<wxString> m_wildcards;
     bool m_filename_ctrl_focus_received;
+    bool m_path_ctrl_focus_received;
 
     DECLARE_EVENT_TABLE()
 };

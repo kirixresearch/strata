@@ -71,11 +71,7 @@ const wchar_t* xdfs_keywords2 = L"";
 //const wchar_t* xdfs_invalid_column_chars =
 //                           L"~!@#$%^&*()+{}|:\"<>?`-=[]\\;',./";
 const wchar_t* xdfs_invalid_column_chars =
-                             L"*|!@:\"<>()[]{}?\\:;'`-=,./\x00\x09\x0A\x0B\x0C\x0D\xFF\t\n";
-
-
-
-
+                             L"*|!@$&^*:\"<>()[]{}?\\:;'`-+=,./\x00\x09\x0A\x0B\x0C\x0D\xFF\t\n";
 
 
 // FsDatabase class implementation

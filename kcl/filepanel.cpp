@@ -343,7 +343,8 @@ BEGIN_EVENT_TABLE(FilePanel, wxPanel)
     EVT_TREE_SEL_CHANGED(ID_Location_TreeCtrl, FilePanel::onTreeSelectionChanged)
     EVT_LIST_ITEM_SELECTED(ID_File_Ctrl, FilePanel::onFileCtrlItemSelected)
     EVT_LIST_ITEM_ACTIVATED(ID_File_Ctrl, FilePanel::onFileCtrlItemActivated)
-    EVT_TEXT_ENTER(ID_Filename_TextCtrl, FilePanel::onPathCtrlEnterPressed)
+    EVT_TEXT_ENTER(ID_Path_TextCtrl, FilePanel::onPathCtrlEnterPressed)
+    EVT_TEXT_ENTER(ID_Filename_TextCtrl, FilePanel::onFilenameCtrlEnterPressed)
     EVT_CHILD_FOCUS(FilePanel::onChildFocus)
     EVT_IDLE(FilePanel::onIdle)
     EVT_BUTTON(ID_GoParent_Button, FilePanel::onGoParentClicked)
@@ -359,6 +360,7 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
 {
     m_filter_index = 0;
     m_filename_ctrl_focus_received = false;
+    m_path_ctrl_focus_received = false;
     m_folder_only = false;
 
     wxBusyCursor bc;
@@ -379,6 +381,26 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
     wxString pictures_dir = home_dir + "/Pictures";
     wxString videos_dir = home_dir + "/Videos";
 #endif
+
+    // put this control first so it gets initial focus
+    m_filename_ctrl = new wxTextCtrl(this,
+                                     ID_Filename_TextCtrl,
+                                     "",
+                                     wxDefaultPosition,
+                                     wxSize(200, -1),
+                                     wxTE_PROCESS_ENTER);
+
+
+    m_filter_ctrl = new wxChoice(this,
+        ID_Filter_Choice,
+        wxDefaultPosition,
+        wxSize(185, -1),
+        0,
+        NULL);
+
+    m_filter_ctrl->Append(_("All Files (*.*)"), (void*)0);
+    m_filter_ctrl->SetSelection(0);
+
 
     m_path_ctrl = new wxTextCtrl(this,
                                  ID_Path_TextCtrl, 
@@ -445,7 +467,6 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
         
         if (remote)
         {
-            
             unsigned char buffer[1024];
             DWORD buffer_size = 1024;
             UNIVERSAL_NAME_INFO* info = (UNIVERSAL_NAME_INFO*)buffer;
@@ -474,6 +495,7 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
 #else
 //    m_location_tree->AppendItem(computer_id, drive_names[i], drive_icons[i],  -1, new LocationTreeData(drives[i]));
 #endif
+
 /*
     wxArrayString drives, drive_names;
     wxArrayInt drive_icons;
@@ -483,28 +505,11 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
     {
         m_location_tree->AppendItem(computer_id, drive_names[i], drive_icons[i],  -1, new LocationTreeData(drives[i]));
     }
-    */
+*/
+
     m_location_tree->ExpandAll();
 
     m_file_ctrl = new FileCtrl(this, ID_File_Ctrl, wxDefaultPosition, wxSize(150,150), wxLC_REPORT | wxBORDER_NONE);
-
-
-    m_filename_ctrl = new wxTextCtrl(this,
-                                 ID_Filename_TextCtrl, 
-                                 "",
-                                 wxDefaultPosition,
-                                 wxSize(200,-1),
-                                 wxTE_PROCESS_ENTER);
-
-    m_filter_ctrl = new wxChoice(this,
-                                 ID_Filter_Choice,
-                                 wxDefaultPosition,
-                                 wxSize(185,-1),
-                                 0,
-                                 NULL);
-    
-    m_filter_ctrl->Append(_("All Files (*.*)"), (void*)0);  
-    m_filter_ctrl->SetSelection(0);   
 
 
     // default to documents dir
@@ -787,8 +792,18 @@ void FilePanel::onFileCtrlItemSelected(wxListEvent& evt)
     m_filename_ctrl->SetValue(path_value);
 }
 
-
 void FilePanel::onPathCtrlEnterPressed(wxCommandEvent& evt)
+{
+    wxString val = m_path_ctrl->GetValue();
+
+    wxDir dir(val);
+    if (dir.IsOpened())
+    {
+        m_file_ctrl->goToDir(val);
+    }
+}
+
+void FilePanel::onFilenameCtrlEnterPressed(wxCommandEvent& evt)
 {
     wxString val = m_filename_ctrl->GetValue();
  
@@ -803,7 +818,6 @@ void FilePanel::onPathCtrlEnterPressed(wxCommandEvent& evt)
             m_file_ctrl->goToDir(val);
         }
     }
-
 }
 
 void FilePanel::onFilterChoice(wxCommandEvent& evt)
@@ -823,6 +837,11 @@ void FilePanel::onChildFocus(wxChildFocusEvent& evt)
          m_filename_ctrl_focus_received = true;
     }
 
+    if (evt.GetWindow() == m_path_ctrl)
+    {
+        m_path_ctrl_focus_received = true;
+    }
+
     evt.Skip();
 }
 
@@ -832,6 +851,12 @@ void FilePanel::onIdle(wxIdleEvent& evt)
     {
         m_filename_ctrl->SelectAll();
         m_filename_ctrl_focus_received = false;
+    }
+
+    if (m_path_ctrl_focus_received)
+    {
+        m_path_ctrl->SelectAll();
+        m_path_ctrl_focus_received = false;
     }
 }
 

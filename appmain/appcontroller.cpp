@@ -89,7 +89,7 @@ enum
     // toolbars are added that are displayed be default, or default sizes
     // have been changed.  Incrementing this number will cause everybody's
     // UI to be reset to the default layout.
-    ClearPerspectiveCounter = 24
+    ClearPerspectiveCounter = 25
 };
 
 
