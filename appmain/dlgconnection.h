@@ -40,6 +40,7 @@ public:
     }
 
     std::wstring getConnectionString();
+    bool fromConnectionString(const std::wstring& conn_str);
 
 public:
 

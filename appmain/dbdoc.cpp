@@ -28,6 +28,7 @@
 #include "dbdoc.h"
 #include "structuredoc.h"
 #include "dlglinkprops.h"
+#include "dlgconnection.h"
 #include "bookmarkfs.h"
 
 #include <wx/generic/dirctrlg.h>
@@ -1503,10 +1504,7 @@ void DbDoc::onItemProperties(wxCommandEvent& evt)
             xd::IFileInfoPtr file_info = db->getFileInfo(path);
             
             if (file_info.isOk() && file_info->isMount())
-            {
-                // TODO: mount properties should be displayed here using DlgConnection
-              
-            /*
+            {              
                 // get connection string
                 std::wstring cstr, rpath;
                 if (!db->getMountPoint(path, cstr, rpath))
@@ -1516,6 +1514,12 @@ void DbDoc::onItemProperties(wxCommandEvent& evt)
                 
                 m_edit_item = folder;
                 
+                DlgConnection* dlg = new DlgConnection(g_app->getMainWindow(), wxID_ANY, _("Connect To Database"), DlgConnection::optionFolder);
+                dlg->getConnectionInfo().fromConnectionString(cstr);
+                //dlg->sigFinished.connect(&onConnectExternalDatabaseWizardFinished);
+                dlg->Show();
+
+                /*
                 ConnectionWizard* wizard = new ConnectionWizard;
                 wizard->setTitle(_("Connection Properties"));
                 wizard->setMode(ConnectionWizard::ModeProperties);
@@ -1527,7 +1531,9 @@ void DbDoc::onItemProperties(wxCommandEvent& evt)
                 site->setMinSize(540,480);
                 site->setName(wxT("ConnectionPropertiesPanel"));
                 return;
-            */
+                */
+
+                return;
             }
         }
     }

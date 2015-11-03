@@ -120,6 +120,44 @@ std::wstring Connection::getConnectionString()
 }
 
 
+bool Connection::fromConnectionString(const std::wstring& conn_str)
+{
+    xd::ConnectionString cstr;
+    cstr.parse(conn_str);
+
+    std::wstring provider = cstr.getLowerValue(L"xdprovider");
+    std::wstring dbtype = cstr.getLowerValue(L"xddbtype");
+
+         if (provider == L"xdnative")   type = xd::dbtypeXdnative;
+    else if (provider == L"xdkpg")      type = xd::dbtypeKpg;
+    else if (provider == L"xdodbc") {
+             if (dbtype == L"access")   type = xd::dbtypeAccess;
+        else if (dbtype == L"mssql")    type = xd::dbtypeSqlServer; 
+        else if (dbtype == L"dsn")      type = xd::dbtypeOdbc; 
+        else if (dbtype == L"db2")      type = xd::dbtypeDb2; 
+        else if (dbtype == L"excel")    type = xd::dbtypeExcel; }
+    else if (provider == L"xdmysql")    type = xd::dbtypeMySql;
+    else if (provider == L"xdpgsql")    type = xd::dbtypePostgres;
+    else if (provider == L"xdoracle")   type = xd::dbtypeOracle;
+    else if (provider == L"xdclient")   type = xd::dbtypeClient;
+    else if (provider == L"xdfs")       type = xd::dbtypeFilesystem;
+    else type = xd::dbtypeFilesystem;
+   
+
+    server = cstr.getValue(L"host");
+    port = kl::wtoi(cstr.getValue(L"port"));
+    username = cstr.getValue(L"user id");
+    password = cstr.getValue(L"password");
+    database = cstr.getValue(L"database");
+
+    if (type == xd::dbtypeKpg || type == xd::dbtypeAccess || type == xd::dbtypeSqlite || type == xd::dbtypeExcel || type == xd::dbtypeFilesystem)
+    {
+        database = L"";
+        path = cstr.getValue(L"database");
+    }
+
+    return true;
+}
 
 
 
