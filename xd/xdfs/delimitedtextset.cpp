@@ -985,7 +985,7 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
                 break;
         }
 
-        if (job && rows_read % 1000 == 0)
+        if (job && (rows_read % 1000) == 0)
         {
             ijob->setCurrentCount(rows_read);
 
