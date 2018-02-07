@@ -371,6 +371,7 @@ void HttpRequest::setMethod(kscript::ExprEnv* env, kscript::Value* retval)
                 m == HttpRequest::methodPost ||
                 m == HttpRequest::methodHead)
             {
+                m_method = m;
                 retval->setBoolean(true);
                 return;
             }
