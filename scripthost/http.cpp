@@ -840,7 +840,7 @@ void HttpRequest::setPostFile(kscript::ExprEnv* env, kscript::Value* retval)
 // (METHOD) HttpRequest.setPostData
 // Description: Allows the post data payload to be set directly
 //
-// Syntax: function HttpRequest.setPostFile(post_string : String) : Boolean
+// Syntax: function HttpRequest.setPostData(post_string : String) : Boolean
 //
 // Remarks: Calling setPostData() allows the post data payload to be
 //     set directly, in contrast with setPostValue(), which automatically
@@ -1381,8 +1381,10 @@ void HttpRequest::doSend()
     }
      else if (m_method == methodPut)
     {
-        // PUT not yet implemented
-        return;
+        // set the PUT option
+        curl_result = curl_easy_setopt(m_curl, CURLOPT_PUT, 1);
+        if (curl_result != CURLE_OK)
+            return;
     }
      else
     {
