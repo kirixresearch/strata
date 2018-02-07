@@ -798,7 +798,7 @@ void HttpRequest::setPostValue(kscript::ExprEnv* env, kscript::Value* retval)
 // Remarks: Sets a form |field| to a specified filename.
 //
 // Param(field): The form |field| to set.
-// Param(filename): The |filename| to which to set the form |field|.
+// Param(filename): The |filename| to set the form |field| to.
 // Returns: Returns true if the form |field| was set to the specified
 //     |filename|, and false otherwise.
 
@@ -877,6 +877,38 @@ void HttpRequest::resetPostParameters(kscript::ExprEnv* env, kscript::Value* ret
 {
     clearFormFields();
 }
+
+
+
+// (METHOD) HttpRequest.setPutFile
+// Description: Specifies a file to upload with the PUT method
+//
+// Syntax: function HttpRequest.setPutFile(filename : String) : Boolean
+//
+// Remarks: Specifies a file |filename| to upload with the PUT method
+//
+// Param(filename): The |filename| to upload
+// Returns: Returns true upon success, false otherwise
+
+void HttpRequest::setPutFile(kscript::ExprEnv* env, kscript::Value* retval)
+{
+    std::wstring fname;
+
+    if (env->getParamCount() >= 1)
+        fname = env->getParam(0)->getString();
+
+    if (!xf_get_file_exist(kl::towstring(fname)))
+    {
+        // file doesn't exist, return error
+        retval->setBoolean(false);
+        return;
+    }
+
+    m_put_file = fname;
+    retval->setBoolean(true);
+}
+
+
 
 // (METHOD) HttpRequest.setReferrer
 // Description: Sets the referrer to use when issuing the HTTP request.
@@ -1305,6 +1337,7 @@ void HttpRequest::put(kscript::ExprEnv* env, kscript::Value* retval)
 void HttpRequest::doSend()
 {
     CURLcode curl_result;
+    FILE* f = NULL;
     
     // free any previous request
     freeResponsePieces();
@@ -1385,6 +1418,19 @@ void HttpRequest::doSend()
         curl_result = curl_easy_setopt(m_curl, CURLOPT_PUT, 1);
         if (curl_result != CURLE_OK)
             return;
+
+        if (m_put_file.length() > 0)
+        {
+            curl_easy_setopt(m_curl, CURLOPT_UPLOAD, 1L);
+
+#ifdef WIN32
+            f = _wfopen(m_put_file.c_str(), L"rb");
+#else
+            std::string asc_filename = kl::tostring(m_put_file);
+            f = fopen(asc_filename.c_str(), "rb");
+#endif
+            curl_easy_setopt(m_curl, CURLOPT_READDATA, f);
+        }
     }
      else
     {
@@ -1403,6 +1449,11 @@ void HttpRequest::doSend()
 
     // reset post parameters, if any
     resetPostParameters(NULL,NULL);
+
+    if (f)
+    {
+        fclose(f);
+    }
 }
 
 void HttpRequest::doGet(kscript::ExprEnv* env, kscript::Value* retval)

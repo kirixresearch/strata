@@ -67,6 +67,8 @@ class HttpRequest : public ScriptHostBase
         KSCRIPT_METHOD("setPostData", HttpRequest::setPostData)
         KSCRIPT_METHOD("resetPostParameters", HttpRequest::resetPostParameters)
         
+        KSCRIPT_METHOD("setPutFile", HttpRequest::setPutFile)
+
         KSCRIPT_METHOD("setReferer", HttpRequest::setReferrer) // common misspelling that's in the HTTP spec
         KSCRIPT_METHOD("setReferrer", HttpRequest::setReferrer)
         KSCRIPT_METHOD("setTimeout", HttpRequest::setTimeout)
@@ -151,6 +153,8 @@ public:
     void setPostData(kscript::ExprEnv* env, kscript::Value* retval);
     void resetPostParameters(kscript::ExprEnv* env, kscript::Value* retval);
 
+    void setPutFile(kscript::ExprEnv* env, kscript::Value* retval);
+
     void setReferrer(kscript::ExprEnv* env, kscript::Value* retval);
     void setTimeout(kscript::ExprEnv* env, kscript::Value* retval);
     void setUserAgent(kscript::ExprEnv* env, kscript::Value* retval);
@@ -226,7 +230,8 @@ private:
     
     curl_httppost* m_formfields;      // only used by multipart post
     curl_httppost* m_formfieldslast;  // only used by multipart post
-    std::string m_post_string;               // only used by regular post
+    std::string m_post_string;        // only used by regular post
+    std::wstring m_put_file;          // only used by put
     bool m_post_multipart;
     bool m_auto_encode;
     bool m_async;
