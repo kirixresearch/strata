@@ -36,8 +36,9 @@ void apphookPostOpenProject()
 {
 }
 
-void apphookOpenWeb(const wxString& location, bool* handled)
+bool apphookOpenWeb(const wxString& location, bool* handled)
 {
+    return true;
 }
 
 bool apphookOpenTemplate(const wxString& location,
