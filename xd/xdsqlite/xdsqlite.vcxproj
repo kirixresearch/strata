@@ -125,6 +125,7 @@
       </DataExecutionPrevention>
       <ImportLibrary>.\DebugUnicode/xdsqlite.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
