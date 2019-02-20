@@ -903,18 +903,18 @@ jobs::IJobPtr ImportTemplate::createJob()
         {
             kl::JsonNode object = objects.appendElement();
 
-            object["source_connection"] = source_connection;
-            object["destination_connection"] = destination_connection;
+            object["input_connection"] = source_connection;
+            object["output_connection"] = destination_connection;
 
-            object["source_path"] = it->input_tablename;
-            object["destination_path"] = it->output_tablename;
+            object["input"] = it->input_tablename;
+            object["output"] = it->output_tablename;
 
             object["overwrite"].setBoolean(true);
 
             if (m_ii.type == dbtypeDelimitedText)
             {
-                object["source_format"].setObject();
-                kl::JsonNode format = object["source_format"];
+                object["input_format"].setObject();
+                kl::JsonNode format = object["input_format"];
 
                 format["delimiter"] = m_ii.delimiters;
                 format["text_qualifier"] = m_ii.text_qualifier;
