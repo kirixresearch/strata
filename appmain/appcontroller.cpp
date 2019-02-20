@@ -17,13 +17,15 @@
 #include "scriptapp.h"
 #include "dlgprojectmgr.h"
 #include "dlgdatabasefile.h"
-#include "dlgconnection.h"
 #include "extensionmgr.h"
 #include "extensionpkg.h"
 #include "moduleremoveduprec.h"
 #include "importtemplate.h"
 #include "exporttemplate.h"
 #include "reportdoc.h"
+#include "importwizard.h"
+#include "exportwizard.h"
+#include "connectionwizard.h"
 #include "paneloptions.h"
 #include "panelmerge.h"
 #include "panelsplit.h"
@@ -158,8 +160,9 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
     EVT_MENU(ID_App_ToggleProtect, AppController::onToggleLock)
     EVT_MENU(ID_Project_Import, AppController::onImportData)
     EVT_MENU(ID_Project_Export, AppController::onExportData)
-    EVT_MENU(ID_Project_ConnectExternalTables, AppController::onConnectExternalTables)
-    EVT_MENU(ID_Project_ConnectExternalDatabase, AppController::onConnectExternalDatabase)
+    EVT_MENU(ID_Project_ConnectExternal, AppController::onConnectExternal)
+    //EVT_MENU(ID_Project_ConnectExternalTables, AppController::onConnectExternalTables)
+    //EVT_MENU(ID_Project_ConnectExternalDatabase, AppController::onConnectExternalDatabase)
     EVT_MENU(ID_App_JobScheduler, AppController::onJobScheduler)
     EVT_MENU(ID_App_JobManager, AppController::onJobManager)
     EVT_MENU(ID_App_ExtensionManager, AppController::onExtensionManager)
@@ -812,8 +815,9 @@ bool AppController::init()
     menuFile->AppendSeparator();
     menuFile->Append(ID_Project_Import, _("&Import..."));
     menuFile->Append(ID_Project_Export, _("&Export..."));
-    menuFile->Append(ID_Project_ConnectExternalTables, _("Link to External Tables..."));
-    menuFile->Append(ID_Project_ConnectExternalDatabase, _("Create Co&nnection to Database..."));
+    menuFile->Append(ID_Project_OpenDatabase, _("Create Co&nnection..."));
+    //menuFile->Append(ID_Project_ConnectExternalTables, _("Link to External Tables..."));
+    //menuFile->Append(ID_Project_ConnectExternalDatabase, _("Create Co&nnection to Database..."));
     menuFile->AppendSeparator();
     menuFile->Append(ID_App_OpenProject, _("P&rojects..."));
     menuFile->AppendSeparator();
@@ -4117,6 +4121,13 @@ void AppController::onCheckForUpdates(wxCommandEvent& evt)
 }
 
 
+void AppController::onConnectExternal(wxCommandEvent& evt)
+{
+    showCreateExternalConnectionWizard();
+}
+
+
+/*
 void AppController::onConnectExternalDatabase(wxCommandEvent& evt)
 {
     showConnectExternalDatabaseWizard();
@@ -4127,6 +4138,7 @@ void AppController::onConnectExternalTables(wxCommandEvent& evt)
 {
     showConnectExternalTablesWizard();
 }
+*/
 
 
 void AppController::onJobScheduler(wxCommandEvent& evt)
@@ -4887,47 +4899,49 @@ static void makeSafeConnectionName(xd::IDatabasePtr db, wxString& name)
     }
 }
 
-static void onImportWizardFinished(DlgConnection* dlg)
+static void onImportWizardFinished(ImportWizard* dlg)
 {
-    // save import wizard's path location
-    IAppPreferencesPtr prefs = g_app->getAppPreferences();
-    prefs->setString("import_wizard.default_location", dlg->getFilePanelDirectory());
-
-    Connection& ci = dlg->getConnectionInfo();
-    ImportTemplate templ;
-    ImportInfo& ii = templ.m_ii;
-
-    ii.type = ci.type;
-    ii.server = ci.server;
-    ii.port = ci.port;
-    ii.database = ci.database;
-    ii.username = ci.username;
-    ii.password = ci.password;
-
-    ii.path = ci.path;
-    ii.base_path = ci.base_path;
-
-    ii.binary_copy = ci.binary_copy;
-
-    ii.delimiters = ci.delimiters;
-    ii.text_qualifier = ci.text_qualifier;
-    ii.date_format_str = ci.date_format_str;
-    ii.first_row_header = ci.first_row_header;
-
-    std::vector<ConnectionTable>::iterator it;
-    for (it = ci.tables.begin(); it != ci.tables.end(); ++it)
-    {
-        ImportTableSelection t;
-        t.append = it->append;
-        t.selected = true;
-        t.input_tablename = it->input_tablename;
-        t.output_tablename = it->output_tablename;
-        ii.tables.push_back(t);
-    }
-
-    templ.execute();
+    dlg->getTemplate().execute();
 }
 
+
+static void onCreateExternalConnectionWizardFinished(ConnectionWizard* dlg)
+{
+    wxString conn_str = dlg->getConnectionString();
+    ConnectionInfo info = dlg->getConnectionInfo();
+    wxString conn_name;
+    switch (info.type)
+    {
+    case dbtypeSqlServer:
+    case dbtypeMySql:
+        conn_name = wxString::Format(_("%s on %s"),
+            info.database.c_str(),
+            info.server.c_str());
+        break;
+
+    case dbtypeOracle:
+    case dbtypeDb2:
+    case dbtypeOdbc:
+        conn_name = wxString::Format(_("%s on %s"),
+            info.database.c_str(),
+            dlg->getConnectionInfo().server.c_str());
+        break;
+
+    case dbtypeFilesystem:
+        conn_name = dlg->getConnectionInfo().path;
+        if (conn_name.Last() == '/' || conn_name.Last() == '\\')
+            conn_name.RemoveLast();
+        break;
+
+    case dbtypeClient:
+        conn_name = dlg->getConnectionInfo().server;
+        break;
+    }
+
+    makeSafeConnectionName(g_app->getDatabase(), conn_name);
+
+    g_app->getAppController()->createMountPoint(conn_str, conn_name);
+}
 
 bool AppController::openExcel(const wxString& location, int* site_id)
 {
@@ -5038,10 +5052,6 @@ bool AppController::openExcel(const wxString& location, int* site_id)
 
 bool AppController::openAccess(const wxString& location)
 {
-    // TODO: reimplement using DlgConnection
-    return false;
-
-/*
     // convert the path of the excel file
     wxString fn;
     if (location.Left(5).CmpNoCase(wxT("file:")) == 0)
@@ -5087,15 +5097,10 @@ bool AppController::openAccess(const wxString& location)
                                              -1, -1, 540, 480);
     site->setMinSize(540, 480);
     return true;
-*/
 }
 
 bool AppController::openPackage(const wxString& location)
 {
-    // TODO: reimplement using DlgConnection
-    return false;
-
-/*
     // convert the path of the excel file
     wxString fn;
     if (location.Left(5).CmpNoCase(wxT("file:")) == 0)
@@ -5140,7 +5145,7 @@ bool AppController::openPackage(const wxString& location)
                                              -1, -1, 540, 480);
     site->setMinSize(540, 480);
     return true;
-*/
+
 }
 
 bool AppController::setActiveChildByLocation(const wxString& location, int* site_id)
@@ -6346,12 +6351,35 @@ void AppController::createMountPoint(const wxString& conn_str,
 }
 
 
-static void onExportWizardFinished(void* dlg)
+static void onExportWizardFinished(ExportWizard* dlg)
 {
+    dlg->getTemplate().execute();
 }
 
 
 
+void AppController::showCreateExternalConnectionWizard()
+{
+    IDocumentSitePtr site;
+    site = g_app->getMainFrame()->lookupSite(wxT("CreateConnectionWizard"));
+    if (site.isNull())
+    {
+        ConnectionWizard* wizard = new ConnectionWizard;
+        wizard->sigConnectionWizardFinished.connect(&onCreateExternalConnectionWizardFinished);
+
+        site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
+            -1, -1, 540, 480);
+        site->setMinSize(540, 480);
+        site->setName(wxT("CreateConnectionWizard"));
+    }
+    else
+    {
+        if (!site->getVisible())
+            site->setVisible(true);
+    }
+}
+
+/*
 static void onConnectExternalDatabaseWizardFinished(DlgConnection* dlg)
 {
     Connection& info = dlg->getConnectionInfo();
@@ -6391,18 +6419,20 @@ static void onConnectExternalDatabaseWizardFinished(DlgConnection* dlg)
     g_app->getAppController()->createMountPoint(conn_str, conn_name);
 
 }
+*/
 
 
+/*
 void AppController::showConnectExternalDatabaseWizard()
 {
     DlgConnection* dlg = new DlgConnection(g_app->getMainWindow(), wxID_ANY, _("Connect To Database"), DlgConnection::optionFolder);
     dlg->sigFinished.connect(&onConnectExternalDatabaseWizardFinished);
     dlg->Show();
 }
+*/
 
 
-
-
+/*
 static void onConnectExternalTablesWizardFinished(DlgConnection* dlg)
 {
     xd::IDatabasePtr db = g_app->getDatabase();
@@ -6424,18 +6454,20 @@ static void onConnectExternalTablesWizardFinished(DlgConnection* dlg)
     
     g_app->getAppController()->refreshDbDoc();
 }
+*/
 
-
+/*
 void AppController::showConnectExternalTablesWizard()
 {
     DlgConnection* dlg = new DlgConnection(g_app->getMainWindow(), wxID_ANY, _("Link to External Tables"));
     dlg->sigFinished.connect(&onConnectExternalTablesWizardFinished);
     dlg->Show();
 }
-
+*/
 
 void AppController::showImportWizard(const ImportInfo& info, const wxString& location)
 {
+/*
     wxStandardPaths& paths = wxStandardPaths::Get();
     wxString documents_dir = paths.GetDocumentsDir();
 
@@ -6448,7 +6480,8 @@ void AppController::showImportWizard(const ImportInfo& info, const wxString& loc
         dlg->setFilePanelDirectory(default_directory);
     dlg->sigFinished.connect(&onImportWizardFinished);
     dlg->Show();
-/*
+*/
+
     AppBusyCursor bc;
     
     IDocumentSitePtr site;
@@ -6476,14 +6509,12 @@ void AppController::showImportWizard(const ImportInfo& info, const wxString& loc
         if (!site->getVisible())
             site->setVisible(true);
     }
-*/
 }
 
 
 void AppController::showExportWizard(const ExportInfo& info,
                                      const wxString& location)
 {
-/*
     IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("ExportWizard"));
     if (site.isNull())
@@ -6507,7 +6538,6 @@ void AppController::showExportWizard(const ExportInfo& info,
         if (!site->getVisible())
             site->setVisible(true);
     }
-*/
 }
 
 void AppController::showLicenseManager()

@@ -419,7 +419,7 @@ std::wstring ConnectionWizard::getConnectionString()
 
 void ConnectionWizard::setConnectionString(const std::wstring& str)
 {
-    xd::ConnectionStringParser cstr;
+    xd::ConnectionString cstr;
     cstr.parse(str);
     
     bool xdfs = false;

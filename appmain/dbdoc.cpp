@@ -17,6 +17,8 @@
 #include "editordoc.h"
 #include "querydoc.h"
 #include "reportdoc.h"
+#include "importwizard.h"
+#include "exportwizard.h"
 #include "paneldatabaseinfo.h"
 #include "panelfileinfo.h"
 #include "panelrelationship.h"
@@ -27,6 +29,7 @@
 #include "importtemplate.h"
 #include "dbdoc.h"
 #include "structuredoc.h"
+#include "connectionwizard.h"
 #include "dlglinkprops.h"
 #include "dlgconnection.h"
 #include "bookmarkfs.h"
@@ -578,7 +581,7 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
         // if there is an extension filter, make sure the
         // files shown are in that filter
 
-        if (exts.size() > 0 && m_conn->getType() == xd::dbtypeFilesystem)
+        if (exts.size() > 0 && m_conn->getType() == dbtypeFilesystem)
         {
             bool ext_found = false;
             wxString ext = item_name.AfterLast('.');
@@ -888,7 +891,7 @@ enum
 
 
 BEGIN_EVENT_TABLE(DbDoc, wxEvtHandler)
-    EVT_MENU(ID_Project_ConnectExternalDatabase, DbDoc::onConnectExternalDatabase)
+    EVT_MENU(ID_Project_ConnectExternal, DbDoc::onCreateExternalConnection)
     EVT_MENU(ID_Project_NewTable, DbDoc::onCreateTable)
     EVT_MENU(ID_Project_Import, DbDoc::onImportData)
     EVT_MENU(ID_Project_Export, DbDoc::onExportData)
@@ -1385,7 +1388,7 @@ void DbDoc::onKeyDown(const wxKeyEvent& evt, bool* handled)
     }
 }
 
-void DbDoc::onConnectExternalDatabase(wxCommandEvent& evt)
+void DbDoc::onCreateExternalConnection(wxCommandEvent& evt)
 {
     IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
@@ -1398,7 +1401,7 @@ void DbDoc::onConnectExternalDatabase(wxCommandEvent& evt)
     if (!folder)
         return;
 
-    g_app->getAppController()->showConnectExternalDatabaseWizard();
+    g_app->getAppController()->showCreateExternalConnectionWizard();
 }
 
 void DbDoc::onCreateTable(wxCommandEvent& evt)
@@ -1438,8 +1441,6 @@ void DbDoc::onImportData(wxCommandEvent& evt)
 
 void DbDoc::onExportData(wxCommandEvent& evt)
 {
-    // TODO: reimplement
-/*
     IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
 
@@ -1460,7 +1461,6 @@ void DbDoc::onExportData(wxCommandEvent& evt)
     }
 
     g_app->getAppController()->showExportWizard(info);
-*/
 }
 
 void DbDoc::onOpenProject(wxCommandEvent& evt)
@@ -1504,35 +1504,33 @@ void DbDoc::onItemProperties(wxCommandEvent& evt)
             xd::IFileInfoPtr file_info = db->getFileInfo(path);
             
             if (file_info.isOk() && file_info->isMount())
-            {              
+            {
                 // get connection string
                 std::wstring cstr, rpath;
                 if (!db->getMountPoint(path, cstr, rpath))
                     return;
 
                 IDocumentSitePtr site;
-                
+
                 m_edit_item = folder;
-                
+
+                /*
                 DlgConnection* dlg = new DlgConnection(g_app->getMainWindow(), wxID_ANY, _("Connect To Database"), DlgConnection::optionFolder);
                 dlg->getConnectionInfo().fromConnectionString(cstr);
                 //dlg->sigFinished.connect(&onConnectExternalDatabaseWizardFinished);
                 dlg->Show();
+                */
 
-                /*
                 ConnectionWizard* wizard = new ConnectionWizard;
                 wizard->setTitle(_("Connection Properties"));
                 wizard->setMode(ConnectionWizard::ModeProperties);
                 wizard->setConnectionString(cstr);
                 wizard->sigConnectionWizardFinished.connect(this, &DbDoc::onSetConnectionPropertiesFinished);
-                
-                site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
-                                                         -1, -1, 540, 480);
-                site->setMinSize(540,480);
-                site->setName(wxT("ConnectionPropertiesPanel"));
-                return;
-                */
 
+                site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
+                    -1, -1, 540, 480);
+                site->setMinSize(540, 480);
+                site->setName(wxT("ConnectionPropertiesPanel"));
                 return;
             }
         }
@@ -3108,7 +3106,8 @@ void DbDoc::onFsItemRightClicked(IFsItemPtr item)
             menuPopup.AppendSeparator();
             menuPopup.Append(ID_Project_Import, _("&Import..."));
             menuPopup.Append(ID_Project_Export, _("&Export..."));
-            menuPopup.Append(ID_Project_ConnectExternalDatabase, _("Create Co&nnection to Database..."));
+            menuPopup.Append(ID_Project_ConnectExternal, _("Create Co&nnection..."));
+            //menuPopup.Append(ID_Project_ConnectExternalDatabase, _("Create Co&nnection to Database..."));
             menuPopup.AppendSeparator();            
 
             menuPopup.Append(ID_App_OpenProject, _("P&rojects..."));
@@ -3153,7 +3152,8 @@ void DbDoc::onFsItemRightClicked(IFsItemPtr item)
                 menuPopup.Append(ID_RefreshItem, _("Refre&sh"));
                 menuPopup.AppendSeparator();
                 menuPopup.AppendSubMenu(submenuNew, _("&New"));
-                menuPopup.Append(ID_Project_ConnectExternalDatabase, _("Cre&ate Connection to Database..."));
+                //menuPopup.Append(ID_Project_ConnectExternalDatabase, _("Cre&ate Connection to Database..."));
+                menuPopup.Append(ID_Project_ConnectExternal, _("Cre&ate Connection..."));
                 menuPopup.AppendSeparator();
                 menuPopup.Append(ID_Paste, _("&Paste"));
                 menuPopup.AppendSeparator();
@@ -3547,20 +3547,16 @@ void DbDoc::onCopyJobFinished(jobs::IJobPtr job)
 
 void DbDoc::onSetConnectionPropertiesFinished(ConnectionWizard* dlg)
 {
-    // TODO: examine and reimplement
-
-/*
     // get the connection string
     wxString conn_str = dlg->getConnectionString();
     xd::IDatabasePtr db = getItemDatabase(m_edit_item);
     wxASSERT_MSG(db.p, wxT("Missing db"));
-    
+
     // set the mount point
     wxString path = getFsItemPath(m_edit_item);
     g_app->getDatabase()->setMountPoint(towstr(path), towstr(conn_str), L"/");
-    
+
     // refresh the project
     refresh();
-*/
 }
 

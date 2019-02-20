@@ -1,19 +1,20 @@
 /*!
- *
- * Copyright (c) 2005-2013, Kirix Research, LLC.  All rights reserved.
- *
- * Project:  Application Client
- * Author:   David Z. Williams
- * Created:  2005-04-27
- *
- */
+*
+* Copyright (c) 2005-2013, Kirix Research, LLC.  All rights reserved.
+*
+* Project:  Application Client
+* Author:   David Z. Williams
+* Created:  2005-04-27
+*
+*/
 
 
 #include "appmain.h"
+#include "dlgdatabasefile.h"
+#include "importwizard.h"
 #include "appcontroller.h"
 #include "jsonconfig.h"
 #include "tabledoc.h"
-#include "importtemplate.h"
 #include <kl/crypt.h>
 
 
@@ -38,7 +39,7 @@ enum
 };
 
 
-const int COMBO_DEFAULT_IDX  = 0;
+const int COMBO_DEFAULT_IDX = 0;
 
 
 
@@ -53,42 +54,40 @@ static wxString serverTypeToString(int type)
 {
     switch (type)
     {
-        case xd::dbtypeSqlServer:       return "mssql";
-        case xd::dbtypeMySql:           return "mysql";
-        case xd::dbtypeOracle:          return "oracle";
-        case xd::dbtypePostgres:        return "postgres";
-        case xd::dbtypeOdbc:            return "odbc";
-        case xd::dbtypeDb2:             return "db2";
-        case xd::dbtypeKpg:             return "package";
-        case xd::dbtypeAccess:          return "msaccess";
-        case xd::dbtypeExcel:           return "msexcel";
-        case xd::dbtypeFilesystem:      return "files";
-        //case xd::dbtypeXbase:           return "xbase";
-        //case xd::dbtypeDelimitedText:   return "delimited_text";
-        //case xd::dbtypeFixedLengthText: return "fixed_length_text";
-        case xd::dbtypeSqlite:          return "sqlite";
+    case dbtypeSqlServer:       return wxT("mssql");
+    case dbtypeMySql:           return wxT("mysql");
+    case dbtypeOracle:          return wxT("oracle");
+    case dbtypePostgres:        return wxT("postgres");
+    case dbtypeOdbc:            return wxT("odbc");
+    case dbtypeDb2:             return wxT("db2");
+    case dbtypePackage:         return wxT("package");
+    case dbtypeAccess:          return wxT("msaccess");
+    case dbtypeExcel:           return wxT("msexcel");
+    case dbtypeXbase:           return wxT("xbase");
+    case dbtypeDelimitedText:   return wxT("delimited_text");
+    case dbtypeFixedLengthText: return wxT("fixed_length_text");
+    case dbtypeSqlite:          return wxT("sqlite");
     }
-    
+
     return wxT("");
 }
 
 static int stringToServerType(const wxString& str)
 {
-         if (str == "mssql")             return xd::dbtypeSqlServer;
-    else if (str == "mysql")             return xd::dbtypeMySql;
-    else if (str == "oracle")            return xd::dbtypeOracle;
-    else if (str == "postgres")          return xd::dbtypePostgres;
-    else if (str == "odbc")              return xd::dbtypeOdbc;
-    else if (str == "db2")               return xd::dbtypeDb2;
-    else if (str == "package")           return xd::dbtypeKpg;
-    else if (str == "msaccess")          return xd::dbtypeAccess;
-    else if (str == "msexcel")           return xd::dbtypeExcel;
-    else if (str == "xbase")             return xd::dbtypeFilesystem;
-    else if (str == "delimited_text")    return xd::dbtypeFilesystem;
-    else if (str == "fixed_length_text") return xd::dbtypeFilesystem;
-    else if (str == "files")             return xd::dbtypeFilesystem;
-    else if (str == "sqlite")            return xd::dbtypeSqlite;
-    else return xd::dbtypeUndefined;
+    if (str == wxT("mssql"))             return dbtypeSqlServer;
+    else if (str == wxT("mysql"))             return dbtypeMySql;
+    else if (str == wxT("oracle"))            return dbtypeOracle;
+    else if (str == wxT("postgres"))          return dbtypePostgres;
+    else if (str == wxT("odbc"))              return dbtypeOdbc;
+    else if (str == wxT("db2"))               return dbtypeDb2;
+    else if (str == wxT("package"))           return dbtypePackage;
+    else if (str == wxT("msaccess"))          return dbtypeAccess;
+    else if (str == wxT("msexcel"))           return dbtypeExcel;
+    else if (str == wxT("xbase"))             return dbtypeXbase;
+    else if (str == wxT("delimited_text"))    return dbtypeDelimitedText;
+    else if (str == wxT("fixed_length_text")) return dbtypeFixedLengthText;
+    else if (str == wxT("sqlite"))            return dbtypeSqlite;
+    else return dbtypeUndefined;
 }
 
 
@@ -116,7 +115,7 @@ bool ImportTemplate::load(const std::wstring& path)
 bool ImportTemplate::loadJson(const std::wstring& path)
 {
     m_ii.tables.clear();
-    
+
     kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), path);
     if (!root.isOk())
         return false;
@@ -142,13 +141,13 @@ bool ImportTemplate::loadJson(const std::wstring& path)
         m_ii.type = stringToServerType(root["database_type"].getString());
     else if (root.childExists(L"import_type"))
         m_ii.type = stringToServerType(root["import_type"].getString()); // deprecated
-            
+
 
     kl::JsonNode connection_string = root["connection_string"];
     if (connection_string.isOk())
     {
     }
-     else
+    else
     {
         kl::JsonNode connection_info = root["connection_info"];
         if (connection_info.isOk())
@@ -167,25 +166,25 @@ bool ImportTemplate::loadJson(const std::wstring& path)
                 wxString pw = connection_info["password"].getString();
                 if (kl::isEncryptedString(towstr(pw)))
                     m_ii.password = kl::decryptString(towstr(pw), PASSWORD_KEY);
-                     else
+                else
                     m_ii.password = pw;
             }
         }
     }
-    
-    
+
+
     kl::JsonNode path_node = root["path"];
     if (path_node.isOk())
         m_ii.path = path_node.getString();
-         else
+    else
         m_ii.path = wxT("");
-    
+
     kl::JsonNode target_path_node = root["target_path"];
     if (target_path_node.isOk())
         m_ii.base_path = target_path_node.getString();
-         else
+    else
         m_ii.base_path = wxT("");
-        
+
     kl::JsonNode delimited_text = root["delimited_text"];
     if (delimited_text.isOk())
     {
@@ -196,41 +195,28 @@ bool ImportTemplate::loadJson(const std::wstring& path)
         if (delimited_text.childExists("first_row_header"))
             m_ii.first_row_header = delimited_text["first_row_header"].getBoolean();
     }
-    
-
-    kl::JsonNode binary_copy = root["binary_copy"];
-    if (binary_copy.isOk())
-    {
-        m_ii.binary_copy = binary_copy.getBoolean();
-    }
-     else
-    {
-        m_ii.binary_copy = false;
-    }
 
 
-
-    
     kl::JsonNode objects = root["objects"];
-    
+
     if (objects.isUndefined())
         objects = root["imports"];  // backward compatibility -- can be removed later
-    
+
     if (objects.isOk())
     {
         size_t i, count = objects.getChildCount();
-        for (i =  0; i < count; ++i)
+        for (i = 0; i < count; ++i)
         {
             kl::JsonNode object = objects[i];
-            
+
             if (object["query"].isOk())
             {
                 // query-style entry
-                
+
                 kl::JsonNode query_node = object["query"];
                 kl::JsonNode output_node = object["output"];
                 kl::JsonNode append_node = object["append"];
-                
+
                 if (query_node.isOk() && output_node.isOk())
                 {
                     // table-style entry
@@ -245,12 +231,12 @@ bool ImportTemplate::loadJson(const std::wstring& path)
                     m_ii.tables.push_back(its);
                 }
             }
-             else
+            else
             {
                 kl::JsonNode input_node = object["input"];
                 kl::JsonNode output_node = object["output"];
                 kl::JsonNode append_node = object["append"];
-                
+
                 if (input_node.isOk() && output_node.isOk())
                 {
                     // table-style entry
@@ -410,7 +396,7 @@ bool ImportTemplate::loadJsonFromNode(const std::wstring& path)
         kl::JsonNode type_node = table_node["type"];
         if (type_node.isOk())
             ts.type = type_node.getInteger();
-             else
+        else
             ts.type = ImportTableSelection::typeTable;
 
         kl::JsonNode show_node = table_node["show"];
@@ -439,7 +425,7 @@ bool ImportTemplate::loadJsonFromNode(const std::wstring& path)
         ts.append = (append_node.getInteger() != 0 ? true : false);
 
         kl::JsonNode field_mapping_name_node = table_node["field_mapping_name"];
-        if (!field_mapping_name_node.isOk())    
+        if (!field_mapping_name_node.isOk())
             return false;
         ts.field_mapping_name = field_mapping_name_node.getString();
 
@@ -451,9 +437,9 @@ bool ImportTemplate::loadJsonFromNode(const std::wstring& path)
         kl::JsonNode fixed_length_row_width_node = table_node["fixed_length_row_width"];
         if (fixed_length_row_width_node.isOk())
             ts.row_width = fixed_length_row_width_node.getInteger();
-             else
+        else
             ts.row_width = 0;
-    
+
         // load fixed-length structure (if any)
         kl::JsonNode fixed_length_structure_node = table_node["fixed_length_structure"];
         if (fixed_length_structure_node.isOk())
@@ -697,22 +683,22 @@ bool usesConnectionPage(int type)
 {
     switch (type)
     {
-        case xd::dbtypeSqlServer:
-        case xd::dbtypeMySql:
-        case xd::dbtypeOracle:
-        case xd::dbtypePostgres:
-        case xd::dbtypeOdbc:
-        case xd::dbtypeDb2:
-            return true;
+    case dbtypeSqlServer:
+    case dbtypeMySql:
+    case dbtypeOracle:
+    case dbtypePostgres:
+    case dbtypeOdbc:
+    case dbtypeDb2:
+        return true;
     }
-    
+
     return false;
 }
 
 bool ImportTemplate::save(const std::wstring& path)
 {
     kl::JsonNode root;
-    
+
     kl::JsonNode metadata = root["metadata"];
     metadata["type"] = wxT("application/vnd.kx.import");
     metadata["version"] = 1;
@@ -743,14 +729,14 @@ bool ImportTemplate::save(const std::wstring& path)
         root["target_path"] = m_ii.base_path;
     }
 
-    if (m_ii.delimiters.length() > 0)
+    if (m_ii.type == dbtypeDelimitedText)
     {
         kl::JsonNode delimited_text = root["delimited_text"];
         delimited_text["delimiter"] = m_ii.delimiters;
         delimited_text["text_qualifier"] = m_ii.text_qualifier;
         delimited_text["first_row_header"].setBoolean(m_ii.first_row_header);
     }
-    
+
     root["objects"].setArray();
     kl::JsonNode objects = root["objects"];
 
@@ -758,8 +744,8 @@ bool ImportTemplate::save(const std::wstring& path)
     int table_counter = 0;
     std::vector<ImportTableSelection>::iterator table_it;
     for (table_it = m_ii.tables.begin();
-         table_it != m_ii.tables.end();
-         ++table_it)
+    table_it != m_ii.tables.end();
+        ++table_it)
     {
         // if the table was not selected for anything, don't write
         // it out to the save file
@@ -776,7 +762,7 @@ bool ImportTemplate::save(const std::wstring& path)
             if (table_it->append)
                 objects_node["append"].setBoolean(true);
         }
-         else if (table_it->type == ImportTableSelection::typeQuery)
+        else if (table_it->type == ImportTableSelection::typeQuery)
         {
             objects_node["query"] = table_it->query;
             objects_node["output"] = table_it->output_tablename;
@@ -784,7 +770,7 @@ bool ImportTemplate::save(const std::wstring& path)
                 objects_node["append"].setBoolean(true);
         }
     }
-    
+
 
 
     return JsonConfig::saveToDb(root, g_app->getDatabase(), path, L"application/vnd.kx.import");
@@ -799,7 +785,7 @@ static void readKpgMetadata(jobs::IJobPtr job)
         return;
 
     IConnectionPtr conn = createUnmanagedConnection();
-    conn->setType(xd::dbtypeKpg);
+    conn->setType(dbtypePackage);
     conn->setPath(job->getExtraValue(L"kpg"));
     conn->open();
 
@@ -814,7 +800,7 @@ static void readKpgMetadata(jobs::IJobPtr job)
     for (i = 0; i < params["objects"].getChildCount(); ++i)
     {
         kl::JsonNode object = params["objects"][i];
-        
+
         std::wstring source_path = object["source_path"];
         std::wstring destination_path = object["destination_path"];
 
@@ -826,7 +812,7 @@ static void readKpgMetadata(jobs::IJobPtr job)
         if (finfo.isNull())
             continue;
         std::wstring object_id = finfo->getObjectId();
-        
+
 
         // read resource from kpg
         source_path = L".resource/" + source_path;
@@ -873,7 +859,7 @@ jobs::IJobPtr ImportTemplate::createJob()
 
         if (it->output_tablename.substr(0, 1) == L"/")
             new_output_path += it->output_tablename.substr(1);
-             else
+        else
             new_output_path += it->output_tablename;
 
         it->output_tablename = new_output_path;
@@ -883,7 +869,7 @@ jobs::IJobPtr ImportTemplate::createJob()
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.load-job");
     job->getJobInfo()->setTitle(towstr(_("Importing Data")));
 
-    if (m_ii.type == xd::dbtypeKpg)
+    if (m_ii.type == dbtypePackage)
     {
         job->setExtraValue(L"kpg", m_ii.path);
     }
@@ -917,31 +903,22 @@ jobs::IJobPtr ImportTemplate::createJob()
         {
             kl::JsonNode object = objects.appendElement();
 
-            object["input_connection"] = source_connection;
-            object["output_connection"] = destination_connection;
+            object["source_connection"] = source_connection;
+            object["destination_connection"] = destination_connection;
 
-            object["input"] = it->input_tablename;
-            object["output"] = it->output_tablename;
+            object["source_path"] = it->input_tablename;
+            object["destination_path"] = it->output_tablename;
 
             object["overwrite"].setBoolean(true);
 
-            if (m_ii.binary_copy)
+            if (m_ii.type == dbtypeDelimitedText)
             {
-                object["input_format"].setObject();
-                kl::JsonNode input_format = object["input_format"];
-            
-                input_format["object_type"] = L"stream";
-            }
-             else if (m_ii.delimiters.length() > 0)
-            {
-                object["input_format"].setObject();
-                kl::JsonNode input_format = object["input_format"];
-            
-                input_format["object_type"] = L"table";
-                input_format["format"] = L"delimited_text";
-                input_format["delimiter"] = m_ii.delimiters;
-                input_format["text_qualifier"] = m_ii.text_qualifier;
-                input_format["header_row"].setBoolean(m_ii.first_row_header);
+                object["source_format"].setObject();
+                kl::JsonNode format = object["source_format"];
+
+                format["delimiter"] = m_ii.delimiters;
+                format["text_qualifier"] = m_ii.text_qualifier;
+                format["header_row"].setBoolean(m_ii.first_row_header);
             }
         }
     }

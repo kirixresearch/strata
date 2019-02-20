@@ -3234,6 +3234,27 @@ public:
     bool compress;
 };
 
+static int extensionToDbtype(const wxString& filename)
+{
+    wxString ext;
+    ext = filename.AfterLast(wxT('.'));
+    ext.MakeLower();
+    
+    // specify what type of import we're doing based on the file extension
+    if (ext.CmpNoCase(wxT("kpg")) == 0)
+        return dbtypePackage;
+     else if (ext.CmpNoCase(wxT("mdb")) == 0)
+        return dbtypeAccess;
+     else if (ext.CmpNoCase(wxT("accdb")) == 0)
+        return dbtypeAccess;
+     else if (ext.CmpNoCase(wxT("xls")) == 0)
+        return dbtypeExcel;
+     else if (ext.CmpNoCase(wxT("dbf")) == 0)
+        return dbtypeXbase;
+
+    return dbtypeDelimitedText;
+}
+
 
 static wxString appendPath(const wxString& str1, const wxString& str2)
 {
@@ -3306,16 +3327,16 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
         switch (binding_database_type)
         {
             // TODO: FIXME: there are missing types from this list, Xbase, etc.
-            case scripthost::DbDatabaseType::Xdnative:     database_type = xd::dbtypeXdnative;   break;
-            case scripthost::DbDatabaseType::Package:      database_type = xd::dbtypeKpg;        break;
-            case scripthost::DbDatabaseType::Oracle:       database_type = xd::dbtypeOracle;     break;
-            case scripthost::DbDatabaseType::Postgres:     database_type = xd::dbtypePostgres;   break;
-            case scripthost::DbDatabaseType::SqlServer:    database_type = xd::dbtypeSqlServer;  break;
-            case scripthost::DbDatabaseType::MySQL:        database_type = xd::dbtypeMySql;      break;
-            case scripthost::DbDatabaseType::Odbc:         database_type = xd::dbtypeOdbc;       break;
-            case scripthost::DbDatabaseType::Access:       database_type = xd::dbtypeAccess;     break;
-            case scripthost::DbDatabaseType::Excel:        database_type = xd::dbtypeExcel;      break;
-            case scripthost::DbDatabaseType::Filesystem:   database_type = xd::dbtypeFilesystem; break;
+            case scripthost::DbDatabaseType::Xdnative:     database_type = dbtypeXdnative;          break;
+            case scripthost::DbDatabaseType::Package:      database_type = dbtypePackage;           break;
+            case scripthost::DbDatabaseType::Oracle:       database_type = dbtypeOracle;            break;
+            case scripthost::DbDatabaseType::Postgres:     database_type = dbtypePostgres;          break;
+            case scripthost::DbDatabaseType::SqlServer:    database_type = dbtypeSqlServer;         break;
+            case scripthost::DbDatabaseType::MySQL:        database_type = dbtypeMySql;             break;
+            case scripthost::DbDatabaseType::Odbc:         database_type = dbtypeOdbc;              break;
+            case scripthost::DbDatabaseType::Access:       database_type = dbtypeAccess;            break;
+            case scripthost::DbDatabaseType::Excel:        database_type = dbtypeExcel;             break;
+            case scripthost::DbDatabaseType::Filesystem:   database_type = dbtypeFilesystem;        break;
             default:
                 // unknown database type
                 return;
@@ -3515,15 +3536,15 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
         switch (binding_database_type)
         {
             // TODO: FIXME: there are missing types from this list, Xbase, etc.
-            case scripthost::DbDatabaseType::Xdnative:     database_type = xd::dbtypeXdnative;     break;
-            case scripthost::DbDatabaseType::Package:      database_type = xd::dbtypeKpg;          break;
-            case scripthost::DbDatabaseType::Oracle:       database_type = xd::dbtypeOracle;       break;
-            case scripthost::DbDatabaseType::SqlServer:    database_type = xd::dbtypeSqlServer;    break;
-            case scripthost::DbDatabaseType::MySQL:        database_type = xd::dbtypeMySql;        break;
-            case scripthost::DbDatabaseType::Odbc:         database_type = xd::dbtypeOdbc;         break;
-            case scripthost::DbDatabaseType::Access:       database_type = xd::dbtypeAccess;       break;
-            case scripthost::DbDatabaseType::Excel:        database_type = xd::dbtypeExcel;        break;
-            case scripthost::DbDatabaseType::Filesystem:   database_type = xd::dbtypeFilesystem;   break;
+            case scripthost::DbDatabaseType::Xdnative:     database_type = dbtypeXdnative;     break;
+            case scripthost::DbDatabaseType::Package:      database_type = dbtypePackage;      break;
+            case scripthost::DbDatabaseType::Oracle:       database_type = dbtypeOracle;       break;
+            case scripthost::DbDatabaseType::SqlServer:    database_type = dbtypeSqlServer;    break;
+            case scripthost::DbDatabaseType::MySQL:        database_type = dbtypeMySql;        break;
+            case scripthost::DbDatabaseType::Odbc:         database_type = dbtypeOdbc;         break;
+            case scripthost::DbDatabaseType::Access:       database_type = dbtypeAccess;       break;
+            case scripthost::DbDatabaseType::Excel:        database_type = dbtypeExcel;        break;
+            case scripthost::DbDatabaseType::Filesystem:   database_type = dbtypeFilesystem;   break;
             default:
                 // unknown database type
                 return;

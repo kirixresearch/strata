@@ -239,7 +239,7 @@ private:
 
     // event handlers
 
-    void onConnectExternalDatabase(wxCommandEvent& evt);
+    void onCreateExternalConnection(wxCommandEvent& evt);
     void onCreateTable(wxCommandEvent& evt);
     void onImportData(wxCommandEvent& evt);
     void onExportData(wxCommandEvent& evt);
