@@ -116,7 +116,7 @@ bool MysqlIterator::init(const std::wstring& query)
         // limit blob/text fields to 4096 characters (for now) --
         // this seems to be sensible behavior because copies of
         // the table will not clog of the database space-wise
-        if (colinfo->type == FIELD_TYPE_BLOB && dai->width > 4096)
+        if (colinfo->type == FIELD_TYPE_BLOB && (dai->width <= 0 || dai->width > 4096))
             dai->width = 4096;
         
         m_fields.push_back(dai);
