@@ -13,7 +13,7 @@
 #define __KCANVAS_CANVASPDF_H
 
 
-#include "../supp/haru/include/hpdf.h" 
+#include "../supp/libharu/include/hpdf.h" 
 
 
 #define USE_WXPDF 0
