@@ -159,7 +159,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonu.lib;../../kl/lib/klu.lib;../../kscript/lib/kscriptu.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonu.lib;../xdcommonsql/lib/xdcommonsqlu.lib;../../kl/lib/klu.lib;../../kscript/lib/kscriptu.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\ReleaseUnicode/xdnative.pdb</ProgramDatabaseFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -247,7 +247,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonud.lib;../../kl/lib/klud.lib;../../kscript/lib/kscriptud.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonud.lib;../xdcommonsql/lib/xdcommonsqlud.lib;../../kl/lib/klud.lib;../../kscript/lib/kscriptud.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
