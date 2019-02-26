@@ -117,7 +117,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;../xdcommon/lib/xdcommonud.lib;../../kl/lib/klud.lib;../../kscript/lib/kscriptud.lib;../../supp/curl/builds/libcurl-debug-static-ssl-static-ipv6-sspi-spnego/lib/libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;../xdcommon/lib/xdcommonud.lib;../../kl/lib/klud.lib;../../kscript/lib/kscriptud.lib;../../supp/curl/builds/libcurl-debug-static-ipv6-sspi-spnego-winssl/lib/libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -162,7 +162,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;../xdcommon/lib/xdcommonud.lib;../../kl/lib/klud.lib;../../kscript/lib/kscriptud.lib;../../supp/curl/builds/libcurl-debug-static-ssl-static-ipv6-sspi-spnego/lib/libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;../xdcommon/lib/xdcommonud.lib;../../kl/lib/klud.lib;../../kscript/lib/kscriptud.lib;../../supp/curl/builds/libcurl-debug-static-ipv6-sspi-spnego-winssl/lib/libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -208,7 +208,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;../xdcommon/lib/xdcommonu.lib;../../kl/lib/klu.lib;../../kscript/lib/kscriptu.lib;../../supp/curl/builds/libcurl-release-static-ssl-static-ipv6-sspi-spnego/lib/libcurl_a.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;../xdcommon/lib/xdcommonu.lib;../../kl/lib/klu.lib;../../kscript/lib/kscriptu.lib;../../supp/curl/builds/libcurl-release-static-ipv6-sspi-spnego-winssl/lib/libcurl_a.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -253,7 +253,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;../xdcommon/lib/xdcommonu.lib;../../kl/lib/klu.lib;../../kscript/lib/kscriptu.lib;../../supp/curl/builds/libcurl-release-static-ssl-static-ipv6-sspi-spnego/lib/libcurl_a.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;../xdcommon/lib/xdcommonu.lib;../../kl/lib/klu.lib;../../kscript/lib/kscriptu.lib;../../supp/curl/builds/libcurl-release-static-ipv6-sspi-spnego-winssl/lib/libcurl_a.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
