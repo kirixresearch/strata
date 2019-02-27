@@ -84,7 +84,7 @@ erase %VC_OUTPUT_PATH%\xdsqlite.dll /f/q 2> nul
 REM -- build the source tree --
 
 echo Building...
-msbuild %BUILD_SLN% /t:Rebuild /p:Configuration=Release
+msbuild %BUILD_SLN% /t:Rebuild /p:Configuration=Release /p:Platform=Win32
 
 
 IF NOT EXIST %VC_OUTPUT_PATH%\appstrata.exe goto err
