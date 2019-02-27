@@ -70,13 +70,13 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\debugu\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\DebugUnicode\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\debugu\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\DebugUnicode\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\DebugUnicode\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\releaseu\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\ReleaseUnicode\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\releaseu\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\ReleaseUnicode\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\ReleaseUnicode\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
@@ -141,7 +141,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../kl/include;../supp/wxWidgets/include;../supp/wxWidgets/lib/vc_lib/mswud;../supp/wxWidgets/contrib/include;../supp/wxWidgets/src/zlib;../tango/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../kl/include;../supp/wxWidgets/include;../supp/wxWidgets/lib/vc_x64_lib/mswud;../supp/wxWidgets/contrib/include;../supp/wxWidgets/src/zlib;../tango/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;UNICODE;_LIB;_WINDOWS;__WINDOWS__;__WXMSW__;__WXDEBUG__;WXDEBUG=1;__WIN32__;WINVER=0x0400;STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -158,10 +158,10 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;rpcrt4.lib;wxbase28ud.lib;wxbase28ud_net.lib;wxmsw28ud_core.lib;wxmsw28ud_adv.lib;wxpngd.lib;wxzlibd.lib;../paladin/lib/paladinud.lib;../kcl/lib/kclud.lib;../kl/lib/klud.lib;../cfw/lib/cfwud.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../debugu/palgen.exe</OutputFile>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;rpcrt4.lib;wxbase31ud.lib;wxbase31ud_net.lib;wxmsw31ud_core.lib;wxmsw31ud_adv.lib;wxpngd.lib;wxzlibd.lib;../paladin/lib/paladinud.lib;../kcl/lib/kclud.lib;../kl/lib/klud.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_x64_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\DebugUnicode/palgen.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
@@ -232,7 +232,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>../kl/include;../supp/wxWidgets/include;../supp/wxWidgets/lib/vc_lib/mswu;../supp/wxWidgets/contrib/include;../supp/wxWidgets/src/zlib;../tango/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../kl/include;../supp/wxWidgets/include;../supp/wxWidgets/lib/vc_x64_lib/mswu;../supp/wxWidgets/contrib/include;../supp/wxWidgets/src/zlib;../tango/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;UNICODE;_LIB;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN32__;WINVER=0x0400;STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -249,10 +249,10 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;comctl32.lib;rpcrt4.lib;wxbase28u.lib;wxbase28u_net.lib;wxmsw28u_core.lib;wxmsw28u_adv.lib;wxpng.lib;wxzlib.lib;../kcl/lib/kclu.lib;../paladin/lib/paladinu.lib;../cfw/lib/cfwu.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../releaseu/palgen.exe</OutputFile>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;comctl32.lib;rpcrt4.lib;wxbase31u.lib;wxbase31u_net.lib;wxmsw31u_core.lib;wxmsw31u_adv.lib;wxpng.lib;wxzlib.lib;../kcl/lib/kclu.lib;../kl/lib/klu.lib;../paladin/lib/paladinu.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_x64_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>.\ReleaseUnicode/palgen.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
