@@ -12,7 +12,7 @@
     <Package
         Comments="This MSI installation file installs Kirix Strata" 
         Manufacturer="Kirix Research, LLC"
-        InstallerVersion="300" 
+        InstallerVersion="301" 
         Languages="1033"
         Compressed="yes"/>
 
