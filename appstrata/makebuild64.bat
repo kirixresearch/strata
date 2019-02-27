@@ -64,7 +64,7 @@ git pull
 REM -- update the version info --
 
 %BUILDUTIL% write_config %CONFIG_PATH%\build_config.h
-%BUILDUTIL% write_config %SOURCE_PATH%\tango\xdcommon\build_config.h
+%BUILDUTIL% write_config %SOURCE_PATH%\xd\xdcommon\build_config.h
 
 
 REM -- clean --
@@ -206,15 +206,7 @@ erase %TEMP%\%S3NAME%
 mkdir %BUILD_OUTPUT_PATH%
 mkdir %BUILD_OUTPUT_PATH%\info
 copy %SETUP_PATH%\%WXS_NAME%.msi %BUILD_OUTPUT_PATH%
-copy %SOURCE_PATH%\appstrata\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
-copy %SOURCE_PATH%\xd\xdfs\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
-copy %SOURCE_PATH%\xd\xdkpg\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
-copy %SOURCE_PATH%\xd\xdmysql\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
-copy %SOURCE_PATH%\xd\xdnative\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
-copy %SOURCE_PATH%\xd\xdodbc\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
-copy %SOURCE_PATH%\xd\xdoracle\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
-copy %SOURCE_PATH%\xd\xdpsql\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
-copy %SOURCE_PATH%\xd\xdsqlite\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
+copy VC_OUTPUT_PATH\*.map %BUILD_OUTPUT_PATH%\info
 
 
 
