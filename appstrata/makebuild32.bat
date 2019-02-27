@@ -69,16 +69,16 @@ REM -- update the version info --
 
 REM -- clean --
 
-erase %VC_OUTPUT_PATH%\appstrata.exe /f/q
-erase %VC_OUTPUT_PATH%\gpasvc.exe /f/q
-erase %VC_OUTPUT_PATH%\xdfs.dll /f/q
-erase %VC_OUTPUT_PATH%\xdkpg.dll /f/q
-erase %VC_OUTPUT_PATH%\xdmysql.dll /f/q
-erase %VC_OUTPUT_PATH%\xdnative.dll /f/q
-erase %VC_OUTPUT_PATH%\xdodbc.dll /f/q
-erase %VC_OUTPUT_PATH%\xdoracle.dll /f/q
-erase %VC_OUTPUT_PATH%\xdpgsql.dll /f/q
-erase %VC_OUTPUT_PATH%\xdsqlite.dll /f/q
+erase %VC_OUTPUT_PATH%\appstrata.exe /f/q > nul
+erase %VC_OUTPUT_PATH%\gpasvc.exe /f/q > nul
+erase %VC_OUTPUT_PATH%\xdfs.dll /f/q > nul
+erase %VC_OUTPUT_PATH%\xdkpg.dll /f/q > nul
+erase %VC_OUTPUT_PATH%\xdmysql.dll /f/q > nul
+erase %VC_OUTPUT_PATH%\xdnative.dll /f/q > nul
+erase %VC_OUTPUT_PATH%\xdodbc.dll /f/q > nul
+erase %VC_OUTPUT_PATH%\xdoracle.dll /f/q > nul
+erase %VC_OUTPUT_PATH%\xdpgsql.dll /f/q > nul
+erase %VC_OUTPUT_PATH%\xdsqlite.dll /f/q > nul
 
 
 REM -- build the source tree --
