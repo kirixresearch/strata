@@ -2,31 +2,31 @@
 
 set APPLICATION_NAME=Kirix Strata
 
-call "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /Release /x64 /xp
+call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\amd64\vcvars64.bat"
 
-set WIX_PATH="c:\Program Files (x86)\Windows Installer XML v3.5\bin"
-set SIGNCMD=d:\build64\cert\signtool sign /d "%APPLICATION_NAME%" /f d:\build64\cert\signcert.p12 /t http://timestamp.comodoca.com/authenticode
-set MSGFMT="c:\Program Files (x86)\Poedit\bin\msgfmt"
-set MSGCAT="c:\Program Files (x86)\Poedit\bin\msgcat"
+set WIX_PATH="c:\Program Files (x86)\WiX Toolset v3.11\bin"
+set SIGNCMD=c:\build\cert\signtool sign /d "%APPLICATION_NAME%" /f c:\build\cert\signcert.p12 /t http://timestamp.comodoca.com/authenticode
+set MSGFMT="c:\Program Files (x86)\Poedit\GettextTools\bin\msgfmt"
+set MSGCAT="c:\Program Files (x86)\Poedit\GettextTools\bin\msgcat"
 SET YEAR=%DATE:~10,4%
 SET MONTH=%DATE:~4,2%
 SET DAY=%DATE:~7,2%
 
-set BUILD_DRIVE=d:
-set BUILD_BASE=d:\build64
-set SOURCE_PATH=d:\build64\src\trunk
-set CONFIG_PATH=d:\build64\src\trunk\appstrata\config
-set VC_OUTPUT_PATH=d:\build64\src\trunk\releaseu
+set BUILD_DRIVE=c:
+set BUILD_BASE=c:\build\x64
+set SOURCE_PATH=c:\build\x64\src
+set CONFIG_PATH=c:\build\x64\src\appstrata\config
+set VC_OUTPUT_PATH=c:\build\x64\src\releaseu
 set SETUP_PATH=%SOURCE_PATH%\appstrata\setup
 set WXS_NAME=strata64
 set WEBRES_DIR=%SOURCE_PATH%\appstrata\webres
 set BUILD_PROJECT=appstrata
-set BUILD_SLN=build64.sln
-set BUILDUTIL=cscript /nologo d:\buildcmn\buildutil.vbs d:\buildcmn
+set BUILD_SLN=%SOURCE_PATH%\appstrata\sln\build.sln
+set BUILDUTIL=cscript /nologo c:\build\common\buildutil.vbs c:\build\common
 
 REM -- these variables are used by the WIX source files --
-set BUILDSRC=d:\build64\buildsrc
-set BUILDSRCXR=d:\build64\buildsrc\xr
+set BUILDSRC=c:\build\x64\buildsrc
+set BUILDSRCXR=c:\build\x64\buildsrc\xr
 
 REM -- first, put the current build number in the BUILD_CURRENT variable --
 for /f "delims=" %%A in ('%BUILDUTIL% show_buildnum') do set BUILD_CURRENT=%%A
@@ -48,7 +48,6 @@ if exist %BUILD_OUTPUT_PATH% (
 )
 
 
-
 REM -- change to the drive and driectory where the build will be made --
 
 %BUILD_DRIVE%
@@ -59,8 +58,7 @@ cd %SOURCE_PATH%
 REM -- get the latest from source control --
 
 echo Getting latest from source control
-svn update
-
+git pull
 
 
 REM -- update the version info --
@@ -73,25 +71,31 @@ REM -- clean --
 
 erase %VC_OUTPUT_PATH%\appstrata.exe /f/q
 erase %VC_OUTPUT_PATH%\gpasvc.exe /f/q
+erase %VC_OUTPUT_PATH%\xdfs.dll /f/q
+erase %VC_OUTPUT_PATH%\xdkpg.dll /f/q
+erase %VC_OUTPUT_PATH%\xdmysql.dll /f/q
 erase %VC_OUTPUT_PATH%\xdnative.dll /f/q
 erase %VC_OUTPUT_PATH%\xdodbc.dll /f/q
 erase %VC_OUTPUT_PATH%\xdoracle.dll /f/q
-erase %VC_OUTPUT_PATH%\xdfs.dll /f/q
+erase %VC_OUTPUT_PATH%\xdpgsql.dll /f/q
 erase %VC_OUTPUT_PATH%\xdsqlite.dll /f/q
+
 
 REM -- build the source tree --
 
 echo Building...
-REM %MSDEV% %BUILD_SLN% /MAKE "%BUILD_PROJECT% - Win32 Release Unicode"  /REBUILD /OUT build.log
-msbuild %SOURCE_PATH%\%BUILD_SLN% /t:Rebuild /p:Configuration=Release /p:Platform=x64
+msbuild %BUILD_SLN% /t:Rebuild /p:Configuration=Release /p:Platform=x64
 
 
 IF NOT EXIST %VC_OUTPUT_PATH%\appstrata.exe goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\gpasvc.exe goto err
+IF NOT EXIST %VC_OUTPUT_PATH%\xdfs.dll goto err
+IF NOT EXIST %VC_OUTPUT_PATH%\xdkpg.dll goto err
+IF NOT EXIST %VC_OUTPUT_PATH%\xdmysql.dll goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\xdnative.dll goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\xdodbc.dll goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\xdoracle.dll goto err
-IF NOT EXIST %VC_OUTPUT_PATH%\xdfs.dll goto err
+IF NOT EXIST %VC_OUTPUT_PATH%\xdpgsql.dll goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\xdsqlite.dll goto err
 
 goto ok
@@ -125,10 +129,13 @@ REM -- copy the files to build source --
 
 copy %VC_OUTPUT_PATH%\appstrata.exe %BUILDSRC%\bin\kstrata.exe /Y
 copy %VC_OUTPUT_PATH%\gpasvc.exe %BUILDSRC%\bin /Y
+copy %VC_OUTPUT_PATH%\xdfs.dll %BUILDSRC%\bin /Y
+copy %VC_OUTPUT_PATH%\xdkpg.dll %BUILDSRC%\bin /Y
+copy %VC_OUTPUT_PATH%\xdmysql.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdnative.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdodbc.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdoracle.dll %BUILDSRC%\bin /Y
-copy %VC_OUTPUT_PATH%\xdfs.dll %BUILDSRC%\bin /Y
+copy %VC_OUTPUT_PATH%\xdpgsql.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdsqlite.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\imgres.zip %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\webres.jar %BUILDSRC%\bin /Y
@@ -142,11 +149,15 @@ REM -- sign the files --
 echo Signing build output files...
 %SIGNCMD% %BUILDSRC%\bin\kstrata.exe
 %SIGNCMD% %BUILDSRC%\bin\gpasvc.exe
-%SIGNCMD% %BUILDSRC%\bin\xdnative.dll
 %SIGNCMD% %BUILDSRC%\bin\xdfs.dll
-%SIGNCMD% %BUILDSRC%\bin\xdsqlite.dll
-%SIGNCMD% %BUILDSRC%\bin\xdoracle.dll
+%SIGNCMD% %BUILDSRC%\bin\xdkpg.dll
+%SIGNCMD% %BUILDSRC%\bin\xdmysql.dll
+%SIGNCMD% %BUILDSRC%\bin\xdnative.dll
 %SIGNCMD% %BUILDSRC%\bin\xdodbc.dll
+%SIGNCMD% %BUILDSRC%\bin\xdoracle.dll
+%SIGNCMD% %BUILDSRC%\bin\xdpgsql.dll
+%SIGNCMD% %BUILDSRC%\bin\xdsqlite.dll
+
 
 
 
@@ -155,7 +166,7 @@ if "%2"=="build_only" goto end
 
 REM -- make the setup exe --
 
-
+:build
 
 echo Generating Installation...
 erase %SETUP_PATH%\%WXS_NAME%_tmp.wxs /f /q 2>nul
@@ -185,7 +196,9 @@ REM -- make sure the setup output file exists --
 if not "%S3BUCKET%"=="" (
 echo Uploading to S3...
 copy %SETUP_PATH%\%WXS_NAME%.msi %TEMP%\%S3NAME%
-s3 put %S3BUCKET%/ %TEMP%\%S3NAME% /acl:public-read
+REM s3 put /  /acl:public-read
+aws s3 cp %TEMP%\%S3NAME% %S3BUCKET%/ --acl public-read
+echo Build can be downloaded here: %S3BUCKET%/%S3NAME%
 erase %TEMP%\%S3NAME%
 )
 
@@ -194,11 +207,14 @@ mkdir %BUILD_OUTPUT_PATH%
 mkdir %BUILD_OUTPUT_PATH%\info
 copy %SETUP_PATH%\%WXS_NAME%.msi %BUILD_OUTPUT_PATH%
 copy %SOURCE_PATH%\appstrata\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
-copy %SOURCE_PATH%\tango\xdnative\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
-copy %SOURCE_PATH%\tango\xdfs\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
-copy %SOURCE_PATH%\tango\xdsqlite\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
-copy %SOURCE_PATH%\tango\xdoracle\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
-copy %SOURCE_PATH%\tango\xdodbc\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
+copy %SOURCE_PATH%\xd\xdfs\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
+copy %SOURCE_PATH%\xd\xdkpg\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
+copy %SOURCE_PATH%\xd\xdmysql\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
+copy %SOURCE_PATH%\xd\xdnative\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
+copy %SOURCE_PATH%\xd\xdodbc\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
+copy %SOURCE_PATH%\xd\xdoracle\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
+copy %SOURCE_PATH%\xd\xdpsql\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
+copy %SOURCE_PATH%\xd\xdsqlite\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
 
 
 
