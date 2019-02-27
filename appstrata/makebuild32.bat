@@ -2,7 +2,7 @@
 
 set APPLICATION_NAME=Kirix Strata
 
-REM call "c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\vcvars32.bat"
+call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
 
 set WIX_PATH="c:\Program Files (x86)\WiX Toolset v3.11\bin"
 set SIGNCMD=c:\build\cert\signtool sign /d "%APPLICATION_NAME%" /f c:\build\cert\signcert.p12 /t http://timestamp.comodoca.com/authenticode
@@ -21,7 +21,7 @@ set SETUP_PATH=%SOURCE_PATH%\appstrata\setup
 set WXS_NAME=strata
 set WEBRES_DIR=%SOURCE_PATH%\appstrata\webres
 set BUILD_PROJECT=appstrata
-set BUILD_SLN=%SOURCE_PATH%\appstrata\sln\buildx86.sln
+set BUILD_SLN=%SOURCE_PATH%\appstrata\sln\build.sln
 set BUILDUTIL=cscript /nologo c:\build\common\buildutil.vbs c:\build\common
 
 REM -- these variables are used by the WIX source files --
@@ -84,7 +84,6 @@ erase %VC_OUTPUT_PATH%\xdsqlite.dll /f/q
 REM -- build the source tree --
 
 echo Building...
-REM %MSDEV% %BUILD_SLN% /MAKE "%BUILD_PROJECT% - Win32 Release Unicode"  /REBUILD /OUT build.log
 msbuild %BUILD_SLN% /t:Rebuild /p:Configuration=Release
 
 
@@ -98,7 +97,6 @@ IF NOT EXIST %VC_OUTPUT_PATH%\xdodbc.dll goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\xdoracle.dll goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\xdpgsql.dll goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\xdsqlite.dll goto err
-
 
 goto ok
 
@@ -159,7 +157,6 @@ echo Signing build output files...
 %SIGNCMD% %BUILDSRC%\bin\xdoracle.dll
 %SIGNCMD% %BUILDSRC%\bin\xdpgsql.dll
 %SIGNCMD% %BUILDSRC%\bin\xdsqlite.dll
-
 
 
 
@@ -226,6 +223,7 @@ echo Build %BUILD_CURRENT% Complete at:
 date /t
 time /t
 %BUILDUTIL% open %BUILD_OUTPUT_PATH%
+
 
 :end
 

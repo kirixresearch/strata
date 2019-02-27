@@ -15,7 +15,8 @@
         InstallerVersion="300" 
         Languages="1033"
         Compressed="yes"/>
-    
+
+
     <Media Id="1" EmbedCab="yes" Cabinet="kxinst.cab"/>
         
 
@@ -67,12 +68,12 @@
                                 Directory="ProgramMenuDir"
                                 Name="Kirix Strata"
                                 Advertise="yes"
-								Icon="kstrata.exe"/>
+                                Icon="kstrata.exe"/>
                             <Shortcut Id="AppmainDesktopShortcut"
                                 Directory="DesktopFolder"
                                 Name="Kirix Strata"
                                 Advertise="yes"
-								Icon="kstrata.exe"/>
+                                Icon="kstrata.exe"/>
                         </File>
 
                         <File Id="imgres"   Name="imgres.zip"   DiskId="1" Source="$(env.buildsrc)\bin\imgres.zip"/>
@@ -89,12 +90,10 @@
                         <RemoveFolder Id="ProgramMenuDir" Directory='ProgramMenuDir' On="uninstall"/>
                         
                     </Component>
-                    
-                    
+
+
                     <!-- core registry items for things like license keys -->
                     <Component Id="CoreRegistry" Guid="0357E732-340A-4AE1-BAD2-01CF9A3F89E5" KeyPath="yes" SharedDllRefCount="no" Permanent="yes">
-
- 
 
                         <RegistryKey Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo" ForceCreateOnInstall="yes">
                             <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
