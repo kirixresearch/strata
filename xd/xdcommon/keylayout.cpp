@@ -104,164 +104,172 @@ const unsigned char* KeyLayout::getKey()
     for (part_it = m_parts.begin(); part_it != part_end; ++part_it)
     {
         ptr = m_buf + part_it->offset;
-        switch (part_it->type)
+
+        if (m_iter->isNull(part_it->handle))
         {
-            case xd::typeCharacter:
+            memset(ptr, 0, part_it->width);
+        }
+        else
+        {
+            switch (part_it->type)
             {
-                const std::string& s = m_iter->getString(part_it->handle);
-                int copy_len = s.length();
-                if (copy_len > part_it->width)
+                case xd::typeCharacter:
                 {
-                    m_trunc = true;
-                    copy_len = part_it->width;
-                }
-                memset(ptr, 0, part_it->width);
-                memcpy(ptr, s.c_str(), copy_len);
-            }
-            break;
-
-            case xd::typeWideCharacter:
-            {
-                const std::wstring& s = m_iter->getWideString(part_it->handle);
-                int copy_len = s.length();
-                if (copy_len*2 > part_it->width)
-                {
-                    m_trunc = true;
-                    copy_len = (part_it->width/2);
-                }
-                memset(ptr, 0, part_it->width);
-                kl::wstring2ucsbe(ptr, s, copy_len);
-            }
-            break;
-
-            case xd::typeInteger:
-            {
-                // for debugging:
-                //unsigned int tempui;
-                //tempui = (unsigned int)m_iter->getInteger(part_it->handle);
-
-                // the key stores only an integer. The source
-                // may have decimal places, which would yield
-                // truncation.  Find out if we will truncate
-                // a decimal place
-
-                unsigned int tempui;
-                double d1, d2;
-
-                d1 = m_iter->getDouble(part_it->handle);
-                d2 = kl::dblround(d1, 0);
-
-                if (0 != kl::dblcompare(d1, d2))
-                {
-                    m_trunc = true;
-                }
-                
-                tempui = (unsigned int)d2;
-
-                ptr[0] = (tempui >> 24) & 0xff;
-                ptr[1] = (tempui >> 16) & 0xff;
-                ptr[2] = (tempui >> 8) & 0xff;
-                ptr[3] = (tempui & 0xff);
-
-                // flip sign so the integers sort properly
-                if (ptr[0] & 0x80)
-                {
-                    ptr[0] &= 0x7f;
-                }
-                 else
-                {
-                    ptr[0] |= 0x80;
-                }
-
-                break;
-            }
-        
-            case xd::typeNumeric:
-            case xd::typeDouble:
-            {
-                double tempd;
-                unsigned char* tempd_src = (unsigned char*)&tempd;
-
-                tempd = m_iter->getDouble(part_it->handle);
-
-                unsigned char* dest = ptr;
-
-                int i = 8;
-                while (i--)
-                {
-                    *dest = *(tempd_src+i);
-                    dest++;
-                }
-
-                if (ptr[0] & 0x80)
-                {
-                    for (i = 0; i < 8; i++)
+                    const std::string& s = m_iter->getString(part_it->handle);
+                    int copy_len = s.length();
+                    if (copy_len > part_it->width)
                     {
-                        ptr[i] = ~ptr[i];
+                        m_trunc = true;
+                        copy_len = part_it->width;
+                    }
+                    memset(ptr, 0, part_it->width);
+                    memcpy(ptr, s.c_str(), copy_len);
+                }
+                break;
+
+                case xd::typeWideCharacter:
+                {
+                    const std::wstring& s = m_iter->getWideString(part_it->handle);
+                    int copy_len = s.length();
+                    if (copy_len*2 > part_it->width)
+                    {
+                        m_trunc = true;
+                        copy_len = (part_it->width/2);
+                    }
+                    memset(ptr, 0, part_it->width);
+                    kl::wstring2ucsbe(ptr, s, copy_len);
+                }
+                break;
+
+                case xd::typeInteger:
+                {
+                    // for debugging:
+                    //unsigned int tempui;
+                    //tempui = (unsigned int)m_iter->getInteger(part_it->handle);
+
+                    // the key stores only an integer. The source
+                    // may have decimal places, which would yield
+                    // truncation.  Find out if we will truncate
+                    // a decimal place
+
+                    unsigned int tempui;
+                    double d1, d2;
+
+                    d1 = m_iter->getDouble(part_it->handle);
+                    d2 = kl::dblround(d1, 0);
+
+                    if (0 != kl::dblcompare(d1, d2))
+                    {
+                        m_trunc = true;
+                    }
+                
+                    tempui = (unsigned int)d2;
+
+                    ptr[0] = (tempui >> 24) & 0xff;
+                    ptr[1] = (tempui >> 16) & 0xff;
+                    ptr[2] = (tempui >> 8) & 0xff;
+                    ptr[3] = (tempui & 0xff);
+
+                    // flip sign so the integers sort properly
+                    if (ptr[0] & 0x80)
+                    {
+                        ptr[0] &= 0x7f;
+                    }
+                     else
+                    {
+                        ptr[0] |= 0x80;
+                    }
+
+                    break;
+                }
+        
+                case xd::typeNumeric:
+                case xd::typeDouble:
+                {
+                    double tempd;
+                    unsigned char* tempd_src = (unsigned char*)&tempd;
+
+                    tempd = m_iter->getDouble(part_it->handle);
+
+                    unsigned char* dest = ptr;
+
+                    int i = 8;
+                    while (i--)
+                    {
+                        *dest = *(tempd_src+i);
+                        dest++;
+                    }
+
+                    if (ptr[0] & 0x80)
+                    {
+                        for (i = 0; i < 8; i++)
+                        {
+                            ptr[i] = ~ptr[i];
+                        }
+                    }
+                     else
+                    {
+                        ptr[0] |= 0x80;
                     }
                 }
-                 else
+                break;
+
+                case xd::typeDate:
                 {
-                    ptr[0] |= 0x80;
+                    xd::datetime_t d1, d2;
+                
+                    d1 = m_iter->getDateTime(part_it->handle);
+
+                    // if the time value of the source datetime
+                    // was anything besides 00:00:00, indicate
+                    // truncation
+                
+                    d2 = d1 >> 32;
+                    d2 <<= 32;
+
+                    if (d2 != d1)
+                    {
+                        m_trunc = true;
+                    }                
+
+                    ptr[0] = (unsigned char)((d1 >> 56) & 0xff);
+                    ptr[1] = (unsigned char)((d1 >> 48) & 0xff);
+                    ptr[2] = (unsigned char)((d1 >> 40) & 0xff);
+                    ptr[3] = (unsigned char)((d1 >> 32) & 0xff);
                 }
-            }
-            break;
+                break;
 
-            case xd::typeDate:
-            {
-                xd::datetime_t d1, d2;
-                
-                d1 = m_iter->getDateTime(part_it->handle);
-
-                // if the time value of the source datetime
-                // was anything besides 00:00:00, indicate
-                // truncation
-                
-                d2 = d1 >> 32;
-                d2 <<= 32;
-
-                if (d2 != d1)
+                case xd::typeDateTime:
                 {
-                    m_trunc = true;
-                }                
+                    xd::datetime_t tempdt = m_iter->getDateTime(part_it->handle);
 
-                ptr[0] = (unsigned char)((d1 >> 56) & 0xff);
-                ptr[1] = (unsigned char)((d1 >> 48) & 0xff);
-                ptr[2] = (unsigned char)((d1 >> 40) & 0xff);
-                ptr[3] = (unsigned char)((d1 >> 32) & 0xff);
+                    ptr[0] = (unsigned char)((tempdt >> 56) & 0xff);
+                    ptr[1] = (unsigned char)((tempdt >> 48) & 0xff);
+                    ptr[2] = (unsigned char)((tempdt >> 40) & 0xff);
+                    ptr[3] = (unsigned char)((tempdt >> 32) & 0xff);
+                    ptr[4] = (unsigned char)((tempdt >> 24) & 0xff);
+                    ptr[5] = (unsigned char)((tempdt >> 16) & 0xff);
+                    ptr[6] = (unsigned char)((tempdt >> 8) & 0xff);
+                    ptr[7] = (unsigned char)(tempdt & 0xff);
+                }
+                break;
+
+                case xd::typeBoolean:
+                {
+                    bool tempb = m_iter->getBoolean(part_it->handle);
+                    if (tempb)
+                        ptr[0] = 2;
+                         else
+                        ptr[0] = 1;
+                }
+                break;
+
+                case xd::typeBinary:
+                {
+                    memcpy(ptr, m_iter->getRawPtr(part_it->handle), part_it->width);
+                }
+                break;
             }
-            break;
-
-            case xd::typeDateTime:
-            {
-                xd::datetime_t tempdt = m_iter->getDateTime(part_it->handle);
-
-                ptr[0] = (unsigned char)((tempdt >> 56) & 0xff);
-                ptr[1] = (unsigned char)((tempdt >> 48) & 0xff);
-                ptr[2] = (unsigned char)((tempdt >> 40) & 0xff);
-                ptr[3] = (unsigned char)((tempdt >> 32) & 0xff);
-                ptr[4] = (unsigned char)((tempdt >> 24) & 0xff);
-                ptr[5] = (unsigned char)((tempdt >> 16) & 0xff);
-                ptr[6] = (unsigned char)((tempdt >> 8) & 0xff);
-                ptr[7] = (unsigned char)(tempdt & 0xff);
-            }
-            break;
-
-            case xd::typeBoolean:
-            {
-                bool tempb = m_iter->getBoolean(part_it->handle);
-                if (tempb)
-                    ptr[0] = 2;
-                     else
-                    ptr[0] = 1;
-            }
-            break;
-
-            case xd::typeBinary:
-            {
-                memcpy(ptr, m_iter->getRawPtr(part_it->handle), part_it->width);
-            }
-            break;
         }
 
         if (part_it->descending)
