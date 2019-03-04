@@ -838,10 +838,10 @@ bool TableSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* 
                 }
 
                 m_table->writeColumnInfo(idx,
-                                         it_sa->params.name,
-                                         it_sa->params.type,
-                                         it_sa->params.width,
-                                         it_sa->params.scale);
+                                         (it_sa->params.mask & xd::ColumnInfo::maskName) ? it_sa->params.name : L"",
+                                         (it_sa->params.mask & xd::ColumnInfo::maskType) ? it_sa->params.type : -1,
+                                         (it_sa->params.mask & xd::ColumnInfo::maskWidth) ? it_sa->params.width : -1,
+                                         (it_sa->params.mask & xd::ColumnInfo::maskScale) ? it_sa->params.scale : -1);
             }
         }
 
