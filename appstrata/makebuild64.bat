@@ -206,7 +206,7 @@ erase %TEMP%\%S3NAME%
 mkdir %BUILD_OUTPUT_PATH%
 mkdir %BUILD_OUTPUT_PATH%\info
 copy %SETUP_PATH%\%WXS_NAME%.msi %BUILD_OUTPUT_PATH%
-copy VC_OUTPUT_PATH\*.map %BUILD_OUTPUT_PATH%\info
+copy %VC_OUTPUT_PATH%\*.map %BUILD_OUTPUT_PATH%\info
 
 
 
