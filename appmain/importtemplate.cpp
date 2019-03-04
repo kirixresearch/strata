@@ -916,6 +916,7 @@ jobs::IJobPtr ImportTemplate::createJob()
                 object["input_format"].setObject();
                 kl::JsonNode format = object["input_format"];
 
+                format["format"] = "delimited_text";
                 format["delimiter"] = m_ii.delimiters;
                 format["text_qualifier"] = m_ii.text_qualifier;
                 format["header_row"].setBoolean(m_ii.first_row_header);
