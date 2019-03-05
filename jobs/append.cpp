@@ -147,19 +147,15 @@ int AppendJob::runJob()
     }
      else
     {
-
-        // TODO: reimplement!
-
-/*
         // output target does not yet exist;  create an output table with a merged structure
-        xd::Structure input_structure = xcm::null;
-        xd::Structure output_structure = xcm::null;
-        xd::IColumnInfoPtr input_colinfo = xcm::null;
-        xd::IColumnInfoPtr output_colinfo = xcm::null;
+        xd::Structure input_structure;
+        xd::Structure output_structure;
+
 
         int col_idx = 0;
         int input_col_count = 0;
         int output_col_count = 0;
+        size_t last_found_idx = (size_t)-1;
 
         for (it = tables.begin(); it != tables.end(); ++it)
         {
@@ -176,36 +172,38 @@ int AppendJob::runJob()
                 return 0;
             }
             
-            if (!output_structure)
+
+            input_col_count = input_structure.getColumnCount();
+            if (output_structure.getColumnCount() == 0)
             {
-                output_structure = input_structure->clone();
+                output_structure = input_structure;
             }
-
-            input_col_count = input_structure->getColumnCount();
-            output_col_count = output_structure->getColumnCount();
-
-            if (output_col_count < input_col_count)
+            else
             {
-                input_col_count = output_col_count;
-            }
-
-            for (col_idx = 0; col_idx < input_col_count; ++col_idx)
-            {
-                input_colinfo = input_structure->getColumnInfoByIdx(col_idx);
-                output_colinfo = output_structure->getColumnInfoByIdx(col_idx);
-
-                if (input_colinfo->getWidth() > output_colinfo->getWidth())
-                    output_colinfo->setWidth(input_colinfo->getWidth());
+                for (col_idx = 0; col_idx < input_col_count; ++col_idx)
+                {
+                    size_t out_idx = output_structure.getColumnIdx(input_structure.columns[col_idx].name);
+                    if (out_idx == (size_t)-1)
+                    {
+                        output_structure.createColumn(input_structure.columns[col_idx]);
+                    }
+                     else
+                    {
+                        if (input_structure.columns[col_idx].width > output_structure.columns[out_idx].width)
+                            output_structure.columns[out_idx].width = input_structure.columns[col_idx].width;
+                    }
+                }
             }
         }
 
-        if (!m_db->createTable(output_path, output_structure, NULL))
+        xd::FormatDefinition fd;
+        fd.columns = output_structure;
+        if (!m_db->createTable(output_path, fd))
         {
             m_job_info->setState(jobStateFailed);
             m_job_info->setError(jobserrWriteError, L"");
             return 0;
         }
-        */
     }
 
 
