@@ -142,9 +142,22 @@ static wxMenu* createProjectsMenu(const std::vector<ProjectInfo>& projects,
     int i = 0;
     for (it = projects.begin(); it != it_end; ++it)
     {
+        
+        std::wstring location = it->location;
+        if (kl::icontains(location, L"xdprovider="))
+        {
+            xd::ConnectionString cstr(location);
+            std::wstring provider = cstr.getLowerValue(L"xdprovider");
+
+            if (provider == L"xdnative" || provider == L"xdfs")
+            {
+                location = cstr.getLowerValue(L"database");
+            }
+        }
+
         wxString menu_name = it->name;
         menu_name.Append(L" - ");
-        menu_name.Append(it->location);
+        menu_name.Append(location);
 
         menu->AppendCheckItem(base_id+i, menu_name);
         

@@ -75,6 +75,23 @@ bool DatabaseInfoPanel::initDoc(IFramePtr frame,
                                                 -1,
                                                 _("Location:"));
     wxString project_loc_str = g_app->getDatabaseLocation();
+
+
+    std::wstring local_location = towstr(project_loc_str);
+    if (kl::icontains(local_location, L"xdprovider="))
+    {
+        xd::ConnectionString cstr(local_location);
+        std::wstring provider = cstr.getLowerValue(L"xdprovider");
+
+        if (provider == L"xdnative" || provider == L"xdfs")
+        {
+            project_loc_str = cstr.getLowerValue(L"database");
+        }
+    }
+
+
+
+
     wxStaticText* location = new wxStaticText(this, -1, project_loc_str);
     
     wxBoxSizer* project_location_sizer = new wxBoxSizer(wxHORIZONTAL);

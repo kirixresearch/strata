@@ -95,7 +95,7 @@ public:
                          wxRESIZE_BORDER)
     {
         SetMinSize(wxSize(600,420));
-        SetMaxSize(wxSize(800,600));
+        //SetMaxSize(wxSize(800,600));
         
         #ifdef __WXGTK__
         SetSize(wxSize(620,520));

@@ -868,12 +868,20 @@ void DlgProjectMgr::populate()
         wxString name = it->name;
         if (name.Length() == 0)
         {
-            name = it->location;
-            int idx = name.Find(PATH_SEPARATOR_CHAR, true);
-            if (idx >= 0)
-                name = name.Mid(idx+1);
+            name = _("(Untitled)");
         }
-        
+
+        std::wstring local_location = it->location;
+        if (kl::icontains(local_location, L"xdprovider="))
+        {
+            xd::ConnectionString cstr(it->location);
+            std::wstring provider = cstr.getLowerValue(L"xdprovider");
+
+            if (provider == L"xdnative" || provider == L"xdfs")
+            {
+                local_location = cstr.getLowerValue(L"database");
+            }
+        }
 
         // calculate the project size
         wxString size_str = wxT("");
@@ -881,7 +889,7 @@ void DlgProjectMgr::populate()
         t2 = time(NULL);
         if (display_project_size && (t2-t1) < 8)
         {
-            double size = getProjectSize(it->location);
+            double size = getProjectSize(local_location);
             double mb_size = size/1048576.0;
             double gb_size = size/1073741824.0;
             if (gb_size >= 1.0)
@@ -894,7 +902,7 @@ void DlgProjectMgr::populate()
         m_grid->setCellString(row, colName, name);
         m_grid->setCellBitmap(row, colName, GETBMP(gf_project_16), kcl::Grid::alignLeft);
         m_grid->setCellString(row, colType, it->local ? _("Local") : _("Network"));
-        m_grid->setCellString(row, colLocation, it->location);
+        m_grid->setCellString(row, colLocation, local_location);
         m_grid->setCellString(row, colSize, size_str);
         m_grid->setCellString(row, colUser, it->user_id);
         ++row;
