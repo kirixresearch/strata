@@ -819,8 +819,13 @@ void TableDoc::onFrameEvent(FrameworkEvent& evt)
     }
      else if (evt.name == FRAMEWORK_EVT_TREEPANEL_OFS_FILE_RENAMED)
     {
+        if (m_path == evt.s_param)
+        {
+            m_path = evt.s_param2;
+        }
+
         updateCaption();
-        
+
         IDocumentSitePtr doc_site = m_frame->getActiveChild();
         if (doc_site.isOk() && doc_site == m_doc_site)
         {
