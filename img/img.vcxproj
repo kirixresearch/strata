@@ -63,37 +63,44 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeBuildCommandLine>nmake "basedir=..\debugu" /c /f imgres.mak</NMakeBuildCommandLine>
-    <NMakeOutput>..\debugu\imgres.zip</NMakeOutput>
-    <NMakeCleanCommandLine>nmake "basedir=..\debugu" /c /f imgres.mak clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake "basedir=..\debugu" /c /f imgres.mak clean all</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak </NMakeBuildCommandLine>
+    <NMakeOutput>$(SolutionDir)..\debugu\imgres.zip</NMakeOutput>
+    <NMakeCleanCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean all  </NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(SolutionDir)..\debugu\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <NMakeBuildCommandLine>nmake "basedir=..\releaseu" /c /f imgres.mak</NMakeBuildCommandLine>
-    <NMakeOutput>..\releaseu\imgres.zip</NMakeOutput>
-    <NMakeCleanCommandLine>nmake "basedir=..\releaseu" /c /f imgres.mak clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake "basedir=..\releaseu" /c /f imgres.mak clean all</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak </NMakeBuildCommandLine>
+    <NMakeOutput>$(SolutionDir)..\releaseu\imgres.zip</NMakeOutput>
+    <NMakeCleanCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak clean all  </NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(SolutionDir)..\releaseu\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <NMakeBuildCommandLine>nmake "basedir=..\releaseu" /c /f imgres.mak</NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine>nmake "basedir=..\releaseu" /c /f imgres.mak clean all</NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>nmake "basedir=..\releaseu" /c /f imgres.mak clean</NMakeCleanCommandLine>
-    <NMakeOutput>..\releaseu\imgres.zip</NMakeOutput>
+    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak </NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak clean all  </NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak clean</NMakeCleanCommandLine>
+    <NMakeOutput>$(SolutionDir)..\releaseu\imgres.zip</NMakeOutput>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(SolutionDir)..\releaseu\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <NMakeBuildCommandLine>nmake "basedir=..\debugu" /c /f imgres.mak</NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine>nmake "basedir=..\debugu" /c /f imgres.mak clean all</NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>nmake "basedir=..\debugu" /c /f imgres.mak clean</NMakeCleanCommandLine>
-    <NMakeOutput>..\debugu\imgres.zip</NMakeOutput>
+    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak </NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean all  </NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean</NMakeCleanCommandLine>
+    <NMakeOutput>$(SolutionDir)..\debugu\imgres.zip</NMakeOutput>
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(SolutionDir)..\debugu\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="imgres.mak" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
