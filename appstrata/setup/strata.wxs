@@ -45,6 +45,7 @@
 
     <Icon Id="kstrata.exe" SourceFile="$(env.buildsrc)\bin\kstrata.exe"/>
 
+
     <Property Id="ARPPRODUCTICON">kstrata.exe</Property>
     <Property Id="ARPURLINFOABOUT"><![CDATA[http://www.kirix.com]]></Property>
     
@@ -78,6 +79,8 @@
 
                         <File Id="imgres"   Name="imgres.zip"   DiskId="1" Source="$(env.buildsrc)\bin\imgres.zip"/>
                         <File Id="webres"   Name="webres.jar"   DiskId="1" Source="$(env.buildsrc)\bin\webres.jar"/>
+
+
                         <File Id="xdfs"     Name="xdfs.dll"     DiskId="1" Source="$(env.buildsrc)\bin\xdfs.dll"/>
                         <File Id="xdkpg"    Name="xdkpg.dll"    DiskId="1" Source="$(env.buildsrc)\bin\xdkpg.dll"/>
                         <File Id="xdmysql"  Name="xdmysql.dll"  DiskId="1" Source="$(env.buildsrc)\bin\xdmysql.dll"/>
@@ -90,7 +93,6 @@
                         <RemoveFolder Id="ProgramMenuDir" Directory='ProgramMenuDir' On="uninstall"/>
                         
                     </Component>
-
 
                     <!-- core registry items for things like license keys -->
                     <Component Id="CoreRegistry" Guid="0357E732-340A-4AE1-BAD2-01CF9A3F89E5" KeyPath="yes" SharedDllRefCount="no" Permanent="yes">

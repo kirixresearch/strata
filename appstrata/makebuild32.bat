@@ -122,7 +122,9 @@ IF EXIST %VC_OUTPUT_PATH%\webres.jar erase %VC_OUTPUT_PATH%\webres.jar
 %SOURCE_PATH%\zip -j %VC_OUTPUT_PATH%\webres.jar %WEBRES_DIR%\*.*
 
 REM -- make .mo translation files from the .po files
+
 %MSGFMT% %SOURCE_PATH%\appmain\i18n\de\messages.po -o %SOURCE_PATH%\appmain\i18n\de\messages.mo
+
 
 
 REM -- copy the files to build source --
@@ -141,6 +143,7 @@ copy %VC_OUTPUT_PATH%\imgres.zip %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\webres.jar %BUILDSRC%\bin /Y
 mkdir %BUILDSRC%\i18n\de >nul
 copy %SOURCE_PATH%\appmain\i18n\de\messages.mo %BUILDSRC%\i18n\de
+
 
 
 
@@ -198,7 +201,7 @@ echo Uploading to S3...
 copy %SETUP_PATH%\%WXS_NAME%.msi %TEMP%\%S3NAME%
 REM s3 put /  /acl:public-read
 aws s3 cp %TEMP%\%S3NAME% %S3BUCKET%/ --acl public-read
-echo Build can be downloaded here: %S3BUCKET%/%S3NAME%
+echo Build can be downloaded here: %S3BUCKET:s3:=http:%/%S3NAME%
 erase %TEMP%\%S3NAME%
 )
 
