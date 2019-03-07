@@ -111,6 +111,8 @@ bool ProjectMgr::addProjectEntry(const wxString& name,
     config->write(wxT("User"), towstr(user_id));
     config->write(wxT("Password"), towstr(password));
 
+    config->flush();
+
     refresh();
 
     return true;
@@ -181,12 +183,26 @@ int ProjectMgr::getIdxFromLocation(const wxString& location)
     std::vector<ProjectInfo>::iterator it;
     for (it = m_projects.begin(); it != m_projects.end(); ++it)
     {
+        std::wstring entry_location = it->location;
+
+        if (kl::icontains(entry_location, L"xdprovider="))
+        {
+            xd::ConnectionString cstr(entry_location);
+            std::wstring provider = cstr.getLowerValue(L"xdprovider");
+
+            if (provider == L"xdnative" || provider == L"xdfs")
+            {
+                entry_location = cstr.getLowerValue(L"database");
+            }
+        }
+
+
 #ifdef __WXMSW__
         // windows paths are case insensitive
-        if (0 == wcscasecmp(it->location.c_str(), location.c_str()))
+        if (0 == wcscasecmp(entry_location.c_str(), location.c_str()))
             return idx;
 #else
-        if (it->location == location)
+        if (entry_location == location)
             return idx;
 #endif
         idx++;

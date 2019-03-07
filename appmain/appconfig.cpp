@@ -260,6 +260,11 @@ public:
         return key.DeleteSelf();
     }
 
+    bool flush()
+    {
+        return true;
+    }
+
 protected:
 
     wxRegKey::StdKey m_reg_toplevel;
@@ -346,6 +351,12 @@ public:
     {
         return m_config->DeleteGroup(path);
     }
+
+    bool flush()
+    {
+        return m_config->Flush();
+    }
+
 
 private:
 

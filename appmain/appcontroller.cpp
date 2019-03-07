@@ -4953,7 +4953,7 @@ bool AppController::openExcel(const wxString& location, int* site_id)
         fn = getPhysPathFromDatabasePath(location);
 
     IConnectionPtr conn = createUnmanagedConnection();
-    conn->setType(xd::dbtypeExcel);
+    conn->setType(dbtypeExcel);
     conn->setPath(towstr(fn));
 
     // if we cannot open the connection, bail out
@@ -5111,7 +5111,7 @@ bool AppController::openPackage(const wxString& location)
 
     {
         IConnectionPtr conn = createUnmanagedConnection();
-        conn->setType(xd::dbtypeKpg);
+        conn->setType(dbtypePackage);
         conn->setPath(towstr(fn));
         if (!conn->open())
         {
@@ -5672,7 +5672,7 @@ static void addDefaultItemsToProject(const wxString& project_path)
 
 
     IConnectionPtr conn = createUnmanagedConnection();
-    conn->setType(xd::dbtypeKpg);
+    conn->setType(dbtypePackage);
     conn->setPath(towstr(filename));
 
     xd::IDatabasePtr db;
@@ -5713,7 +5713,7 @@ static void addDefaultItemsToProject(const wxString& project_path)
 
 
     ImportTemplate templ;
-    templ.m_ii.type = xd::dbtypeKpg;
+    templ.m_ii.type = dbtypePackage;
     templ.m_ii.path = towstr(filename);
 
     // add the items to the import job
@@ -5721,6 +5721,7 @@ static void addDefaultItemsToProject(const wxString& project_path)
     for (it = item_names.begin(); it != item_names.end(); ++it)
     {
         ImportTableSelection tbl;
+        tbl.selected = true;
         tbl.input_tablename = *it;
         tbl.output_tablename = *it;
         tbl.append = false;
@@ -5751,6 +5752,28 @@ bool AppController::createDefaultProject()
         project_path += PATH_SEPARATOR_CHAR;
     project_path += wxT("Default Project");
     
+    std::wstring base = towstr(project_path);
+    std::wstring test = base;
+    int counter = 2;
+    while (xf_get_directory_exist(test))
+    {
+        test = base + L" " + kl::itowstring(counter);
+        counter++;
+
+        if (counter >= 20)
+        {
+            // don't want to create too many of these
+            IAppPreferencesPtr prefs = g_app->getAppPreferences();
+            prefs->setBoolean(wxT("general.default_project_created"), true);
+            return false;
+        }
+    }
+
+
+    project_path = test;
+
+
+
     // create and open the project
     bool created = createProject(project_path, wxEmptyString, true);
     
@@ -6014,10 +6037,10 @@ bool AppController::openProject(const wxString& location,
     
     // get the project's name from the registry
     ProjectMgr projmgr;
-    int idx = projmgr.getIdxFromLocation(location);
+    int project_idx = projmgr.getIdxFromLocation(location);
     std::vector<ProjectInfo>& projects = projmgr.getProjectEntries();
-    wxString entry_name = projects[idx].entry_name;
-    wxString name = projects[idx].name;
+    wxString entry_name = (project_idx >= 0 ? projects[project_idx].entry_name : L"");
+    wxString name = (project_idx >= 0 ? projects[project_idx].name : L"");
     
 
     g_app->setDatabase(database);
@@ -6035,11 +6058,14 @@ bool AppController::openProject(const wxString& location,
         prefs->setBoolean(wxT("general.default_links_created_2"), true);
     }
     
-    // if the 'Last Open Project' preference has been set,
-    // set this project as the default startup connection
-    if (getAppPrefsBoolean(wxT("general.startup.open_last_project")))
-        prefs->setString(wxT("general.startup.connection"), entry_name);
-    
+    if (project_idx >= 0)
+    {
+        // if the 'Last Open Project' preference has been set,
+        // set this project as the default startup connection
+        if (getAppPrefsBoolean(wxT("general.startup.open_last_project")))
+            prefs->setString(wxT("general.startup.connection"), entry_name);
+    }
+
     // let application hook handle post open project operations
     apphookPostOpenProject();
 
