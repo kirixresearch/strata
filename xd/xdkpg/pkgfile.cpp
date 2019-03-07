@@ -141,7 +141,7 @@ PkgStreamReader::~PkgStreamReader()
 
 bool PkgStreamReader::reopen()
 {
-    xf_file_t f = xf_open(m_pkgfile->m_filename, xfOpen, xfReadWrite, xfShareReadWrite);
+    xf_file_t f = xf_open(m_pkgfile->m_filename, xfOpen, xfRead, xfShareRead);
     if (!f)
         return false;
     m_file = f;
@@ -480,7 +480,13 @@ bool PkgFile::open(const std::wstring& filename)
     m_file = xf_open(filename, xfOpen, mode_flags, share_flags);
     if (!m_file)
     {
-        return false;
+        mode_flags = xfRead;
+        share_flags = xfShareRead;
+        m_file = xf_open(filename, xfOpen, mode_flags, share_flags);
+        if (!m_file)
+        {
+            return false;
+        }
     }
 
     m_filename = filename;
