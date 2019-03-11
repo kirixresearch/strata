@@ -5005,7 +5005,7 @@ bool AppController::openExcel(const wxString& location, int* site_id)
                                               title.c_str());
         
         ImportTemplate templ;
-        templ.m_ii.type = xd::dbtypeExcel;
+        templ.m_ii.type = dbtypeExcel;
         templ.m_ii.path = towstr(fn);
 
         selections = dlg.GetSelections();
