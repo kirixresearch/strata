@@ -136,21 +136,21 @@ jobs::IJobPtr ExportTemplate::createJob()
     {
         kl::JsonNode object = objects.appendElement();
 
-        object["source_connection"] = source_connection;
-        object["destination_connection"] = destination_connection;
+        object["input_connection"] = source_connection;
+        object["output_connection"] = destination_connection;
 
-        object["source_path"] = it->input_tablename;
-        object["destination_path"] = it->output_tablename;
+        object["input"] = it->input_tablename;
+        object["output"] = it->output_tablename;
 
         object["overwrite"].setBoolean(true);
 
         if (m_ei.type == dbtypeDelimitedText)
         {
-            object["destination_format"].setObject();
-            kl::JsonNode format = object["destination_format"];
+            object["output_format"].setObject();
+            kl::JsonNode format = object["output_format"];
             
             format["object_type"] = L"table";
-            format["format"] = L"delimited_text";
+            format["format"] = "delimited_text";
             format["delimiter"] = m_ei.delimiters;
             format["text_qualifier"] = m_ei.text_qualifier;
             format["header_row"].setBoolean(m_ei.first_row_header);
