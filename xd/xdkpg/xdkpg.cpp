@@ -51,7 +51,8 @@ public:
         {
             if (!xf_get_file_exist(location))
             {
-                return this->createDatabase(location);
+                if (!this->createDatabase(connection_str))
+                    return xcm::null;
             }
         }
 
