@@ -387,7 +387,7 @@ bool XbaseFile::create(const std::wstring& filename, const std::vector<XbaseFiel
     written = 0;
     m_stream->write(flds, field_arr_len, &written);
 
-    if (written == field_arr_len)
+    if (written != field_arr_len)
     {
         // something went wrong, so close the file,
         // and delete the file we just tried to create
