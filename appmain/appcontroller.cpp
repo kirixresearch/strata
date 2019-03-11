@@ -5827,17 +5827,51 @@ void AppController::createDefaultLinks()
 {
     IAppPreferencesPtr prefs = g_app->getAppPreferences();
     
-    BookmarkFs::createBookmark(towstr(_("Home Page")), towstr(getAppPrefsDefaultString("general.location.home")));
-    BookmarkFs::createBookmark(towstr(_("Online Help")), towstr(getAppPrefsDefaultString("general.location.help")));
-    BookmarkFs::createBookmark(towstr(_("Developer Resources")), towstr(getAppPrefsDefaultString("general.location.resources")));
-    BookmarkFs::createBookmark(towstr(_("Support Forums")), towstr(getAppPrefsDefaultString("general.location.support")));
+    wxString home_page = getAppPrefsDefaultString("general.location.home");
+    if (home_page.Length() > 0)
+    {
+        BookmarkFs::createBookmark(towstr(_("Home Page")), towstr(home_page));
+    }
+
+    wxString online_help = getAppPrefsDefaultString("general.location.help");
+    if (online_help.Length() > 0)
+    {
+        BookmarkFs::createBookmark(towstr(_("Online Help")), towstr(online_help));
+    }
+
+    wxString developer_resources = getAppPrefsDefaultString("general.location.resources");
+    if (developer_resources.Length() > 0)
+    {
+        BookmarkFs::createBookmark(towstr(_("Developer Resources")), towstr(developer_resources));
+    }
+
+    wxString support_forums = getAppPrefsDefaultString("general.location.support");
+    if (support_forums.Length() > 0)
+    {
+        BookmarkFs::createBookmark(towstr(_("Support Forums")), towstr(support_forums));
+    }
 
 
-    BookmarkFs::setFileVisualLocation(towstr(_("Home Page")), 0);
-    BookmarkFs::setFileVisualLocation(towstr(_("Online Help")), 1);
-    BookmarkFs::setFileVisualLocation(towstr(_("Developer Resources")), 2);
-    BookmarkFs::setFileVisualLocation(towstr(_("Support Forums")), 3);
+    int idx = 0;
+    if (home_page.Length() > 0)
+    {
+        BookmarkFs::setFileVisualLocation(towstr(_("Home Page")), idx++);
+    }
 
+    if (online_help.Length() > 0)
+    {
+        BookmarkFs::setFileVisualLocation(towstr(_("Online Help")), idx++);
+    }
+
+    if (developer_resources.Length() > 0)
+    {
+        BookmarkFs::setFileVisualLocation(towstr(_("Developer Resources")), idx++);
+    }
+
+    if (support_forums.Length() > 0)
+    {
+        BookmarkFs::setFileVisualLocation(towstr(_("Support Forums")), idx++);
+    }
 }
 
 
