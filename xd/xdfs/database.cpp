@@ -1231,12 +1231,18 @@ bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
             return false;
     }
 
+    std::wstring output_path = info->output;
+
+
+    IXdsqlTablePtr output;
 
     if (info->append)
     {
-        IXdsqlTablePtr output = openTable(info->output, info->output_format);
+        output = openTable(info->output, info->output_format);
         if (output.isNull())
             return false;
+
+        output_path = L"/.temp/.ptr/" + kl::stdswprintf(L"%p", output.p);
     }
      else
     {
@@ -1246,11 +1252,17 @@ bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
         fd.columns = structure.columns;
         if (!createTable(info->output, fd))
             return false;
+
+        output = openTable(info->output, info->output_format);
+        if (output.isNull())
+            return false;
+
+        output_path = L"/.temp/.ptr/" + kl::stdswprintf(L"%p", output.p);
     }
 
 
     std::wstring cstr, rpath;
-    if (detectMountPoint(info->output, &cstr, &rpath))
+    if (detectMountPoint(output_path, &cstr, &rpath))
     {
         xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
@@ -1260,7 +1272,7 @@ bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
     }
      else
     {
-        xdcmnInsert(static_cast<xd::IDatabase*>(this), iter, info->output, info->copy_columns, info->where, info->limit, job);
+        xdcmnInsert(static_cast<xd::IDatabase*>(this), iter, output_path, info->copy_columns, info->where, info->limit, job);
     }
 
     return true;
@@ -2443,6 +2455,7 @@ bool FsDatabase::createTable(const std::wstring& path, const xd::FormatDefinitio
         file.createFile(phys_path, fields, csv_encoding);
         file.closeFile();
         
+        return true;
 /*
         // save structure to edf
         DelimitedTextSet* tset = new DelimitedTextSet(this);

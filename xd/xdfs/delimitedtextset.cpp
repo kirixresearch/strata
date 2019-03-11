@@ -1250,7 +1250,7 @@ bool DelimitedTextRowInserter::putNull(xd::objhandle_t column_handle)
 
 bool DelimitedTextRowInserter::startInsert(const std::wstring& col_list)
 {
-    xd::Structure s;
+    xd::Structure s = m_set->getStructure();
     
     size_t i, col_count = s.getColumnCount();
     for (i = 0; i < col_count; ++i)
