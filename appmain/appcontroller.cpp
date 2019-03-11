@@ -5136,7 +5136,7 @@ bool AppController::openPackage(const wxString& location)
     wizard->setMode(ImportWizard::ModeOpen);
     
     ImportTemplate& import_template = wizard->getTemplate();
-    import_template.m_ii.type = xd::dbtypeKpg;
+    import_template.m_ii.type = dbtypePackage;
     import_template.m_ii.path = fn;
     wizard->sigImportWizardFinished.connect(&onImportWizardFinished);
 
