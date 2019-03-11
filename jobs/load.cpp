@@ -378,6 +378,10 @@ int LoadJob::runJob()
         info.iter_input = source_iter;
         info.output = it->output;
         info.append = true;
+        if (it->output_format.format != xd::formatDefault)
+        {
+            info.output_format = it->output_format;
+        }
 
 
 
@@ -408,6 +412,8 @@ int LoadJob::runJob()
                 col.calculated = false;
                 output_format.columns.insert(output_format.columns.begin(), col);
             }
+
+            info.output_format.columns = output_format.columns;
 
             if (!it->output_db->createTable(it->output, output_format))
             {
