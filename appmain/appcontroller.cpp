@@ -5030,6 +5030,7 @@ bool AppController::openExcel(const wxString& location, int* site_id)
             int idx = selections[i];
             
             ImportTableSelection tbl;
+            tbl.selected = true;
             tbl.input_tablename = as[idx];
             tbl.output_tablename = getTempTablename(fn, as[idx]);
             tbl.append = false;
