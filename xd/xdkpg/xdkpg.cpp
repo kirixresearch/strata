@@ -123,10 +123,10 @@ private:
 
 // -- these are the publicly creatable classes --
 
-XCM_BEGIN_DYNAMIC_MODULE(xdpgsql)
+XCM_BEGIN_DYNAMIC_MODULE(xdkpg)
     XCM_BEGIN_CLASS_MAP()
         XCM_CLASS_ENTRY(DatabaseMgr)
     XCM_END_CLASS_MAP()
-XCM_END_DYNAMIC_MODULE(xdpgsql)
+XCM_END_DYNAMIC_MODULE(xdkpg)
 
 
