@@ -26,14 +26,14 @@
             <a id="c237"></a>
             <h2>Application</h2>
             <p>The Application category contains classes essential for creating and interacting with script-defined interfaces, and it contains both the Application class as well as the Event classes.</p>
-            <p>The Application class is responsible for starting and stopping the script event loop, which drives the user interface aspects of the program and coordinates the connection between the program code and the user’s actions.</p>
+            <p>The Application class is responsible for starting and stopping the script event loop, which drives the user interface aspects of the program and coordinates the connection between the program code and the user's actions.</p>
             <p>In practice, the Application class only needs to be called if the script needs to process events, and in this case, it should appear after the main form is created and shown, near the top of the script:</p>
             <pre>var a = new Form;<br>a.show();<br>Application.run();</pre>
             <p>While the Application class is responsible for the event loop, the Event class serves as the base class for the events that are actually processed, such as mouse events.&nbsp; The Event class contains functions for dispatching events as well as functions for connecting to the event so that when the event is dispatched, appropriate event handlers can be notified that the event has occurred, as well as receive information about the event.</p>
             <a id="c238"></a>
             <h2>Dialog</h2>
             <p>The dialog category of classes contains classes for creating stock dialogs.&nbsp; For example, using these classes, you can create dialogs for opening or saving files, entering text or passwords, or selecting colors.</p>
-            <p>While interfaces usually require the Application event to start the event loop, dialogs don’t need the Application event loop to run.</p>
+            <p>While interfaces usually require the Application event to start the event loop, dialogs don't need the Application event loop to run.</p>
             <p>So, to create a new file open dialog for selecting images, you might create a script like this:</p>
             <pre>// create a new file dialog object<br>var dlg = new FileDialog;<br><br>// show these file types in the file dialogs filter<br>dlg.setFilter("Bitmap Files|*.bmp|JPEG Images|*.jpg;*.jpeg");<br><br>// show the dialog, and accept the results only if the<br>// user presses Ok<br><br>if (dlg.showDialog() == DialogResult.Ok)<br>{<br>    var files = dlg.getPaths();<br><br>    for (var f in files)<br>        alert(files[f]);<br>}</pre>
             <a id="c239"></a>
@@ -42,7 +42,7 @@
             <a id="c240"></a>
             <h2>Control</h2>
             <p>The Control category contains classes for controls that are added to forms.&nbsp; With the classes in this category, you can add buttons, text controls, web controls, tree controls, list controls, and other important interface elements to your forms.&nbsp; In addition, by extending the FormControl class, you can create your own controls.</p>
-            <p>Here’s an example that adds a button to a form and closes the form when the button is clicked:</p>
+            <p>Here's an example that adds a button to a form and closes the form when the button is clicked:</p>
             <pre>// create an instance of our derived MyForm class<br>var f = new MyForm;<br>f.show();<br>Application.run();<br><br>// create our own class derived from Form<br>class MyForm extends Form<br>{<br>    function MyForm()<br>    {<br>        // call the constructor on the base class Form<br>        super("Button Example", 100, 100, 200, 100);<br>        <br>        // create a button and add the button to our form<br>        var button = new Button("Exit", 60, 20, 80, 24);<br>        this.add(button);<br>        <br>        // when the button is clicked, call the onButtonClicked<br>        // event handler on this class<br>        button.click.connect(this, onButtonClicked);<br>    }<br>    <br>    function onButtonClicked()<br>    {<br>        // when the button is clicked, exit the application<br>        Application.exit();<br>    }<br>}</pre>
             <a id="c241"></a>
             <h2>Layout</h2>
@@ -59,9 +59,9 @@
             <p>The Network category contains classes for issuing HttpRequests as well as transferring data via FTP and SFTP.</p>
             <a id="c242"></a>
             <h2>Database</h2>
-            <p>The database category of classes contains information for connecting to databases, such as Oracle, MySQL, or Strata’s database, and interacting with the data inside the database.&nbsp; With classes in this category, you can connect to databases, create tables, and perform queries on the data, such as queries to select data from tables, insert new records into tables, delete records, as well as other standard database operations.</p>
+            <p>The database category of classes contains information for connecting to databases, such as Oracle, MySQL, or Strata's database, and interacting with the data inside the database.&nbsp; With classes in this category, you can connect to databases, create tables, and perform queries on the data, such as queries to select data from tables, insert new records into tables, delete records, as well as other standard database operations.</p>
             <p>The main classes in the Database category are DbConnection and DbResult:&nbsp; DbConnection is used to connect to databases and execute SQL commands on the connected database.&nbsp; DbResult is used to iterate through whatever results are returned when the SQL is executed.</p>
-            <p>Here’s an example that shows how to connect to Strata’s database, and create a new table and select data from it:</p>
+            <p>Here's an example that shows how to connect to Strata's database, and create a new table and select data from it:</p>
             <pre>// connect to local project database;<br>// HostApp.getDatabase() returns a DbConnection object<br>var db = HostApp.getDatabase();<br><br>// create a table<br>var result = db.execute("CREATE TABLE mytable (field1 VARCHAR(80));");<br><br>// add some rows<br>db.execute("<br>        INSERT INTO mytable (field1) VALUES ('111');<br>        INSERT INTO mytable (field1) VALUES ('222');<br>        INSERT INTO mytable (field1) VALUES ('333');<br>        ");<br><br>// update application's project tree (we do this<br>// so that the newly created table displays in the<br>// application project tree)<br>HostApp.refresh();<br><br>// select the rows and display the values<br>var result = db.execute("SELECT * FROM mytable");<br><br>while (result.next())<br>{<br>    alert(result.field1);<br>}</pre>
             <a id="c243"></a>
             <h2>Encryption</h2>
@@ -69,7 +69,7 @@
             <pre>var text = "The hash of this text is: ";<br>alert(text + Hash.md5(text));</pre>
             <h2>System</h2>
             <p>The System category contains classes for interacting with the computer on which the script is running.&nbsp; With classes in this category, you can find out information about system settings, such as system metrics, fonts, and colors.&nbsp; In addition, you can use it to load and access shared libraries, such as DLLs, SOs, and DYLIBs.</p>
-            <p>For example, here’s how to show information about default system directories:</p>
+            <p>For example, here's how to show information about default system directories:</p>
             <pre>var output;<br><br>output += "Document Path: \t";<br>output += Environment.getDocumentsPath();<br>output += "\n";<br><br>output += "System Path: \t";<br>output += Environment.getSystemPath();<br>output += "\n";<br><br>output += "Temporary Path: \t";<br>output += Environment.getTempPath();<br>output += "\n\n";<br><br>alert(output);</pre>
             <h2>Host Application</h2>
             <p>The Host Application category contains classes for interacting with the application in which the script is running.&nbsp; For example, if a Script is running inside Strata, the host application is Strata and using the Host Application category of classes, you are able to add items to menus, add forms to dockable panes, manipulate documents, and more.</p>
@@ -85,7 +85,7 @@
             </ul>
             <p>In addition to the two required files listed above, .kxt files may also contain additional files:</p>
             <ul>
-               <li>As many Javascript source files as you’d like to include which may be referenced in your Javascript code. <i>(Optional)</i></li>
+               <li>As many Javascript source files as you'd like to include which may be referenced in your Javascript code. <i>(Optional)</i></li>
                <li>As many Extension resource files as you'd like to include which may be referenced in your Javascript code.&nbsp; To see how to reference Extension resource files in your Javascript code, see "Can I add bitmaps and text resources to an extension?". <i>(Optional)</i></li>
                <li>A bitmap file that will be shown in the Extension Manager in the application. This bitmap file must be referenced in the &lt;bitmap&gt; tag in the "info.xml" file. <i>(Optional)</i></li>
             </ul>
