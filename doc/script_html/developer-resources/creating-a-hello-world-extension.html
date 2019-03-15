@@ -17,7 +17,7 @@
             <h2>Creating a "Hello World" Extension</h2>
             <p>While scripts can be run individually, sometimes you want to package them up so they can be run as part of the application, without the script being stored in the project or on in the filesystem, but instead existing as if it were part of the native functionality of the package.</p>
             <p>When scripts are packaged up this way and installed, they are called extensions.&nbsp; The extension encapsulates the functionality of the script, along with other resources such as bitmaps or data tables, into a single extension file.</p>
-            <p>Then, when an extension is installed in Kirix Strata™, the scripts contained in the extension run each time Strata is opened, adding additional functionality to Strata as if it existed natively as part of the package.</p>
+            <p>Then, when an extension is installed in the application, the scripts contained in the extension run each time Strata is opened, adding additional functionality to Strata as if it existed natively as part of the package.</p>
             <p>You can create an extension for Strata by packaging a script together with an XML file, called "info.xml." This XML file contains the information required to load and run the script as an extension in Strata.</p>
             <p>To see this in action, let's create a simple “Hello World” extension that shows a “Hello World” alert when we click on a menu item in the tools folder.</p>
             <p>First, create a script file called “main.js” to hold the primary contents of the extension:</p>
@@ -63,15 +63,15 @@
             <p>&nbsp;</p>
             <ul>
                <li>&lt;guid&gt;&nbsp;&nbsp;&nbsp; Unique ID for the extension (generate using the extension wizard)</li>
-               <li>&lt;name&gt;&nbsp;&nbsp;&nbsp; Name shown in the Extensions panel in Kirix Strata.</li>
+               <li>&lt;name&gt;&nbsp;&nbsp;&nbsp; Name shown in the Extensions panel in the application.</li>
                <li>&lt;author&gt;&nbsp;&nbsp;&nbsp; Author of the extension.</li>
-               <li>&lt;bitmap&gt;&nbsp;&nbsp;&nbsp; Bitmap shown in the Extensions panel in Kirix Strata.</li>
+               <li>&lt;bitmap&gt;&nbsp;&nbsp;&nbsp; Bitmap shown in the Extensions panel in the application.</li>
                <li>&lt;startup&gt;&nbsp;&nbsp;&nbsp; Initial script file to be called when the extension is run.</li>
                <li>&lt;copyright&gt;&nbsp;&nbsp;&nbsp; Copyright information for the extension.</li>
-               <li>&lt;description&gt;&nbsp;&nbsp;&nbsp; Description shown in the Extensions panel in Kirix Strata.</li>
-               <li>&lt;major_version&gt;&nbsp;&nbsp;&nbsp; Major version shown in the Extensions panel in Kirix Strata.</li>
-               <li>&lt;minor_version&gt;&nbsp;&nbsp;&nbsp; Minor version shown in the Extensions panel in Kirix Strata.</li>
-               <li>&lt;subminor_version&gt;&nbsp;&nbsp;&nbsp; Subminor version shown in the Extensions panel in Kirix Strata.</li>
+               <li>&lt;description&gt;&nbsp;&nbsp;&nbsp; Description shown in the Extensions panel in the application.</li>
+               <li>&lt;major_version&gt;&nbsp;&nbsp;&nbsp; Major version shown in the Extensions panel in the application.</li>
+               <li>&lt;minor_version&gt;&nbsp;&nbsp;&nbsp; Minor version shown in the Extensions panel in the application.</li>
+               <li>&lt;subminor_version&gt;&nbsp;&nbsp;&nbsp; Subminor version shown in the Extensions panel in the application.</li>
             </ul>
             <p>Once you’ve created this information file, it’s time to package up the main.js file and the info.xml file into an extension, and install it.&nbsp; To do this:</p>
             <ol>

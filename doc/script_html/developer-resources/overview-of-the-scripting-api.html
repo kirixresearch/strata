@@ -15,7 +15,7 @@
             <h1>Developer Resources</h1>
             <a id="c235"></a>
             <h2>Overview of the Scripting API</h2>
-            <p>The scripting API in Kirix Strata™ utilizes classes to define a rich API for creating GUI elements, such as forms with a native look&amp;feel, accessing and manipulating databases, interfacing with the web, and more.</p>
+            <p>The scripting API in the application utilizes classes to define a rich API for creating GUI elements, such as forms with a native look&amp;feel, accessing and manipulating databases, interfacing with the web, and more.</p>
             <p>The class categories divide roughly into classes used for basic language operations, classes for creating interfaces, classes for accessing and manipulating information, and classes for interacting with the system and host application.</p>
             <p>Of course, the classes used for the basic language operations are the standard core JavaScript classes.&nbsp; In addition to this, the classes used for creating interfaces are the classes in the Application, Dialog, Form, Control, Layout, and Graphics categories.&nbsp; The classes used for accessing and manipulating information are the classes in the Input/Output, XML, DOM, Network, Database and Encryption categories.&nbsp; And finally, the classes used for interacting with the system and the host application are the classes in the System and Host Application categories.</p>
             <p>Following is an overview of the major class categories as well as some of the important classes in each category:</p>
@@ -87,20 +87,20 @@
             <ul>
                <li>As many Javascript source files as you’d like to include which may be referenced in your Javascript code. <i>(Optional)</i></li>
                <li>As many Extension resource files as you'd like to include which may be referenced in your Javascript code.&nbsp; To see how to reference Extension resource files in your Javascript code, see "Can I add bitmaps and text resources to an extension?". <i>(Optional)</i></li>
-               <li>A bitmap file that will be shown in the Extension Manager in Kirix Strata. This bitmap file must be referenced in the &lt;bitmap&gt; tag in the "info.xml" file. <i>(Optional)</i></li>
+               <li>A bitmap file that will be shown in the Extension Manager in the application. This bitmap file must be referenced in the &lt;bitmap&gt; tag in the "info.xml" file. <i>(Optional)</i></li>
             </ul>
             <p>The fields in this "info.xml" file are as follows:</p>
             <ul>
                <li>&lt;guid&gt;&nbsp;&nbsp;&nbsp; Unique ID for the extension</li>
-               <li>&lt;name&gt;&nbsp;&nbsp;&nbsp; Name shown in the Extensions panel in Kirix Strata.</li>
+               <li>&lt;name&gt;&nbsp;&nbsp;&nbsp; Name shown in the Extensions panel in the application.</li>
                <li>&lt;author&gt;&nbsp;&nbsp;&nbsp; Author of the extension.</li>
-               <li>&lt;bitmap&gt;&nbsp;&nbsp;&nbsp; Bitmap shown in the Extensions panel in Kirix Strata.</li>
+               <li>&lt;bitmap&gt;&nbsp;&nbsp;&nbsp; Bitmap shown in the Extensions panel in the application.</li>
                <li>&lt;startup&gt;&nbsp;&nbsp;&nbsp; Initial script file to be called when the extension is run.</li>
                <li>&lt;copyright&gt;&nbsp;&nbsp;&nbsp; Copyright information for the extension.</li>
-               <li>&lt;description&gt;&nbsp;&nbsp;&nbsp; Description shown in the Extensions panel in Kirix Strata.</li>
-               <li>&lt;major_version&gt;&nbsp;&nbsp;&nbsp; Major version shown in the Extensions panel in Kirix Strata.</li>
-               <li>&lt;minor_version&gt;&nbsp;&nbsp;&nbsp; Minor version shown in the Extensions panel in Kirix Strata.</li>
-               <li>&lt;subminor_version&gt;&nbsp;&nbsp;&nbsp; Subminor version shown in the Extensions panel in Kirix Strata.</li>
+               <li>&lt;description&gt;&nbsp;&nbsp;&nbsp; Description shown in the Extensions panel in the application.</li>
+               <li>&lt;major_version&gt;&nbsp;&nbsp;&nbsp; Major version shown in the Extensions panel in the application.</li>
+               <li>&lt;minor_version&gt;&nbsp;&nbsp;&nbsp; Minor version shown in the Extensions panel in the application.</li>
+               <li>&lt;subminor_version&gt;&nbsp;&nbsp;&nbsp; Subminor version shown in the Extensions panel in the application.</li>
             </ul>
             <p>Here's what an example "info.xml" file would look like:</p>
             <pre>&lt;?xml version="1.0"&gt;<br>&lt;extension_info&gt;<br>    &lt;guid&gt;{9642c44c-f790-4f16-9d46-fb54fc97d1a7}&lt;/guid&gt;<br>    &lt;name&gt;Example Extension&lt;/name&gt;<br>    &lt;author&gt;Example Industries, Inc.&lt;/author&gt;<br>    &lt;bitmap&gt;icon.png&lt;/bitmap&gt;<br>    &lt;startup&gt;main.js&lt;/startup&gt;<br>    &lt;copyright&gt;(c) 2008 Example Industries, Inc.&lt;/copyright&gt;<br>    &lt;description&gt;Example extension description goes here.&lt;/description&gt;<br>    &lt;major_version&gt;1&lt;/major_version&gt;<br>    &lt;minor_version&gt;0&lt;/minor_version&gt;<br>    &lt;subminor_version&gt;0&lt;/subminor_version&gt;<br>&lt;/extension_info&gt;</pre>
