@@ -1,0 +1,191 @@
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: Arial, Verdana, Helvetica, sans-serif;
+  font-size: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  line-height: 1.15;
+  overflow-x: auto;
+  overflow-y: scroll;
+}
+
+body {
+  position: relative;
+  color: #333;
+  background: #f5f5f5;
+  overflow: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 1em 0;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: normal;
+  line-height: 1.15;
+  margin: 0.8em 0;
+  color: #aaa;
+}
+
+h1:first-child {
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 1.75rem;
+  font-weight: normal;
+  color: #fe7100;
+}
+
+h3 {
+  font-size: 1.375rem;
+  margin: 1.5em 0 1em;
+}
+
+h4 {
+  font-size: 1rem;
+  margin: 1em 0 0.5em;
+}
+
+h5 {
+  font-size: 1rem;
+}
+
+h6 {
+  font-size: 0.75rem;
+}
+
+a:link,
+a:active,
+a:visited,
+a:hover {
+  color: #2766ad;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+p, ul, pre, li, td, th {
+  line-height: 1.5em;
+  margin-bottom: 1em;
+}
+
+p {
+  line-height: 1.5;
+  margin: 1em 0;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0;
+  margin-bottom: 1rem;
+}
+
+td {
+  font-size: 14px;
+  padding: 1px 4px;
+}
+
+tr:hover td {
+  background: #f5f5f5;
+}
+
+dt {
+  margin-left: 2rem;
+  margin-right: 20px;
+  font-size: 12px;
+  font-family: monospace;
+  color: #555;
+}
+
+dd {
+  font-size: 14px;
+  line-height: 20px;
+  margin-bottom: 10px;
+  margin-right: 20px;
+  margin-left: 60px;
+}
+
+ol {
+  margin-bottom: 30px;
+  margin-left: 40px;
+  margin-right: 40px;
+}
+
+code, pre, div.code {
+  display: block;
+  background: #f5f5f5;
+  border: 1px solid #dadada;
+  padding: 11px;
+  font-size: 12px;
+  line-height: 1.3em;
+  overflow: auto;
+  margin: 0 0 20px;
+}
+
+
+p.docs-returns,
+p.docs-description {
+  margin-left: 2rem;
+  font-size: 14px;
+}
+
+dl.code-constructor dt,
+dl.code-syntax dt {
+  margin-bottom: 12px;
+  margin-left: 0;
+  white-space: pre;
+}
+
+dl.code-constructor dt {
+  margin-left: 2rem;
+}
+
+dl.code-constructor,
+dl.code-syntax {
+  padding-bottom: 12px;
+}
+
+.backlink {
+  text-align: right;
+  margin: 0.5rem 1.25rem;
+  font-size: 14px;
+  float: right;
+  clear: both;
+}
+
+.class-method {
+  padding: 15px 0 2px;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+#page-wrapper {
+  margin: 0 auto;
+  max-width: 1152px;
+}
+
+#page-content {
+  margin: 3rem 3rem 6rem;
+  padding: 3rem;
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 16px -8px rgba(0,0,0,0.4);
+}
