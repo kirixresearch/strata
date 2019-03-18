@@ -1,0 +1,113 @@
+<!doctype html>
+<html class="no-js" lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Overview of the Scripting API | Workstation Documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="img/favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <div id="page-wrapper">
+      <a name="top" id="top"></a>
+      <div id="page-content">
+        <div class="backlink"><a href="index.html">Back to Home</a></div>
+        <h1>Developer Resources</h1>
+        <a id="c235"></a>
+        <h2>Overview of the Scripting API</h2>
+        <p>The scripting API in the application utilizes classes to define a rich API for creating GUI elements, such as forms with a native look&amp;feel, accessing and manipulating databases, interfacing with the web, and more.</p>
+        <p>The class categories divide roughly into classes used for basic language operations, classes for creating interfaces, classes for accessing and manipulating information, and classes for interacting with the system and host application.</p>
+        <p>Of course, the classes used for the basic language operations are the standard core JavaScript classes.&nbsp; In addition to this, the classes used for creating interfaces are the classes in the Application, Dialog, Form, Control, Layout, and Graphics categories.&nbsp; The classes used for accessing and manipulating information are the classes in the Input/Output, XML, DOM, Network, Database and Encryption categories.&nbsp; And finally, the classes used for interacting with the system and the host application are the classes in the System and Host Application categories.</p>
+        <p>Following is an overview of the major class categories as well as some of the important classes in each category:</p>
+        <a id="c236"></a>
+        <h2>Core</h2>
+        <p>The Core class category contains the foundational classes and functions that are used to manipulate strings, numbers, dates, boolean values, arrays, and basic objects.</p>
+        <p>For example, with the String class, you can concatenate strings, split them up, extract substrings, or match and replace portions of strings.&nbsp; Or, with the Array class, you can store collections of Strings or Numbers, add or remove elements from these collections, sort these elements, or iterate through them, performing operations on each element.</p>
+        <a id="c237"></a>
+        <h2>Application</h2>
+        <p>The Application category contains classes essential for creating and interacting with script-defined interfaces, and it contains both the Application class as well as the Event classes.</p>
+        <p>The Application class is responsible for starting and stopping the script event loop, which drives the user interface aspects of the program and coordinates the connection between the program code and the user's actions.</p>
+        <p>In practice, the Application class only needs to be called if the script needs to process events, and in this case, it should appear after the main form is created and shown, near the top of the script:</p>
+        <pre>var a = new Form;<br>a.show();<br>Application.run();</pre>
+        <p>While the Application class is responsible for the event loop, the Event class serves as the base class for the events that are actually processed, such as mouse events.&nbsp; The Event class contains functions for dispatching events as well as functions for connecting to the event so that when the event is dispatched, appropriate event handlers can be notified that the event has occurred, as well as receive information about the event.</p>
+        <a id="c238"></a>
+        <h2>Dialog</h2>
+        <p>The dialog category of classes contains classes for creating stock dialogs.&nbsp; For example, using these classes, you can create dialogs for opening or saving files, entering text or passwords, or selecting colors.</p>
+        <p>While interfaces usually require the Application event to start the event loop, dialogs don't need the Application event loop to run.</p>
+        <p>So, to create a new file open dialog for selecting images, you might create a script like this:</p>
+        <pre>// create a new file dialog object<br>var dlg = new FileDialog;<br><br>// show these file types in the file dialogs filter<br>dlg.setFilter("Bitmap Files|*.bmp|JPEG Images|*.jpg;*.jpeg");<br><br>// show the dialog, and accept the results only if the<br>// user presses Ok<br><br>if (dlg.showDialog() == DialogResult.Ok)<br>{<br>    var files = dlg.getPaths();<br><br>    for (var f in files)<br>        alert(files[f]);<br>}</pre>
+        <a id="c239"></a>
+        <h2>Form</h2>
+        <p>The Form category contains classes for creating top-level forms that contain other controls, as well as for creating and manipulating menu bars, toolbars, and status bars.</p>
+        <a id="c240"></a>
+        <h2>Control</h2>
+        <p>The Control category contains classes for controls that are added to forms.&nbsp; With the classes in this category, you can add buttons, text controls, web controls, tree controls, list controls, and other important interface elements to your forms.&nbsp; In addition, by extending the FormControl class, you can create your own controls.</p>
+        <p>Here's an example that adds a button to a form and closes the form when the button is clicked:</p>
+        <pre>// create an instance of our derived MyForm class<br>var f = new MyForm;<br>f.show();<br>Application.run();<br><br>// create our own class derived from Form<br>class MyForm extends Form<br>{<br>    function MyForm()<br>    {<br>        // call the constructor on the base class Form<br>        super("Button Example", 100, 100, 200, 100);<br>        <br>        // create a button and add the button to our form<br>        var button = new Button("Exit", 60, 20, 80, 24);<br>        this.add(button);<br>        <br>        // when the button is clicked, call the onButtonClicked<br>        // event handler on this class<br>        button.click.connect(this, onButtonClicked);<br>    }<br>    <br>    function onButtonClicked()<br>    {<br>        // when the button is clicked, exit the application<br>        Application.exit();<br>    }<br>}</pre>
+        <a id="c241"></a>
+        <h2>Layout</h2>
+        <p>The Layout category contains classes for laying our controls on a form.</p>
+        <h2>Graphics</h2>
+        <p>The Graphics category contains classes for drawing to the device context of a form.</p>
+        <h2>Input/Output</h2>
+        <p>The Input/Output category contains classes for reading and writing to text and binary files.</p>
+        <h2>XML</h2>
+        <p>The XML category contains a class for accessing information in XML.</p>
+        <h2>Document Object Model (DOM)</h2>
+        <p>The Document Object Model category contains classes for accessing and manipulating the document object model.</p>
+        <h2>Network</h2>
+        <p>The Network category contains classes for issuing HttpRequests as well as transferring data via FTP and SFTP.</p>
+        <a id="c242"></a>
+        <h2>Database</h2>
+        <p>The database category of classes contains information for connecting to databases, such as Oracle, MySQL, or the application's database, and interacting with the data inside the database.&nbsp; With classes in this category, you can connect to databases, create tables, and perform queries on the data, such as queries to select data from tables, insert new records into tables, delete records, as well as other standard database operations.</p>
+        <p>The main classes in the Database category are DbConnection and DbResult:&nbsp; DbConnection is used to connect to databases and execute SQL commands on the connected database.&nbsp; DbResult is used to iterate through whatever results are returned when the SQL is executed.</p>
+        <p>Here's an example that shows how to connect to the application's database, and create a new table and select data from it:</p>
+        <pre>// connect to local project database;<br>// HostApp.getDatabase() returns a DbConnection object<br>var db = HostApp.getDatabase();<br><br>// create a table<br>var result = db.execute("CREATE TABLE mytable (field1 VARCHAR(80));");<br><br>// add some rows<br>db.execute("<br>        INSERT INTO mytable (field1) VALUES ('111');<br>        INSERT INTO mytable (field1) VALUES ('222');<br>        INSERT INTO mytable (field1) VALUES ('333');<br>        ");<br><br>// update application's project tree (we do this<br>// so that the newly created table displays in the<br>// application project tree)<br>HostApp.refresh();<br><br>// select the rows and display the values<br>var result = db.execute("SELECT * FROM mytable");<br><br>while (result.next())<br>{<br>    alert(result.field1);<br>}</pre>
+        <a id="c243"></a>
+        <h2>Encryption</h2>
+        <p>The encryption category contains classes for encrypting strings.&nbsp; For example, you can perform use the Hash class to perform an MD5 hash as follows:</p>
+        <pre>var text = "The hash of this text is: ";<br>alert(text + Hash.md5(text));</pre>
+        <h2>System</h2>
+        <p>The System category contains classes for interacting with the computer on which the script is running.&nbsp; With classes in this category, you can find out information about system settings, such as system metrics, fonts, and colors.&nbsp; In addition, you can use it to load and access shared libraries, such as DLLs, SOs, and DYLIBs.</p>
+        <p>For example, here's how to show information about default system directories:</p>
+        <pre>var output;<br><br>output += "Document Path: \t";<br>output += Environment.getDocumentsPath();<br>output += "\n";<br><br>output += "System Path: \t";<br>output += Environment.getSystemPath();<br>output += "\n";<br><br>output += "Temporary Path: \t";<br>output += Environment.getTempPath();<br>output += "\n\n";<br><br>alert(output);</pre>
+        <h2>Host Application</h2>
+        <p>The Host Application category contains classes for interacting with the application in which the script is running.&nbsp; For example, if a Script is running inside the application, the host application is the application and using the Host Application category of classes, you are able to add items to menus, add forms to dockable panes, manipulate documents, and more.</p>
+        <p>For example, if you want to find out all the open documents, you might do the following:</p>
+        <pre>// get all the host application's open documents, which <br>// are returned by HostApp.getDocuments() as an array of <br>// HostDocument objects<br>var g_all_documents;<br>g_all_documents = HostApp.getDocuments();<br><br>var g_all_locations = "The documents currently open are: \n\n";<br>for (var doc in g_all_documents)<br>{<br>    // for each open document, find the location<br>    var location;<br>    location = g_all_documents[doc].getLocation();<br>    g_all_locations += location + "\n";<br>}<br><br>// show the open locations<br>alert(g_all_locations);</pre>
+        <a id="c244"></a>
+        <h2>Extensions</h2>
+        <p>The application extensions are stored and distributed as ".kxt" files.&nbsp; These are simply .zip files with a .kxt file extension.&nbsp; To put together a new .kxt file, start by creating an empty .zip file and add your script files, info.xml and any other resources into it.&nbsp; Finally, change the file extension from ".zip" to ".kxt".</p>
+        <p>In order for an extension to work, your .kxt file must contain at least two items:</p>
+        <ul>
+          <li><b>info.xml</b> - An XML file with the metadata for the extension.&nbsp; See an example of this type of file below.</li>
+          <li><b>main.js</b> - A JavaScript file that contains the code you want to run when the extension loads.</li>
+        </ul>
+        <p>In addition to the two required files listed above, .kxt files may also contain additional files:</p>
+        <ul>
+          <li>As many Javascript source files as you'd like to include which may be referenced in your Javascript code. <i>(Optional)</i></li>
+          <li>As many Extension resource files as you'd like to include which may be referenced in your Javascript code.&nbsp; To see how to reference Extension resource files in your Javascript code, see "Can I add bitmaps and text resources to an extension?". <i>(Optional)</i></li>
+          <li>A bitmap file that will be shown in the Extension Manager in the application. This bitmap file must be referenced in the &lt;bitmap&gt; tag in the "info.xml" file. <i>(Optional)</i></li>
+        </ul>
+        <p>The fields in this "info.xml" file are as follows:</p>
+        <ul>
+          <li>&lt;guid&gt;&nbsp;&nbsp;&nbsp; Unique ID for the extension</li>
+          <li>&lt;name&gt;&nbsp;&nbsp;&nbsp; Name shown in the Extensions panel in the application.</li>
+          <li>&lt;author&gt;&nbsp;&nbsp;&nbsp; Author of the extension.</li>
+          <li>&lt;bitmap&gt;&nbsp;&nbsp;&nbsp; Bitmap shown in the Extensions panel in the application.</li>
+          <li>&lt;startup&gt;&nbsp;&nbsp;&nbsp; Initial script file to be called when the extension is run.</li>
+          <li>&lt;copyright&gt;&nbsp;&nbsp;&nbsp; Copyright information for the extension.</li>
+          <li>&lt;description&gt;&nbsp;&nbsp;&nbsp; Description shown in the Extensions panel in the application.</li>
+          <li>&lt;major_version&gt;&nbsp;&nbsp;&nbsp; Major version shown in the Extensions panel in the application.</li>
+          <li>&lt;minor_version&gt;&nbsp;&nbsp;&nbsp; Minor version shown in the Extensions panel in the application.</li>
+          <li>&lt;subminor_version&gt;&nbsp;&nbsp;&nbsp; Subminor version shown in the Extensions panel in the application.</li>
+        </ul>
+        <p>Here's what an example "info.xml" file would look like:</p>
+        <pre>&lt;?xml version="1.0"&gt;<br>&lt;extension_info&gt;<br>    &lt;guid&gt;{9642c44c-f790-4f16-9d46-fb54fc97d1a7}&lt;/guid&gt;<br>    &lt;name&gt;Example Extension&lt;/name&gt;<br>    &lt;author&gt;Example Industries, Inc.&lt;/author&gt;<br>    &lt;bitmap&gt;icon.png&lt;/bitmap&gt;<br>    &lt;startup&gt;main.js&lt;/startup&gt;<br>    &lt;copyright&gt;(c) 2008 Example Industries, Inc.&lt;/copyright&gt;<br>    &lt;description&gt;Example extension description goes here.&lt;/description&gt;<br>    &lt;major_version&gt;1&lt;/major_version&gt;<br>    &lt;minor_version&gt;0&lt;/minor_version&gt;<br>    &lt;subminor_version&gt;0&lt;/subminor_version&gt;<br>&lt;/extension_info&gt;</pre>
+        <p>After you've put together a .kxt file, you can add it to the application by selecting Extensions from the Tools menu.&nbsp; An Extension Manager will appear; click the Add Extensions button to add your extension to the list.&nbsp; Going forward, every time the application loads, it will automatically launch your extension and run the code you have in "main.js".<br><br></p>
+        <p>&nbsp;</p>
+      </div>
+    </div>
+  </body>
+</html>

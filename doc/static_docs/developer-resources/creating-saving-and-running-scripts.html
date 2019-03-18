@@ -1,0 +1,45 @@
+<!doctype html>
+<html class="no-js" lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Creating, Saving, and Running Scripts | Workstation Documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="img/favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <div id="page-wrapper">
+      <a name="top" id="top"></a>
+      <div id="page-content">
+        <div class="backlink"><a href="index.html">Back to Home</a></div>
+        <h1>Developer Resources</h1>
+        <a id="c228"></a>
+        <h2>Creating, Saving, and Running Scripts</h2>
+        <p>Unlike scripts in web pages, an application script is not embedded inside HTML markup.&nbsp; Instead, they are simply standalone text files that contain JavaScript that can be executed inside the application as a program, or rolled up into extensions that execute when the application runs.</p>
+        <p>To create a new script that shows a message:</p>
+        <ol>
+          <li>Go to the File menu and select New-&gt;Script, which will open a new text editor without any script.</li>
+          <li>
+            In the script editor, enter the the following command<br><br>
+            <pre>alert("test");</pre>
+          </li>
+        </ol>
+        <p>To save this script to the project and run it:</p>
+        <ol>
+          <li>Go to the File menu and select "Save As".</li>
+          <li>In the project "Save As" dialog, enter the name "Test_script", then press "Save".</li>
+          <li>Then, while the script is open, run it by either selecting Run/Script Query from the Tools menu, or pressing Alt-Enter hotkey to issue a keyboard command to run the script.</li>
+        </ol>
+        <p>While we saved this script in the project, we could also have saved it to the file system.&nbsp; To save this script to the filesystem:</p>
+        <ol>
+          <li>Go to the File menu, and select "Save As External"</li>
+          <li>Then, save the script as you would any other file on your system.</li>
+        </ol>
+        <p>Actually, both scripts are stored on the filesystem.&nbsp; However, when scripts are created inside a project, the script file is managed directly by the project and is not readily accessible to other applications on the filesystem.&nbsp; In contrast, when scripts are created outside the project, they are managed by the filesystem and can be readily accessed and manipulated by tools outside of the application.</p>
+        <p>Because you can create and save scripts inside or outside your project, you are free to manage your scripts as you see fit.&nbsp; You can open and save scripts to both locations, and move them back and forth between the project and the file system by simply using "Save As" or "Save As External."</p>
+        <p>Creating scripts inside a project is useful if you want to create a script that's tightly related to a specific set of tables and queries in a system that you run on a regular basis, and that you don't want to accidentally be moved by other tools in the filesystem.&nbsp; However, creating scripts outside a project is useful if you want to edit scripts with other text editors, manage scripts with source control, or develop scripts collaboratively with other developers.</p>
+      </div>
+    </div>
+  </body>
+</html>

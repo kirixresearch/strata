@@ -41,10 +41,6 @@ h1 {
   color: #aaa;
 }
 
-h1:first-child {
-  margin-top: 0;
-}
-
 h2 {
   font-size: 1.75rem;
   font-weight: normal;
@@ -163,11 +159,16 @@ dl.code-syntax {
 }
 
 .backlink {
-  text-align: right;
-  margin: 0.5rem 1.25rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 3rem 3rem 0;
   font-size: 14px;
-  float: right;
-  clear: both;
+}
+
+.backlink::before {
+  content: '« ';
+  color: #2766ad;
 }
 
 .class-method {
@@ -183,6 +184,7 @@ dl.code-syntax {
 }
 
 #page-content {
+  position: relative;
   margin: 3rem 3rem 6rem;
   padding: 3rem;
   background: #fff;
