@@ -2266,6 +2266,7 @@ xd::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
             std::wstring file_primary_key;
             int file_type = xd::filetypeTable;
             int file_format = xd::formatDefault;
+            int file_flags = 0;
             int is_mount = -1;
             std::wstring file_mime_type;
             std::wstring file_object_id;
@@ -2288,6 +2289,7 @@ xd::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
                         file_mime_type = file_info->getMimeType();
                         file_object_id = file_info->getObjectId();
                         file_url = file_info->getUrl();
+                        file_flags = file_info->getFlags();
                         if (is_mount == -1)
                             is_mount = file_info->isMount() ? 1 : 0;
                     }
@@ -2303,6 +2305,7 @@ xd::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
             f->mime_type = file_mime_type;
             f->object_id = file_object_id;
             f->url = file_url;
+            f->flags = file_flags;
             
             if (f->is_mount)
             {
