@@ -206,7 +206,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;secur32.lib;../xdcommon/lib/xdcommonu.lib;../../kscript/lib/kscriptu.lib;../../kl/lib/klu.lib;../../supp/xlnt/source/Debug/xlnt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;secur32.lib;../xdcommon/lib/xdcommonu.lib;../../kscript/lib/kscriptu.lib;../../kl/lib/klu.lib;../../supp/xlnt/source/Release/xlnt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\ReleaseUnicode/xdexcel.pdb</ProgramDatabaseFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
