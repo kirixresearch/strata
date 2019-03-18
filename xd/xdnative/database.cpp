@@ -2633,7 +2633,10 @@ xd::IFileInfoEnumPtr XdnativeDatabase::getFolderInfo(const std::wstring& _mask)
             xd::IFileInfoPtr file_info = getFileInfo(ofs_path);
             if (file_info.isOk())
             {
-                retval->append(file_info);
+                if (file_name.substr(0,5) != L"xtmp_")
+                {
+                    retval->append(file_info);
+                }
             }
         }
 
