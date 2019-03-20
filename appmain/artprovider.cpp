@@ -139,7 +139,11 @@ bool DrawUxThemeCloseButton(wxDC& dc,
         button_state == wxAUI_BUTTON_STATE_CHECKED)
         return true;
 
+#if wxCHECK_VERSION(3,1,1)
+    if (true)
+#else
     if (wxUxThemeEngine::Get())
+#endif
     {
         wxUxThemeHandle hTheme(wnd, L"WINDOW");
         if (hTheme)
@@ -169,12 +173,19 @@ bool DrawUxThemeCloseButton(wxDC& dc,
             rc.right = rc.left+13;
             rc.bottom = rc.top+13;
             
+
             // draw the themed close button
+
+#if wxCHECK_VERSION(3,1,1)
+            ::DrawThemeBackground(hTheme, (HDC)kcl::getHdcFrom(dc), 19 /*WP_SMALLCLOSEBUTTON*/, state, &rc, NULL);
+#else
             wxUxThemeEngine::Get()->DrawThemeBackground(
-                                hTheme, 
-                                (HDC)kcl::getHdcFrom(dc), 
-                                19 /*WP_SMALLCLOSEBUTTON*/,
-                                state, &rc, NULL);
+                hTheme,
+                (HDC)kcl::getHdcFrom(dc),
+                19 /*WP_SMALLCLOSEBUTTON*/,
+                state, &rc, NULL);
+#endif
+
             return true;
         }
     }
