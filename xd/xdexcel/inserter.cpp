@@ -22,7 +22,10 @@
 #include <kl/xml.h>
 #include "../xdcommon/util.h"
 
-const int PACKAGE_BLOCK_SIZE = 1000000;
+
+#define XLNT_STATIC
+#include <xlnt/xlnt.hpp>
+
 
 ExcelRowInserter::ExcelRowInserter(ExcelDatabase* db, const std::wstring& table, const xd::Structure& structure)
 {
@@ -38,6 +41,8 @@ ExcelRowInserter::ExcelRowInserter(ExcelDatabase* db, const std::wstring& table,
     m_rows_per_buf = 0;
     m_table = table;
     kl::replaceStr(m_table, L"\"", L"");
+
+    m_ws = new xlnt::worksheet();
 }
 
 ExcelRowInserter::~ExcelRowInserter()
@@ -50,7 +55,7 @@ ExcelRowInserter::~ExcelRowInserter()
 xd::objhandle_t ExcelRowInserter::getHandle(const std::wstring& column_name)
 {
     std::vector<ExcelInsertFieldData>::iterator it;
-    for (it = m_fields.begin(); it != m_fields.end(); ++it)
+    for (it = m_insert_data.begin(); it != m_insert_data.end(); ++it)
     {
         if (kl::iequals(it->m_name, column_name))
             return &(*it);
@@ -94,8 +99,7 @@ bool ExcelRowInserter::putWideString(xd::objhandle_t column_handle,
     return true;
 }
 
-bool ExcelRowInserter::putDouble(xd::objhandle_t column_handle,
-                               double value)
+bool ExcelRowInserter::putDouble(xd::objhandle_t column_handle, double value)
 {
     ExcelInsertFieldData* f = (ExcelInsertFieldData*)column_handle;
     if (!f)
@@ -108,8 +112,7 @@ bool ExcelRowInserter::putDouble(xd::objhandle_t column_handle,
     return true;
 }
 
-bool ExcelRowInserter::putInteger(xd::objhandle_t column_handle,
-                                int value)
+bool ExcelRowInserter::putInteger(xd::objhandle_t column_handle, int value)
 {
     ExcelInsertFieldData* f = (ExcelInsertFieldData*)column_handle;
     if (!f)
@@ -122,8 +125,7 @@ bool ExcelRowInserter::putInteger(xd::objhandle_t column_handle,
     return true;
 }
 
-bool ExcelRowInserter::putBoolean(xd::objhandle_t column_handle,
-                                bool value)
+bool ExcelRowInserter::putBoolean(xd::objhandle_t column_handle, bool value)
 {
     ExcelInsertFieldData* f = (ExcelInsertFieldData*)column_handle;
     if (!f)
@@ -136,8 +138,7 @@ bool ExcelRowInserter::putBoolean(xd::objhandle_t column_handle,
     return true;
 }
 
-bool ExcelRowInserter::putDateTime(xd::objhandle_t column_handle,
-                                 xd::datetime_t value)
+bool ExcelRowInserter::putDateTime(xd::objhandle_t column_handle, xd::datetime_t value)
 {
     ExcelInsertFieldData* f = (ExcelInsertFieldData*)column_handle;
     if (!f)
@@ -163,6 +164,24 @@ bool ExcelRowInserter::putNull(xd::objhandle_t column_handle)
 
 bool ExcelRowInserter::startInsert(const std::wstring& col_list)
 {
+    *m_ws = m_database->m_wb->active_sheet();
+
+    xd::Structure structure = m_database->describeTable(m_table);
+
+    // calculate the total physical row width
+    std::vector<xd::ColumnInfo>::const_iterator it;
+    int idx = 1;
+    for (it = structure.columns.begin(); it != structure.columns.end(); ++it)
+    {
+        ExcelInsertFieldData d;
+        d.m_name = it->name;
+        d.m_xd_type = it->type;
+        d.m_str_val = L"";
+        d.m_idx = idx++;
+
+        m_insert_data.push_back(d);
+    }
+
     return true;
 }
 
@@ -202,13 +221,25 @@ static void dbl2decstr(char* dest, double d, int width, int scale)
 
 bool ExcelRowInserter::insertRow()
 {
+    xlnt::row_t row = m_ws->next_row();
+
+    //std::vector<ExcelInsertFieldData>::iterator it;
+    //for (it = m_
+
+    for (auto& fld : m_insert_data)
+    {
+        m_ws->cell((xlnt::column_t)fld.m_idx, row).value(kl::toUtf8(fld.m_str_val).m_s);
+
+        // reset for next round
+        fld.m_str_val = L"";
+    }
+
     return true;
 }
 
 void ExcelRowInserter::finishInsert()
 {
-    if (!m_writer)
-        return;
+    m_database->m_wb->save(m_database->m_path);
 }
 
 bool ExcelRowInserter::flush()

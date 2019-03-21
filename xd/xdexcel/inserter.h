@@ -40,6 +40,8 @@ struct ExcelInsertFieldData
     }
 };
 
+namespace xlnt { class worksheet; };
+
 
 class ExcelStreamWriter;
 class ExcelRowInserter : public xd::IRowInserter
@@ -75,7 +77,6 @@ public:
 private:
 
     ExcelDatabase* m_database;
-    ExcelStreamWriter* m_writer;
 
     bool m_inserting;
     std::wstring m_table;
@@ -86,7 +87,9 @@ private:
     unsigned char* m_data;
 
     xd::Structure m_structure;
-    std::vector<ExcelInsertFieldData> m_fields;
+    std::vector<ExcelInsertFieldData> m_insert_data;
+
+    xlnt::worksheet* m_ws;
 };
 
 
