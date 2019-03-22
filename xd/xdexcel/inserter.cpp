@@ -25,7 +25,7 @@
 
 #define XLNT_STATIC
 #include <xlnt/xlnt.hpp>
-
+#include <xlnt/worksheet/sheet_format_properties.hpp>
 
 ExcelRowInserter::ExcelRowInserter(ExcelDatabase* db, const std::wstring& table, const xd::Structure& structure)
 {
@@ -170,7 +170,33 @@ bool ExcelRowInserter::putNull(xd::objhandle_t column_handle)
 
 bool ExcelRowInserter::startInsert(const std::wstring& col_list)
 {
-    *m_ws = m_database->m_wb->active_sheet();
+    try
+    {
+        *m_ws = m_database->m_wb->sheet_by_title(kl::toUtf8(m_table).m_s);
+    }
+    catch(xlnt::key_not_found e)
+    {
+        if (m_database->m_wb->sheet_count() == 1 && m_database->m_wb->active_sheet().next_row() == 1)
+        {
+            *m_ws = m_database->m_wb->active_sheet();
+            m_ws->title(kl::toUtf8(m_table).m_s);
+        }
+         else
+        {
+            *m_ws = m_database->m_wb->create_sheet();
+            m_ws->title(kl::toUtf8(m_table).m_s);
+        }
+    }
+
+    
+    // these next four lines fix a bug in xlnt when exporting to a sheet that
+    // is not the active sheet. For some reason the baseColWidth and defaultRowHeight
+    // attributes are not written in the sheetFormatPr tag unless the following are explicitly set
+    xlnt::sheet_format_properties format_properties;
+    format_properties.base_col_width = 10.0;
+    format_properties.default_row_height = 16.0;
+    (*m_ws).format_properties(format_properties);
+
 
     xlnt::row_t row = m_ws->next_row();
 
