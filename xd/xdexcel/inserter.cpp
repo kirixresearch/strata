@@ -159,12 +159,20 @@ bool ExcelRowInserter::putNull(xd::objhandle_t column_handle)
         return false;
     }
 
-    return false;
+    f->m_str_val = L"";
+    f->m_bool_val = false;
+    f->m_dbl_val = 0.0;
+    f->m_int_val = 0;
+    f->m_datetime_val = 0;
+
+    return true;
 }
 
 bool ExcelRowInserter::startInsert(const std::wstring& col_list)
 {
     *m_ws = m_database->m_wb->active_sheet();
+
+    xlnt::row_t row = m_ws->next_row();
 
     xd::Structure structure = m_database->describeTable(m_table);
 
@@ -179,6 +187,11 @@ bool ExcelRowInserter::startInsert(const std::wstring& col_list)
         d.m_str_val = L"";
         d.m_idx = idx++;
 
+        if (row == 1)
+        {
+            m_ws->cell((xlnt::column_t)d.m_idx, row).value(kl::toUtf8(d.m_name).m_s);
+        }
+
         m_insert_data.push_back(d);
     }
 
@@ -186,38 +199,6 @@ bool ExcelRowInserter::startInsert(const std::wstring& col_list)
 }
 
 
-// reipped from xdnative/util.cpp
-static void dbl2decstr(char* dest, double d, int width, int scale)
-{
-    double intpart;
-
-    // check for negative
-    if (d < 0.0)
-    {
-        *dest = '-';
-        dest++;
-        width--;
-        d = fabs(d);
-    }
-
-    // rounding
-    d += (0.5/kl::pow10(scale));
-
-    // put everything to the right of the decimal
-    d /= kl::pow10(width-scale);
-
-    while (width)
-    {
-        d *= 10;
-        d = modf(d, &intpart);
-        if (intpart > 9.1)
-            intpart = 0.0;
-
-        *dest = int(intpart) + '0';
-        dest++;
-        width--;
-    }
-}
 
 bool ExcelRowInserter::insertRow()
 {
@@ -228,7 +209,40 @@ bool ExcelRowInserter::insertRow()
 
     for (auto& fld : m_insert_data)
     {
-        m_ws->cell((xlnt::column_t)fld.m_idx, row).value(kl::toUtf8(fld.m_str_val).m_s);
+        switch (fld.m_xd_type)
+        {
+            case xd::typeCharacter:
+            case xd::typeWideCharacter:
+                m_ws->cell((xlnt::column_t)fld.m_idx, row).value(kl::toUtf8(fld.m_str_val).m_s);
+                break;
+
+            case xd::typeNumeric:
+            case xd::typeDouble:
+                m_ws->cell((xlnt::column_t)fld.m_idx, row).value(fld.m_dbl_val);
+                break;
+
+            case xd::typeInteger:
+                m_ws->cell((xlnt::column_t)fld.m_idx, row).value(fld.m_int_val);
+                break;
+
+            case xd::typeBoolean:
+                m_ws->cell((xlnt::column_t)fld.m_idx, row).value(fld.m_bool_val);
+                break;
+
+            case xd::typeDate:
+            {
+                xd::DateTime dt(fld.m_datetime_val);
+                m_ws->cell((xlnt::column_t)fld.m_idx, row).value(xlnt::date(dt.getYear(),dt.getMonth(),dt.getDay()));
+                break;
+            }
+
+            case xd::typeDateTime:
+            {
+                xd::DateTime dt(fld.m_datetime_val);
+                m_ws->cell((xlnt::column_t)fld.m_idx, row).value(xlnt::datetime(dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond(), dt.getMillisecond()*1000));
+                break;
+            }
+        }
 
         // reset for next round
         fld.m_str_val = L"";
