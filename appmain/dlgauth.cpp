@@ -87,21 +87,13 @@ public:
     DlgAuthHelp(wxWindow* parent)
                     : wxDialog(parent, -1, _("Software Activation Help"),
                          wxDefaultPosition,
-                         wxSize(600,420),
+                         wxDefaultSize,
                          wxDEFAULT_DIALOG_STYLE |
                          wxNO_FULL_REPAINT_ON_RESIZE |
                          wxCLIP_CHILDREN |
                          wxCENTER |
                          wxRESIZE_BORDER)
     {
-        SetMinSize(wxSize(600,420));
-        //SetMaxSize(wxSize(800,600));
-        
-        #ifdef __WXGTK__
-        SetSize(wxSize(620,520));
-        SetMinSize(wxSize(620,520));
-        #endif
-        
         wxString appname = APPLICATION_NAME;
         wxString support_telno = APP_CONTACT_SUPPORTTELNO;
         wxString support_email = APP_CONTACT_SUPPORTEMAIL;
@@ -205,6 +197,9 @@ public:
         
         // set the ok button as the default
         ok_button->SetDefault();
+
+        SetClientSize(main_sizer->GetMinSize().Scale(1.2f, 1.0));
+        SetMinSize(GetSize());
     }
 };
 
@@ -235,15 +230,15 @@ DlgAuth::DlgAuth(wxWindow* parent,
                  paladin::Authentication* global_auth)
                     : wxDialog(parent, -1, _("Software Activation"),
                          wxDefaultPosition,
-                         wxSize(480,360),
+                         wxDefaultSize,
                          wxDEFAULT_DIALOG_STYLE |
                          wxNO_FULL_REPAINT_ON_RESIZE |
                          wxCLIP_CHILDREN |
                          wxCENTER |
                          wxRESIZE_BORDER)
 {
-    SetMinSize(wxSize(480,360));
-    SetMaxSize(wxSize(640,480));
+    //SetMinSize(wxSize(480,360));
+    //SetMaxSize(wxSize(640,480));
     
     #ifdef __WXGTK__
     SetSize(wxSize(560,400));
@@ -318,6 +313,8 @@ DlgAuth::DlgAuth(wxWindow* parent,
     serial_sizer->Add(m_activation_valid->GetSize().GetWidth(), 1);
     
     
+    wxSize min_size_sitecode = m_serial_textctrl->GetTextExtent("XXXX XXXX XXXX XXXX").Scale(1.2f, 1.5f);
+    
     // measure the label widths
     wxSize label_size = getMaxTextSize(label_serial,
                                             label_sitecode,
@@ -327,8 +324,10 @@ DlgAuth::DlgAuth(wxWindow* parent,
     serial_sizer->SetItemMinSize(label_serial, label_size);
     sitecode_sizer->SetItemMinSize(label_sitecode, label_size);
     authcode_sizer->SetItemMinSize(label_authcode, label_size);
-    
-    
+
+    serial_sizer->SetItemMinSize(m_serial_textctrl, min_size_sitecode);
+    authcode_sizer->SetItemMinSize(m_authcode_textctrl, min_size_sitecode);
+
     // -- create status label --
     
     wxString activation_str;
@@ -368,7 +367,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     vert_sizer->Add(status_label, 0, wxEXPAND | wxRIGHT, 20);
     vert_sizer->AddSpacer(15);
     vert_sizer->Add(message, 0, wxEXPAND | wxRIGHT, 20);
-    vert_sizer->AddSpacer(20);
+    vert_sizer->AddSpacer(15);
     vert_sizer->Add(m_internet_radio);
     vert_sizer->AddSpacer(8);
     vert_sizer->Add(serial_sizer, 0, wxEXPAND | wxRIGHT, 60);
@@ -378,6 +377,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     vert_sizer->Add(sitecode_sizer, 0, wxEXPAND | wxRIGHT, 60);
     vert_sizer->AddSpacer(8);
     vert_sizer->Add(authcode_sizer, 0, wxEXPAND | wxRIGHT, 60);
+    vert_sizer->AddSpacer(8);
     
     
     // create top sizer
@@ -443,6 +443,9 @@ DlgAuth::DlgAuth(wxWindow* parent,
     
     // set the ok button as the default
     ok_button->SetDefault();
+
+    SetClientSize(main_sizer->GetMinSize());
+    SetMinSize(GetSize());
 }
 
 DlgAuth::~DlgAuth()
