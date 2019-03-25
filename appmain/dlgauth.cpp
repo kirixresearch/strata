@@ -200,6 +200,7 @@ public:
 
         SetClientSize(main_sizer->GetMinSize().Scale(1.2f, 1.0));
         SetMinSize(GetSize());
+        CenterOnScreen();
     }
 };
 
