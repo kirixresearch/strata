@@ -136,7 +136,7 @@
     </Link>
     <Manifest>
       <VerboseOutput>true</VerboseOutput>
-      <EnableDpiAwareness>false</EnableDpiAwareness>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
     </Manifest>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -190,6 +190,7 @@
     </Link>
     <Manifest>
       <VerboseOutput>true</VerboseOutput>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
     </Manifest>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -250,6 +251,9 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\ReleaseUnicode/appstrata.bsc</OutputFile>
     </Bscmake>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -303,6 +307,9 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\ReleaseUnicode/appstrata.bsc</OutputFile>
     </Bscmake>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\appmain\aapch.cpp">
