@@ -72,6 +72,27 @@ void initIdBitmapMap()
 
 
 
+// this art provider is exactly the same as wxAuiDefaultToolbarArt,
+// with the exception that it draw a border line at the top to
+// separate it from the StandardToolbar
+
+
+class ToolbarArt : public wxAuiDefaultToolBarArt
+{
+public:
+
+    void DrawBackground(wxDC& dc,
+        wxWindow* wnd,
+        const wxRect& rect)
+    {
+        wxColor start_color = kcl::stepColor(kcl::getBaseColor(), 150);
+        wxColor end_color = kcl::stepColor(kcl::getBaseColor(), 90);
+        dc.GradientFillLinear(rect, start_color, end_color, wxSOUTH);
+        //dc.SetPen(kcl::getBorderPen());
+        //dc.DrawLine(rect.x, rect.y, rect.x + rect.width, rect.y);
+    }
+};
+
 // -- Standard Toolbar implementation --
 
 BEGIN_EVENT_TABLE(StandardToolbar, wxAuiToolBar)
@@ -101,7 +122,9 @@ StandardToolbar::StandardToolbar(wxWindow* parent,
     m_url->setSingleClickSelect(true);
     //m_url = new wxBitmapComboBox(this, ID_Frame_UrlCtrl);
     
-    
+    SetArtProvider(new ToolbarArt);
+    SetToolBorderPadding(FromDIP(2));
+
     // use 24x24 pixel icons as our default
     setSmallIcons(false);
 
@@ -364,6 +387,7 @@ FormatToolbar::FormatToolbar(wxWindow* parent,
 {
     SetArtProvider(new FormatToolbarArt);
     SetToolPacking(0);
+    SetToolBorderPadding(FromDIP(2));
 
     // zoom combo box
     m_zoom_combo = new ZoomComboControl(this, ID_View_ZoomCombo);

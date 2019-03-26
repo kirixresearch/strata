@@ -404,6 +404,7 @@ LinkBar::LinkBar(wxWindow* parent,
     SetArtProvider(new LinkBarArt);
     SetToolTextOrientation(wxAUI_TBTOOL_TEXT_RIGHT);
     SetToolPacking(0);
+    SetToolBorderPadding(FromDIP(2));
     
     // top padding needs to be one greater since the top pixel
     // of the linkbar is actually the border line; left padding
