@@ -348,7 +348,6 @@ void PageSizePanel::onOrientationChanged(int orientation)
     
     m_orientation = orientation;
     
-    /*
     if (orientation == wxLANDSCAPE && (width > height))
         return;
 
@@ -365,7 +364,6 @@ void PageSizePanel::onOrientationChanged(int orientation)
     
     val = wxString::Format(wxT("%.2f"), height);
     m_pageheight_textctrl->SetValue(val);
-    */
 }
 
 BEGIN_EVENT_TABLE(PageSizePanel, wxPanel)
