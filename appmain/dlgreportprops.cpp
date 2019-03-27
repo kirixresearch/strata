@@ -174,14 +174,12 @@ ReportPropsDialog::ReportPropsDialog(wxWindow* parent) :
                                      -1,
                                      _("Report Settings"),
                                      wxDefaultPosition,
-                                     wxSize(520,480),
+                                     wxDefaultSize,
                                      wxDEFAULT_DIALOG_STYLE |
                                      wxRESIZE_BORDER |
                                      wxCLIP_CHILDREN |
                                      wxNO_FULL_REPAINT_ON_RESIZE)
 {
-    SetMinSize(wxSize(520,480));
-    SetMaxSize(wxSize(660,620));
 }
 
 ReportPropsDialog::~ReportPropsDialog()
@@ -339,6 +337,9 @@ int ReportPropsDialog::ShowModal()
     SetSizer(main_sizer);
     Layout();
     
+    SetClientSize(main_sizer->GetMinSize());
+    SetMinClientSize(GetClientSize());
+
     // set the ok button as the default
     ok_button->SetDefault();
     
