@@ -77,6 +77,12 @@ public:
 
     int GetIndentSize();
 
+    // starting in wxWidgets 3.1.2, the default art work has a 4-pixel padding, which we don't want
+    int GetAdditionalBorderSpace(wxWindow* wnd)
+    {
+        return 0;
+    }
+
     wxAuiTabArt* Clone();
 };
 
