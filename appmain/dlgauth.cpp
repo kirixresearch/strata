@@ -414,7 +414,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     wxStdDialogButtonSizer* ok_cancel_sizer = new wxStdDialogButtonSizer;
     ok_cancel_sizer->AddButton(ok_button);
     ok_cancel_sizer->AddButton(cancel_button);
-    ok_cancel_sizer->AddButton(new wxButton(this, wxID_HELP));
+    //ok_cancel_sizer->AddButton(new wxButton(this, wxID_HELP));
     ok_cancel_sizer->Realize();
     ok_cancel_sizer->Prepend(serial_label, 0, wxALIGN_CENTER | wxLEFT, 15);
     ok_cancel_sizer->AddSpacer(5);
