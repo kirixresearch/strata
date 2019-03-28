@@ -16,7 +16,7 @@
         <h1>Developer Resources</h1>
         <a id="c251"></a>
         <h2>Creating a "Hello World" Extension</h2>
-        <p>While scripts can be run individually, sometimes you want to package them up so they can be run as part of the application, without the script being stored in the project or on in the filesystem, but instead existing as if it were part of the native functionality of the package.</p>
+        <p>While scripts can be run individually, sometimes you want to package them up so they can be run as part of the application, without the script being stored in the project or on in the filesystem, but instead existing as if it were part of the native functionality of the application.</p>
         <p>When scripts are packaged up this way and installed, they are called extensions.&nbsp; The extension encapsulates the functionality of the script, along with other resources such as bitmaps or data tables, into a single extension file.</p>
         <p>Then, when an extension is installed in the application, the scripts contained in the extension run each time the application is opened, adding additional functionality to the application as if it existed natively as part of the package.</p>
         <p>You can create an extension for the application by packaging a script together with an XML file, called "info.xml." This XML file contains the information required to load and run the script as an extension in the application.</p>
@@ -59,7 +59,7 @@
           <li>In the "Save As" dialog, save the script as "info.xml" to your desktop.</li>
         </ol>
         <p>Then, in this file, enter the following and save it:</p>
-        <pre>&lt;?xml version="1.0"&gt;<br>&lt;extension_info&gt;<br>    &lt;guid&gt;{9642c44c-f790-4f16-9d46-fb54fc97d1a7}&lt;/guid&gt;<br>    &lt;name&gt;Hello World Extension&lt;/name&gt;<br>    &lt;author&gt;Hello World Industries, Inc.&lt;/author&gt;<br>    &lt;bitmap&gt;icon.png&lt;/bitmap&gt;<br>    &lt;startup&gt;main.js&lt;/startup&gt;<br>    &lt;copyright&gt;(c) 2008 Hello World Industries, Inc.&lt;/copyright&gt;<br>    &lt;description&gt;A simple "Hello World" extension.&lt;/description&gt;<br>    &lt;major_version&gt;1&lt;/major_version&gt;<br>    &lt;minor_version&gt;0&lt;/minor_version&gt;<br>    &lt;subminor_version&gt;0&lt;/subminor_version&gt;<br>&lt;/extension_info&gt;</pre>
+        <pre>&lt;?xml version="1.0"&gt;<br>&lt;extension_info&gt;<br>    &lt;guid&gt;{9642c44c-f790-4f16-9d46-fb54fc97d1a7}&lt;/guid&gt;<br>    &lt;name&gt;Hello World Extension&lt;/name&gt;<br>    &lt;author&gt;Hello World Industries, Inc.&lt;/author&gt;<br>    &lt;bitmap&gt;icon.png&lt;/bitmap&gt;<br>    &lt;startup&gt;main.js&lt;/startup&gt;<br>    &lt;copyright&gt;(c) Hello World Industries, Inc.&lt;/copyright&gt;<br>    &lt;description&gt;A simple "Hello World" extension.&lt;/description&gt;<br>    &lt;major_version&gt;1&lt;/major_version&gt;<br>    &lt;minor_version&gt;0&lt;/minor_version&gt;<br>    &lt;subminor_version&gt;0&lt;/subminor_version&gt;<br>&lt;/extension_info&gt;</pre>
         <p>The fields in this "info.xml" file are as follows:</p>
         <p>&nbsp;</p>
         <ul>
