@@ -465,9 +465,7 @@ DlgAuth::~DlgAuth()
 static void licenseServerError(wxWindow* parent)
 {
     wxString compname = APP_COMPANY_NAME;
-    wxString account_webpage = APP_WEBLOCATION_ACCOUNT;
-    wxString message = wxString::Format(_("The license server could not be contacted.  Your computer may not have the necessary Internet access or may be behind a firewall or proxy server.  Please try again and, if activation still does not work, either go to %s to generate an activation code manually or contact %s for further information."),
-                                        account_webpage.c_str(),
+    wxString message = wxString::Format(_("The license server could not be contacted.  Your computer may not have the necessary Internet access or may be behind a firewall or proxy server.  Please try again and, if activation still does not work, contact %s for further information."),
                                         compname.c_str());
 
     appMessageBox(message,
@@ -488,10 +486,8 @@ static void licenseLoginInvalid(wxWindow* parent)
 {
     wxString appname = APPLICATION_NAME;
     wxString compname = APP_COMPANY_NAME;
-    wxString account_webpage = APP_WEBLOCATION_ACCOUNT;
-    wxString message = wxString::Format(_("%s could not be activated with the serial number provided.  Please check to make sure the serial number matches the one you were given and try again.  If activation still does not work, either go to %s to generate an activation code manually or contact %s for further information."),
+    wxString message = wxString::Format(_("%s could not be activated with the serial number provided.  Please check to make sure the serial number matches the one you were given and try again.  If activation still does not work, contact %s for further information."),
                                         appname.c_str(),
-                                        account_webpage.c_str(),
                                         compname.c_str());
     appMessageBox(message,
                        APPLICATION_NAME,
@@ -502,9 +498,7 @@ static void licenseLoginInvalid(wxWindow* parent)
 static void licenseInvalidError(wxWindow* parent)
 {
     wxString compname = APP_COMPANY_NAME;
-    wxString account_webpage = APP_WEBLOCATION_ACCOUNT;
-    wxString message = wxString::Format(_("The serial number provided has either expired or is invalid.  Please check to make sure the serial number matches the one you were given and try again.  If activation still does not work, either go to %s to generate an activation code manually or contact %s for further information."),
-                                        account_webpage.c_str(),
+    wxString message = wxString::Format(_("The serial number provided has either expired or is invalid.  Please check to make sure the serial number matches the one you were given and try again.  If activation still does not work, contact %s for further information."),
                                         compname.c_str());
 
     appMessageBox(message,
@@ -631,10 +625,9 @@ void DlgAuth::onOK(wxCommandEvent& evt)
         if (!validateManualCode(activation_code, true))
         {
             wxString appname = APPLICATION_NAME;
-            wxString account_webpage = APP_WEBLOCATION_ACCOUNT;
             wxString compname = APP_COMPANY_NAME;
-            wxString message = wxString::Format(_("%s could not be activated with the activation code provided.  Please check to make sure the activation code matches the one you were given and try again.  If activation still does not work, either go to %s to generate a new activation code or contact %s for further information."),
-                                                appname.c_str(), account_webpage.c_str(), compname.c_str());
+            wxString message = wxString::Format(_("%s could not be activated with the activation code provided.  Please check to make sure the activation code matches the one you were given and try again.  If activation still does not work, contact %s for further information."),
+                                                appname.c_str(), compname.c_str());
             appMessageBox(message,
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER,
