@@ -346,8 +346,16 @@ DlgAuth::DlgAuth(wxWindow* parent,
     wxString email = APP_CONTACT_SALESEMAIL;
     wxString str;
 
-    str = wxString::Format(_("To continue using %s beyond the first 30 days, a serial number is required.  You may obtain this number by purchasing %s; please contact %s for more details.  For help activating this software, please click the Help button below."),
-                           appname.c_str(), appname.c_str(), email.c_str());
+    if (APP_TRIAL_LICENSE_DAYS > 0)
+    {
+        str = wxString::Format(_("To continue using %s beyond the first %d day(s), a serial number is required.  You may obtain this number by purchasing %s; please contact %s for more details.  For help activating this software, please click the Help button below."),
+                               appname.c_str(), APP_TRIAL_LICENSE_DAYS, appname.c_str(), email.c_str());
+    }
+     else
+    {
+         str = wxString::Format(_("A serial number is required to activate the software; for further help, please contact us at %s"), email.c_str());
+    }
+
 
     wxStaticText* message = new wxStaticText(this, -1, str);
     
