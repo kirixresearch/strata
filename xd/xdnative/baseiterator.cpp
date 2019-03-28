@@ -2565,9 +2565,18 @@ bool BaseIterator::isNull(xd::objhandle_t column_handle)
         {
             if (!m_rowptr)
                 return true;
+            
+            if (dai->offset == 0)
+            {
+                // if a calc field has a bad expression, this situation could be triggered, which
+                // was causing a read before the beginning of m_rowptr, because calc fields have
+                // a dai->offset = 0 because they are not physical fields. Avoid this by returning true;
 
-            // remove the null bit, if any
-            *(m_rowptr + dai->offset - 1) &= 0xfe;
+                // a physical field in the first column position which allows nulls would not have an offset of dai->offset = 0
+                return true;
+            }
+
+            return  ((*(m_rowptr + dai->offset - 1) & 0x01) ? true:false);
         }
          else
         {
@@ -2583,7 +2592,6 @@ bool BaseIterator::isNull(xd::objhandle_t column_handle)
 
         return dai->result->isNull();
     }
-
 
     return false;
 }
