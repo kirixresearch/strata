@@ -858,34 +858,35 @@ bool OfsFile::getFileType(XdnativeDatabase* db,
     if (!f)
         return false;
 
-    unsigned char* buf = new unsigned char[1048];
-    int readb = 0;
-    int r = 0;
-
-    readb = xf_read(f, buf, 1, 1024);
-    memset(buf+readb, 0, 8);
-
-    xf_close(f);
-
-    if (readb < 4)
-        return false;
-
-
-    // get the chunk into a string
     std::wstring dest;
-    
-    if (buf[0] == 0xff && buf[1] == 0xfe &&
-        (buf[2] != 0x00 || buf[3] != 0x00))
+
     {
-        // little endian unicode
-        kl::ucsle2wstring(dest, buf+2, 523);
-    }
-     else
-    {
-        dest = kl::towstring((char*)buf);
+        unsigned char buf[1048];
+        int readb = 0;
+        int r = 0;
+
+        readb = xf_read(f, buf, 1, 1024);
+        memset(buf+readb, 0, 8);
+
+        xf_close(f);
+
+        if (readb < 4)
+            return false;
+
+        // get the chunk into a string
+
+        if (buf[0] == 0xff && buf[1] == 0xfe &&
+            (buf[2] != 0x00 || buf[3] != 0x00))
+        {
+            // little endian unicode
+            kl::ucsle2wstring(dest, buf+2, 523);
+        }
+         else
+        {
+            dest = kl::towstring((char*)buf);
+        }
     }
 
-    delete[] buf;
     
     
     
@@ -911,7 +912,7 @@ bool OfsFile::getFileType(XdnativeDatabase* db,
     }
 
     // if we couldn't determine the file type
-    // via our arts, use classical methods
+    // via our arts, use classical methods (load and fully parse)
     if (t == -1)
     {
         OfsFile* file = OfsFile::openFile(db, _key_path);

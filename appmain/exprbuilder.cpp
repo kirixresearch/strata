@@ -1080,7 +1080,19 @@ void ExprBuilderPanel::onFunctionListNeedTooltipText(kcl::GridEvent& evt)
 void ExprBuilderPanel::onLearnMoreHyperlinkClicked(wxHyperlinkEvent& evt)
 {
     wxString url = evt.GetURL();
-    g_app->getAppController()->openWeb(url);
+
+    if (url.Find("://") != -1)
+    {
+        g_app->getAppController()->openWeb(url);
+    }
+     else
+    {
+         wxHelpControllerBase* hc = g_app->getHelpController();
+         if (hc)
+         {
+             hc->DisplaySection(url + "()");
+         }
+    }
 }
 
 void ExprBuilderPanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)

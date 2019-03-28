@@ -240,16 +240,13 @@ public:
     DlgAddProject(wxWindow* parent, ProjectInfo* info)
                         : wxDialog(parent, -1, _("Add Project"),
                              wxDefaultPosition,
-                             wxSize(500,320),
+                             wxDefaultSize,
                              wxDEFAULT_DIALOG_STYLE |
                              wxNO_FULL_REPAINT_ON_RESIZE |
                              wxCLIP_CHILDREN |
                              wxCENTER |
                              wxRESIZE_BORDER), m_info(info)
     {
-        SetMinSize(wxSize(500,320));
-
-
         // create 'create project' radio button
         m_create_radio = new wxRadioButton(this, ID_Create_Radio, _("Create a new project"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
 
@@ -273,6 +270,12 @@ public:
         create_loc_sizer->Add(m_create_loc_textctrl, 1, wxALIGN_CENTER);
         create_loc_sizer->AddSpacer(5);
         create_loc_sizer->Add(m_create_browse_button, 0);
+
+        // get a sensi
+        wxSize s = m_create_loc_textctrl->GetTextExtent("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        wxSize s2 = m_create_loc_textctrl->GetSize();
+        s.y = s2.y;
+        create_loc_sizer->SetItemMinSize(m_create_loc_textctrl, s);
 
         // create 'add project' radio button
         m_add_radio = new wxRadioButton(this, ID_Add_Radio, _("Add an existing project to the project manager list"));
@@ -321,6 +324,9 @@ public:
         vert_sizer->AddSpacer(8);
         vert_sizer->Add(add_loc_sizer, 0, wxEXPAND);
 
+        wxSize text_min_size = message->GetTextExtent(message->GetLabel());
+        text_min_size.x /= 2;
+        vert_sizer->SetItemMinSize(message, text_min_size);
 
         // create top sizer
         
@@ -347,7 +353,7 @@ public:
         
         // this code is necessary to get the sizer's bottom margin to 8
         wxSize min_size = ok_cancel_sizer->GetMinSize();
-        min_size.SetHeight(min_size.GetHeight()+16);
+        min_size.SetHeight(min_size.GetHeight()+this->FromDIP(16));
         ok_cancel_sizer->SetMinSize(min_size);
 
 
@@ -360,7 +366,12 @@ public:
         SetSizer(main_sizer);
         Layout();
         
-        SetSize(500,320);
+
+        min_size = main_sizer->GetMinSize().Scale(1.0f, 1.2f);
+        SetClientSize(min_size);
+        SetMinClientSize(min_size);
+        
+        
         resizeStaticText(message, message->GetClientSize().GetWidth());
         Center();
         
@@ -718,11 +729,9 @@ END_EVENT_TABLE()
 
 DlgProjectMgr::DlgProjectMgr(wxWindow* parent, wxWindowID id) :
                   wxDialog(parent, -1, _("Projects"),
-                    wxDefaultPosition, wxSize(520,340),
+                    wxDefaultPosition, wxDefaultSize,
                     wxCAPTION | wxRESIZE_BORDER | wxCLIP_CHILDREN)
 {
-    SetMinSize(wxSize(520,340));
-    
     // create grid
     m_grid = new kcl::RowSelectionGrid(this,
                                        wxID_ANY,
@@ -797,12 +806,16 @@ DlgProjectMgr::DlgProjectMgr(wxWindow* parent, wxWindowID id) :
     SetSizer(main_sizer);
     Layout();
 
+    SetSize(this->FromDIP(wxSize(520, 340)));
+    SetMinSize(GetSize());
+
+    bool display_project_size = g_app->getAppPreferences()->getBoolean(wxT("project_mgr.display_project_size"), true);
+
     // this code changes the two proportional columns to be
     // non-proportionally sized, which will make the grid fill
     // the client window size initially, but still allow the user
     // to resize each column)
 
-    bool display_project_size = g_app->getAppPreferences()->getBoolean(wxT("project_mgr.display_project_size"), true);
 
     // set the size of the location column
     int w, h;
@@ -832,7 +845,8 @@ DlgProjectMgr::DlgProjectMgr(wxWindow* parent, wxWindowID id) :
     m_grid->moveCursor(0, colName, false);
     m_grid->refresh(kcl::Grid::refreshAll);
 
-    SetSize(520,340);
+
+
     Center();
 }
 

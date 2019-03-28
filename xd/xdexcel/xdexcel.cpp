@@ -15,6 +15,8 @@
 #include "../xdcommon/connectionstr.h"
 #include "../xdcommon/errorinfo.h"
 
+#define XLNT_STATIC
+#include <xlnt/xlnt.hpp>
 
 class DatabaseMgr : public xd::IDatabaseMgr
 {
@@ -83,6 +85,9 @@ public:
 
         std::wstring location = c.getValue(L"database");
 
+
+        xlnt::workbook wb;
+        wb.save(location);
 
         //PkgFile file;
         //if (!file.create(location))

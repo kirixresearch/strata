@@ -869,6 +869,7 @@ public:
         top_right_sizer->AddSpacer(10);
 
 
+
         // create options sizer
         
         wxFlexGridSizer* top_sizer = new wxFlexGridSizer(1, 2, 10, 10);
@@ -977,6 +978,7 @@ public:
         grid_sizer->Add(m_preview_grid, 1, wxEXPAND | wxALL, 10);
 
         
+        /*
         // even thought the right top sizer is growable, make sure the left top
         // sizer starts out taking up half the top sizer's width by default
         wxSize top_left_minsize = parent->GetClientSize();
@@ -985,7 +987,7 @@ public:
         top_left_minsize.x /= 2;
         top_left_minsize.y = -1;
         top_sizer->SetItemMinSize(top_left_sizer, top_left_minsize);
-        
+        */
         
         // create main sizer
 
@@ -2430,29 +2432,44 @@ bool OptionsPanel::initDoc(IFramePtr frame,
     m_report_page = new ReportOptionsPage(this, m_pi);
     m_script_page = new ScriptOptionsPage(this, m_pi);
 
+    
+    wxSize page_min_size, aggregate_min_size(0,0);
+    page_min_size = m_general_page->GetSizer()->GetMinSize();
+    aggregate_min_size = page_min_size;
+
+    page_min_size = m_internet_page->GetSizer()->GetMinSize();
+    aggregate_min_size.x = wxMax(aggregate_min_size.x, page_min_size.x);
+    aggregate_min_size.y = wxMax(aggregate_min_size.y, page_min_size.y);
+
+    page_min_size = m_privacy_page->GetSizer()->GetMinSize();
+    aggregate_min_size.x = wxMax(aggregate_min_size.x, page_min_size.x);
+    aggregate_min_size.y = wxMax(aggregate_min_size.y, page_min_size.y);
+
+    page_min_size = m_datasheet_page->GetSizer()->GetMinSize();
+    aggregate_min_size.x = wxMax(aggregate_min_size.x, page_min_size.x);
+    aggregate_min_size.y = wxMax(aggregate_min_size.y, page_min_size.y);
+
+    page_min_size = m_report_page->GetSizer()->GetMinSize();
+    aggregate_min_size.x = wxMax(aggregate_min_size.x, page_min_size.x);
+    aggregate_min_size.y = wxMax(aggregate_min_size.y, page_min_size.y);
+
+    page_min_size = m_script_page->GetSizer()->GetMinSize();
+    aggregate_min_size.x = wxMax(aggregate_min_size.x, page_min_size.x);
+    aggregate_min_size.y = wxMax(aggregate_min_size.y, page_min_size.y);
+
+
+
     kcl::ButtonBar* button_bar = new kcl::ButtonBar(this, -1);
     button_bar->setItemMinSize(64, -1);
     
-    button_bar->addItem(ID_GeneralOptionsButton,
-                        GETBMP(gf_switch_32),
-                        _("General"));
-    button_bar->addItem(ID_InternetOptionsButton,
-                        GETBMP(gf_globe_32),
-                        _("Internet"));
-    button_bar->addItem(ID_PrivacyOptionsButton,
-                        GETBMP(gf_lock_32),
-                        _("Privacy"));
-    button_bar->addItem(ID_DatasheetOptionsButton,
-                        GETBMP(gf_table_32),
-                        _("Datasheet"));
-    button_bar->addItem(ID_ReportOptionsButton,
-                        GETBMP(gf_report_32),
-                        _("Report"));
-    button_bar->addItem(ID_ScriptOptionsButton,
-                        GETBMP(gf_script_32),
-                        _("Script"));
+    button_bar->addItem(ID_GeneralOptionsButton, GETBMP(gf_switch_32),  _("General"));
+    button_bar->addItem(ID_InternetOptionsButton, GETBMP(gf_globe_32), _("Internet"));
+    button_bar->addItem(ID_PrivacyOptionsButton, GETBMP(gf_lock_32), _("Privacy"));
+    button_bar->addItem(ID_DatasheetOptionsButton, GETBMP(gf_table_32), _("Datasheet"));
+    button_bar->addItem(ID_ReportOptionsButton, GETBMP(gf_report_32), _("Report"));
+    button_bar->addItem(ID_ScriptOptionsButton, GETBMP(gf_script_32), _("Script"));
     
-    
+
     wxButton* restore_defaults_button = new wxButton(this,
                                               ID_RestoreDefaultsButton,
                                               _("Restore Defaults"));
@@ -2487,7 +2504,18 @@ bool OptionsPanel::initDoc(IFramePtr frame,
     m_sizer->Add(m_report_page, 1, wxEXPAND | wxLEFT | wxRIGHT, 8);
     m_sizer->Add(m_script_page, 1, wxEXPAND | wxLEFT | wxRIGHT, 8);
     m_sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
+
+
+    m_sizer->SetItemMinSize(m_general_page, aggregate_min_size);
+    m_sizer->SetItemMinSize(m_internet_page, aggregate_min_size);
+    m_sizer->SetItemMinSize(m_privacy_page, aggregate_min_size);
+    m_sizer->SetItemMinSize(m_datasheet_page, aggregate_min_size);
+    m_sizer->SetItemMinSize(m_report_page, aggregate_min_size);
+    m_sizer->SetItemMinSize(m_script_page, aggregate_min_size);
+
     SetSizer(m_sizer);
+    SetSize(m_sizer->GetMinSize());
+
     Layout();
     
     // start out on the general options page

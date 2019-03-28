@@ -87,21 +87,13 @@ public:
     DlgAuthHelp(wxWindow* parent)
                     : wxDialog(parent, -1, _("Software Activation Help"),
                          wxDefaultPosition,
-                         wxSize(600,420),
+                         wxDefaultSize,
                          wxDEFAULT_DIALOG_STYLE |
                          wxNO_FULL_REPAINT_ON_RESIZE |
                          wxCLIP_CHILDREN |
                          wxCENTER |
                          wxRESIZE_BORDER)
     {
-        SetMinSize(wxSize(600,420));
-        //SetMaxSize(wxSize(800,600));
-        
-        #ifdef __WXGTK__
-        SetSize(wxSize(620,520));
-        SetMinSize(wxSize(620,520));
-        #endif
-        
         wxString appname = APPLICATION_NAME;
         wxString support_telno = APP_CONTACT_SUPPORTTELNO;
         wxString support_email = APP_CONTACT_SUPPORTEMAIL;
@@ -205,6 +197,10 @@ public:
         
         // set the ok button as the default
         ok_button->SetDefault();
+
+        SetClientSize(main_sizer->GetMinSize().Scale(1.2f, 1.0));
+        SetMinSize(GetSize());
+        CenterOnScreen();
     }
 };
 
@@ -235,15 +231,15 @@ DlgAuth::DlgAuth(wxWindow* parent,
                  paladin::Authentication* global_auth)
                     : wxDialog(parent, -1, _("Software Activation"),
                          wxDefaultPosition,
-                         wxSize(480,360),
+                         wxDefaultSize,
                          wxDEFAULT_DIALOG_STYLE |
                          wxNO_FULL_REPAINT_ON_RESIZE |
                          wxCLIP_CHILDREN |
                          wxCENTER |
                          wxRESIZE_BORDER)
 {
-    SetMinSize(wxSize(480,360));
-    SetMaxSize(wxSize(640,480));
+    //SetMinSize(wxSize(480,360));
+    //SetMaxSize(wxSize(640,480));
     
     #ifdef __WXGTK__
     SetSize(wxSize(560,400));
@@ -318,6 +314,8 @@ DlgAuth::DlgAuth(wxWindow* parent,
     serial_sizer->Add(m_activation_valid->GetSize().GetWidth(), 1);
     
     
+    wxSize min_size_sitecode = m_serial_textctrl->GetTextExtent("XXXX XXXX XXXX XXXX").Scale(1.2f, 1.5f);
+    
     // measure the label widths
     wxSize label_size = getMaxTextSize(label_serial,
                                             label_sitecode,
@@ -327,8 +325,10 @@ DlgAuth::DlgAuth(wxWindow* parent,
     serial_sizer->SetItemMinSize(label_serial, label_size);
     sitecode_sizer->SetItemMinSize(label_sitecode, label_size);
     authcode_sizer->SetItemMinSize(label_authcode, label_size);
-    
-    
+
+    serial_sizer->SetItemMinSize(m_serial_textctrl, min_size_sitecode);
+    authcode_sizer->SetItemMinSize(m_authcode_textctrl, min_size_sitecode);
+
     // -- create status label --
     
     wxString activation_str;
@@ -346,8 +346,16 @@ DlgAuth::DlgAuth(wxWindow* parent,
     wxString email = APP_CONTACT_SALESEMAIL;
     wxString str;
 
-    str = wxString::Format(_("To continue using %s beyond the first 30 days, a serial number is required.  You may obtain this number by purchasing %s; please contact %s for more details.  For help activating this software, please click the Help button below."),
-                           appname.c_str(), appname.c_str(), email.c_str());
+    if (APP_TRIAL_LICENSE_DAYS > 0)
+    {
+        str = wxString::Format(_("To continue using %s beyond the first %d day(s), a serial number is required.  You may obtain this number by purchasing %s; please contact %s for more details.  For help activating this software, please click the Help button below."),
+                               appname.c_str(), APP_TRIAL_LICENSE_DAYS, appname.c_str(), email.c_str());
+    }
+     else
+    {
+         str = wxString::Format(_("A serial number is required to activate the software; for further help, please contact us at %s"), email.c_str());
+    }
+
 
     wxStaticText* message = new wxStaticText(this, -1, str);
     
@@ -368,7 +376,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     vert_sizer->Add(status_label, 0, wxEXPAND | wxRIGHT, 20);
     vert_sizer->AddSpacer(15);
     vert_sizer->Add(message, 0, wxEXPAND | wxRIGHT, 20);
-    vert_sizer->AddSpacer(20);
+    vert_sizer->AddSpacer(15);
     vert_sizer->Add(m_internet_radio);
     vert_sizer->AddSpacer(8);
     vert_sizer->Add(serial_sizer, 0, wxEXPAND | wxRIGHT, 60);
@@ -378,6 +386,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     vert_sizer->Add(sitecode_sizer, 0, wxEXPAND | wxRIGHT, 60);
     vert_sizer->AddSpacer(8);
     vert_sizer->Add(authcode_sizer, 0, wxEXPAND | wxRIGHT, 60);
+    vert_sizer->AddSpacer(8);
     
     
     // create top sizer
@@ -413,7 +422,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     wxStdDialogButtonSizer* ok_cancel_sizer = new wxStdDialogButtonSizer;
     ok_cancel_sizer->AddButton(ok_button);
     ok_cancel_sizer->AddButton(cancel_button);
-    ok_cancel_sizer->AddButton(new wxButton(this, wxID_HELP));
+    //ok_cancel_sizer->AddButton(new wxButton(this, wxID_HELP));
     ok_cancel_sizer->Realize();
     ok_cancel_sizer->Prepend(serial_label, 0, wxALIGN_CENTER | wxLEFT, 15);
     ok_cancel_sizer->AddSpacer(5);
@@ -443,6 +452,9 @@ DlgAuth::DlgAuth(wxWindow* parent,
     
     // set the ok button as the default
     ok_button->SetDefault();
+
+    SetClientSize(main_sizer->GetMinSize());
+    SetMinSize(GetSize());
 }
 
 DlgAuth::~DlgAuth()
@@ -453,9 +465,7 @@ DlgAuth::~DlgAuth()
 static void licenseServerError(wxWindow* parent)
 {
     wxString compname = APP_COMPANY_NAME;
-    wxString account_webpage = APP_WEBLOCATION_ACCOUNT;
-    wxString message = wxString::Format(_("The license server could not be contacted.  Your computer may not have the necessary Internet access or may be behind a firewall or proxy server.  Please try again and, if activation still does not work, either go to %s to generate an activation code manually or contact %s for further information."),
-                                        account_webpage.c_str(),
+    wxString message = wxString::Format(_("The license server could not be contacted.  Your computer may not have the necessary Internet access or may be behind a firewall or proxy server.  Please try again and, if activation still does not work, contact %s for further information."),
                                         compname.c_str());
 
     appMessageBox(message,
@@ -476,10 +486,8 @@ static void licenseLoginInvalid(wxWindow* parent)
 {
     wxString appname = APPLICATION_NAME;
     wxString compname = APP_COMPANY_NAME;
-    wxString account_webpage = APP_WEBLOCATION_ACCOUNT;
-    wxString message = wxString::Format(_("%s could not be activated with the serial number provided.  Please check to make sure the serial number matches the one you were given and try again.  If activation still does not work, either go to %s to generate an activation code manually or contact %s for further information."),
+    wxString message = wxString::Format(_("%s could not be activated with the serial number provided.  Please check to make sure the serial number matches the one you were given and try again.  If activation still does not work, contact %s for further information."),
                                         appname.c_str(),
-                                        account_webpage.c_str(),
                                         compname.c_str());
     appMessageBox(message,
                        APPLICATION_NAME,
@@ -490,9 +498,7 @@ static void licenseLoginInvalid(wxWindow* parent)
 static void licenseInvalidError(wxWindow* parent)
 {
     wxString compname = APP_COMPANY_NAME;
-    wxString account_webpage = APP_WEBLOCATION_ACCOUNT;
-    wxString message = wxString::Format(_("The serial number provided has either expired or is invalid.  Please check to make sure the serial number matches the one you were given and try again.  If activation still does not work, either go to %s to generate an activation code manually or contact %s for further information."),
-                                        account_webpage.c_str(),
+    wxString message = wxString::Format(_("The serial number provided has either expired or is invalid.  Please check to make sure the serial number matches the one you were given and try again.  If activation still does not work, contact %s for further information."),
                                         compname.c_str());
 
     appMessageBox(message,
@@ -619,10 +625,9 @@ void DlgAuth::onOK(wxCommandEvent& evt)
         if (!validateManualCode(activation_code, true))
         {
             wxString appname = APPLICATION_NAME;
-            wxString account_webpage = APP_WEBLOCATION_ACCOUNT;
             wxString compname = APP_COMPANY_NAME;
-            wxString message = wxString::Format(_("%s could not be activated with the activation code provided.  Please check to make sure the activation code matches the one you were given and try again.  If activation still does not work, either go to %s to generate a new activation code or contact %s for further information."),
-                                                appname.c_str(), account_webpage.c_str(), compname.c_str());
+            wxString message = wxString::Format(_("%s could not be activated with the activation code provided.  Please check to make sure the activation code matches the one you were given and try again.  If activation still does not work, contact %s for further information."),
+                                                appname.c_str(), compname.c_str());
             appMessageBox(message,
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER,

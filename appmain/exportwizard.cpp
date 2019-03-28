@@ -336,8 +336,8 @@ void ExportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
                 ei->path += L".mdb";
             
             // fix wrong file extension for Microsoft Excel files
-            if (ei->type == dbtypeExcel && !kl::iequals(ext, L"xls"))
-                ei->path += L".xls";
+            if (ei->type == dbtypeExcel && !kl::iequals(ext, L"xlsx"))
+                ei->path += L".xlsx";
             
             // check to see if the path entered is valid
             /*
@@ -461,7 +461,7 @@ void ExportWizard::onFileTypeChanged(int file_type)
     }
      else if (file_type == dbtypeExcel)
     {
-        path += wxT("untitled.xls");
+        path += wxT("untitled.xlsx");
         
         m_path_selection_page->setMessage(_("Please enter the location of the Microsoft Excel file to which you would like to export."));
         m_path_selection_page->setPathLabel(_("File:"));
@@ -971,7 +971,18 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         // we need to create the file before adding tables to it
 
         xd::IDatabaseMgrPtr db_mgr;
-        db_mgr.create_instance("xdodbc.DatabaseMgr");
+        std::wstring cstr;
+        if (conn_type == dbtypeExcel)
+        {
+            db_mgr.create_instance("xdexcel.DatabaseMgr");
+            cstr = L"Xdprovider=xdexcel;database=" + towstr(conn_path);
+        }
+        else
+        {
+            db_mgr.create_instance("xdodbc.DatabaseMgr");
+            cstr = L"Xdprovider=xdodbc;database=" + towstr(conn_path);
+        }
+
         if (db_mgr.isNull())
         {
             wxString appname = APPLICATION_NAME;
@@ -1007,9 +1018,6 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             }
         }
 
-
-        std::wstring cstr = L"Xdprovider=xdodbc;database=" + towstr(conn_path);
-
         bool res = db_mgr->createDatabase(cstr);
         if (!res)
         {
@@ -1031,9 +1039,6 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
         }
-
-        conn.clear();
-        xf_remove(towstr(conn_path));
     }
      else
     {

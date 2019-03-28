@@ -221,7 +221,11 @@ static bool DrawUxThemeCheckBox(wxWindow* wnd,
 #if defined(__WXMSW__)
 #if wxUSE_UXTHEME
 
+#if wxCHECK_VERSION(3,1,1)
+    if (true)
+#else
     if (wxUxThemeEngine::Get())
+#endif
     {
         wxUxThemeHandle hTheme(wnd, L"BUTTON");
         if (hTheme)
@@ -237,12 +241,17 @@ static bool DrawUxThemeCheckBox(wxWindow* wnd,
                 state = 1; /*CBS_UNCHECKEDNORMAL*/
             
             // draw the themed checkbox button
+#if wxCHECK_VERSION(3,1,1)
+            ::DrawThemeBackground(hTheme, (HDC)getHdcFrom(dc), part, state, &r, NULL);
+#else
             wxUxThemeEngine::Get()->DrawThemeBackground(
                         hTheme, 
                         (HDC)getHdcFrom(dc), 
                         part,
                         state,
                         &r, NULL);
+#endif
+
             return true;
         }
     }

@@ -6924,6 +6924,7 @@ void AppController::showOptionsDialog()
     site = m_frame->lookupSite(wxT("OptionsPanel"));
     if (site.isNull())
     {
+        /*
         int w = 530;
         int h = 500;
         
@@ -6934,14 +6935,19 @@ void AppController::showOptionsDialog()
             h = 560;
         }
         #endif
+        */
         
         OptionsPanel* panel = new OptionsPanel;
         site = g_app->getMainFrame()->createSite(panel,
                                                  sitetypeModeless,
                                                  -1, -1,
-                                                 w, h);
-        site->setMinSize(w,h);
+                                                 -1, -1);
+
         site->setName(wxT("OptionsPanel"));
+
+        wxSize min_size = panel->GetSizer()->GetMinSize();
+        site->getContainerWindow()->SetMinClientSize(min_size);
+        site->getContainerWindow()->SetClientSize(min_size);
     }
      else
     {

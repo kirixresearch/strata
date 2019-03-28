@@ -110,7 +110,6 @@ public:
         case dbtypeSqlServer:    provider = L"xdsqlserver"; break;
 #endif
 
-        case dbtypeExcel:        provider = L"xdodbc"; dbtype = L"excel"; break;
         case dbtypeSqlite:       provider = L"xdsqlite"; break;
         case dbtypeMySql:        provider = L"xdmysql"; break;
 
@@ -125,6 +124,20 @@ public:
         case dbtypeFixedLengthText:
             provider = L"xdfs"; break;
         case dbtypePackage:      provider = L"xdkpg"; break;
+
+        case dbtypeExcel:
+            provider = L"xdodbc";
+            dbtype = L"excel";
+
+            if (kl::icontains(m_path, L".xlsx"))
+            {
+                provider = L"xdexcel";
+                dbtype = L"";
+                break;
+            }
+
+            break;
+
         default:
             return L"";
         }

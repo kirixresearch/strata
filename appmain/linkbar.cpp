@@ -146,6 +146,15 @@ class DropShadowPopupTransientWindow : public wxPopupTransientWindow
 
 public:
 
+#if wxCHECK_VERSION(3,1,1)
+    DropShadowPopupTransientWindow() : wxPopupTransientWindow()
+    {
+    }
+
+    DropShadowPopupTransientWindow(wxWindow *parent, int style = wxBORDER_NONE) : wxPopupTransientWindow(parent, style)
+    {
+    }
+#else
     DropShadowPopupTransientWindow()
     {
         Init();
@@ -154,9 +163,10 @@ public:
     DropShadowPopupTransientWindow(wxWindow *parent, int style = wxBORDER_NONE)
     {
         Init();
-
         (void)Create(parent, style);
     }
+#endif
+
 
 
     bool Create(wxWindow *parent, int flags)
@@ -394,6 +404,7 @@ LinkBar::LinkBar(wxWindow* parent,
     SetArtProvider(new LinkBarArt);
     SetToolTextOrientation(wxAUI_TBTOOL_TEXT_RIGHT);
     SetToolPacking(0);
+    SetToolBorderPadding(FromDIP(2));
     
     // top padding needs to be one greater since the top pixel
     // of the linkbar is actually the border line; left padding

@@ -53,7 +53,7 @@ std::wstring XlsxSet::getSetId()
 {
     std::wstring set_id;
     
-    set_id = L"xdfs:";
+    set_id = L"xdexcel:";
     set_id += xf_get_network_path(m_file.getFilename());
 
 #ifdef WIN32
