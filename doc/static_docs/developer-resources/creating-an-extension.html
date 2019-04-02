@@ -1,0 +1,60 @@
+<!doctype html>
+<html class="no-js" lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Creating an Extension | Workstation Documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="img/favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <div id="page-wrapper">
+      <a name="top" id="top"></a>
+      <div id="page-content">
+        <div class="backlink"><a href="index.html">Back to Home</a></div>
+        <h1>Developer Resources</h1>
+        <a id="c209"></a>
+        <h2>Creating an Extension</h2>
+        <p>You can create an extension by packaging a script together with an XML file, called &quot;info.xml.&quot; This XML file contains the information required to load and run the script as an extension in the application.</p>
+        <p>Extensions are stored and distributed as &quot;.kxt&quot; files.&nbsp; These are simply .zip files with a .kxt file extension.&nbsp; To put together a new .kxt file, start by creating an empty .zip file and add your script files, info.xml and any other resources into it.&nbsp; Finally, change the file extension from &quot;.zip&quot; to &quot;.kxt&quot;.</p>
+        <p>In order for an extension to work, your .kxt file must contain at least two items:</p>
+        <ul>
+          <li><b>info.xml</b> - An XML file with the metadata for the extension.&nbsp; See an example of this type of file below.</li>
+          <li><b>main.js</b> - A JavaScript file that contains the code you want to run when the extension loads.</li>
+        </ul>
+        <p>In addition to these two required files, you can package additional resources in the .kxt file to use with your extension, such as:</p>
+        <ul>
+          <li>Additional JavaScript source files, which you can reference in &quot;main.js&quot; or other parts of your code.</li>
+          <li>A bitmap file to display a graphic in the Extension Manager.</li>
+          <li>Other resource files that you would like to use, such as HTML templates, data files, etc.</li>
+        </ul>
+        <p>After you've put together a .kxt file, you can add it to the application by selecting Extensions from the Tools menu.&nbsp; An Extension Manager will appear; click the Add Extensions button to add your extension to the list.&nbsp; Going forward, every time the application loads, it will automatically launch your extension and run the code you have in &quot;main.js&quot;.</p>
+        <a id="c210"></a>
+        <h2>Creating a Basic &quot;Hello, World&quot; Extension</h2>
+        <p>To make a &quot;Hello, world&quot; extension, the first step is to create a script that displays the text &quot;Hello, world&quot;.&nbsp; Fortunately, this involves just a few steps and a single line of code:</p>
+        <ol>
+          <li>Click New in the File menu, and select Script from the set of options</li>
+          <li>
+            Add the following line to the new script:<br /><br />
+            <pre>alert(&quot;Hello, world&quot;);</pre>
+          </li>
+          <li>Select Save from the File menu and then name the saved file &quot;Hello_world&quot;</li>
+        </ol>
+        <p>At this point, you can press &lt;Alt-Enter&gt; to run this script; it should display an message box that says &quot;Hello, world&quot;.&nbsp; If this works properly, select Save As External from the File menu and save this file as &quot;main.js&quot; on your local drive.</p>
+        <p>The next step is to create an &quot;info.xml&quot; file for the extension.&nbsp; To do this, open Notepad or another text editor and cut and paste the following text into it:</p>
+        <pre>&lt;?xml version=&quot;1.0&quot;&gt;<br />&lt;extension_info&gt;<br />&nbsp;&nbsp;&nbsp;  &lt;guid&gt;{ad912db5-97f9-4fba-a983-3aa0bffa8faa}&lt;/guid&gt;<br />&nbsp;&nbsp;&nbsp;  &lt;name&gt;Hello World&lt;/name&gt;<br />&nbsp;&nbsp; &nbsp; &lt;author&gt;Yours Truly&lt;/author&gt;<br />&nbsp;&nbsp; &nbsp; &lt;bitmap&gt;&lt;/bitmap&gt;<br />&nbsp;&nbsp; &nbsp; &lt;startup&gt;main.js&lt;/startup&gt;<br />&nbsp;&nbsp; &nbsp; &lt;copyright&gt;Me&lt;/copyright&gt;<br />&nbsp;&nbsp; &nbsp; &lt;description&gt;Display a Hello World alert message.&lt;/description&gt;<br />&nbsp;&nbsp;&nbsp;  &lt;major_version&gt;1&lt;/major_version&gt;<br />&nbsp;&nbsp; &nbsp; &lt;minor_version&gt;0&lt;/minor_version&gt;<br />&nbsp;&nbsp; &nbsp; &lt;subminor_version&gt;0&lt;/subminor_version&gt;<br />&lt;/extension_info&gt;</pre>
+        <a id="c211"></a>
+        <p>Next, save this file as &quot;info.xml&quot; in the same area where you put &quot;main.js&quot; (NOTE: if you use Notepad, be sure to change the &quot;Save as type&quot; option to &quot;All Files&quot;, so that it saves as an XML file).</p>
+        <p>Finally, you just need to package everything together as a .kxt file:</p>
+        <ol>
+          <li>Create a .zip file on your local drive called &quot;Hello_world.zip&quot;.</li>
+          <li>Add &quot;main.js&quot; and &quot;info.xml&quot; to &quot;Hello_world.zip&quot;</li>
+          <li>Change the name of &quot;Hello_world.zip&quot; to &quot;Hello_world.kxt&quot;</li>
+        </ol>
+        <p>The &quot;Hello, world&quot; extension is now complete.&nbsp; To add this extension to the application, select Extensions from the Tools menu, click Add Extensions and finally select the &quot;Hello_world.kxt&quot; file.</p>
+        <p>After adding &quot;Hello_world.kxt&quot; to the Extensions area, you can run it immediately by clicking the Start Now button.&nbsp; Additionally, after you close the application, the next time you open it, this extension will run automatically.&nbsp; Of course, this gets old quickly, and so you can remove the extension by selecting Extensions from the Tools menu and clicking the Uninstall button for &quot;Hello World&quot;.</p>
+      </div>
+    </div>
+  </body>
+</html>

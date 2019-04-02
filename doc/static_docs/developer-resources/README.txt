@@ -1,3 +1,5 @@
-Welcome to the developer resources for the workstation!
+Welcome to the workstation developer documentation, which discusses utilizing scripting within the application.
 
-To get started with the introduction to the developer resources, open the index.html file. If you wish to view the reference for a particular class, you may also browse for the file in your file explorer and directly open that file.
+To get started, open the index.html file in this directory.
+
+To view reference information for a particular class, you may also click on any individual html page in this directory to open it in your browser.
