@@ -2307,6 +2307,34 @@ static wchar_t* findJoin(wchar_t* s)
 
 
 
+class TemporaryTableGarbageCollector
+{
+public:
+
+    xd::IDatabasePtr db;
+    std::vector<std::wstring> tables;
+
+    TemporaryTableGarbageCollector(xd::IDatabasePtr _db)
+    {
+        db = _db;
+    }
+
+    ~TemporaryTableGarbageCollector()
+    {
+        for (auto table : tables)
+        {
+            db->deleteFile(table);
+        }
+    }
+
+    void addTable(const std::wstring& path)
+    {
+        tables.push_back(path);
+    }
+
+};
+
+
 xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
                            const std::wstring& _command,
                            unsigned int flags,
@@ -2318,6 +2346,8 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
         error.setError(xd::errorSyntax, L"Invalid syntax; empty SELECT statement");
         return xcm::null;
     }
+
+    TemporaryTableGarbageCollector gc(db);
 
     wchar_t* command = new wchar_t[_command.length()+1];
     wcscpy(command, _command.c_str());
@@ -2635,7 +2665,6 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
         st.join_type = joinNone;
         st.alias = alias;
         st.structure = table_structure;
-
 
         source_tables.insert(source_tables.begin(), st);
     }

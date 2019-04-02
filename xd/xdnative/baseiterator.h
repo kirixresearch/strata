@@ -112,7 +112,8 @@ public:
     virtual bool setFirstKey() { return false; }
     virtual xd::rowpos_t getRowNumber() { return 0; }
     
-    void setIteratorFlags(unsigned int mask, unsigned int value) { }
+    void setIteratorFlags(unsigned int mask, unsigned int value);
+    unsigned int getIteratorFlags();
 
     virtual bool init(XdnativeDatabase* database,
                       IXdnativeSet* set,
@@ -131,9 +132,6 @@ public:
     xd::Structure getStructure();
     bool refreshStructure();
     bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
-
-    unsigned int getIteratorFlags();
-    void setIteratorFlags(unsigned int new_val);
 
     xd::IIteratorPtr getChildIterator(xd::IRelationPtr relation);
     xd::IIteratorPtr getFilteredChildIterator(xd::IRelationPtr relation);

@@ -2120,12 +2120,10 @@ unsigned int BaseIterator::getIteratorFlags()
     return m_iter_flags;
 }
 
-void BaseIterator::setIteratorFlags(unsigned int new_val)
+void  BaseIterator::setIteratorFlags(unsigned int mask, unsigned int value)
 {
-    m_iter_flags = new_val;
+    m_iter_flags |= (value & mask);
 }
-
-
 
 
 const unsigned char* BaseIterator::getRowBuffer()

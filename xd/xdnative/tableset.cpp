@@ -43,8 +43,8 @@ TableIterator::TableIterator() : BaseIterator()
     m_eof = false;
     m_bof = false;
     m_include_deleted = false;
-
-    setIteratorFlags(xd::ifFastSkip | xd::ifFastRowCount);
+    m_table_set = NULL;
+    setIteratorFlags(xd::ifFastSkip | xd::ifFastRowCount, xd::ifFastSkip | xd::ifFastRowCount);
 }
 
 TableIterator::~TableIterator()
@@ -95,6 +95,17 @@ bool TableIterator::init(XdnativeDatabase* database,
 std::wstring TableIterator::getTable()
 {
     return m_table_set->m_ofspath;
+}
+
+void TableIterator::setIteratorFlags(unsigned int mask, unsigned int value)
+{
+    BaseIterator::setIteratorFlags(mask, value);
+
+    if (mask & xd::ifTemporary)
+    {
+        bool v = (value & xd::ifTemporary) ? true : false;
+        m_table_set->setTemporary(v);
+    }
 }
 
 
@@ -408,6 +419,7 @@ TableSet::TableSet(XdnativeDatabase* database) : BaseSet(database)
     m_update_iter = NULL;
     m_update_buf = NULL;
     m_idxrefresh_time = 0;
+    m_temporary = false;
 
     setSetFlags(xd::sfFastRowCount);
 }

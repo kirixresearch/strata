@@ -64,6 +64,8 @@ public:
 
     std::wstring getTable();
 
+    void setIteratorFlags(unsigned int mask, unsigned int value);
+
     const unsigned char* getRowBuffer();
     int getRowBufferWidth();
 
