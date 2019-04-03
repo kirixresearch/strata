@@ -12,6 +12,7 @@
 #include "jobspch.h"
 #include "relationship.h"
 #include "util.h"
+#include <set>
 
 
 namespace jobs
@@ -108,6 +109,27 @@ int RelationshipJob::runJob()
 
         // get the indexes
         xd::IndexInfoEnum right_set_indexes = m_db->getIndexEnum(right_path);
+
+        // make sure we have a unique index name
+        std::set<std::wstring, kl::cmp_nocase> index_names;
+        for (auto index_info : right_set_indexes)
+        {
+            index_names.insert(index_info.name);
+        }
+
+        if (index_names.find(name) != index_names.end())
+        {
+            int suffix = 2;
+            std::wstring test;
+            do
+            {
+                test = name + L"_" + kl::itowstring(suffix);
+                ++suffix;
+            } while (index_names.find(test) != index_names.end());
+            name = test;
+        }
+
+
 
         // if we're on an external database, then move on
         if (jobs::getMountRoot(m_db, right_path).length() != 0)
