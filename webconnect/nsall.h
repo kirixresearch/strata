@@ -15049,11 +15049,11 @@ class nsILocalFile; /* forward declaration */
 
 
 /* starting interface:    nsIHelperAppLauncherDialog */
-#define NS_IHELPERAPPLAUNCHERDIALOG_IID_STR "f3704fdc-8ae6-4eba-a3c3-f02958ac0649"
+#define NS_IHELPERAPPLAUNCHERDIALOG_IID_STR "3ae4dca8-ac91-4891-adcf-3fbebed6170e"
 
 #define NS_IHELPERAPPLAUNCHERDIALOG_IID \
-  {0xf3704fdc, 0x8ae6, 0x4eba, \
-    { 0xa3, 0xc3, 0xf0, 0x29, 0x58, 0xac, 0x06, 0x49 }}
+  {0x3ae4dca8, 0xac91, 0x4891, \
+    { 0xad, 0xcf, 0x3f, 0xbe, 0xbe, 0xd6, 0x17, 0x0e }}
 
 class NS_NO_VTABLE nsIHelperAppLauncherDialog : public nsISupports {
  public: 
@@ -15071,6 +15071,9 @@ class NS_NO_VTABLE nsIHelperAppLauncherDialog : public nsISupports {
 
   /* nsILocalFile promptForSaveToFile (in nsIHelperAppLauncher launcher, in nsISupports windowContext, in wstring defaultFile, in wstring suggestedFileExtension, in boolean force_prompt); */
   NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval) = 0;
+
+  /* void promptForSaveToFileAsync (in nsIHelperAppLauncher launcher, in nsISupports windowContext, in wstring defaultFile, in wstring suggestedFileExtension, in boolean force_prompt); */
+  NS_IMETHOD PromptForSaveToFileAsync(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt) = 0;
 
 };
 

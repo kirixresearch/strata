@@ -1558,6 +1558,15 @@ public:
         NS_NewNativeLocalFile(nsDependentCString(fname.c_str()), PR_TRUE, new_file);
         return NS_OK;
     }
+
+    NS_IMETHOD PromptForSaveToFileAsync(nsIHelperAppLauncher* launcher,
+        nsISupports* window_context,
+        const char16_t* default_file,
+        const char16_t* suggested_file_extension,
+        bool force_prompt)
+    {
+        return NS_OK;
+    }
 };
 
 

@@ -2351,7 +2351,7 @@ interface nsIHelperAppLauncher;
 interface nsILocalFile;
 
 
-[scriptable, object, uuid(f3704fdc-8ae6-4eba-a3c3-f02958ac0649)]
+[scriptable, object, uuid(3ae4dca8-ac91-4891-adcf-3fbebed6170e)]
 interface nsIHelperAppLauncherDialog : nsISupports
 {
     const unsigned long REASON_CANTHANDLE = 0;
@@ -2363,6 +2363,13 @@ interface nsIHelperAppLauncherDialog : nsISupports
               in unsigned long reason);
 
     nsILocalFile promptForSaveToFile(
+              in nsIHelperAppLauncher launcher,
+              in nsISupports windowContext,
+              in wstring defaultFile,
+              in wstring suggestedFileExtension,
+              in boolean force_prompt);
+
+    void promptForSaveToFileAsync(
               in nsIHelperAppLauncher launcher,
               in nsISupports windowContext,
               in wstring defaultFile,
