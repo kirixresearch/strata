@@ -15149,11 +15149,11 @@ typedef NS_CALLBACK(nsWriteSegmentFun)(
 );
 
 /* starting interface:    nsIInputStream */
-#define NS_IINPUTSTREAM_IID_STR "fa9c7f6c-61b3-11d4-9877-00c04fa0cf4a"
+#define NS_IINPUTSTREAM_IID_STR "53cdbc97-c2d7-4e30-b2c3-45b2ee79db18"
 
 #define NS_IINPUTSTREAM_IID \
-  {0xfa9c7f6c, 0x61b3, 0x11d4, \
-    { 0x98, 0x77, 0x00, 0xc0, 0x4f, 0xa0, 0xcf, 0x4a }}
+  {0x53cdbc97, 0xc2d7, 0x4e30, \
+    { 0xb2, 0xc3, 0x45, 0xb2, 0xee, 0x79, 0xdb, 0x18 }}
 
 class NS_NO_VTABLE nsIInputStream : public nsISupports {
  public: 
@@ -19397,19 +19397,19 @@ class nsIInputStream; /* forward declaration */
 
 
 /* starting interface:    nsIStreamListener */
-#define NS_ISTREAMLISTENER_IID_STR "1a637020-1482-11d3-9333-00104ba0fd40"
+#define NS_ISTREAMLISTENER_IID_STR "3b4c8a77-76ba-4610-b316-678c73a3b88c"
 
 #define NS_ISTREAMLISTENER_IID \
-  {0x1a637020, 0x1482, 0x11d3, \
-    { 0x93, 0x33, 0x00, 0x10, 0x4b, 0xa0, 0xfd, 0x40 }}
+  {0x3b4c8a77, 0x76ba, 0x4610, \
+    { 0xb3, 0x16, 0x67, 0x8c, 0x73, 0xa3, 0xb8, 0x8c }}
 
 class NS_NO_VTABLE nsIStreamListener : public nsIRequestObserver {
  public: 
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_ISTREAMLISTENER_IID)
 
-  /* void onDataAvailable (in nsIRequest request, in nsISupports contxt, in nsIInputStream input_stream, in unsigned long offset, in unsigned long count); */
-  NS_IMETHOD OnDataAvailable(nsIRequest *request, nsISupports *contxt, nsIInputStream *input_stream, uint32_t offset, uint32_t count) = 0;
+  /* void onDataAvailable (in nsIRequest request, in nsISupports contxt, in nsIInputStream input_stream, in unsigned long long offset, in unsigned long count); */
+  NS_IMETHOD OnDataAvailable(nsIRequest *request, nsISupports *contxt, nsIInputStream *input_stream, uint64_t offset, uint32_t count) = 0;
 
 };
 
@@ -20125,11 +20125,11 @@ class nsIStreamListener; /* forward declaration */
 
 
 /* starting interface:    nsIURILoader */
-#define NS_IURILOADER_IID_STR "2f7e8051-f1c9-4bcc-8584-9cfd5849e343"
+#define NS_IURILOADER_IID_STR "8762c4e7-be35-4958-9b81-a05685bb516d"
 
 #define NS_IURILOADER_IID \
-  {0x2f7e8051, 0xf1c9, 0x4bcc, \
-    { 0x85, 0x84, 0x9c, 0xfd, 0x58, 0x49, 0xe3, 0x43 }}
+  {0x8762c4e7, 0xbe35, 0x4958, \
+    { 0x9b, 0x81, 0xa0, 0x56, 0x85, 0xbb, 0x51, 0x6d }}
 
 class NS_NO_VTABLE nsIURILoader : public nsISupports {
  public: 
@@ -20147,8 +20147,8 @@ class NS_NO_VTABLE nsIURILoader : public nsISupports {
   /* void unRegisterContentListener (in nsIURIContentListener content_listener); */
   NS_IMETHOD UnRegisterContentListener(nsIURIContentListener *content_listener) = 0;
 
-  /* void openURI (in nsIChannel channel, in boolean is_content_preferred, in nsIInterfaceRequestor window_context); */
-  NS_IMETHOD OpenURI(nsIChannel *channel, bool is_content_preferred, nsIInterfaceRequestor *window_context) = 0;
+  /* void openURI (in nsIChannel channel, in unsigned long flags, in nsIInterfaceRequestor window_context); */
+  NS_IMETHOD OpenURI(nsIChannel *channel, uint32_t flags, bool is_content_preferred, nsIInterfaceRequestor *window_context) = 0;
 
   /* nsIStreamListener openChannel (in nsIChannel channel, in unsigned long flags, in nsIInterfaceRequestor window_context); */
   NS_IMETHOD OpenChannel(nsIChannel *channel, uint32_t flags, nsIInterfaceRequestor *window_context, nsIStreamListener * *_retval) = 0;

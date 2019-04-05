@@ -1088,7 +1088,7 @@ public:
     NS_IMETHODIMP OnDataAvailable(nsIRequest* channel,
                                   nsISupports* context,
                                   nsIInputStream* in_stream,
-                                  PRUint32 source_offset,
+                                  PRUint64 source_offset,
                                   PRUint32 count)
     {
         unsigned char* buf = new unsigned char[count];

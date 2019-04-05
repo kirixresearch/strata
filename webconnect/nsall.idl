@@ -2392,7 +2392,7 @@ typedef NS_CALLBACK(nsWriteSegmentFun)(
 native nsWriteSegmentFun(nsWriteSegmentFun);
 
   
-[scriptable, uuid(fa9c7f6c-61b3-11d4-9877-00c04fa0cf4a)]
+[scriptable, uuid(53cdbc97-c2d7-4e30-b2c3-45b2ee79db18)]
 interface nsIInputStream : nsISupports
 {
      void close();
@@ -3223,14 +3223,14 @@ interface nsIRequest;
 interface nsIInputStream;
 
 
-[scriptable, uuid(1a637020-1482-11d3-9333-00104ba0fd40)]
+[scriptable, uuid(3b4c8a77-76ba-4610-b316-678c73a3b88c)]
 interface nsIStreamListener : nsIRequestObserver
 {
     void onDataAvailable(
             in nsIRequest request,
             in nsISupports contxt,
             in nsIInputStream input_stream,
-            in unsigned long offset,
+            in unsigned long long offset,
             in unsigned long count);
 };
 
@@ -3428,7 +3428,7 @@ interface nsIInterfaceRequestor;
 interface nsIStreamListener;
 
 
-[scriptable, uuid(2f7e8051-f1c9-4bcc-8584-9cfd5849e343)]
+[scriptable, uuid(8762c4e7-be35-4958-9b81-a05685bb516d)]
 interface nsIURILoader : nsISupports
 {
     const unsigned long IS_CONTENT_PREFERRED = 0x01;
@@ -3438,7 +3438,7 @@ interface nsIURILoader : nsISupports
     void unRegisterContentListener(in nsIURIContentListener content_listener);
     
     void openURI(in nsIChannel channel,
-                 in boolean is_content_preferred,
+                 in unsigned long aFlags,
                  in nsIInterfaceRequestor window_context);
     
     nsIStreamListener openChannel(in nsIChannel channel,
