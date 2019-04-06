@@ -519,15 +519,17 @@ NS_IMETHODIMP nsSupportsWeakReference::GetWeakReference(nsIWeakReference * *_ret
 /* End of implementation class template. */
 #endif
 
+struct PRFileDesc;
+struct PRLibrary;
 class nsISimpleEnumerator; /* forward declaration */
 
 
 /* starting interface:    nsIFile */
-#define NS_IFILE_IID_STR "c8c0a080-0868-11d3-915f-d9d889d48e3c"
+#define NS_IFILE_IID_STR "272a5020-64f5-485c-a8c4-44b2882ae0a2"
 
 #define NS_IFILE_IID \
-  {0xc8c0a080, 0x0868, 0x11d3, \
-    { 0x91, 0x5f, 0xd9, 0xd8, 0x89, 0xd4, 0x8e, 0x3c }}
+  {0x272a5020, 0x64f5, 0x485c, \
+    { 0xa8, 0xc4, 0x44, 0xb2, 0x88, 0x2a, 0xe0, 0xa2 }}
 
 class NS_NO_VTABLE nsIFile : public nsISupports {
  public: 
@@ -660,6 +662,50 @@ class NS_NO_VTABLE nsIFile : public nsISupports {
   /* readonly attribute nsISimpleEnumerator directoryEntries; */
   NS_IMETHOD GetDirectoryEntries(nsISimpleEnumerator * *aDirectoryEntries) = 0;
 
+  /* void initWithPath (in AString file_path); */
+  NS_IMETHOD InitWithPath(const nsAString & file_path) = 0;
+
+  /* [noscript] void initWithNativePath (in ACString file_path); */
+  NS_IMETHOD InitWithNativePath(const nsACString & file_path) = 0;
+
+  /* void initWithFile (in nsIFile file); */
+  NS_IMETHOD InitWithFile(nsIFile *file) = 0;
+
+  /* attribute boolean followLinks; */
+  NS_IMETHOD GetFollowLinks(bool *aFollowLinks) = 0;
+  NS_IMETHOD SetFollowLinks(bool aFollowLinks) = 0;
+
+  /* [noscript] PRFileDescStar openNSPRFileDesc (in long flags, in long mode); */
+  NS_IMETHOD OpenNSPRFileDesc(int32_t flags, int32_t mode, PRFileDesc **_retval) = 0;
+
+  /* [noscript] FILEStar openANSIFileDesc (in string mode); */
+  NS_IMETHOD OpenANSIFileDesc(const char * mode, FILE **_retval) = 0;
+
+  /* [noscript] PRLibraryStar load (); */
+  NS_IMETHOD Load(PRLibrary **_retval) = 0;
+
+  /* void appendRelativePath (in AString rel_path); */
+  NS_IMETHOD AppendRelativePath(const nsAString & rel_path) = 0;
+
+  /* [noscript] void appendRelativeNativePath (in ACString rel_path); */
+  NS_IMETHOD AppendRelativeNativePath(const nsACString & rel_path) = 0;
+
+  /* attribute ACString persistentDescriptor; */
+  NS_IMETHOD GetPersistentDescriptor(nsACString & aPersistentDescriptor) = 0;
+  NS_IMETHOD SetPersistentDescriptor(const nsACString & aPersistentDescriptor) = 0;
+
+  /* void reveal (); */
+  NS_IMETHOD Reveal(void) = 0;
+
+  /* void launch (); */
+  NS_IMETHOD Launch(void) = 0;
+
+  /* ACString getRelativeDescriptor (in nsIFile from_file); */
+  NS_IMETHOD GetRelativeDescriptor(nsIFile *from_file, nsACString & _retval) = 0;
+
+  /* void setRelativeDescriptor (in nsIFile from_file, in ACString rel_desc); */
+  NS_IMETHOD SetRelativeDescriptor(nsIFile *from_file, const nsACString & rel_desc) = 0;
+
 };
 
   NS_DEFINE_STATIC_IID_ACCESSOR(nsIFile, NS_IFILE_IID)
@@ -710,7 +756,23 @@ class NS_NO_VTABLE nsIFile : public nsISupports {
   NS_IMETHOD Equals(nsIFile *file, bool *_retval); \
   NS_IMETHOD Contains(nsIFile *file, bool recurse, bool *_retval); \
   NS_IMETHOD GetParent(nsIFile * *aParent); \
-  NS_IMETHOD GetDirectoryEntries(nsISimpleEnumerator * *aDirectoryEntries); 
+  NS_IMETHOD GetDirectoryEntries(nsISimpleEnumerator * *aDirectoryEntries); \
+  NS_IMETHOD InitWithPath(const nsAString & file_path); \
+  NS_IMETHOD InitWithNativePath(const nsACString & file_path); \
+  NS_IMETHOD InitWithFile(nsIFile *file); \
+  NS_IMETHOD GetFollowLinks(bool *aFollowLinks); \
+  NS_IMETHOD SetFollowLinks(bool aFollowLinks); \
+  NS_IMETHOD OpenNSPRFileDesc(int32_t flags, int32_t mode, PRFileDesc **_retval); \
+  NS_IMETHOD OpenANSIFileDesc(const char * mode, FILE **_retval); \
+  NS_IMETHOD Load(PRLibrary **_retval); \
+  NS_IMETHOD AppendRelativePath(const nsAString & rel_path); \
+  NS_IMETHOD AppendRelativeNativePath(const nsACString & rel_path); \
+  NS_IMETHOD GetPersistentDescriptor(nsACString & aPersistentDescriptor); \
+  NS_IMETHOD SetPersistentDescriptor(const nsACString & aPersistentDescriptor); \
+  NS_IMETHOD Reveal(void); \
+  NS_IMETHOD Launch(void); \
+  NS_IMETHOD GetRelativeDescriptor(nsIFile *from_file, nsACString & _retval); \
+  NS_IMETHOD SetRelativeDescriptor(nsIFile *from_file, const nsACString & rel_desc); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIFILE(_to) \
@@ -758,7 +820,23 @@ class NS_NO_VTABLE nsIFile : public nsISupports {
   NS_IMETHOD Equals(nsIFile *file, bool *_retval) { return _to Equals(file, _retval); } \
   NS_IMETHOD Contains(nsIFile *file, bool recurse, bool *_retval) { return _to Contains(file, recurse, _retval); } \
   NS_IMETHOD GetParent(nsIFile * *aParent) { return _to GetParent(aParent); } \
-  NS_IMETHOD GetDirectoryEntries(nsISimpleEnumerator * *aDirectoryEntries) { return _to GetDirectoryEntries(aDirectoryEntries); } 
+  NS_IMETHOD GetDirectoryEntries(nsISimpleEnumerator * *aDirectoryEntries) { return _to GetDirectoryEntries(aDirectoryEntries); } \
+  NS_IMETHOD InitWithPath(const nsAString & file_path) { return _to InitWithPath(file_path); } \
+  NS_IMETHOD InitWithNativePath(const nsACString & file_path) { return _to InitWithNativePath(file_path); } \
+  NS_IMETHOD InitWithFile(nsIFile *file) { return _to InitWithFile(file); } \
+  NS_IMETHOD GetFollowLinks(bool *aFollowLinks) { return _to GetFollowLinks(aFollowLinks); } \
+  NS_IMETHOD SetFollowLinks(bool aFollowLinks) { return _to SetFollowLinks(aFollowLinks); } \
+  NS_IMETHOD OpenNSPRFileDesc(int32_t flags, int32_t mode, PRFileDesc **_retval) { return _to OpenNSPRFileDesc(flags, mode, _retval); } \
+  NS_IMETHOD OpenANSIFileDesc(const char * mode, FILE **_retval) { return _to OpenANSIFileDesc(mode, _retval); } \
+  NS_IMETHOD Load(PRLibrary **_retval) { return _to Load(_retval); } \
+  NS_IMETHOD AppendRelativePath(const nsAString & rel_path) { return _to AppendRelativePath(rel_path); } \
+  NS_IMETHOD AppendRelativeNativePath(const nsACString & rel_path) { return _to AppendRelativeNativePath(rel_path); } \
+  NS_IMETHOD GetPersistentDescriptor(nsACString & aPersistentDescriptor) { return _to GetPersistentDescriptor(aPersistentDescriptor); } \
+  NS_IMETHOD SetPersistentDescriptor(const nsACString & aPersistentDescriptor) { return _to SetPersistentDescriptor(aPersistentDescriptor); } \
+  NS_IMETHOD Reveal(void) { return _to Reveal(); } \
+  NS_IMETHOD Launch(void) { return _to Launch(); } \
+  NS_IMETHOD GetRelativeDescriptor(nsIFile *from_file, nsACString & _retval) { return _to GetRelativeDescriptor(from_file, _retval); } \
+  NS_IMETHOD SetRelativeDescriptor(nsIFile *from_file, const nsACString & rel_desc) { return _to SetRelativeDescriptor(from_file, rel_desc); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIFILE(_to) \
@@ -806,7 +884,23 @@ class NS_NO_VTABLE nsIFile : public nsISupports {
   NS_IMETHOD Equals(nsIFile *file, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Equals(file, _retval); } \
   NS_IMETHOD Contains(nsIFile *file, bool recurse, bool *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Contains(file, recurse, _retval); } \
   NS_IMETHOD GetParent(nsIFile * *aParent) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetParent(aParent); } \
-  NS_IMETHOD GetDirectoryEntries(nsISimpleEnumerator * *aDirectoryEntries) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDirectoryEntries(aDirectoryEntries); } 
+  NS_IMETHOD GetDirectoryEntries(nsISimpleEnumerator * *aDirectoryEntries) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDirectoryEntries(aDirectoryEntries); } \
+  NS_IMETHOD InitWithPath(const nsAString & file_path) { return !_to ? NS_ERROR_NULL_POINTER : _to->InitWithPath(file_path); } \
+  NS_IMETHOD InitWithNativePath(const nsACString & file_path) { return !_to ? NS_ERROR_NULL_POINTER : _to->InitWithNativePath(file_path); } \
+  NS_IMETHOD InitWithFile(nsIFile *file) { return !_to ? NS_ERROR_NULL_POINTER : _to->InitWithFile(file); } \
+  NS_IMETHOD GetFollowLinks(bool *aFollowLinks) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFollowLinks(aFollowLinks); } \
+  NS_IMETHOD SetFollowLinks(bool aFollowLinks) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFollowLinks(aFollowLinks); } \
+  NS_IMETHOD OpenNSPRFileDesc(int32_t flags, int32_t mode, PRFileDesc **_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->OpenNSPRFileDesc(flags, mode, _retval); } \
+  NS_IMETHOD OpenANSIFileDesc(const char * mode, FILE **_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->OpenANSIFileDesc(mode, _retval); } \
+  NS_IMETHOD Load(PRLibrary **_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Load(_retval); } \
+  NS_IMETHOD AppendRelativePath(const nsAString & rel_path) { return !_to ? NS_ERROR_NULL_POINTER : _to->AppendRelativePath(rel_path); } \
+  NS_IMETHOD AppendRelativeNativePath(const nsACString & rel_path) { return !_to ? NS_ERROR_NULL_POINTER : _to->AppendRelativeNativePath(rel_path); } \
+  NS_IMETHOD GetPersistentDescriptor(nsACString & aPersistentDescriptor) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPersistentDescriptor(aPersistentDescriptor); } \
+  NS_IMETHOD SetPersistentDescriptor(const nsACString & aPersistentDescriptor) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPersistentDescriptor(aPersistentDescriptor); } \
+  NS_IMETHOD Reveal(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Reveal(); } \
+  NS_IMETHOD Launch(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Launch(); } \
+  NS_IMETHOD GetRelativeDescriptor(nsIFile *from_file, nsACString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetRelativeDescriptor(from_file, _retval); } \
+  NS_IMETHOD SetRelativeDescriptor(nsIFile *from_file, const nsACString & rel_desc) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetRelativeDescriptor(from_file, rel_desc); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -1096,67 +1190,113 @@ NS_IMETHODIMP nsFile::GetDirectoryEntries(nsISimpleEnumerator * *aDirectoryEntri
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
+/* void initWithPath (in AString file_path); */
+NS_IMETHODIMP nsFile::InitWithPath(const nsAString & file_path)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [noscript] void initWithNativePath (in ACString file_path); */
+NS_IMETHODIMP nsFile::InitWithNativePath(const nsACString & file_path)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void initWithFile (in nsIFile file); */
+NS_IMETHODIMP nsFile::InitWithFile(nsIFile *file)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute boolean followLinks; */
+NS_IMETHODIMP nsFile::GetFollowLinks(bool *aFollowLinks)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsFile::SetFollowLinks(bool aFollowLinks)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [noscript] PRFileDescStar openNSPRFileDesc (in long flags, in long mode); */
+NS_IMETHODIMP nsFile::OpenNSPRFileDesc(int32_t flags, int32_t mode, PRFileDesc **_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [noscript] FILEStar openANSIFileDesc (in string mode); */
+NS_IMETHODIMP nsFile::OpenANSIFileDesc(const char * mode, FILE **_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [noscript] PRLibraryStar load (); */
+NS_IMETHODIMP nsFile::Load(PRLibrary **_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void appendRelativePath (in AString rel_path); */
+NS_IMETHODIMP nsFile::AppendRelativePath(const nsAString & rel_path)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* [noscript] void appendRelativeNativePath (in ACString rel_path); */
+NS_IMETHODIMP nsFile::AppendRelativeNativePath(const nsACString & rel_path)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute ACString persistentDescriptor; */
+NS_IMETHODIMP nsFile::GetPersistentDescriptor(nsACString & aPersistentDescriptor)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsFile::SetPersistentDescriptor(const nsACString & aPersistentDescriptor)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void reveal (); */
+NS_IMETHODIMP nsFile::Reveal()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void launch (); */
+NS_IMETHODIMP nsFile::Launch()
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* ACString getRelativeDescriptor (in nsIFile from_file); */
+NS_IMETHODIMP nsFile::GetRelativeDescriptor(nsIFile *from_file, nsACString & _retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void setRelativeDescriptor (in nsIFile from_file, in ACString rel_desc); */
+NS_IMETHODIMP nsFile::SetRelativeDescriptor(nsIFile *from_file, const nsACString & rel_desc)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 /* End of implementation class template. */
 #endif
 
-struct PRFileDesc;
-struct PRLibrary;
 
 /* starting interface:    nsILocalFile */
-#define NS_ILOCALFILE_IID_STR "aa610f20-a889-11d3-8c81-000064657374"
+#define NS_ILOCALFILE_IID_STR "ce4ef184-7660-445e-9e59-6731bdc65505"
 
 #define NS_ILOCALFILE_IID \
-  {0xaa610f20, 0xa889, 0x11d3, \
-    { 0x8c, 0x81, 0x00, 0x00, 0x64, 0x65, 0x73, 0x74 }}
+  {0xce4ef184, 0x7660, 0x445e, \
+    { 0x9e, 0x59, 0x67, 0x31, 0xbd, 0xc6, 0x55, 0x05 }}
 
 class NS_NO_VTABLE nsILocalFile : public nsIFile {
  public: 
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_ILOCALFILE_IID)
-
-  /* void initWithPath (in AString file_path); */
-  NS_IMETHOD InitWithPath(const nsAString & file_path) = 0;
-
-  /* [noscript] void initWithNativePath (in ACString file_path); */
-  NS_IMETHOD InitWithNativePath(const nsACString & file_path) = 0;
-
-  /* void initWithFile (in nsILocalFile file); */
-  NS_IMETHOD InitWithFile(nsILocalFile *file) = 0;
-
-  /* attribute boolean followLinks; */
-  NS_IMETHOD GetFollowLinks(bool *aFollowLinks) = 0;
-  NS_IMETHOD SetFollowLinks(bool aFollowLinks) = 0;
-
-  /* [noscript] PRFileDescStar openNSPRFileDesc (in long flags, in long mode); */
-  NS_IMETHOD OpenNSPRFileDesc(int32_t flags, int32_t mode, PRFileDesc **_retval) = 0;
-
-  /* [noscript] FILEStar openANSIFileDesc (in string mode); */
-  NS_IMETHOD OpenANSIFileDesc(const char * mode, FILE **_retval) = 0;
-
-  /* [noscript] PRLibraryStar load (); */
-  NS_IMETHOD Load(PRLibrary **_retval) = 0;
-
-  /* void appendRelativePath (in AString rel_path); */
-  NS_IMETHOD AppendRelativePath(const nsAString & rel_path) = 0;
-
-  /* [noscript] void appendRelativeNativePath (in ACString rel_path); */
-  NS_IMETHOD AppendRelativeNativePath(const nsACString & rel_path) = 0;
-
-  /* attribute ACString persistentDescriptor; */
-  NS_IMETHOD GetPersistentDescriptor(nsACString & aPersistentDescriptor) = 0;
-  NS_IMETHOD SetPersistentDescriptor(const nsACString & aPersistentDescriptor) = 0;
-
-  /* void reveal (); */
-  NS_IMETHOD Reveal(void) = 0;
-
-  /* void launch (); */
-  NS_IMETHOD Launch(void) = 0;
-
-  /* ACString getRelativeDescriptor (in nsILocalFile from_file); */
-  NS_IMETHOD GetRelativeDescriptor(nsILocalFile *from_file, nsACString & _retval) = 0;
-
-  /* void setRelativeDescriptor (in nsILocalFile from_file, in ACString rel_desc); */
-  NS_IMETHOD SetRelativeDescriptor(nsILocalFile *from_file, const nsACString & rel_desc) = 0;
 
 };
 
@@ -1164,60 +1304,15 @@ class NS_NO_VTABLE nsILocalFile : public nsIFile {
 
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSILOCALFILE \
-  NS_IMETHOD InitWithPath(const nsAString & file_path); \
-  NS_IMETHOD InitWithNativePath(const nsACString & file_path); \
-  NS_IMETHOD InitWithFile(nsILocalFile *file); \
-  NS_IMETHOD GetFollowLinks(bool *aFollowLinks); \
-  NS_IMETHOD SetFollowLinks(bool aFollowLinks); \
-  NS_IMETHOD OpenNSPRFileDesc(int32_t flags, int32_t mode, PRFileDesc **_retval); \
-  NS_IMETHOD OpenANSIFileDesc(const char * mode, FILE **_retval); \
-  NS_IMETHOD Load(PRLibrary **_retval); \
-  NS_IMETHOD AppendRelativePath(const nsAString & rel_path); \
-  NS_IMETHOD AppendRelativeNativePath(const nsACString & rel_path); \
-  NS_IMETHOD GetPersistentDescriptor(nsACString & aPersistentDescriptor); \
-  NS_IMETHOD SetPersistentDescriptor(const nsACString & aPersistentDescriptor); \
-  NS_IMETHOD Reveal(void); \
-  NS_IMETHOD Launch(void); \
-  NS_IMETHOD GetRelativeDescriptor(nsILocalFile *from_file, nsACString & _retval); \
-  NS_IMETHOD SetRelativeDescriptor(nsILocalFile *from_file, const nsACString & rel_desc); 
+  /* no methods! */
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSILOCALFILE(_to) \
-  NS_IMETHOD InitWithPath(const nsAString & file_path) { return _to InitWithPath(file_path); } \
-  NS_IMETHOD InitWithNativePath(const nsACString & file_path) { return _to InitWithNativePath(file_path); } \
-  NS_IMETHOD InitWithFile(nsILocalFile *file) { return _to InitWithFile(file); } \
-  NS_IMETHOD GetFollowLinks(bool *aFollowLinks) { return _to GetFollowLinks(aFollowLinks); } \
-  NS_IMETHOD SetFollowLinks(bool aFollowLinks) { return _to SetFollowLinks(aFollowLinks); } \
-  NS_IMETHOD OpenNSPRFileDesc(int32_t flags, int32_t mode, PRFileDesc **_retval) { return _to OpenNSPRFileDesc(flags, mode, _retval); } \
-  NS_IMETHOD OpenANSIFileDesc(const char * mode, FILE **_retval) { return _to OpenANSIFileDesc(mode, _retval); } \
-  NS_IMETHOD Load(PRLibrary **_retval) { return _to Load(_retval); } \
-  NS_IMETHOD AppendRelativePath(const nsAString & rel_path) { return _to AppendRelativePath(rel_path); } \
-  NS_IMETHOD AppendRelativeNativePath(const nsACString & rel_path) { return _to AppendRelativeNativePath(rel_path); } \
-  NS_IMETHOD GetPersistentDescriptor(nsACString & aPersistentDescriptor) { return _to GetPersistentDescriptor(aPersistentDescriptor); } \
-  NS_IMETHOD SetPersistentDescriptor(const nsACString & aPersistentDescriptor) { return _to SetPersistentDescriptor(aPersistentDescriptor); } \
-  NS_IMETHOD Reveal(void) { return _to Reveal(); } \
-  NS_IMETHOD Launch(void) { return _to Launch(); } \
-  NS_IMETHOD GetRelativeDescriptor(nsILocalFile *from_file, nsACString & _retval) { return _to GetRelativeDescriptor(from_file, _retval); } \
-  NS_IMETHOD SetRelativeDescriptor(nsILocalFile *from_file, const nsACString & rel_desc) { return _to SetRelativeDescriptor(from_file, rel_desc); } 
+  /* no methods! */
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSILOCALFILE(_to) \
-  NS_IMETHOD InitWithPath(const nsAString & file_path) { return !_to ? NS_ERROR_NULL_POINTER : _to->InitWithPath(file_path); } \
-  NS_IMETHOD InitWithNativePath(const nsACString & file_path) { return !_to ? NS_ERROR_NULL_POINTER : _to->InitWithNativePath(file_path); } \
-  NS_IMETHOD InitWithFile(nsILocalFile *file) { return !_to ? NS_ERROR_NULL_POINTER : _to->InitWithFile(file); } \
-  NS_IMETHOD GetFollowLinks(bool *aFollowLinks) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFollowLinks(aFollowLinks); } \
-  NS_IMETHOD SetFollowLinks(bool aFollowLinks) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFollowLinks(aFollowLinks); } \
-  NS_IMETHOD OpenNSPRFileDesc(int32_t flags, int32_t mode, PRFileDesc **_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->OpenNSPRFileDesc(flags, mode, _retval); } \
-  NS_IMETHOD OpenANSIFileDesc(const char * mode, FILE **_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->OpenANSIFileDesc(mode, _retval); } \
-  NS_IMETHOD Load(PRLibrary **_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Load(_retval); } \
-  NS_IMETHOD AppendRelativePath(const nsAString & rel_path) { return !_to ? NS_ERROR_NULL_POINTER : _to->AppendRelativePath(rel_path); } \
-  NS_IMETHOD AppendRelativeNativePath(const nsACString & rel_path) { return !_to ? NS_ERROR_NULL_POINTER : _to->AppendRelativeNativePath(rel_path); } \
-  NS_IMETHOD GetPersistentDescriptor(nsACString & aPersistentDescriptor) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPersistentDescriptor(aPersistentDescriptor); } \
-  NS_IMETHOD SetPersistentDescriptor(const nsACString & aPersistentDescriptor) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetPersistentDescriptor(aPersistentDescriptor); } \
-  NS_IMETHOD Reveal(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Reveal(); } \
-  NS_IMETHOD Launch(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Launch(); } \
-  NS_IMETHOD GetRelativeDescriptor(nsILocalFile *from_file, nsACString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetRelativeDescriptor(from_file, _retval); } \
-  NS_IMETHOD SetRelativeDescriptor(nsILocalFile *from_file, const nsACString & rel_desc) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetRelativeDescriptor(from_file, rel_desc); } 
+  /* no methods! */
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -1249,98 +1344,6 @@ nsLocalFile::nsLocalFile()
 nsLocalFile::~nsLocalFile()
 {
   /* destructor code */
-}
-
-/* void initWithPath (in AString file_path); */
-NS_IMETHODIMP nsLocalFile::InitWithPath(const nsAString & file_path)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* [noscript] void initWithNativePath (in ACString file_path); */
-NS_IMETHODIMP nsLocalFile::InitWithNativePath(const nsACString & file_path)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void initWithFile (in nsILocalFile file); */
-NS_IMETHODIMP nsLocalFile::InitWithFile(nsILocalFile *file)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute boolean followLinks; */
-NS_IMETHODIMP nsLocalFile::GetFollowLinks(bool *aFollowLinks)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsLocalFile::SetFollowLinks(bool aFollowLinks)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* [noscript] PRFileDescStar openNSPRFileDesc (in long flags, in long mode); */
-NS_IMETHODIMP nsLocalFile::OpenNSPRFileDesc(int32_t flags, int32_t mode, PRFileDesc **_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* [noscript] FILEStar openANSIFileDesc (in string mode); */
-NS_IMETHODIMP nsLocalFile::OpenANSIFileDesc(const char * mode, FILE **_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* [noscript] PRLibraryStar load (); */
-NS_IMETHODIMP nsLocalFile::Load(PRLibrary **_retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void appendRelativePath (in AString rel_path); */
-NS_IMETHODIMP nsLocalFile::AppendRelativePath(const nsAString & rel_path)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* [noscript] void appendRelativeNativePath (in ACString rel_path); */
-NS_IMETHODIMP nsLocalFile::AppendRelativeNativePath(const nsACString & rel_path)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* attribute ACString persistentDescriptor; */
-NS_IMETHODIMP nsLocalFile::GetPersistentDescriptor(nsACString & aPersistentDescriptor)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-NS_IMETHODIMP nsLocalFile::SetPersistentDescriptor(const nsACString & aPersistentDescriptor)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void reveal (); */
-NS_IMETHODIMP nsLocalFile::Reveal()
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void launch (); */
-NS_IMETHODIMP nsLocalFile::Launch()
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* ACString getRelativeDescriptor (in nsILocalFile from_file); */
-NS_IMETHODIMP nsLocalFile::GetRelativeDescriptor(nsILocalFile *from_file, nsACString & _retval)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void setRelativeDescriptor (in nsILocalFile from_file, in ACString rel_desc); */
-NS_IMETHODIMP nsLocalFile::SetRelativeDescriptor(nsILocalFile *from_file, const nsACString & rel_desc)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* End of implementation class template. */
@@ -3588,6 +3591,292 @@ NS_IMETHODIMP nsURI::GetSpecIgnoringRef(nsACString & aSpecIgnoringRef)
 
 /* readonly attribute boolean hasRef; */
 NS_IMETHODIMP nsURI::GetHasRef(bool *aHasRef)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* End of implementation class template. */
+#endif
+
+
+/* starting interface:    nsIURL */
+#define NS_IURL_IID_STR "1419aa16-f134-4154-9886-00c7c5147a13"
+
+#define NS_IURL_IID \
+  {0x1419aa16, 0xf134, 0x4154, \
+    { 0x98, 0x86, 0x00, 0xc7, 0xc5, 0x14, 0x7a, 0x13 }}
+
+class NS_NO_VTABLE nsIURL : public nsIURI {
+ public: 
+
+  NS_DECLARE_STATIC_IID_ACCESSOR(NS_IURL_IID)
+
+  /* attribute AUTF8String filePath; */
+  NS_IMETHOD GetFilePath(nsACString & aFilePath) = 0;
+  NS_IMETHOD SetFilePath(const nsACString & aFilePath) = 0;
+
+  /* attribute AUTF8String query; */
+  NS_IMETHOD GetQuery(nsACString & aQuery) = 0;
+  NS_IMETHOD SetQuery(const nsACString & aQuery) = 0;
+
+  /* attribute AUTF8String directory; */
+  NS_IMETHOD GetDirectory(nsACString & aDirectory) = 0;
+  NS_IMETHOD SetDirectory(const nsACString & aDirectory) = 0;
+
+  /* attribute AUTF8String fileName; */
+  NS_IMETHOD GetFileName(nsACString & aFileName) = 0;
+  NS_IMETHOD SetFileName(const nsACString & aFileName) = 0;
+
+  /* attribute AUTF8String fileBaseName; */
+  NS_IMETHOD GetFileBaseName(nsACString & aFileBaseName) = 0;
+  NS_IMETHOD SetFileBaseName(const nsACString & aFileBaseName) = 0;
+
+  /* attribute AUTF8String fileExtension; */
+  NS_IMETHOD GetFileExtension(nsACString & aFileExtension) = 0;
+  NS_IMETHOD SetFileExtension(const nsACString & aFileExtension) = 0;
+
+  /* AUTF8String getCommonBaseSpec (in nsIURI aURIToCompare); */
+  NS_IMETHOD GetCommonBaseSpec(nsIURI *aURIToCompare, nsACString & _retval) = 0;
+
+  /* AUTF8String getRelativeSpec (in nsIURI aURIToCompare); */
+  NS_IMETHOD GetRelativeSpec(nsIURI *aURIToCompare, nsACString & _retval) = 0;
+
+};
+
+  NS_DEFINE_STATIC_IID_ACCESSOR(nsIURL, NS_IURL_IID)
+
+/* Use this macro when declaring classes that implement this interface. */
+#define NS_DECL_NSIURL \
+  NS_IMETHOD GetFilePath(nsACString & aFilePath); \
+  NS_IMETHOD SetFilePath(const nsACString & aFilePath); \
+  NS_IMETHOD GetQuery(nsACString & aQuery); \
+  NS_IMETHOD SetQuery(const nsACString & aQuery); \
+  NS_IMETHOD GetDirectory(nsACString & aDirectory); \
+  NS_IMETHOD SetDirectory(const nsACString & aDirectory); \
+  NS_IMETHOD GetFileName(nsACString & aFileName); \
+  NS_IMETHOD SetFileName(const nsACString & aFileName); \
+  NS_IMETHOD GetFileBaseName(nsACString & aFileBaseName); \
+  NS_IMETHOD SetFileBaseName(const nsACString & aFileBaseName); \
+  NS_IMETHOD GetFileExtension(nsACString & aFileExtension); \
+  NS_IMETHOD SetFileExtension(const nsACString & aFileExtension); \
+  NS_IMETHOD GetCommonBaseSpec(nsIURI *aURIToCompare, nsACString & _retval); \
+  NS_IMETHOD GetRelativeSpec(nsIURI *aURIToCompare, nsACString & _retval); 
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object. */
+#define NS_FORWARD_NSIURL(_to) \
+  NS_IMETHOD GetFilePath(nsACString & aFilePath) { return _to GetFilePath(aFilePath); } \
+  NS_IMETHOD SetFilePath(const nsACString & aFilePath) { return _to SetFilePath(aFilePath); } \
+  NS_IMETHOD GetQuery(nsACString & aQuery) { return _to GetQuery(aQuery); } \
+  NS_IMETHOD SetQuery(const nsACString & aQuery) { return _to SetQuery(aQuery); } \
+  NS_IMETHOD GetDirectory(nsACString & aDirectory) { return _to GetDirectory(aDirectory); } \
+  NS_IMETHOD SetDirectory(const nsACString & aDirectory) { return _to SetDirectory(aDirectory); } \
+  NS_IMETHOD GetFileName(nsACString & aFileName) { return _to GetFileName(aFileName); } \
+  NS_IMETHOD SetFileName(const nsACString & aFileName) { return _to SetFileName(aFileName); } \
+  NS_IMETHOD GetFileBaseName(nsACString & aFileBaseName) { return _to GetFileBaseName(aFileBaseName); } \
+  NS_IMETHOD SetFileBaseName(const nsACString & aFileBaseName) { return _to SetFileBaseName(aFileBaseName); } \
+  NS_IMETHOD GetFileExtension(nsACString & aFileExtension) { return _to GetFileExtension(aFileExtension); } \
+  NS_IMETHOD SetFileExtension(const nsACString & aFileExtension) { return _to SetFileExtension(aFileExtension); } \
+  NS_IMETHOD GetCommonBaseSpec(nsIURI *aURIToCompare, nsACString & _retval) { return _to GetCommonBaseSpec(aURIToCompare, _retval); } \
+  NS_IMETHOD GetRelativeSpec(nsIURI *aURIToCompare, nsACString & _retval) { return _to GetRelativeSpec(aURIToCompare, _retval); } 
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
+#define NS_FORWARD_SAFE_NSIURL(_to) \
+  NS_IMETHOD GetFilePath(nsACString & aFilePath) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFilePath(aFilePath); } \
+  NS_IMETHOD SetFilePath(const nsACString & aFilePath) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFilePath(aFilePath); } \
+  NS_IMETHOD GetQuery(nsACString & aQuery) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetQuery(aQuery); } \
+  NS_IMETHOD SetQuery(const nsACString & aQuery) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetQuery(aQuery); } \
+  NS_IMETHOD GetDirectory(nsACString & aDirectory) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetDirectory(aDirectory); } \
+  NS_IMETHOD SetDirectory(const nsACString & aDirectory) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetDirectory(aDirectory); } \
+  NS_IMETHOD GetFileName(nsACString & aFileName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFileName(aFileName); } \
+  NS_IMETHOD SetFileName(const nsACString & aFileName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFileName(aFileName); } \
+  NS_IMETHOD GetFileBaseName(nsACString & aFileBaseName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFileBaseName(aFileBaseName); } \
+  NS_IMETHOD SetFileBaseName(const nsACString & aFileBaseName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFileBaseName(aFileBaseName); } \
+  NS_IMETHOD GetFileExtension(nsACString & aFileExtension) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFileExtension(aFileExtension); } \
+  NS_IMETHOD SetFileExtension(const nsACString & aFileExtension) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFileExtension(aFileExtension); } \
+  NS_IMETHOD GetCommonBaseSpec(nsIURI *aURIToCompare, nsACString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetCommonBaseSpec(aURIToCompare, _retval); } \
+  NS_IMETHOD GetRelativeSpec(nsIURI *aURIToCompare, nsACString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetRelativeSpec(aURIToCompare, _retval); } 
+
+#if 0
+/* Use the code below as a template for the implementation class for this interface. */
+
+/* Header file */
+class nsURL : public nsIURL
+{
+public:
+  NS_DECL_ISUPPORTS
+  NS_DECL_NSIURL
+
+  nsURL();
+
+private:
+  ~nsURL();
+
+protected:
+  /* additional members */
+};
+
+/* Implementation file */
+NS_IMPL_ISUPPORTS1(nsURL, nsIURL)
+
+nsURL::nsURL()
+{
+  /* member initializers and constructor code */
+}
+
+nsURL::~nsURL()
+{
+  /* destructor code */
+}
+
+/* attribute AUTF8String filePath; */
+NS_IMETHODIMP nsURL::GetFilePath(nsACString & aFilePath)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsURL::SetFilePath(const nsACString & aFilePath)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute AUTF8String query; */
+NS_IMETHODIMP nsURL::GetQuery(nsACString & aQuery)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsURL::SetQuery(const nsACString & aQuery)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute AUTF8String directory; */
+NS_IMETHODIMP nsURL::GetDirectory(nsACString & aDirectory)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsURL::SetDirectory(const nsACString & aDirectory)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute AUTF8String fileName; */
+NS_IMETHODIMP nsURL::GetFileName(nsACString & aFileName)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsURL::SetFileName(const nsACString & aFileName)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute AUTF8String fileBaseName; */
+NS_IMETHODIMP nsURL::GetFileBaseName(nsACString & aFileBaseName)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsURL::SetFileBaseName(const nsACString & aFileBaseName)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* attribute AUTF8String fileExtension; */
+NS_IMETHODIMP nsURL::GetFileExtension(nsACString & aFileExtension)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsURL::SetFileExtension(const nsACString & aFileExtension)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* AUTF8String getCommonBaseSpec (in nsIURI aURIToCompare); */
+NS_IMETHODIMP nsURL::GetCommonBaseSpec(nsIURI *aURIToCompare, nsACString & _retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* AUTF8String getRelativeSpec (in nsIURI aURIToCompare); */
+NS_IMETHODIMP nsURL::GetRelativeSpec(nsIURI *aURIToCompare, nsACString & _retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* End of implementation class template. */
+#endif
+
+
+/* starting interface:    nsIFileURL */
+#define NS_IFILEURL_IID_STR "7750029c-1b0a-414e-8359-a77f24a2a0a6"
+
+#define NS_IFILEURL_IID \
+  {0x7750029c, 0x1b0a, 0x414e, \
+    { 0x83, 0x59, 0xa7, 0x7f, 0x24, 0xa2, 0xa0, 0xa6 }}
+
+class NS_NO_VTABLE nsIFileURL : public nsIURL {
+ public: 
+
+  NS_DECLARE_STATIC_IID_ACCESSOR(NS_IFILEURL_IID)
+
+  /* attribute nsIFile file; */
+  NS_IMETHOD GetFile(nsIFile * *aFile) = 0;
+  NS_IMETHOD SetFile(nsIFile *aFile) = 0;
+
+};
+
+  NS_DEFINE_STATIC_IID_ACCESSOR(nsIFileURL, NS_IFILEURL_IID)
+
+/* Use this macro when declaring classes that implement this interface. */
+#define NS_DECL_NSIFILEURL \
+  NS_IMETHOD GetFile(nsIFile * *aFile); \
+  NS_IMETHOD SetFile(nsIFile *aFile); 
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object. */
+#define NS_FORWARD_NSIFILEURL(_to) \
+  NS_IMETHOD GetFile(nsIFile * *aFile) { return _to GetFile(aFile); } \
+  NS_IMETHOD SetFile(nsIFile *aFile) { return _to SetFile(aFile); } 
+
+/* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
+#define NS_FORWARD_SAFE_NSIFILEURL(_to) \
+  NS_IMETHOD GetFile(nsIFile * *aFile) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetFile(aFile); } \
+  NS_IMETHOD SetFile(nsIFile *aFile) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetFile(aFile); } 
+
+#if 0
+/* Use the code below as a template for the implementation class for this interface. */
+
+/* Header file */
+class nsFileURL : public nsIFileURL
+{
+public:
+  NS_DECL_ISUPPORTS
+  NS_DECL_NSIFILEURL
+
+  nsFileURL();
+
+private:
+  ~nsFileURL();
+
+protected:
+  /* additional members */
+};
+
+/* Implementation file */
+NS_IMPL_ISUPPORTS1(nsFileURL, nsIFileURL)
+
+nsFileURL::nsFileURL()
+{
+  /* member initializers and constructor code */
+}
+
+nsFileURL::~nsFileURL()
+{
+  /* destructor code */
+}
+
+/* attribute nsIFile file; */
+NS_IMETHODIMP nsFileURL::GetFile(nsIFile * *aFile)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+NS_IMETHODIMP nsFileURL::SetFile(nsIFile *aFile)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -12639,7 +12928,7 @@ class nsIDOMWindow : public nsISupports {
   /* [optional_argc] nsIVariant showModalDialog (in DOMString uri, [optional] in nsIVariant args, [optional] in DOMString options); */
   NS_IMETHOD ShowModalDialog(const nsAString & uri, nsIVariant *args, const nsAString & options, uint8_t _argc, nsIVariant * *_retval) = 0;
 
-  /* [binaryname(PostMessageMoz),implicit_jscontext] void postMessage (in jsval message, in DOMString targetOrigin); */
+  /* [binaryname(PostMessageMoz),implicit_jscontext] void postMessage (in jsval message, in DOMString targetOrigin, [optional] in jsval transfer); */
   NS_IMETHOD PostMessageMoz(jsval message, const nsAString & targetOrigin, jsval transfer, JSContext* cx) = 0;
 
   /* DOMString atob (in DOMString aAsciiString); */
@@ -12915,13 +13204,13 @@ class nsIDOMWindow : public nsISupports {
   NS_IMETHOD GetName(nsAString & aName); \
   NS_IMETHOD SetName(const nsAString & aName); \
   NS_IMETHOD GetLocation(nsIDOMLocation * *aLocation); \
-  NS_IMETHOD GetHistory(nsIDOMHistory * *aHistory); \
-  NS_IMETHOD GetLocationbar(nsIDOMBarProp * *aLocationbar); \
-  NS_IMETHOD GetMenubar(nsIDOMBarProp * *aMenubar); \
-  NS_IMETHOD GetPersonalbar(nsIDOMBarProp * *aPersonalbar); \
-  NS_IMETHOD GetScrollbars(nsIDOMBarProp * *aScrollbars); \
-  NS_IMETHOD GetStatusbar(nsIDOMBarProp * *aStatusbar); \
-  NS_IMETHOD GetToolbar(nsIDOMBarProp * *aToolbar); \
+  NS_IMETHOD GetHistory(nsISupports * *aHistory); \
+  NS_IMETHOD GetLocationbar(nsISupports * *aLocationbar); \
+  NS_IMETHOD GetMenubar(nsISupports * *aMenubar); \
+  NS_IMETHOD GetPersonalbar(nsISupports * *aPersonalbar); \
+  NS_IMETHOD GetScrollbars(nsISupports * *aScrollbars); \
+  NS_IMETHOD GetStatusbar(nsISupports * *aStatusbar); \
+  NS_IMETHOD GetToolbar(nsISupports * *aToolbar); \
   NS_IMETHOD GetStatus(nsAString & aStatus); \
   NS_IMETHOD SetStatus(const nsAString & aStatus); \
   NS_IMETHOD Close(void); \
@@ -12944,7 +13233,7 @@ class nsIDOMWindow : public nsISupports {
   NS_IMETHOD Prompt(const nsAString & message, const nsAString & initial, nsAString & _retval); \
   NS_IMETHOD Print(void); \
   NS_IMETHOD ShowModalDialog(const nsAString & uri, nsIVariant *args, const nsAString & options, uint8_t _argc, nsIVariant * *_retval); \
-  NS_IMETHOD PostMessageMoz(jsval message, const nsAString & targetOrigin, JSContext* cx); \
+  NS_IMETHOD PostMessageMoz(jsval message, const nsAString & targetOrigin, jsval transfer, JSContext* cx); \
   NS_IMETHOD Atob(const nsAString & aAsciiString, nsAString & _retval); \
   NS_IMETHOD Btoa(const nsAString & aBase64Data, nsAString & _retval); \
   NS_IMETHOD GetSessionStorage(nsIDOMStorage * *aSessionStorage); \
@@ -12986,7 +13275,6 @@ class nsIDOMWindow : public nsISupports {
   NS_IMETHOD GetPrompter(nsIPrompt * *aPrompter); \
   NS_IMETHOD GetClosed(bool *aClosed); \
   NS_IMETHOD GetCrypto(nsIDOMCrypto * *aCrypto); \
-  NS_IMETHOD GetPkcs11(nsIDOMPkcs11 * *aPkcs11); \
   NS_IMETHOD GetControllers(nsIControllers * *aControllers); \
   NS_IMETHOD GetMozInnerScreenX(float *aMozInnerScreenX); \
   NS_IMETHOD GetMozInnerScreenY(float *aMozInnerScreenY); \
@@ -13060,13 +13348,13 @@ class nsIDOMWindow : public nsISupports {
   NS_IMETHOD GetName(nsAString & aName) { return _to GetName(aName); } \
   NS_IMETHOD SetName(const nsAString & aName) { return _to SetName(aName); } \
   NS_IMETHOD GetLocation(nsIDOMLocation * *aLocation) { return _to GetLocation(aLocation); } \
-  NS_IMETHOD GetHistory(nsIDOMHistory * *aHistory) { return _to GetHistory(aHistory); } \
-  NS_IMETHOD GetLocationbar(nsIDOMBarProp * *aLocationbar) { return _to GetLocationbar(aLocationbar); } \
-  NS_IMETHOD GetMenubar(nsIDOMBarProp * *aMenubar) { return _to GetMenubar(aMenubar); } \
-  NS_IMETHOD GetPersonalbar(nsIDOMBarProp * *aPersonalbar) { return _to GetPersonalbar(aPersonalbar); } \
-  NS_IMETHOD GetScrollbars(nsIDOMBarProp * *aScrollbars) { return _to GetScrollbars(aScrollbars); } \
-  NS_IMETHOD GetStatusbar(nsIDOMBarProp * *aStatusbar) { return _to GetStatusbar(aStatusbar); } \
-  NS_IMETHOD GetToolbar(nsIDOMBarProp * *aToolbar) { return _to GetToolbar(aToolbar); } \
+  NS_IMETHOD GetHistory(nsISupports * *aHistory) { return _to GetHistory(aHistory); } \
+  NS_IMETHOD GetLocationbar(nsISupports * *aLocationbar) { return _to GetLocationbar(aLocationbar); } \
+  NS_IMETHOD GetMenubar(nsISupports * *aMenubar) { return _to GetMenubar(aMenubar); } \
+  NS_IMETHOD GetPersonalbar(nsISupports * *aPersonalbar) { return _to GetPersonalbar(aPersonalbar); } \
+  NS_IMETHOD GetScrollbars(nsISupports * *aScrollbars) { return _to GetScrollbars(aScrollbars); } \
+  NS_IMETHOD GetStatusbar(nsISupports * *aStatusbar) { return _to GetStatusbar(aStatusbar); } \
+  NS_IMETHOD GetToolbar(nsISupports * *aToolbar) { return _to GetToolbar(aToolbar); } \
   NS_IMETHOD GetStatus(nsAString & aStatus) { return _to GetStatus(aStatus); } \
   NS_IMETHOD SetStatus(const nsAString & aStatus) { return _to SetStatus(aStatus); } \
   NS_IMETHOD Close(void) { return _to Close(); } \
@@ -13089,7 +13377,7 @@ class nsIDOMWindow : public nsISupports {
   NS_IMETHOD Prompt(const nsAString & message, const nsAString & initial, nsAString & _retval) { return _to Prompt(message, initial, _retval); } \
   NS_IMETHOD Print(void) { return _to Print(); } \
   NS_IMETHOD ShowModalDialog(const nsAString & uri, nsIVariant *args, const nsAString & options, uint8_t _argc, nsIVariant * *_retval) { return _to ShowModalDialog(uri, args, options, _argc, _retval); } \
-  NS_IMETHOD PostMessageMoz(jsval message, const nsAString & targetOrigin, JSContext* cx) { return _to PostMessageMoz(message, targetOrigin, cx); } \
+  NS_IMETHOD PostMessageMoz(jsval message, const nsAString & targetOrigin, jsval transfer, JSContext* cx) { return _to PostMessageMoz(message, targetOrigin, transfer, cx); } \
   NS_IMETHOD Atob(const nsAString & aAsciiString, nsAString & _retval) { return _to Atob(aAsciiString, _retval); } \
   NS_IMETHOD Btoa(const nsAString & aBase64Data, nsAString & _retval) { return _to Btoa(aBase64Data, _retval); } \
   NS_IMETHOD GetSessionStorage(nsIDOMStorage * *aSessionStorage) { return _to GetSessionStorage(aSessionStorage); } \
@@ -13131,7 +13419,6 @@ class nsIDOMWindow : public nsISupports {
   NS_IMETHOD GetPrompter(nsIPrompt * *aPrompter) { return _to GetPrompter(aPrompter); } \
   NS_IMETHOD GetClosed(bool *aClosed) { return _to GetClosed(aClosed); } \
   NS_IMETHOD GetCrypto(nsIDOMCrypto * *aCrypto) { return _to GetCrypto(aCrypto); } \
-  NS_IMETHOD GetPkcs11(nsIDOMPkcs11 * *aPkcs11) { return _to GetPkcs11(aPkcs11); } \
   NS_IMETHOD GetControllers(nsIControllers * *aControllers) { return _to GetControllers(aControllers); } \
   NS_IMETHOD GetMozInnerScreenX(float *aMozInnerScreenX) { return _to GetMozInnerScreenX(aMozInnerScreenX); } \
   NS_IMETHOD GetMozInnerScreenY(float *aMozInnerScreenY) { return _to GetMozInnerScreenY(aMozInnerScreenY); } \
@@ -13205,13 +13492,13 @@ class nsIDOMWindow : public nsISupports {
   NS_IMETHOD GetName(nsAString & aName) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetName(aName); } \
   NS_IMETHOD SetName(const nsAString & aName) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetName(aName); } \
   NS_IMETHOD GetLocation(nsIDOMLocation * *aLocation) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetLocation(aLocation); } \
-  NS_IMETHOD GetHistory(nsIDOMHistory * *aHistory) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetHistory(aHistory); } \
-  NS_IMETHOD GetLocationbar(nsIDOMBarProp * *aLocationbar) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetLocationbar(aLocationbar); } \
-  NS_IMETHOD GetMenubar(nsIDOMBarProp * *aMenubar) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMenubar(aMenubar); } \
-  NS_IMETHOD GetPersonalbar(nsIDOMBarProp * *aPersonalbar) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPersonalbar(aPersonalbar); } \
-  NS_IMETHOD GetScrollbars(nsIDOMBarProp * *aScrollbars) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetScrollbars(aScrollbars); } \
-  NS_IMETHOD GetStatusbar(nsIDOMBarProp * *aStatusbar) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetStatusbar(aStatusbar); } \
-  NS_IMETHOD GetToolbar(nsIDOMBarProp * *aToolbar) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetToolbar(aToolbar); } \
+  NS_IMETHOD GetHistory(nsISupports * *aHistory) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetHistory(aHistory); } \
+  NS_IMETHOD GetLocationbar(nsISupports * *aLocationbar) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetLocationbar(aLocationbar); } \
+  NS_IMETHOD GetMenubar(nsISupports * *aMenubar) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMenubar(aMenubar); } \
+  NS_IMETHOD GetPersonalbar(nsISupports * *aPersonalbar) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPersonalbar(aPersonalbar); } \
+  NS_IMETHOD GetScrollbars(nsISupports * *aScrollbars) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetScrollbars(aScrollbars); } \
+  NS_IMETHOD GetStatusbar(nsISupports * *aStatusbar) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetStatusbar(aStatusbar); } \
+  NS_IMETHOD GetToolbar(nsISupports * *aToolbar) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetToolbar(aToolbar); } \
   NS_IMETHOD GetStatus(nsAString & aStatus) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetStatus(aStatus); } \
   NS_IMETHOD SetStatus(const nsAString & aStatus) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetStatus(aStatus); } \
   NS_IMETHOD Close(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Close(); } \
@@ -13234,7 +13521,7 @@ class nsIDOMWindow : public nsISupports {
   NS_IMETHOD Prompt(const nsAString & message, const nsAString & initial, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Prompt(message, initial, _retval); } \
   NS_IMETHOD Print(void) { return !_to ? NS_ERROR_NULL_POINTER : _to->Print(); } \
   NS_IMETHOD ShowModalDialog(const nsAString & uri, nsIVariant *args, const nsAString & options, uint8_t _argc, nsIVariant * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->ShowModalDialog(uri, args, options, _argc, _retval); } \
-  NS_IMETHOD PostMessageMoz(jsval message, const nsAString & targetOrigin, JSContext* cx) { return !_to ? NS_ERROR_NULL_POINTER : _to->PostMessageMoz(message, targetOrigin, cx); } \
+  NS_IMETHOD PostMessageMoz(jsval message, const nsAString & targetOrigin, jsval transfer, JSContext* cx) { return !_to ? NS_ERROR_NULL_POINTER : _to->PostMessageMoz(message, targetOrigin, transfer, cx); } \
   NS_IMETHOD Atob(const nsAString & aAsciiString, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Atob(aAsciiString, _retval); } \
   NS_IMETHOD Btoa(const nsAString & aBase64Data, nsAString & _retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->Btoa(aBase64Data, _retval); } \
   NS_IMETHOD GetSessionStorage(nsIDOMStorage * *aSessionStorage) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetSessionStorage(aSessionStorage); } \
@@ -13276,7 +13563,6 @@ class nsIDOMWindow : public nsISupports {
   NS_IMETHOD GetPrompter(nsIPrompt * *aPrompter) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPrompter(aPrompter); } \
   NS_IMETHOD GetClosed(bool *aClosed) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetClosed(aClosed); } \
   NS_IMETHOD GetCrypto(nsIDOMCrypto * *aCrypto) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetCrypto(aCrypto); } \
-  NS_IMETHOD GetPkcs11(nsIDOMPkcs11 * *aPkcs11) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetPkcs11(aPkcs11); } \
   NS_IMETHOD GetControllers(nsIControllers * *aControllers) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetControllers(aControllers); } \
   NS_IMETHOD GetMozInnerScreenX(float *aMozInnerScreenX) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMozInnerScreenX(aMozInnerScreenX); } \
   NS_IMETHOD GetMozInnerScreenY(float *aMozInnerScreenY) { return !_to ? NS_ERROR_NULL_POINTER : _to->GetMozInnerScreenY(aMozInnerScreenY); } \
@@ -13408,44 +13694,44 @@ NS_IMETHODIMP nsDOMWindow::GetLocation(nsIDOMLocation * *aLocation)
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* readonly attribute nsIDOMHistory history; */
-NS_IMETHODIMP nsDOMWindow::GetHistory(nsIDOMHistory * *aHistory)
+/* readonly attribute nsISupports history; */
+NS_IMETHODIMP nsDOMWindow::GetHistory(nsISupports * *aHistory)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* readonly attribute nsIDOMBarProp locationbar; */
-NS_IMETHODIMP nsDOMWindow::GetLocationbar(nsIDOMBarProp * *aLocationbar)
+/* readonly attribute nsISupports locationbar; */
+NS_IMETHODIMP nsDOMWindow::GetLocationbar(nsISupports * *aLocationbar)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* readonly attribute nsIDOMBarProp menubar; */
-NS_IMETHODIMP nsDOMWindow::GetMenubar(nsIDOMBarProp * *aMenubar)
+/* readonly attribute nsISupports menubar; */
+NS_IMETHODIMP nsDOMWindow::GetMenubar(nsISupports * *aMenubar)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* readonly attribute nsIDOMBarProp personalbar; */
-NS_IMETHODIMP nsDOMWindow::GetPersonalbar(nsIDOMBarProp * *aPersonalbar)
+/* readonly attribute nsISupports personalbar; */
+NS_IMETHODIMP nsDOMWindow::GetPersonalbar(nsISupports * *aPersonalbar)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* readonly attribute nsIDOMBarProp scrollbars; */
-NS_IMETHODIMP nsDOMWindow::GetScrollbars(nsIDOMBarProp * *aScrollbars)
+/* readonly attribute nsISupports scrollbars; */
+NS_IMETHODIMP nsDOMWindow::GetScrollbars(nsISupports * *aScrollbars)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* readonly attribute nsIDOMBarProp statusbar; */
-NS_IMETHODIMP nsDOMWindow::GetStatusbar(nsIDOMBarProp * *aStatusbar)
+/* readonly attribute nsISupports statusbar; */
+NS_IMETHODIMP nsDOMWindow::GetStatusbar(nsISupports * *aStatusbar)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* readonly attribute nsIDOMBarProp toolbar; */
-NS_IMETHODIMP nsDOMWindow::GetToolbar(nsIDOMBarProp * *aToolbar)
+/* readonly attribute nsISupports toolbar; */
+NS_IMETHODIMP nsDOMWindow::GetToolbar(nsISupports * *aToolbar)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -13578,8 +13864,8 @@ NS_IMETHODIMP nsDOMWindow::ShowModalDialog(const nsAString & uri, nsIVariant *ar
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* [binaryname(PostMessageMoz),implicit_jscontext] void postMessage (in jsval message, in DOMString targetOrigin); */
-NS_IMETHODIMP nsDOMWindow::PostMessageMoz(jsval message, const nsAString & targetOrigin, JSContext* cx)
+/* [binaryname(PostMessageMoz),implicit_jscontext] void postMessage (in jsval message, in DOMString targetOrigin, [optional] in jsval transfer); */
+NS_IMETHODIMP nsDOMWindow::PostMessageMoz(jsval message, const nsAString & targetOrigin, jsval transfer, JSContext* cx)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -13812,12 +14098,6 @@ NS_IMETHODIMP nsDOMWindow::GetClosed(bool *aClosed)
 
 /* readonly attribute nsIDOMCrypto crypto; */
 NS_IMETHODIMP nsDOMWindow::GetCrypto(nsIDOMCrypto * *aCrypto)
-{
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* readonly attribute nsIDOMPkcs11 pkcs11; */
-NS_IMETHODIMP nsDOMWindow::GetPkcs11(nsIDOMPkcs11 * *aPkcs11)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -15079,17 +15359,20 @@ class NS_NO_VTABLE nsIHelperAppLauncherDialog : public nsISupports {
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSIHELPERAPPLAUNCHERDIALOG \
   NS_IMETHOD Show(nsIHelperAppLauncher *launcher, nsISupports *windowContext, uint32_t reason); \
-  NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval); 
+  NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval); \
+  NS_IMETHOD PromptForSaveToFileAsync(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSIHELPERAPPLAUNCHERDIALOG(_to) \
   NS_IMETHOD Show(nsIHelperAppLauncher *launcher, nsISupports *windowContext, uint32_t reason) { return _to Show(launcher, windowContext, reason); } \
-  NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval) { return _to PromptForSaveToFile(launcher, windowContext, defaultFile, suggestedFileExtension, force_prompt, _retval); } 
+  NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval) { return _to PromptForSaveToFile(launcher, windowContext, defaultFile, suggestedFileExtension, force_prompt, _retval); } \
+  NS_IMETHOD PromptForSaveToFileAsync(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt) { return _to PromptForSaveToFileAsync(launcher, windowContext, defaultFile, suggestedFileExtension, force_prompt); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSIHELPERAPPLAUNCHERDIALOG(_to) \
   NS_IMETHOD Show(nsIHelperAppLauncher *launcher, nsISupports *windowContext, uint32_t reason) { return !_to ? NS_ERROR_NULL_POINTER : _to->Show(launcher, windowContext, reason); } \
-  NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->PromptForSaveToFile(launcher, windowContext, defaultFile, suggestedFileExtension, force_prompt, _retval); } 
+  NS_IMETHOD PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->PromptForSaveToFile(launcher, windowContext, defaultFile, suggestedFileExtension, force_prompt, _retval); } \
+  NS_IMETHOD PromptForSaveToFileAsync(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt) { return !_to ? NS_ERROR_NULL_POINTER : _to->PromptForSaveToFileAsync(launcher, windowContext, defaultFile, suggestedFileExtension, force_prompt); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -15131,6 +15414,12 @@ NS_IMETHODIMP nsHelperAppLauncherDialog::Show(nsIHelperAppLauncher *launcher, ns
 
 /* nsILocalFile promptForSaveToFile (in nsIHelperAppLauncher launcher, in nsISupports windowContext, in wstring defaultFile, in wstring suggestedFileExtension, in boolean force_prompt); */
 NS_IMETHODIMP nsHelperAppLauncherDialog::PromptForSaveToFile(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt, nsILocalFile * *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void promptForSaveToFileAsync (in nsIHelperAppLauncher launcher, in nsISupports windowContext, in wstring defaultFile, in wstring suggestedFileExtension, in boolean force_prompt); */
+NS_IMETHODIMP nsHelperAppLauncherDialog::PromptForSaveToFileAsync(nsIHelperAppLauncher *launcher, nsISupports *windowContext, const char16_t * defaultFile, const char16_t * suggestedFileExtension, bool force_prompt)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -19417,15 +19706,15 @@ class NS_NO_VTABLE nsIStreamListener : public nsIRequestObserver {
 
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSISTREAMLISTENER \
-  NS_IMETHOD OnDataAvailable(nsIRequest *request, nsISupports *contxt, nsIInputStream *input_stream, uint32_t offset, uint32_t count); 
+  NS_IMETHOD OnDataAvailable(nsIRequest *request, nsISupports *contxt, nsIInputStream *input_stream, uint64_t offset, uint32_t count); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSISTREAMLISTENER(_to) \
-  NS_IMETHOD OnDataAvailable(nsIRequest *request, nsISupports *contxt, nsIInputStream *input_stream, uint32_t offset, uint32_t count) { return _to OnDataAvailable(request, contxt, input_stream, offset, count); } 
+  NS_IMETHOD OnDataAvailable(nsIRequest *request, nsISupports *contxt, nsIInputStream *input_stream, uint64_t offset, uint32_t count) { return _to OnDataAvailable(request, contxt, input_stream, offset, count); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSISTREAMLISTENER(_to) \
-  NS_IMETHOD OnDataAvailable(nsIRequest *request, nsISupports *contxt, nsIInputStream *input_stream, uint32_t offset, uint32_t count) { return !_to ? NS_ERROR_NULL_POINTER : _to->OnDataAvailable(request, contxt, input_stream, offset, count); } 
+  NS_IMETHOD OnDataAvailable(nsIRequest *request, nsISupports *contxt, nsIInputStream *input_stream, uint64_t offset, uint32_t count) { return !_to ? NS_ERROR_NULL_POINTER : _to->OnDataAvailable(request, contxt, input_stream, offset, count); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -19459,8 +19748,8 @@ nsStreamListener::~nsStreamListener()
   /* destructor code */
 }
 
-/* void onDataAvailable (in nsIRequest request, in nsISupports contxt, in nsIInputStream input_stream, in unsigned long offset, in unsigned long count); */
-NS_IMETHODIMP nsStreamListener::OnDataAvailable(nsIRequest *request, nsISupports *contxt, nsIInputStream *input_stream, uint32_t offset, uint32_t count)
+/* void onDataAvailable (in nsIRequest request, in nsISupports contxt, in nsIInputStream input_stream, in unsigned long long offset, in unsigned long count); */
+NS_IMETHODIMP nsStreamListener::OnDataAvailable(nsIRequest *request, nsISupports *contxt, nsIInputStream *input_stream, uint64_t offset, uint32_t count)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -19904,22 +20193,26 @@ class NS_NO_VTABLE nsITransfer : public nsIWebProgressListener2 {
   NS_IMETHOD Init(nsIURI *source, nsIURI *target, const nsAString & display_name, nsIMIMEInfo *mime_info, PRTime start_time, nsILocalFile *temp_file, nsICancelable *cancelable, bool is_private) = 0;
 
   /* void setSha256Hash (in ACString hash); */
-  NS_IMETHOD SetSha256Hash(const nsACString & haHash) = 0;
+  NS_IMETHOD SetSha256Hash(const nsACString & hash) = 0;
+
 };
 
   NS_DEFINE_STATIC_IID_ACCESSOR(nsITransfer, NS_ITRANSFER_IID)
 
 /* Use this macro when declaring classes that implement this interface. */
 #define NS_DECL_NSITRANSFER \
-  NS_IMETHOD Init(nsIURI *source, nsIURI *target, const nsAString & display_name, nsIMIMEInfo *mime_info, PRTime start_time, nsILocalFile *temp_file, nsICancelable *cancelable); 
+  NS_IMETHOD Init(nsIURI *source, nsIURI *target, const nsAString & display_name, nsIMIMEInfo *mime_info, PRTime start_time, nsILocalFile *temp_file, nsICancelable *cancelable, bool is_private); \
+  NS_IMETHOD SetSha256Hash(const nsACString & hash); 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object. */
 #define NS_FORWARD_NSITRANSFER(_to) \
-  NS_IMETHOD Init(nsIURI *source, nsIURI *target, const nsAString & display_name, nsIMIMEInfo *mime_info, PRTime start_time, nsILocalFile *temp_file, nsICancelable *cancelable) { return _to Init(source, target, display_name, mime_info, start_time, temp_file, cancelable); } 
+  NS_IMETHOD Init(nsIURI *source, nsIURI *target, const nsAString & display_name, nsIMIMEInfo *mime_info, PRTime start_time, nsILocalFile *temp_file, nsICancelable *cancelable, bool is_private) { return _to Init(source, target, display_name, mime_info, start_time, temp_file, cancelable, is_private); } \
+  NS_IMETHOD SetSha256Hash(const nsACString & hash) { return _to SetSha256Hash(hash); } 
 
 /* Use this macro to declare functions that forward the behavior of this interface to another object in a safe way. */
 #define NS_FORWARD_SAFE_NSITRANSFER(_to) \
-  NS_IMETHOD Init(nsIURI *source, nsIURI *target, const nsAString & display_name, nsIMIMEInfo *mime_info, PRTime start_time, nsILocalFile *temp_file, nsICancelable *cancelable) { return !_to ? NS_ERROR_NULL_POINTER : _to->Init(source, target, display_name, mime_info, start_time, temp_file, cancelable); } 
+  NS_IMETHOD Init(nsIURI *source, nsIURI *target, const nsAString & display_name, nsIMIMEInfo *mime_info, PRTime start_time, nsILocalFile *temp_file, nsICancelable *cancelable, bool is_private) { return !_to ? NS_ERROR_NULL_POINTER : _to->Init(source, target, display_name, mime_info, start_time, temp_file, cancelable, is_private); } \
+  NS_IMETHOD SetSha256Hash(const nsACString & hash) { return !_to ? NS_ERROR_NULL_POINTER : _to->SetSha256Hash(hash); } 
 
 #if 0
 /* Use the code below as a template for the implementation class for this interface. */
@@ -19953,8 +20246,14 @@ nsTransfer::~nsTransfer()
   /* destructor code */
 }
 
-/* void init (in nsIURI source, in nsIURI target, in AString display_name, in nsIMIMEInfo mime_info, in PRTime start_time, in nsILocalFile temp_file, in nsICancelable cancelable); */
-NS_IMETHODIMP nsTransfer::Init(nsIURI *source, nsIURI *target, const nsAString & display_name, nsIMIMEInfo *mime_info, PRTime start_time, nsILocalFile *temp_file, nsICancelable *cancelable)
+/* void init (in nsIURI source, in nsIURI target, in AString display_name, in nsIMIMEInfo mime_info, in PRTime start_time, in nsILocalFile temp_file, in nsICancelable cancelable, in boolean is_private); */
+NS_IMETHODIMP nsTransfer::Init(nsIURI *source, nsIURI *target, const nsAString & display_name, nsIMIMEInfo *mime_info, PRTime start_time, nsILocalFile *temp_file, nsICancelable *cancelable, bool is_private)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* void setSha256Hash (in ACString hash); */
+NS_IMETHODIMP nsTransfer::SetSha256Hash(const nsACString & hash)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -20149,8 +20448,8 @@ class NS_NO_VTABLE nsIURILoader : public nsISupports {
   /* void unRegisterContentListener (in nsIURIContentListener content_listener); */
   NS_IMETHOD UnRegisterContentListener(nsIURIContentListener *content_listener) = 0;
 
-  /* void openURI (in nsIChannel channel, in unsigned long flags, in nsIInterfaceRequestor window_context); */
-  NS_IMETHOD OpenURI(nsIChannel *channel, uint32_t flags, bool is_content_preferred, nsIInterfaceRequestor *window_context) = 0;
+  /* void openURI (in nsIChannel channel, in unsigned long aFlags, in nsIInterfaceRequestor window_context); */
+  NS_IMETHOD OpenURI(nsIChannel *channel, uint32_t aFlags, nsIInterfaceRequestor *window_context) = 0;
 
   /* nsIStreamListener openChannel (in nsIChannel channel, in unsigned long flags, in nsIInterfaceRequestor window_context); */
   NS_IMETHOD OpenChannel(nsIChannel *channel, uint32_t flags, nsIInterfaceRequestor *window_context, nsIStreamListener * *_retval) = 0;
@@ -20166,7 +20465,7 @@ class NS_NO_VTABLE nsIURILoader : public nsISupports {
 #define NS_DECL_NSIURILOADER \
   NS_IMETHOD RegisterContentListener(nsIURIContentListener *content_listener); \
   NS_IMETHOD UnRegisterContentListener(nsIURIContentListener *content_listener); \
-  NS_IMETHOD OpenURI(nsIChannel *channel, bool is_content_preferred, nsIInterfaceRequestor *window_context); \
+  NS_IMETHOD OpenURI(nsIChannel *channel, uint32_t aFlags, nsIInterfaceRequestor *window_context); \
   NS_IMETHOD OpenChannel(nsIChannel *channel, uint32_t flags, nsIInterfaceRequestor *window_context, nsIStreamListener * *_retval); \
   NS_IMETHOD Stop(nsISupports *load_cookie); 
 
@@ -20174,7 +20473,7 @@ class NS_NO_VTABLE nsIURILoader : public nsISupports {
 #define NS_FORWARD_NSIURILOADER(_to) \
   NS_IMETHOD RegisterContentListener(nsIURIContentListener *content_listener) { return _to RegisterContentListener(content_listener); } \
   NS_IMETHOD UnRegisterContentListener(nsIURIContentListener *content_listener) { return _to UnRegisterContentListener(content_listener); } \
-  NS_IMETHOD OpenURI(nsIChannel *channel, bool is_content_preferred, nsIInterfaceRequestor *window_context) { return _to OpenURI(channel, is_content_preferred, window_context); } \
+  NS_IMETHOD OpenURI(nsIChannel *channel, uint32_t aFlags, nsIInterfaceRequestor *window_context) { return _to OpenURI(channel, aFlags, window_context); } \
   NS_IMETHOD OpenChannel(nsIChannel *channel, uint32_t flags, nsIInterfaceRequestor *window_context, nsIStreamListener * *_retval) { return _to OpenChannel(channel, flags, window_context, _retval); } \
   NS_IMETHOD Stop(nsISupports *load_cookie) { return _to Stop(load_cookie); } 
 
@@ -20182,7 +20481,7 @@ class NS_NO_VTABLE nsIURILoader : public nsISupports {
 #define NS_FORWARD_SAFE_NSIURILOADER(_to) \
   NS_IMETHOD RegisterContentListener(nsIURIContentListener *content_listener) { return !_to ? NS_ERROR_NULL_POINTER : _to->RegisterContentListener(content_listener); } \
   NS_IMETHOD UnRegisterContentListener(nsIURIContentListener *content_listener) { return !_to ? NS_ERROR_NULL_POINTER : _to->UnRegisterContentListener(content_listener); } \
-  NS_IMETHOD OpenURI(nsIChannel *channel, bool is_content_preferred, nsIInterfaceRequestor *window_context) { return !_to ? NS_ERROR_NULL_POINTER : _to->OpenURI(channel, is_content_preferred, window_context); } \
+  NS_IMETHOD OpenURI(nsIChannel *channel, uint32_t aFlags, nsIInterfaceRequestor *window_context) { return !_to ? NS_ERROR_NULL_POINTER : _to->OpenURI(channel, aFlags, window_context); } \
   NS_IMETHOD OpenChannel(nsIChannel *channel, uint32_t flags, nsIInterfaceRequestor *window_context, nsIStreamListener * *_retval) { return !_to ? NS_ERROR_NULL_POINTER : _to->OpenChannel(channel, flags, window_context, _retval); } \
   NS_IMETHOD Stop(nsISupports *load_cookie) { return !_to ? NS_ERROR_NULL_POINTER : _to->Stop(load_cookie); } 
 
@@ -20230,8 +20529,8 @@ NS_IMETHODIMP nsURILoader::UnRegisterContentListener(nsIURIContentListener *cont
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
-/* void openURI (in nsIChannel channel, in boolean is_content_preferred, in nsIInterfaceRequestor window_context); */
-NS_IMETHODIMP nsURILoader::OpenURI(nsIChannel *channel, bool is_content_preferred, nsIInterfaceRequestor *window_context)
+/* void openURI (in nsIChannel channel, in unsigned long aFlags, in nsIInterfaceRequestor window_context); */
+NS_IMETHODIMP nsURILoader::OpenURI(nsIChannel *channel, uint32_t aFlags, nsIInterfaceRequestor *window_context)
 {
     return NS_ERROR_NOT_IMPLEMENTED;
 }

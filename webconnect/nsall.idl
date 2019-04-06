@@ -161,9 +161,19 @@ interface nsISupportsWeakReference : nsISupports
 ///////////////////////////////////////////////////////////////////////////////
 
 
+%{C++
+struct PRFileDesc;
+struct PRLibrary;
+%}
+
+[ptr] native PRFileDescStar(PRFileDesc);
+[ptr] native PRLibraryStar(PRLibrary);
+[ptr] native FILEStar(FILE);
+
+
 interface nsISimpleEnumerator;
 
-[scriptable, uuid(c8c0a080-0868-11d3-915f-d9d889d48e3c)]
+[scriptable, uuid(272a5020-64f5-485c-a8c4-44b2882ae0a2), builtinclass]
 interface nsIFile : nsISupports
 {
     const unsigned long NORMAL_FILE_TYPE = 0;
@@ -215,6 +225,26 @@ interface nsIFile : nsISupports
     
     readonly attribute nsIFile parent;
     readonly attribute nsISimpleEnumerator directoryEntries;
+
+    void initWithPath(in AString file_path);
+    [noscript] void initWithNativePath(in ACString file_path);
+    void initWithFile(in nsIFile file);
+
+    attribute boolean followLinks;
+
+    [noscript] PRFileDescStar openNSPRFileDesc(in long flags, in long mode);
+    [noscript] FILEStar openANSIFileDesc(in string mode);
+    [noscript] PRLibraryStar load();
+    void appendRelativePath(in AString rel_path);
+    [noscript] void appendRelativeNativePath(in ACString rel_path);
+
+    attribute ACString persistentDescriptor;
+
+    void reveal();
+    void launch();
+
+    ACString getRelativeDescriptor(in nsIFile from_file);
+    void setRelativeDescriptor(in nsIFile from_file, in ACString rel_desc);
 };
 
 
@@ -225,39 +255,12 @@ interface nsIFile : nsISupports
 ///////////////////////////////////////////////////////////////////////////////
 
 
-%{C++
-struct PRFileDesc;
-struct PRLibrary;
-%}
 
-[ptr] native PRFileDescStar(PRFileDesc);
-[ptr] native PRLibraryStar(PRLibrary);
-[ptr] native FILEStar(FILE);
-
-
-[scriptable, uuid(aa610f20-a889-11d3-8c81-000064657374)]
+[scriptable, builtinclass, uuid(ce4ef184-7660-445e-9e59-6731bdc65505)]
 interface nsILocalFile : nsIFile
 {
-    void initWithPath(in AString file_path);
-    [noscript] void initWithNativePath(in ACString file_path);
-    void initWithFile(in nsILocalFile file);
-    
-    attribute boolean followLinks;
-
-    [noscript] PRFileDescStar openNSPRFileDesc(in long flags, in long mode);
-    [noscript] FILEStar openANSIFileDesc(in string mode);
-    [noscript] PRLibraryStar load();
-    void appendRelativePath(in AString rel_path);
-    [noscript] void appendRelativeNativePath(in ACString rel_path);
-    
-    attribute ACString persistentDescriptor;
-    
-    void reveal();
-    void launch();
-    
-    ACString getRelativeDescriptor(in nsILocalFile from_file);
-    void setRelativeDescriptor(in nsILocalFile from_file, in ACString rel_desc);
 };
+
 
 
 
@@ -662,6 +665,33 @@ interface nsIURI : nsISupports
 
     readonly attribute AUTF8String specIgnoringRef;
     readonly attribute boolean hasRef;
+};
+
+
+
+
+
+[scriptable, uuid(1419aa16-f134-4154-9886-00c7c5147a13)]
+interface nsIURL : nsIURI
+{
+    attribute AUTF8String filePath;
+    attribute AUTF8String query;
+    attribute AUTF8String directory;
+    attribute AUTF8String fileName;
+    attribute AUTF8String fileBaseName;
+    attribute AUTF8String fileExtension;
+
+    AUTF8String getCommonBaseSpec(in nsIURI aURIToCompare);
+    AUTF8String getRelativeSpec(in nsIURI aURIToCompare);
+};
+
+
+
+
+[scriptable, uuid(7750029c-1b0a-414e-8359-a77f24a2a0a6)]
+interface nsIFileURL : nsIURL
+{
+    attribute nsIFile file;
 };
 
 
@@ -3383,7 +3413,7 @@ interface nsITransfer : nsIWebProgressListener2
               in nsIMIMEInfo mime_info,
               in PRTime start_time,
               in nsILocalFile temp_file,
-              in nsICancelable cancelable
+              in nsICancelable cancelable,
               in boolean is_private);
 
     void setSha256Hash(in ACString hash);
