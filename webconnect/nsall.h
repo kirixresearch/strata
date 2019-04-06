@@ -12526,11 +12526,11 @@ class nsIFrameRequestCallback; /* forward declaration */
 
 
 /* starting interface:    nsIDOMWindow */
-#define NS_IDOMWINDOW_IID_STR "b0ebb526-ed69-43c6-8242-b381a1fe79da"
+#define NS_IDOMWINDOW_IID_STR "97b6784b-ab12-4f79-8422-d7868a4cc7dc"
 
 #define NS_IDOMWINDOW_IID \
-  {0xb0ebb526, 0xed69, 0x43c6, \
-    { 0x82, 0x42, 0xb3, 0x81, 0xa1, 0xfe, 0x79, 0xda }}
+  {0x97b6784b, 0xab12, 0x4f79, \
+    { 0x84, 0x22, 0xd7, 0x86, 0x8a, 0x4c, 0xc7, 0xdc }}
 
 class nsIDOMWindow : public nsISupports {
  public: 
@@ -12553,26 +12553,26 @@ class nsIDOMWindow : public nsISupports {
   /* readonly attribute nsIDOMLocation location; */
   NS_IMETHOD GetLocation(nsIDOMLocation * *aLocation) = 0;
 
-  /* readonly attribute nsIDOMHistory history; */
-  NS_IMETHOD GetHistory(nsIDOMHistory * *aHistory) = 0;
+  /* readonly attribute nsISupports history; */
+  NS_IMETHOD GetHistory(nsISupports * *aHistory) = 0;
 
-  /* readonly attribute nsIDOMBarProp locationbar; */
-  NS_IMETHOD GetLocationbar(nsIDOMBarProp * *aLocationbar) = 0;
+  /* readonly attribute nsISupports locationbar; */
+  NS_IMETHOD GetLocationbar(nsISupports * *aLocationbar) = 0;
 
-  /* readonly attribute nsIDOMBarProp menubar; */
-  NS_IMETHOD GetMenubar(nsIDOMBarProp * *aMenubar) = 0;
+  /* readonly attribute nsISupports menubar; */
+  NS_IMETHOD GetMenubar(nsISupports * *aMenubar) = 0;
 
-  /* readonly attribute nsIDOMBarProp personalbar; */
-  NS_IMETHOD GetPersonalbar(nsIDOMBarProp * *aPersonalbar) = 0;
+  /* readonly attribute nsISupports personalbar; */
+  NS_IMETHOD GetPersonalbar(nsISupports * *aPersonalbar) = 0;
 
-  /* readonly attribute nsIDOMBarProp scrollbars; */
-  NS_IMETHOD GetScrollbars(nsIDOMBarProp * *aScrollbars) = 0;
+  /* readonly attribute nsISupports scrollbars; */
+  NS_IMETHOD GetScrollbars(nsISupports * *aScrollbars) = 0;
 
-  /* readonly attribute nsIDOMBarProp statusbar; */
-  NS_IMETHOD GetStatusbar(nsIDOMBarProp * *aStatusbar) = 0;
+  /* readonly attribute nsISupports statusbar; */
+  NS_IMETHOD GetStatusbar(nsISupports * *aStatusbar) = 0;
 
-  /* readonly attribute nsIDOMBarProp toolbar; */
-  NS_IMETHOD GetToolbar(nsIDOMBarProp * *aToolbar) = 0;
+  /* readonly attribute nsISupports toolbar; */
+  NS_IMETHOD GetToolbar(nsISupports * *aToolbar) = 0;
 
   /* attribute DOMString status; */
   NS_IMETHOD GetStatus(nsAString & aStatus) = 0;
@@ -12640,7 +12640,7 @@ class nsIDOMWindow : public nsISupports {
   NS_IMETHOD ShowModalDialog(const nsAString & uri, nsIVariant *args, const nsAString & options, uint8_t _argc, nsIVariant * *_retval) = 0;
 
   /* [binaryname(PostMessageMoz),implicit_jscontext] void postMessage (in jsval message, in DOMString targetOrigin); */
-  NS_IMETHOD PostMessageMoz(jsval message, const nsAString & targetOrigin, JSContext* cx) = 0;
+  NS_IMETHOD PostMessageMoz(jsval message, const nsAString & targetOrigin, jsval transfer, JSContext* cx) = 0;
 
   /* DOMString atob (in DOMString aAsciiString); */
   NS_IMETHOD Atob(const nsAString & aAsciiString, nsAString & _retval) = 0;
@@ -12750,9 +12750,6 @@ class nsIDOMWindow : public nsISupports {
 
   /* readonly attribute nsIDOMCrypto crypto; */
   NS_IMETHOD GetCrypto(nsIDOMCrypto * *aCrypto) = 0;
-
-  /* readonly attribute nsIDOMPkcs11 pkcs11; */
-  NS_IMETHOD GetPkcs11(nsIDOMPkcs11 * *aPkcs11) = 0;
 
   /* readonly attribute nsIControllers controllers; */
   NS_IMETHOD GetControllers(nsIControllers * *aControllers) = 0;
@@ -19892,20 +19889,22 @@ class nsICancelable; /* forward declaration */
 
 
 /* starting interface:    nsITransfer */
-#define NS_ITRANSFER_IID_STR "23c51569-e9a1-4a92-adeb-3723db82ef7c"
+#define NS_ITRANSFER_IID_STR "b1c81100-9d66-11e2-9e96-0800200c9a66"
 
 #define NS_ITRANSFER_IID \
-  {0x23c51569, 0xe9a1, 0x4a92, \
-    { 0xad, 0xeb, 0x37, 0x23, 0xdb, 0x82, 0xef, 0x7c }}
+  {0xb1c81100, 0x9d66, 0x11e2, \
+    { 0x9e, 0x96, 0x08, 0x00, 0x20, 0x0c, 0x9a, 0x66 }}
 
 class NS_NO_VTABLE nsITransfer : public nsIWebProgressListener2 {
  public: 
 
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_ITRANSFER_IID)
 
-  /* void init (in nsIURI source, in nsIURI target, in AString display_name, in nsIMIMEInfo mime_info, in PRTime start_time, in nsILocalFile temp_file, in nsICancelable cancelable); */
-  NS_IMETHOD Init(nsIURI *source, nsIURI *target, const nsAString & display_name, nsIMIMEInfo *mime_info, PRTime start_time, nsILocalFile *temp_file, nsICancelable *cancelable) = 0;
+  /* void init (in nsIURI source, in nsIURI target, in AString display_name, in nsIMIMEInfo mime_info, in PRTime start_time, in nsILocalFile temp_file, in nsICancelable cancelable, in boolean is_private); */
+  NS_IMETHOD Init(nsIURI *source, nsIURI *target, const nsAString & display_name, nsIMIMEInfo *mime_info, PRTime start_time, nsILocalFile *temp_file, nsICancelable *cancelable, bool is_private) = 0;
 
+  /* void setSha256Hash (in ACString hash); */
+  NS_IMETHOD SetSha256Hash(const nsACString & haHash) = 0;
 };
 
   NS_DEFINE_STATIC_IID_ACCESSOR(nsITransfer, NS_ITRANSFER_IID)

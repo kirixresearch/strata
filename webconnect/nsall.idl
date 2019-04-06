@@ -1955,7 +1955,7 @@ interface nsIAnimationFrameListener;
 interface nsIDOMMozURLProperty;
 interface nsIFrameRequestCallback;
 
-[scriptable, uuid(b0ebb526-ed69-43c6-8242-b381a1fe79da)]
+[scriptable, uuid(97b6784b-ab12-4f79-8422-d7868a4cc7dc)]
 interface nsIDOMWindow : nsISupports
 {
     readonly attribute nsIDOMWindow window;
@@ -1965,13 +1965,13 @@ interface nsIDOMWindow : nsISupports
     attribute DOMString name;
 
     readonly attribute nsIDOMLocation location;
-    readonly attribute nsIDOMHistory history;
-    readonly attribute nsIDOMBarProp locationbar;
-    readonly attribute nsIDOMBarProp menubar;
-    readonly attribute nsIDOMBarProp personalbar;
-    readonly attribute nsIDOMBarProp scrollbars;
-    readonly attribute nsIDOMBarProp statusbar;
-    readonly attribute nsIDOMBarProp toolbar;
+    readonly attribute nsISupports history;
+    readonly attribute nsISupports locationbar;
+    readonly attribute nsISupports menubar;
+    readonly attribute nsISupports personalbar;
+    readonly attribute nsISupports scrollbars;
+    readonly attribute nsISupports statusbar;
+    readonly attribute nsISupports toolbar;
 
     attribute DOMString status;
 
@@ -2021,7 +2021,7 @@ interface nsIDOMWindow : nsISupports
                                [optional] in DOMString options);
 
     [implicit_jscontext, binaryname(PostMessageMoz)]
-    void postMessage(in jsval message, in DOMString targetOrigin);
+    void postMessage(in jsval message, in DOMString targetOrigin, [optional] in jsval transfer);
 
     DOMString atob(in DOMString aAsciiString);
     DOMString btoa(in DOMString aBase64Data);
@@ -2078,7 +2078,6 @@ interface nsIDOMWindow : nsISupports
 
     readonly attribute boolean closed;
     readonly attribute nsIDOMCrypto crypto;
-    readonly attribute nsIDOMPkcs11 pkcs11;
     readonly attribute nsIControllers controllers;
 
     readonly attribute float mozInnerScreenX;
@@ -3375,7 +3374,7 @@ interface nsILocalFile;
 interface nsICancelable;
 
 
-[scriptable, uuid(23c51569-e9a1-4a92-adeb-3723db82ef7c)]
+[scriptable, uuid(b1c81100-9d66-11e2-9e96-0800200c9a66)]
 interface nsITransfer : nsIWebProgressListener2
 {
     void init(in nsIURI source,
@@ -3384,7 +3383,10 @@ interface nsITransfer : nsIWebProgressListener2
               in nsIMIMEInfo mime_info,
               in PRTime start_time,
               in nsILocalFile temp_file,
-              in nsICancelable cancelable);
+              in nsICancelable cancelable
+              in boolean is_private);
+
+    void setSha256Hash(in ACString hash);
 };
 
 
