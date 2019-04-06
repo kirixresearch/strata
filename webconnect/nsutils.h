@@ -59,8 +59,11 @@ public:
                        nsIMIMEInfo* mime_info,
                        PRTime start_time,
                        nsILocalFile* temp_file,
-                       nsICancelable* cancelable);
-                       
+                       nsICancelable* cancelable,
+                       bool is_private);
+
+    NS_IMETHOD SetSha256Hash(const nsACString& hash);
+
     NS_IMETHOD OnStateChange(nsIWebProgress* web_progress, 
                              nsIRequest* request,
                              PRUint32 state_flags, 

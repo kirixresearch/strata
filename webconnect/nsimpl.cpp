@@ -651,9 +651,16 @@ NS_IMETHODIMP ProgressListenerAdaptor::Init(
                                            nsIMIMEInfo* mime_info,
                                            PRTime start_time,
                                            nsILocalFile* temp_file,
-                                           nsICancelable* cancelable)
+                                           nsICancelable* cancelable,
+                                           bool is_private)
 {
     return NS_OK;
+}
+
+
+NS_IMETHODIMP ProgressListenerAdaptor::SetSha256Hash(const nsACString& hash)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 NS_IMETHODIMP ProgressListenerAdaptor::OnStateChange(

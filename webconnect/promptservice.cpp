@@ -1223,8 +1223,32 @@ public:
 
     NS_DECL_ISUPPORTS
 
+    nsIURI* m_target;
+    nsILocalFile* m_file;
+
     TransferService()
     {
+        m_progress = NULL;
+        m_target = NULL;
+        m_file = NULL;
+    }
+
+    virtual ~TransferService()
+    {
+        if (m_target)
+        {
+            m_target->Release();
+        }
+
+        if (m_file)
+        {
+            m_file->Release();
+        }
+    }
+
+    void SetDownloadListener(wxWebProgressBase* p)
+    {
+        m_progress = p;
     }
 
     NS_IMETHODIMP Init(nsIURI* source,
@@ -1233,9 +1257,27 @@ public:
                        nsIMIMEInfo* mime_info,
                        PRTime start_time,
                        nsILocalFile* temp_file,
-                       nsICancelable* cancelable)
+                       nsICancelable* cancelable,
+                       bool is_private)
     {
+        m_target = target;
+        if (m_target)
+        {
+            m_target->AddRef();
+        }
+
+        m_file = temp_file;
+        if (m_file)
+        {
+            m_file->AddRef();
+        }
+
         return NS_OK;
+    }
+
+    NS_IMETHODIMP SetSha256Hash(const nsACString& hash)
+    {
+        return NS_ERROR_NOT_IMPLEMENTED;
     }
 
     NS_IMETHOD OnStateChange(nsIWebProgress* web_progress,
@@ -1243,6 +1285,55 @@ public:
                              PRUint32 state_flags,
                              nsresult status)
     {
+        if (state_flags & nsIWebProgressListener::STATE_STOP)
+        {
+            nsresult rv;
+
+            ns_smartptr<nsIFileURL> file_url;
+            m_target->QueryInterface(nsIFileURL::GetIID(), (void**)&(file_url.p));
+
+            if (file_url)
+            {
+                ns_smartptr<nsIFile> file;
+                file_url->GetFile(&file.p);
+                if (file)
+                {
+                    bool exists = false;
+                    if (NS_SUCCEEDED(file->Exists(&exists)) && exists)
+                    {
+                        file->Remove(false);
+                    }
+
+                    nsEmbedString ns_filename;
+                    file->GetLeafName(ns_filename);
+
+                    ns_smartptr<nsIFile> parent;
+                    file->GetParent(&parent.p);
+
+                    m_file->MoveTo(parent, ns_filename);
+                }
+            }
+
+
+            if (m_target)
+            {
+                m_target->Release();
+            }
+            m_target = NULL;
+
+            if (m_file)
+            {
+                m_file->Release();
+            }
+            m_file = NULL;
+
+
+            if (m_progress)
+            {
+                m_progress->OnFinish();
+            }
+        }
+
         return NS_OK;
     }
 
@@ -1269,7 +1360,15 @@ public:
                                  PRInt64 cur_total_progress,
                                  PRInt64 max_total_progress)
     {
-       return NS_OK;
+        if (m_progress)
+        {
+            m_progress->OnProgressChange(wxLongLong(cur_self_progress), wxLongLong(max_self_progress));
+
+            if (m_progress->IsCancelled())
+                request->Cancel(0x804b0002 /*NS_BINDING_ABORTED*/);
+        }
+
+        return NS_OK;
     }
     
     NS_IMETHOD OnLocationChange(
@@ -1287,6 +1386,12 @@ public:
                              nsresult status,
                              const char16_t* message)
     {
+        if (NS_FAILED(status))
+        {
+            if (m_progress && !m_progress->IsCancelled())
+                m_progress->OnError(ns2wx(message));
+        }
+        
         return NS_OK;
     }
 
@@ -1308,6 +1413,9 @@ public:
     {
         return NS_OK;
     }
+
+public:
+    wxWebProgressBase* m_progress;
 };
 
 NS_IMPL_ADDREF(TransferService)
@@ -1321,6 +1429,13 @@ NS_INTERFACE_MAP_BEGIN(TransferService)
 NS_INTERFACE_MAP_END
 
 
+
+
+TransferService** g_capture_transfer_service = NULL;
+void captureTransferService(TransferService** s)
+{
+    g_capture_transfer_service = s;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //  TransferFactory class implementation
@@ -1357,6 +1472,12 @@ public:
         obj->AddRef();
         res = obj->QueryInterface(iid, result);
         obj->Release();
+
+        if (g_capture_transfer_service)
+        {
+            *g_capture_transfer_service = obj;
+            obj->AddRef();
+        }
 
         return res;
     }
@@ -1419,8 +1540,7 @@ public:
                 url = ns2wx(ns_spec);
         }
         
-        
-        
+
         nsEmbedString ns_filename;
         launcher->GetSuggestedFileName(ns_filename);
         wxString filename = ns2wx(ns_filename);
@@ -1451,7 +1571,9 @@ public:
 
         if (handled)
         {
-        
+            TransferService* transfer_service = NULL;
+            captureTransferService(&transfer_service);
+
             switch (evt.m_download_action)
             {
                 case wxWEB_DOWNLOAD_SAVE:
@@ -1461,6 +1583,11 @@ public:
                     wxASSERT_MSG(evt.m_download_action_path.Length() > 0, wxT("You must specify a filename in the event object"));
                     if (evt.m_download_action_path.IsEmpty())
                     {
+                        captureTransferService(NULL);
+                        if (transfer_service)
+                        {
+                            transfer_service->Release();
+                        }
                         // no filename specified
                         launcher->Cancel(0x804b0002 /* = NS_BINDING_ABORTED */ );
                         return NS_OK;
@@ -1486,15 +1613,16 @@ public:
                     break;
             }
             
-            
-            if (evt.m_download_listener)
+            captureTransferService(NULL);
+
+            if (transfer_service)
             {
-                evt.m_download_listener->Init(url, evt.m_download_action_path);
-                nsIWebProgressListener* progress = CreateProgressListenerAdaptor(evt.m_download_listener);
-                
-                launcher->SetWebProgressListener((nsIWebProgressListener2*)progress);
-                
-                progress->Release();
+                if (evt.m_download_listener)
+                {
+                    evt.m_download_listener->Init(url, evt.m_download_action_path);
+                    transfer_service->SetDownloadListener(evt.m_download_listener);
+                }
+                transfer_service->Release();
             }
         
         }
