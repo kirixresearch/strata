@@ -1474,6 +1474,12 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
             if (needs_close)
                 closeSet();
 
+            if (db->getFileExist(save_path))
+            {
+                // if file exists, overwrite (the user was prompted)
+                db->deleteFile(save_path);
+            }
+
             if (!db->moveFile(m_path, save_path))
             {
                 appMessageBox(_("The file could not be saved in the specified location.  The destination location may by in use."),
