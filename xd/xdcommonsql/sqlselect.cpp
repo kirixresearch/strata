@@ -3465,9 +3465,12 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
     }
      else
     {
-        output_path = xd::getTemporaryPath();
+        if (!p_into)
+        {
+            output_path = xd::getTemporaryPath();
+            temporary = true;
+        }
         create_result = db->createTable(output_path, output_structure);
-        temporary = true;
     }
 
     if (!create_result)

@@ -396,7 +396,13 @@ void RemoveDupRecWizard::onWizardFinished(kcl::Wizard* wizard)
     params["output"].setString(xd::getTemporaryPath());
 
     if (m_info->m_output_path.Length() > 0)
+    {
         params["output"].setString(towstr(m_info->m_output_path));
+    }
+     else
+    {
+        params["untitled"] = true;
+    }
 
     params["distinct"].setBoolean(true);
 
