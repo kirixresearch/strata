@@ -13,6 +13,8 @@
 #include <wx/wx.h>
 #include <wx/artprov.h>
 #include <wx/printdlg.h>
+#include <wx/stdpaths.h>
+#include <wx/filename.h>
 #include <string>
 #include "webcontrol.h"
 #include "nsinclude.h"
@@ -1225,12 +1227,14 @@ public:
 
     nsIURI* m_target;
     nsILocalFile* m_file;
+    int m_action;
 
     TransferService()
     {
         m_progress = NULL;
         m_target = NULL;
         m_file = NULL;
+        m_action = wxWEB_DOWNLOAD_SAVE;
     }
 
     virtual ~TransferService()
@@ -1287,8 +1291,6 @@ public:
     {
         if (state_flags & nsIWebProgressListener::STATE_STOP)
         {
-            nsresult rv;
-
             ns_smartptr<nsIFileURL> file_url;
             m_target->QueryInterface(nsIFileURL::GetIID(), (void**)&(file_url.p));
 
@@ -1307,10 +1309,20 @@ public:
                     nsEmbedString ns_filename;
                     file->GetLeafName(ns_filename);
 
+                    wxString fname = ns2wx(ns_filename);
+
                     ns_smartptr<nsIFile> parent;
                     file->GetParent(&parent.p);
 
                     m_file->MoveTo(parent, ns_filename);
+
+                    if (m_action == wxWEB_DOWNLOAD_OPEN)
+                    {
+                        nsEmbedCString s;
+                        m_file->GetNativePath(s);
+                        wxString full_path = ns2wx(s);
+                        ::wxLaunchDefaultApplication(full_path);
+                    }
                 }
             }
 
@@ -1576,6 +1588,23 @@ public:
 
             switch (evt.m_download_action)
             {
+                case wxWEB_DOWNLOAD_OPEN:
+                {
+                    //launcher->LaunchWithApplication(NULL, PR_FALSE);
+                    //break;
+                    wxFileName fn(wxStandardPaths::Get().GetTempDir(), filename);
+                    wxString full_path = fn.GetFullPath();
+
+                    nsILocalFile* filep = NULL;
+                    NS_NewNativeLocalFile(nsDependentCString((const char*)full_path.mbc_str()), PR_TRUE, &filep);
+
+                    launcher->SaveToDisk(filep, PR_FALSE);
+
+                    if (filep)
+                        filep->Release();
+                    break;
+                }
+
                 case wxWEB_DOWNLOAD_SAVE:
                     launcher->SaveToDisk(nsnull, PR_FALSE);
                     break;
@@ -1605,9 +1634,6 @@ public:
                             filep->Release();
                     }
                     break;
-                case wxWEB_DOWNLOAD_OPEN:
-                    launcher->LaunchWithApplication(NULL, PR_FALSE);
-                    break;
                 case wxWEB_DOWNLOAD_CANCEL:
                     launcher->Cancel(0x804b0002 /* = NS_BINDING_ABORTED */ );
                     break;
@@ -1617,6 +1643,7 @@ public:
 
             if (transfer_service)
             {
+                transfer_service->m_action = evt.m_download_action;
                 if (evt.m_download_listener)
                 {
                     evt.m_download_listener->Init(url, evt.m_download_action_path);
