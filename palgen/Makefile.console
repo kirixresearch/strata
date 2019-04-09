@@ -24,7 +24,7 @@ OBJECTS = app.o \
 all: $(EXENAME)
 
 $(EXENAME):	$(OBJECTS)
-		$(CPP) $^ $(LINKFLAGS) $(LIBDIRS) $(LIBS) -o $(OUTPUT_DIR)/$(EXENAME)
+		$(CPP) $^ $(LINKFLAGS) $(LIBDIRS) $(LIBS) -o -static-libstdc++ -static-libgcc $(OUTPUT_DIR)/$(EXENAME)
 
 clean:
 	rm -f *.o $(EXENAME)
