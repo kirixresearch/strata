@@ -2514,7 +2514,7 @@ bool OptionsPanel::initDoc(IFramePtr frame,
     m_sizer->SetItemMinSize(m_script_page, aggregate_min_size);
 
     SetSizer(m_sizer);
-    SetSize(m_sizer->GetMinSize());
+    SetClientSize(m_sizer->GetMinSize());
 
     Layout();
     

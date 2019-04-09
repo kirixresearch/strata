@@ -2956,8 +2956,7 @@ void AppController::onSplitTable(wxCommandEvent& evt)
     if (site.isNull())
     {
         SplitPanel* panel = new SplitPanel;
-        site = g_app->getMainFrame()->createSite(panel, sitetypeModeless, -1, -1, 420, 360);
-        site->setMinSize(420,360);
+        site = g_app->getMainFrame()->createSite(panel, sitetypeModeless, -1, -1, -1, -1);
         site->setName(wxT("DividePanel"));
     }
      else

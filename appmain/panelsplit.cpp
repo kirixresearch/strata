@@ -176,6 +176,11 @@ bool SplitPanel::initDoc(IFramePtr frame,
     sourcetable_sizer->AddSpacer(5);
     sourcetable_sizer->Add(m_browse_button, 0, wxALIGN_CENTER);
 
+    wxSize s1 = m_sourcetable_textctrl->GetSize();
+    wxSize s2 = m_sourcetable_textctrl->GetTextExtent("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+    s1.x = wxMax(s1.x,s2.x);
+    sourcetable_sizer->SetItemMinSize(m_sourcetable_textctrl, s1);
+
     // create table prefix sizer
     wxStaticText* label_prefix = new wxStaticText(this, -1, _("Table Prefix:"));
     m_prefix_textctrl = new wxTextCtrl(this, ID_PrefixTextCtrl);
@@ -190,12 +195,12 @@ bool SplitPanel::initDoc(IFramePtr frame,
     wxStaticText* label_records = new wxStaticText(this, -1, _("Records"));
 
     m_rowcount_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_rowcount_sizer->AddSpacer(10);
+    m_rowcount_sizer->AddSpacer(this->FromDIP(10));
     m_rowcount_sizer->Add(label_rowcount, 0, wxALIGN_CENTER);
     m_rowcount_sizer->Add(m_rowcount_textctrl, 1, wxALIGN_CENTER);
-    m_rowcount_sizer->AddSpacer(5);
+    m_rowcount_sizer->AddSpacer(this->FromDIP(5));
     m_rowcount_sizer->Add(label_records, 0, wxALIGN_CENTER);
-    m_rowcount_sizer->AddSpacer(10);
+    m_rowcount_sizer->AddSpacer(this->FromDIP(10));
 
     // create table count sizer
     wxStaticText* label_tablecount = new wxStaticText(this, -1, _("Table Count:"));
@@ -203,12 +208,12 @@ bool SplitPanel::initDoc(IFramePtr frame,
     m_tablecount_textctrl = new wxTextCtrl(this, ID_TableCountTextCtrl);
 
     m_tablecount_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_tablecount_sizer->AddSpacer(10);
+    m_tablecount_sizer->AddSpacer(this->FromDIP(10));
     m_tablecount_sizer->Add(label_tablecount, 0, wxALIGN_CENTER);
     m_tablecount_sizer->Add(m_tablecount_textctrl, 1, wxALIGN_CENTER);
-    m_tablecount_sizer->AddSpacer(5);
+    m_tablecount_sizer->AddSpacer(this->FromDIP(5));
     m_tablecount_sizer->Add(label_tables, 0, wxALIGN_CENTER);
-    m_tablecount_sizer->AddSpacer(10);
+    m_tablecount_sizer->AddSpacer(this->FromDIP(10));
 
     // create table size sizer
     wxStaticText* label_tablesize = new wxStaticText(this, -1, _("Table Size:"));
@@ -216,12 +221,12 @@ bool SplitPanel::initDoc(IFramePtr frame,
     wxStaticText* label_mb = new wxStaticText(this, -1, _("MB"));
 
     m_tablesize_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_tablesize_sizer->AddSpacer(10);
+    m_tablesize_sizer->AddSpacer(this->FromDIP(10));
     m_tablesize_sizer->Add(label_tablesize, 0, wxALIGN_CENTER);
     m_tablesize_sizer->Add(m_tablesize_textctrl, 1, wxALIGN_CENTER);
-    m_tablesize_sizer->AddSpacer(5);
+    m_tablesize_sizer->AddSpacer(this->FromDIP(5));
     m_tablesize_sizer->Add(label_mb, 0, wxALIGN_CENTER);
-    m_tablesize_sizer->AddSpacer(10);
+    m_tablesize_sizer->AddSpacer(this->FromDIP(10));
 
     // create expression sizer
     wxStaticText* label_expression = new wxStaticText(this, -1, _("Formula:"));
@@ -233,10 +238,10 @@ bool SplitPanel::initDoc(IFramePtr frame,
                                            wxTE_MULTILINE | wxTE_BESTWRAP);
 
     m_expression_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_expression_sizer->AddSpacer(10);
-    m_expression_sizer->Add(label_expression, 0, wxEXPAND | wxTOP, 4);
+    m_expression_sizer->AddSpacer(this->FromDIP(10));
+    m_expression_sizer->Add(label_expression, 0, wxEXPAND | wxTOP, this->FromDIP(4));
     m_expression_sizer->Add(m_expression_textctrl, 1, wxEXPAND);
-    m_expression_sizer->AddSpacer(10);
+    m_expression_sizer->AddSpacer(this->FromDIP(10));
 
     // create a platform standards-compliant OK/Cancel sizer
     
@@ -246,11 +251,11 @@ bool SplitPanel::initDoc(IFramePtr frame,
     ok_cancel_sizer->AddButton(m_ok_button);
     ok_cancel_sizer->AddButton(new wxButton(this, wxID_CANCEL));
     ok_cancel_sizer->Realize();
-    ok_cancel_sizer->AddSpacer(5);
+    ok_cancel_sizer->AddSpacer(this->FromDIP(5));
     
     // this code is necessary to get the sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
-    min_size.SetHeight(min_size.GetHeight()+16);
+    min_size.SetHeight(min_size.GetHeight()+ this->FromDIP(16));
     ok_cancel_sizer->SetMinSize(min_size);
     
     // resize labels to same width
@@ -276,33 +281,37 @@ bool SplitPanel::initDoc(IFramePtr frame,
     // create input options sizer
     wxStaticBox* box1 = new wxStaticBox(this, -1, _("Input Options"));
     m_input_sizer = new wxStaticBoxSizer(box1, wxVERTICAL);
-    m_input_sizer->AddSpacer(10);
-    m_input_sizer->Add(sourcetable_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
-    m_input_sizer->AddSpacer(8);
-    m_input_sizer->Add(splittype_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
-    m_input_sizer->AddSpacer(10);
+    m_input_sizer->AddSpacer(this->FromDIP(10));
+    m_input_sizer->Add(sourcetable_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, this->FromDIP(10));
+    m_input_sizer->AddSpacer(this->FromDIP(8));
+    m_input_sizer->Add(splittype_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, this->FromDIP(10));
+    m_input_sizer->AddSpacer(this->FromDIP(10));
     
     // create output options sizer
     wxStaticBox* box2 = new wxStaticBox(this, -1, _("Output Options"));
     m_output_sizer = new wxStaticBoxSizer(box2, wxVERTICAL);
-    m_output_sizer->AddSpacer(10);
-    m_output_sizer->Add(prefix_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
-    m_output_sizer->Add(m_rowcount_sizer, 0, wxEXPAND | wxTOP, 8);
-    m_output_sizer->Add(m_tablecount_sizer, 0, wxEXPAND | wxTOP, 8);
-    m_output_sizer->Add(m_tablesize_sizer, 0, wxEXPAND | wxTOP, 8);
-    m_output_sizer->Add(m_expression_sizer, 1, wxEXPAND | wxTOP , 8);
-    m_output_sizer->AddSpacer(10);
+    m_output_sizer->AddSpacer(this->FromDIP(10));
+    m_output_sizer->Add(prefix_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, this->FromDIP(10));
+    m_output_sizer->Add(m_rowcount_sizer, 0, wxEXPAND | wxTOP, this->FromDIP(8));
+    m_output_sizer->Add(m_tablecount_sizer, 0, wxEXPAND | wxTOP, this->FromDIP(8));
+    m_output_sizer->Add(m_tablesize_sizer, 0, wxEXPAND | wxTOP, this->FromDIP(8));
+    m_output_sizer->Add(m_expression_sizer, 1, wxEXPAND | wxTOP , this->FromDIP(8));
+    m_output_sizer->AddSpacer(this->FromDIP(10));
 
     // create main sizer
     m_main_sizer = new wxBoxSizer(wxVERTICAL);
-    m_main_sizer->AddSpacer(8);
-    m_main_sizer->Add(m_input_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 8);
-    m_main_sizer->AddSpacer(10);
-    m_main_sizer->Add(m_output_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 8);
+    m_main_sizer->AddSpacer(this->FromDIP(8));
+    m_main_sizer->Add(m_input_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, this->FromDIP(8));
+    m_main_sizer->AddSpacer(this->FromDIP(10));
+    m_main_sizer->Add(m_output_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, this->FromDIP(8));
     m_spacer = m_main_sizer->AddStretchSpacer(1);
     m_main_sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
+
     SetSizer(m_main_sizer);
-    
+    min_size = m_main_sizer->GetMinSize();
+    GetParent()->SetClientSize(min_size);
+    GetParent()->SetMinClientSize(min_size);
+
     // connect drag-drop signals from source tree
     FsDataDropTarget* sourcetable_droptarget = new FsDataDropTarget;
     sourcetable_droptarget->sigDragDrop.connect(this, &SplitPanel::onSourceTableDropped);
