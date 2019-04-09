@@ -146,8 +146,8 @@ bool FindPanel::initDoc(IFramePtr frame,
                                   wxTE_PROCESS_ENTER | wxTE_PROCESS_TAB);
 
     m_find_mode_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_find_mode_sizer->Add(m_find_mode_label, 0, wxALIGN_CENTER | wxLEFT, 2);
-    m_find_mode_sizer->AddSpacer(5);
+    m_find_mode_sizer->Add(m_find_mode_label, 0, wxALIGN_CENTER | wxLEFT, this->FromDIP(2));
+    m_find_mode_sizer->AddSpacer(this->FromDIP(5));
     m_find_mode_sizer->Add(m_find_mode_combo, 1);
 
     
@@ -165,8 +165,8 @@ bool FindPanel::initDoc(IFramePtr frame,
                                   wxTE_PROCESS_ENTER | wxTE_PROCESS_TAB);
 
     m_find_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_find_sizer->Add(m_find_label, 0, wxALIGN_CENTER | wxLEFT, 2);
-    m_find_sizer->AddSpacer(5);
+    m_find_sizer->Add(m_find_label, 0, wxALIGN_CENTER | wxLEFT, this->FromDIP(2));
+    m_find_sizer->AddSpacer(this->FromDIP(5));
     m_find_sizer->Add(m_find_combo, 1);
 
 
@@ -196,11 +196,15 @@ bool FindPanel::initDoc(IFramePtr frame,
                                     wxSize(28,20));
 
     m_find_in_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_find_in_sizer->Add(m_find_in_label, 0, wxALIGN_CENTER | wxLEFT, 2);
-    m_find_in_sizer->AddSpacer(5);
+    m_find_in_sizer->Add(m_find_in_label, 0, wxALIGN_CENTER | wxLEFT, this->FromDIP(2));
+    m_find_in_sizer->AddSpacer(this->FromDIP(5));
     m_find_in_sizer->Add(m_find_in_combo, 1);
-    m_find_in_sizer->Add(find_in_browse, 0, wxALIGN_CENTER | wxLEFT, 2);
+    m_find_in_sizer->Add(find_in_browse, 0, wxALIGN_CENTER | wxLEFT, this->FromDIP(2));
 
+    wxSize s = m_find_in_combo->GetSize();
+    wxSize s2 = m_find_in_combo->GetTextExtent("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+    s.x = wxMax(s.x, s2.x);
+    m_find_in_sizer->SetItemMinSize(m_find_in_combo, s);
 
     // create replace sizer
     
@@ -215,8 +219,8 @@ bool FindPanel::initDoc(IFramePtr frame,
                                      wxTE_PROCESS_ENTER | wxTE_PROCESS_TAB);
     
     m_replace_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_replace_sizer->Add(m_replace_label, 0, wxALIGN_CENTER | wxLEFT, 2);
-    m_replace_sizer->AddSpacer(5);
+    m_replace_sizer->Add(m_replace_label, 0, wxALIGN_CENTER | wxLEFT, this->FromDIP(2));
+    m_replace_sizer->AddSpacer(this->FromDIP(5));
     m_replace_sizer->Add(m_replace_combo, 1);
 
     
@@ -256,10 +260,10 @@ bool FindPanel::initDoc(IFramePtr frame,
     
     wxStaticBox* option_caption = new wxStaticBox(this, -1, _("Options"));
     wxStaticBoxSizer* option_sizer = new wxStaticBoxSizer(option_caption, wxVERTICAL);
-    option_sizer->AddSpacer(8);
-    option_sizer->Add(m_matchcase_checkbox, 0, wxLEFT | wxRIGHT | wxBOTTOM, 8);
-    option_sizer->Add(m_wholecell_checkbox, 0, wxLEFT | wxRIGHT | wxBOTTOM, 8);
-    option_sizer->Add(m_allopen_checkbox, 0, wxLEFT | wxRIGHT | wxBOTTOM, 8);
+    option_sizer->AddSpacer(this->FromDIP(8));
+    option_sizer->Add(m_matchcase_checkbox, 0, wxLEFT | wxRIGHT | wxBOTTOM, this->FromDIP(8));
+    option_sizer->Add(m_wholecell_checkbox, 0, wxLEFT | wxRIGHT | wxBOTTOM, this->FromDIP(8));
+    option_sizer->Add(m_allopen_checkbox, 0, wxLEFT | wxRIGHT | wxBOTTOM, this->FromDIP(8));
     
     // we don't support multi-doc find yet
     option_sizer->Show(m_allopen_checkbox, false);
@@ -268,24 +272,25 @@ bool FindPanel::initDoc(IFramePtr frame,
     
     m_button_sizer = new wxBoxSizer(wxHORIZONTAL);
     m_button_sizer->AddStretchSpacer();
-    m_button_sizer->Add(m_findprev_button, 0, wxRIGHT, 8);
-    m_button_sizer->Add(m_findnext_button, 0, wxRIGHT, 8);
-    m_button_sizer->Add(m_replace_button, 0, wxRIGHT, 8);
-    m_button_sizer->Add(m_replaceall_button, 0, wxRIGHT, 8);
-    m_button_sizer->Add(m_findall_button, 0, wxRIGHT, 8);
+    m_button_sizer->AddSpacer(this->FromDIP(8));
+    m_button_sizer->Add(m_findprev_button, 0, wxRIGHT, this->FromDIP(8));
+    m_button_sizer->Add(m_findnext_button, 0, wxRIGHT, this->FromDIP(8));
+    m_button_sizer->Add(m_replace_button, 0, wxRIGHT, this->FromDIP(8));
+    m_button_sizer->Add(m_replaceall_button, 0, wxRIGHT, this->FromDIP(8));
+    m_button_sizer->Add(m_findall_button, 0, wxRIGHT, this->FromDIP(8));
 
     // create main sizer
     
     m_main_sizer = new wxBoxSizer(wxVERTICAL);
-    m_main_sizer->AddSpacer(8);
-    m_main_sizer->Add(m_find_mode_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 8);
-    m_main_sizer->Add(m_find_sizer,      0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 8);
-    m_main_sizer->Add(m_find_in_sizer,   0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 8);
-    m_main_sizer->Add(m_replace_sizer,   0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 8);
-    m_main_sizer->Add(option_sizer,      1, wxEXPAND | wxLEFT | wxRIGHT, 8);
-    m_main_sizer->AddSpacer(8);
+    m_main_sizer->AddSpacer(this->FromDIP(8));
+    m_main_sizer->Add(m_find_mode_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, this->FromDIP(8));
+    m_main_sizer->Add(m_find_sizer,      0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, this->FromDIP(8));
+    m_main_sizer->Add(m_find_in_sizer,   0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, this->FromDIP(8));
+    m_main_sizer->Add(m_replace_sizer,   0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, this->FromDIP(8));
+    m_main_sizer->Add(option_sizer,      1, wxEXPAND | wxLEFT | wxRIGHT, this->FromDIP(8));
+    m_main_sizer->AddSpacer(this->FromDIP(8));
     m_main_sizer->Add(m_button_sizer,    0, wxEXPAND);
-    m_main_sizer->AddSpacer(8);
+    m_main_sizer->AddSpacer(this->FromDIP(8));
     SetSizer(m_main_sizer);
     
     // this function takes care of laying out the panel, setting
@@ -465,24 +470,33 @@ void FindPanel::setMode(int mode, bool layout)
     
     if (m_doc_site.isOk())
     {
-        int x,y,w,h;
-        m_doc_site->getPosition(&x,&y,&w,&h);
-        
+        int w,h;
+        GetClientSize(&w,&h);
+
+        wxSize min_size = m_main_sizer->GetMinSize();
+        m_doc_site->getContainerWindow()->SetMinClientSize(min_size);
+
+        if (min_size.x > w)
+            w = min_size.x;
+        if (min_size.y > h)
+            h = min_size.y;
+
+            /*
         if (m_mode == FindPanel::ModeFind)
         {
-            m_doc_site->setMinSize(340,215);
-            m_doc_site->setPosition(x,y,340,225);
+            m_doc_site->setPosition(x,y,w,h);
         }
          else if (m_mode == FindPanel::ModeFindInFiles)
         {
-            m_doc_site->setMinSize(340,245);
-            m_doc_site->setPosition(x,y,340,245);
+            m_doc_site->setPosition(x,y,w,h);
         }
          else if (m_mode == FindPanel::ModeFindReplace)
         {
-            m_doc_site->setMinSize(340,245);
-            m_doc_site->setPosition(x,y,340,245);
-        }
+            m_doc_site->setPosition(x,y,w,h);
+        }*/
+
+
+        m_doc_site->getContainerWindow()->SetClientSize(w,h);
     }
     
     Thaw();

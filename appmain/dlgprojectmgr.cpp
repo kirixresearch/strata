@@ -271,7 +271,7 @@ public:
         create_loc_sizer->AddSpacer(5);
         create_loc_sizer->Add(m_create_browse_button, 0);
 
-        // get a sensi
+        // get a sensible width
         wxSize s = m_create_loc_textctrl->GetTextExtent("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         wxSize s2 = m_create_loc_textctrl->GetSize();
         s.y = s2.y;
