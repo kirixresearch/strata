@@ -726,7 +726,7 @@ void ExprBuilderPanel::construct()
     m_func_list = new kcl::RowSelectionGrid(this,
                                             ID_ExprBuilderFunctionList,
                                             wxDefaultPosition,
-                                            wxSize(145,30),
+                                            wxSize(FromDIP(145), FromDIP(30)),
                                             kcl::DEFAULT_BORDER,
                                             true, false);
     m_func_list->setOptionState(kcl::Grid::optColumnResize |
@@ -758,7 +758,7 @@ void ExprBuilderPanel::construct()
     }
     
     // create column list
-    m_col_list = new FieldListControl(this, ID_ExprBuilderFieldListCtrl, wxDefaultPosition, wxSize(140,30));
+    m_col_list = new FieldListControl(this, ID_ExprBuilderFieldListCtrl, wxDefaultPosition, FromDIP(wxSize(140,30)));
     m_col_list->setDragFormat(wxT("exprbuilder_fieldlist"));
     m_col_list->sigFieldDblClicked.connect(this, &ExprBuilderPanel::onColumnActivated);
     
@@ -772,9 +772,9 @@ void ExprBuilderPanel::construct()
     // create bottom sizer
     wxBoxSizer* bottom_sizer = new wxBoxSizer(wxHORIZONTAL);
     bottom_sizer->Add(m_func_list, 0, wxEXPAND);
-    bottom_sizer->Add(m_col_list, 1, wxEXPAND | wxLEFT, 8);
-    bottom_sizer->Add(button_sizer, 0, wxEXPAND | wxLEFT, 8);
-    bottom_sizer->SetItemMinSize(m_func_list, 150, 1);
+    bottom_sizer->Add(m_col_list, 1, wxEXPAND | wxLEFT, FromDIP(8));
+    bottom_sizer->Add(button_sizer, 0, wxEXPAND | wxLEFT, FromDIP(8));
+    bottom_sizer->SetItemMinSize(m_func_list, FromDIP(150), FromDIP(1));
 
     // create helper sizer
     
@@ -789,7 +789,7 @@ void ExprBuilderPanel::construct()
 
     m_helper_sizer = new wxBoxSizer(wxHORIZONTAL);
     m_helper_sizer->Add(m_func_syntax_label, 0, wxALIGN_CENTER);
-    m_helper_sizer->AddSpacer(10);
+    m_helper_sizer->AddSpacer(FromDIP(10));
     m_helper_sizer->Add(m_learn_more_hyperlink, 0, wxALIGN_CENTER);
     m_helper_sizer->AddStretchSpacer();
 
@@ -799,8 +799,8 @@ void ExprBuilderPanel::construct()
     ok_cancel_sizer->AddButton(m_ok_button);
     ok_cancel_sizer->AddButton(m_cancel_button);
     ok_cancel_sizer->Realize();
-    ok_cancel_sizer->Prepend(m_helper_sizer, 1, wxEXPAND | wxLEFT, 8);
-    ok_cancel_sizer->AddSpacer(5);
+    ok_cancel_sizer->Prepend(m_helper_sizer, 1, wxEXPAND | wxLEFT, FromDIP(8));
+    ok_cancel_sizer->AddSpacer(FromDIP(5));
     
     // this code is necessary to get the sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
@@ -809,11 +809,22 @@ void ExprBuilderPanel::construct()
     
     // create main sizer
     m_main_sizer = new wxBoxSizer(wxVERTICAL);
-    m_main_sizer->AddSpacer(8);
-    m_main_sizer->Add(m_expr_text, 1, wxEXPAND | wxLEFT | wxRIGHT, 8);
-    m_main_sizer->AddSpacer(8);
-    m_main_sizer->Add(bottom_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 8);
+    m_main_sizer->AddSpacer(FromDIP(8));
+    m_main_sizer->Add(m_expr_text, 1, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
+    m_main_sizer->AddSpacer(FromDIP(8));
+    m_main_sizer->Add(bottom_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
     m_main_sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
+
+    {
+        wxClientDC dc(m_expr_text);
+        wxSize s1 = m_expr_text->GetSize();
+        wxSize s2 = m_expr_text->GetTextExtent("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        wxSize s3 = dc.GetMultiLineTextExtent("X\nX\nX\nX\nX\n");
+        s1.x = wxMax(s1.x, s2.x);
+        s1.y = wxMax(s1.y, s3.y);
+        m_main_sizer->SetItemMinSize(m_expr_text, s1);
+    }
+
     SetSizer(m_main_sizer);
 
     // refresh the row selection grid

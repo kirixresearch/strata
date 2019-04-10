@@ -7924,8 +7924,7 @@ void TableDoc::showReplacePanel(const wxString& def_condition, const wxString& d
             site = m_frame->createSite(panel,
                                        sitetypeModeless |
                                        siteHidden,
-                                       -1, -1, 560, 340);
-            site->setMinSize(560,340);
+                                       -1, -1, -1, -1);
             site->setName(wxT("UpdatePanel"));
         }
 

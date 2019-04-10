@@ -82,6 +82,12 @@ bool ReplaceRowsPanel::initDoc(IFramePtr frame,
     replace_sizer->AddSpacer(5);
     replace_sizer->Add(m_valid_control, 0, wxALIGN_CENTER);
 
+    wxSize s1 = m_replace_text->GetSize();
+    wxSize s2 = m_replace_text->GetTextExtent("XXXXXXXXXXXXXXX");
+    s1.x = wxMax(s1.x, s2.x);
+    replace_sizer->SetItemMinSize(m_replace_text, s1);
+
+
     m_expr_panel = new ExprBuilderPanel;
     m_expr_panel->setTypeOnly(xd::typeBoolean);
     m_expr_panel->setEmptyOk(true);
@@ -123,6 +129,10 @@ bool ReplaceRowsPanel::initDoc(IFramePtr frame,
 
 
     m_doc_site->setCaption(caption);
+
+    wxSize min_client_size = main_sizer->GetMinSize();
+    m_doc_site->getContainerWindow()->SetClientSize(min_client_size);
+    m_doc_site->getContainerWindow()->SetMinClientSize(min_client_size);
 
 
     // validate the expression builder and panel
