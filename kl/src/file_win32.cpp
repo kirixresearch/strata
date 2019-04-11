@@ -191,6 +191,14 @@ xf_file_t xf_open(const std::wstring& filename,
                 NULL, dwDisposition, FILE_ATTRIBUTE_NORMAL | opt, NULL);
 #endif
 
+    #ifdef _DEBUG
+    if (h == INVALID_HANDLE_VALUE)
+    {
+        std::wstring last_error_msg = xf_get_win32_error_msg();
+        int i = 5;
+    }
+    #endif
+
     return (h != INVALID_HANDLE_VALUE ? h : NULL);
 }
 

@@ -141,9 +141,20 @@ PkgStreamReader::~PkgStreamReader()
 
 bool PkgStreamReader::reopen()
 {
-    xf_file_t f = xf_open(m_pkgfile->m_filename, xfOpen, xfRead, xfShareRead);
+    xf_file_t f = xf_open(m_pkgfile->m_filename, xfOpen, xfReadWrite, xfShareReadWrite);
     if (!f)
-        return false;
+    {
+        f = xf_open(m_pkgfile->m_filename, xfOpen, xfRead, xfShareRead);
+        if (!f)
+        {
+            return false;
+        }
+    }
+
+    if (m_file && m_file != m_pkgfile->m_file)
+    {
+        xf_close(m_file);
+    }
     m_file = f;
     return true;
 }
@@ -502,7 +513,10 @@ bool PkgFile::open(const std::wstring& filename)
     
     // couldn't find package file signature, bail out
     if (buf2int(header+0) != 0xffaa0011)
+    {
+        delete[] header;
         return false;
+    }
     
     // get offset of first directory block
     m_version = buf2int(header+4);
