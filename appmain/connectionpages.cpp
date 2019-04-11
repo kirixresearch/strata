@@ -155,6 +155,7 @@ PathSelectionPage::PathSelectionPage(kcl::Wizard* parent,
     m_filetype_sizer = new wxBoxSizer(wxHORIZONTAL);
     m_filetype_sizer->Add(50,23);
     m_filetype_sizer->Add(m_filetype_label, 0, wxALIGN_CENTER);
+    m_filetype_sizer->AddSpacer(FromDIP(10));
     m_filetype_sizer->Add(m_filetype_choice, 1, wxALIGN_CENTER);
     m_filetype_sizer->Add(50,23);
 
@@ -177,6 +178,7 @@ PathSelectionPage::PathSelectionPage(kcl::Wizard* parent,
     m_path_sizer = new wxBoxSizer(wxHORIZONTAL);
     m_path_sizer->Add(50,23);
     m_path_sizer->Add(m_path_label, 0, wxALIGN_CENTER);
+    m_path_sizer->AddSpacer(FromDIP(10));
     m_path_sizer->Add(m_path_textctrl, 1, wxALIGN_CENTER);
     m_path_sizer->AddSpacer(5);
     m_path_sizer->Add(browse_button);
@@ -202,6 +204,7 @@ PathSelectionPage::PathSelectionPage(kcl::Wizard* parent,
     m_filter_sizer = new wxBoxSizer(wxHORIZONTAL);
     m_filter_sizer->Add(50,23);
     m_filter_sizer->Add(m_filter_label, 0, wxALIGN_CENTER);
+    m_filter_sizer->AddSpacer(FromDIP(10));
     m_filter_sizer->Add(m_filter_choice, 1, wxALIGN_CENTER);
     m_filter_sizer->Add(50,23);
 
@@ -221,6 +224,7 @@ PathSelectionPage::PathSelectionPage(kcl::Wizard* parent,
     m_version_sizer = new wxBoxSizer(wxHORIZONTAL);
     m_version_sizer->Add(50,23);
     m_version_sizer->Add(m_version_label, 0, wxALIGN_CENTER);
+    m_version_sizer->AddSpacer(FromDIP(10));
     m_version_sizer->Add(m_version_choice, 1, wxALIGN_CENTER);
     m_version_sizer->Add(50,23);
 
@@ -630,7 +634,6 @@ void PathSelectionPage::resizeLabelWidths()
                 m_filetype_label->IsShown() ? m_filetype_label : NULL,
                 m_filter_label->IsShown()   ? m_filter_label   : NULL,
                 m_version_label->IsShown()  ? m_version_label  : NULL);
-    label_size.x += 10;
 
     m_path_sizer->SetItemMinSize(m_path_label, label_size);
     m_filetype_sizer->SetItemMinSize(m_filetype_label, label_size);
