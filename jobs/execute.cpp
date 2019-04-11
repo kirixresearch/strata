@@ -92,7 +92,12 @@ int ExecuteJob::runJob()
         flags = xd::sqlAlwaysCopy;
 
     xcm::IObjectPtr result;
-    m_db->execute(sql, flags, result, xd_job);
+    if (!m_db->execute(sql, flags, result, xd_job))
+    {
+        m_job_info->setState(jobStateFailed);
+        return 0;
+    }
+
     setResultObject(result);
 
     if (xd_job->getCancelled())
