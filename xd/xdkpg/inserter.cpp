@@ -215,8 +215,8 @@ bool KpgRowInserter::startInsert(const std::wstring& col_list)
 
             total_phys_width += width;
 
-            if (colinfo.nulls_allowed)
-                total_phys_width++;
+            //if (colinfo.nulls_allowed)
+            //    total_phys_width++;
         }
     }
 
