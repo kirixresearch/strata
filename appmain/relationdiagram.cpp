@@ -2842,7 +2842,7 @@ void RelationDiagram::onSize(wxSizeEvent& evt)
     // window is reduced in size
     
     m_memdc.SelectObject(wxNullBitmap);
-    m_bmp.Create(cli_width, cli_height, -1);
+    m_bmp.Create(cli_width+1, cli_height+1, -1);
     m_memdc.SelectObject(m_bmp);
 #else
     if (!m_bmp.Ok() ||
@@ -2850,7 +2850,7 @@ void RelationDiagram::onSize(wxSizeEvent& evt)
         cli_height > m_bmp.GetHeight())
     {
         m_memdc.SelectObject(wxNullBitmap);
-        m_bmp.Create(cli_width, cli_height, -1);
+        m_bmp.Create(cli_width+1, cli_height+1, -1);
         m_memdc.SelectObject(m_bmp);
     }
 #endif
