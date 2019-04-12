@@ -1091,6 +1091,11 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
         output_struct.createColumn(info);
     }
 
+    if (db->getFileExist(info->output))
+    {
+        db->deleteFile(info->output);
+    }
+
     if (!db->createTable(info->output, output_struct))
         return false;
 
