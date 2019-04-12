@@ -398,6 +398,12 @@ void RemoveDupRecWizard::onWizardFinished(kcl::Wizard* wizard)
     if (m_info->m_output_path.Length() > 0)
     {
         params["output"].setString(towstr(m_info->m_output_path));
+
+        xd::IDatabasePtr db = g_app->getDatabase();
+        if (db)
+        {
+            db->deleteFile(towstr(m_info->m_output_path));
+        }
     }
      else
     {
