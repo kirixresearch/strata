@@ -137,6 +137,17 @@ jobs::IJobPtr QueryTemplate::execute(int site_id)
     job->setExtraValue(L"appmain.siteid", kl::itowstring(site_id));
 
 
+    if (m_output_path.length() > 0)
+    {
+        xd::IDatabasePtr db = g_app->getDatabase();
+        if (db)
+        {
+            // overwriting is the standard for query templates
+            db->deleteFile(towstr(m_output_path));
+        }
+    }
+
+
     // run the job
     kl::JsonNode params;
     params["command"].setString(towstr(getQueryString()));
