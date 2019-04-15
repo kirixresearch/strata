@@ -256,7 +256,7 @@ wxString QueryTemplate::getQueryString()
         for (join_it = all_joins.begin();
              join_it != all_joins.end(); ++join_it)
         {
-            if (isSamePath(towstr(join_it->right_path), towstr(tbl_it->path)) == 0)
+            if (isSamePath(towstr(join_it->right_path), towstr(tbl_it->path)))
             {
                 found = true;
                 break;
