@@ -909,7 +909,7 @@ jobs::IJobPtr ImportTemplate::createJob()
             object["input"] = it->input_tablename;
             object["output"] = it->output_tablename;
 
-            object["overwrite"].setBoolean(true);
+            object["overwrite"].setBoolean(!it->append);
 
             if (m_ii.type == dbtypeDelimitedText)
             {
