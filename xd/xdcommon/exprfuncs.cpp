@@ -307,6 +307,12 @@ void func_round(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_substr(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     const wchar_t* str = env->m_eval_params[0]->getString();
     int str_len = wcslen(str);
     int p1 = env->m_eval_params[1]->getInteger();
@@ -390,6 +396,12 @@ void func_iif(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_ltrim(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     const wchar_t* p0 = env->m_eval_params[0]->getString();
     const wchar_t* p1 = NULL;
     
@@ -454,6 +466,12 @@ int internal_rtrim(wchar_t* result, const wchar_t* str, const wchar_t* trim_char
 
 void func_rtrim(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     const wchar_t* p0 = env->m_eval_params[0]->getString();
     const wchar_t* p1 = NULL;
 
@@ -486,6 +504,12 @@ void func_chr(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_trim(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     const wchar_t* p0 = env->m_eval_params[0]->getString();
     const wchar_t* p1 = NULL;
 
@@ -522,6 +546,12 @@ void func_trim(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_lpad(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     wchar_t* str = env->m_eval_params[0]->getString();
     int fill_len = env->m_eval_params[1]->getInteger();
 
@@ -568,6 +598,12 @@ void func_lpad(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_rpad(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     wchar_t* str = env->m_eval_params[0]->getString();
     int fill_len = env->m_eval_params[1]->getInteger();
 
@@ -939,6 +975,12 @@ void func_max(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_int(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     double d = env->m_eval_params[0]->getDouble();
 
     if (d > 0)
@@ -956,6 +998,12 @@ void func_int(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_strpart(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     wchar_t* str = env->m_eval_params[0]->getString();
     int target = env->m_eval_params[1]->getInteger();
     const wchar_t* delimiters = L" ";
@@ -1045,6 +1093,12 @@ void func_strpart(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_reverse(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     wchar_t* str = env->m_eval_params[0]->getString();
     int str_len = env->m_eval_params[0]->getDataLen();
 
@@ -1964,6 +2018,12 @@ void func_tochar(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_lower(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     wchar_t* p0 = env->m_eval_params[0]->getString();
     wchar_t* dest;
 
@@ -1981,6 +2041,12 @@ void func_lower(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_upper(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     wchar_t* p0 = env->m_eval_params[0]->getString();
     wchar_t* dest;
 
