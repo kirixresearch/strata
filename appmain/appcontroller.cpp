@@ -6906,7 +6906,7 @@ bool AppController::doReadOnlyCheck()
 {
     if (g_app->isDatabaseReadOnly())
     {
-        int result = appMessageBox(_("This project is currently set to 'read-only' status to protect your data from unintentional changes.  Would you like\nto temporarily remove the 'read-only' status to perform this operation?"),
+        int result = appMessageBox(_("This project is currently set to 'read-only' status to protect your data from unintentional changes.  Would you like to temporarily remove the 'read-only' status to perform this operation?"),
                                         APPLICATION_NAME,
                                         wxYES_NO | wxICON_QUESTION | wxCENTER);
         if (result != wxYES)
