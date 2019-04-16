@@ -306,6 +306,12 @@ public:
         main_sizer->Add(laf_sizer, 0, wxEXPAND);
         main_sizer->AddSpacer(15);
         main_sizer->Add(m_check_for_updates, 0, wxLEFT, 10);
+
+        if (wxString(APP_UPDATE_URL).Length() == 0)
+        {
+            main_sizer->Hide(m_check_for_updates);
+        }
+
         SetSizer(main_sizer);
         Layout();
         
