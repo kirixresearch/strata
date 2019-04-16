@@ -25,7 +25,7 @@
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
-
+#include "../xdcommon/jobinfo.h"
 
 const wchar_t* oracle_keywords =
                 L"ACCESS,ADD,ALL,ALTER,AND,ANY,ARRAYLEN,AS,ASC,AUDIT,"
@@ -434,7 +434,8 @@ OracleDatabase::OracleDatabase()
     m_svc = (OCISvcCtx*)0;
     m_err = (OCIError*)0;
     
-    
+    m_last_job = 0;
+
     std::wstring kws;
     kws += oracle_keywords;
     kws += L",";
@@ -754,7 +755,16 @@ bool OracleDatabase::cleanup()
 
 xd::IJobPtr OracleDatabase::createJob()
 {
-    return xcm::null;
+    KL_AUTO_LOCK(m_obj_mutex);
+
+    m_last_job++;
+
+    JobInfo* job = new JobInfo;
+    job->setJobId(m_last_job);
+    job->ref();
+    m_jobs.push_back(job);
+
+    return static_cast<xd::IJob*>(job);
 }
 
 xd::IDatabasePtr OracleDatabase::getMountDatabase(const std::wstring& path)

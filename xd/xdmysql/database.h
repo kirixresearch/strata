@@ -29,6 +29,7 @@ std::wstring mysqlGetTablenameFromPath(const std::wstring& path);
 std::wstring mysqlQuoteIdentifier(const std::wstring& str);
 std::wstring mysqlQuoteIdentifierIfNecessary(const std::wstring& str);
 
+class JobInfo;
 
 class MysqlDatabase : public xd::IDatabase
 {
@@ -127,6 +128,10 @@ public:
 
 private:
 
+    kl::mutex m_obj_mutex;
+    int m_last_job;
+    std::vector<JobInfo*> m_jobs;
+
     xd::IAttributesPtr m_attr;
     
     MYSQL* m_data;
@@ -141,6 +146,8 @@ private:
     std::wstring m_password;
     
     ThreadErrorInfo m_error;
+
+
 
 };
 

@@ -29,6 +29,7 @@
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/util.h"
 #include "../xdcommonsql/xdcommonsql.h"
+#include "../xdcommon/jobinfo.h"
 #include "database.h"
 #include "iterator.h"
 #include "inserter.h"
@@ -314,6 +315,8 @@ MysqlDatabase::MysqlDatabase()
     m_username = L"";
     m_password = L"";
 
+    m_last_job = 0;
+
     // illegal characters in a table name include \/. and characters illegal
     // in filenames, the superset of which includes: \/:*?<>|
     
@@ -522,7 +525,16 @@ bool MysqlDatabase::storeObject(xcm::IObject* obj, const std::wstring& ofs_path)
 
 xd::IJobPtr MysqlDatabase::createJob()
 {
-    return xcm::null;
+    KL_AUTO_LOCK(m_obj_mutex);
+
+    m_last_job++;
+
+    JobInfo* job = new JobInfo;
+    job->setJobId(m_last_job);
+    job->ref();
+    m_jobs.push_back(job);
+
+    return static_cast<xd::IJob*>(job);
 }
 
 xd::IJobPtr MysqlDatabase::getJob(xd::jobid_t job_id)
