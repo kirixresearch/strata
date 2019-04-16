@@ -116,7 +116,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;shlwapi.lib;../xdcommon/lib/xdcommonud.lib;../xdcommonsql/lib/xdcommonsqlud.lib;../../kscript/lib/kscriptud.lib;../../kl/lib/klud.lib;../../supp/libmariadb/libmariadb/Debug/mariadbclient.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;shlwapi.lib;../xdcommon/lib/xdcommonud.lib;../xdcommonsql/lib/xdcommonsqlud.lib;../../kscript/lib/kscriptud.lib;../../kl/lib/klud.lib;../../supp/libmariadb/libmariadb/Debug/libmariadb.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\DebugUnicode/xdmysql.pdb</ProgramDatabaseFile>
@@ -160,7 +160,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;shlwapi.lib;../xdcommon/lib/xdcommonud.lib;../xdcommonsql/lib/xdcommonsqlud.lib;../../kscript/lib/kscriptud.lib;../../kl/lib/klud.lib;../../supp/libmariadb/libmariadb/Debug/mariadbclient.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;shlwapi.lib;../xdcommon/lib/xdcommonud.lib;../xdcommonsql/lib/xdcommonsqlud.lib;../../kscript/lib/kscriptud.lib;../../kl/lib/klud.lib;../../supp/libmariadb/libmariadb/Debug/libmariadb.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\DebugUnicode/xdmysql.pdb</ProgramDatabaseFile>
@@ -205,7 +205,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;shlwapi.lib;../xdcommon/lib/xdcommonu.lib;../xdcommonsql/lib/xdcommonsqlu.lib;../../kscript/lib/kscriptu.lib;../../kl/lib/klu.lib;../../supp/libmariadb/libmariadb/Release/mariadbclient.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;shlwapi.lib;../xdcommon/lib/xdcommonu.lib;../xdcommonsql/lib/xdcommonsqlu.lib;../../kscript/lib/kscriptu.lib;../../kl/lib/klu.lib;../../supp/libmariadb/libmariadb/Release/libmariadb.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\ReleaseUnicode/xdmysql.pdb</ProgramDatabaseFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -249,7 +249,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;shlwapi.lib;../xdcommon/lib/xdcommonu.lib;../xdcommonsql/lib/xdcommonsqlu.lib;../../kscript/lib/kscriptu.lib;../../kl/lib/klu.lib;../../supp/libmariadb/libmariadb/Release/mariadbclient.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;shlwapi.lib;../xdcommon/lib/xdcommonu.lib;../xdcommonsql/lib/xdcommonsqlu.lib;../../kscript/lib/kscriptu.lib;../../kl/lib/klu.lib;../../supp/libmariadb/libmariadb/Release/libmariadb.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\ReleaseUnicode/xdmysql.pdb</ProgramDatabaseFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
