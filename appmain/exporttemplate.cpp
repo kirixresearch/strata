@@ -57,8 +57,8 @@ static void writeKpgMetadata(jobs::IJobPtr job)
     {
         kl::JsonNode object = params["objects"][i];
         
-        std::wstring source_path = object["source_path"];
-        std::wstring destination_path = object["destination_path"];
+        std::wstring source_path = object["input"];
+        std::wstring destination_path = object["output"];
 
         if (source_path.empty() || destination_path.empty())
             continue;
@@ -76,6 +76,8 @@ static void writeKpgMetadata(jobs::IJobPtr job)
         std::wstring json = model->toJson();
 
         // write resource to kpg
+        while (destination_path.substr(0, 1) == L"/")
+            destination_path = destination_path.substr(1);
         destination_path = L".resource/" + destination_path;
 
         writeStreamTextFile(kpg, destination_path, json);

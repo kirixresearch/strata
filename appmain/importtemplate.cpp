@@ -801,8 +801,8 @@ static void readKpgMetadata(jobs::IJobPtr job)
     {
         kl::JsonNode object = params["objects"][i];
 
-        std::wstring source_path = object["source_path"];
-        std::wstring destination_path = object["destination_path"];
+        std::wstring source_path = object["input"];
+        std::wstring destination_path = object["output"];
 
         if (source_path.empty() || destination_path.empty())
             continue;
@@ -815,6 +815,8 @@ static void readKpgMetadata(jobs::IJobPtr job)
 
 
         // read resource from kpg
+        while (source_path.substr(0,1) == L"/")
+            source_path = source_path.substr(1);
         source_path = L".resource/" + source_path;
 
         std::wstring json;
