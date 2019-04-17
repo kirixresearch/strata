@@ -104,7 +104,7 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
     
 
     // if a definition was specified, but the values are empty, specify defaults
-    if (m_def.delimiter.empty())
+    if (m_def.delimiter.empty() && m_def.determine_delimiters)
     {
         xd::FormatDefinition info;
         if (m_database->getFileFormat(url, m_file.getStream(), &info, true /* discover_delimiters */))

@@ -489,6 +489,7 @@ struct FormatDefinition
         encoding = encodingUndefined;
         header_row = true;
         determine_structure = false;
+        determine_delimiters = true;
         fixed_start_offset = 0;
         fixed_row_width = 0;
         fixed_line_delimited = false;
@@ -509,6 +510,7 @@ struct FormatDefinition
     std::wstring line_delimiter;
     bool header_row;
     bool determine_structure;
+    bool determine_delimiters;            // if true, the values of text_qualifier and line_delimiter will be automatically determined, IF they are blank
 
     // fixed length parameters (when format = formatFixedLengthText)
     int fixed_start_offset;
