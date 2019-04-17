@@ -436,8 +436,12 @@ xd::IFileInfoPtr KpgDatabase::getFileInfo(const std::wstring& path)
     }
      else
     {
-        folder = kl::beforeLast(path, L'/');
-        name = kl::afterLast(path, L'/');
+        //folder = kl::beforeLast(path, L'/');
+        //name = kl::afterLast(path, L'/');
+        folder = L"";
+        name = path;
+        while (name.substr(0,1) == L"/")
+            name = name.substr(1);
     }
     
     xd::IFileInfoEnumPtr files = getFolderInfo(folder);
