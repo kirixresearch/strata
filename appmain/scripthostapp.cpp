@@ -3070,20 +3070,17 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else if (type == L"delimited")
     {
-        std::wstring delimiters = L"";
-        std::wstring line_delimiters = L"";
-        std::wstring text_qualifiers = L"";
-        bool first_row_column_names = true;
-        std::vector<HostDataDefinitionField> fields;
-        
+        xd::FormatDefinition fd;
+        fd.format = xd::formatDelimitedText;
+
         if (info->getMemberExists(L"delimiters"))
-            delimiters = info->getMember(L"delimiters")->getString();
+            fd.delimiter = info->getMember(L"delimiters")->getString();
         if (info->getMemberExists(L"line_delimiters"))
-            line_delimiters = info->getMember(L"line_delimiters")->getString();
+            fd.line_delimiter = info->getMember(L"line_delimiters")->getString();
         if (info->getMemberExists(L"text_qualifiers"))
-            text_qualifiers = info->getMember(L"text_qualifiers")->getString();
+            fd.text_qualifier = info->getMember(L"text_qualifiers")->getString();
         if (info->getMemberExists(L"first_row_column_names"))
-            first_row_column_names = info->getMember(L"first_row_column_names")->getBoolean();
+            fd.header_row = info->getMember(L"first_row_column_names")->getBoolean();
         
         if (info->getMemberExists(L"fields") && info->getMember(L"fields")->isObject())
         {
@@ -3094,15 +3091,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
                 kscript::Value* mval = fields_obj->getRawMemberByIdx(i);
                 if (mval && mval->isObject())
                 {
-                    HostDataDefinitionField field;
-                    field.name = L"";
-                    field.type = 0;
-                    field.width = 0;
-                    field.scale = 0;
-                    
-                    int source_offset = 0, source_width = 0;
-                    std::wstring name;
-                    int type = 0, width = 0, scale = 0;
+                    xd::ColumnInfo field;
 
                     if (mval->getMemberExists(L"name"))
                         field.name = mval->getMember(L"name")->getString();
@@ -3113,9 +3102,9 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
                     if (mval->getMemberExists(L"scale"))
                         field.scale = mval->getMember(L"scale")->getInteger();
                     if (mval->getMemberExists(L"formula"))
-                        field.formula = mval->getMember(L"formula")->getString();
+                        field.expression = mval->getMember(L"formula")->getString();
 
-                    fields.push_back(field);
+                    fd.columns.push_back(field);
                 }
             }
         }
@@ -3134,6 +3123,9 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
         {
             set_path = filename;
         }
+
+
+        g_app->getDatabase()->assignDefinition(set_path, fd);
         
         /*
         TODO: implement

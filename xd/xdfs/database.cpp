@@ -74,10 +74,17 @@ const wchar_t* xdfs_invalid_column_chars =
                              L"*|!@$&^*:\"<>()[]{}?\\:;'`-+=,./\x00\x09\x0A\x0B\x0C\x0D\xFF\t\n";
 
 
+std::wstring g_process_random_string;
+
 // FsDatabase class implementation
 
 FsDatabase::FsDatabase()
 {
+    if (g_process_random_string.length() == 0)
+    {
+        g_process_random_string = kl::getUniqueString();
+    }
+
     m_last_job = 0;
     m_relations_filetime = 0;
 
@@ -125,6 +132,11 @@ FsDatabase::~FsDatabase()
     std::vector<JobInfo*>::iterator jit;
     for (jit = m_jobs.begin(); jit != m_jobs.end(); ++jit)
         (*jit)->unref();
+
+    for (auto file : m_files_to_delete)
+    {
+        xf_remove(file);
+    }
 }
 
 
@@ -3340,4 +3352,46 @@ xd::ColumnInfo FsDatabase::validateExpression(const std::wstring& expression, co
     ret.type = type;
     return ret;
 }
+
+
+bool FsDatabase::assignDefinition(const std::wstring& _path, const xd::FormatDefinition& fd)
+{
+    std::wstring path = makeFullPath(_path);
+    path = xf_get_network_path(path);
+
+#ifdef WIN32
+    // win32's filenames are case-insensitive, so
+    // when generating the set id, make the whole filename
+    // lowercase to avoid multiple id's for the same file
+    kl::makeLower(path);
+#endif
+
+    std::wstring file_id = kl::md5str(L"xdfs:" + g_process_random_string + L":" + path);
+    std::wstring definition_path = xf_get_temp_path() + xf_path_separator_wchar + L"xdfs-" + file_id + L".xddef";
+
+    m_files_to_delete.push_back(definition_path);
+
+    return saveDefinitionToFile(definition_path, fd);
+}
+
+
+bool FsDatabase::loadAssignedDefinition(const std::wstring& _path, xd::FormatDefinition* fd)
+{
+    std::wstring path = makeFullPath(_path);
+    path = xf_get_network_path(path);
+
+#ifdef WIN32
+    // win32's filenames are case-insensitive, so
+    // when generating the set id, make the whole filename
+    // lowercase to avoid multiple id's for the same file
+    kl::makeLower(path);
+#endif
+
+    std::wstring file_id = kl::md5str(L"xdfs:" + g_process_random_string + L":" + path);
+    std::wstring definition_path = xf_get_temp_path() + xf_path_separator_wchar + L"xdfs-" + file_id + L".xddef";
+
+    return loadDefinitionFromFile(definition_path, fd);
+}
+
+
 

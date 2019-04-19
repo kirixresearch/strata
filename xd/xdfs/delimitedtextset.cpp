@@ -56,6 +56,11 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
 
     if (m_def.format == xd::formatDefault)
     {
+        m_database->loadAssignedDefinition(m_file_url, &m_def);
+    }
+
+    if (m_def.format == xd::formatDefault)
+    {
         // there is no specified configuration about this file, so we have to
         // run logic that tries to determine the best way to open this file
         

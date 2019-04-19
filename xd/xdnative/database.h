@@ -204,6 +204,7 @@ public:
                  xd::IJob* job);
 
     xd::ColumnInfo validateExpression(const std::wstring& expr, const xd::Structure& structure = xd::Structure(), const std::wstring& path_context = L"");
+    bool assignDefinition(const std::wstring& path, const xd::FormatDefinition& fd);
 
 private:
 
