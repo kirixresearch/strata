@@ -55,6 +55,10 @@ public:
     void releaseAggResultObject(CommonAggregateResult* agg_res);
     void recalcAggResults();
 
+protected:
+
+    virtual void onParserInit(kscript::ExprParser* parser) {}
+
 private:
 
     static bool script_parse_hook(kscript::ExprParseHookInfo& hook_info);

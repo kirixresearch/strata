@@ -414,6 +414,35 @@ xd::Structure DelimitedTextSet::getStructure()
     return s;
 }
 
+xd::Structure DelimitedTextSet::getStructureWithTransformations()
+{
+    xd::Structure s;
+
+    std::vector<xd::ColumnInfo>::iterator it, it_end = m_def.columns.end();
+    int counter = 0;
+    for (it = m_def.columns.begin(); it != it_end; ++it)
+    {
+        xd::ColumnInfo col;
+
+        col.name = it->name;
+        col.type = it->type;
+        col.width = it->width;
+        col.scale = it->scale;
+        col.source_offset = 0;
+        col.calculated = false;
+        col.column_ordinal = counter++;
+        col.table_ordinal = 0;
+        col.nulls_allowed = it->nulls_allowed;
+        col.expression = it->expression;
+
+        s.createColumn(col);
+    }
+
+    XdfsBaseSet::appendCalcFields(s);
+    return s;
+}
+
+
 bool DelimitedTextSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
 {
     bool done_flag = false;

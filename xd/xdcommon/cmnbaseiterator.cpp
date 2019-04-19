@@ -1077,6 +1077,8 @@ kscript::ExprParser* CommonBaseIterator::parse(const std::wstring& expr)
                          &CommonBaseIterator::script_parse_hook,
                          (void*)&info);
     
+    onParserInit(parser);
+
     if (!parser->parse(expr))
     {
         delete parser;
