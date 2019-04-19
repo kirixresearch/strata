@@ -517,7 +517,7 @@ bool DelimitedTextIterator::modifyStructure(const xd::StructureModify& mod_param
 
 void func_rawvalue(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
-    retval->setString(((DelimitedTextIterator*)param)->m_file.getString(env->m_eval_params[0]->getInteger()));
+    retval->setString(((DelimitedTextIterator*)param)->m_file.getString(env->m_eval_params[0]->getInteger() - 1));
 }
 
 void DelimitedTextIterator::onParserInit(kscript::ExprParser* parser)
