@@ -2893,17 +2893,21 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
     
     if (type == L"fixed")
     {
+        xd::FormatDefinition fd;
+        fd.format = xd::formatDelimitedText;
+
+
         int start_offset = 0;
         int row_width = 0;
         std::wstring line_delimiters = L"";
         std::vector<HostDataDefinitionField> fields;
         
         if (info->getMemberExists(L"start_offset"))
-            start_offset = info->getMember(L"start_offset")->getInteger();
+            fd.fixed_start_offset = info->getMember(L"start_offset")->getInteger();
         if (info->getMemberExists(L"row_width"))
-            row_width = info->getMember(L"row_width")->getInteger();
+            fd.fixed_row_width = info->getMember(L"row_width")->getInteger();
         if (info->getMemberExists(L"line_delimiters"))
-            line_delimiters = info->getMember(L"line_delimiters")->getString();
+            fd.line_delimiter = info->getMember(L"line_delimiters")->getString();
             
         if (info->getMemberExists(L"fields") && info->getMember(L"fields")->isObject())
         {
@@ -2914,18 +2918,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
                 kscript::Value* mval = fields_obj->getRawMemberByIdx(i);
                 if (mval && mval->isObject())
                 {
-                    HostDataDefinitionField field;
-                    field.source_offset = 0;
-                    field.source_width = 0;
-                    field.source_encoding = 0;
-                    field.name = L"";
-                    field.type = 0;
-                    field.width = 0;
-                    field.scale = 0;
-                    
-                    int source_offset = 0, source_width = 0;
-                    std::wstring name;
-                    int type = 0, width = 0, scale = 0;
+                    xd::ColumnInfo field;
 
                     if (mval->getMemberExists(L"source_offset"))
                         field.source_offset = mval->getMember(L"source_offset")->getInteger();
@@ -2942,7 +2935,9 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
                     if (mval->getMemberExists(L"scale"))
                         field.scale = mval->getMember(L"scale")->getInteger();
                     
-                    
+                    if (mval->getMemberExists(L"formula"))
+                        field.expression = mval->getMember(L"formula")->getString();
+                    /*
                     // get source name; if there's no source name, use the destination name
                     if (mval->getMemberExists(L"source_name"))
                         field.source_name = mval->getMember(L"source_name")->getString();
@@ -2951,12 +2946,13 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
 
                     // get formula; if there's no formula, use the source name
                     if (mval->getMemberExists(L"formula"))
-                        field.formula = mval->getMember(L"formula")->getString();
+                        field.expression = mval->getMember(L"formula")->getString();
                          else
-                        field.formula = field.source_name;
+                        field.expression = field.source_name;
                     kl::replaceStrNoCase(field.formula, L"$SRCFIELD", field.source_name);
+                    */
 
-                    fields.push_back(field);
+                    fd.columns.push_back(field);
                 }
             }
 
@@ -2976,94 +2972,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
                 set_path = filename;
             }
             
-            /*
-            // TODO: implement
-
-            xd::IFixedLengthDefinitionPtr set;
-            set = g_app->getDatabase()->openSetEx(set_path, xd::formatFixedLengthText);
-            if (!set)
-                return;
-            
-            
-            set->setRowWidth(row_width);
-            set->setBeginningSkipCharacterCount(start_offset);
-            
-            // FIXME: the xd interface needs to be fixed to
-            // accept an actual list of line delimiters; right now
-            // "\n" is assumed
-            if (line_delimiters.length() > 0)
-                set->setLineDelimited(true);
-                 else
-                set->setLineDelimited(false);
-            
-            
-            xd::Structure s;
-            size_t col_count;
-            std::vector<HostDataDefinitionField>::iterator it;
-
-            // delete all existing source fields
-            s = set->getSourceStructure();
-            col_count = s->getColumnCount();
-            for (i = 0; i < col_count; ++i)
-                s->deleteColumn(s->getColumnName(i));
-            set->modifySourceStructure(s, NULL);
-            
-            // delete all existing destination fields
-            s = set->getDestinationStructure();
-            col_count = s->getColumnCount();
-            for (i = 0; i < col_count; ++i)
-                s->deleteColumn(s->getColumnName(i));
-            set->modifyDestinationStructure(s, NULL);
-
-
-            //  add the source fields 
-            s = set->getSourceStructure();
-            for (it = fields.begin(); it != fields.end(); ++it)
-            {
-                xd::IColumnInfoPtr col = s->createColumn();
-                col->setName(it->source_name);
-                col->setOffset(it->source_offset);
-                col->setWidth(it->source_width);
-                if (it->source_encoding)
-                    col->setEncoding(it->source_encoding);
-            }
-            
-            
-            set->modifySourceStructure(s, NULL);
-
-
-            // add the destination fields
-            s = set->getDestinationStructure();
-            
-            // for some reason, the delimited set creates a default structure if
-            // there is none.  This may be right, but it screws up what we're trying
-            // to do.  So, delete the default structure.
-
-            col_count = s->getColumnCount();
-            for (i = 0; i < col_count; ++i)
-                s->deleteColumn(s->getColumnName(i));
-            
-            xd::Structure source_structure = set->getSourceStructure();
-            int idx = 0;
-            for (it = fields.begin(); it != fields.end(); ++it)
-            {
-                xd::IColumnInfoPtr col = s->createColumn();
-                col->setName(it->name);
-                col->setType(it->type);
-                col->setWidth(it->width);
-                col->setScale(it->scale);
-                col->setExpression(it->formula);
-                
-                if (it->formula.length() == 0 && idx < source_structure->getColumnCount())
-                    col->setExpression(source_structure->getColumnName(idx));
-                ++idx;
-            }
-            
-            set->modifyDestinationStructure(s, NULL);
-            set->saveConfiguration();
-
-            */
-
+            g_app->getDatabase()->assignDefinition(set_path, fd);
 
             retval->setBoolean(true);
         }
@@ -3074,7 +2983,10 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
         fd.format = xd::formatDelimitedText;
 
         if (info->getMemberExists(L"delimiters"))
+        {
             fd.delimiter = info->getMember(L"delimiters")->getString();
+            fd.determine_delimiters = false;
+        }
         if (info->getMemberExists(L"line_delimiters"))
             fd.line_delimiter = info->getMember(L"line_delimiters")->getString();
         if (info->getMemberExists(L"text_qualifiers"))
@@ -3124,95 +3036,9 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
             set_path = filename;
         }
 
-
         g_app->getDatabase()->assignDefinition(set_path, fd);
         
-        /*
-        TODO: implement
-
-        xd::IDelimitedTextSetPtr set;
-        set = g_app->getDatabase()->openSetEx(set_path, xd::formatDelimitedText);
-        if (set.isNull())
-        {
-            retval->setBoolean(false);
-            return;
-        }
-        
-        
-        set->setDelimiters(delimiters, false);
-        set->setLineDelimiters(line_delimiters, false);
-        set->setTextQualifier(text_qualifiers, false);
-        set->determineColumns(5000, NULL);
-        set->setFirstRowColumnNames(first_row_column_names);
-        
-        xd::Structure source_structure = set->getSourceStructure();
-        
-        xd::Structure s;
-        size_t i, col_count;
-        std::vector<HostDataDefinitionField>::iterator it;
-
-
-        // delete all existing destination fields
-        s = set->getDestinationStructure();
-        col_count = s->getColumnCount();
-        for (i = 0; i < col_count; ++i)
-            s->deleteColumn(s->getColumnName(i));
-        set->modifyDestinationStructure(s, NULL);
-
-
-        
-
-
-        // add the destination fields
-        s = set->getDestinationStructure();
-        
-        col_count = s->getColumnCount();
-        for (i = 0; i < col_count; ++i)
-            s->deleteColumn(s->getColumnName(i));
-
-        int idx = 0;
-        for (it = fields.begin(); it != fields.end(); ++it)
-        {
-            xd::IColumnInfoPtr col = s->createColumn();
-            col->setName(it->name);
-            col->setType(it->type);
-            col->setWidth(it->width);
-            col->setScale(it->scale);
-            
-            if (it->formula.length() == 0)
-            {
-                // no expression, simply take the corresponding source
-                // field (based on index)
-                col->setExpression(L"");
-                
-                if (idx < source_structure->getColumnCount())
-                {
-                    col->setExpression(source_structure->getColumnName(idx));
-                }
-            }
-             else
-            {
-                std::wstring formula = it->formula;
-                
-                if (idx < source_structure->getColumnCount())
-                {
-                    std::wstring src_field_name = source_structure->getColumnName(idx);
-                    formula = it->formula;
-                    kl::replaceStrNoCase(formula, L"$SRCFIELD", src_field_name);
-                }
-                        
-                col->setExpression(formula);
-            }
-            
-            ++idx;
-        }
-        
-        set->modifyDestinationStructure(s, NULL);
-        set->saveConfiguration();
-        */
-
         retval->setBoolean(true);
-        
     }
     
 }
