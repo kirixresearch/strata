@@ -56,6 +56,22 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
 
     if (m_def.format == xd::formatDefault)
     {
+        if (m_database->loadAssignedDefinition(m_file_url, &m_def))
+        {
+            int i = 1; // rawvalue() is 1-based
+            for (auto &col : m_def.columns)
+            {
+                if (col.expression.find(L"$SRCFIELD"))
+                {
+                    std::wstring replacement = kl::stdswprintf(L"rawvalue(%d)", i++);
+                    kl::replaceStr(col.expression, L"$SRCFIELD", replacement, true);
+                }
+            }
+        }
+    }
+
+    if (m_def.format == xd::formatDefault)
+    {
         // there is no specified configuration about this file, so we have to
         // run logic that tries to determine the best way to open this file
         
@@ -104,7 +120,7 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
     
 
     // if a definition was specified, but the values are empty, specify defaults
-    if (m_def.delimiter.empty())
+    if (m_def.delimiter.empty() && m_def.determine_delimiters)
     {
         xd::FormatDefinition info;
         if (m_database->getFileFormat(url, m_file.getStream(), &info, true /* discover_delimiters */))
@@ -408,6 +424,35 @@ xd::Structure DelimitedTextSet::getStructure()
     XdfsBaseSet::appendCalcFields(s);
     return s;
 }
+
+xd::Structure DelimitedTextSet::getStructureWithTransformations()
+{
+    xd::Structure s;
+
+    std::vector<xd::ColumnInfo>::iterator it, it_end = m_def.columns.end();
+    int counter = 0;
+    for (it = m_def.columns.begin(); it != it_end; ++it)
+    {
+        xd::ColumnInfo col;
+
+        col.name = it->name;
+        col.type = it->type;
+        col.width = it->width;
+        col.scale = it->scale;
+        col.source_offset = 0;
+        col.calculated = false;
+        col.column_ordinal = counter++;
+        col.table_ordinal = 0;
+        col.nulls_allowed = it->nulls_allowed;
+        col.expression = it->expression;
+
+        s.createColumn(col);
+    }
+
+    XdfsBaseSet::appendCalcFields(s);
+    return s;
+}
+
 
 bool DelimitedTextSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
 {

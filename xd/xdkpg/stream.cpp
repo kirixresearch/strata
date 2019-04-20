@@ -138,7 +138,14 @@ bool KpgStream::write(const void* buf,
         delete[] info_block;
     }
 
-    return m_writer->writeBlock(buf, (int)write_size, true);
+    bool res = m_writer->writeBlock(buf, (int)write_size, true);
+    if (res)
+    {
+        if (written_count)
+            *written_count = write_size;
+    }
+
+    return res;
 }
 
 

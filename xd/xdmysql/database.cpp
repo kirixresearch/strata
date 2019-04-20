@@ -26,9 +26,11 @@
 #include <kl/md5.h>
 #include <xd/xd.h>
 #include "../xdcommon/dbattr.h"
+#include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/util.h"
 #include "../xdcommonsql/xdcommonsql.h"
+#include "../xdcommon/jobinfo.h"
 #include "database.h"
 #include "iterator.h"
 #include "inserter.h"
@@ -314,6 +316,8 @@ MysqlDatabase::MysqlDatabase()
     m_username = L"";
     m_password = L"";
 
+    m_last_job = 0;
+
     // illegal characters in a table name include \/. and characters illegal
     // in filenames, the superset of which includes: \/:*?<>|
     
@@ -522,7 +526,16 @@ bool MysqlDatabase::storeObject(xcm::IObject* obj, const std::wstring& ofs_path)
 
 xd::IJobPtr MysqlDatabase::createJob()
 {
-    return xcm::null;
+    KL_AUTO_LOCK(m_obj_mutex);
+
+    m_last_job++;
+
+    JobInfo* job = new JobInfo;
+    job->setJobId(m_last_job);
+    job->ref();
+    m_jobs.push_back(job);
+
+    return static_cast<xd::IJob*>(job);
 }
 
 xd::IJobPtr MysqlDatabase::getJob(xd::jobid_t job_id)
@@ -564,7 +577,51 @@ bool MysqlDatabase::copyFile(const std::wstring& src_path, const std::wstring& d
 
 bool MysqlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
-    return false;
+    if (info->iter_input.isOk())
+    {
+        if (!info->append)
+        {
+            xd::Structure structure = info->iter_input->getStructure();
+            if (structure.isNull())
+                return false;
+
+            deleteFile(info->output);
+
+            xd::FormatDefinition fd = info->output_format;
+            fd.columns.clear();
+            int i, col_count = structure.getColumnCount();
+            for (i = 0; i < col_count; ++i)
+                fd.createColumn(structure.getColumnInfoByIdx(i));
+
+            if (!createTable(info->output, fd))
+                return false;
+        }
+
+        // iterator copy - use xdcmnInsert
+
+        xdcmnInsert(static_cast<xd::IDatabase*>(this), info->iter_input, info->output, info->copy_columns, info->where, info->limit, job);
+        return true;
+    }
+    else
+    {
+        bool success = true;
+
+        std::wstring intbl = getTablenameFromOfsPath(info->input);
+        std::wstring outtbl = getTablenameFromOfsPath(info->output);
+        std::wstring sql = L"create table %outtbl% as select * from %intbl%";
+        kl::replaceStr(sql, L"%intbl%", intbl);
+        kl::replaceStr(sql, L"%outtbl%", outtbl);
+
+        if (info->where.length() > 0)
+            sql += (L" where " + info->where);
+
+        if (info->order.length() > 0)
+            sql += (L" order by " + info->order);
+
+        xcm::IObjectPtr result_obj;
+        return execute(sql, 0, result_obj, NULL);
+    }
+
 }
 
 bool MysqlDatabase::deleteFile(const std::wstring& path)

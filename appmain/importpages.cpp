@@ -45,7 +45,7 @@ enum
 
 // -- utility functions --
 
-static void getAllSets(xd::IDatabasePtr db_ptr,
+static void getAllObjects(xd::IDatabasePtr db_ptr,
                        const wxString& path,
                        std::vector<wxString>& retval)
 {
@@ -74,9 +74,9 @@ static void getAllSets(xd::IDatabasePtr db_ptr,
             folder_path += "/";
 
             // recursively traverse this folder
-            getAllSets(db_ptr, folder_path, retval);
+            getAllObjects(db_ptr, folder_path, retval);
         }
-         else if (item_type == xd::filetypeTable)
+         else if (item_type == xd::filetypeTable || item_type == xd::filetypeStream)
         {
             wxString name = path;
             
@@ -411,7 +411,7 @@ void ImportTableSelectionPage::onPageChanged()
     // get a list of all items in the source database
     std::vector<wxString> info;
     std::vector<wxString>::iterator info_it;
-    getAllSets(conn->getDatabasePtr(), wxT("/"), info);
+    getAllObjects(conn->getDatabasePtr(), wxT("/"), info);
 
 
     // format oracle tables the way oracle users

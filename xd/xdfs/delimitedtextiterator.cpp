@@ -221,7 +221,7 @@ bool DelimitedTextIterator::refreshStructure()
 {
     m_fields.clear();
 
-    xd::Structure set_structure = m_set->getStructure();
+    xd::Structure set_structure = m_set->getStructureWithTransformations();
 
     // add fields from structure
     bool default_structure_visible = false;
@@ -514,6 +514,16 @@ bool DelimitedTextIterator::modifyStructure(const xd::StructureModify& mod_param
     return true;
 }
 
+
+void DelimitedTextIterator::func_rawvalue(kscript::ExprEnv* env, void* param, kscript::Value* retval)
+{
+    retval->setString(((DelimitedTextIterator*)param)->m_file.getString(env->m_eval_params[0]->getInteger() - 1));
+}
+
+void DelimitedTextIterator::onParserInit(kscript::ExprParser* parser)
+{
+    parser->addFunction(L"rawvalue", false, DelimitedTextIterator::func_rawvalue, false, L"s(i)", this);
+}
 
 
 xd::objhandle_t DelimitedTextIterator::getHandle(const std::wstring& expr)

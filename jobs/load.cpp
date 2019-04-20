@@ -202,6 +202,10 @@ int LoadJob::runJob()
                 if (format == L"delimited_text")
                 {
                     lo.query_params.format.format = xd::formatDelimitedText;
+                    if (format_node.childExists("delimiter"))
+                    {
+                        lo.query_params.format.determine_delimiters = false;
+                    }
                     lo.query_params.format.delimiter = format_node.getChild("delimiter").getString();
                     lo.query_params.format.text_qualifier = format_node.getChild("text_qualifier").getString();
                     lo.query_params.format.header_row = format_node.getChild("header_row").getBoolean();

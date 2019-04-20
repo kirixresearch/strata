@@ -24,8 +24,9 @@
 #include "set.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/dbattr.h"
+#include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/fileinfo.h"
-
+#include "../xdcommon/jobinfo.h"
 
 const wchar_t* oracle_keywords =
                 L"ACCESS,ADD,ALL,ALTER,AND,ANY,ARRAYLEN,AS,ASC,AUDIT,"
@@ -434,7 +435,8 @@ OracleDatabase::OracleDatabase()
     m_svc = (OCISvcCtx*)0;
     m_err = (OCIError*)0;
     
-    
+    m_last_job = 0;
+
     std::wstring kws;
     kws += oracle_keywords;
     kws += L",";
@@ -754,7 +756,16 @@ bool OracleDatabase::cleanup()
 
 xd::IJobPtr OracleDatabase::createJob()
 {
-    return xcm::null;
+    KL_AUTO_LOCK(m_obj_mutex);
+
+    m_last_job++;
+
+    JobInfo* job = new JobInfo;
+    job->setJobId(m_last_job);
+    job->ref();
+    m_jobs.push_back(job);
+
+    return static_cast<xd::IJob*>(job);
 }
 
 xd::IDatabasePtr OracleDatabase::getMountDatabase(const std::wstring& path)
@@ -810,7 +821,50 @@ bool OracleDatabase::copyFile(const std::wstring& src_path,
 
 bool OracleDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
-    return false;
+    if (info->iter_input.isOk())
+    {
+        if (!info->append)
+        {
+            xd::Structure structure = info->iter_input->getStructure();
+            if (structure.isNull())
+                return false;
+
+            deleteFile(info->output);
+
+            xd::FormatDefinition fd = info->output_format;
+            fd.columns.clear();
+            int i, col_count = structure.getColumnCount();
+            for (i = 0; i < col_count; ++i)
+                fd.createColumn(structure.getColumnInfoByIdx(i));
+
+            if (!createTable(info->output, fd))
+                return false;
+        }
+
+        // iterator copy - use xdcmnInsert
+
+        xdcmnInsert(static_cast<xd::IDatabase*>(this), info->iter_input, info->output, info->copy_columns, info->where, info->limit, job);
+        return true;
+    }
+    else
+    {
+        bool success = true;
+
+        std::wstring intbl = getTablenameFromOfsPath(info->input);
+        std::wstring outtbl = getTablenameFromOfsPath(info->output);
+        std::wstring sql = L"create table %outtbl% as select * from %intbl%";
+        kl::replaceStr(sql, L"%intbl%", intbl);
+        kl::replaceStr(sql, L"%outtbl%", outtbl);
+
+        if (info->where.length() > 0)
+            sql += (L" where " + info->where);
+
+        if (info->order.length() > 0)
+            sql += (L" order by " + info->order);
+
+        xcm::IObjectPtr result_obj;
+        return execute(sql, 0, result_obj, NULL);
+    }
 }
 
 bool OracleDatabase::deleteFile(const std::wstring& path)

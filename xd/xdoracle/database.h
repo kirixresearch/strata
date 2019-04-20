@@ -56,6 +56,7 @@ XCM_DECLARE_SMARTPTR(IOracleDatabase)
 
 
 
+class JobInfo;
 
 class OracleDatabase : public xd::IDatabase,
                        public IOracleDatabase
@@ -156,6 +157,10 @@ private:
     sword checkerr(OCIError* err, sword status);
     
 private:
+
+    kl::mutex m_obj_mutex;
+    int m_last_job;
+    std::vector<JobInfo*> m_jobs;
 
     xd::IAttributesPtr m_attr;
     

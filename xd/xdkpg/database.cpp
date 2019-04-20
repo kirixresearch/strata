@@ -436,8 +436,12 @@ xd::IFileInfoPtr KpgDatabase::getFileInfo(const std::wstring& path)
     }
      else
     {
-        folder = kl::beforeLast(path, L'/');
-        name = kl::afterLast(path, L'/');
+        //folder = kl::beforeLast(path, L'/');
+        //name = kl::afterLast(path, L'/');
+        folder = L"";
+        name = path;
+        while (name.substr(0,1) == L"/")
+            name = name.substr(1);
     }
     
     xd::IFileInfoEnumPtr files = getFolderInfo(folder);
@@ -489,10 +493,13 @@ xd::IFileInfoEnumPtr KpgDatabase::getFolderInfo(const std::wstring& path)
                     if (!info.parse(stream_info))
                         continue;
                     std::wstring object_type = info.getProperty(L"type").value;
+                    std::wstring mime_type = info.getChild(L"mime_type").getNodeValue();
 
                     xdcommon::FileInfo* f = new xdcommon::FileInfo;
                     f->name = entry.stream_name;
                     f->type = (object_type == L"stream" ? xd::filetypeStream : xd::filetypeTable);
+                    if (mime_type.length() > 0)
+                        f->mime_type = mime_type;
                     f->object_id = kl::md5str(L"xdkpg:" + lower_path + L":" + lower_stream);
 
                     retval->append(static_cast<xd::IFileInfo*>(f));

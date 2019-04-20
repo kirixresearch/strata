@@ -4329,3 +4329,17 @@ xd::ColumnInfo XdnativeDatabase::validateExpression(const std::wstring& expressi
     return ret;
 }
 
+bool XdnativeDatabase::assignDefinition(const std::wstring& path, const xd::FormatDefinition& fd)
+{
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, &cstr, &rpath))
+    {
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return false;
+
+        return db->assignDefinition(rpath, fd);
+    }
+
+    return false;
+}

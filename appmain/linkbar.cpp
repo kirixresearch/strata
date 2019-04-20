@@ -2180,6 +2180,19 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
             favicon = webdoc->getFavIcon();
             webdoc.clear();
         }
+         else
+        {
+            kcl::BitmapComboControl* wnd = (kcl::BitmapComboControl*)g_app->getMainWindow()->FindWindowById(ID_Frame_UrlCtrl);
+            if (wnd)
+            {
+                wxBitmap bmp = wnd->getBitmap();
+                if (bmp.IsOk())
+                {
+                    favicon = bmp.ConvertToImage();
+                }
+            }
+
+        }
                 
 
         // create the bookmark at the specified location

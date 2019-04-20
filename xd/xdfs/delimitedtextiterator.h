@@ -127,7 +127,12 @@ public:
     bool getBoolean(xd::objhandle_t data_handle);
     bool isNull(xd::objhandle_t data_handle);
 
-private:
+protected:
+
+    static void func_rawvalue(kscript::ExprEnv* env, void* param, kscript::Value* retval);
+    void onParserInit(kscript::ExprParser* parser);
+    
+public:
 
     FsDatabase* m_database;
     DelimitedTextSet* m_set;

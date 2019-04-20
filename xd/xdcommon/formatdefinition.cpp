@@ -74,6 +74,8 @@ std::wstring saveDefinitionToString(const xd::FormatDefinition& def)
         delimitedtext["delimiter"] = def.delimiter;
         delimitedtext["line_delimiter"] = def.line_delimiter;
         delimitedtext["header_row"].setBoolean(def.header_row);
+        delimitedtext["determine_structure"].setBoolean(def.determine_structure);
+        delimitedtext["determine_delimiters"].setBoolean(def.determine_delimiters);
     }
 
 
@@ -83,6 +85,7 @@ std::wstring saveDefinitionToString(const xd::FormatDefinition& def)
         fixedlengthtext["start_offset"].setInteger(def.fixed_start_offset);
         fixedlengthtext["row_width"].setInteger(def.fixed_row_width);
         fixedlengthtext["line_delimited"].setBoolean(def.fixed_line_delimited);
+        fixedlengthtext["line_delimiter"].setString(def.line_delimiter);
     }
 
 
@@ -174,6 +177,17 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def
         def->delimiter = delimitedtext["delimiter"];
         def->line_delimiter = delimitedtext["line_delimiter"];
         def->header_row = delimitedtext["header_row"].getBoolean();
+
+        if (delimitedtext.childExists("determine_structure"))
+        {
+            def->determine_structure = delimitedtext["determine_structure"].getBoolean();
+        }
+
+        if (delimitedtext.childExists("determine_delimiters"))
+        {
+            def->determine_delimiters = delimitedtext["determine_delimiters"].getBoolean();
+        }
+
     }
 
     if (root.childExists("fixedlengthtext"))
@@ -182,9 +196,10 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def
         def->fixed_start_offset = fixedlengthtext["start_offset"].getInteger();
         def->fixed_row_width = fixedlengthtext["row_width"].getInteger();
         def->fixed_line_delimited = fixedlengthtext["line_delimited"].getBoolean();
+        def->line_delimiter = fixedlengthtext["line_delimiter"].getString();
     }
 
-    
+
     def->columns.clear();
     if (root.childExists("columns"))
     {

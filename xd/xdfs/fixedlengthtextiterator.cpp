@@ -84,7 +84,7 @@ FixedLengthTextIterator::FixedLengthTextIterator(FsDatabase* database)
 
 FixedLengthTextIterator::~FixedLengthTextIterator()
 {
-    std::vector<TtbDataAccessInfo*>::iterator it;
+    std::vector<FixedLengthDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         delete (*it);
@@ -472,7 +472,7 @@ xd::Structure FixedLengthTextIterator::getStructure()
 {
     xd::Structure s;
 
-    std::vector<TtbDataAccessInfo*>::iterator it;
+    std::vector<FixedLengthDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if (!(*it)->isColumn())
@@ -487,7 +487,7 @@ xd::Structure FixedLengthTextIterator::getStructure()
         col.width = (*it)->width;
         col.scale = (*it)->scale;
         col.expression = (*it)->expr_text;
-        col.calculated = (*it)->isCalculated();
+        col.calculated = (*it)->calculated;
         col.column_ordinal = (*it)->ordinal;
 
         s.createColumn(col);
@@ -500,7 +500,7 @@ xd::Structure FixedLengthTextIterator::getParserStructure()
 {
     xd::Structure s;
 
-    std::vector<TtbDataAccessInfo*>::iterator it;
+    std::vector<FixedLengthDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if (!(*it)->isColumn())
@@ -526,7 +526,7 @@ bool FixedLengthTextIterator::refreshStructure()
 {
     m_fields.clear();
 
-    xd::Structure set_structure = m_set->getStructure();
+    xd::Structure set_structure = m_set->getStructureWithTransformations();
 
     // add fields from structure
     bool default_structure_visible = false;
@@ -540,7 +540,7 @@ bool FixedLengthTextIterator::refreshStructure()
     {
         const xd::ColumnInfo& colinfo = set_structure.getColumnInfoByIdx(i);
         
-        TtbDataAccessInfo* dai = new TtbDataAccessInfo;
+        FixedLengthDataAccessInfo* dai = new FixedLengthDataAccessInfo;
         dai->name = colinfo.name;
         dai->type = colinfo.type;
         dai->offset = colinfo.source_offset;
@@ -549,6 +549,7 @@ bool FixedLengthTextIterator::refreshStructure()
         dai->ordinal = colinfo.column_ordinal;
         dai->expr_text = colinfo.expression;
         dai->visible = default_structure_visible;
+        dai->calculated = colinfo.calculated;
         m_fields.push_back(dai);
         
         // parse any expression, if necessary
@@ -581,7 +582,7 @@ bool FixedLengthTextIterator::refreshStructure()
 
             if (colinfo.isOk())
             {
-                TtbDataAccessInfo* dai = new TtbDataAccessInfo;
+                FixedLengthDataAccessInfo* dai = new FixedLengthDataAccessInfo;
                 dai->name = colinfo.name;
                 dai->type = colinfo.type;
                 dai->offset = colinfo.source_offset;
@@ -641,7 +642,7 @@ bool FixedLengthTextIterator::refreshStructure()
                 const xd::ColumnInfo& colinfo = set_structure.getColumnInfo(dequote_expr);
                 if (colinfo.isOk())
                 {
-                    TtbDataAccessInfo* dai = new TtbDataAccessInfo;
+                    FixedLengthDataAccessInfo* dai = new FixedLengthDataAccessInfo;
                     dai->name = colname;
                     dai->type = colinfo.type;
                     dai->offset = colinfo.source_offset;
@@ -649,6 +650,7 @@ bool FixedLengthTextIterator::refreshStructure()
                     dai->scale = colinfo.scale;
                     dai->ordinal = colinfo.column_ordinal;
                     dai->expr_text = colinfo.expression;
+                    dai->calculated = colinfo.calculated;
                     dai->visible = true;
                     m_fields.push_back(dai);
         
@@ -695,7 +697,7 @@ bool FixedLengthTextIterator::refreshStructure()
                         break;
                 }
 
-                TtbDataAccessInfo* dai = new TtbDataAccessInfo;
+                FixedLengthDataAccessInfo* dai = new FixedLengthDataAccessInfo;
                 dai->name = colname;
                 dai->type = xd_type;
                 dai->offset = 0;
@@ -716,7 +718,7 @@ bool FixedLengthTextIterator::refreshStructure()
 bool FixedLengthTextIterator::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
 {
     std::vector<xd::StructureModify::Action>::const_iterator it;
-    std::vector<TtbDataAccessInfo*>::iterator it2;
+    std::vector<FixedLengthDataAccessInfo*>::iterator it2;
     
     // handle delete
     for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)
@@ -730,7 +732,7 @@ bool FixedLengthTextIterator::modifyStructure(const xd::StructureModify& mod_par
         {
             if (0 == wcscasecmp(it->column.c_str(), (*it2)->name.c_str()))
             {
-                TtbDataAccessInfo* dai = *(it2);
+                FixedLengthDataAccessInfo* dai = *(it2);
                 m_fields.erase(it2);
                 delete dai;
                 break;
@@ -776,6 +778,7 @@ bool FixedLengthTextIterator::modifyStructure(const xd::StructureModify& mod_par
                         delete (*it2)->expr;
                     (*it2)->expr_text = it->params.expression;
                     (*it2)->expr = parse(it->params.expression);
+                    (*it2)->calculated = (*it2)->expr_text.length() > 0 ? true : false;
                 }
             }
         }
@@ -789,7 +792,7 @@ bool FixedLengthTextIterator::modifyStructure(const xd::StructureModify& mod_par
 
         if (it->params.expression.length() > 0)
         {
-            TtbDataAccessInfo* dai = new TtbDataAccessInfo;
+            FixedLengthDataAccessInfo* dai = new FixedLengthDataAccessInfo;
             dai->name = it->params.name;
             dai->type = it->params.type;
             dai->width = it->params.width;
@@ -797,6 +800,7 @@ bool FixedLengthTextIterator::modifyStructure(const xd::StructureModify& mod_par
             dai->ordinal = m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
+            dai->calculated = dai->expr_text.length() > 0 ? true : false;
             m_fields.push_back(dai);
         }
     }
@@ -814,7 +818,7 @@ bool FixedLengthTextIterator::modifyStructure(const xd::StructureModify& mod_par
         
         if (it->params.expression.length() > 0)
         {
-            TtbDataAccessInfo* dai = new TtbDataAccessInfo;
+            FixedLengthDataAccessInfo* dai = new FixedLengthDataAccessInfo;
             dai->name = it->params.name;
             dai->type = it->params.type;
             dai->width = it->params.width;
@@ -822,6 +826,7 @@ bool FixedLengthTextIterator::modifyStructure(const xd::StructureModify& mod_par
             dai->ordinal = m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
+            dai->calculated = dai->expr_text.length() > 0 ? true : false;
             m_fields.insert(m_fields.begin()+insert_idx, dai);
         }
     }
@@ -830,9 +835,19 @@ bool FixedLengthTextIterator::modifyStructure(const xd::StructureModify& mod_par
 }
 
 
+void FixedLengthTextIterator::func_rawvalue(kscript::ExprEnv* env, void* param, kscript::Value* retval)
+{
+    retval->setString(((FixedLengthTextIterator*)param)->m_row.getString(env->m_eval_params[0]->getInteger() - 1));
+}
+
+void FixedLengthTextIterator::onParserInit(kscript::ExprParser* parser)
+{
+    parser->addFunction(L"rawvalue", false, FixedLengthTextIterator::func_rawvalue, false, L"s(i)", this);
+}
+
 xd::objhandle_t FixedLengthTextIterator::getHandle(const std::wstring& expr)
 {
-    std::vector<TtbDataAccessInfo*>::iterator it;
+    std::vector<FixedLengthDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if (kl::iequals((*it)->name, expr))
@@ -842,7 +857,7 @@ xd::objhandle_t FixedLengthTextIterator::getHandle(const std::wstring& expr)
     // test for binary keys
     if (0 == wcsncasecmp(expr.c_str(), L"KEY:", 4))
     {
-        TtbDataAccessInfo* dai = new TtbDataAccessInfo;
+        FixedLengthDataAccessInfo* dai = new FixedLengthDataAccessInfo;
         dai->expr = NULL;
         dai->expr_text = expr;
         dai->type = xd::typeBinary;
@@ -867,7 +882,7 @@ xd::objhandle_t FixedLengthTextIterator::getHandle(const std::wstring& expr)
         return (xd::objhandle_t)0;
     }
 
-    TtbDataAccessInfo* dai = new TtbDataAccessInfo;
+    FixedLengthDataAccessInfo* dai = new FixedLengthDataAccessInfo;
     dai->expr = parser;
     dai->expr_text = expr;
     dai->type = kscript2xdType(parser->getType());
@@ -878,7 +893,7 @@ xd::objhandle_t FixedLengthTextIterator::getHandle(const std::wstring& expr)
 
 bool FixedLengthTextIterator::releaseHandle(xd::objhandle_t data_handle)
 {
-    std::vector<TtbDataAccessInfo*>::iterator it;
+    std::vector<FixedLengthDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if ((xd::objhandle_t)(*it) == data_handle)
@@ -900,7 +915,7 @@ bool FixedLengthTextIterator::releaseHandle(xd::objhandle_t data_handle)
 
 xd::ColumnInfo FixedLengthTextIterator::getInfo(xd::objhandle_t data_handle)
 {
-    TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
+    FixedLengthDataAccessInfo* dai = (FixedLengthDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
         return xd::ColumnInfo();
@@ -938,7 +953,7 @@ xd::ColumnInfo FixedLengthTextIterator::getInfo(xd::objhandle_t data_handle)
 
 int FixedLengthTextIterator::getType(xd::objhandle_t data_handle)
 {
-    TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
+    FixedLengthDataAccessInfo* dai = (FixedLengthDataAccessInfo*)data_handle;
     if (dai == NULL)
         return xd::typeInvalid;
 
@@ -947,7 +962,7 @@ int FixedLengthTextIterator::getType(xd::objhandle_t data_handle)
 
 int FixedLengthTextIterator::getRawWidth(xd::objhandle_t data_handle)
 {
-    TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
+    FixedLengthDataAccessInfo* dai = (FixedLengthDataAccessInfo*)data_handle;
     if (dai && dai->key_layout)
         return dai->key_layout->getKeyLength();
     
@@ -956,7 +971,7 @@ int FixedLengthTextIterator::getRawWidth(xd::objhandle_t data_handle)
 
 const unsigned char* FixedLengthTextIterator::getRawPtr(xd::objhandle_t data_handle)
 {
-    TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
+    FixedLengthDataAccessInfo* dai = (FixedLengthDataAccessInfo*)data_handle;
     if (dai == NULL)
         return NULL;
     if (!m_rowptr)
@@ -970,7 +985,7 @@ const unsigned char* FixedLengthTextIterator::getRawPtr(xd::objhandle_t data_han
 
 const std::string& FixedLengthTextIterator::getString(xd::objhandle_t data_handle)
 {
-    TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
+    FixedLengthDataAccessInfo* dai = (FixedLengthDataAccessInfo*)data_handle;
 
     if (dai == NULL)
         return empty_string;
@@ -1058,7 +1073,7 @@ const std::string& FixedLengthTextIterator::getString(xd::objhandle_t data_handl
 
 const std::wstring& FixedLengthTextIterator::getWideString(xd::objhandle_t data_handle)
 {
-    TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
+    FixedLengthDataAccessInfo* dai = (FixedLengthDataAccessInfo*)data_handle;
 
     //if (!dai->is_active)
     //    return empty_wstring;
@@ -1099,7 +1114,7 @@ const std::wstring& FixedLengthTextIterator::getWideString(xd::objhandle_t data_
 
 xd::datetime_t FixedLengthTextIterator::getDateTime(xd::objhandle_t data_handle)
 {
-    TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
+    FixedLengthDataAccessInfo* dai = (FixedLengthDataAccessInfo*)data_handle;
 
     //if (!dai->is_active)
     //    return empty_wstring;
@@ -1156,7 +1171,7 @@ xd::datetime_t FixedLengthTextIterator::getDateTime(xd::objhandle_t data_handle)
 
 double FixedLengthTextIterator::getDouble(xd::objhandle_t data_handle)
 {
-    TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
+    FixedLengthDataAccessInfo* dai = (FixedLengthDataAccessInfo*)data_handle;
 
     //if (!dai->is_active)
     //    return empty_wstring;
@@ -1223,7 +1238,7 @@ double FixedLengthTextIterator::getDouble(xd::objhandle_t data_handle)
 
 int FixedLengthTextIterator::getInteger(xd::objhandle_t data_handle)
 {
-    TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
+    FixedLengthDataAccessInfo* dai = (FixedLengthDataAccessInfo*)data_handle;
 
     if (!dai)
         return false;
@@ -1268,7 +1283,7 @@ int FixedLengthTextIterator::getInteger(xd::objhandle_t data_handle)
 
 bool FixedLengthTextIterator::getBoolean(xd::objhandle_t data_handle)
 {
-    TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
+    FixedLengthDataAccessInfo* dai = (FixedLengthDataAccessInfo*)data_handle;
 
     if (!dai)
         return false;
@@ -1293,7 +1308,7 @@ bool FixedLengthTextIterator::getBoolean(xd::objhandle_t data_handle)
 
 bool FixedLengthTextIterator::isNull(xd::objhandle_t data_handle)
 {
-    TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
+    FixedLengthDataAccessInfo* dai = (FixedLengthDataAccessInfo*)data_handle;
 
     //if (!dai->is_active)
     //    return true;

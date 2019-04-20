@@ -128,6 +128,8 @@ public:
     bool groupQuery(xd::GroupQueryParams* info, xd::IJob* job);
 
     xd::ColumnInfo validateExpression(const std::wstring& expr, const xd::Structure& structure = xd::Structure(), const std::wstring& path_context = L"");
+    bool assignDefinition(const std::wstring& path, const xd::FormatDefinition& fd);
+    bool loadAssignedDefinition(const std::wstring& _path, xd::FormatDefinition* fd);
 
     // xd::IRelationSchema
 
@@ -175,6 +177,8 @@ private:
     kl::mutex m_relations_mutex;
     xf_filetime_t m_relations_filetime;
     std::vector<RelationInfo*> m_relations;
+
+    std::vector<std::wstring> m_files_to_delete;
 };
 
 

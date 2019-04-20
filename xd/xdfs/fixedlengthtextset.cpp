@@ -57,6 +57,23 @@ bool FixedLengthTextSet::init(const std::wstring& filename, const xd::FormatDefi
     m_def = def;
     m_def.format = xd::formatFixedLengthText;
     
+    if (def.format == xd::formatDefault)
+    {
+        if (m_database->loadAssignedDefinition(filename, &m_def))
+        {
+            int i = 1; // rawvalue() is 1-based
+            for (auto &col : m_def.columns)
+            {
+                if (col.expression.find(L"$SRCFIELD"))
+                {
+                    std::wstring replacement = kl::stdswprintf(L"rawvalue(%d)", i++);
+                    kl::replaceStr(col.expression, L"$SRCFIELD", replacement, true);
+                }
+            }
+        }
+    }
+
+
     if (m_def.fixed_row_width == 0)
         m_def.fixed_row_width = 80;  // must have some kind of default row width
 
@@ -199,6 +216,34 @@ xd::Structure FixedLengthTextSet::getStructure()
         col.column_ordinal = counter++;
         col.table_ordinal = 0;
         col.nulls_allowed = it->nulls_allowed;
+
+        structure.createColumn(col);
+    }
+
+    XdfsBaseSet::appendCalcFields(structure);
+    return structure;
+}
+
+xd::Structure FixedLengthTextSet::getStructureWithTransformations()
+{
+    xd::Structure structure;
+
+    std::vector<xd::ColumnInfo>::iterator it, it_end = m_def.columns.end();
+    int counter = 0;
+    for (it = m_def.columns.begin(); it != it_end; ++it)
+    {
+        xd::ColumnInfo col;
+
+        col.name = it->name;
+        col.type = it->type;
+        col.width = it->width;
+        col.scale = it->scale;
+        col.source_offset = 0;
+        col.calculated = false;
+        col.column_ordinal = counter++;
+        col.table_ordinal = 0;
+        col.nulls_allowed = it->nulls_allowed;
+        col.expression = it->expression;
 
         structure.createColumn(col);
     }

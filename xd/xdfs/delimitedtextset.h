@@ -65,6 +65,7 @@ public:
                    size_t info_size) { return false; }
 
     xd::Structure getStructure();
+    xd::Structure getStructureWithTransformations();
 
     bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
     bool determineColumns(int check_rows, int max_seconds, xd::IJob* job);
@@ -73,7 +74,6 @@ private:
 
     bool loadConfigurationFromDataFile();
     bool determineIfFirstRowIsHeader();
-    void populateColumnNameMatchVector();
 
 private:
 
