@@ -1916,6 +1916,17 @@ IXdsqlTablePtr FsDatabase::openTable(const std::wstring& path, const xd::FormatD
         
     int format = fi->format;
 
+
+
+    if (format == xd::formatDefault)
+    {
+        xd::FormatDefinition fd;
+        if (loadAssignedDefinition(phys_path, &fd))
+        {
+            format = fd.format;
+        }
+    }
+
     // if the native format was passed, have the database do it's best to
     // determine the format from the text definition or the file extension
     if (format == xd::formatDefault)

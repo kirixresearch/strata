@@ -19,9 +19,9 @@
 
 
 
-// -- TtbDataAccessInfo struct declaration --
+// -- FixedLengthDataAccessInfo struct declaration --
 
-struct TtbDataAccessInfo
+struct FixedLengthDataAccessInfo
 {
     // metadata
     char ttb_type;
@@ -33,6 +33,7 @@ struct TtbDataAccessInfo
     int scale;
     int ordinal;
     bool nulls_allowed;
+    bool calculated;
     std::wstring expr_text;
     bool visible;           // is part of visible structure (via getStructure())
 
@@ -43,7 +44,7 @@ struct TtbDataAccessInfo
     std::wstring wstr_result;
     std::string str_result;
 
-    TtbDataAccessInfo()
+    FixedLengthDataAccessInfo()
     {
         ttb_type = 0;
 
@@ -55,6 +56,7 @@ struct TtbDataAccessInfo
         ordinal = 0;
         nulls_allowed = false;
         visible = false;
+        calculated = false;
         expr_text = L"";
 
         expr = NULL;
@@ -63,7 +65,7 @@ struct TtbDataAccessInfo
         str_result = "";
     }
     
-    ~TtbDataAccessInfo()
+    ~FixedLengthDataAccessInfo()
     {
         delete expr;
         delete key_layout;
@@ -148,6 +150,11 @@ public:
     bool getBoolean(xd::objhandle_t data_handle);
     bool isNull(xd::objhandle_t data_handle);
 
+protected:
+
+    static void func_rawvalue(kscript::ExprEnv* env, void* param, kscript::Value* retval);
+    void onParserInit(kscript::ExprParser* parser);
+
 private:
 
     void updatePosition();
@@ -176,8 +183,8 @@ private:
     bool m_eof;
     bool m_buffer_wrapper_mode;
 
-    std::vector<TtbDataAccessInfo*> m_fields;
-    std::vector<TtbDataAccessInfo*> m_exprs;
+    std::vector<FixedLengthDataAccessInfo*> m_fields;
+    std::vector<FixedLengthDataAccessInfo*> m_exprs;
 };
 
 

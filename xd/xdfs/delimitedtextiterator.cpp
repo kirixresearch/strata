@@ -515,14 +515,14 @@ bool DelimitedTextIterator::modifyStructure(const xd::StructureModify& mod_param
 }
 
 
-void func_rawvalue(kscript::ExprEnv* env, void* param, kscript::Value* retval)
+void DelimitedTextIterator::func_rawvalue(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
     retval->setString(((DelimitedTextIterator*)param)->m_file.getString(env->m_eval_params[0]->getInteger() - 1));
 }
 
 void DelimitedTextIterator::onParserInit(kscript::ExprParser* parser)
 {
-    parser->addFunction(L"rawvalue", false, func_rawvalue, false, L"s(i)", this);
+    parser->addFunction(L"rawvalue", false, DelimitedTextIterator::func_rawvalue, false, L"s(i)", this);
 }
 
 

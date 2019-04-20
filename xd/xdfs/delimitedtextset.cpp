@@ -56,14 +56,16 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
 
     if (m_def.format == xd::formatDefault)
     {
-        m_database->loadAssignedDefinition(m_file_url, &m_def);
-        int i = 1; // rawvalue() is 1-based
-        for (auto &col : m_def.columns)
+        if (m_database->loadAssignedDefinition(m_file_url, &m_def))
         {
-            if (col.expression.find(L"$SRCFIELD"))
+            int i = 1; // rawvalue() is 1-based
+            for (auto &col : m_def.columns)
             {
-                std::wstring replacement = kl::stdswprintf(L"rawvalue(%d)", i++);
-                kl::replaceStr(col.expression, L"$SRCFIELD", replacement, true);
+                if (col.expression.find(L"$SRCFIELD"))
+                {
+                    std::wstring replacement = kl::stdswprintf(L"rawvalue(%d)", i++);
+                    kl::replaceStr(col.expression, L"$SRCFIELD", replacement, true);
+                }
             }
         }
     }

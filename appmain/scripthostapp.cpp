@@ -2894,7 +2894,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
     if (type == L"fixed")
     {
         xd::FormatDefinition fd;
-        fd.format = xd::formatDelimitedText;
+        fd.format = xd::formatFixedLengthText;
 
 
         int start_offset = 0;
