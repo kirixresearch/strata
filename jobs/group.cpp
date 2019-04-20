@@ -241,7 +241,7 @@ int GroupJob::runJob()
             return 0;
         }
 
-        if (m_db->getFileExist(output2))
+        if (!m_db->getFileExist(output2))
         {
             m_job_info->setState(jobStateFailed);
             return 0;
@@ -260,9 +260,8 @@ int GroupJob::runJob()
         info3.columns = column_params;
         info3.where = where_params;
         info3.having = having_params;
-        m_to_delete.push_back(info1.output);
 
-        bool res3 =  m_db->groupQuery(&info1, xd_job.p);
+        bool res3 =  m_db->groupQuery(&info3, xd_job.p);
 
         if (xd_job->getCancelled())
         {
