@@ -1184,6 +1184,11 @@ void func_str(kscript::ExprEnv* env, void* param, kscript::Value* retval)
         if (fill_dec < 0 || fill_dec > 12)
             fill_dec = 12;
 
+        if (env->m_param_count >= 2)
+        {
+            number = kl::dblround(number, fill_dec);
+        }
+
         wchar_t buf[128];
         swprintf(buf, 128, L"%.*f", fill_dec, number);
 
