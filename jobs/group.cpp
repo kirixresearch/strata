@@ -287,14 +287,12 @@ int GroupJob::runJob()
 
 void GroupJob::runPostJob()
 {
-/*
     if (m_db)
     {
         std::vector<std::wstring>::iterator it;
         for (it = m_to_delete.begin(); it != m_to_delete.end(); ++it)
             m_db->deleteFile(*it);
     }
-    */
 }
 
 
