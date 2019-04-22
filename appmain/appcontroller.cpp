@@ -143,7 +143,7 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
     EVT_MENU(ID_Edit_Replace, AppController::onShowFindPanel)
     EVT_MENU(ID_Edit_FindPrev, AppController::onFindPrev)
     EVT_MENU(ID_Edit_FindNext, AppController::onFindNext)
-    EVT_MENU(ID_File_Bookmark, AppController::onCreateBookmark) 
+    EVT_MENU(ID_File_Bookmark, AppController::onCreateBookmark)
     EVT_MENU(ID_Frame_ShowColumnList, AppController::onShowColumnListPanel)
     EVT_MENU(ID_Frame_ShowProjectPanel, AppController::onShowProjectPanel)
     EVT_MENU(ID_Frame_ShowConsolePanel, AppController::onShowConsolePanel)
@@ -155,7 +155,7 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
     EVT_MENU(ID_Frame_ToggleStandardToolbar, AppController::onToggleToolbar)
     EVT_MENU(ID_Frame_ToggleLinkToolbar, AppController::onToggleToolbar)
     EVT_MENU(ID_Frame_ToggleFormatToolbar, AppController::onToggleToolbar)
-    EVT_MENU(ID_Frame_ToggleStatusBar, AppController::onToggleStatusBar)    
+    EVT_MENU(ID_Frame_ToggleStatusBar, AppController::onToggleStatusBar)
     EVT_MENU(ID_Frame_ToggleFullScreen, AppController::onToggleFullScreen)
     EVT_MENU(ID_App_ToggleProtect, AppController::onToggleLock)
     EVT_MENU(ID_Project_Import, AppController::onImportData)
@@ -168,7 +168,7 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
     EVT_MENU(ID_App_JobManager, AppController::onJobManager)
     EVT_MENU(ID_App_ExtensionManager, AppController::onExtensionManager)
     EVT_MENU(ID_Project_ProjectProperties, AppController::onProjectProperties)
-    EVT_MENU(ID_Project_CleanProject, AppController::onCleanProject)    
+    EVT_MENU(ID_Project_CleanProject, AppController::onCleanProject)
     EVT_MENU(ID_Project_Relationship, AppController::onRelationshipManager)
     EVT_MENU(ID_App_RelationshipSyncNone, AppController::onSetRelationshipSync)
     EVT_MENU(ID_App_RelationshipSyncFilter, AppController::onSetRelationshipSync)
@@ -198,35 +198,35 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
     // precede the general update range
     EVT_UPDATE_UI(ID_Frame_ToggleFullScreen, AppController::onUpdateUI_ToggleFullScreen)
     EVT_UPDATE_UI(ID_Frame_ToggleStatusBar, AppController::onUpdateUI_ToggleStatusBar)
-    EVT_UPDATE_UI(ID_Frame_ToggleProjectPanel, AppController::onUpdateUI_ToggleProjectPanel)    
+    EVT_UPDATE_UI(ID_Frame_ToggleProjectPanel, AppController::onUpdateUI_ToggleProjectPanel)
     EVT_UPDATE_UI(ID_Frame_ToggleConsolePanel, AppController::onUpdateUI_ToggleConsolePanel)
     EVT_UPDATE_UI(ID_Frame_ToggleColumnListPanel, AppController::onUpdateUI_ToggleColumnListPanel)
     EVT_UPDATE_UI(ID_Frame_ToggleMarkManagerPanel, AppController::onUpdateUI_ToggleMarkManagerPanel)
     EVT_UPDATE_UI(ID_Frame_ToggleRelationshipManagerPanel, AppController::onUpdateUI_ToggleRelationshipPanel)
     EVT_UPDATE_UI(ID_Frame_ToggleStandardToolbar, AppController::onUpdateUI_ToggleToolbar)
-    EVT_UPDATE_UI(ID_Frame_ToggleLinkToolbar, AppController::onUpdateUI_ToggleToolbar)    
+    EVT_UPDATE_UI(ID_Frame_ToggleLinkToolbar, AppController::onUpdateUI_ToggleToolbar)
     EVT_UPDATE_UI(ID_Frame_ToggleFormatToolbar, AppController::onUpdateUI_ToggleToolbar)
     EVT_UPDATE_UI_RANGE(ID_Frame_First, ID_Frame_Last, AppController::onUpdateUI_EnableAlways)
 
     // update the macro recording menu item
-    EVT_UPDATE_UI(ID_App_StartRecord, AppController::onUpdateUI_StartRecord)        
+    EVT_UPDATE_UI(ID_App_StartRecord, AppController::onUpdateUI_StartRecord)
     EVT_UPDATE_UI(ID_App_StopRecord, AppController::onUpdateUI_StopRecord)
 
     // update application commands; make sure the specific cases
     // precede the general update range
     EVT_UPDATE_UI(ID_App_ToggleProtect, AppController::onUpdateUI_ToggleLock)
     EVT_UPDATE_UI(ID_App_RelationshipSyncNone, AppController::onUpdateUI_RelationshipSync)
-    EVT_UPDATE_UI(ID_App_RelationshipSyncFilter, AppController::onUpdateUI_RelationshipSync)  
+    EVT_UPDATE_UI(ID_App_RelationshipSyncFilter, AppController::onUpdateUI_RelationshipSync)
     EVT_UPDATE_UI(ID_App_RelationshipSyncSeek, AppController::onUpdateUI_RelationshipSync)
     EVT_UPDATE_UI_RANGE(ID_App_First, ID_App_Last, AppController::onUpdateUI_EnableAlways)
-    
+
     // disable the project commands if there isn't a project
     EVT_UPDATE_UI_RANGE(ID_Project_First, ID_Project_Last, AppController::onUpdateUI_DisableIfNoProject)
 
     // disable the special utilities if there isn't a project
     //EVT_UPDATE_UI_RANGE(ID_Special_First, ID_Special_Last, AppController::onUpdateUI_DisableIfNoProject)
 
-    // disable the file commands if there's isn't a child
+    // disable the file commands if there isn't a child
     EVT_UPDATE_UI(ID_File_Stop, AppController::onUpdateUI_DisableIfNoJobs)
     EVT_UPDATE_UI_RANGE(ID_File_First, ID_File_Last, AppController::onUpdateUI_DisableIfNoChildren)
 
@@ -234,36 +234,36 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
     EVT_UPDATE_UI(ID_View_SwitchToSourceView, AppController::onUpdateUI_ViewSource)
     EVT_UPDATE_UI(ID_View_SwitchToDesignView, AppController::onUpdateUI_ViewDesign)
     EVT_UPDATE_UI(ID_View_SwitchToLayoutView, AppController::onUpdateUI_ViewLayout)
-    
-    // disable the view commands if there's isn't a child
+
+    // disable the view commands if there isn't a child
     EVT_UPDATE_UI_RANGE(ID_View_First, ID_View_Last, AppController::onUpdateUI_DisableIfNoChildren)
 
-    // disable the window commands if there's isn't a child
+    // disable the window commands if there isn't a child
     EVT_UPDATE_UI_RANGE(ID_Window_First, ID_Window_Last, AppController::onUpdateUI_DisableIfNoChildren)
 
-    // disable the edit commands if there's isn't a child
+    // disable the edit commands if there isn't a child
     EVT_UPDATE_UI_RANGE(ID_Edit_Delete, ID_Edit_Last, AppController::onUpdateUI_DisableIfNoChildren)
 
-    // disable the data commands if there's isn't a child 
+    // disable the data commands if there isn't a child
     EVT_UPDATE_UI_RANGE(ID_Data_First, ID_Data_Last, AppController::onUpdateUI_DisableIfNoChildren)
 
-    // disable the tablecommands if there's isn't a child
+    // disable the tablecommands if there isn't a child
     EVT_UPDATE_UI_RANGE(ID_Table_First, ID_Table_Last, AppController::onUpdateUI_DisableIfNoChildren)
 
-    // disable the data commands if there's isn't a child
+    // disable the data commands if there isn't a child
     EVT_UPDATE_UI_RANGE(ID_Canvas_First, ID_Canvas_Last, AppController::onUpdateUI_DisableIfNoChildren)
 
-    // disable the data commands if there's isn't a child
+    // disable the data commands if there isn't a child
     EVT_UPDATE_UI_RANGE(ID_Format_First, ID_Format_Last, AppController::onUpdateUI_DisableIfNoChildren)
-    
+
     // explicity disable the save and save as if we don't have a project; this will
     // allow us to use the webdoc without the project, if we chose, but only be able to
-    // save externally; TODO: this is mostly working, except with the web tables, which 
-    // require a project, so if we want to allow this safely, we'll have to disable tables 
+    // save externally; TODO: this is mostly working, except with the web tables, which
+    // require a project, so if we want to allow this safely, we'll have to disable tables
     // in the webdoc, since these require a project
     EVT_UPDATE_UI(ID_File_Save, AppController::onUpdateUI_DisableIfNoProject)
     EVT_UPDATE_UI(ID_File_SaveAs, AppController::onUpdateUI_DisableIfNoProject)
-    
+
     // allow cut/copy/paste for dbdoc
     EVT_UPDATE_UI(ID_Edit_Cut, AppController::onUpdateUI_EnableIfNoChildren)
     EVT_UPDATE_UI(ID_Edit_Copy, AppController::onUpdateUI_EnableIfNoChildren)
@@ -275,21 +275,21 @@ static void postBorderSelectedEvent(IDocumentSitePtr active_child,
                                     wxAuiToolBarItem* item)
 {
     // send the selected border to the active document through a wx event
-    
+
     if (active_child.isNull())
         return;
 
     if (item == NULL)
         return;
-        
+
     IDocumentPtr doc = active_child->getDocument();
     if (doc.isOk())
     {
         wxWindow* w = doc->getDocumentWindow();
         if (w != NULL)
         {
-            // post a wx event for the active document to process -- 
-            // the selected border is sent as a delimited list (;) of 
+            // post a wx event for the active document to process --
+            // the selected border is sent as a delimited list (;) of
             // borders and properties (e.g. "border.bottom.style:border.style.none;..."
             wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, item->GetId());
 
@@ -300,15 +300,15 @@ static void postBorderSelectedEvent(IDocumentSitePtr active_child,
             {
                 default:
                     {
-                        // TODO: "default" is selected when the main toolbar icon is clicked; right 
-                        // now this is hardwired to a bottom border because this is what's on the 
-                        // toolbar item; however, the toolbar icon should change based on the last 
-                        // selected item, like the color drop down, so that the default isn't always 
+                        // TODO: "default" is selected when the main toolbar icon is clicked; right
+                        // now this is hardwired to a bottom border because this is what's on the
+                        // toolbar item; however, the toolbar icon should change based on the last
+                        // selected item, like the color drop down, so that the default isn't always
                         // a bottom border
                         border.Append(kcanvas::PROP_BORDER_BOTTOM_STYLE + wxT(":") + kcanvas::BORDER_STYLE_SOLID);
                     }
-                    break;                
-                
+                    break;
+
                 case kcl::BorderPanel::border_noborder:
                     {
                         border.Append(kcanvas::PROP_BORDER_STYLE + wxT(":") + kcanvas::BORDER_STYLE_NONE);
@@ -374,13 +374,13 @@ static void postBorderSelectedEvent(IDocumentSitePtr active_child,
                 case kcl::BorderPanel::border_outside:
                     {
                         border.Append(kcanvas::PROP_BORDER_TOP_STYLE + wxT(":") + kcanvas::BORDER_STYLE_SOLID);
-                        border.Append(wxT(";"));                    
+                        border.Append(wxT(";"));
                         border.Append(kcanvas::PROP_BORDER_BOTTOM_STYLE + wxT(":") + kcanvas::BORDER_STYLE_SOLID);
                         border.Append(wxT(";"));
                         border.Append(kcanvas::PROP_BORDER_LEFT_STYLE + wxT(":") + kcanvas::BORDER_STYLE_SOLID);
                         border.Append(wxT(";"));
                         border.Append(kcanvas::PROP_BORDER_RIGHT_STYLE + wxT(":") + kcanvas::BORDER_STYLE_SOLID);
-                    }                
+                    }
                     break;
 /*
                 case kcl::BorderPanel::border_thick_out:
@@ -394,9 +394,9 @@ static void postBorderSelectedEvent(IDocumentSitePtr active_child,
                         border.Append(kcanvas::PROP_BORDER_RIGHT_STYLE + wxT(":") + kcanvas::BORDER_STYLE_SOLID);
                     }
                     break;
-*/                    
+*/
             }
-            
+
             evt.SetString(border);
             ::wxPostEvent(w, evt);
         }
@@ -407,13 +407,13 @@ static void postColorSelectedEvent(IDocumentSitePtr active_child,
                                    wxAuiToolBarItem* item)
 {
     // send the selected color to the active document through a wx event
-    
+
     if (active_child.isNull())
         return;
 
     if (item == NULL)
         return;
-        
+
     IDocumentPtr doc = active_child->getDocument();
     if (doc.isOk())
     {
@@ -441,12 +441,12 @@ public:
     {
         m_toolbar = toolbar;
         m_tool_id = tool_id;
-        
+
         if (m_toolbar != NULL)
             m_toolbar->SetToolSticky(m_tool_id, true);
-        
+
         m_container = new kcl::PopupContainer(pt, anchor_corner);
-        
+
         kcl::BorderPanel* panel = new kcl::BorderPanel(m_container);
 
         panel->sigBorderSelected.connect(this,
@@ -455,13 +455,13 @@ public:
                               &AppController::onBorderPanelDestructing);
         m_container->doPopup(panel);
     }
-    
+
     ~BorderPanelHelper()
     {
         if (m_toolbar != NULL && m_tool_id != -1)
             m_toolbar->SetToolSticky(m_tool_id, false);
     }
-    
+
     void onBorderPanelBorderSelected(int id)
     {
         if (m_toolbar == NULL || m_tool_id == -1)
@@ -469,7 +469,7 @@ public:
 
         // find the toolbar item we clicked
         wxAuiToolBarItem* item = m_toolbar->FindTool(m_tool_id);
-        
+
         // pass the id
         item->SetUserData((long)id);
 
@@ -482,7 +482,7 @@ public:
 public:
 
     kcl::PopupContainer* m_container;
-    
+
     wxAuiToolBar* m_toolbar;
     int m_tool_id;
 };
@@ -502,12 +502,12 @@ public:
     {
         m_toolbar = toolbar;
         m_tool_id = tool_id;
-        
+
         if (m_toolbar != NULL)
             m_toolbar->SetToolSticky(m_tool_id, true);
-        
+
         m_container = new kcl::PopupContainer(pt, anchor_corner);
-        
+
         kcl::ColorPanel* panel = new kcl::ColorPanel(m_container, layout);
         panel->setDefaultColor(default_color);
         panel->setMode(mode);
@@ -521,13 +521,13 @@ public:
                               &AppController::onCustomColorsChanged);
         m_container->doPopup(panel);
     }
-    
+
     ~ColorPanelHelper()
     {
         if (m_toolbar != NULL && m_tool_id != -1)
             m_toolbar->SetToolSticky(m_tool_id, false);
     }
-    
+
     void onColorPanelColorSelected(wxColor color, int mode)
     {
         if (m_toolbar == NULL || m_tool_id == -1)
@@ -535,7 +535,7 @@ public:
 
         // find the toolbar item we clicked
         wxAuiToolBarItem* item = m_toolbar->FindTool(m_tool_id);
-        
+
         // either create or update the user-data with the selected color
         if (item->GetUserData())
         {
@@ -546,7 +546,7 @@ public:
         {
             item->SetUserData((long)(new wxColor(color)));
         }
-        
+
         m_container->Show(false);
         m_container->Destroy();
 
@@ -556,7 +556,7 @@ public:
 public:
 
     kcl::PopupContainer* m_container;
-    
+
     wxAuiToolBar* m_toolbar;
     int m_tool_id;
 };
@@ -581,10 +581,10 @@ AppController::AppController()
 }
 
 AppController::~AppController()
-{        
+{
     delete m_script_command_router;
     delete m_rel_diagram_watcher;
-        
+
     if (m_job_update_timer)
     {
         m_job_update_timer->UnInit();
@@ -600,12 +600,12 @@ bool AppController::checkLicense(bool show_warnings)
         // if authentication failed, try to install
         // a license to let the user evaluate the product
         // if this fails,  open the license
-        // manager and give the user a chance to reauthenticate 
+        // manager and give the user a chance to reauthenticate
 
         #if APP_TRIAL_LICENSE_DAYS > 0
         g_auth->installLicense(APP_TRIAL_LICENSE_DAYS);
         #endif
-        
+
         if (g_auth->checkAuth() != paladin::errNone)
             showLicenseManager();
 
@@ -636,7 +636,7 @@ bool AppController::init()
     bool maximized;
     std::wstring perspective;
     long clear_perspective_counter = 0;
-    
+
     screen_x = wxSystemSettings::GetMetric(wxSYS_SCREEN_X);
     screen_y = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y);
     screen_y -= getTaskBarHeight();
@@ -682,14 +682,14 @@ bool AppController::init()
     }
 
     // must be initialized to NULL (we check these often)
-    m_borderpanel_helper = NULL;    
+    m_borderpanel_helper = NULL;
     m_colorpanel_helper = NULL;
 
     // create the main frame
     m_frame = createFrameObject();
     if (m_frame.isNull())
         return false;
-    
+
     m_frame->create(NULL, m_frame_caption, x, y, w, h);
 
 #if defined(__WXMSW__)
@@ -705,13 +705,13 @@ bool AppController::init()
 #else
 
     // TODO: application icon for non-msw platforms
-    
+
     //wxBitmap bmp_logo;
     //bmp_logo = GETBMP(logo_16);
     //wxIcon logo;
     //logo.CopyFromBitmap(bmp_logo);
     //m_frame->setIcon(logo);
-    
+
 #endif
 
 
@@ -721,7 +721,7 @@ bool AppController::init()
     #if APP_CONSOLE==0
     g_app->SetTopWindow(m_frame->getFrameWindow());
     #endif
-    
+
     g_app->setMainFrame(m_frame);
 
     m_frame->addWindowEventHandler(this);
@@ -729,7 +729,7 @@ bool AppController::init()
 
     // allow additional custom hook functionality
     apphookInitFrame();
-    
+
     m_frame->sigFrameClose().connect(this, &AppController::onFrameClose);
     m_frame->sigFrameSize().connect(this, &AppController::onFrameSize);
     m_frame->sigFrameDestroy().connect(this, &AppController::onFrameDestroy);
@@ -737,13 +737,13 @@ bool AppController::init()
     m_frame->sigFrameEvent().connect(this, &AppController::onFrameEvent);
     m_frame->sigActiveChildChanged().connect(this, &AppController::onActiveChildChanged);
     m_frame->sigSiteContextMenu().connect(this, &AppController::onFrameChildContextMenu);
-    
-    
+
+
     // add accelerators -- these allow certain functions to be accessed
     // without being represented on the menu; we create it here since
     // menu accelerators add onto the existing list of accelerators
-    // NOTE: first parameter is a flag field indicating the state of 
-    // the ALT, SHIFT, and CTRL keys; one of wxACCEL_ALT, wxACCEL_SHIFT, 
+    // NOTE: first parameter is a flag field indicating the state of
+    // the ALT, SHIFT, and CTRL keys; one of wxACCEL_ALT, wxACCEL_SHIFT,
     // wxACCEL_CTRL or wxACCEL_NORMAL
     wxAcceleratorEntry entries[31];
 
@@ -775,9 +775,9 @@ bool AppController::init()
     // panel, the console panel, or the child window without the panel toggling;
     // so, whereas Ctrl-B will toggle the project panel, Ctrl-Shift-B will only
     // open it and set the focus if it's closed; similarly with Ctrl-Shift-K for
-    // the console panel; Ctrl-(Shift)-I moves the focus back to the child window    
+    // the console panel; Ctrl-(Shift)-I moves the focus back to the child window
     entries[23].Set(wxACCEL_CTRL | wxACCEL_SHIFT, (int)'I', ID_Window_Current);
-    entries[24].Set(wxACCEL_CTRL, (int)'I', ID_Window_Current);                             // alternate for setting focus to content    
+    entries[24].Set(wxACCEL_CTRL, (int)'I', ID_Window_Current);                             // alternate for setting focus to content
     entries[25].Set(wxACCEL_CTRL | wxACCEL_SHIFT, (int)'B', ID_Frame_ShowProjectPanel);
     entries[26].Set(wxACCEL_CTRL | wxACCEL_SHIFT, (int)'K', ID_Frame_ShowConsolePanel);
     entries[27].Set(wxACCEL_CTRL, (int)';', ID_Frame_ShowConsolePanel);                     // alternate for show console panel
@@ -785,7 +785,7 @@ bool AppController::init()
 
 
     // TODO: experimental accelerators for startings/stopping recording;
-    // currently, these functions are for development only and not available 
+    // currently, these functions are for development only and not available
     // in the menu
     entries[29].Set(wxACCEL_ALT, WXK_F1, ID_App_StartRecord);
     entries[30].Set(wxACCEL_ALT, WXK_F2, ID_App_StopRecord);
@@ -801,7 +801,7 @@ bool AppController::init()
     submenuNew->Append(ID_Project_NewReport, _("&Report"));
     submenuNew->Append(ID_Project_NewQuery, _("&Query"));
     submenuNew->Append(ID_Project_NewScript, _("&Script"));
-    
+
     wxMenu* menuFile = new wxMenu;
     menuFile->AppendSubMenu(submenuNew, _("&New"));
     menuFile->Append(ID_Project_OpenFile, _("&Open...\tCtrl+O"));
@@ -848,7 +848,7 @@ bool AppController::init()
     // note: the accelerators for next/previous tab are also specified
     // in the accelerator table above; these will supercede those, so
     // this won't cause any problem; however, if we decide we don't want
-    // the tab submenu, we can simply comment it out, and the hotkeys for 
+    // the tab submenu, we can simply comment it out, and the hotkeys for
     // tabs, which we definitely want, will still work
     wxMenu* menuViewTabs = new wxMenu;
 
@@ -865,7 +865,7 @@ bool AppController::init()
     // these here for display; the actual accelerators are defined
     // in the accelerator table above
     wxMenu* menuViewZoom = new wxMenu;
-          
+
     menuViewZoom->Append(ID_View_ZoomIn, _("&Increase\tCtrl++"));
     menuViewZoom->Append(ID_View_ZoomOut, _("&Decrease\tCtrl+-"));
     menuViewZoom->AppendSeparator();
@@ -894,7 +894,7 @@ bool AppController::init()
     m_view_menu->AppendCheckItem(ID_Frame_ToggleFullScreen, _("F&ull Screen\tF11"));
 
     // create the data menu
-    
+
     wxMenu* menuDataColumns = new wxMenu;
     menuDataColumns->Append(ID_Data_CreateDynamicField, _("Insert &Calculated Field..."));
     menuDataColumns->Append(ID_Data_ModifyDynamicField, _("&Edit Calculated Field..."));
@@ -903,7 +903,7 @@ bool AppController::init()
     menuDataColumns->AppendSeparator();
     menuDataColumns->Append(ID_Table_EditViews, _("&Insert Column..."));
     menuDataColumns->Append(ID_Table_HideColumn, _("&Hide Column"));
-    
+
     wxMenu* menuDataGroups = new wxMenu;
     menuDataGroups->Append(ID_Table_InsertGroupBreak, _("&Insert Group Break"));
     menuDataGroups->Append(ID_Table_RemoveGroupBreak, _("&Remove Group Break"));
@@ -954,16 +954,16 @@ bool AppController::init()
     menuTools->Append(ID_App_ExtensionManager, _("&Extensions..."));
     menuTools->AppendSeparator();
     menuTools->Append(ID_App_Options, _("&Options..."));
-    
-    // note: for online items, some menu items may not have target URLs 
-    // (depending on application definitions in appversion.h; only show 
+
+    // note: for online items, some menu items may not have target URLs
+    // (depending on application definitions in appversion.h; only show
     // the menu items that have actual URLs associated with them
     wxMenu* menuHelp = new wxMenu;
     wxString help_item;
     bool append_help_contents_separator = false;
     bool append_help_resources_separator = false;
     bool append_help_update_separator = false;
-    
+
     // local help contents should always exist; other help-related
     // items may or may not exist
     if (true)
@@ -971,7 +971,7 @@ bool AppController::init()
         menuHelp->Append(ID_Project_Help, _("&Help Contents\tF1"));
         append_help_contents_separator = true;
     }
-    
+
     help_item = APP_WEBLOCATION_HELP;
     if (help_item.Length() > 0)
     {
@@ -986,7 +986,7 @@ bool AppController::init()
     }
     if (append_help_contents_separator)
         menuHelp->AppendSeparator();
-    
+
     // help resources info
     help_item = APP_WEBLOCATION_SUPPORT;
     if (help_item.Length() > 0)
@@ -1000,7 +1000,7 @@ bool AppController::init()
         menuHelp->Append(ID_Project_ContactUs, _("&Contact Us"));
         append_help_resources_separator = true;
     }
-    if (append_help_resources_separator)        
+    if (append_help_resources_separator)
         menuHelp->AppendSeparator();
 
     // help update info
@@ -1008,7 +1008,7 @@ bool AppController::init()
     if (help_item.Length() > 0)
     {
         menuHelp->Append(ID_App_LicenseManager, _("&Activate..."));
-        append_help_update_separator = true;        
+        append_help_update_separator = true;
     }
     help_item = APP_UPDATE_URL;
     if (help_item.Length() > 0)
@@ -1023,7 +1023,7 @@ bool AppController::init()
     menuHelp->Append(ID_App_About, _("A&bout..."));
 
 
-    
+
     wxMenuBar* menuBar = new wxMenuBar;
     menuBar->Append(menuFile, _("&File"));
     menuBar->Append(menuEdit, _("&Edit"));
@@ -1031,13 +1031,13 @@ bool AppController::init()
     menuBar->Append(menuData, _("&Data"));
     menuBar->Append(menuTools, _("&Tools"));
     menuBar->Append(menuHelp, _("&Help"));
-    
+
     // give the application hook a chance to managed the menu bar
     apphookInitMenuBar(menuBar);
-    
+
     m_frame->setMenuBar(menuBar, 4);
-    
-    
+
+
     // create the standard toolbar and dock it
     m_project_toolbar = new StandardToolbar(m_frame->getFrameWindow());
     m_frame->dockWindow(m_project_toolbar,
@@ -1047,7 +1047,7 @@ bool AppController::init()
                         siteNoResize,
                         0, -1, 0, 0);
     m_frame->getAuiManager().GetPane(m_project_toolbar).Name(wxT("NavigationToolbar")).Resizable().DockFixed();
-    
+
     // create the linkbar and dock it
     m_linkbar = new LinkBar(m_frame->getFrameWindow());
     m_frame->dockWindow(m_linkbar,
@@ -1069,7 +1069,7 @@ bool AppController::init()
                         siteHidden,
                         2, -1, 0, 0);
     m_frame->getAuiManager().GetPane(m_format_toolbar).Name(wxT("FormatToolbar")).Resizable().DockFixed();
-    
+
 
 
 
@@ -1082,75 +1082,75 @@ bool AppController::init()
     statusbar->sigItemLeftDblClick().connect(this, &AppController::onStatusBarItemLeftDblClick);
     statusbar->sigRefresh().connect(this, &AppController::onStatusBarRefresh);
 
-    
+
     wxDoubleClickGauge* job_progress_gauge;
     job_progress_gauge = new wxDoubleClickGauge(statusbar->getStatusBarCtrl(),
                                                 -1,
                                                 100,
                                                 wxDefaultPosition,
                                                 wxSize(130, 16));
-    
+
     // NOTE: The extra padding that is added to these items has been added
     //       so that the spacing of these items matches the spacing of the
     //       static items on the far left of the LinkBar
-    
+
     // add panel toggle statusbar items
     IStatusBarItemPtr item;
     item = statusbar->addItem(wxT("app_toggle_projectpanel"), StatusBar::LocationLeft);
     item->setBitmap(GETBMP(gf_project_16));
     item->setToolTip(_("Show/Hide Project Panel"));
     item->setPadding(3,1);
-    
+
     item = statusbar->addItem(wxT("app_toggle_fieldspanel"), StatusBar::LocationLeft);
     item->setBitmap(GETBMP(gf_field_16));
     item->setToolTip(_("Show/Hide Fields Panel"));
     item->setPadding(0,1);
-    
+
     item = statusbar->addItem(wxT("app_toggle_markspanel"), StatusBar::LocationLeft);
     item->setBitmap(GETBMP(gf_highlight_16));
     item->setToolTip(_("Show/Hide Marks Panel"));
     item->setPadding(0,1);
-    
+
     item = statusbar->addItem(wxT("app_toggle_relationshipspanel"), StatusBar::LocationLeft);
     item->setBitmap(GETBMP(gf_related_field_16));
     item->setToolTip(_("Show/Hide Relationships Panel"));
-    
+
     // add separator
     item = statusbar->addSeparator(wxEmptyString, StatusBar::LocationLeft);
-    
+
     // add job statusbar items
     item = statusbar->addItem(wxT("app_job_failed"), StatusBar::LocationLeft);
     item->setBitmap(GETBMP(gf_exclamation_16));
     item->show(false);
-    
+
     item = statusbar->addControl(job_progress_gauge, wxT("app_job_gauge"), StatusBar::LocationLeft);
     item->show(false);
-    
+
     item = statusbar->addItem(wxT("app_job_text"), StatusBar::LocationLeft);
     item->setWidth(180);
     item->show(false);
-    
+
     // store job text item for later use
     m_job_text_item = item;
 
     // add separator
     item = statusbar->addSeparator(wxT("app_job_text_separator"), StatusBar::LocationLeft);
     item->show(false);
-    
+
     // store job separator item for later use
     m_job_separator_item = item;
-    
+
     // add general text statusbar item
     item = statusbar->addItem(wxT("app_statusbar_text"), StatusBar::LocationLeft);
     item->setProportion(1);
-    
+
     // store statusbar text item for later use
     m_doc_text_item = item;
-    
+
     statusbar->populate();
-    
+
     m_frame->setStatusBar(statusbar);
-    
+
     m_frame->dockWindow(statusbar->getStatusBarCtrl(),
                wxEmptyString,
                sitetypeDockable |
@@ -1176,9 +1176,9 @@ bool AppController::init()
 
 
     // get the setting for m_data_locked ("Protect Data")
-    
+
     m_data_locked = g_app->getAppPreferences()->getBoolean(wxT("app.data_locked"), true);
-    
+
 
     IDocumentSitePtr site;
 
@@ -1190,7 +1190,7 @@ bool AppController::init()
     site->setCaption(_("Console"));
     site->setName(wxT("ConsolePanel"));
 
-    
+
     // create dbdoc and dock it
     m_dbdoc = new DbDoc;
     m_dbdoc->initAsDocument();
@@ -1210,10 +1210,10 @@ bool AppController::init()
                          getAppPrefsDefaultString(wxT("general.location.home")));
         flush = true;
     }
-    
+
     if (flush)
         prefs->flush();
-    
+
 
     // create the column list panel
     state = sitetypeDockable | dockLeft | siteHidden;
@@ -1221,34 +1221,34 @@ bool AppController::init()
     m_columnlistpanel_site = m_frame->createSite(columnlist_panel, state, 0, 0, 200, 360);
     m_columnlistpanel_site->setCaption(_("Fields"));
     m_columnlistpanel_site->setName(wxT("FieldsPanel"));
-    
+
     // make sure the the column list is docked
     // below the project panel by default
     wxAuiPaneInfo& info = m_frame->getAuiManager().GetPane(wxT("FieldsPanel"));
     info.Position(1);
-    
-    
-    
-    
+
+
+
+
     // create the marks panel
     state = sitetypeDockable | dockRight | siteHidden;
     MarkMgrPanel* markmgr_panel = new MarkMgrPanel;
     m_markmanagerpanel_site = m_frame->createSite(markmgr_panel, state, 0, 0, 200, 400);
     m_markmanagerpanel_site->setCaption(_("Marks"));
     m_markmanagerpanel_site->setName(wxT("MarksPanel"));
-    
-    
+
+
 
     // load frame perspective
-    
+
     if (perspective.length() > 0)
         m_frame->getAuiManager().LoadPerspective(perspective, false);
-    
-    
+
+
     // create the relationship diagram watcher (watches for files that are
     // renamed in order to update its own internal structures)
     m_rel_diagram_watcher = new RelDiagramWatcher;
-    
+
     // recalculate the frame's layout
     m_frame->refreshFrameLayout();
 
@@ -1260,7 +1260,7 @@ bool AppController::init()
     {
         // we don't want to show a message here if the user pressed 'Cancel'
         // in the Activate panel since it's clear they want to exit
-        
+
         if (m_frame.isOk())
             m_frame->getFrameWindow()->Close(true);
 
@@ -1268,21 +1268,21 @@ bool AppController::init()
     }
 
     g_app->processIdle();
-    
+
     if (!m_frame)
     {
         // license was deactivated
         return false;
     }
-    
-    
+
+
     // reset to (and save) the default perspective (first time only)
     if (clear_perspective_counter < ClearPerspectiveCounter)
         resetToDefaultPerspective();
 
 
     // set initial preferences
-    
+
     // NOTE: This must be at the end of AppController::init() because it sends
     //       a size event to the frame which recalculates the size of the all
     //       of the frame's children (must be done because of toolbar sizing)
@@ -1300,7 +1300,7 @@ bool AppController::init()
     // on Oct 9th 2007 when work commenced on the new status bar;
     if (maximized)
         m_frame->refreshFrameLayout();
-    
+
 
     // we need to add the find panel here (hidden, of course),
     // because we want to be able to add items to the find combobox;
@@ -1308,14 +1308,14 @@ bool AppController::init()
     // it will get a task bar selector because it is the first top-
     // level window to be created
     FindPanel* find_panel = new FindPanel;
-    
+
     site = m_frame->createSite(find_panel,
                                sitetypeModeless | siteHidden,
                                -1, -1, 340, 190);
     site->setMinSize(340,190);
     site->setName(wxT("FindPanel"));
-    
-    
+
+
     apphookAppStartup();
 
 
@@ -1323,7 +1323,7 @@ bool AppController::init()
     bool default_project_created = getAppPrefsBoolean(wxT("general.default_project_created"));
     if (!default_project_created)
         createDefaultProject();
-    
+
     // show startup page(s) -- this must be done after the call
     // to createDefaultProject() above since that call opens
     // and closes the default project (which closes all of
@@ -1344,16 +1344,16 @@ bool AppController::init()
      else if (startup_action == prefStartupOpenProject)
     {
         wxString connstr = getAppPrefsString(wxT("general.startup.connection"));
-        
+
         // do a lookup of the startup project
         ProjectMgr projmgr;
         int idx = projmgr.getIdxFromEntryName(connstr);
-        
+
         // if we have a startup project, try to load it
         if (idx != -1)
         {
             std::vector<ProjectInfo>& projects = projmgr.getProjectEntries();
-            
+
             // if we can't open the project, show the project manager
             if (!openProject(projects[idx].location,
                              projects[idx].user_id,
@@ -1371,12 +1371,12 @@ bool AppController::init()
             // we can't find the project, reset the default startup action
             prefs->setLong(wxT("general.startup.default_action"), prefStartupProjectMgr);
             prefs->flush();
-            
+
             showProjectManager();
         }
     }
-    
-    
+
+
     // if we don't have an open database yet, the user did not start with
     // a project open and exited the Project Manager dialog without
     // selecting a project, so bail out and exit the application
@@ -1406,7 +1406,7 @@ bool AppController::init()
         ExtensionMgr* ext_mgr = g_app->getExtensionMgr();
         ext_mgr->startAllExtensions();
     }
-    
+
     // hook for 'app ready'
     apphookAppReady();
 
@@ -1417,20 +1417,20 @@ void AppController::resetToDefaultPerspective()
 {
     wxFrame* frame = g_app->getMainWindow();
     frame->Freeze();
-    
+
     // make sure we reset the toolbar style
     long default_toolbar_style = getAppPrefsDefaultLong(wxT("general.toolbar.style"));
     g_app->getAppPreferences()->setLong(wxT("general.toolbar.style"), default_toolbar_style);
     g_app->getAppPreferences()->flush();
-    
+
     std::wstring perspective;
     long x, y, w, h, screen_x, screen_y;
     bool maximized;
-    
+
     screen_x = wxSystemSettings::GetMetric(wxSYS_SCREEN_X);
     screen_y = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y);
     screen_y -= getTaskBarHeight();
-    
+
     // read the default values (if they exist)
     IAppConfigPtr config = g_app->getAppConfig();
     config->setPath(L"/WindowDimensions");
@@ -1440,14 +1440,14 @@ void AppController::resetToDefaultPerspective()
     config->read(L"DefaultHeight",      &h,           screen_y);
     config->read(L"DefaultMaximized",   &maximized,   false);
     config->read(L"DefaultPerspective", perspective,  L"");
-    
+
     // load the default perspective
     g_app->getMainWindow()->SetSize(x,y,w,h);
     g_app->getMainFrame()->getAuiManager().LoadPerspective(perspective, true);
-    
+
     // get the (updated) default perspective string from the aui manager
     perspective = m_frame->getAuiManager().SavePerspective();
-    
+
     // write out the default values
     config->write(L"DefaultXPos",        x);
     config->write(L"DefaultYPos",        y);
@@ -1455,21 +1455,21 @@ void AppController::resetToDefaultPerspective()
     config->write(L"DefaultHeight",      h);
     config->write(L"DefaultMaximized",   maximized);
     config->write(L"DefaultPerspective", perspective);
-    
+
     frame->Thaw();
 }
 
 void AppController::doPreferenceRefresh()
 {
     // toolbar and button prefs
-    
+
     IAppPreferencesPtr prefs = g_app->getAppPreferences();
 
     long toolbar_prefs_setting, toolbar_style_flags;
     toolbar_prefs_setting = getAppPrefsLong(wxT("general.toolbar.style"));
     prefs->setLong(wxT("general.toolbar.style"), toolbar_prefs_setting);
     prefs->flush();
-    
+
     // set the aui toolbar style
     switch (toolbar_prefs_setting)
     {
@@ -1478,7 +1478,7 @@ void AppController::doPreferenceRefresh()
         case prefToolbarLargeIcons:         toolbar_style_flags = wxAUI_TB_DEFAULT_STYLE; break;
         case prefToolbarLargeIconsWithText: toolbar_style_flags = wxAUI_TB_TEXT; break;
     }
-    
+
     // make sure the toolbar doesn't have a border
     toolbar_style_flags |= wxNO_BORDER;
 
@@ -1508,11 +1508,11 @@ void AppController::doPreferenceRefresh()
 
     // update the internet preferences
     wxWebPreferences webprefs = wxWebControl::GetPreferences();
-    
+
     // set user agent
-    
+
     wxString agent_extra;
-    
+
     agent_extra = APP_CONFIG_KEY;
     agent_extra = wxT("/");
 
@@ -1521,24 +1521,24 @@ void AppController::doPreferenceRefresh()
                             APP_VERSION_MINOR,
                             APP_VERSION_SUBMINOR,
                             APP_VERSION_BUILDSERIAL);
-    
+
     webprefs.SetStringPref( wxT("general.useragent.extra.kx"), agent_extra);
-    
-    
+
+
     // set proxy settings
-    
+
     webprefs.SetStringPref( wxT("network.proxy.http"),       getAppPrefsString(wxT("internet.proxy.http")));
     webprefs.SetIntPref(    wxT("network.proxy.http_port"),  getAppPrefsLong(wxT("internet.proxy.http_port")));
-    
+
     webprefs.SetStringPref( wxT("network.proxy.ftp"),        getAppPrefsString(wxT("internet.proxy.ftp")));
     webprefs.SetIntPref(    wxT("network.proxy.ftp_port"),   getAppPrefsLong(wxT("internet.proxy.ftp_port")));
-    
+
     webprefs.SetStringPref( wxT("network.proxy.ssl"),        getAppPrefsString(wxT("internet.proxy.ssl")));
     webprefs.SetIntPref(    wxT("network.proxy.ssl_port"),   getAppPrefsLong(wxT("internet.proxy.ssl_port")));
-    
+
     webprefs.SetStringPref( wxT("network.proxy.socks"),      getAppPrefsString(wxT("internet.proxy.socks")));
     webprefs.SetIntPref(    wxT("network.proxy.socks_port"), getAppPrefsLong(wxT("internet.proxy.socks_port")));
-    
+
     int proxy_type = getAppPrefsLong(wxT("internet.proxy.type"));
     switch (proxy_type)
     {
@@ -1555,11 +1555,11 @@ void AppController::doPreferenceRefresh()
     }
 
 
-    // set certificate warning preference; note: this setting is for disabling 
+    // set certificate warning preference; note: this setting is for disabling
     // the SSL certificate warnings in certain situations where they might happen
-    // heven though the security is known to exist; this is not part of the standard 
-    // webpref settings that are allowed, nor is it exposed in the interface; 
-    // TODO: research if there's some combination of native preferences that might 
+    // heven though the security is known to exist; this is not part of the standard
+    // webpref settings that are allowed, nor is it exposed in the interface;
+    // TODO: research if there's some combination of native preferences that might
     // work to accomplish this
     bool ignore_cert_errors = getAppPrefsBoolean(wxT("internet.ignore_cert_errors"));
     if (getAppPrefsBoolean(wxT("internet.ignore_cert_errors")))
@@ -1567,14 +1567,14 @@ void AppController::doPreferenceRefresh()
 
 
     // set cookie preferences
-    
+
     if (getAppPrefsBoolean(wxT("privacy.cookie.accept")))
         webprefs.SetIntPref(wxT("network.cookie.cookieBehavior"), 0 /* enable all cookies */);
          else
         webprefs.SetIntPref(wxT("network.cookie.cookieBehavior"), 2 /* disable all cookies */);
-    
+
     webprefs.SetIntPref(wxT("network.cookie.lifetime.days"), getAppPrefsLong(wxT("privacy.cookie.lifetime_days")));
-    
+
     int cookie_lifetime_policy = getAppPrefsLong(wxT("privacy.cookie.lifetime_policy"));
     switch (cookie_lifetime_policy)
     {
@@ -1587,10 +1587,10 @@ void AppController::doPreferenceRefresh()
             webprefs.SetIntPref(wxT("network.cookie.lifetimePolicy"), 2 /* accept for session only */);
             break;
     }
-    
-    
+
+
     // set popup preferences
-    
+
     if (getAppPrefsBoolean(wxT("privacy.popups.block")))
         webprefs.SetIntPref(wxT("privacy.popups.policy"), 2 /* reject popups */);
          else
@@ -1623,34 +1623,34 @@ void AppController::onNew(wxCommandEvent& evt)
     wxFrame* main_window = g_app->getMainWindow();
 
     m_linkbar->SetToolSticky(evt.GetId(), true);
-    
+
     // create the popup menu
     wxMenu menuPopup;
-    
+
     wxMenuItem* m1 =  new wxMenuItem(&menuPopup, ID_Project_NewTab, _("Tab"));
     m1->SetBitmap(GETBMP(gf_document_16));
     menuPopup.Append(m1);
-    
+
     wxMenuItem* m2 =  new wxMenuItem(&menuPopup, ID_Project_NewTable, _("Table"));
     m2->SetBitmap(GETBMP(gf_table_16));
     menuPopup.Append(m2);
-    
+
     wxMenuItem* m3 =  new wxMenuItem(&menuPopup, ID_Project_NewReport, _("Report"));
     m3->SetBitmap(GETBMP(gf_report_16));
     menuPopup.Append(m3);
-    
+
     wxMenuItem* m4 =  new wxMenuItem(&menuPopup, ID_Project_NewQuery, _("Query"));
     m4->SetBitmap(GETBMP(gf_query_16));
     menuPopup.Append(m4);
-    
+
     wxMenuItem* m5 =  new wxMenuItem(&menuPopup, ID_Project_NewScript, _("Script"));
     m5->SetBitmap(GETBMP(gf_script_16));
     menuPopup.Append(m5);
-    
+
     wxRect rect = m_linkbar->GetToolRect(evt.GetId());
     wxPoint pt = m_linkbar->ClientToScreen(rect.GetBottomLeft());
     pt = main_window->ScreenToClient(pt);
-    
+
     CommandCapture* cc = new CommandCapture;
     main_window->PushEventHandler(cc);
     main_window->PopupMenu(&menuPopup, pt);
@@ -1700,7 +1700,7 @@ static bool setReportCreateInfo(IDocumentSitePtr doc_site,
 
     // set the data fields
     int generate_fields = false;
-    
+
     int i;
     int col_count = grid->getColumnCount();
     kcl::IModelPtr model = grid->getModel();
@@ -1718,7 +1718,7 @@ static bool setReportCreateInfo(IDocumentSitePtr doc_site,
             // determine the alignment
             wxString alignment;
             int type = model->getColumnInfo(model_idx)->getType();
-            
+
             switch (type)
             {
                 default:
@@ -1792,9 +1792,9 @@ void AppController::onStartRecord(wxCommandEvent& evt)
     g_macro.reset();
     g_macro.setIndent(0);
     g_macro.setRecording(true);
-    
+
     wxDateTime now = wxDateTime::Now();
-    
+
     g_macro << "// Generated Macro Script";
     g_macro << wxT("// ") + now.Format();
     g_macro << "";
@@ -1818,28 +1818,28 @@ void AppController::onStopRecord(wxCommandEvent& evt)
     g_macro << "}";
     g_macro << "";
     g_macro.setRecording(false);
-    
+
     wxString text;
     std::vector<wxString>& lines = g_macro.getLines();
     std::vector<wxString>::iterator it;
-    
+
     for (it = lines.begin(); it != lines.end(); ++it)
     {
         text += *it;
         text += wxT("\n");
     }
-    
+
     g_macro.reset();
-    
+
     int site_id = 0;
     if (!newScript(&site_id))
         return;
-        
+
     IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(site_id);
     IEditorDocPtr doc = site->getDocument();
     if (doc.isNull())
         return;
-    
+
     doc->setText(text);
 }
 
@@ -1855,20 +1855,20 @@ void AppController::onCreateBookmark(wxCommandEvent& evt)
                    wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
     }
-    
+
     // make sure we have an open document
     IDocumentSitePtr site = m_frame->getActiveChild();
     if (site.isNull())
         return;
-    
+
     IDocumentPtr doc = site->getDocument();
     if (doc.isNull())
         return;
-    
+
     // get rid of unwanted characters
     wxString s = site->getCaption();
     trimUnwantedUrlChars(s);
-    
+
     // get new bookmark path from a dialog
     LinkPropsDialog dlg(g_app->getMainWindow());
     dlg.setMode(LinkPropsDialog::ModeCreate);
@@ -1877,10 +1877,10 @@ void AppController::onCreateBookmark(wxCommandEvent& evt)
     dlg.SetSize(360,145);
     dlg.SetMinSize(wxSize(370,165));
     dlg.CenterOnScreen();
-    
+
     if (dlg.ShowModal() != wxID_OK)
         return;
-    
+
     BookmarkFs::createBookmark(towstr(dlg.getPath()), towstr(doc->getDocumentLocation()));
     m_linkbar->refresh();
 }
@@ -1925,7 +1925,7 @@ static bool isValidOpenExtension(const wxString& ext)
     {
         return true;
     }
-    
+
     return false;
 }
 
@@ -2021,16 +2021,16 @@ static bool isInvalidOpenExtension(const wxString& ext)
     {
         return true;
     }
-    
+
     // this is a list of file extensions that we run into
     // on a regular basis that are not in the list above
-    
+
     if (ext.CmpNoCase(wxT("ZIP")) == 0 ||
         ext.CmpNoCase(wxT("ISO")) == 0)
     {
         return true;
     }
-    
+
     return false;
 }
 
@@ -2073,10 +2073,10 @@ void AppController::onOpenFile(wxCommandEvent& evt)
                  wxEmptyString,
                  filter,
                  wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE);
-    
+
     if (dlg.ShowModal() != wxID_OK)
         return;
-    
+
     // show a busy cursor
     AppBusyCursor bc;
 
@@ -2090,15 +2090,15 @@ void AppController::onOpenFile(wxCommandEvent& evt)
     for (i = 0; i < count; ++i)
     {
         path = as.Item(i);
-        
+
         ext = path.AfterLast('.');
-        
+
         if (i == 0)
         {
             first_ext = ext;
             continue;
         }
-        
+
         // if all of the extensions are not the same, bail out
         if (ext.CmpNoCase(first_ext))
         {
@@ -2108,11 +2108,11 @@ void AppController::onOpenFile(wxCommandEvent& evt)
             return;
         }
     }
-    
+
     // open each set
     bool error_occurred = false;
     bool invalid_filetype = false;
-    
+
     for (i = 0; i < count; ++i)
     {
         wxString url = filenameToUrl(as.Item(i));
@@ -2120,7 +2120,7 @@ void AppController::onOpenFile(wxCommandEvent& evt)
         wxString ext = as.Item(i).AfterLast(wxT('.'));
         if (ext == as.Item(i))
             ext = wxT("");
-            
+
         if (isValidOpenExtension(ext))
         {
             if (!openAny(url))
@@ -2140,7 +2140,7 @@ void AppController::onOpenFile(wxCommandEvent& evt)
             }
         }
     }
-    
+
     if (invalid_filetype)
     {
         wxString appname = APPLICATION_NAME;
@@ -2151,7 +2151,7 @@ void AppController::onOpenFile(wxCommandEvent& evt)
                            wxOK | wxICON_INFORMATION | wxCENTER);
         return;
     }
-    
+
     // let the user know if some of the files couldn't be opened
     if (error_occurred)
     {
@@ -2167,7 +2167,7 @@ void AppController::onOpenLocation(wxCommandEvent& evt)
 
     // select the text in the URI bar
     m_project_toolbar->m_url->SetSelection(0,-1);
-    
+
     // set the focus to the URI bar
     m_project_toolbar->m_url->SetFocus();
 }
@@ -2251,25 +2251,25 @@ void AppController::onStop(wxCommandEvent& evt)
     jobs::IJobQueuePtr job_queue = g_app->getJobQueue();
     if (job_queue.isNull())
         return;
-    
+
     if (!job_queue->getJobsActive())
         return;
-    
+
     jobs::IJobInfoEnumPtr jobs;
     jobs = job_queue->getJobInfoEnum(jobs::jobStateRunning);
     if (jobs.isNull())
         return;
-    
+
     if (jobs->size() > 1)
     {
         showJobManager();
         return;
     }
-    
+
     jobs::IJobInfoPtr job_info = jobs->getItem(0);
     if (job_info.isNull())
         return;
-    
+
     jobs::IJobPtr job = job_queue->lookupJob(job_info->getJobId());
     if (job.isOk())
         job->cancel();
@@ -2295,7 +2295,7 @@ void AppController::onToggleFullScreen(wxCommandEvent& evt)
               APPLICATION_NAME,
               wxOK | wxICON_INFORMATION);
     }
-    
+
     toggleFullScreen();
 }
 
@@ -2375,7 +2375,7 @@ void AppController::onViewChanged(wxCommandEvent& evt)
 
     IFramePtr main_frame = g_app->getMainFrame();
     wxFrame* main_window = g_app->getMainWindow();
-    
+
     bool is_allowed = true;
 
     // switch to the view that was selected
@@ -2387,14 +2387,14 @@ void AppController::onViewChanged(wxCommandEvent& evt)
         e1->l_param2 = (unsigned long)(&is_allowed);
         main_frame->sendEvent(e1);
     }
-    
+
     // don't allow the view to be changed
     if (!is_allowed)
         return;
-        
+
     // switch to the view that was selected
     if (command != 0)
-    {    
+    {
         e2 = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGED);
         e2->l_param = (unsigned long)command;
         main_frame->sendEvent(e2);
@@ -2405,7 +2405,7 @@ void AppController::onViewChanged(wxCommandEvent& evt)
 void AppController::doViewSwitcher(bool drop_down_menu)
 {
     FrameworkEvent *e1, *e2, *e3;
-    
+
     IFramePtr main_frame = g_app->getMainFrame();
     wxFrame* main_window = g_app->getMainWindow();
 
@@ -2414,26 +2414,26 @@ void AppController::doViewSwitcher(bool drop_down_menu)
     e1 = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_QUERY_AVAILABLE_VIEW);
     e1->o_param = (wxObject*)list;
     main_frame->sendEvent(e1);
-    
+
     int id;
     wxString label;
     bool checked;
-    
+
     wxMenu menuPopup;
-    
+
     int next_id = -1;
     int command;
-    
+
     size_t i, count = list->getCount();
     for (i = 0; i < count; ++i)
     {
         list->getItemInfo(i, &id, &label, &checked);
-        
+
         wxMenuItem* item = menuPopup.AppendCheckItem(id, label);
         if (checked)
         {
             item->Check(true);
-            
+
             // figure out which document is the "next" document
             if (next_id == -1)
             {
@@ -2452,11 +2452,11 @@ void AppController::doViewSwitcher(bool drop_down_menu)
             }
         }
     }
-    
+
     if (drop_down_menu)
     {
         m_project_toolbar->SetToolSticky(ID_View_ViewSwitcher, true);
-        
+
         // FIXME: The positioning of this menu is troublesome.  On Windows,
         //        if the menu is going to go offscreen, Windows moves
         //        the menu so that the menu no longer goes offscreen,
@@ -2464,7 +2464,7 @@ void AppController::doViewSwitcher(bool drop_down_menu)
         //        with the toolbar item.  Ideally, we should measure
         //        the menu ourselves and determine if it should be
         //        popped up from the bottom left or bottom right
-        
+
         // the dropdown arrow was clicked, show the view choices to the user
         wxRect rect = m_project_toolbar->GetToolRect(ID_View_ViewSwitcher);
         wxPoint pt(rect.GetRight()+1, rect.GetBottom());
@@ -2495,11 +2495,11 @@ void AppController::doViewSwitcher(bool drop_down_menu)
         e2->l_param2 = (unsigned long)(&is_allowed);
         main_frame->sendEvent(e2);
     }
-    
+
     // don't allow the view to be changed
     if (!is_allowed)
         return;
-        
+
     // switch to the view that was selected
     if (command != 0)
     {
@@ -2507,7 +2507,7 @@ void AppController::doViewSwitcher(bool drop_down_menu)
         e3->l_param = (unsigned long)command;
         main_frame->sendEvent(e3);
     }
-    
+
     // cleanup before we're done
     delete list;
 }
@@ -2529,7 +2529,7 @@ void AppController::onBookmarkDropDown(wxAuiToolBarEvent& evt)
         menuPopup.Append(ID_File_ShareView, _("Share Data View..."));
 
         m_project_toolbar->SetToolSticky(ID_File_Bookmark, true);
-        
+
         wxRect rect = m_project_toolbar->GetToolRect(ID_File_Bookmark);
         wxPoint pt(rect.GetRight()+1, rect.GetBottom());
 
@@ -2585,7 +2585,7 @@ void AppController::onCutCopyPaste(wxCommandEvent& evt)
         {
             m_dbdoc->doPaste();
         }
-    
+
         return;
     }
 
@@ -2629,7 +2629,7 @@ void AppController::onCutCopyPaste(wxCommandEvent& evt)
 void AppController::onTextColorDropDown(wxAuiToolBarEvent& evt)
 {
     wxAuiToolBar* format_toolbar = (wxAuiToolBar*)(evt.GetEventObject());
-    
+
     if (evt.IsDropDownClicked())
     {
         // the dropdown arrow was clicked, show the color panel
@@ -2662,7 +2662,7 @@ void AppController::onTextColorDropDown(wxAuiToolBarEvent& evt)
 void AppController::onBorderDropDown(wxAuiToolBarEvent& evt)
 {
     wxAuiToolBar* format_toolbar = (wxAuiToolBar*)(evt.GetEventObject());
-    
+
     if (evt.IsDropDownClicked())
     {
         // the dropdown arrow was clicked, show the border panel
@@ -2686,7 +2686,7 @@ void AppController::onBorderDropDown(wxAuiToolBarEvent& evt)
 void AppController::onFillColorDropDown(wxAuiToolBarEvent& evt)
 {
     wxAuiToolBar* format_toolbar = (wxAuiToolBar*)(evt.GetEventObject());
-    
+
     if (evt.IsDropDownClicked())
     {
         // the dropdown arrow was clicked, show the color panel
@@ -2719,7 +2719,7 @@ void AppController::onFillColorDropDown(wxAuiToolBarEvent& evt)
 void AppController::onLineColorDropDown(wxAuiToolBarEvent& evt)
 {
     wxAuiToolBar* format_toolbar = (wxAuiToolBar*)(evt.GetEventObject());
-    
+
     if (evt.IsDropDownClicked())
     {
         // the dropdown arrow was clicked, show the color panel
@@ -2753,7 +2753,7 @@ void AppController::onRelationshipSyncDropDown(wxAuiToolBarEvent& evt)
 {
     wxFrame* main_window = g_app->getMainWindow();
     int command;
-    
+
     m_linkbar->SetToolSticky(ID_App_ToggleRelationshipSync, true);
 
     wxMenu menuPopup;
@@ -2783,8 +2783,8 @@ void AppController::onRelationshipSyncDropDown(wxAuiToolBarEvent& evt)
 
     // make sure the button is "un-stuck"
     m_linkbar->SetToolSticky(ID_App_ToggleRelationshipSync, false);
-    
-    
+
+
     switch (command)
     {
         default:   return;
@@ -2815,7 +2815,7 @@ void AppController::onSetFindCtrlFocus(wxCommandEvent& evt)
 {
     // select the text in the find control
     m_project_toolbar->m_find->SetSelection(0,-1);
-    
+
     // set the focus to the find control
     m_project_toolbar->m_find->SetFocus();
 }
@@ -2825,7 +2825,7 @@ void AppController::onFindPrev(wxCommandEvent& evt)
     wxString find_str = m_project_toolbar->m_find->GetValue();
     if (find_str.IsEmpty())
         return;
-    
+
     // fire an event to add this string to the find combobox dropdowns
     FrameworkEvent* cfw_evt = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_ADD_FIND_COMBO_ITEM);
     cfw_evt->s_param = find_str;
@@ -2834,15 +2834,15 @@ void AppController::onFindPrev(wxCommandEvent& evt)
     IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
     if (doc_site.isNull())
         return;
-    
+
     IDocumentPtr doc = doc_site->getDocument();
     if (doc.isNull())
         return;
-    
+
     IFindTargetPtr find_target = doc;
     if (find_target.isNull())
         return;
-    
+
     bool match_case, whole_word;
     getAppPrefsFindMatchCase(&match_case);
     getAppPrefsFindMatchWholeWord(&whole_word);
@@ -2858,7 +2858,7 @@ void AppController::onFindNext(wxCommandEvent& evt)
     wxString find_str = m_project_toolbar->m_find->GetValue();
     if (find_str.IsEmpty())
         return;
-    
+
     // fire an event to add this string to the find combobox dropdowns
     FrameworkEvent* cfw_evt = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_ADD_FIND_COMBO_ITEM);
     cfw_evt->s_param = find_str;
@@ -2867,15 +2867,15 @@ void AppController::onFindNext(wxCommandEvent& evt)
     IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
     if (doc_site.isNull())
         return;
-    
+
     IDocumentPtr doc = doc_site->getDocument();
     if (doc.isNull())
         return;
-    
+
     IFindTargetPtr find_target = doc;
     if (find_target.isNull())
         return;
-    
+
     bool match_case, whole_word;
     getAppPrefsFindMatchCase(&match_case);
     getAppPrefsFindMatchWholeWord(&whole_word);
@@ -2887,7 +2887,7 @@ void AppController::onFindNext(wxCommandEvent& evt)
 }
 
 void AppController::onMergeTable(wxCommandEvent& evt)
-{   
+{
     IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("MergePanel"));
     if (site.isNull())
@@ -3073,9 +3073,9 @@ void AppController::onUpdateUI_ToggleToolbar(wxUpdateUIEvent& evt)
 {
     if (m_frame.isNull())
         return;
-    
+
     wxWindowID wnd_id = -1;
-    
+
     switch (evt.GetId())
     {
         case ID_Frame_ToggleStandardToolbar: wnd_id = ID_Toolbar_Standard; break;
@@ -3084,11 +3084,11 @@ void AppController::onUpdateUI_ToggleToolbar(wxUpdateUIEvent& evt)
         default:
             return;
     }
-    
+
     wxWindow* wnd = m_frame->findWindow(wnd_id);
     if (!wnd)
         return;
-    
+
     evt.Check(wnd->IsShown());
 }
 
@@ -3096,7 +3096,7 @@ void AppController::onUpdateUI_ToggleStatusBar(wxUpdateUIEvent& evt)
 {
     if (m_frame.isNull())
         return;
-    
+
     IStatusBarPtr statusbar = m_frame->getStatusBar();
     if (statusbar.isOk())
     {
@@ -3104,7 +3104,7 @@ void AppController::onUpdateUI_ToggleStatusBar(wxUpdateUIEvent& evt)
         evt.Check(wnd->IsShown());
         return;
     }
-    
+
     evt.Check(false);
 }
 
@@ -3112,17 +3112,17 @@ void AppController::onUpdateUI_ToggleProjectPanel(wxUpdateUIEvent& evt)
 {
     if (m_frame.isNull())
         return;
-    
+
     if (!m_dbdoc)
         return;
-    
+
     bool check = false;
-    
+
     IDocumentSitePtr site;
     site = m_dbdoc->getDbDocSite();
     if (site.isOk())
         check = (site->getVisible() ? true : false);
-    
+
     evt.Check(check);
 }
 
@@ -3130,14 +3130,14 @@ void AppController::onUpdateUI_ToggleConsolePanel(wxUpdateUIEvent& evt)
 {
     if (m_frame.isNull())
         return;
-    
+
     bool check = false;
-    
+
     IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("ConsolePanel"));
     if (site.isOk())
         check = (site->getVisible() ? true : false);
-    
+
     evt.Check(check);
 }
 
@@ -3145,14 +3145,14 @@ void AppController::onUpdateUI_ToggleColumnListPanel(wxUpdateUIEvent& evt)
 {
     if (m_frame.isNull())
         return;
-    
+
     bool check = false;
-    
+
     IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("FieldsPanel"));
     if (site.isOk())
         check = (site->getVisible() ? true : false);
-    
+
     evt.Check(check);
 }
 
@@ -3160,14 +3160,14 @@ void AppController::onUpdateUI_ToggleMarkManagerPanel(wxUpdateUIEvent& evt)
 {
     if (m_frame.isNull())
         return;
-    
+
     bool check = false;
-    
+
     IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("MarksPanel"));
     if (site.isOk())
         check = (site->getVisible() ? true : false);
-    
+
     evt.Check(check);
 }
 
@@ -3175,14 +3175,14 @@ void AppController::onUpdateUI_ToggleRelationshipPanel(wxUpdateUIEvent& evt)
 {
     if (m_frame.isNull())
         return;
-    
+
     bool check = false;
-    
+
     IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("RelationshipsPanel"));
     if (site.isOk())
         check = (site->getVisible() ? true : false);
-    
+
     evt.Check(check);
 }
 
@@ -3199,11 +3199,11 @@ void AppController::onUpdateUI_RelationshipSync(wxUpdateUIEvent& evt)
         case ID_App_RelationshipSyncNone:
             synctype == tabledocRelationshipSyncNone ? evt.Check(true) : evt.Check(false);
             break;
-            
+
         case ID_App_RelationshipSyncFilter:
             synctype == tabledocRelationshipSyncFilter ? evt.Check(true) : evt.Check(false);
             break;
-            
+
         case ID_App_RelationshipSyncSeek:
             synctype == tabledocRelationshipSyncSeek ? evt.Check(true) : evt.Check(false);
             break;
@@ -3214,22 +3214,22 @@ void AppController::onUpdateUI_ViewSource(wxUpdateUIEvent& evt)
 {
     if (!m_frame)
         return;
-        
+
     IDocumentSitePtr doc_site = m_frame->getActiveChild();
     if (!doc_site)
         return;
-        
+
     IDocumentPtr doc = doc_site->getDocument();
     IWebDocPtr webdoc = doc;
     ITextDocPtr textdoc = doc;
     ISqlDocPtr sqldoc = doc;
-    
+
     if (sqldoc.isOk())
         evt.Check(true);
-    
+
     if (textdoc.isOk())
         evt.Check(true);
-    
+
     if (webdoc.isOk())
         evt.Check(webdoc->isViewingSource());
 }
@@ -3238,17 +3238,17 @@ void AppController::onUpdateUI_ViewDesign(wxUpdateUIEvent& evt)
 {
     if (!m_frame)
         return;
-        
+
     IDocumentSitePtr doc_site = m_frame->getActiveChild();
     if (!doc_site)
         return;
-        
+
     IDocumentPtr doc = doc_site->getDocument();
     IReportDocPtr reportdoc = doc;
     ITransformationDocPtr transdoc = doc;
     IStructureDocPtr structdoc = doc;
     IQueryDocPtr querydoc = doc;
-    
+
     evt.Check(transdoc.isOk() ||
               structdoc.isOk() ||
               querydoc.isOk());
@@ -3261,21 +3261,21 @@ void AppController::onUpdateUI_ViewLayout(wxUpdateUIEvent& evt)
 {
     if (!m_frame)
         return;
-        
+
     IDocumentSitePtr doc_site = m_frame->getActiveChild();
     if (!doc_site)
         return;
-        
+
     IDocumentPtr doc = doc_site->getDocument();
     IWebDocPtr webdoc = doc;
     IReportDocPtr reportdoc = doc;
     ITableDocPtr tabledoc = doc;
-    
+
     evt.Check(tabledoc.isOk());
-    
+
     if (webdoc)
         evt.Check(!webdoc->isViewingSource());
-    
+
     if (reportdoc)
         evt.Check(!reportdoc->isDesignView());
 }
@@ -3295,7 +3295,7 @@ void AppController::onUpdateUI_StopRecord(wxUpdateUIEvent& evt)
 void AppController::onStatusBarItemLeftClick(IStatusBarItemPtr item)
 {
     wxString name = item->getName();
-    
+
     if (name == wxT("app_toggle_projectpanel"))
         toggleProjectPanel();
      else if (name == wxT("app_toggle_fieldspanel"))
@@ -3311,7 +3311,7 @@ void AppController::onStatusBarItemLeftClick(IStatusBarItemPtr item)
 void AppController::onStatusBarItemLeftDblClick(IStatusBarItemPtr item)
 {
     wxString name = item->getName();
-    
+
     if (name == wxT("app_job_gauge") || name == wxT("app_job_text"))
         showJobManager();
 }
@@ -3320,7 +3320,7 @@ void AppController::onStatusBarRefresh()
 {
     // NOTE: use care when adding calls to this function as it
     //       is called _EVERY_ time the statusbar refreshes itself
-    
+
     // there are no active jobs
     if (!g_app->getJobQueue()->getJobsActive())
     {
@@ -3332,11 +3332,11 @@ void AppController::onStatusBarRefresh()
             m_doc_text_item->show(true);
             m_frame->getStatusBar()->populate();
         }
-        
+
         // no need to do anything
         return;
     }
-    
+
     // a job is running and there is no text in the
     // main application statusbar area; make the job text
     // take up all of the statusbar's "stretchable" area
@@ -3349,7 +3349,7 @@ void AppController::onStatusBarRefresh()
         m_frame->getStatusBar()->populate();
         return;
     }
-    
+
     // a job is running and there is also text in the
     // main application statusbar area; show both the job text
     // and the application text in the statusbar's "stretchable" area
@@ -3370,14 +3370,14 @@ void AppController::onFrameEvent(FrameworkEvent& evt)
     {
         wxString str = evt.s_param;
         wxBitmap bitmap = GETBMP(gf_find_16);
-        
+
         // if the find/filter string doesn't exist in the find combobox, add it
         if (m_project_toolbar->m_find->FindString(str) == wxNOT_FOUND &&
             !str.IsEmpty())
         {
             m_project_toolbar->m_find->Insert(str, bitmap, 0);
         }
-        
+
         // update the standard toolbar
         m_project_toolbar->m_find->SetValue(str);
     }
@@ -3406,18 +3406,18 @@ void AppController::onFrameClose(wxCloseEvent& evt)
         closeProject();
         return;
     }
-    
+
 
     int ID_ExitApp = 100;
     int ID_RunBackgroundJobs = 101;
-    
+
     // check for scheduled jobs
 
     std::vector<JobSchedulerEntry> jobs = g_app->getJobScheduler()->getJobs();
     if (jobs.size() > 0)
     {
         bool background_jobs_active = false;
-        
+
         std::vector<JobSchedulerEntry>::iterator job_it;
         for (job_it = jobs.begin(); job_it != jobs.end(); ++job_it)
         {
@@ -3427,7 +3427,7 @@ void AppController::onFrameClose(wxCloseEvent& evt)
                 break;
             }
         }
-        
+
         if (background_jobs_active)
         {
             #ifdef WIN32
@@ -3440,7 +3440,7 @@ void AppController::onFrameClose(wxCloseEvent& evt)
                 dlg.setButton2(ID_ExitApp, _("Exit"));
                 dlg.showButtons(CustomPromptDlg::showButton1 |
                                 CustomPromptDlg::showButton2);
-                
+
                 int result = dlg.ShowModal();
                 if (result == ID_RunBackgroundJobs)
                 {
@@ -3453,18 +3453,18 @@ void AppController::onFrameClose(wxCloseEvent& evt)
                     evt.Veto();
                     return;
                 }
-                
+
             #else
                 wxString appname = APPLICATION_NAME;
                 wxString message = wxString::Format(_("There are currently jobs scheduled to run.  If you choose to exit %s, these jobs will not run as scheduled.  Are you sure you want to exit %s?"), appname.c_str(), appname.c_str());
-                
+
                 if (wxYES == appMessageBox(message,
                                                 APPLICATION_NAME,
                                                 wxYES_NO))
                 {
                     return;
                 }
-                
+
                 evt.Veto();
                 return;
             #endif
@@ -3499,11 +3499,11 @@ void AppController::onFrameSize(wxSizeEvent& evt)
 {
     wxFrame* frame_wnd = g_app->getMainWindow();
     bool maximized = frame_wnd->IsMaximized();
-    
+
     IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
     if (statusbar.isNull())
         return;
-    
+
     if (maximized)
         statusbar->showResizeGripper(false);
          else
@@ -3511,7 +3511,7 @@ void AppController::onFrameSize(wxSizeEvent& evt)
 }
 
 void AppController::onFrameDestroy()
-{ 
+{
     wxFrame* frame_wnd = g_app->getMainWindow();
 
     if (frame_wnd->IsIconized())
@@ -3527,7 +3527,7 @@ void AppController::onFrameDestroy()
 
     wxAuiManager& mgr = m_frame->getAuiManager();
     std::wstring perspective = towstr(mgr.SavePerspective());
-    
+
 
     // main window dimensions
 
@@ -3565,7 +3565,7 @@ void AppController::onFrameDestroy()
     m_frame.clear();
     m_columnlistpanel_site.clear();
     m_markmanagerpanel_site.clear();
-    
+
     g_app->setMainFrame(xcm::null);
 
 
@@ -3610,7 +3610,7 @@ void AppController::onFrameBarRightClick()
 void AppController::updateTitle()
 {
     wxString title;
-    
+
     // update the frame's titlebar
     IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
     if (doc_site.isNull())
@@ -3634,7 +3634,7 @@ void AppController::updateTitle()
             title = m_frame_caption;
         }
     }
-    
+
 
     wxFrame* wnd = g_app->getMainWindow();
     if (wnd && wnd->GetTitle() != title)
@@ -3647,34 +3647,34 @@ void AppController::updateURLToolbar()
 {
     if (!m_frame)
         return;
-        
+
     wxString name;
     wxBitmap bitmap;
-    
+
     // get the name of the child
     IDocumentSitePtr doc_site = m_frame->getActiveChild();
     if (doc_site.isOk())
     {
         bitmap = doc_site->getBitmap();
-        
+
         IDocumentPtr doc = doc_site->getDocument();
         if (doc.isOk())
             name = doc->getDocumentLocation();
-        
+
         // this is a temporary fix so that the spinning progress
         // icon doesn't show up as the document icon in the URL bar
         IWebDocPtr webdoc = doc;
         if (webdoc.isOk())
             bitmap = GETBMP(gf_document_16);
     }
-    
+
     // if it doesn't exist in the url bar, add it
     if (m_project_toolbar->m_url->FindString(name) == wxNOT_FOUND &&
         name.CmpNoCase(wxT("about:blank")) != 0 && !name.IsEmpty())
     {
         m_project_toolbar->m_url->Insert(name, bitmap, 0);
     }
-    
+
     // update the standard toolbar
     m_project_toolbar->m_url->SetValue(name);
 }
@@ -3689,7 +3689,7 @@ void AppController::updateQuickFilterToolBarItem()
         m_project_toolbar->Refresh();
         return;
     }
-    
+
     // get the name of the child
     IDocumentSitePtr doc_site = m_frame->getActiveChild();
     if (doc_site.isNull())
@@ -3698,7 +3698,7 @@ void AppController::updateQuickFilterToolBarItem()
         m_project_toolbar->Refresh();
         return;
     }
-    
+
     IDocumentPtr doc = doc_site->getDocument();
     if (doc.isNull())
     {
@@ -3706,7 +3706,7 @@ void AppController::updateQuickFilterToolBarItem()
         m_project_toolbar->Refresh();
         return;
     }
-    
+
     ITableDocPtr tabledoc = doc;
     if (tabledoc.isNull())
     {
@@ -3714,7 +3714,7 @@ void AppController::updateQuickFilterToolBarItem()
         m_project_toolbar->Refresh();
         return;
     }
-    
+
     wxString filter = tabledoc->getFilter();
     bool quick_filter_pending = tabledoc->isQuickFilterPending();
 
@@ -3724,7 +3724,7 @@ void AppController::updateQuickFilterToolBarItem()
         m_project_toolbar->Refresh();
         return;
     }
-    
+
     m_project_toolbar->ToggleTool(ID_Data_QuickFilter, true);
     m_project_toolbar->Refresh();
 }
@@ -3733,9 +3733,9 @@ void AppController::updateViewMenu(IDocumentSitePtr doc_site)
 {
     if (!m_view_menu)
         return;
-        
+
     // remove old items from the view menu
-    
+
     if (m_view_menu->FindItem(ID_View_SwitchToSourceView) != NULL)
         m_view_menu->Delete(ID_View_SwitchToSourceView);
     if (m_view_menu->FindItem(ID_View_SwitchToDesignView) != NULL)
@@ -3745,18 +3745,18 @@ void AppController::updateViewMenu(IDocumentSitePtr doc_site)
     wxMenuItem* item = m_view_menu->FindItemByPosition(0);
     if (item->IsSeparator())
         m_view_menu->Delete(item);
-    
+
     // we don't have an active document, bail out
     if (doc_site.isNull())
         return;
-    
+
     // the editor doc has only one view
     IEditorDocPtr editordoc = doc_site->getDocument();
     if (editordoc.isOk())
         return;
-    
+
     // add items to the menu based on the active view
-    
+
     IWebDocPtr webdoc = doc_site->getDocument();
     IReportDocPtr reportdoc = doc_site->getDocument();
     ITextDocPtr textdoc = lookupOtherDocument(doc_site, "appmain.TextDoc");
@@ -3764,7 +3764,7 @@ void AppController::updateViewMenu(IDocumentSitePtr doc_site)
     ITableDocPtr tabledoc = lookupOtherDocument(doc_site, "appmain.TableDoc");
     IStructureDocPtr structdoc = lookupOtherDocument(doc_site, "appmain.StructureDoc");
     IQueryDocPtr querydoc = lookupOtherDocument(doc_site, "appmain.QueryDoc");
-    
+
     if (webdoc.isOk())
     {
         m_view_menu->PrependSeparator();
@@ -3772,7 +3772,7 @@ void AppController::updateViewMenu(IDocumentSitePtr doc_site)
         m_view_menu->InsertCheckItem(1, ID_View_SwitchToLayoutView, _("Web Page View"));
         return;
     }
-    
+
     if (reportdoc.isOk())
     {
         m_view_menu->PrependSeparator();
@@ -3780,7 +3780,7 @@ void AppController::updateViewMenu(IDocumentSitePtr doc_site)
         m_view_menu->InsertCheckItem(1, ID_View_SwitchToLayoutView, _("Layout View"));
         return;
     }
-    
+
     if (textdoc.isOk() || transdoc.isOk())
     {
         m_view_menu->PrependSeparator();
@@ -3789,7 +3789,7 @@ void AppController::updateViewMenu(IDocumentSitePtr doc_site)
         m_view_menu->InsertCheckItem(2, ID_View_SwitchToLayoutView, _("Table View"));
         return;
     }
-    
+
     if (structdoc.isOk())
     {
         m_view_menu->PrependSeparator();
@@ -3797,7 +3797,7 @@ void AppController::updateViewMenu(IDocumentSitePtr doc_site)
         m_view_menu->InsertCheckItem(1, ID_View_SwitchToLayoutView, _("Table View"));
         return;
     }
-    
+
     if (querydoc.isOk())
     {
         m_view_menu->PrependSeparator();
@@ -3806,7 +3806,7 @@ void AppController::updateViewMenu(IDocumentSitePtr doc_site)
         m_view_menu->InsertCheckItem(2, ID_View_SwitchToLayoutView, _("Table View"));
         return;
     }
-    
+
     // the tabledoc was opened by itself (no StructureDoc is available yet),
     // so populate the menu with the design and table items
     if (tabledoc.isOk())
@@ -3833,14 +3833,14 @@ void AppController::onFrameChildContextMenu(IDocumentSitePtr doc_site)
 
     wxMenu menuPopup;
     menuPopup.Append(8000, _("&New Tab"));
-    
+
     // allow the tab to be duplicated, as long as we're not on an editordoc
     IEditorDocPtr editor_doc = doc_site->getDocument();
     if (editor_doc.isNull())
     {
         menuPopup.Append(8001, _("&Duplicate Tab"));
     }
-    
+
     menuPopup.AppendSeparator();
     menuPopup.Append(8002, _("&Refresh Tab"));
     menuPopup.Append(8003, _("Refresh &All Tabs"));
@@ -3852,7 +3852,7 @@ void AppController::onFrameChildContextMenu(IDocumentSitePtr doc_site)
 
     wxFrame* main_window = g_app->getMainWindow();
     int command;
-    
+
     wxPoint pt_mouse = ::wxGetMousePosition();
     pt_mouse = main_window->ScreenToClient(pt_mouse);
     CommandCapture* cc = new CommandCapture;
@@ -3862,7 +3862,7 @@ void AppController::onFrameChildContextMenu(IDocumentSitePtr doc_site)
     main_window->PopEventHandler(true);
 
     IFramePtr frame = g_app->getMainFrame();
-    
+
     switch (command)
     {
         case (8000):
@@ -3909,11 +3909,11 @@ void AppController::onFrameChildContextMenu(IDocumentSitePtr doc_site)
                     site = sites->getItem(i);
                     if (site.isNull())
                         continue;
-                        
+
                     IWebDocPtr web_doc = site->getDocument();
                     if (!web_doc.isNull())
                         web_doc->getWebControl()->Reload();
-                }                
+                }
             }
             break;
         case (8004):
@@ -3944,7 +3944,7 @@ void AppController::onFrameChildContextMenu(IDocumentSitePtr doc_site)
                     site = sites->getItem(i);
                     if (site.isNull())
                         continue;
-                        
+
                     if (site != doc_site)
                         frame->closeSite(site);
                 }
@@ -3974,12 +3974,12 @@ void AppController::onColorPanelDestructing(kcl::ColorPanel* panel)
 void AppController::onCustomColorsRequested(std::vector<wxColor>& colors)
 {
     getAppPrefsCustomColors(colors);
-    
+
     if (m_colorpanel_helper != NULL)
     {
         wxAuiToolBar* toolbar = m_colorpanel_helper->m_toolbar;
         int tool_id = m_colorpanel_helper->m_tool_id;
-        
+
         if (toolbar != NULL && tool_id != -1)
             toolbar->SetToolSticky(tool_id, false);
     }
@@ -3998,7 +3998,7 @@ void AppController::onHelp(wxCommandEvent& evt)
         hc->DisplayContents();
     }
      else
-    {                 
+    {
         // the help file can't be found.  As an alternitave, show
         // the online help in a web browser
         wxString uri = getAppPrefsDefaultString(wxT("general.location.help"));
@@ -4040,9 +4040,9 @@ void AppController::onHomeMiddleClick(wxAuiToolBarEvent& evt)
     wxString home_pages = getAppPrefsString(wxT("general.location.home"));
     if (home_pages.IsEmpty())
         home_pages = wxT("about:blank");
-        
+
     bool first = true;
-    
+
     wxArrayString arr;
     wxStringTokenizer tkz(home_pages, wxT("|"));
     while (tkz.HasMoreTokens())
@@ -4053,7 +4053,7 @@ void AppController::onHomeMiddleClick(wxAuiToolBarEvent& evt)
             int open_mask = appOpenForceNewWindow;
             if (first)
                 open_mask |= appOpenActivateNewWindow;
-            
+
             // the active child is not a webdoc; open all homepages
             // in new tabs and select the first one we open
             openWeb(t, NULL, open_mask);
@@ -4073,7 +4073,7 @@ void AppController::onHome(wxCommandEvent& evt)
     IWebDocPtr webdoc;
     if (docsite.isOk())
         webdoc = docsite->getDocument();
-    
+
     bool first = true;
 
     wxArrayString arr;
@@ -4095,7 +4095,7 @@ void AppController::onHome(wxCommandEvent& evt)
                 int open_mask = appOpenForceNewWindow;
                 if (first)
                     open_mask |= appOpenActivateNewWindow;
-                
+
                 // the active child is not a webdoc; open all homepages
                 // in new tabs and select the first one we open
                 openWeb(t, NULL, open_mask);
@@ -4226,7 +4226,7 @@ bool AppController::openAny(const wxString& _location,
         if (ext.Find(L'/') != -1)
             ext = L"";
     }
-  
+
     ext.MakeUpper();
 
     // if we have a script/text file, open it with the script/text editor
@@ -4270,7 +4270,7 @@ bool AppController::openAny(const wxString& _location,
             ext == wxT("FOR")       ||
             ext == wxT("F95")       ||
 
-            ext == wxT("J")         ||  // java         
+            ext == wxT("J")         ||  // java
             ext == wxT("JAVA")      ||
 
             ext == wxT("JS")        ||  // javscript
@@ -4328,7 +4328,7 @@ bool AppController::openAny(const wxString& _location,
     {
         return openScript(location, site_id);
     }
- 
+
     // if we have an excel file (XLS extension), open a dialog asking
     // the user which tables they would like to open (read-only)
     if (ext == wxT("XLS") || ext == wxT("XLSX"))
@@ -4370,13 +4370,13 @@ bool AppController::openAny(const wxString& _location,
         // otherwise open the location in a browser
         return openWeb(location, NULL, appOpenDefault, site_id);
     }
-    
+
     xd::IFileInfoPtr file_info;
     file_info = db->getFileInfo(towstr(location));
     if (file_info.isOk())
     {
         int item_type = file_info->getType();
-  
+
         if (item_type == xd::filetypeTable)
         {
             if (openTable(location, site_id))
@@ -4399,7 +4399,7 @@ bool AppController::openAny(const wxString& _location,
          else if (item_type == xd::filetypeNode)
         {
             kl::JsonNode node;
-        
+
 
             node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(location));
             if (!node.isOk())
@@ -4420,9 +4420,9 @@ bool AppController::openAny(const wxString& _location,
             kl::JsonNode kpp_template = root_node["kpp_template"];
             if (kpp_template.isOk())
                 return openTemplate(location);
-        }    
+        }
     }
-    
+
     // sanity check; open the location in a browser
     return openWeb(location, NULL, appOpenDefault, site_id);
 }
@@ -4447,7 +4447,7 @@ bool AppController::openReport(const wxString& location,
         appMessageBox(_("This report could not be opened.  It may have an invalid format or may have been created with a different version."),
                            APPLICATION_NAME,
                            wxOK | wxICON_INFORMATION | wxCENTER);
-                           
+
         g_app->getMainFrame()->closeSite(site);
         return false;
     }
@@ -4476,7 +4476,7 @@ bool AppController::openQuery(const wxString& location, int* site_id)
     // if the document is open, set the focus to that document
     if (setActiveChildByLocation(location, site_id))
         return true;
-    
+
     IDocumentSitePtr site;
     site = m_frame->createSite(static_cast<IDocument*>(doc),
                         sitetypeNormal,
@@ -4501,8 +4501,8 @@ bool AppController::openScript(const wxString& _location, int* site_id)
     // multiple times
 
     wxString location = _location;
-    
-    
+
+
     if (location.Length() > 0 && !kl::isFileUrl(towstr(location)))
     {
         // get the physical location of the script file
@@ -4516,11 +4516,11 @@ bool AppController::openScript(const wxString& _location, int* site_id)
         {
             wxString old_location = location;
             location = getObjectPathFromMountPath(location);
-            
+
             if (location == old_location)
             {
                 xd::IDatabasePtr db = g_app->getDatabase();
-                
+
                 if (db.isOk() && db->getFileExist(towstr(location)))
                 {
                     // file is a database path, which takes precedence
@@ -4535,7 +4535,7 @@ bool AppController::openScript(const wxString& _location, int* site_id)
             }
         }
     }
-    
+
     // if the document is open, set the focus to that document
     if (setActiveChildByLocation(location, site_id))
         return true;
@@ -4545,47 +4545,47 @@ bool AppController::openScript(const wxString& _location, int* site_id)
 
     EditorDoc* doc = new EditorDoc;
     IDocumentSitePtr site;
-    
+
     site = m_frame->createSite(static_cast<IDocument*>(doc),
                                sitetypeNormal | siteHidden,
                                -1, -1, -1, -1);
 
     if (site.isNull())
         return false;
-    
+
     if (location.Length() > 0)
     {
         if (!doc->loadFile(location))
         {
             if (site_id)
                 *site_id = 0;
-                
+
             m_frame->closeSite(site, closeForce);
             return false;
         }
     }
-    
+
     if (site_id)
         *site_id = site->getId();
-    
+
     site->setVisible(true);
-    
+
     return true;
 }
-        
+
 bool AppController::openTable(const wxString& _location, int* site_id)
 {
     if (site_id)
         *site_id = 0;
-        
+
     AppBusyCursor bc;
-    
+
     xd::IDatabasePtr database = g_app->getDatabase();
     wxASSERT_MSG(database.isOk(), wxT("Current database is NULL."));
-    
+
     if (database.isNull())
         return false;
-        
+
     std::wstring location = towstr(_location);
     kl::trim(location);
 
@@ -4610,12 +4610,12 @@ bool AppController::openTable(const wxString& _location, int* site_id)
 
         if (doc->getCaption().Length() == 0)
             doc->setCaption(location, wxEmptyString);
-            
+
         unsigned int site_type = sitetypeNormal;
 
         IDocumentSitePtr doc_site;
         doc_site = g_app->getMainFrame()->createSite(doc, site_type, -1, -1, -1, -1);
-            
+
         if (site_id)
             *site_id = doc_site->getId();
     }
@@ -4633,7 +4633,7 @@ bool AppController::openTemplate(const wxString& location,
     xd::IDatabasePtr db = g_app->getDatabase();
     if (!db)
         return false;
-    
+
     xd::IFileInfoPtr file_info;
     file_info = db->getFileInfo(towstr(location));
     if (!file_info.isOk())
@@ -4666,7 +4666,7 @@ bool AppController::openTemplate(const wxString& location,
             ImportInfo info;
             showImportWizard(info, location);
         }
-        
+
         return true;
     }
      else if (file_info->getType() == xd::filetypeNode)
@@ -4700,7 +4700,7 @@ bool AppController::openTemplate(const wxString& location,
 
         return true;
     }
-    
+
     return false;
 }
 
@@ -4718,13 +4718,13 @@ bool AppController::openWeb(const wxString& _location,
 
     if (site_id)
         *site_id = 0;
-        
+
     wxString location = _location;
 
-    // finally, if we can't open the url as a file in the project, try 
+    // finally, if we can't open the url as a file in the project, try
     // to open it as a browser document
     IWebDocPtr doc;
-    
+
     if (!(open_mask & appOpenForceNewWindow))
     {
         IDocumentSitePtr active_site = m_frame->getActiveChild();
@@ -4736,9 +4736,9 @@ bool AppController::openWeb(const wxString& _location,
         }
     }
 
-    // if we don't have a webdoc, create one     
+    // if we don't have a webdoc, create one
     if (doc.isNull())
-    {    
+    {
         int state = sitetypeNormal;
         if (!(open_mask & appOpenActivateNewWindow))
             state |= siteNoInitialActivate;
@@ -4747,10 +4747,10 @@ bool AppController::openWeb(const wxString& _location,
         site = m_frame->createSite(doc, state, -1, -1, -1, -1);
         if (site.isOk() && site_id)
             *site_id = site->getId();
-    }    
+    }
 
     doc->openURI(location, post_data);
-    
+
     return true;
 }
 
@@ -4786,10 +4786,10 @@ static void getAllSets(xd::IDatabasePtr db_ptr,
          else if (item_type == xd::filetypeTable)
         {
             wxString name = path;
-            
+
             if (name.Length() == 0 || name.Last() != wxT('/'))
                 name += wxT("/");
-                
+
             name += info->getName();
 
             retval.push_back(name);
@@ -4806,7 +4806,7 @@ static wxString getTempTablename(const wxString& filename, const wxString& table
     wxString tn = tablename;
     while (tn.Length() > 0 && tn.GetChar(0) == wxT('/'))
         tn = tn.Mid(1);
-    
+
     wxString retval = wxT("/.temp/");
     retval += fn;
     retval += wxT("/");
@@ -4840,13 +4840,13 @@ static void onOpenExcelJobFinished(jobs::IJobPtr job)
         if (first_site_id == 0)
             first_site_id = site_id;
     }
-    
+
     // activate the tab which contains the first table in the file
     IFramePtr frame = g_app->getMainFrame();
     IDocumentSitePtr first_site = frame->lookupSiteById(first_site_id);
     if (first_site.isOk())
         frame->setActiveChild(first_site);
-        
+
     g_app->getAppController()->refreshDbDoc();
 }
 
@@ -4854,7 +4854,7 @@ static void makeSafeConnectionName(xd::IDatabasePtr db, wxString& name)
 {
     name.Trim();
     name.Trim(false);
-    
+
     // DOS/Windows-based filesystem mount
     if (name.Mid(1, 1) == wxT(":"))
     {
@@ -4863,13 +4863,13 @@ static void makeSafeConnectionName(xd::IDatabasePtr db, wxString& name)
              else
             name = name.Mid(2, wxString::npos);
     }
-    
+
     while (name.Mid(0, 1) == wxT("/") ||
            name.Mid(0, 1) == wxT("\\"))
     {
         name = name.Mid(1, wxString::npos);
     }
-    
+
     name.Replace(wxT("\\\\"), wxT("_"), true);
     name.Replace(wxT("\\"), wxT("_"), true);
     name.Replace(wxT("/"), wxT("_"), true);
@@ -4969,11 +4969,11 @@ bool AppController::openExcel(const wxString& location, int* site_id)
         // would show multiple error messages)
         return true;
     }
-    
+
     // create the dialog's title
     wxString title = fn.AfterLast(PATH_SEPARATOR_CHAR);
     wxString dlg_title = wxString::Format(_("Open '%s'"), title.c_str());
-    
+
     // get a list of all items in the source database
     std::vector<wxString> info;
     std::vector<wxString>::iterator info_it;
@@ -4991,19 +4991,19 @@ bool AppController::openExcel(const wxString& location, int* site_id)
                             _("Select the tables you would like to open from this file."),
                             dlg_title,
                             as);
-    
+
     // select all the tables by default
     int sel = 0;
     wxArrayInt selections;
     for (info_it = info.begin(); info_it != info.end(); ++info_it)
         selections.Add(sel++);
-    
+
     dlg.SetSelections(selections);
     if (dlg.ShowModal() == wxID_OK)
     {
         wxString job_title = wxString::Format(_("Importing from '%s'"),
                                               title.c_str());
-        
+
         ImportTemplate templ;
         templ.m_ii.type = dbtypeExcel;
         templ.m_ii.path = towstr(fn);
@@ -5023,11 +5023,11 @@ bool AppController::openExcel(const wxString& location, int* site_id)
         }
 
         std::vector<std::wstring> output_paths;
-            
+
         for (i = 0; i < count; ++i)
         {
             int idx = selections[i];
-            
+
             ImportTableSelection tbl;
             tbl.selected = true;
             tbl.input_tablename = as[idx];
@@ -5080,14 +5080,14 @@ bool AppController::openAccess(const wxString& location)
             return true;
         }
     }
-    
+
     wxString title = fn.AfterLast(PATH_SEPARATOR_CHAR);
     title = wxString::Format(_("Import '%s'"), title.c_str());
-    
+
     ImportWizard* wizard = new ImportWizard;
     wizard->setTitle(title);
     wizard->setMode(ImportWizard::ModeOpen);
-    
+
     ImportTemplate& import_template = wizard->getTemplate();
     import_template.m_ii.type = dbtypeAccess;
     import_template.m_ii.path = fn;
@@ -5131,11 +5131,11 @@ bool AppController::openPackage(const wxString& location)
 
     wxString title = fn.AfterLast(PATH_SEPARATOR_CHAR);
     title = wxString::Format(_("Import '%s'"), title.c_str());
-    
+
     ImportWizard* wizard = new ImportWizard;
     wizard->setTitle(title);
     wizard->setMode(ImportWizard::ModeOpen);
-    
+
     ImportTemplate& import_template = wizard->getTemplate();
     import_template.m_ii.type = dbtypePackage;
     import_template.m_ii.path = fn;
@@ -5153,7 +5153,7 @@ bool AppController::setActiveChildByLocation(const wxString& location, int* site
 {
     IDocumentSiteEnumPtr doc_sites;
     doc_sites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
-    
+
     size_t i, size = doc_sites->size();
     for (i = 0; i < size; ++i)
     {
@@ -5180,7 +5180,7 @@ bool AppController::newReport(int* site_id)
     // see if the currently active document has any
     // report creation info to send
     IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
-    
+
     ReportCreateInfo tabledoc_data;
     if (setReportCreateInfo(doc_site, tabledoc_data))
     {
@@ -5205,10 +5205,10 @@ bool AppController::newReport(int* site_id)
         delete doc;
         return false;
     }
-    
+
     if (site_id)
         *site_id = doc_site->getId();
-    
+
     return true;
 }
 
@@ -5220,14 +5220,14 @@ bool AppController::newQuery(int* site_id)
 bool AppController::newTable(int* site_id)
 {
     IDocumentSitePtr doc_site;
-    
+
     StructureDoc* doc = new StructureDoc;
     doc_site = m_frame->createSite(static_cast<IDocument*>(doc),
                         sitetypeNormal,
                         -1, -1, -1, -1);
     if (doc_site.isNull())
         return false;
-        
+
     if (site_id)
         *site_id = doc_site->getId();
     return true;
@@ -5257,24 +5257,24 @@ jobs::IJobPtr AppController::executeScript(const wxString& _location,
         error->line = 0;
         error->offset = 0;
         error->code = 0;
-    }    
-    
+    }
+
     ScriptHostInclude include_path;
 
     wxString location = _location;
-    
+
     if (xf_get_file_exist(towstr(location)))
     {
         wxString ext = _location.AfterLast(wxT('.'));
         ext.MakeUpper();
-    
+
         include_path.type = ScriptHostInclude::includeFile;
         wxString dir = location.BeforeLast(PATH_SEPARATOR_CHAR);
         if (dir != location && ext != L"ZIP" && ext != L"KXT")
         {
             include_path.path = dir;
         }
-        
+
         location = filenameToUrl(location);
     }
      else
@@ -5288,7 +5288,7 @@ jobs::IJobPtr AppController::executeScript(const wxString& _location,
             {
                 include_path.path = dir;
             }
-        } 
+        }
          else
         {
             wxString inc = location;
@@ -5320,18 +5320,18 @@ jobs::IJobPtr AppController::executeScript(const wxString& _location,
     // create a script host object
     ScriptHost* script_host = new ScriptHost;
     script_host->setParams(params);
-    
+
     // add the include path
     if (include_path.path.Length() > 0)
     {
         script_host->addIncludePath(include_path);
         script_host->setStartupPath(include_path.path);
     }
-    
-    
+
+
     bool compile_result;
-    
-    
+
+
 
     wxString ext = _location.AfterLast(wxT('.'));
     ext.MakeUpper();
@@ -5343,10 +5343,10 @@ jobs::IJobPtr AppController::executeScript(const wxString& _location,
             // could not open package
             return xcm::null;
         }
-        
+
         // script host will delete package
         script_host->setPackage(pkg);
-        
+
         compile_result = script_host->compilePackage();
     }
      else
@@ -5366,7 +5366,7 @@ jobs::IJobPtr AppController::executeScript(const wxString& _location,
                 return xcm::null;
             }
         }
-        
+
         xd::IStreamPtr stream = db->openStream(towstr(location));
         if (!stream)
         {
@@ -5377,32 +5377,32 @@ jobs::IJobPtr AppController::executeScript(const wxString& _location,
             }
             return xcm::null;
         }
-        
+
         std::wstring value;
-        
-        
-        
+
+
+
         // load script data
-        
+
         wxMemoryBuffer buf;
-        
+
         char* tempbuf = new char[1025];
         unsigned long read = 0;
-        
+
         while (1)
         {
             if (!stream->read(tempbuf, 1024, &read))
                 break;
-            
+
             buf.AppendData(tempbuf, read);
-            
+
             if (read != 1024)
                 break;
         }
-        
+
         delete[] tempbuf;
-        
-        
+
+
         unsigned char* ptr = (unsigned char*)buf.GetData();
         size_t buf_len = buf.GetDataLen();
         if (buf_len >= 2 && ptr[0] == 0xff && ptr[1] == 0xfe)
@@ -5422,7 +5422,7 @@ jobs::IJobPtr AppController::executeScript(const wxString& _location,
             buf.AppendByte(0);
             value = wxString::From8BitData((char*)buf.GetData());
         }
-        
+
         compile_result = script_host->compile(value.c_str());
     }
 
@@ -5477,7 +5477,7 @@ jobs::IJobPtr AppController::executeCode(const wxString& value,
     // create a script host object
     ScriptHost* script_host = new ScriptHost;
     script_host->setParams(params);
-    
+
     if (!script_host->compile(value))
     {
         if (error)
@@ -5521,8 +5521,8 @@ jobs::IJobPtr AppController::execute(const wxString& location)
     xd::IFileInfoPtr file_info = db->getFileInfo(towstr(location));
     if (!file_info)
         return xcm::null;
-        
-    
+
+
     // give the application hook a chance to handle this call
     bool handled = false;
     jobs::IJobPtr res = apphookExecute(location, file_info, &handled);
@@ -5560,11 +5560,11 @@ jobs::IJobPtr AppController::execute(const wxString& location)
             kl::JsonNode jobjson;
             if (!jobjson.fromString(wval))
                 return xcm::null;
-            
+
             kl::JsonNode params = jobjson.getChild(L"params");
             if (!params.isOk())
                 return xcm::null;
-            
+
             jobs::IJobPtr job = appCreateJob(mime_type);
             if (job.isNull())
             {
@@ -5636,7 +5636,7 @@ bool AppController::print(const wxString& location)
         appMessageBox(_("This report could not be printed."),
                            APPLICATION_NAME,
                            wxOK | wxICON_INFORMATION | wxCENTER);
-                           
+
         g_app->getMainFrame()->closeSite(site);
         return false;
     }
@@ -5651,17 +5651,17 @@ static void addDefaultItemsToProject(const wxString& project_path)
     wxFrame* wnd = g_app->getMainWindow();
     if (!wnd)
         return;
-    
+
     // don't show any of this happening
     wnd->Freeze();
-    
+
 
     if (!g_app->getAppController()->openProject(project_path, "admin", ""))
     {
         wnd->Thaw();
         return;
     }
-    
+
     // get the path of the startup sample file
     wxString filename = g_app->getInstallPath();
     #ifdef WIN32
@@ -5669,7 +5669,7 @@ static void addDefaultItemsToProject(const wxString& project_path)
     #else
     filename += wxT("/../samples/startup.kpg");
     #endif
-    
+
 
 
     IConnectionPtr conn = createUnmanagedConnection();
@@ -5693,7 +5693,7 @@ static void addDefaultItemsToProject(const wxString& project_path)
 
     xd::IFileInfoEnumPtr objects = db->getFolderInfo(L"");
 
-    
+
     // populate the item names vector from the package file stream
     std::vector<std::wstring> item_names;
 
@@ -5704,13 +5704,13 @@ static void addDefaultItemsToProject(const wxString& project_path)
         std::wstring object_name = objects->getItem(i)->getName();
         if (object_name.empty() || object_name[0] == '.')
             continue;
-        
+
         item_names.push_back(object_name);
     }
-    
+
     // sort the tablenames vector
     std::sort(item_names.begin(), item_names.end());
-    
+
 
 
     ImportTemplate templ;
@@ -5730,7 +5730,7 @@ static void addDefaultItemsToProject(const wxString& project_path)
         templ.m_ii.tables.push_back(tbl);
     }
 
-    
+
     // run the job
     jobs::IJobPtr job = templ.createJob();
     if (job.isOk())
@@ -5738,7 +5738,7 @@ static void addDefaultItemsToProject(const wxString& project_path)
         job->runJob();
         job->runPostJob();
     }
-    
+
     // make sure the project is closed again
     // (since we'll be opening it again shortly)
     g_app->getAppController()->closeProject();
@@ -5752,7 +5752,7 @@ bool AppController::createDefaultProject()
     if (project_path.Last() != PATH_SEPARATOR_CHAR)
         project_path += PATH_SEPARATOR_CHAR;
     project_path += wxT("Default Project");
-    
+
     std::wstring base = towstr(project_path);
     std::wstring test = base;
     int counter = 2;
@@ -5777,24 +5777,24 @@ bool AppController::createDefaultProject()
 
     // create and open the project
     bool created = createProject(project_path, wxEmptyString, true);
-    
+
     // add default items to the project
     if (created)
         addDefaultItemsToProject(project_path);
-    
+
     // set a flag indicating that a default project has been created
     IAppPreferencesPtr prefs = g_app->getAppPreferences();
     prefs->setBoolean(wxT("general.default_project_created"), created);
-    
+
     if (created && !prefs->exists(wxT("general.startup.default_action")))
     {
         // if they don't already have a default startup action,
         // add one that loads the default project we just created
-            
+
          // lookup the connection number
         ProjectMgr projectmgr;
         int idx = projectmgr.getIdxFromLocation(project_path);
-        
+
         // if the project isn't already in the project manager, add it
         if (idx == -1)
         {
@@ -5803,10 +5803,10 @@ bool AppController::createDefaultProject()
                                     wxT("admin"),
                                     wxEmptyString,
                                     true);
-                                    
+
             idx = projectmgr.getIdxFromLocation(project_path);
         }
-        
+
         // if we have a valid index, set that project as our startup project
         if (idx != -1)
         {
@@ -5816,7 +5816,7 @@ bool AppController::createDefaultProject()
                              projectmgr.getProjectEntries()[idx].entry_name);
         }
     }
-    
+
     // flush preferences
     prefs->flush();
 
@@ -5826,7 +5826,7 @@ bool AppController::createDefaultProject()
 void AppController::createDefaultLinks()
 {
     IAppPreferencesPtr prefs = g_app->getAppPreferences();
-    
+
     wxString home_page = getAppPrefsDefaultString("general.location.home");
     if (home_page.Length() > 0)
     {
@@ -5891,7 +5891,7 @@ bool AppController::createProject(const wxString& location,
 
         return false;
     }
-    
+
     // recursively create project folder
     if (!createFolderStructure(location))
         return false;
@@ -5912,18 +5912,18 @@ bool AppController::createProject(const wxString& location,
                             wxT("admin"),
                             wxEmptyString,
                             true);
-    
+
     // open the project we just created
     if (open_project)
     {
         g_app->setDatabase(database);
-        
+
         if (m_dbdoc)
             m_dbdoc->setDatabase(database);
 
         refreshDbDoc();
     }
-    
+
     return true;
 }
 
@@ -5951,8 +5951,8 @@ bool AppController::openProject(const wxString& location,
     lower_location.MakeLower();
 
 
-    if (lower_location.Find(L"xdprovider=") == -1 && 
-        lower_location.SubString(0,6) != wxT("http://") && 
+    if (lower_location.Find(L"xdprovider=") == -1 &&
+        lower_location.SubString(0,6) != wxT("http://") &&
         lower_location.SubString(0,7) != wxT("https://"))
     {
         if (!xf_get_directory_exist(towstr(location)))
@@ -6000,7 +6000,7 @@ bool AppController::openProject(const wxString& location,
                 return false;
         }
     }
-    
+
 
     wxString cstr;
     if (lower_location.Find(wxT("xdprovider=")) != -1)
@@ -6009,7 +6009,7 @@ bool AppController::openProject(const wxString& location,
         cstr = location;
         if (cstr.Length() == 0 || cstr.Last() != ';')
             cstr += wxT(";");
-        
+
         if (lower_location.Find(wxT("user id=")) == -1)
         {
             cstr += wxT("user id=");
@@ -6059,7 +6059,7 @@ bool AppController::openProject(const wxString& location,
         cstr += password;
         cstr += wxT(";");
     }
-    
+
     xd::IDatabasePtr database = dbmgr->open(towstr(cstr));
     if (database.isNull())
     {
@@ -6069,22 +6069,22 @@ bool AppController::openProject(const wxString& location,
 
         return false;
     }
-    
+
     // get the project's name from the registry
     ProjectMgr projmgr;
     int project_idx = projmgr.getIdxFromLocation(location);
     std::vector<ProjectInfo>& projects = projmgr.getProjectEntries();
     wxString entry_name = (project_idx >= 0 ? projects[project_idx].entry_name : L"");
     wxString name = (project_idx >= 0 ? projects[project_idx].name : L"");
-    
+
 
     g_app->setDatabase(database);
     g_app->setDatabaseLocation(location);
     g_app->setDatabaseConnectionString(towstr(cstr));
-    
+
     if (m_dbdoc)
         m_dbdoc->setDatabase(database);
-    
+
     IAppPreferencesPtr prefs = g_app->getAppPreferences();
     bool default_links_created = prefs->getBoolean(wxT("general.default_links_created_2"), false);
     if (!default_links_created)
@@ -6092,7 +6092,7 @@ bool AppController::openProject(const wxString& location,
         createDefaultLinks();
         prefs->setBoolean(wxT("general.default_links_created_2"), true);
     }
-    
+
     if (project_idx >= 0)
     {
         // if the 'Last Open Project' preference has been set,
@@ -6112,10 +6112,10 @@ bool AppController::openProject(const wxString& location,
 bool AppController::openProject(xd::IDatabasePtr database)
 {
     g_app->setDatabase(database);
-    
+
     if (m_dbdoc)
         m_dbdoc->setDatabase(database);
-        
+
     refreshDbDoc();
     return true;
 }
@@ -6142,7 +6142,7 @@ void AppController::printConsoleText(const wxString& text)
     #if APP_CONSOLE==1
     printf("%s", (const char*)text.mbc_str());
     #else
-    
+
     if (kl::thread::isMain())
     {
         wxCommandEvent e;
@@ -6155,7 +6155,7 @@ void AppController::printConsoleText(const wxString& text)
         e.SetString(text);
         ::wxPostEvent(this, e);
     }
-    
+
     #endif
 }
 
@@ -6168,7 +6168,7 @@ class DlgCancellingJobsWait : public wxDialog
 
 public:
 
-    DlgCancellingJobsWait(wxWindow* parent) : 
+    DlgCancellingJobsWait(wxWindow* parent) :
                 wxDialog(parent, -1, APPLICATION_NAME,
                          wxDefaultPosition,
                          wxSize(240, 100),
@@ -6177,26 +6177,26 @@ public:
     {
         // create the dialog message
         wxStaticText* label_message = new wxStaticText(this, -1, _("Cancelling all running jobs..."));
-        
+
         // create the dialog bitmap
         wxBitmap bmp = wxArtProvider::GetBitmap(wxART_INFORMATION, wxART_MESSAGE_BOX);
         wxStaticBitmap* bitmap_information = new wxStaticBitmap(this, -1, bmp);
-        
+
         wxBoxSizer* top_sizer = new wxBoxSizer(wxHORIZONTAL);
         top_sizer->Add(bitmap_information);
         top_sizer->AddSpacer(16);
         top_sizer->Add(label_message, 0, wxEXPAND);
-        
+
         wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
         main_sizer->AddSpacer(12);
         main_sizer->Add(top_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 16);
         main_sizer->AddSpacer(12);
         SetSizer(main_sizer);
         Layout();
-        
+
         // 70 = 16*2 (outer border) + 16 (inner border) + 32 (bitmap width) - 10
         resizeStaticText(label_message, GetClientSize().GetWidth()-70);
-        
+
         CenterOnParent();
     }
 
@@ -6217,7 +6217,7 @@ bool AppController::checkForRunningJobs(bool exit_message)
     {
         wxString appname = APPLICATION_NAME;
         wxString message;
-        
+
         if (exit_message)
             message =  _("There are currently jobs running.  Would you like to cancel all running jobs and exit?");
              else
@@ -6249,15 +6249,15 @@ bool AppController::checkForRunningJobs(bool exit_message)
             DlgCancellingJobsWait* wait_dlg =
                 new DlgCancellingJobsWait(m_frame->getFrameWindow());
             wait_dlg->Show(true);
-            
+
             // show a busy cursor while we're cancelling the jobs
             AppBusyCursor bc;
-            
+
             // make sure the dialog doesn't just pop up and go away
             // right away (appears like flicker)
             ::wxYield();
             wxMilliSleep(1500);
-            
+
             // cancel all running jobs
             jobs::IJobInfoEnumPtr jobs = job_queue->getJobInfoEnum(jobs::jobStateRunning);
             size_t i, job_count = jobs->size();
@@ -6265,12 +6265,12 @@ bool AppController::checkForRunningJobs(bool exit_message)
             {
                 jobs::IJobInfoPtr job_info = jobs->getItem(i);
                 int job_id = job_info->getJobId();
-                
+
                 jobs::IJobPtr job = job_queue->lookupJob(job_id);
                 if (job)
                     job->cancel();
             }
-            
+
             // wait for all the jobs to cancel before we close the application
             bool cancelling = true;
             while (cancelling)
@@ -6282,7 +6282,7 @@ bool AppController::checkForRunningJobs(bool exit_message)
                     cancelling = false;
                 }
             }
-            
+
             // destroy the wait dialog and exit the program
             wait_dlg->Destroy();
             return true;
@@ -6323,7 +6323,7 @@ bool AppController::checkForTemporaryFiles()
         if (xd::isTemporaryPath(table_doc->getPath()))
             return true;
     }
-    
+
     return false;
 }
 
@@ -6363,7 +6363,7 @@ bool AppController::closeProject()
 
     if (m_dbdoc)
         m_dbdoc->setDatabase(xcm::null);
-    
+
     g_app->setDatabaseLocation(wxEmptyString);
 
     return true;
@@ -6383,11 +6383,11 @@ bool AppController::cleanProject()
 
     AppBusyCursor bc;
     g_app->getDatabase()->cleanup();
-    
+
     appMessageBox(_("Project successfully compacted."),
                   APPLICATION_NAME,
                   wxOK | wxICON_INFORMATION);
-    
+
     return true;
 }
 
@@ -6396,16 +6396,16 @@ void AppController::createMountPoint(const wxString& conn_str,
                                      bool refresh_tree)
 {
     wxString path = mount_path;
-    
+
     if (path.IsEmpty())
         path = wxT("/mount");
-        
+
     if (path.Mid(0, 1) != wxT("/"))
         path.Prepend(wxT("/"));
 
     xd::IDatabasePtr db = g_app->getDatabase();
     db->setMountPoint(towstr(path), towstr(conn_str), L"/");
-    
+
     if (refresh_tree)
         g_app->getAppController()->refreshDbDoc();
 }
@@ -6457,7 +6457,7 @@ static void onConnectExternalDatabaseWizardFinished(DlgConnection* dlg)
                                          info.database.c_str(),
                                          info.server.c_str());
             break;
-        
+
 
         case xd::dbtypeOdbc:
             conn_name = info.database;
@@ -6475,7 +6475,7 @@ static void onConnectExternalDatabaseWizardFinished(DlgConnection* dlg)
     }
 
     makeSafeConnectionName(g_app->getDatabase(), conn_name);
-            
+
     g_app->getAppController()->createMountPoint(conn_str, conn_name);
 
 }
@@ -6511,7 +6511,7 @@ static void onConnectExternalTablesWizardFinished(DlgConnection* dlg)
         fi.data_path = it->input_tablename;
         db->saveDefinition(it->output_tablename, fi);
     }
-    
+
     g_app->getAppController()->refreshDbDoc();
 }
 */
@@ -6543,7 +6543,7 @@ void AppController::showImportWizard(const ImportInfo& info, const wxString& loc
 */
 
     AppBusyCursor bc;
-    
+
     IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("ImportWizard"));
     if (site.isNull())
@@ -6552,7 +6552,7 @@ void AppController::showImportWizard(const ImportInfo& info, const wxString& loc
         wizard->sigImportWizardFinished.connect(&onImportWizardFinished);
 
         if (info.base_path.length() > 0) wizard->getTemplate().m_ii = info;
-            
+
         if (!location.IsEmpty())
         {
             wizard->loadTemplate(location);
@@ -6589,7 +6589,7 @@ void AppController::showExportWizard(const ExportInfo& info,
                                                  -1, -1, 540, 480);
         site->setMinSize(540,480);
         site->setName(wxT("ExportWizard"));
-        
+
         if (!location.IsEmpty())
             wizard->loadTemplate(location);
     }
@@ -6601,7 +6601,7 @@ void AppController::showExportWizard(const ExportInfo& info,
 }
 
 void AppController::showLicenseManager()
-{    
+{
     // make sure there are no running jobs
     if (!checkForRunningJobs())
         return;
@@ -6656,7 +6656,7 @@ void AppController::showLicenseManager()
 void AppController::showFindPanel()
 {
     size_t child_count = g_app->getMainFrame()->getChildCount();
-    
+
     FindPanel* panel;
 
     IDocumentSitePtr site;
@@ -6666,27 +6666,27 @@ void AppController::showFindPanel()
         IDocumentPtr doc = site->getDocument();
         if (doc.isOk())
             panel = (FindPanel*)(doc->getDocumentWindow());
-        
+
         IFindPanelPtr find_panel = doc;
         if (find_panel.isOk())
             find_panel->setMode(FindPanel::ModeFind, true);
-        
+
         if (!site->getVisible())
             site->setVisible(true);
     }
-    
+
     if (panel)
     {
         // populate the panel's find combobox with either
         // the global find/filter combobox's value or the
         // value queried from the active document
-        
+
         wxString val;
-        
+
         FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE);
         e->l_param = (unsigned long)(&val);
         g_app->getMainFrame()->sendEvent(e);
-        
+
         if (val.IsEmpty())
         {
             val = g_app->getAppController()->
@@ -6694,7 +6694,7 @@ void AppController::showFindPanel()
                          getFindCombo()->
                          GetValue();
         }
-        
+
         panel->setFindValue(val);
     }
 }
@@ -6702,7 +6702,7 @@ void AppController::showFindPanel()
 void AppController::showFindInFilesPanel()
 {
     size_t child_count = g_app->getMainFrame()->getChildCount();
-    
+
     FindPanel* panel;
 
     IDocumentSitePtr site;
@@ -6712,27 +6712,27 @@ void AppController::showFindInFilesPanel()
         IDocumentPtr doc = site->getDocument();
         if (doc.isOk())
             panel = (FindPanel*)(doc->getDocumentWindow());
-        
+
         IFindPanelPtr find_panel = doc;
         if (find_panel.isOk())
             find_panel->setMode(FindPanel::ModeFindInFiles, true);
-        
+
         if (!site->getVisible())
             site->setVisible(true);
     }
-    
+
     if (panel)
     {
         // populate the panel's find combobox with either
         // the global find/filter combobox's value or the
         // value queried from the active document
-        
+
         wxString val;
-        
+
         FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE);
         e->l_param = (unsigned long)(&val);
         g_app->getMainFrame()->sendEvent(e);
-        
+
         if (val.IsEmpty())
         {
             val = g_app->getAppController()->
@@ -6740,7 +6740,7 @@ void AppController::showFindInFilesPanel()
                          getFindCombo()->
                          GetValue();
         }
-        
+
         panel->setFindValue(val);
     }
 }
@@ -6748,7 +6748,7 @@ void AppController::showFindInFilesPanel()
 void AppController::showReplacePanel()
 {
     FindPanel* panel;
-    
+
     IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("FindPanel"));
     if (site.isOk())
@@ -6760,27 +6760,27 @@ void AppController::showReplacePanel()
             if (panel != NULL)
                 panel->setMode(FindPanel::ModeFindReplace, true);
         }
-        
+
         IFindPanelPtr find_panel = doc;
         if (find_panel.isOk())
             find_panel->setMode(FindPanel::ModeFindReplace, true);
-        
+
         if (!site->getVisible())
             site->setVisible(true);
     }
-    
+
     if (panel)
     {
         // populate the panel's find combobox with either
         // the global find/filter combobox's value or the
         // value queried from the active document
-        
+
         wxString val;
-        
+
         FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE);
         e->l_param = (unsigned long)(&val);
         g_app->getMainFrame()->sendEvent(e);
-        
+
         if (val.IsEmpty())
         {
             val = g_app->getAppController()->
@@ -6788,7 +6788,7 @@ void AppController::showReplacePanel()
                          getFindCombo()->
                          GetValue();
         }
-        
+
         panel->setFindValue(val);
     }
 }
@@ -6822,9 +6822,9 @@ void AppController::showMarkManagerPanel()
 void AppController::showStartupPage()
 {
     IAppPreferencesPtr prefs = g_app->getAppPreferences();
-    
+
     long counter = 0;
-    
+
     #if APP_WELCOME_PAGES == 1
     counter = prefs->getLong(wxT("general.startup.counter"), 0);
     ++counter;
@@ -6835,12 +6835,12 @@ void AppController::showStartupPage()
     }
     #endif
 
-    
+
     wxString home_pages;
     home_pages = getAppPrefsString(wxT("general.location.home"));
-    
+
     bool activate_last = false;
-    
+
     #if APP_WELCOME_PAGES == 1
     if (counter == 1)
     {
@@ -6864,9 +6864,9 @@ void AppController::showStartupPage()
         }
     }
     #endif
-    
-    
-    
+
+
+
     // if there 5 or less days left, show the 'about to expire' page
     if (g_auth->getDaysLeft() <= 5)
     {
@@ -6879,12 +6879,12 @@ void AppController::showStartupPage()
             home_pages += license_expiration;
         }
     }
-    
-    
-    
-    
+
+
+
+
     //  open the homepage(s)
-    
+
     wxArrayString arr;
     wxStringTokenizer tkz(home_pages, wxT("|"));
     while (tkz.HasMoreTokens())
@@ -6893,10 +6893,10 @@ void AppController::showStartupPage()
         if (!t.IsEmpty())
         {
             int flags = appOpenForceNewWindow;
-            
+
             if (activate_last && !tkz.HasMoreTokens())
                 flags |= appOpenActivateNewWindow;
-            
+
             openWeb(t, NULL, flags);
         }
     }
@@ -6926,7 +6926,7 @@ void AppController::showOptionsDialog()
         /*
         int w = 530;
         int h = 500;
-        
+
         #ifdef __WXGTK__
         if (wxNORMAL_FONT->GetPointSize() >= 11)
         {
@@ -6935,7 +6935,7 @@ void AppController::showOptionsDialog()
         }
         #endif
         */
-        
+
         OptionsPanel* panel = new OptionsPanel;
         site = g_app->getMainFrame()->createSite(panel,
                                                  sitetypeModeless,
@@ -7013,7 +7013,7 @@ void AppController::showProjectManager()
     if (dlg.ShowModal() == wxID_OK)
     {
         ProjectInfo info = dlg.getSelectedProject();
-        
+
         if (g_app->getDatabase().isOk())
         {
             // the project that we selected is already open; do nothing
@@ -7024,7 +7024,7 @@ void AppController::showProjectManager()
                 if (info.location == g_app->getDatabaseLocation())
                     return;
             #endif
-            
+
             if (!closeProject())
                 return;
         }
@@ -7054,7 +7054,7 @@ void AppController::showRelationshipManager()
         y = wxMax(y, -2);
         width = wxMax(width, 50);
         height = wxMax(height, 50);
-        
+
         RelationshipPanel* panel = new RelationshipPanel;
         site = m_frame->createSite(panel,
                                    sitetypeModeless |
@@ -7102,7 +7102,7 @@ void AppController::showProjectPanel(bool show, bool focus)
     else
     {
         IDocumentSitePtr active_child_site = g_app->getMainFrame()->getActiveChild();
-        
+
         if (active_child_site.isOk())
         {
             IDocumentPtr active_child_doc = active_child_site->getDocument();
@@ -7365,7 +7365,7 @@ void AppController::toggleProjectPanel()
     else
     {
         IDocumentSitePtr active_child_site = g_app->getMainFrame()->getActiveChild();
-        
+
         if (active_child_site.isOk())
         {
             IDocumentPtr active_child_doc = active_child_site->getDocument();
@@ -7399,7 +7399,7 @@ void AppController::toggleConsolePanel()
         else
         {
             IDocumentSitePtr active_child_site = g_app->getMainFrame()->getActiveChild();
-            
+
             if (active_child_site.isOk())
             {
                 IDocumentPtr active_child_doc = active_child_site->getDocument();
@@ -7452,7 +7452,7 @@ void AppController::toggleStatusBar()
     if (statusbar.isOk())
     {
         wxAuiToolBar* wnd = statusbar->getStatusBarCtrl();
-        
+
         m_frame->showWindow(wnd, !wnd->IsShown());
         m_frame->refreshFrameLayout();
     }
@@ -7474,10 +7474,10 @@ void AppController::toggleToolbar(wxWindowID id)
     wxWindow* wnd = m_frame->findWindow(wnd_id);
     if (!wnd)
         return;
-    
+
     m_frame->getFrameWindow()->Freeze();
     m_frame->showWindow(wnd, !wnd->IsShown());
-    
+
     if (id == ID_Frame_ToggleFormatToolbar)
     {
         // let everyone know we've toggled the format toolbar on or off
@@ -7488,7 +7488,7 @@ void AppController::toggleToolbar(wxWindowID id)
             e->l_param = 0;
         g_app->getMainFrame()->sendEvent(e);
     }
-    
+
     m_frame->refreshFrameLayout();
     m_frame->getFrameWindow()->Thaw();
 }
@@ -7500,7 +7500,7 @@ void AppController::refreshDbDoc()
     // because refreshing the tree/linkbar involves gui operations,
     // we will check to make sure that we are running in the
     // main thread
-    
+
     if (kl::thread::isMain())
     {
         // running in the main thread, simply invoke the refresh
@@ -7524,7 +7524,7 @@ void AppController::refreshLinkBar()
     // because refreshing the tree/linkbar involves gui operations,
     // we will check to make sure that we are running in the
     // main thread
-    
+
     if (kl::thread::isMain())
     {
         // running in the main thread, simply invoke the refresh
@@ -7545,7 +7545,7 @@ void AppController::refreshLinkBar()
 void AppController::onTreeRefresh(wxCommandEvent& evt)
 {
     // this is guaranteed to be running in the main thread
-    
+
     if (evt.GetId() == ID_TreeRefresh)
     {
         if (m_dbdoc)
