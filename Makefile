@@ -22,15 +22,13 @@ all:
 	cd xd/xdnative && $(MAKE) -w
 	cd xd/xdodbc && $(MAKE) -w
 	cd xd/xdpgsql && $(MAKE) -w
-#	cd xd/xdoracle && $(MAKE) -w
+ 	cd xd/xdoracle && $(MAKE) -w
 	cd jobs && $(MAKE) -w
 	cd scripthost && $(MAKE) -w
 	cd kcl && $(MAKE) -w
 	cd webconnect && $(MAKE) -w
 	cd kcanvas && $(MAKE) -w
 	cd img && $(MAKE) -w
-	cd sdservlib && $(MAKE) -w
-	cd sdserv && $(MAKE) -w
 	cd appstrata && $(MAKE) -w
 
 clean:
@@ -44,7 +42,7 @@ clean:
 	cd xd/xdnative && $(MAKE) -w clean
 	cd xd/xdodbc && $(MAKE) -w clean
 	cd xd/xdpgsql && $(MAKE) -w clean
-#	cd xd/xdoracle && $(MAKE) -w clean
+ 	cd xd/xdoracle && $(MAKE) -w clean
 	cd jobs && $(MAKE) -w clean
 	cd scripthost && $(MAKE) -w clean
 	cd kcl && $(MAKE) -w clean
@@ -52,8 +50,6 @@ clean:
 	cd kcanvas && $(MAKE) -w clean
 	cd webconnect && $(MAKE) -w clean
 	cd img && $(MAKE) -w clean
-	cd sdservlib && $(MAKE) -w clean
-	cd sdserv && $(MAKE) -w clean
 	cd appstrata && $(MAKE) -w clean
 
 cleanwx:
