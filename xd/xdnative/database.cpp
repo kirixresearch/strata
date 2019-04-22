@@ -2416,7 +2416,7 @@ bool XdnativeDatabase::detectMountPoint(const std::wstring& path,
         return true;
     }
 
-    if (0 == path.compare(0, 7, L"http://") || 0 == path.compare(0, 8, L"https://") || 0 == path.compare(0, 9, L"sdserv://") || 0 == path.compare(0, 10, L"sdservs://"))
+    if (0 == path.compare(0, 7, L"http://") || 0 == path.compare(0, 8, L"https://"))
     {
         if (connection_str)
             *connection_str = L"Xdprovider=xdclient;Database=;User ID=;Password=;";

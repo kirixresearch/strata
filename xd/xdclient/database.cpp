@@ -110,8 +110,6 @@ std::wstring ClientDatabase::getRequestPath(const std::wstring& path, const std:
     if (path.find(L"://") != path.npos)
     {
         res = path;
-        kl::replaceStr(res, L"sdservs:", L"https:");
-        kl::replaceStr(res, L"sdserv:", L"http:");
         if (method.length() > 0)
             res += (L"?m=" + method);
         return res;

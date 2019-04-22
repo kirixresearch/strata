@@ -3959,12 +3959,6 @@ void WebDoc::onUpdateUI(wxUpdateUIEvent& evt)
 
 void WebDoc::onElementClick(wxWebEvent& evt)
 {
-    if (evt.GetContentType() == "application/sdserv-table+json")
-    {
-        g_app->getAppController()->openTable(evt.GetHref());
-        return;
-    }
-
     evt.Skip();
 }
 
@@ -3982,12 +3976,6 @@ void WebDoc::onLeftUp(wxWebEvent& evt)
 
 void WebDoc::onMiddleUp(wxWebEvent& evt)
 {
-    if (evt.GetContentType() == "application/sdserv-table+json")
-    {
-        //g_app->getAppController()->openTable(evt.GetHref());
-        return;
-    }
-
     if (g_feed_content_handler)
     {
         g_feed_content_handler->setOpenedWithMiddleClick(true);
@@ -4046,15 +4034,4 @@ void WebDoc::onWebViewDocumentLoaded(wxWebViewEvent& evt)
 
 void WebDoc::onWebViewNavigating(wxWebViewEvent& evt)
 {
-    wxString loc = evt.GetURL();
-
-    if (loc.Left(7) == wxT("sdserv:") || loc.Left(8) == wxT("sdservs:"))
-    {
-        g_app->getAppController()->openAny(loc);
-        evt.Veto();
-
-        g_macro << "";
-        g_macro << "// open a file";
-        g_macro << wxString::Format(wxT("HostApp.open('%s');"), wxcstr(loc));
-    }
 }
