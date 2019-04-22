@@ -741,8 +741,8 @@ std::wstring FsDatabase::makeFullPath(const std::wstring& _path)
         // then xdfs has a mode which puts drive letters and share
         // names in a virtual root, like
         //
-        // /|c:/testdata/ap_hist.dbf = c:\testdata\ap_hist.dbf
-        // /|cardiff/sys1/dump/ap_hist.csv = \\cardiff\sys1\dump\ap_hist.csv
+        // /|c:/testdata/table.dbf = c:\testdata\table.dbf
+        // /|sys/tesdata/table.csv = \\sys\testdata\table.csv
         
         std::vector<std::wstring> path_parts;
         kl::parseDelimitedList(path, path_parts, PATH_SEPARATOR_CHAR);
