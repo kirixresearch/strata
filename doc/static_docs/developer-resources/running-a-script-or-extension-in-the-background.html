@@ -1,0 +1,117 @@
+<!doctype html>
+<html class="no-js" lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Running a Script or Extension in the Background | Workstation Documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="img/favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <div id="page-wrapper">
+      <a name="top" id="top"></a>
+      <div id="page-content">
+        <div class="backlink"><a href="index.html">Back to Home</a></div>
+        <h1>Developer Resources</h1>
+        <h2>Running a Script or Extension in the Background</h2>
+        <p>You can automatically run a script on a schedule using the Job Scheduler in the application. However, in order for the scheduling to run properly, you would also need to have the application open and running at all times, which is not always desirable or feasible.</p>
+        <p>In this situation, a more robust method for running the application is to use a Windows Service. A Windows Service is a utility that is configured to launch and run the application in the background, without the need for a user interface.</p>
+        <h3>Running the Application as a Windows Service</h3>
+        <p>To run the application as a Windows Service in Windows 10, do the following:</p>
+        <ol>
+        <li>In Windows 10, click on the “Start” menu and type “Services”.</li>
+        <li>Select the Services application to bring up the Windows Services interface.</li>
+        <li>In the “Name” column, scroll down to find the application and then double click to open the properties dialog.</li>
+        <li>Configure the “Startup Type” as necessary (e.g., choose “Automatic” if you wish to run the application when the system boots up).</li>
+        <li>If desirable, click the “Start” button to begin running the application as a Service.</li>
+        </ol>
+        <p>NOTE: Windows 7 or greater is required to run the application as a Windows Service.</p>
+        <h3>Automatically Run a Script Using the Scheduler</h3>
+        <p>To run a script automatically with a Windows Service, do the following:</p>
+        <ol>
+        <li>Run the application as a Windows Service (see above).</li>
+        <li>From the “Tools” menu in the application, select “Schedule Jobs…”</li>
+        <li>In the Job Scheduler, double-click on the left to add your job and rename as desired.</li>
+        <li>Then, at the top right, add your desired scheduling information (e.g., Run Daily at 9:00 AM).</li>
+        <li>Finally, in the bottom right of the Scheduler, add in the process you wish to run by dragging your script from the Project Tree.</li>
+        <li>Click OK to confirm your job.</li>
+        </ol>
+        <p>Please note that the Scheduler should be modified using the same account as the service’s log-in account, otherwise the updated settings will not be read by the service, because they belong to another account.</p>
+        <h3>Automatically Run an Extension</h3>
+        <p>To run an extension automatically with a Windows Service, you’ll need to code your cron parameters as part of your script.</p>
+        <p>For example, here is a code example that runs an extension daily at 11:00 AM:</p>
+        <pre>class MiniScheduler
+{
+    function MiniScheduler(command, start_time, interval /*seconds*/)
+    {
+        interval = interval * 1000; // convert interval to milliseconds
+
+        this.m_command = command;
+        this.m_start_time = start_time;
+        this.m_interval = interval;
+        this.m_pulse_function = null;
+
+        // if start time is in the past, fast forward until it's in the future
+        var start_ms = start_time.getTime();
+        var now = new Date;
+        var now_ms = now.getTime();
+        while (start_ms < now_ms)
+            start_ms += interval;
+        this.m_start_time = new Date(start_ms);
+
+        this.m_last_run = this.m_start_time.getTime() - interval;
+    }
+
+    function setPulseFunction(f)
+    {
+        this.m_pulse_function = f;
+    }
+
+    function run()
+    {
+        var now;
+
+        while (1)
+        {
+            now = new Date();
+
+            if (now.getTime() < this.m_start_time.getTime())
+            {
+                if (this.m_pulse_function != null)
+                    this.m_pulse_function();
+                System.sleep(1000);
+                continue;
+            }
+
+            if ((now.getTime() - this.m_last_run) >= this.m_interval)
+            {
+                this.m_last_run = now.getTime();
+                eval(this.m_command);
+            }
+
+            if (this.m_pulse_function != null)
+                this.m_pulse_function();
+            System.sleep(60000);
+        }
+    }
+
+    var m_command;
+    var m_start_time;
+    var m_interval;
+    var m_last_run;
+    var m_pulse_function;
+}
+
+var g_scheduler = new MiniScheduler("doProcessing();",
+                                    new Date("2019-01-01 11:00"),
+                                    86400 /* one day in # seconds */);
+g_scheduler.run();
+
+function doProcessing()
+{
+   // daily processing code goes here
+}</pre>
+    </div>
+  </body>
+</html>
