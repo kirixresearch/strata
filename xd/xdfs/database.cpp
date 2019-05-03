@@ -147,6 +147,7 @@ bool FsDatabase::open(const std::wstring& path)
         if (!xf_get_directory_exist(path))
             return false;
 
+        /*
         std::wstring control_dir = path;
         
         #ifdef WIN32
@@ -162,6 +163,11 @@ bool FsDatabase::open(const std::wstring& path)
             control_dir = xf_get_temp_path();
             control_dir = L"/xdfs";
         }
+        */
+
+        std::wstring control_dir = xf_get_temp_path(); // returns temp path with trailing slash
+        control_dir += L"xdfs";
+
 
 
         // make control directory
