@@ -1,0 +1,8 @@
+rm -rf libwebsockets
+svn update libwebsockets
+cd libwebsockets
+mkdir build
+cd build
+cmake ..
+make
+

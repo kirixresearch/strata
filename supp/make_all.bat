@@ -1,0 +1,22 @@
+@echo off
+
+if "%FrameworkDir%"=="" (
+    echo error: please run this script from the Visual Studio Command Prompt environment
+	goto end
+)
+
+
+call make_openssl
+call make_curl
+call make_libwebsockets
+call make_postgres
+call make_libmariadb
+call make_wxwidgets
+call make_libharu
+call make_zlib
+call make_libzip
+call make_expat
+call make_oracle
+
+
+:end

@@ -1,0 +1,4 @@
+cd libzip
+./configure --with-pic
+make clean all
+
