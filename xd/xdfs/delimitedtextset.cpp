@@ -119,19 +119,36 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
 
     
 
+    xd::FormatDefinition determine_info;
+    bool determine_info_populated = false;
+
     // if a definition was specified, but the values are empty, specify defaults
     if (m_def.delimiter.empty() && m_def.determine_delimiters)
     {
-        xd::FormatDefinition info;
-        if (m_database->getFileFormat(url, m_file.getStream(), &info, true /* discover_delimiters */))
+        if (m_database->getFileFormat(url, m_file.getStream(), &determine_info, true /* discover_delimiters */))
         {
-            m_def.delimiter = info.delimiter;
+            m_def.delimiter = determine_info.delimiter;
+            determine_info_populated = true;
         }
     }
 
     if (m_def.line_delimiter.empty())
     {
-        m_def.line_delimiter = L"\n";
+        if (m_def.determine_delimiters)
+        {
+            if (!determine_info_populated)
+            {
+                if (m_database->getFileFormat(url, m_file.getStream(), &determine_info, true /* discover_delimiters */))
+                {
+                    m_def.line_delimiter = determine_info.line_delimiter;
+                }
+            }
+        }
+
+        if (m_def.line_delimiter.empty())
+        {
+            m_def.line_delimiter = L"\n";
+        }
     }
 
     

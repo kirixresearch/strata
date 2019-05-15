@@ -313,7 +313,20 @@ static bool determineSetFormatInfo(xd::IStream* stream, xd::FormatDefinition* in
         f.skip(1);
 
         if (ch == 0x0d)
+        {
+            if (!f.eof())
+            {
+                if (f.getChar() != 0x0a)
+                {
+                    // old-style \r line ending
+                    lines.push_back(line);
+                    line = L"";
+                    info->line_delimiter = L"\r";
+                }
+            }
+
             continue;
+        }
         
         if (ch == 0x0a)
         {
@@ -338,6 +351,11 @@ static bool determineSetFormatInfo(xd::IStream* stream, xd::FormatDefinition* in
         return true;
     }
     
+    if (info->line_delimiter.length() == 0)
+    {
+        info->line_delimiter = L"\n";
+    }
+
     size_t comma_count = 0,
            tab_count = 0,
            semicolon_count = 0,

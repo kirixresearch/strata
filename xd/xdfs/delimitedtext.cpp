@@ -225,8 +225,13 @@ void DelimitedTextFile::setDelimiters(const std::wstring& val)
 void DelimitedTextFile::setLineDelimiters(const std::wstring& val)
 {
     m_line_delimiters = val;
-    if (m_line_delimiters == L"\x0d" ||
-        m_line_delimiters == L"\x0a" ||
+
+    if (m_line_delimiters == L"\x0d")
+    {
+        m_line_delimiters = val;
+    }
+
+    if (m_line_delimiters == L"\x0a" ||
         m_line_delimiters == L"\x0d\x0a" ||
         m_line_delimiters == L"\x0a\x0d")
     {
