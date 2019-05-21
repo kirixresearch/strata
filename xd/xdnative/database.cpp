@@ -2402,7 +2402,7 @@ bool XdnativeDatabase::detectMountPoint(const std::wstring& path,
     if (0 == path.compare(0, 7, L"file://"))
     {
         cstr = L"Xdprovider=xdfs;Database=;User ID=;Password=;";
-        rpath = path.substr(7);
+        rpath = kl::urlToFilename(path);
         if (rpath.empty())
             return false;
         if (rpath.length() >= 3 && rpath[0] == '/' && rpath[2] == ':') // ex: file:///c:/abc.txt

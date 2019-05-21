@@ -45,6 +45,7 @@
 #include <kl/utf8.h>
 #include <kl/thread.h>
 #include <kl/string.h>
+#include <kl/url.h>
 
 enum
 {
@@ -2720,7 +2721,14 @@ void TableDoc::updateCaption()
     }
      else
     {
-        m_caption = kl::afterLast(m_path, '/');
+        std::wstring path = m_path;
+        if (kl::isUrl(path))
+        {
+            path = kl::urlToFilename(path);
+        }
+        kl::replaceStr(path, L"\\", L"/");
+
+        m_caption = kl::afterLast(path, '/');
     }
 
     if (m_doc_site)
