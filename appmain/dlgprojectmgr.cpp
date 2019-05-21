@@ -16,6 +16,42 @@
 #include <wx/dir.h>
 
 
+// utility functions
+
+static std::wstring getLocationFromString(const std::wstring& location_or_cstr)
+{
+    if (kl::icontains(location_or_cstr, L"xdprovider="))
+    {
+        xd::ConnectionString cstr(location_or_cstr);
+        std::wstring provider = cstr.getLowerValue(L"xdprovider");
+
+        if (provider == L"xdnative" || provider == L"xdfs")
+        {
+            return cstr.getLowerValue(L"database");
+        }
+
+        return L"";
+    }
+    else
+    {
+        return location_or_cstr;
+    }
+}
+
+static bool isSameLocation(const std::wstring& location1, std::wstring& location2)
+{
+    std::wstring loc1 = getLocationFromString(location1);
+    std::wstring loc2 = getLocationFromString(location2);
+
+#ifdef WIN32
+    return kl::iequals(loc1, loc2);
+#else
+    return (loc1 == loc2 ? true : false);
+#endif
+}
+
+
+
 // ProjectMgr class implementation
 
 ProjectMgr::ProjectMgr()
@@ -176,43 +212,17 @@ int ProjectMgr::getIdxFromEntryName(const wxString& entry_name)
     return -1;
 }
 
-int ProjectMgr::getIdxFromLocation(const wxString& location)
+int ProjectMgr::getIdxFromLocation(const wxString& _location)
 {
     int idx = 0;
     
+    std::wstring location = towstr(_location);
 
     std::vector<ProjectInfo>::iterator it;
     for (it = m_projects.begin(); it != m_projects.end(); ++it)
     {
-        std::wstring entry_location = it->location;
-
-        if (kl::icontains(entry_location, L"xdprovider="))
-        {
-            xd::ConnectionString cstr(entry_location);
-            std::wstring provider = cstr.getLowerValue(L"xdprovider");
-
-            if (provider == L"xdnative" || provider == L"xdfs")
-            {
-                entry_location = cstr.getLowerValue(L"database");
-            }
-        }
-
-
-#ifdef __WXMSW__
-        // windows paths are case insensitive
-        if (0 == wcscasecmp(it->location.c_str(), location.c_str()))   // if we were passed a connection string
+        if (isSameLocation(location, it->location))
             return idx;
-
-        // windows paths are case insensitive
-        if (0 == wcscasecmp(entry_location.c_str(), location.c_str()))
-            return idx;
-#else
-        if (it->location == location)
-            return idx;
-
-        if (entry_location == location)
-            return idx;
-#endif
         idx++;
     }
 
@@ -1182,7 +1192,6 @@ static bool _deleteTree(const wxString& path)
 
 
 
-
 void DlgProjectMgr::onDeleteProject(wxCommandEvent& evt)
 {
     int row = m_grid->getCursorRow();
@@ -1190,13 +1199,11 @@ void DlgProjectMgr::onDeleteProject(wxCommandEvent& evt)
         return;
     
     std::vector<ProjectInfo>& connections = m_projmgr.getProjectEntries();
-    wxString location = connections[row].location;
+    std::wstring location = connections[row].location;
+    std::wstring current_open_database = towstr(g_app->getDatabaseLocation());
 
-#ifdef WIN32
-    if (location.CmpNoCase(g_app->getDatabaseLocation()) == 0)
-#else
-    if (location == g_app->getDatabaseLocation())
-#endif
+
+    if (isSameLocation(location, current_open_database))
     {
         appMessageBox(_("The selected project is currently open.  Please close the project before deleting it."),
                            APPLICATION_NAME,
@@ -1211,8 +1218,14 @@ void DlgProjectMgr::onDeleteProject(wxCommandEvent& evt)
     if (res != wxYES)
         return;
 
-    AppBusyCursor bc;
-    _deleteTree(location);
+
+    std::wstring disk_location = getLocationFromString(location);
+
+    if (xf_is_valid_directory_path(disk_location))
+    {
+        AppBusyCursor bc;
+        _deleteTree(disk_location);
+    }
     
     m_projmgr.deleteProjectEntry(row);
     populate();
