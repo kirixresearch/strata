@@ -377,6 +377,8 @@ bool TransformationDoc::initDoc(IFramePtr frame,
     m_doc_site->setCaption(caption);
     m_doc_site->setBitmap(GETBMP(gf_table_16));
 
+    Hide();     // prevent flicker when creating TextDoc
+
     // create document's window
     bool result = Create(docsite_wnd,
                          -1,
@@ -481,6 +483,8 @@ bool TransformationDoc::initDoc(IFramePtr frame,
     item = addStatusBarItem(wxT("transformationdoc_row_width"));
     item->setWidth(150);
     
+    Show();     // prevent flicker when creating TextDoc
+
     return true;
 }
 

@@ -312,11 +312,13 @@ bool TextDoc::initDoc(IFramePtr frame,
     updateCaption();
     m_doc_site->setBitmap(GETBMP(gf_table_16));
 
+    Hide();     // prevent flicker when creating TextDoc
+
     // create document's window
     bool result = Create(docsite_wnd,
                          -1,
                          wxPoint(0,0),
-                         docsite_wnd->GetClientSize(),
+                         wxSize(1,1),    // prevent flicker; was docsite_wnd->GetClientSize(),
                          wxNO_FULL_REPAINT_ON_RESIZE |
                          wxCLIP_CHILDREN);
 
@@ -394,6 +396,9 @@ bool TextDoc::initDoc(IFramePtr frame,
     m_textview->sigColumnDeleted.connect(this, &TextDoc::onTextViewColumnDeleted);
     m_textview->sigColumnModified.connect(this, &TextDoc::onTextViewColumnModified);
     m_textview->sigCursorPositionChanged.connect(this, &TextDoc::onTextViewCursorPositionChanged);
+
+    Show();     // prevent flicker when creating TextDoc
+
     return true;
 }
 
