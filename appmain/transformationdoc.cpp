@@ -537,14 +537,17 @@ void TransformationDoc::onSiteActivated()
 
 void TransformationDoc::initFromDefinition(const xd::FormatDefinition& def)
 {
+    std::vector<xd::ColumnInfo>::const_iterator cit;
+
     // clear the grid
     m_grid->deleteAllRows();
     
 
-    // populate the grid from the set's destination structure
+
+    // populate the grid from the table's destination structure
     int row = 0;
 
-    std::vector<xd::ColumnInfo>::const_iterator cit;
+
     for (cit = def.columns.cbegin(); cit != def.columns.cend(); ++cit)
     {
         insertRowFromColumnInfo(row, *cit);
@@ -553,6 +556,8 @@ void TransformationDoc::initFromDefinition(const xd::FormatDefinition& def)
     
 
     updateNumberColumn();
+    populateSourceFieldDropDown();
+
     resizeAllGridColumnsToFitDoc(m_grid);
 
     // refresh the row selection grid
@@ -610,12 +615,15 @@ void TransformationDoc::getTransformation(std::vector<TransformField>& result)
 
 void TransformationDoc::setInputStructure(const std::vector<TransformField>& input_fields)
 {
+/*
     m_source_fields = input_fields;
     populateSourceFieldDropDown();
+*/
 }
 
 void TransformationDoc::setInputStructure(const xd::Structure& structure)
 {
+/*
     m_source_fields.clear();
     
     TransformField field;
@@ -636,6 +644,7 @@ void TransformationDoc::setInputStructure(const xd::Structure& structure)
     }
     
     populateSourceFieldDropDown();
+*/
 }
 
 void TransformationDoc::getColumnListItems(std::vector<ColumnListItem>& items)
@@ -681,6 +690,7 @@ void TransformationDoc::onColumnListDblClicked(const std::vector<wxString>& item
     }
 
     updateNumberColumn();
+    populateSourceFieldDropDown();
     m_grid->moveCursor(m_grid->getRowCount()-1, colFieldName);
     m_grid->scrollVertToCursor();
     m_grid->refresh(kcl::Grid::refreshAll);
@@ -727,7 +737,7 @@ void TransformationDoc::insertRow(int row, bool calculated)
     f->output_type = xd::typeCharacter;
     f->output_width = 20;
     f->output_scale = 0;
-    f->output_expression = wxT("\"\"");
+    f->output_expression = "";
     f->calculated = calculated;
     f->original = false;
     
@@ -776,6 +786,7 @@ void TransformationDoc::insertSelectedRows(bool calculated)
     }
 
     updateNumberColumn();
+    populateSourceFieldDropDown();
     m_grid->refresh(kcl::Grid::refreshAll);
     updateStatusBar();
 }
@@ -792,7 +803,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
     f->input_scale = 0;
     f->input_offset = colinfo.source_offset;
     f->output_name = colinfo.name;
-    f->output_type = xd::typeCharacter;
+    f->output_type = colinfo.type;
     f->output_width = colinfo.width;
     f->output_scale = colinfo.scale;
     f->output_expression = L"";
@@ -848,7 +859,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
     }
     
     // get (or create) the field's expression
-    wxString field_expr = getFieldExpression(row);
+    //wxString field_expr = getFieldExpression(row);
     
     /*
     // make sure either a source field or an expression is specified
@@ -1072,6 +1083,14 @@ wxString TransformationDoc::createDestinationExpression(int row)
     wxString source_name = m_grid->getCellString(row, colSourceName);
     wxString quoted_source_name = xd::quoteIdentifier(g_app->getDatabase(), towstr(source_name));
     
+
+    if (format_comboidx == -1 && (source_name == "--" || source_name.IsEmpty()))
+    {
+        return "";
+    }
+
+
+
     // translate from the combobox index and xd type
     // to the expression format index
     int expr_format = combo2formatIdx(xd_type, format_comboidx);
@@ -1183,6 +1202,21 @@ void TransformationDoc::populateSourceFieldDropDown()
 {
     if (!m_grid)
         return;
+
+    m_source_fields.clear();
+
+    xd::Structure s = createStructureFromGrid();
+    for (auto col : s.columns)
+    {
+        TransformField field;
+        field.input_name = col.name;
+        field.input_type = col.type;
+        field.input_width = col.width;
+        field.input_scale = col.scale;
+        field.input_offset = col.source_offset;
+        m_source_fields.push_back(field);
+    }
+
 
     kcl::CellProperties props;
     props.mask = kcl::CellProperties::cpmaskCtrlType |
@@ -1438,7 +1472,9 @@ void TransformationDoc::onDeletedRows(std::vector<int> rows)
     //       so it will take care of the grid refresh for us
     checkOverlayText();
     updateNumberColumn();
+    populateSourceFieldDropDown();
     updateStatusBar();
+    m_dirty = true;
 }
 
 void TransformationDoc::onFrameEvent(FrameworkEvent& evt)
@@ -1494,6 +1530,7 @@ void TransformationDoc::onFrameEvent(FrameworkEvent& evt)
                         TODO: implement
                         initFromSet(m_init_set);
                         updateNumberColumn();
+                        populateSourceFieldDropDown();
                         checkOverlayText();
                         */
 
@@ -1661,6 +1698,44 @@ bool TransformationDoc::doSave()
     }
 
 
+    ITextDocPtr textdoc = lookupOtherDocument(m_doc_site, "appmain.TextDoc");
+    if (textdoc)
+    {
+        xd::FormatDefinition& def = textdoc->getDefinition();
+        def.columns.clear();
+
+        std::wstring name, source_name, expression;
+        int type, width, scale, format_sel;
+
+
+        // populate the new structure
+        int row, row_count = m_grid->getRowCount();
+        for (row = 0; row < row_count; ++row)
+        {
+            name = m_grid->getCellString(row, colFieldName);
+            type = m_grid->getCellComboSel(row, colFieldType);
+            width = m_grid->getCellInteger(row, colFieldWidth);
+            scale = m_grid->getCellInteger(row, colFieldScale);
+            source_name = m_grid->getCellString(row, colSourceName);
+            format_sel = m_grid->getCellComboSel(row, colFieldFormula);
+            expression = getFieldExpression(row);
+
+            xd::ColumnInfo colinfo;
+            colinfo.name = name;
+            colinfo.type = choice2xd(type);
+            colinfo.width = width;
+            colinfo.scale = scale;
+            colinfo.expression = expression;
+
+            def.createColumn(colinfo);
+        }
+
+        textdoc->save(false);
+        textdoc->refreshDocuments();
+    }
+
+
+
     // update the TableDoc's view
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
@@ -1731,6 +1806,7 @@ void TransformationDoc::onDeleteField(wxCommandEvent& evt)
     m_grid->deleteSelectedRows();
     checkOverlayText();
     updateNumberColumn();
+    populateSourceFieldDropDown();
     m_grid->refresh(kcl::Grid::refreshAll);
     updateStatusBar();
 }
@@ -1827,6 +1903,7 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
         // cell's text has not yet changed)
         m_grid->setCellString(row, colFieldName, evt.GetString());
         
+        populateSourceFieldDropDown();
         clearProblemRows();
         checkDuplicateFieldnames(CheckMarkRows);
         checkInvalidFieldnames(CheckMarkRows);
@@ -1941,7 +2018,7 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
                 m_grid->setCellString(row, colFieldName, source_name);
             
             // remove default double-quoted expression when selecting a source name
-            if (expr_text == wxT("\"\""))
+            if (expr_text == "\"\"")
                 m_grid->setCellString(row, colFieldFormula, wxEmptyString);
         }
     }

@@ -30,6 +30,8 @@ public:
     virtual xd::Structure getStructure() = 0;
     virtual void setSourceUrl(const wxString& source_url) = 0; // allows override of displayed url
     virtual xd::FormatDefinition& getDefinition() = 0;
+    virtual void refreshDocuments() = 0;
+    virtual bool save(bool do_refresh) = 0;
 };
 
 XCM_DECLARE_SMARTPTR(ITextDoc)
@@ -94,7 +96,7 @@ public:
     xd::Structure getStructure();
     bool open(const wxString& filename);
     void close();
-    bool save();
+    bool save(bool do_refresh = false);
     wxString getPath();
     void refreshDocuments();
     
@@ -195,7 +197,7 @@ private:
     
     wxString m_path;
     wxString m_source_url;          // source url (can override what's displayed in the url bar)
-    
+    std::wstring m_definition_file; // filename that stores the xd definition
     int m_view;                     // fixed-length or text-delimited
     int m_encoding;                 // 
     bool m_dirty;                   // changes have been made to the document

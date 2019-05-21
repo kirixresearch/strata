@@ -20,6 +20,7 @@
 #include "jsonconfig.h"
 #include "textview.h"
 #include <wx/filesys.h>
+#include <kl/url.h>
 
 
 #define MAX_SKIPCHARS 2000000000
@@ -744,22 +745,58 @@ bool TextDoc::open(const wxString& filename)
     if (finfo.isNull())
         return false;
 
+    // get physical filename
+    std::wstring phys_filename;
+    if (kl::isUrl(towstr(filename)))
+    {
+        phys_filename = kl::urlToFilename(towstr(filename));
+        if (!xf_get_file_exist(phys_filename))
+        {
+            phys_filename = L"";
+        }
+    }
+    else
+    {
+        if (xf_get_file_exist(towstr(filename)))
+        {
+            phys_filename = filename;
+        }
+    }
+
+    if (phys_filename.length() > 0)
+    {
+        m_definition_file = phys_filename + L".def";
+    }
+
+
 
 
     m_path = filename;
     m_path_is_datafile = finfo->isMount() ? false : true;
 
     m_def = xd::FormatDefinition();
-    if (m_path_is_datafile)
+
+    if (xf_get_file_exist(m_definition_file))
     {
-        if (!db->detectStreamFormat(towstr(filename), &m_def, NULL, NULL))
-            return false;
+        std::wstring def = xf_get_file_contents(m_definition_file);
+        xd::Util::loadDefinitionFromString(def, &m_def);
     }
-     else
+    else
     {
-        if (!db->loadDefinition(towstr(filename), &m_def))
-            return false;
+        if (m_path_is_datafile)
+        {
+            if (!db->detectStreamFormat(towstr(filename), &m_def, NULL, NULL))
+                return false;
+        }
+        else
+        {
+            if (!db->loadDefinition(towstr(filename), &m_def))
+                return false;
+        }
     }
+
+
+
 
 
     if (m_def.format == xd::formatDelimitedText)
@@ -779,6 +816,8 @@ bool TextDoc::open(const wxString& filename)
         return res;
     }
 
+    refreshDocuments();
+
     return true;
 }
 
@@ -790,14 +829,13 @@ void TextDoc::close()
     m_grid->setModel(xcm::null);
 }
 
-bool TextDoc::save()
+bool TextDoc::save(bool do_refresh)
 {
     xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
-    bool do_refresh = false;
-
+    /*
     if (m_path_is_datafile)
     {
         // m_path is currently set to the source data file;
@@ -821,7 +859,13 @@ bool TextDoc::save()
         if (!db->saveDefinition(towstr(m_path), m_def))
             return false;
     }
+    */
 
+    if (m_definition_file.length() > 0)
+    {
+        std::wstring def = xd::Util::saveDefinitionToString(m_def);
+        xf_put_file_contents(m_definition_file, def);
+    }
 
     if (do_refresh)
     {

@@ -214,7 +214,8 @@ void DelimitedTextFile::closeFile()
 
 bool DelimitedTextFile::isUnicode()
 {
-    return (m_file.getEncoding() == BufferedTextFile::encodingDefault) ? false : true;
+    int encoding = m_file.getEncoding();
+    return (encoding == BufferedTextFile::encodingDefault || encoding == BufferedTextFile::encodingISO88591) ? false : true;
 }
 
 void DelimitedTextFile::setDelimiters(const std::wstring& val)
