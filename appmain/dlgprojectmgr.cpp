@@ -180,6 +180,7 @@ int ProjectMgr::getIdxFromLocation(const wxString& location)
 {
     int idx = 0;
     
+
     std::vector<ProjectInfo>::iterator it;
     for (it = m_projects.begin(); it != m_projects.end(); ++it)
     {
@@ -199,9 +200,16 @@ int ProjectMgr::getIdxFromLocation(const wxString& location)
 
 #ifdef __WXMSW__
         // windows paths are case insensitive
+        if (0 == wcscasecmp(it->location.c_str(), location.c_str()))   // if we were passed a connection string
+            return idx;
+
+        // windows paths are case insensitive
         if (0 == wcscasecmp(entry_location.c_str(), location.c_str()))
             return idx;
 #else
+        if (it->location == location)
+            return idx;
+
         if (entry_location == location)
             return idx;
 #endif
