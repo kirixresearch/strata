@@ -33,6 +33,7 @@ public:
     virtual void refreshFromDefinition() = 0;
     virtual void refreshDocuments() = 0;
     virtual bool save(bool do_refresh) = 0;
+    virtual bool checkSave() = 0;
 };
 
 XCM_DECLARE_SMARTPTR(ITextDoc)
@@ -84,6 +85,7 @@ public:
     wxWindow* getDocumentWindow();
     wxString getDocumentLocation();
     void setDocumentFocus();
+    bool checkSave(); // saves the definition file (after asking user if m_dirty is true)
     bool onSiteClosing(bool force);
     void onSiteDeactivated();
     void onSiteActivated();

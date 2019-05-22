@@ -677,6 +677,16 @@ bool TableDoc::onSiteClosing(bool force)
         }
     }
     
+
+    // see note in TextDoc onSiteClosing() about cfw
+    ITextDocPtr textdoc = lookupOtherDocument(m_doc_site, "appmain.TextDoc");
+    if (textdoc.isOk())
+    {
+        if (!textdoc->checkSave())
+            return false;
+        textdoc.clear();
+    }
+
     AppBusyCursor bc;
 
 
@@ -1319,6 +1329,16 @@ void TableDoc::onSave(wxCommandEvent& evt)
         updateCaption();
         return;
     }
+
+
+    // see note in TextDoc onSiteClosing() about cfw
+    ITextDocPtr textdoc = lookupOtherDocument(m_doc_site, "appmain.TextDoc");
+    if (textdoc.isOk())
+    {
+        textdoc->save(false);
+        textdoc.clear();
+    }
+
 
     // always show a "Save As" dialog for temporary tables
     if (isTemporary())

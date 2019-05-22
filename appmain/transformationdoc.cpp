@@ -1643,7 +1643,18 @@ void TransformationDoc::onCopy(wxCommandEvent& evt)
 void TransformationDoc::onSave(wxCommandEvent& evt)
 {
     if (m_dirty)
+    {
         doSave();
+    }
+     else
+    {
+        // give TextDoc a chance to save
+        ITextDocPtr textdoc = lookupOtherDocument(m_doc_site, "appmain.TextDoc");
+        if (textdoc)
+        {
+            textdoc->save(false);
+        }
+    }
 }
 
 bool TransformationDoc::doSave()

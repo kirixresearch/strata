@@ -425,23 +425,20 @@ void TextDoc::setSourceUrl(const wxString& source_url)
     m_source_url = source_url;
 }
 
-bool TextDoc::onSiteClosing(bool force)
-{
-    if (force)
-    {
-        return true;
-    }
 
+// saves the definition file (after asking user if m_dirty is true)
+bool TextDoc::checkSave()
+{
     if (m_dirty)
     {
         int result = appMessageBox(_("Would you like to save the changes you made to the configuration?"),
-                                        APPLICATION_NAME,
-                                        wxYES_NO | wxCANCEL | wxICON_QUESTION | wxCENTER);
+            APPLICATION_NAME,
+            wxYES_NO | wxCANCEL | wxICON_QUESTION | wxCENTER);
 
         // cancel the site closing
         if (result == wxCANCEL)
             return false;
-        
+
         // close site and don't perform a save operation
         if (result == wxNO)
             return true;
@@ -449,11 +446,26 @@ bool TextDoc::onSiteClosing(bool force)
 
     if (m_dirty)
     {
-        // save the set's metadata
+        // save the definition
         wxCommandEvent e;
         onSave(e);
     }
-    
+
+    return true;
+}
+
+
+
+bool TextDoc::onSiteClosing(bool force)
+{
+    if (force)
+    {
+        return true;
+    }
+
+    if (!checkSave())
+        return false;
+    m_dirty = false; // prevent asking user a second time via TableDoc::onSiteClosing()
 
     // right now, cfw doesn't fire onSiteClosing() to all documents in a container,
     // just the one that is active.  This is probably wrong.   This code works around
@@ -1904,6 +1916,7 @@ void TextDoc::onTextDelimitedFieldDelimiterTextEnter(wxCommandEvent& evt)
 
     xd::FormatDefinition defaults = m_def;
     defaults.delimiter = towstr(s);
+    defaults.determine_delimiters = false;
     defaults.columns.clear();
 
     wxBusyCursor bc;
@@ -1999,11 +2012,11 @@ void TextDoc::onTextDelimitedFieldDelimiterCombo(wxCommandEvent& evt)
     if (sel == m_last_delimiters_sel)
         return;
         
-    
+    m_dirty = true;
+
     m_last_delimiters_sel = sel;
     m_last_delimiters = getFieldDelimiters();
     
-
     // if the user typed in one of the default delimiters,
     // use that combobox entry instead
     
@@ -2012,6 +2025,7 @@ void TextDoc::onTextDelimitedFieldDelimiterCombo(wxCommandEvent& evt)
 
     xd::FormatDefinition defaults = m_def;
     defaults.delimiter = towstr(getFieldDelimiters());
+    defaults.determine_delimiters = false;
     defaults.columns.clear();
 
     wxBusyCursor bc;
@@ -2021,7 +2035,6 @@ void TextDoc::onTextDelimitedFieldDelimiterCombo(wxCommandEvent& evt)
     refreshDocuments();
     updateColumnList();
     updateStatusBar();
-    m_dirty = true;
 }
 
 void TextDoc::onTextDelimitedTextQualifierCombo(wxCommandEvent& evt)
