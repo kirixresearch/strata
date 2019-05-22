@@ -2881,7 +2881,27 @@ void TableDoc::setIterator(xd::IIteratorPtr iter, bool go_first)
     }
 
     if (m_active_view.isNull())
+    {
+
+        // if there is only one view, and it's empty, this would normally present
+        // the user with a blank grid. We want to avoid this by populating an
+        // empty view with the fill table structure
+        if (viewvec->size() == 1)
+        {
+            ITableDocViewPtr view = viewvec->getItem(0);
+
+            if (view->getColumnCount() == 0)
+            {
+                xd::Structure s = m_iter->getStructure();
+                initializeDefaultView(view, s);
+            }
+        }
+
+
         setActiveView(viewvec->getItem(0));
+    }
+
+
 
 
     if (m_grid)
