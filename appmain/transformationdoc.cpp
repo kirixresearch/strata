@@ -806,6 +806,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
     f->input_width = colinfo.source_width;
     f->input_scale = 0;
     f->input_offset = colinfo.source_offset;
+    f->input_encoding = colinfo.source_encoding;
     f->output_name = colinfo.name;
     f->output_type = colinfo.type;
     f->output_width = colinfo.width;
@@ -1716,6 +1717,8 @@ bool TransformationDoc::doSave()
         int row, row_count = m_grid->getRowCount();
         for (row = 0; row < row_count; ++row)
         {
+            TransformField* f = (TransformField*)m_grid->getRowData(row);
+
             name = m_grid->getCellString(row, colFieldName);
             type = m_grid->getCellComboSel(row, colFieldType);
             width = m_grid->getCellInteger(row, colFieldWidth);
@@ -1730,11 +1733,14 @@ bool TransformationDoc::doSave()
             colinfo.width = width;
             colinfo.scale = scale;
             colinfo.expression = expression;
+            colinfo.source_offset = f->input_offset;
+            colinfo.source_width = f->input_width;
 
             def.createColumn(colinfo);
         }
 
         textdoc->save(false);
+        textdoc->refreshFromDefinition();
         textdoc->refreshDocuments();
     }
 

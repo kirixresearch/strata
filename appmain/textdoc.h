@@ -30,6 +30,7 @@ public:
     virtual xd::Structure getStructure() = 0;
     virtual void setSourceUrl(const wxString& source_url) = 0; // allows override of displayed url
     virtual xd::FormatDefinition& getDefinition() = 0;
+    virtual void refreshFromDefinition() = 0;
     virtual void refreshDocuments() = 0;
     virtual bool save(bool do_refresh) = 0;
 };
@@ -98,6 +99,8 @@ public:
     void close();
     bool save(bool do_refresh = false);
     wxString getPath();
+
+    void refreshFromDefinition();
     void refreshDocuments();
     
     // IColumnListTarget

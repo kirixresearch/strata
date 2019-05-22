@@ -795,6 +795,11 @@ bool TextView::openFile(const wxString& filename)
     return retval;
 }
 
+bool TextView::isOpen()
+{
+    return m_text_model->isOpen();
+}
+
 void TextView::closeFile()
 {
     if (m_text_model->isOpen())

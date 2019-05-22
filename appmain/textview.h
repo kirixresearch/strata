@@ -153,6 +153,7 @@ public:
 
     bool openFile(const wxString& filename);
     void closeFile();
+    bool isOpen();
     
     void addColumn(int offset,
                    int encoding = -1,

@@ -631,9 +631,17 @@ bool TextDoc::initFixedLengthView()
     //    fn = urlToFilename(fn);
     //     else
     //    fn = getPhysPathFromDatabasePath(fn);
-        
+
+    if (m_textview->isOpen())
+    {
+        m_textview->closeFile();
+    }
+     
     if (!m_textview->openFile(fn))
+    {
+        m_loading_definition = false;
         return false;
+    }
 
     // set the controls' values
     
@@ -881,6 +889,15 @@ bool TextDoc::save(bool do_refresh)
     return true;
 }
 
+void TextDoc::refreshFromDefinition()
+{
+    // repopulate our own view
+    if (m_def.format == xd::formatFixedLengthText)
+    {
+        initFixedLengthView();
+    }
+}
+
 void TextDoc::refreshDocuments()
 {
     xd::IDatabasePtr db = g_app->getDatabase();
@@ -908,11 +925,15 @@ void TextDoc::refreshDocuments()
             qp.format = m_def;
             xd::IIteratorPtr iter = db->query(qp);
             if (iter.isOk())
+            {
                 tabledoc->open(towstr(m_path), iter);
+                tabledoc->refreshActiveView();
+            }
         }
          else
         {
             tabledoc->open(towstr(m_path));
+            tabledoc->refreshActiveView();
         }
     }
 }
@@ -1322,7 +1343,7 @@ void TextDoc::onTextViewColumnAdded(TextViewColumn& col)
         newcol.source_width = col.width;
 
         m_def.columns.insert(m_def.columns.begin() + idx, newcol);
-        save();
+        save(true);
     }
 
 
@@ -1337,7 +1358,7 @@ void TextDoc::onTextViewColumnAdded(TextViewColumn& col)
     if (tabledoc)
     {
         // update the TableDoc's base set
-        tabledoc->open(towstr(m_path));
+        //tabledoc->open(towstr(m_path));
         
         ITableDocViewPtr tabledocview = tabledoc->getActiveView();
         if (tabledocview)
@@ -1379,7 +1400,7 @@ void TextDoc::onTextViewColumnDeleted(TextViewColumn& col)
     {
         deleted_colname = m_def.columns[idx].name;
         m_def.columns.erase(m_def.columns.begin() + idx);
-        save();
+        save(true);
     }
 
 
@@ -1406,8 +1427,8 @@ void TextDoc::onTextViewColumnDeleted(TextViewColumn& col)
         }
         
         // update the TableDoc's base set and refresh its view
-        tabledoc->open(towstr(m_path));
-        tabledoc->refreshActiveView();
+        //tabledoc->open(towstr(m_path));
+        //tabledoc->refreshActiveView();
     }
 
     updateColumnList();
@@ -1450,7 +1471,7 @@ void TextDoc::onTextViewColumnModified(TextViewColumn& col, TextViewColumn& new_
             col.source_width = new_settings.width;
         }
 
-        save();
+        save(true);
     }
 
 
@@ -1482,8 +1503,8 @@ void TextDoc::onTextViewColumnModified(TextViewColumn& col, TextViewColumn& new_
         }
 
         // update the TableDoc's base set and refresh its view
-        tabledoc->open(towstr(m_path));
-        tabledoc->refreshActiveView();
+        //tabledoc->open(towstr(m_path));
+        //tabledoc->refreshActiveView();
     }
     
     updateColumnList();
@@ -1610,6 +1631,10 @@ void TextDoc::onFileTypeChanged(wxCommandEvent& evt)
     if (sel == FileType_TextDelimited)
     {
         m_view = TextDoc::TextDelimitedView;
+
+        m_def = xd::FormatDefinition();
+        m_def.format = xd::formatDelimitedText;
+
         initDelimitedTextView();
     }
     
@@ -1617,6 +1642,10 @@ void TextDoc::onFileTypeChanged(wxCommandEvent& evt)
     {
         m_view = TextDoc::FixedLengthView;
         
+        m_def = xd::FormatDefinition();
+        m_def.format = xd::formatFixedLengthText;
+        m_def.fixed_row_width = 80;
+
         initFixedLengthView();
     }
 
@@ -1665,14 +1694,16 @@ void TextDoc::onFixedLengthSkipCharSpun(wxSpinEvent& evt)
     m_textview->refresh();
 
     m_def.fixed_start_offset = val;
-    save();
+    save(true);
 
+    /*
     // update the TableDoc's base set
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
     {
         tabledoc->open(towstr(m_path));
     }
+    */
 
     m_dirty = true;
 }
@@ -1701,14 +1732,16 @@ void TextDoc::onFixedLengthSkipCharTextEnter(wxCommandEvent& evt)
     m_textview->refresh();
 
     m_def.fixed_start_offset = val;
-    save();
+    save(true);
 
+    /*
     // update the TableDoc's base set
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
     {
         tabledoc->open(towstr(m_path));
     }
+    */
     
     m_dirty = true;
 }
@@ -1745,7 +1778,7 @@ void TextDoc::onFixedLengthRowWidthTextEnter(wxCommandEvent& evt)
         def_changed = true;
     }
 
-    save();
+    save(true);
 
     m_textview->setRowWidth(val);
     m_textview->refresh();
@@ -1760,12 +1793,14 @@ void TextDoc::onFixedLengthRowWidthTextEnter(wxCommandEvent& evt)
             transdoc->initFromDefinition(m_def);
     }
 
+    /*
     // update the TableDoc's base set
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
     {
         tabledoc->open(towstr(m_path));
     }
+    */
 
     updateColumnList();
     updateStatusBar();
@@ -1786,7 +1821,7 @@ void TextDoc::onFixedLengthRowWidthSpun(wxSpinEvent& evt)
         m_def.columns[0].width = m_def.fixed_row_width;
         def_changed = true;
     }
-    save();
+    save(true);
 
     m_textview->setRowWidth(m_def.fixed_row_width);
     m_textview->refresh();
@@ -1817,7 +1852,7 @@ void TextDoc::onFixedLengthRowWidthSpun(wxSpinEvent& evt)
 void TextDoc::onFixedLengthLineDelimitedChecked(wxCommandEvent& evt)
 {
     m_def.fixed_line_delimited = evt.IsChecked();
-    save();
+    save(true);
 
     if (m_def.fixed_line_delimited)
         m_textview->setFileType(TextViewModel::lineDelimited);
@@ -1826,12 +1861,14 @@ void TextDoc::onFixedLengthLineDelimitedChecked(wxCommandEvent& evt)
 
     m_textview->refresh();
     
+    /*
     // update the TableDoc's base set
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
     {
         tabledoc->open(towstr(m_path));
     }
+    */
 
     updateColumnList();
     updateStatusBar();

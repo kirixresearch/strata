@@ -27,6 +27,7 @@ public:
         input_width = 20;
         input_scale = 0;
         input_offset = 0;
+        input_encoding = xd::encodingUndefined;
 
         output_name = wxEmptyString;
         output_type = xd::typeCharacter;
@@ -45,6 +46,7 @@ public:
         input_width = c.input_width;
         input_scale = c.input_scale;
         input_offset = c.input_offset;
+        input_encoding = c.input_encoding;
 
         output_name = c.output_name;
         output_type = c.output_type;
@@ -63,6 +65,7 @@ public:
         input_width = c.input_width;
         input_scale = c.input_scale;
         input_offset = c.input_offset;
+        input_encoding = c.input_encoding;
 
         output_name = c.output_name;
         output_type = c.output_type;
@@ -83,6 +86,7 @@ public:
     int input_width;
     int input_scale;
     int input_offset;
+    int input_encoding;
 
     wxString output_name;
     int output_type;
