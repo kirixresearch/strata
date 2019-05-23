@@ -830,9 +830,14 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
     // cell's combobox is populated before we set its cell info
     updateRowCellProps(row);
     
+
+    wxString expr = colinfo.expression;
     wxString source_name;
     int format_comboidx;
-    bool res = getInfoFromDestinationExpression(colinfo.expression,
+
+    expr.Replace(wxString::Format(L"rawvalue(%d)", (row+1)), colinfo.name);
+
+    bool res = getInfoFromDestinationExpression(expr,
                                                 colinfo.type,
                                                 &source_name,
                                                 &format_comboidx);
@@ -857,6 +862,9 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
     }
      else
     {
+        if (source_name == colinfo.name)
+            source_name = L"--";
+
         // we found a match, so populate the cells with the matched info
         m_grid->setCellString(row, colSourceName, source_name);
         m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
@@ -1083,17 +1091,27 @@ void TransformationDoc::updateStatusBar()
 
 wxString TransformationDoc::createDestinationExpression(int row)
 {
+    std::wstring field = m_grid->getCellString(row, colFieldName);
     int xd_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
     int format_comboidx = m_grid->getCellComboSel(row, colFieldFormula);
-    wxString source_name = m_grid->getCellString(row, colSourceName);
-    wxString quoted_source_name = xd::quoteIdentifier(g_app->getDatabase(), towstr(source_name));
-    
-
-    if (format_comboidx == -1 && (source_name == "--" || source_name.IsEmpty()))
+    std::wstring source_name = m_grid->getCellString(row, colSourceName);
+    if (source_name == L"--")
+        source_name = L"";
+   
+    if (format_comboidx == -1 && source_name == L"")
     {
         return "";
     }
 
+    std::wstring quoted_source_name;
+    if (source_name == L"" || source_name == field)
+    {
+        quoted_source_name = kl::stdswprintf(L"rawvalue(%d)", row+1);
+    }
+     else
+    {
+        quoted_source_name = xd::quoteIdentifier(g_app->getDatabase(), source_name);
+    }
 
 
     // translate from the combobox index and xd type
