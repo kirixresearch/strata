@@ -29,6 +29,7 @@ struct DelimitedTextDataAccessInfo
     int scale;
     int ordinal;
     bool nulls_allowed;
+    bool calculated;
     std::wstring expr_text;
 
     // -- expression stuff --
@@ -46,6 +47,7 @@ struct DelimitedTextDataAccessInfo
         scale = 0;
         ordinal = 0;
         nulls_allowed = false;
+        calculated = false;
         expr_text = L"";
 
         expr = NULL;
@@ -62,7 +64,7 @@ struct DelimitedTextDataAccessInfo
     
     bool isCalculated() const
     {
-        return (expr_text.length() > 0) ? true : false;
+        return calculated;
     }
 };
 

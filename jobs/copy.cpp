@@ -99,6 +99,19 @@ int CopyJob::runJob()
         info.input = L"";
     }
 
+    /*
+    if (params_node.childExists(L"input_format") && params_node["input_format"].isString())
+    {
+        xd::QueryParams qp;
+        qp.from = info.input;
+        if (xd::Util::loadDefinitionFromString(params_node["input_format"], &qp.format))
+        {
+            info.iter_input = m_db->query(qp);
+            if (info.iter_input.isNull())
+                return 0;
+        }
+    }
+    */
 
     if (params_node.childExists("order"))
         info.order = params_node["order"].getString();

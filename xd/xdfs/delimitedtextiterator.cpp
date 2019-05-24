@@ -117,8 +117,11 @@ xd::IIteratorPtr DelimitedTextIterator::clone()
 {
     DelimitedTextIterator* iter = new DelimitedTextIterator(m_database);
     
-    if (!iter->init(m_set, m_set->m_file_url))
+    if (!iter->init(m_set, m_columns))
+    {
+        delete iter;
         return xcm::null;
+    }
     
     xd::rowid_t rowid = m_file.getRowOffset();
     iter->goRow(rowid);
@@ -196,6 +199,8 @@ xd::Structure DelimitedTextIterator::getStructure()
 {
     xd::Structure s;
     
+    size_t i = 0;
+
     std::vector<DelimitedTextDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
@@ -206,12 +211,18 @@ xd::Structure DelimitedTextIterator::getStructure()
         col.width = (*it)->width;
         col.scale = (*it)->scale;
         col.column_ordinal = (*it)->ordinal;
-        col.expression = (*it)->expr_text;
+        col.calculated = (*it)->calculated;
+
+        if (col.calculated)
+        {
+            col.expression = (*it)->expr_text;
         
-        if (col.expression.length() > 0)
-            col.calculated = true;
+            if (col.expression.length() > 0)
+                col.calculated = true;
+        }
 
         s.createColumn(col);
+        i++;
     }
 
     return s;
@@ -242,6 +253,7 @@ bool DelimitedTextIterator::refreshStructure()
         dai->scale = colinfo.scale;
         dai->ordinal = colinfo.column_ordinal;
         dai->expr_text = colinfo.expression;
+        dai->calculated = colinfo.calculated;
         m_fields.push_back(dai);
         
         // parse any expression, if necessary
@@ -604,6 +616,7 @@ xd::ColumnInfo DelimitedTextIterator::getInfo(xd::objhandle_t data_handle)
     colinfo.width = dai->width;
     colinfo.scale = dai->scale;
     colinfo.expression = dai->expr_text;
+    colinfo.calculated = dai->calculated;
 
     if (dai->type == xd::typeDate ||
         dai->type == xd::typeInteger)
@@ -624,9 +637,6 @@ xd::ColumnInfo DelimitedTextIterator::getInfo(xd::objhandle_t data_handle)
         colinfo.width = dai->width;
     }
     
-    if (dai->expr_text.length() > 0)
-        colinfo.calculated = true;
-
     return colinfo;
 }
 
