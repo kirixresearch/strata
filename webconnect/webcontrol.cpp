@@ -1863,6 +1863,8 @@ bool GeckoEngine::Init()
     // set path for our cache directory
     prefs->SetCharPref("browser.cache.disk.parent_directory", m_storage_path.mbc_str());
 
+    // allow HTML5 video
+    prefs->SetBoolPref("media.mediasource.enabled", PR_TRUE);
 
 
     m_ok = true;
