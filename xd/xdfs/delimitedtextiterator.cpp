@@ -103,7 +103,7 @@ void DelimitedTextIterator::setTable(const std::wstring& tbl)
 
 std::wstring DelimitedTextIterator::getTable()
 {
-    if (m_set)
+    if (!m_set)
         return L"";
     return m_set->getObjectPath();
 }

@@ -2402,11 +2402,12 @@ bool XdnativeDatabase::detectMountPoint(const std::wstring& path,
     if (0 == path.compare(0, 7, L"file://"))
     {
         cstr = L"Xdprovider=xdfs;Database=;User ID=;Password=;";
-        rpath = kl::urlToFilename(path);
+        //rpath = kl::urlToFilename(path);
+        rpath = path;
         if (rpath.empty())
             return false;
-        if (rpath.length() >= 3 && rpath[0] == '/' && rpath[2] == ':') // ex: file:///c:/abc.txt
-            rpath.erase(0, 1);
+        //if (rpath.length() >= 3 && rpath[0] == '/' && rpath[2] == ':') // ex: file:///c:/abc.txt
+        //    rpath.erase(0, 1);
 
         if (connection_str)
             *connection_str = cstr;
@@ -3397,8 +3398,11 @@ xd::IIteratorPtr XdnativeDatabase::query(const xd::QueryParams& qp)
             std::wstring tbl = ret->getTable();
             if (tbl.length() > 0)
             {
-                tbl = xd::appendPath(mount_root, tbl);
-                ret->setTable(tbl);
+                if (!kl::isUrl(tbl))
+                {
+                    tbl = xd::appendPath(mount_root, tbl);
+                    ret->setTable(tbl);
+                }
             }
 
             return ret;
