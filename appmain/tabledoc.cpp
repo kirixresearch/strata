@@ -1570,6 +1570,9 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
         // iterators without clone capabilities are almost always
         // going to be indeterminate recno jobs
         is_indeterminate = true;
+
+
+        return; // TODO: better error; saveas without clone capabilities is no longer possible
     }
     
     
@@ -1591,6 +1594,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     kl::JsonNode params;
 
     params["input"].setString(m_path);
+    params["input_iterator"].setString(kl::stdswprintf(L"%p", (const void*)source_iter.p));
     params["output"].setString(path);
     params["where"].setString(getFilter());
     params["order"].setString(getSortOrder());
