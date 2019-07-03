@@ -223,7 +223,7 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
     if (!m_tabledoc)
         return false;
 
-    m_path = m_tabledoc->getBrowsePath();
+    m_path = m_tabledoc->getPath();
 
     xd::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(m_path);
     m_structure = g_app->getDatabase()->describeTable(m_path);
