@@ -2800,6 +2800,11 @@ void func_translate(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     }
 
     *outp = 0;
+
+    // reset the string length to the actual output length
+    // the string length will change in situations like this:
+    // translate("ABC", "B", "")
+    retval->setStringLen(outp-outstr);
 }
 
 
