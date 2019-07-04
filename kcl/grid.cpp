@@ -8799,7 +8799,26 @@ void Grid::onKeyDown(wxKeyEvent& event)
                 }
             }
         default:
-            event.Skip();
+            // old code:
+            //event.Skip();
+
+            // replaced with:
+            // for some reason, in wxWidgets 3.1, the EVT_CHAR is not firing as desired if
+            // we skip the wxKeyEvent here; To reproduce:
+            // 1) open table
+            // 2) press key to edit (works)
+            // 3) press return; cursor goes down
+            // 4) press key to edit (doesn't work, but should)
+            wxChar a = event.GetUnicodeKey();
+            if (a != WXK_NONE)
+            {
+                if (event.ShiftDown())
+                    a = ::wxToupper(a);
+                else
+                    a = ::wxTolower(a);
+                event.m_keyCode = a;
+                onChar(event);
+            }
             break;
     }
 }
