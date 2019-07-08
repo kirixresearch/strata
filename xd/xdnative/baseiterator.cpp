@@ -578,7 +578,12 @@ xd::IIteratorPtr BaseIterator::getFilteredChildIterator(xd::IRelationPtr relatio
     info->right_iter_int->setKeyFilter(NULL, 0);
 
     if (!info->right_iter->seek(left_key, left_keylen, false))
-        return xcm::null;
+    {
+        info->right_iter->goLast();
+        info->right_iter_int->setKeyFilter(left_key, left_keylen);
+        info->right_iter_int->setFirstKey();
+        return info->right_iter;
+    }
 
     info->right_iter_int->setKeyFilter(left_key, left_keylen);
     info->right_iter_int->setFirstKey();

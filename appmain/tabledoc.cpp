@@ -3371,10 +3371,6 @@ void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
     m_grid->setVisibleState(kcl::Grid::stateVisible);
     m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_ENABLED_STATE_CHANGED));
 
-    createModel();
-    m_grid->setModel(m_grid_model);
-
-
     // get information about what happened to each of the columns in the job
     std::vector<std::pair<std::wstring, std::wstring> > to_rename;
     std::vector<std::pair<std::wstring, int> > to_insert;
@@ -3385,6 +3381,12 @@ void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
     params.fromString(job->getParameters());
     extractAlterJobInfo(params, input_path, to_rename, to_insert, to_delete);
 
+
+    if (m_iter.isNull())
+    {
+        createModel();
+        m_grid->setModel(m_grid_model);
+    }
 
     // rename the columns; note: for the rename to work, we have to do this
     // after we have a grid model, but before we open the table since the
@@ -3402,11 +3404,18 @@ void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
         }
     }
 
-    open(towstr(input_path));
+    if (m_iter.isNull())
+    {
+        open(towstr(input_path));
 
-    // remove the "Filtered" suffix
-    setCaption(wxEmptyString, wxEmptyString);
-    
+        // remove the "Filtered" suffix
+        setCaption(wxEmptyString, wxEmptyString);
+    }
+    else
+    {
+        m_iter->refreshStructure();
+    }
+
     if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 

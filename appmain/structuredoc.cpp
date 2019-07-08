@@ -1715,6 +1715,8 @@ void StructureDoc::onFrameEvent(FrameworkEvent& evt)
     }
      else if (evt.name == FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED)
     {
+        m_structure = g_app->getDatabase()->describeTable(m_path);
+
         // update the row data in the grid by repopulating it
         populateGridFromStructure();
 
