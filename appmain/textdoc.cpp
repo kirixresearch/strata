@@ -946,6 +946,18 @@ void TextDoc::refreshDocuments()
         {
             tabledoc->open(towstr(m_path));
             tabledoc->refreshActiveView();
+
+        }
+
+        // if there are no columns left when we return to table, auto-populate with default
+        ITableDocViewPtr active_view = tabledoc->getActiveView();
+        if (active_view.isOk())
+        {
+            if (active_view->getColumnCount() == 0)
+            {
+                tabledoc->initializeDefaultView(active_view, m_def.columns);
+                tabledoc->refreshActiveView();
+            }
         }
     }
 }

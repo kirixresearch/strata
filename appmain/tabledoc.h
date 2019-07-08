@@ -278,7 +278,8 @@ public:
     virtual void setActiveView(ITableDocViewPtr view) = 0;
     virtual ITableDocViewPtr getActiveView() = 0;
     virtual void refreshActiveView(bool repaint = true) = 0;
-    
+    virtual void initializeDefaultView(ITableDocViewPtr view, const xd::Structure& structure) = 0;
+
     virtual bool isQuickFilterPending() = 0;    
 };
 
