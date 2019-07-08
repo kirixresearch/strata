@@ -86,6 +86,8 @@ bool DelimitedTextIterator::init(DelimitedTextSet* set, const std::wstring& colu
     m_file.setLineDelimiters(m_set->m_def.line_delimiter);
     m_file.setTextQualifiers(m_set->m_def.text_qualifier);
 
+    m_file.rewind();
+
     if (m_set->m_def.header_row)
     {
         // read past the first row
@@ -412,6 +414,11 @@ bool DelimitedTextIterator::refreshStructure()
     return true;
 }
 
+xd::FormatDefinition DelimitedTextIterator::getFormatDefinition()
+{
+    return m_set->m_def;
+}
+
 bool DelimitedTextIterator::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
 {
     std::vector<xd::StructureModify::Action>::const_iterator it;
@@ -493,6 +500,7 @@ bool DelimitedTextIterator::modifyStructure(const xd::StructureModify& mod_param
             dai->scale = it->params.scale;
             dai->ordinal = m_fields.size();
             dai->expr_text = it->params.expression;
+            dai->calculated = true;
             dai->expr = parse(it->params.expression);
             m_fields.push_back(dai);
         }
@@ -519,6 +527,7 @@ bool DelimitedTextIterator::modifyStructure(const xd::StructureModify& mod_param
             dai->ordinal = m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
+            dai->calculated = true;
             m_fields.insert(m_fields.begin()+insert_idx, dai);
         }
     }

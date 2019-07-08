@@ -67,6 +67,7 @@ protected:
     bool deleteCalcField(const std::wstring& _name);
     bool modifyCalcField(const std::wstring& name, const xd::ColumnInfo& colinfo);
     void appendCalcFields(xd::Structure& structure);
+    void appendCalcFields(std::vector<xd::ColumnInfo>& columns);
 
 protected:
 

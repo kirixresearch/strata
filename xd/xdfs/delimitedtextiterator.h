@@ -113,6 +113,7 @@ public:
     xd::Structure getStructure();
     bool refreshStructure();
     bool modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job);
+    xd::FormatDefinition getFormatDefinition();
 
     xd::objhandle_t getHandle(const std::wstring& expr);
     xd::ColumnInfo getInfo(xd::objhandle_t data_handle);

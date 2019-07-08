@@ -4528,6 +4528,7 @@ void TableDoc::updateChildWindows()
                 xd::IIteratorPtr right_iter = iter_r->getFilteredChildIterator(rel);
                 if (right_iter)
                 {
+                    m_browse_path = right_iter->getTable();
                     table_doc->setIterator(right_iter);
 
                     wxString suffix = " ";

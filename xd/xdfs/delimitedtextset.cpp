@@ -195,6 +195,8 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
         }
     }
 
+    m_file.rewind();
+
     return true;
 }
 
@@ -225,6 +227,9 @@ xd::IRowInserterPtr DelimitedTextSet::getRowInserter()
 bool DelimitedTextSet::getFormatDefinition(xd::FormatDefinition* def)
 {
     *def = m_def;
+
+    appendCalcFields(def->columns);
+
     return true;
 }
 

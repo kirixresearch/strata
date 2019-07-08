@@ -130,7 +130,7 @@ bool DelimitedTextFile::open(xd::IStream* stream, int encoding)
         m_bof = false;
         m_row.clear();
 
-        skip(1);
+       // skip(1);
         return true;
     }
      else

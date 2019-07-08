@@ -702,6 +702,7 @@ public:
     virtual bool refreshStructure() = 0;
     virtual Structure getStructure() = 0;
     virtual bool modifyStructure(const StructureModify& mod_params, IJob* job) = 0;
+    virtual xd::FormatDefinition getFormatDefinition() { xd::FormatDefinition fd; fd.columns = this->getStructure().columns; return fd; } 
 
     virtual objhandle_t getHandle(const std::wstring& expr) = 0;
     virtual ColumnInfo getInfo(objhandle_t data_handle) = 0;

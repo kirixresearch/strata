@@ -529,6 +529,13 @@ bool XdfsBaseSet::modifyCalcField(const std::wstring& name, const xd::ColumnInfo
 
 void XdfsBaseSet::appendCalcFields(xd::Structure& structure)
 {
+    appendCalcFields(structure.columns);
+    structure.m_map.clear();
+}
+
+
+void XdfsBaseSet::appendCalcFields(std::vector<xd::ColumnInfo>& columns)
+{
     if (m_config_file_path.empty())
     {
         KL_AUTO_LOCK(m_object_mutex);
@@ -536,10 +543,10 @@ void XdfsBaseSet::appendCalcFields(xd::Structure& structure)
         std::vector<xd::ColumnInfo>::iterator it;
         for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
         {
-            structure.createColumn(*it);
+            columns.push_back(*it);
         }
     }
-     else
+    else
     {
         kl::JsonNode root;
 
@@ -563,7 +570,7 @@ void XdfsBaseSet::appendCalcFields(xd::Structure& structure)
             col.expression = field["expression"];
             col.calculated = (col.expression.length() > 0) ? true : false;
 
-            structure.createColumn(col);
+            columns.push_back(col);
         }
     }
 }

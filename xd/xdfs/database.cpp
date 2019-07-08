@@ -534,26 +534,45 @@ bool FsDatabase::getFileFormat(const std::wstring& path,
         info->format = xd::formatDelimitedText;
         info->delimiter = L",";
         
-        if (stream && discover_delimiters)
+        if (discover_delimiters)
         {
             FileStream* f = NULL;
             if (!stream)
             {
                 f = new FileStream;
-                stream = f;
+                f->ref();
+                if (f->open(path))
+                {
+                    stream = f;
+                }
+                 else
+                {
+                    f->unref();
+                    f = NULL;
+                    stream = NULL;
+                }
             }
 
-            // the delimiter is almost certainly a comma, but
-            // sometimes is something else, such as a semicolon
-            bool res = determineSetFormatInfo(stream, info);
-        
+            bool res = true;
+            if (stream)
+            {
+                // the delimiter is almost certainly a comma, but
+                // sometimes is something else, such as a semicolon
+                res = determineSetFormatInfo(stream, info);
+            }
+
+
             // because the file extension is csv, don't let determineSetFormatInfo
             // guess anything different (happens sometimes with one-column csv's,
             // because there are no delimiters)
         
             info->format = xd::formatDelimitedText;
 
-            delete f;
+            if (f)
+            {
+                f->unref();
+            }
+
             return res;
         }
 
@@ -1956,8 +1975,15 @@ IXdsqlTablePtr FsDatabase::openTable(const std::wstring& path, const xd::FormatD
     if (format == xd::formatDefault)
     {
         xd::FormatDefinition info;
-        getFileFormat(phys_path, NULL, &info, false);
+        getFileFormat(phys_path, NULL, &info, true /* discover delimiters */);
         format = info.format;
+
+        if (format == xd::formatDelimitedText)
+        {
+            deffi = info;
+            fi = &deffi;
+        }
+
     }
 
 
