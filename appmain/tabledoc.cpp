@@ -2913,7 +2913,7 @@ void TableDoc::setIterator(xd::IIteratorPtr iter, bool go_first)
         // insertion of new rows is not allowed when
         // an order or a filter is set
 
-        if (m_sort_order.empty() && m_filter.empty())
+        if (m_sort_order.empty() && m_filter.empty() && !m_is_childset)
         {
             m_grid->setOptionState(kcl::Grid::optGhostRow, true);
         }
@@ -4323,10 +4323,10 @@ void TableDoc::resetChildWindows()
         if (table_doc.isOk())
         {
             // reset child window with original path
+            table_doc->setIsChildSet(false);
             table_doc->open(table_doc->getPath());
             table_doc->setCaption(wxT(""), wxT(""));
             site->setName(wxT(""));
-            table_doc->setIsChildSet(false);
         }
 
     }
@@ -4537,16 +4537,19 @@ void TableDoc::updateChildWindows()
                 xd::IIteratorPtr right_iter = iter_r->getFilteredChildIterator(rel);
                 if (right_iter)
                 {
-                    m_browse_path = right_iter->getTable();
-                    table_doc->setIterator(right_iter);
+                    TableDoc* table_doc_int = (TableDoc*)table_doc.p;
+                    table_doc_int->m_sort_order = L"";
+                    table_doc_int->m_filter = L"";
+
+                    //table_doc->setIterator(right_iter);
+                    table_doc->setIsChildSet(true);
+                    table_doc->setBrowseSet(right_iter->getTable(), right_iter);
 
                     wxString suffix = " ";
                     suffix += _("[Matching Records]");
 
                     table_doc->setCaption("", suffix);
-
                     table_doc->updateChildWindows();
-                    table_doc->setIsChildSet(true);
                 }
             }
              else if (m_relationship_sync == tabledocRelationshipSyncSeek)
@@ -4561,6 +4564,7 @@ void TableDoc::updateChildWindows()
                                         right_iter);
                     
                     table_doc->setRelationshipSyncMarkExpr(expr);
+                    table_doc->setIsChildSet(true);
                     table_doc->setIterator(right_iter, false);
                     
                     wxString suffix;
@@ -4569,7 +4573,6 @@ void TableDoc::updateChildWindows()
                     table_doc->setCaption("", suffix);
 
                     table_doc->updateChildWindows();
-                    table_doc->setIsChildSet(true);
                 }
                  else
                 {

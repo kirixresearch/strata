@@ -19,6 +19,7 @@
 #include "util.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/keylayout.h"
+#include "../xdcommon/cmniteratorset.h"
 #include "../../kscript/kscript.h"
 
 
@@ -538,6 +539,7 @@ xd::IIteratorPtr BaseIterator::getFilteredChildIterator(xd::IRelationPtr relatio
     {
         BaseIteratorRelInfo i;
         i.relation_id = relation->getRelationId();
+        i.right_table_int = NULL;
         i.kl = NULL;
 
         if (!refreshRelInfo(i))
@@ -555,11 +557,27 @@ xd::IIteratorPtr BaseIterator::getFilteredChildIterator(xd::IRelationPtr relatio
     const unsigned char* left_key = info->kl->getKey();
     int left_keylen = info->kl->getKeyLength();
 
+
+    if (info->right_table.isNull())
+    {
+        info->right_table_int = new CommonIteratorSet();
+        info->right_table_int->create(m_database);
+        info->right_table = (IXdsqlTable*)info->right_table_int;
+    }
+    info->right_table_int->setIterator(info->right_iter);
+    info->right_iter->setTable(info->right_table_int->getObjectPath());
+
     // if the left key was truncated at all, that means that no record
     // can be found on the right side which satisfies the left expression
 
     if (info->kl->getTruncation())
-        return xcm::null;
+    {
+        info->right_iter->goLast();
+        info->right_iter->skip(1);
+        info->right_iter_int->setKeyFilter(NULL, 0);
+        info->right_iter_int->setFirstKey();
+        return info->right_iter;
+    }
 
     // check if the iterator is already positioned on the current key
 
@@ -580,7 +598,8 @@ xd::IIteratorPtr BaseIterator::getFilteredChildIterator(xd::IRelationPtr relatio
     if (!info->right_iter->seek(left_key, left_keylen, false))
     {
         info->right_iter->goLast();
-        info->right_iter_int->setKeyFilter(left_key, left_keylen);
+        info->right_iter->skip(1);
+        info->right_iter_int->setKeyFilter(NULL, 0);
         info->right_iter_int->setFirstKey();
         return info->right_iter;
     }

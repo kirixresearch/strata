@@ -207,6 +207,7 @@
     </ClCompile>
     <ClCompile Include="cmnbaseset.cpp" />
     <ClCompile Include="cmndynamicset.cpp" />
+    <ClCompile Include="cmniteratorset.cpp" />
     <ClCompile Include="connectionstr.cpp" />
     <ClCompile Include="dbattr.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -306,6 +307,7 @@
     <ClInclude Include="cmnbaseiterator.h" />
     <ClInclude Include="cmnbaseset.h" />
     <ClInclude Include="cmndynamicset.h" />
+    <ClInclude Include="cmniteratorset.h" />
     <ClInclude Include="connectionstr.h" />
     <ClInclude Include="dbattr.h" />
     <ClInclude Include="dbfuncs.h" />

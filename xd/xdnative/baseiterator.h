@@ -23,6 +23,7 @@
 
 class BaseIterator;
 class KeyLayout;
+class CommonIteratorSet;
 struct ParserBindInfo;
 
 namespace kscript
@@ -79,6 +80,8 @@ struct BaseIteratorRelInfo
 {
     std::wstring relation_id;
     std::wstring tag;
+    IXdsqlTablePtr right_table;
+    CommonIteratorSet* right_table_int;
     xd::IIteratorPtr right_iter;
     xd::IIteratorKeyAccessPtr right_iter_int;
     KeyLayout* kl;
