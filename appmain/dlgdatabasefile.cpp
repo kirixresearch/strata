@@ -56,12 +56,11 @@ DlgDatabaseFile::DlgDatabaseFile(wxWindow* parent, int mode) :
     if (m_mode == modeSave)
         m_mode = modeSaveSmall;
     
-    SetSize((m_mode == modeSaveSmall) ? wxSize(360,145)
-                                      : wxSize(400,360));
-    SetMinSize((m_mode == modeSaveSmall) ? wxSize(360,145)
-                                         : wxSize(340,300));
-    SetMaxSize((m_mode == modeSaveSmall) ? wxSize(600,145)
-                                         : wxSize(640,540));
+    wxSize small_size = FromDIP(wxSize(360, 145));
+    wxSize default_size = FromDIP(wxSize(400, 360));
+
+    SetSize(m_mode == modeSaveSmall ? small_size : default_size);
+    SetMinSize(m_mode == modeSaveSmall ? small_size : default_size);
     
     wxString caption = wxEmptyString;
     wxString ok_button_text = wxEmptyString;
@@ -104,7 +103,7 @@ DlgDatabaseFile::DlgDatabaseFile(wxWindow* parent, int mode) :
     
     if (m_mode == modeSaveSmall)
     {
-        // -- create the db combo sizer --
+        // create the db combo sizer
         
         label_create = new wxStaticText(this, -1, _("Save in:"));
         m_dbcombo = new DbComboCtrl(this);
@@ -113,7 +112,7 @@ DlgDatabaseFile::DlgDatabaseFile(wxWindow* parent, int mode) :
         
         create_sizer = new wxBoxSizer(wxHORIZONTAL);
         create_sizer->Add(label_create, 0, wxALIGN_CENTER);
-        create_sizer->AddSpacer(5);
+        create_sizer->AddSpacer(FromDIP(5));
         create_sizer->Add(m_dbcombo, 1, wxALIGN_CENTER);
     }
      else
@@ -177,7 +176,7 @@ DlgDatabaseFile::DlgDatabaseFile(wxWindow* parent, int mode) :
     name_sizer->Add(m_name_ctrl, 1, wxALIGN_CENTER);
 
     
-    // -- create a platform standards-compliant OK/Cancel sizer --
+    // create a platform standards-compliant OK/Cancel sizer
     
     m_ok_button = new wxButton(this, wxID_OK, ok_button_text);
     m_ok_button->SetDefault();
@@ -188,13 +187,13 @@ DlgDatabaseFile::DlgDatabaseFile(wxWindow* parent, int mode) :
     ok_cancel_sizer->Realize();
     ok_cancel_sizer->AddSpacer(5);
     
-    // -- this code is necessary to get the sizer's bottom margin to 8 --
+    // this code is necessary to get the sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
-    min_size.SetHeight(min_size.GetHeight()+16);
+    min_size.SetHeight(min_size.GetHeight() + FromDIP(16));
     ok_cancel_sizer->SetMinSize(min_size);
     
     
-    // -- create spacer sizer --
+    // create spacer sizer
     wxBoxSizer* spacer_sizer = new wxBoxSizer(wxHORIZONTAL);
     spacer_sizer->AddStretchSpacer();
     
@@ -203,9 +202,9 @@ DlgDatabaseFile::DlgDatabaseFile(wxWindow* parent, int mode) :
     
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->AddSpacer(8);
-    (tree_sizer != NULL) ? (main_sizer->Add(tree_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 8)) : 0;
-    (create_sizer != NULL) ? (main_sizer->Add(create_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 8)) : 0;
-    main_sizer->Add(name_sizer, 0, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, 8);
+    (tree_sizer != NULL) ? (main_sizer->Add(tree_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8))) : 0;
+    (create_sizer != NULL) ? (main_sizer->Add(create_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8))) : 0;
+    main_sizer->Add(name_sizer, 0, wxEXPAND | wxTOP | wxLEFT | wxRIGHT, FromDIP(8));
     (create_sizer != NULL) ? (main_sizer->Add(spacer_sizer, 1, wxEXPAND)) : 0;
     main_sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
     
@@ -216,9 +215,8 @@ DlgDatabaseFile::DlgDatabaseFile(wxWindow* parent, int mode) :
         // measure the label widths
         if (label_create)
         {
-            wxSize label_size = getMaxTextSize(label_create,
-                                                    label_name);
-            label_size.x += 5;
+            wxSize label_size = getMaxTextSize(label_create, label_name);
+            label_size.x += FromDIP(5);
             
             create_sizer->SetItemMinSize(label_create, label_size);
             name_sizer->SetItemMinSize(label_name, label_size);
