@@ -4324,7 +4324,9 @@ void TableDoc::resetChildWindows()
         {
             // reset child window with original path
             table_doc->setIsChildSet(false);
+            table_doc->setRelationshipSyncMarkExpr(wxT(""));
             table_doc->open(table_doc->getPath());
+            table_doc->setBrowseSet(table_doc->getPath());
             table_doc->setCaption(wxT(""), wxT(""));
             site->setName(wxT(""));
         }
@@ -4572,6 +4574,7 @@ void TableDoc::updateChildWindows()
                     suffix += _("[Matching Records And Context]");
                     table_doc->setCaption("", suffix);
 
+                    m_browse_path = L"";
                     table_doc->updateChildWindows();
                 }
                  else
