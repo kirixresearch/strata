@@ -8460,6 +8460,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
 
     switch (key_code)
     {
+        case WXK_NUMPAD_LEFT:
         case WXK_LEFT:
             {
                 new_col = std::max(0, m_cursor_col - 1);
@@ -8507,6 +8508,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
             }
             break;
 
+        case WXK_NUMPAD_RIGHT:
         case WXK_RIGHT:
             {
                 new_col = std::min((int)(m_viewcols.size()-1), m_cursor_col + 1);
@@ -8552,6 +8554,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
             }
             break;
 
+        case WXK_NUMPAD_UP:
         case WXK_UP:
             {
                 new_row = std::max(0, m_cursor_row - 1);
@@ -8599,6 +8602,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
             }
             break;
 
+        case WXK_NUMPAD_DOWN:
         case WXK_DOWN:
             {
                 new_row = m_cursor_row + 1;
@@ -8646,6 +8650,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
             }
             break;
 
+        case WXK_NUMPAD_PAGEUP:
         case WXK_PAGEUP:
             {
                 int scroll_rows = getVisibleRowCount() - 2;
@@ -8691,6 +8696,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
             }
             break;
 
+        case WXK_NUMPAD_PAGEDOWN:
         case WXK_PAGEDOWN:
             {
                 int scroll_rows = getVisibleRowCount() - 2;
@@ -8743,6 +8749,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
             }
             break;
 
+        case WXK_NUMPAD_HOME:
         case WXK_HOME:
             {
                 m_xoff = 0;
@@ -8753,6 +8760,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
             }
             break;
 
+        case WXK_NUMPAD_END:
         case WXK_END:
             {
                 m_xoff = m_total_width - m_cliwidth + m_frozen_width;
@@ -8798,6 +8806,9 @@ void Grid::onKeyDown(wxKeyEvent& event)
                     fireEvent(wxEVT_KCLGRID_END_EDIT, evt, &allow);
                 }
             }
+
+
+
         default:
             // old code:
             //event.Skip();
@@ -8810,6 +8821,19 @@ void Grid::onKeyDown(wxKeyEvent& event)
             // 3) press return; cursor goes down
             // 4) press key to edit (doesn't work, but should)
             wxChar a = event.GetUnicodeKey();
+
+            if (key_code >= WXK_NUMPAD0 && key_code <= WXK_NUMPAD9)
+            {
+                a = '0' + (key_code - WXK_NUMPAD0);
+            }
+
+            if (key_code == WXK_NUMPAD_EQUAL)     a = '=';
+            if (key_code == WXK_NUMPAD_MULTIPLY)  a = '*';
+            if (key_code == WXK_NUMPAD_SUBTRACT)  a = '-';
+            if (key_code == WXK_NUMPAD_DECIMAL)   a = '.';
+            if (key_code == WXK_NUMPAD_DIVIDE)    a = '/';
+            if (key_code == WXK_NUMPAD_ADD)       a = '+';
+
             if (a != WXK_NONE)
             {
                 if (event.ShiftDown())
