@@ -962,16 +962,17 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
                     colname = colname.substr(0, 80);
             }
             
-            // make sure we don't have any empty column names
-            if (colname.empty())
-                colname = temps;
-            
             // set the column's name based on the m_header_row flag
             if (m_def.header_row)
                 colname = makeValidFieldName(colname, keyword_list, invalid_col_chars);
                  else
                 colname = temps;
             
+            // make sure we don't have any empty column names
+            if (colname.empty())
+                colname = temps;
+
+
             DetermineColumnInfo dci;
             dci.name = colname;
 
