@@ -23,6 +23,7 @@
 #include "kl/md5.h"
 #include "kl/regex.h"
 #include "kl/string.h"
+#include "kl/url.h"
 
 const int ROWS_TO_DETERMINE_STRUCTURE = 10000;
 
@@ -44,6 +45,18 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
     if (!m_file.open(url))
         return false;
     m_file_url = url;
+
+    // set the set info filename
+    std::wstring filename = m_file_url;
+    if (kl::isFileUrl(filename))
+    {
+        filename = kl::urlToFilename(filename);
+    }
+
+    xd::IAttributesPtr attr = m_database->getAttributes();
+    std::wstring definition_path = attr->getStringAttribute(xd::dbattrDefinitionDirectory);
+    setConfigFilePath(ExtFileInfo::getConfigFilenameFromPath(definition_path, filename));
+
 
     // try to load field information from the file header (for example, icsv)
     if (def.format == xd::formatDefault && loadConfigurationFromDataFile())
@@ -467,6 +480,7 @@ xd::Structure DelimitedTextSet::getStructureWithTransformations()
         col.table_ordinal = 0;
         col.nulls_allowed = it->nulls_allowed;
         col.expression = it->expression;
+        col.calculated = it->calculated;
 
         s.createColumn(col);
     }

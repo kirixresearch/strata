@@ -888,8 +888,16 @@ bool TextDoc::save(bool do_refresh)
 
     if (m_definition_file.length() > 0)
     {
-        std::wstring def = xd::Util::saveDefinitionToString(m_def);
-        xf_put_file_contents(m_definition_file, def);
+        xd::FormatDefinition def = m_def;
+        def.columns.clear();
+        for (auto col : m_def.columns)
+        {
+            if (!col.calculated)
+                def.columns.push_back(col);
+        }
+
+        std::wstring defstring = xd::Util::saveDefinitionToString(def);
+        xf_put_file_contents(m_definition_file, defstring);
     }
 
     if (do_refresh)

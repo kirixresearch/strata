@@ -25,6 +25,8 @@
 #include <kl/portable.h>
 #include <kl/math.h>
 #include <kl/md5.h>
+#include <kl/url.h>
+
 
 
 const int GUESS_LINE_DELIMITERS_NEEDED = 20;
@@ -51,6 +53,18 @@ bool FixedLengthTextSet::init(const std::wstring& filename, const xd::FormatDefi
 {
     if (!xf_get_file_exist(filename))
         return false;
+
+    // set the set info filename
+    std::wstring filename2 = filename;
+    if (kl::isFileUrl(filename2))
+    {
+        filename2 = kl::urlToFilename(filename2);
+    }
+
+    xd::IAttributesPtr attr = m_database->getAttributes();
+    std::wstring definition_path = attr->getStringAttribute(xd::dbattrDefinitionDirectory);
+    setConfigFilePath(ExtFileInfo::getConfigFilenameFromPath(definition_path, filename2));
+
 
     // set our member variables
     m_path = filename;
@@ -253,6 +267,12 @@ xd::Structure FixedLengthTextSet::getStructureWithTransformations()
 }
 
 
+bool FixedLengthTextSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* job)
+{
+    bool done_flag = false;
+    XdfsBaseSet::modifyStructure(mod_params, &done_flag);
+    return true;
+}
 
 
 

@@ -800,7 +800,7 @@ bool FixedLengthTextIterator::modifyStructure(const xd::StructureModify& mod_par
             dai->ordinal = m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
-            dai->calculated = dai->expr_text.length() > 0 ? true : false;
+            dai->calculated = true;
             m_fields.push_back(dai);
         }
     }
@@ -826,7 +826,7 @@ bool FixedLengthTextIterator::modifyStructure(const xd::StructureModify& mod_par
             dai->ordinal = m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
-            dai->calculated = dai->expr_text.length() > 0 ? true : false;
+            dai->calculated = true;
             m_fields.insert(m_fields.begin()+insert_idx, dai);
         }
     }

@@ -218,9 +218,6 @@ xd::Structure DelimitedTextIterator::getStructure()
         if (col.calculated)
         {
             col.expression = (*it)->expr_text;
-        
-            if (col.expression.length() > 0)
-                col.calculated = true;
         }
 
         s.createColumn(col);
