@@ -233,6 +233,44 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
         m_tabledoc = xcm::null;
         return false;
     }
+
+
+    // add fields from child file(s)
+
+    xd::IRelationSchemaPtr rels = g_app->getDatabase();
+    if (rels.isOk())
+    {
+        xd::IRelationEnumPtr rel_enum = rels->getRelationEnum(m_path);
+        xd::IRelationPtr rel;
+        size_t r, rel_count = rel_enum->size();
+
+        wxString s;
+
+        for (r = 0; r < rel_count; ++r)
+        {
+            rel = rel_enum->getItem(r);
+
+            if (rel.isNull())
+                continue;
+
+            std::wstring right_path = rel->getRightTable();
+
+            xd::Structure right_structure = g_app->getDatabase()->describeTable(right_path);
+            if (right_structure.isNull())
+                continue;
+
+            size_t i, col_count = right_structure.getColumnCount();
+
+            for (i = 0; i < col_count; ++i)
+            {
+                xd::ColumnInfo colinfo = right_structure.getColumnInfoByIdx(i);
+                colinfo.name = wxString::Format("%s.%s", rel->getTag().c_str(), colinfo.name.c_str());
+                m_structure.columns.push_back(colinfo);
+            }
+        }
+    }
+
+
     
     // make panel caption
     wxString caption = _("Calculated Field");
