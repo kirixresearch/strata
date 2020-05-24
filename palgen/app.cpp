@@ -126,6 +126,7 @@ bool PalGenApp::OnInit()
 int PalGenApp::OnRun()
 {
     processCmdLine(argc, argv);
+    return 0;
 }
 #endif
 
