@@ -18,6 +18,7 @@
 #include <cstdarg>
 #include <ctime>
 #include <cstring>
+#include <clocale>
 #include <bitset>
 
 namespace kl

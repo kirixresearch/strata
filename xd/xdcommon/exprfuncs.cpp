@@ -18,6 +18,7 @@
 #include <cstdio>
 #include <cmath>
 #include <ctime>
+#include <clocale>
 #include "../../kscript/kscript.h"
 #include "../xdcommon/xdcommon.h"
 
