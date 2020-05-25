@@ -19,6 +19,7 @@ OBJECTS = auth.o \
 		crc.o \
 		crypt.o \
 		hostid_unix.o \
+		util.o
 
 all: libpaladin.a
 

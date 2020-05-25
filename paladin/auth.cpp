@@ -140,7 +140,7 @@ const int regMachine = 0;
 const int regUser = 1;
 const int regClasses = 2;
 
-PAL_INLINE bool writeRegKey(int scope, LPCTSTR path, LPCTSTR val)
+bool writeRegKey(int scope, LPCTSTR path, LPCTSTR val)
 {
     LONG result;
     HKEY hkey;
@@ -186,7 +186,7 @@ bool getSpecialFolderPath(int folder_id, TCHAR* path)
     return true;
 }
 
-PAL_INLINE bool readRegKey(int scope, LPCTSTR path, LPTSTR val)
+bool readRegKey(int scope, LPCTSTR path, LPTSTR val)
 {
     LONG result;
     HKEY hkey;
@@ -271,7 +271,7 @@ static bool readReg(LPCTSTR path, LPTSTR val)
 }
 
 
-PAL_INLINE bool getRegKeyExist(int scope, LPCTSTR path, LPTSTR val)
+bool getRegKeyExist(int scope, LPCTSTR path, LPTSTR val)
 {
     HKEY hkey;
     HKEY root;
@@ -299,10 +299,10 @@ PAL_INLINE bool getRegKeyExist(int scope, LPCTSTR path, LPTSTR val)
 #endif
 
 
-PAL_INLINE bool writeFileMarker(const std::wstring& filename,
-                                bool hidden,
-                                bool set_old_time,
-                                paladin_int64_t data = 0)
+bool writeFileMarker(const std::wstring& filename,
+                     bool hidden,
+                     bool set_old_time,
+                     paladin_int64_t data = 0)
 {
     remove(kl::tostring(filename).c_str());
     FILE* file = fopen(kl::tostring(filename).c_str(), "w+b");
@@ -934,7 +934,7 @@ bool validateSiteCode(const wxString& val_site_code)
 
 // generates an 8-bit seed code used for
 // randomizing site codes
-PAL_INLINE int generateSeedCode()
+static int generateSeedCode()
 {
     int seed = (int)(time(NULL) & 0xffff);
     seed += clock();
@@ -1096,7 +1096,7 @@ static const GUID guid_fp3 =
 
 
 #ifdef WIN32
-PAL_INLINE void buildCLSIDPath(LPCTSTR path1, const GUID& guid, TCHAR* path)
+void buildCLSIDPath(LPCTSTR path1, const GUID& guid, TCHAR* path)
 {
     // this builds a fake path which looks like
     // it shouldn't be removed.  It is really used

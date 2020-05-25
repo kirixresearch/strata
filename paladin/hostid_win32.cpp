@@ -56,35 +56,26 @@ sitecode_t getHostId()
     val[0] = 0;
 
     
-    OSVERSIONINFO vi;
-    memset(&vi, 0, sizeof(OSVERSIONINFO));
-    vi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-    GetVersionEx(&vi);
-    
-    // only use KEY_WOW64_64KEY on newer versions of windows
-    if (vi.dwMajorVersion >= 6)  
+    result = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+                _T("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"),
+                0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &hkey);
+
+    if (result == ERROR_SUCCESS)
     {
-        result = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-                   _T("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"),
-                   0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &hkey);
-
-        if (result == ERROR_SUCCESS)
-        {
-            dtype = REG_SZ;
-            dlen = 254;
-            result = RegQueryValueEx(hkey, _T("ProductId"),
-                                     0, &dtype, (LPBYTE)val, &dlen);
-            if (result != ERROR_SUCCESS)
-            {
-                val[0] = 0;
-            }
-
-            RegCloseKey(hkey);
-        }
-         else
+        dtype = REG_SZ;
+        dlen = 254;
+        result = RegQueryValueEx(hkey, _T("ProductId"),
+                                    0, &dtype, (LPBYTE)val, &dlen);
+        if (result != ERROR_SUCCESS)
         {
             val[0] = 0;
         }
+
+        RegCloseKey(hkey);
+    }
+     else
+    {
+        val[0] = 0;
     }
 
 

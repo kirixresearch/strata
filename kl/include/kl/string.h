@@ -85,6 +85,12 @@ inline void makeUpper(char* p)
     }
 }
 
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4244)
+#endif
+
 inline void makeLower(std::string& s)
 {
     std::transform(s.begin(), s.end(), s.begin(), towlower);
@@ -95,6 +101,11 @@ inline void makeLower(std::wstring& s)
     std::transform(s.begin(), s.end(), s.begin(), towlower);
 }
 
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
+s
 inline void makeLower(wchar_t* p)
 {
     while (*p)
