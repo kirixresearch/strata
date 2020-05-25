@@ -105,7 +105,7 @@ inline void makeLower(std::wstring& s)
 #pragma warning(pop)
 #endif
 
-s
+
 inline void makeLower(wchar_t* p)
 {
     while (*p)
