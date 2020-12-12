@@ -2,7 +2,7 @@
 
 set APPLICATION_NAME=Kirix Strata
 
-call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\amd64\vcvars64.bat"
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
 
 set WIX_PATH="c:\Program Files (x86)\WiX Toolset v3.11\bin"
 set SIGNCMD=c:\build\cert\signtool sign /d "%APPLICATION_NAME%" /f c:\build\cert\signcert.p12 /t http://timestamp.comodoca.com/authenticode
