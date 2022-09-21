@@ -72,9 +72,9 @@
 #include "linkbar.h"
 #include "dlglinkprops.h"
 
-
+#if PALADIN_ENABLED
 extern paladin::Authentication* g_auth;
-
+#endif
 
 enum
 {
@@ -595,6 +595,7 @@ AppController::~AppController()
 
 bool AppController::checkLicense(bool show_warnings)
 {
+#if PALADIN_ENABLED
     if (g_auth->checkAuth() != paladin::errNone)
     {
         // if authentication failed, try to install
@@ -613,6 +614,7 @@ bool AppController::checkLicense(bool show_warnings)
         if (g_auth->checkAuth() != paladin::errNone)
             return false;
     }
+#endif
 
     return true;
 }
@@ -1004,12 +1006,15 @@ bool AppController::init()
         menuHelp->AppendSeparator();
 
     // help update info
+#if PALADIN_ENABLED
     help_item = APP_INETAUTH_AUTHSERVERLIST;
     if (help_item.Length() > 0)
     {
         menuHelp->Append(ID_App_LicenseManager, _("&Activate..."));
         append_help_update_separator = true;
     }
+#endif
+
     help_item = APP_UPDATE_URL;
     if (help_item.Length() > 0)
     {
@@ -5933,8 +5938,10 @@ bool AppController::openProject(const wxString& location,
 {
     AppBusyCursor bc;
 
+#if PALADIN_ENABLED
     if (g_auth->checkAuth() != paladin::errNone)
         return false;
+#endif
 
     // create the database manager
     xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
@@ -6602,6 +6609,7 @@ void AppController::showExportWizard(const ExportInfo& info,
 
 void AppController::showLicenseManager()
 {
+#if PALADIN_ENABLED
     // make sure there are no running jobs
     if (!checkForRunningJobs())
         return;
@@ -6629,6 +6637,7 @@ void AppController::showLicenseManager()
                 g_auth);
     dlg.ShowModal();
 
+
     if (g_auth->checkAuth() != paladin::errNone)
     {
         // hide all modeless panels that were showing
@@ -6651,6 +6660,7 @@ void AppController::showLicenseManager()
     }
 
     g_app->startLicenseTimer();
+#endif
 }
 
 void AppController::showFindPanel()
@@ -6866,7 +6876,7 @@ void AppController::showStartupPage()
     #endif
 
 
-
+#if PALADIN_ENABLED
     // if there 5 or less days left, show the 'about to expire' page
     if (g_auth->getDaysLeft() <= 5)
     {
@@ -6879,7 +6889,7 @@ void AppController::showStartupPage()
             home_pages += license_expiration;
         }
     }
-
+#endif
 
 
 
