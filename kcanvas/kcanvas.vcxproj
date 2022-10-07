@@ -143,7 +143,6 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../kl/include;../supp/wxWidgets/include;../supp/wxWidgets/lib/vc_lib/mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;UNICODE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>.\DebugUnicode/kcanvas.pch</PrecompiledHeaderOutputFile>

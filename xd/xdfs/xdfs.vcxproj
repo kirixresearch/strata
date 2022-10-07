@@ -101,7 +101,6 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../../kl/include;../include;../../supp/libzip;../../supp/libzip/lib;../../supp/expat/lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;UNICODE;_USRDLL;XDFS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>.\DebugUnicode/xdfs.pch</PrecompiledHeaderOutputFile>
