@@ -46,7 +46,7 @@ BannerControl::BannerControl(wxWindow* parent,
     m_end_color = kcl::stepColor(kcl::getBaseColor(), 90);
     m_text_color = kcl::getCaptionColor();
     m_border_color = kcl::getBorderColor();
-    m_font = wxFont(11, wxSWISS, wxNORMAL, wxFONTWEIGHT_BOLD, false);
+    m_font = wxFont(11, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false);
 
     m_border_sides = borderNone;
     m_gradient_direction = gradientVertical;
@@ -131,7 +131,7 @@ void BannerControl::onPaint(wxPaintEvent& evt)
     dc.SetBackgroundMode(wxTRANSPARENT);
     dc.SetFont(m_font);
 
-    wxBrush brush(m_start_color, wxSOLID);
+    wxBrush brush(m_start_color, wxBRUSHSTYLE_SOLID);
 
     dc.SetBrush(brush);
     dc.SetPen(*wxTRANSPARENT_PEN);

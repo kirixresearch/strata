@@ -93,7 +93,7 @@ ValidControl::ValidControl(wxWindow* parent, wxWindowID id,
     m_border_visible = true;
     m_label_visible = true;
     m_alignment = ValidControl::alignCenter;
-    m_bgbrush = wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE), wxSOLID);
+    m_bgbrush = wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE), wxBRUSHSTYLE_SOLID);
     SetFont(*wxNORMAL_FONT);
     
     wxSize s = GetSize();

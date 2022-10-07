@@ -312,7 +312,7 @@ void RulerControl::render()
 
     // draw tick marks
     m_memdc.SetPen(*wxBLACK_PEN);
-    m_memdc.SetFont(wxFont(7, wxSWISS, wxNORMAL, wxNORMAL));
+    m_memdc.SetFont(wxFont(7, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
 
     if (tot_width > tot_height)
     {

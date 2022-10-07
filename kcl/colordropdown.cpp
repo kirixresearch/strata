@@ -47,7 +47,7 @@ wxBitmap ColorDropDown::createColorBitmap(const wxBitmap& bmp)
 
     if (m_color.Ok())
     {
-        wxPen pen(m_color, 1, wxSOLID);
+        wxPen pen(m_color, 1, wxPENSTYLE_SOLID);
         dc.SetPen(pen);
 
         for (y = bmp_height-4; y < bmp_height; ++y)

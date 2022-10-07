@@ -118,7 +118,7 @@ void ColorSelector::onPaint(wxPaintEvent& evt)
     wxBrush bgcolor_brush;
     
     if (m_bgcolor == wxNullColour)
-        bgcolor_brush = wxBrush(*wxWHITE, wxSOLID);
+        bgcolor_brush = wxBrush(*wxWHITE, wxBRUSHSTYLE_SOLID);
      else
         bgcolor_brush = wxBrush(m_bgcolor);
     
