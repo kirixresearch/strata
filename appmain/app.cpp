@@ -41,7 +41,11 @@
 
 MainApp* g_app = NULL;
 AppMacroRecorder g_macro;
+
+#if PALADIN_ENABLED
 paladin::Authentication* g_auth = NULL;
+#endif
+
 wxLocale g_locale;
 time_t g_app_start_time = 0;
 
@@ -196,7 +200,7 @@ HWND FindApplicationWindow()
 
 #endif
 
-
+#if PALADIN_ENABLED
 class LicenseTimer : public wxTimer
 {
 public:
@@ -231,7 +235,7 @@ public:
 };
 
 LicenseTimer* g_license_timer = NULL;
-
+#endif
 
 
 
@@ -340,11 +344,13 @@ bool MainApp::OnInit()
     wxStandardPaths& sp = wxStandardPaths::Get();
     m_install_path = sp.GetExecutablePath().BeforeLast(PATH_SEPARATOR_CHAR);
 
+#if PALADIN_ENABLED
     // initialize the paladin object (checks for license authenticity)
     g_auth = paladin::createAuthObject(kl::tostring(APP_COMPANY_KEY).c_str(),
                                        PALADIN_APP_TAG,
                                        PALADIN_APP_TAG APP_PALADIN_TEMP_LICENSE_COUNTER);
-    
+#endif
+
     if (argc > 1)
     {
         if (g_app->getCommandLine()->Found(wxT("s")))
@@ -723,10 +729,16 @@ int MainApp::OnExit()
     }
 #endif
 
+#if PALADIN_ENABLED
     delete g_license_timer;
+#endif
+
     delete g_update_timer;
+
+#if PALADIN_ENABLED
     delete g_auth;
     g_auth = NULL;
+#endif
 
     m_app_preferences->flush();
     m_app_preferences.clear();
@@ -846,18 +858,22 @@ int MainApp::OnRun()
 
 void MainApp::startLicenseTimer()
 {
+#if PALADIN_ENABLED
     if (!g_license_timer)
     {
         g_license_timer = new LicenseTimer;
     }
     
     g_license_timer->Start(30000);  // every 30 seconds
+#endif
 }
 
 void MainApp::stopLicenseTimer()
 {
+#if PALADIN_ENABLED
     if (g_license_timer)
         g_license_timer->Stop();
+#endif
 }
 
 void MainApp::startUpdateTimer()
