@@ -57,9 +57,14 @@ inline void trim(std::wstring& s)
     trimLeft(s);
 }
 
+inline char toUpperCchar(char c)
+{
+    return (char)(unsigned char)towupper((wchar_t)(unsigned char)c);
+}
+
 inline void makeUpper(std::string& s)
 {
-    std::transform(s.begin(), s.end(), s.begin(), towupper);
+    std::transform(s.begin(), s.end(), s.begin(), toUpperCchar);
 }
 
 inline void makeUpper(std::wstring& s)
