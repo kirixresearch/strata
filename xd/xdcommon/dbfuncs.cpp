@@ -330,7 +330,7 @@ int xdcmnInsert(xd::IDatabasePtr dest_db,
     {
         if (job->getStatus() == xd::jobFailed)
         {
-            return cur_count;
+            return (int)cur_count;
         }
 
         if (!job->getCancelled())
@@ -341,5 +341,5 @@ int xdcmnInsert(xd::IDatabasePtr dest_db,
         }
     }
 
-    return cur_count;
+    return (int)cur_count;
 }

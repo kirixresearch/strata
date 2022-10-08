@@ -139,8 +139,8 @@ bool BitmapFileScroller::_goBlock(unsigned long long block_number,
         if (!xf_seek(m_file, 0, xfSeekEnd))
             return false;
 
-        int cur_block = (xf_get_file_pos(m_file)-m_data_offset) / bitmap_file_page_size;
-        cur_block = block_number - cur_block + 1;
+        long long cur_block = (xf_get_file_pos(m_file)-m_data_offset) / bitmap_file_page_size;
+        cur_block = (long long)block_number - cur_block + 1;
         while (cur_block)
         {
             xf_write(m_file, m_buf, bitmap_file_page_size, 1);
@@ -171,8 +171,8 @@ bool BitmapFileScroller::_goBlock(unsigned long long block_number,
 
 bool BitmapFileScroller::getState(unsigned long long offset)
 {
-    unsigned int byte_offset = offset/8;
-    unsigned int bit_offset = offset % 8;
+    unsigned int byte_offset = (unsigned int)(offset/8);
+    unsigned int bit_offset = (unsigned int)(offset % 8);
 
     if (m_buf_offset == (unsigned long long)-1 ||
         byte_offset < m_buf_offset ||
@@ -189,8 +189,8 @@ bool BitmapFileScroller::getState(unsigned long long offset)
 bool BitmapFileScroller::findPrev(unsigned long long* offset,
                                   bool state)
 {
-    unsigned int byte_offset = (*offset)/8;
-    unsigned int bit_offset = (*offset) % 8;
+    unsigned int byte_offset = (unsigned int)((*offset)/8);
+    unsigned int bit_offset = (unsigned int)((*offset) % 8);
     unsigned int byte_check = state ?  0x00000000 : 0xffffffff;
 
     while (1)
@@ -255,8 +255,8 @@ bool BitmapFileScroller::findPrev(unsigned long long* offset,
 bool BitmapFileScroller::findNext(unsigned long long* offset,
                                   bool state)
 {
-    unsigned int byte_offset = (*offset)/8;
-    unsigned int bit_offset = (*offset) % 8;
+    unsigned int byte_offset = (unsigned int)((*offset)/8);
+    unsigned int bit_offset = (unsigned int)((*offset) % 8);
     unsigned int byte_check = state ?  0x00000000 : 0xffffffff;
 
     while (1)
@@ -322,8 +322,8 @@ void BitmapFileScroller::endModify()
 void BitmapFileScroller::setState(unsigned long long offset,
                                   bool state)
 {
-    unsigned byte_offset = offset/8;
-    unsigned bit_offset = offset % 8;
+    unsigned byte_offset = (unsigned int)(offset/8);
+    unsigned bit_offset = (unsigned int)(offset % 8);
 
     if (m_buf_offset == (unsigned long long)-1 ||
         byte_offset < m_buf_offset ||
@@ -413,7 +413,7 @@ bool BitmapFile::open(const std::wstring& filename)
         memset(buf, 0, bitmap_file_page_size);
         int2buf(buf, 0xa2d022e4);     // signature
         int2buf(buf+4, 1);            // version
-        int2buf(buf+8, m_data_offset); // data begin
+        int2buf(buf+8, (unsigned int)m_data_offset); // data begin
         int2buf(buf+12, 0);            // set-bit count (lower 32 bits)
         int2buf(buf+16, 0);            // set-bit count (upper 32 bits)
 
