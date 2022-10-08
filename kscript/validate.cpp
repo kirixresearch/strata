@@ -17,6 +17,9 @@
 #include <cctype>
 #include <cwctype>
 
+#ifdef _MSC_VER
+#define wcsdup _wcsdup
+#endif
 
 #ifdef __APPLE__
 #include "../kl/include/kl/portable.h"
