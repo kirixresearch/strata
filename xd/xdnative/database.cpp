@@ -798,7 +798,8 @@ bool XdnativeDatabase::setOrdinalTable(xd::tableord_t ordinal,
 
     // write out ordinal entry with table filename
     wchar_t tableord_path[64];
-    swprintf(tableord_path, 64, L"/.system/ordinals/%u", ordinal);
+    swprintf(tableord_path, 64, L"/.system/ordinals/%llu", ordinal);
+    tableord_path[63] = 0;
 
     INodeValuePtr tableord;
     if (!getFileExist(tableord_path))
@@ -827,8 +828,9 @@ bool XdnativeDatabase::deleteOrdinal(xd::tableord_t ordinal)
 {
     // write out ordinal entry with table filename
     wchar_t tableord_path[64];
-    swprintf(tableord_path, 64, L"/.system/ordinals/%u", ordinal);
-    
+    swprintf(tableord_path, 64, L"/.system/ordinals/%llu", ordinal);
+    tableord_path[63] = 0;
+
     if (!deleteFile(tableord_path))
         return false;
 
@@ -3155,7 +3157,8 @@ std::wstring XdnativeDatabase::getStreamFilename(const std::wstring& ofs_path)
 std::wstring XdnativeDatabase::getTableFilename(xd::tableord_t table_ordinal)
 {
     wchar_t ord_key_name[64];
-    swprintf(ord_key_name, 64, L"/.system/ordinals/%d", table_ordinal);
+    swprintf(ord_key_name, 64, L"/.system/ordinals/%llu", table_ordinal);
+    ord_key_name[63] = 0;
 
     INodeValuePtr ordinal = openNodeFile(ord_key_name);
     if (!ordinal)
