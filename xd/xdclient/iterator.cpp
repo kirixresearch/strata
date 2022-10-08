@@ -234,7 +234,7 @@ void ClientIterator::skip(int delta)
     if (m_cache_start != 0 && new_row >= m_cache_start && new_row <= m_cache_start + m_cache_row_count - 1)
     {
         // row is in cache
-        m_current_row_ptr = m_current_row_ptr = &(m_cache_rows[new_row - m_cache_start]);
+        m_current_row_ptr = m_current_row_ptr = &(m_cache_rows[new_row - (int)m_cache_start]);
         m_current_row = new_row;
     }
      else
@@ -405,7 +405,7 @@ void ClientIterator::skip(int delta)
         if (new_row - m_cache_start >= m_cache_row_count)
             m_current_row_ptr = NULL;
              else
-            m_current_row_ptr = &(m_cache_rows[new_row - m_cache_start]);
+            m_current_row_ptr = &(m_cache_rows[new_row - (int)m_cache_start]);
 
         m_current_row = new_row;
     }
@@ -425,7 +425,7 @@ void ClientIterator::goLast()
 
 double ClientIterator::getPos()
 {
-    return m_current_row;
+    return (double)m_current_row;
 }
 
 xd::rowid_t ClientIterator::getRowId()
