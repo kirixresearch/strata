@@ -124,7 +124,7 @@ public:
             HDBC conn;
             SQLRETURN retval;
             SQLTCHAR out_str[2048];
-            short out_length;
+            SQLSMALLINT out_length;
 
             // allocate odbc environment
             SQLAllocEnv(&env);
@@ -134,7 +134,7 @@ public:
             retval = SQLDriverConnect(conn,
                                       NULL,
                                       sqlt(cmd),
-                                      cmd.length(),
+                                      (SQLSMALLINT)cmd.length(),
                                       (SQLTCHAR*)out_str,
                                       2048,
                                       &out_length,
@@ -297,12 +297,8 @@ public:
         SQLAllocConnect(m_env, &m_conn);
         SQLSetConnectOption(m_conn, SQL_ODBC_CURSORS, SQL_CUR_USE_ODBC);
 
-
         xd::DatabaseEntryEnum db_list;
-
-
         SQLRETURN r;
-
 
         #ifdef _UNICODE
             wchar_t name_buf[SQL_MAX_DSN_LENGTH+1];
@@ -367,7 +363,6 @@ public:
 
         SQLFreeEnv(m_env);
         m_env = 0;
-
 
         return db_list;
     }
