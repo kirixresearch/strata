@@ -314,10 +314,10 @@ bool XbaseFile::create(const std::wstring& filename, const std::vector<XbaseFiel
         entry_ptr[11] = f.type;
 
         // offset
-        entry_ptr[12] = (offset & 0x000000ff);
-        entry_ptr[13] = (offset & 0x0000ff00) >> 8;
-        entry_ptr[14] = (offset & 0x00ff0000) >> 16;
-        entry_ptr[15] = (offset & 0xff000000) >> 24;
+        entry_ptr[12] = (unsigned char)(offset & 0x000000ff);
+        entry_ptr[13] = (unsigned char)((offset & 0x0000ff00) >> 8);
+        entry_ptr[14] = (unsigned char)((offset & 0x00ff0000) >> 16);
+        entry_ptr[15] = (unsigned char)((offset & 0xff000000) >> 24);
         offset += f.width;
 
         // length
@@ -351,10 +351,10 @@ bool XbaseFile::create(const std::wstring& filename, const std::vector<XbaseFiel
     header[3] = curtime.tm_mday;               // last modify date (day)
 
     size_t row_count = 0;
-    header[4] = (row_count & 0x000000ff);
-    header[5] = (row_count & 0x0000ff00) >> 8;
-    header[6] = (row_count & 0x00ff0000) >> 16;
-    header[7] = (row_count & 0xff000000) >> 24;
+    header[4] = (unsigned char)((row_count & 0x000000ff));
+    header[5] = (unsigned char)((row_count & 0x0000ff00) >> 8);
+    header[6] = (unsigned char)((row_count & 0x00ff0000) >> 16);
+    header[7] = (unsigned char)((row_count & 0xff000000) >> 24);
 
     int header_len = field_arr_len+32;
     header[8] = (header_len & 0x000000ff);      // header length
@@ -823,15 +823,15 @@ bool XbaseFile::putDateTime(size_t col_idx, const XbaseDate& value)
                                          value.second,
                                          value.millisecond);
 
-        *(pos+0) = (julian_day & 0x000000ff);
-        *(pos+1) = (julian_day & 0x0000ff00) >> 8;
-        *(pos+2) = (julian_day & 0x00ff0000) >> 16;
-        *(pos+3) = (julian_day & 0xff000000) >> 24;
+        *(pos+0) = (unsigned char)((julian_day & 0x000000ff));
+        *(pos+1) = (unsigned char)((julian_day & 0x0000ff00) >> 8);
+        *(pos+2) = (unsigned char)((julian_day & 0x00ff0000) >> 16);
+        *(pos+3) = (unsigned char)((julian_day & 0xff000000) >> 24);
 
-        *(pos+4) = (time_stamp & 0x000000ff);
-        *(pos+5) = (time_stamp & 0x0000ff00) >> 8;
-        *(pos+6) = (time_stamp & 0x00ff0000) >> 16;
-        *(pos+7) = (time_stamp & 0xff000000) >> 24;
+        *(pos+4) = (unsigned char)((time_stamp & 0x000000ff));
+        *(pos+5) = (unsigned char)((time_stamp & 0x0000ff00) >> 8);
+        *(pos+6) = (unsigned char)((time_stamp & 0x00ff0000) >> 16);
+        *(pos+7) = (unsigned char)((time_stamp & 0xff000000) >> 24);
         return true;
     }
 
