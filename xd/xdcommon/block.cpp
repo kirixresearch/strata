@@ -405,7 +405,7 @@ void BlockFile::_commitBlock(BlockEntry* entry)
         // append the new block
         xf_seek(m_f, 0, xfSeekEnd);
         xf_off_t pos = xf_get_file_pos(m_f);
-        entry->m_block_idx = ((pos-8)/m_block_size);
+        entry->m_block_idx = (unsigned int)((pos-8)/m_block_size);
         xf_write(m_f, entry->m_buf, m_block_size, 1);
 
         m_cache.add(entry);
@@ -428,7 +428,7 @@ int BlockFile::getBlockCount()
 {
     xf_seek(m_f, 0, xfSeekEnd);
     xf_off_t pos = xf_get_file_pos(m_f);
-    return ((pos-8)/m_block_size);
+    return (int)((pos-8)/m_block_size);
 }
 
 
@@ -492,11 +492,10 @@ BlockEntry* BlockFile::createBlock()
 
     memset(entry->m_buf, 0, m_alloc_size);
 
-
     // append the new block
     xf_seek(m_f, 0, xfSeekEnd);
     xf_off_t pos = xf_get_file_pos(m_f);
-    entry->m_block_idx = ((pos-8)/m_block_size);
+    entry->m_block_idx = (unsigned int)((pos-8)/m_block_size);
     xf_write(m_f, entry->m_buf, m_block_size, 1);
 
     m_cache.add(entry);
