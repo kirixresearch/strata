@@ -847,14 +847,14 @@ void OdbcDatabase::errorSqlConn(HDBC hdbc)
 SQLRETURN OdbcDatabase::connect(HDBC conn)
 {
     SQLTCHAR out_str[2048];
-    short out_length;
+    SQLSMALLINT out_length;
 
     SQLRETURN retval;
     
     retval = SQLDriverConnect(conn,
                               NULL,
                               sqlt(m_conn_str),
-                              m_conn_str.length(),
+                              (SQLSMALLINT)m_conn_str.length(),
                               (SQLTCHAR*)out_str,
                               2048,
                               &out_length,
