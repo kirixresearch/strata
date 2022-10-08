@@ -110,8 +110,8 @@ void dbl2decstr(char* dest, double d, int width, int scale)
 
 std::wstring getTableSetId(xd::tableord_t table_ordinal)
 {
-    wchar_t buf[64];
-    swprintf(buf, 64, L"tbl%08u", table_ordinal);
+    wchar_t buf[32];
+    swprintf(buf, 30, L"tbl%08llu", table_ordinal);
+    buf[11] = 0;
     return buf;
 }
-
