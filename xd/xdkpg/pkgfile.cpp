@@ -696,8 +696,8 @@ bool PkgFile::createDirEntry(const PkgDirEntry& entry)
 
             lo = new_offset & 0xffffffff;
             hi = new_offset >> 32;
-            int2buf(dir_block+4, lo);
-            int2buf(dir_block+8, hi);
+            int2buf(dir_block+4, (unsigned int)lo);
+            int2buf(dir_block+8, (unsigned int)hi);
 
             xf_seek(m_file, dir_block_offset, xfSeekSet);
             xf_write(m_file, dir_block, kpg_dirblock_size, 1);
