@@ -37,7 +37,7 @@
 
 #define APPLICATION_NAME                wxT("Kirix Strata")
 #define APP_COMPANY_NAME                wxT("Kirix Research")
-#define APP_COPYRIGHT                   wxT("Copyright (c) 2002-2013, Kirix Research, LLC.  All rights reserved.")
+#define APP_COPYRIGHT                   wxT("Copyright (c) 2002-2022, Kirix Research, LLC.  All rights reserved.")
 #define APP_WEBLOCATION_HOME            wxT("https://www.kirix.com/strata/portal.html")
 #define APP_WEBLOCATION_HELP            wxT("https://www.kirix.com/help/docs/")
 #define APP_WEBLOCATION_STORE           wxT("https://store.kirix.com/store")
