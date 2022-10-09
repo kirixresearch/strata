@@ -834,14 +834,16 @@ void PromptService::onBadCertificate(const wxString& message, nsIDOMWindow* dom_
     msg_text += wxT("\n");
     msg_text += _("Would you like to accept this certificate and continue?");
     
-    int res = wxMessageBox(msg_text,
-             _("Secure Connection Warning"),
-             wxYES_NO,
-             GetTopFrameFromDOMWindow(dom_window));
+    if (!wxWebControl::GetIgnoreCertErrors())
+    {
+        int res = wxMessageBox(msg_text,
+            _("Secure Connection Warning"),
+            wxYES_NO,
+            GetTopFrameFromDOMWindow(dom_window));
 
-    if (res != wxYES)
-        return;
-
+        if (res != wxYES)
+            return;
+    }
 
     wxWebControl* ctrl = GetWebControlFromDOMWindow(dom_window);
     if (!ctrl)
@@ -851,8 +853,8 @@ void PromptService::onBadCertificate(const wxString& message, nsIDOMWindow* dom_
     if (!uri_fixup)
         return;
     
-    wxString load_uri = ctrl->GetCurrentLoadURI();
-    
+    wxString load_uri = message.BeforeFirst(' ');
+
     ns_smartptr<nsIURI> uri;
     nsEmbedCString load_uri_text;
     wx2ns(load_uri, load_uri_text);
