@@ -84,6 +84,22 @@ public:
     }
 
     wxAuiTabArt* Clone();
+
+private:
+
+    void EnsureBitmaps(const wxWindow* wnd);
+
+    int m_standardPadding;
+    int m_standardBottomLineY;
+
+    wxBitmap m_disabledCloseBmpLookup;
+    wxBitmap m_activeCloseBmpLookup;
+    wxBitmap m_disabledLeftBmpLookup;
+    wxBitmap m_activeLeftBmpLookup;
+    wxBitmap m_disabledRightBmpLookup;
+    wxBitmap m_activeRightBmpLookup;
+    wxBitmap m_disabledWindowListBmpLookup;
+    wxBitmap m_activeWindowListBmpLookup;
 };
 
 

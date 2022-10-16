@@ -27,18 +27,6 @@ const int UXTHEME_CLOSEBUTTON_SIZE = 13;
 
 
 
-#if wxCHECK_VERSION(2,9,3)
-    #define m_caption_font m_captionFont
-    #define m_button_size m_buttonSize
-    #define m_inactive_caption_gradient_colour m_inactiveCaptionGradientColour
-    #define m_inactive_caption_text_colour m_inactiveCaptionTextColour
-    #define m_button_size m_buttonSize
-    #define m_base_colour m_baseColour
-    #define m_border_pen m_borderPen
-    #define m_base_colour_brush m_backgroundBrush
-    #define m_disabled_close_bmp m_inactiveCloseBitmap
-    #define m_active_close_bmp m_activeCloseBitmap
-#endif
 
 // these functions live in aui/dockart.cpp
 wxColor wxAuiLightContrastColour(const wxColour& c);
@@ -135,9 +123,10 @@ bool DrawUxThemeCloseButton(wxDC& dc,
 #if wxUSE_UXTHEME
 
     // don't draw a close button for these states
-    if (button_state == wxAUI_BUTTON_STATE_HIDDEN ||
-        button_state == wxAUI_BUTTON_STATE_CHECKED)
+    if (button_state == wxAUI_BUTTON_STATE_HIDDEN || button_state == wxAUI_BUTTON_STATE_CHECKED)
+    {
         return true;
+    }
 
 #if wxCHECK_VERSION(3,1,1)
     if (true)
@@ -152,37 +141,40 @@ bool DrawUxThemeCloseButton(wxDC& dc,
             switch (button_state)
             {
                 case wxAUI_BUTTON_STATE_NORMAL:
-                    state = 1; // CBS_NORMAL
+                    state = CBS_NORMAL;
                     break;
                 case wxAUI_BUTTON_STATE_HOVER:
-                    state = 2; // CBS_HOT
+                    state = CBS_HOT;
                     break;
                 case wxAUI_BUTTON_STATE_PRESSED:
-                    state = 3; // CBS_PUSHED
+                    state = CBS_PUSHED;
                     break;
                 case wxAUI_BUTTON_STATE_DISABLED:
-                    state = 4; //CBS_DISABLED
+                    state = CBS_DISABLED;
                     break;
                 default:
                     wxASSERT_MSG(false, wxT("Unknown state"));
             }
 
+
+            int n = wnd->FromDIP(13);
+
             RECT rc;
             wxCopyRectToRECT(rect, rc);
-            rc.top += (rect.height-13)/2;
-            rc.right = rc.left+13;
-            rc.bottom = rc.top+13;
+            rc.top += (rect.height-n)/2;
+            rc.right = rc.left+n;
+            rc.bottom = rc.top+n;
             
 
             // draw the themed close button
 
 #if wxCHECK_VERSION(3,1,1)
-            ::DrawThemeBackground(hTheme, (HDC)kcl::getHdcFrom(dc), 19 /*WP_SMALLCLOSEBUTTON*/, state, &rc, NULL);
+            ::DrawThemeBackground(hTheme, (HDC)kcl::getHdcFrom(dc), WP_SMALLCLOSEBUTTON, state, &rc, NULL);
 #else
             wxUxThemeEngine::Get()->DrawThemeBackground(
                 hTheme,
                 (HDC)kcl::getHdcFrom(dc),
-                19 /*WP_SMALLCLOSEBUTTON*/,
+                WP_SMALLCLOSEBUTTON,
                 state, &rc, NULL);
 #endif
 
@@ -227,7 +219,7 @@ void CfwDockArt::DrawCaption(wxDC& dc,
 #ifdef WIN32
 
     dc.SetPen(*wxTRANSPARENT_PEN);
-    dc.SetFont(m_caption_font);
+    dc.SetFont(m_captionFont);
 
     wxColour c1, c2, text_color;
     
@@ -240,9 +232,9 @@ void CfwDockArt::DrawCaption(wxDC& dc,
     }
      else
     {
-        c1 = wxAuiStepColour(m_inactive_caption_gradient_colour, 97);
+        c1 = wxAuiStepColour(m_inactiveCaptionGradientColour, 97);
         c2 = wxAuiLightContrastColour(c1);
-        text_color = m_inactive_caption_text_colour;
+        text_color = m_inactiveCaptionTextColour;
     }
 
     // draw background
@@ -258,11 +250,11 @@ void CfwDockArt::DrawCaption(wxDC& dc,
     clip_rect.width -= 3; // text offset
     clip_rect.width -= 2; // button padding
     if (pane.HasCloseButton())
-        clip_rect.width -= m_button_size;
+        clip_rect.width -= m_buttonSize;
     if (pane.HasPinButton())
-        clip_rect.width -= m_button_size;
+        clip_rect.width -= m_buttonSize;
     if (pane.HasMaximizeButton())
-        clip_rect.width -= m_button_size;
+        clip_rect.width -= m_buttonSize;
 
     wxString draw_text = wxAuiChopText(dc, text, clip_rect.width);
 
@@ -280,39 +272,37 @@ void CfwDockArt::DrawCaption(wxDC& dc,
 
 // CfwTabArt class implementation
 
+void CfwTabArt::EnsureBitmaps(const wxWindow* wnd)
+{
+    if (m_disabledCloseBmpLookup.IsOk())
+        return;
 
-#if wxCHECK_VERSION(2,9,3)
-    #undef m_base_colour_brush
-    #undef m_disabled_close_bmp
-    #undef m_active_close_bmp
+    m_standardPadding = wnd->FromDIP(PADDING);
+    m_standardBottomLineY = BOTTOMLINE_Y; // wnd->FromDIP(BOTTOMLINE_Y);
 
-    #define m_base_colour_brush m_baseColourBrush
-    #define m_disabled_close_bmp m_disabledCloseBmp
-    #define m_active_close_bmp m_activeCloseBmp
-    #define m_disabled_left_bmp m_disabledLeftBmp
-    #define m_active_left_bmp m_activeLeftBmp
-    #define m_disabled_right_bmp m_disabledRightBmp
-    #define m_active_right_bmp m_activeRightBmp
-    #define m_active_windowlist_bmp m_activeWindowListBmp
-    #define m_disabled_windowlist_bmp m_disabledWindowListBmp
-    #define m_selected_font m_selectedFont
-    #define m_normal_font m_normalFont
-    #define m_fixed_tab_width m_fixedTabWidth
-    #define m_tab_ctrl_height m_tabCtrlHeight
-    #define m_measuring_font m_measuringFont
-#endif
+    m_disabledCloseBmpLookup = m_disabledCloseBmp.GetBitmapFor(wnd);
+    m_activeCloseBmpLookup = m_activeCloseBmp.GetBitmapFor(wnd);
+    m_disabledLeftBmpLookup = m_disabledLeftBmp.GetBitmapFor(wnd);
+    m_activeLeftBmpLookup = m_activeLeftBmp.GetBitmapFor(wnd);
+    m_disabledRightBmpLookup = m_disabledRightBmp.GetBitmapFor(wnd);
+    m_activeRightBmpLookup = m_activeRightBmp.GetBitmapFor(wnd);
+    m_disabledWindowListBmpLookup = m_disabledWindowListBmp.GetBitmapFor(wnd);
+    m_activeWindowListBmpLookup = m_activeWindowListBmp.GetBitmapFor(wnd);
+}
 
 void CfwTabArt::DrawBackground(wxDC& dc,
                                wxWindow* wnd,
                                const wxRect& rect)
 {
-    int x = rect.x-PADDING;
-    int w = rect.width+(PADDING*2);
+    EnsureBitmaps(wnd);
+
+    int x = rect.x-m_standardPadding;
+    int w = rect.width+(m_standardPadding*2);
     int y = rect.y;
-    int h = rect.height-BOTTOMLINE_Y;
+    int h = rect.height-m_standardBottomLineY;
     
-    wxColor top_color = wxAuiStepColour(m_base_colour, 95);
-    wxColor bottom_color = wxAuiStepColour(m_base_colour, 150);
+    wxColor top_color = wxAuiStepColour(m_baseColour, 95);
+    wxColor bottom_color = wxAuiStepColour(m_baseColour, 150);
     
     // draw background
     wxRect r1(x, y, w, h*3/5);
@@ -326,8 +316,8 @@ void CfwTabArt::DrawBackground(wxDC& dc,
     // draw base lines
     y = rect.GetHeight();
     w = rect.GetWidth();
-    dc.SetPen(m_border_pen);
-    dc.SetBrush(m_base_colour_brush);
+    dc.SetPen(m_borderPen);
+    dc.SetBrush(m_baseColourBrush);
     dc.DrawRectangle(-1, y-4, w+2, 4);
 }     
 
@@ -383,33 +373,35 @@ void CfwTabArt::DrawButton(wxDC& dc,
                            int orientation,
                            wxRect* out_rect)
 {
+    EnsureBitmaps(wnd);
+
     wxBitmap bmp;
 
     switch (bitmap_id)
     {
         case wxAUI_BUTTON_CLOSE:
             if (button_state & wxAUI_BUTTON_STATE_DISABLED)
-                bmp = m_disabled_close_bmp;
+                bmp = m_disabledCloseBmpLookup;
                  else
-                bmp = m_active_close_bmp;
+                bmp = m_activeCloseBmpLookup;
             break;
         case wxAUI_BUTTON_LEFT:
             if (button_state & wxAUI_BUTTON_STATE_DISABLED)
-                bmp = m_disabled_left_bmp;
+                bmp = m_disabledLeftBmpLookup;
                  else
-                bmp = m_active_left_bmp;
+                bmp = m_activeLeftBmpLookup;
             break;
         case wxAUI_BUTTON_RIGHT:
             if (button_state & wxAUI_BUTTON_STATE_DISABLED)
-                bmp = m_disabled_right_bmp;
+                bmp = m_disabledRightBmpLookup;
                  else
-                bmp = m_active_right_bmp;
+                bmp = m_activeRightBmpLookup;
             break;
         case wxAUI_BUTTON_WINDOWLIST:
             if (button_state & wxAUI_BUTTON_STATE_DISABLED)
-                bmp = m_disabled_windowlist_bmp;
+                bmp = m_disabledWindowListBmpLookup;
                  else
-                bmp = m_active_windowlist_bmp;
+                bmp = m_activeWindowListBmpLookup;
             break;
     }
 
@@ -419,8 +411,8 @@ void CfwTabArt::DrawButton(wxDC& dc,
     int x, y, w, h, bmp_x, bmp_y, bmp_w, bmp_h;
     y = in_rect.y-1;
     w = bmp.GetWidth();
-    h = in_rect.height - BOTTOMLINE_Y - 1;
-    bmp_y = in_rect.y + (in_rect.height-bmp.GetHeight())/2 - BOTTOMLINE_Y + 1;
+    h = in_rect.height - m_standardBottomLineY - 1;
+    bmp_y = in_rect.y + (in_rect.height-bmp.GetHeight())/2 - m_standardBottomLineY + 1;
     bmp_w = bmp.GetWidth();
     bmp_h = bmp.GetHeight();
 
@@ -444,14 +436,14 @@ void CfwTabArt::DrawButton(wxDC& dc,
          button_state == wxAUI_BUTTON_STATE_PRESSED) &&
         !(button_state & wxAUI_BUTTON_STATE_DISABLED))
     {
-        drawInactiveTabBackground(dc, rect, m_base_colour,
-                                      m_border_pen, m_border_pen);
+        drawInactiveTabBackground(dc, rect, m_baseColour,
+                                      m_borderPen, m_borderPen);
 
         if (bitmap_id == wxAUI_BUTTON_RIGHT)
         {
             // draw white chisel outline to the left of the scroll right
             // button's border to separate it from the chopped-off tab
-            dc.SetPen(wxAuiStepColour(m_base_colour, 160));
+            dc.SetPen(wxAuiStepColour(m_baseColour, 160));
             dc.DrawLine(rect.x-1, rect.y, rect.x-1, rect.y+rect.height);
         }
     }
@@ -472,9 +464,13 @@ void CfwTabArt::DrawTab(wxDC& dc,
                         wxRect* out_button_rect,
                         int* x_extent)
 {
+    EnsureBitmaps(wnd);
+
     wxCoord normal_textx, normal_texty;
     wxCoord selected_textx, selected_texty;
     wxCoord textx, texty;
+
+    wxBitmap page_bitmap_lookup = page.bitmap.GetBitmapFor(wnd);
 
     // if the caption is empty, measure some temporary text
     wxString caption = page.caption;
@@ -482,22 +478,22 @@ void CfwTabArt::DrawTab(wxDC& dc,
     if (text_extent_str.empty())
         text_extent_str = wxT("Xj");
 
-    dc.SetFont(m_selected_font);
+    dc.SetFont(m_selectedFont);
     dc.GetTextExtent(text_extent_str, &selected_textx, &selected_texty);
 
-    dc.SetFont(m_normal_font);
+    dc.SetFont(m_normalFont);
     dc.GetTextExtent(text_extent_str, &normal_textx, &normal_texty);
 
     // figure out the size of the tab
     wxSize tab_size = GetTabSize(dc,
                                  wnd,
                                  page.caption,
-                                 page.bitmap,
+                                 page_bitmap_lookup,
                                  page.active,
                                  close_button_state,
                                  x_extent);
 
-    wxCoord tab_height = m_tab_ctrl_height - BOTTOMLINE_Y;
+    wxCoord tab_height = m_tabCtrlHeight - m_standardBottomLineY;
     wxCoord tab_width = tab_size.x;
     wxCoord tab_y = in_rect.y;
     wxCoord tab_x = in_rect.x;
@@ -505,13 +501,13 @@ void CfwTabArt::DrawTab(wxDC& dc,
     // select pen, brush and font for the tab to be drawn
     if (page.active)
     {
-        dc.SetFont(m_selected_font);
+        dc.SetFont(m_selectedFont);
         textx = selected_textx;
         texty = selected_texty;
     }
      else
     {
-        dc.SetFont(m_normal_font);
+        dc.SetFont(m_normalFont);
         textx = normal_textx;
         texty = normal_texty;
     }
@@ -535,17 +531,17 @@ void CfwTabArt::DrawTab(wxDC& dc,
         rect_shine.height += 2;
         
         // draw the gradient background
-        wxColor c1 = m_base_colour;
-        wxColor c2 = wxAuiStepColour(m_border_pen.GetColour(), 125);
+        wxColor c1 = m_baseColour;
+        wxColor c2 = wxAuiStepColour(m_borderPen.GetColour(), 125);
         dc.GradientFillLinear(tab_rect, c1, c2, wxNORTH);
         
         // draw the "shine" for the tab
-        c1 = m_base_colour;
-        c2 = wxAuiStepColour(m_base_colour, 160);
+        c1 = m_baseColour;
+        c2 = wxAuiStepColour(m_baseColour, 160);
         dc.GradientFillLinear(rect_shine, c1, c2, wxNORTH);
         
         // draw left and right borders
-        dc.SetPen(wxAuiStepColour(m_border_pen.GetColour(), 90));
+        dc.SetPen(wxAuiStepColour(m_borderPen.GetColour(), 90));
         dc.DrawLine(tab_x, tab_y,
                     tab_x, tab_y+tab_height);
         dc.DrawLine(tab_x+tab_width, tab_y,
@@ -555,17 +551,17 @@ void CfwTabArt::DrawTab(wxDC& dc,
     {
         // draw inactive tab
 
-        wxPen border_pen2(wxAuiStepColour(m_base_colour, 160));
+        wxPen border_pen2(wxAuiStepColour(m_baseColour, 160));
         wxRect tab_rect(tab_x, tab_y, tab_width, tab_height-1);
-        drawInactiveTabBackground(dc, tab_rect, m_base_colour,
-                                  m_border_pen, border_pen2);
+        drawInactiveTabBackground(dc, tab_rect, m_baseColour,
+                                  m_borderPen, border_pen2);
                                   
         // this code compensates for the scenario when the
         // scroll left/scroll right arrows are showing -- the left border
         // of the inactive tab wasn't drawn all the way to the bottom
-        if (tab_x < m_active_left_bmp.GetWidth()+10)
+        if (tab_x < m_activeLeftBmpLookup.GetWidth()+10)
         {
-            dc.SetPen(m_border_pen);
+            dc.SetPen(m_borderPen);
             dc.DrawLine(tab_x, tab_y, tab_x, tab_y+tab_height);
         }
     }
@@ -574,33 +570,33 @@ void CfwTabArt::DrawTab(wxDC& dc,
     if (close_button_state != wxAUI_BUTTON_STATE_HIDDEN)
     {
         if (IsUxThemed())
-            close_button_width = UXTHEME_CLOSEBUTTON_SIZE;
+            close_button_width = wnd->FromDIP(UXTHEME_CLOSEBUTTON_SIZE);
          else
-            close_button_width = m_active_close_bmp.GetWidth();
+            close_button_width = m_activeCloseBmpLookup.GetWidth();
     }
 
-    int bmp_offset = tab_x + (PADDING*2);
-    int text_offset = tab_x + (PADDING*2);
+    int bmp_offset = tab_x + (m_standardPadding*2);
+    int text_offset = tab_x + (m_standardPadding*2);
     
     if (page.bitmap.IsOk())
     {
-        int bmp_height = page.bitmap.GetHeight();
-        int bmp_width = page.bitmap.GetWidth();
+        int bmp_height = page_bitmap_lookup.GetHeight();
+        int bmp_width = page_bitmap_lookup.GetWidth();
         
         // draw the tab's bitmap
-        dc.DrawBitmap(page.bitmap,
+        dc.DrawBitmap(page_bitmap_lookup,
                       bmp_offset,
                       tab_y + (tab_height-bmp_height)/2,
                       true);
 
         text_offset += bmp_width;
-        text_offset += PADDING;     // bitmap padding
+        text_offset += m_standardPadding;     // bitmap padding
     }
 
     int max_text_size = tab_width;
     max_text_size -= (text_offset-tab_x);
     max_text_size -= close_button_width;
-    max_text_size -= (PADDING+1);
+    max_text_size -= (m_standardPadding+1);
     wxString draw_text = wxAuiChopText(dc, caption, max_text_size);
 
     // draw tab text
@@ -612,7 +608,7 @@ void CfwTabArt::DrawTab(wxDC& dc,
     if (close_button_state != wxAUI_BUTTON_STATE_HIDDEN)
     {
         wxRect rect;
-        rect.SetLeft(tab_x + tab_width - close_button_width - PADDING);
+        rect.SetLeft(tab_x + tab_width - close_button_width - m_standardPadding);
         rect.SetTop(tab_y + (tab_height-close_button_width)/2);
         rect.SetWidth(close_button_width);
         rect.SetHeight(close_button_width);
@@ -621,11 +617,11 @@ void CfwTabArt::DrawTab(wxDC& dc,
         {
             // we couldn't draw the Windows XP mini close button,
             // so draw the default 'x'
-            wxBitmap bmp = m_disabled_close_bmp;
-            int bmp_height = m_disabled_close_bmp.GetHeight();
-            int bmp_width = m_disabled_close_bmp.GetWidth();
+            wxBitmap bmp = m_disabledCloseBmpLookup;
+            int bmp_height = m_disabledCloseBmpLookup.GetHeight();
+            int bmp_width = m_disabledCloseBmpLookup.GetWidth();
 
-            rect.SetLeft(tab_x + tab_width - close_button_width - PADDING);
+            rect.SetLeft(tab_x + tab_width - close_button_width - m_standardPadding);
             rect.SetTop(tab_y + (tab_height-bmp_height)/2);
             rect.SetWidth(close_button_width);
             rect.SetHeight(bmp_width);
@@ -633,7 +629,7 @@ void CfwTabArt::DrawTab(wxDC& dc,
             if (close_button_state == wxAUI_BUTTON_STATE_HOVER ||
                 close_button_state == wxAUI_BUTTON_STATE_PRESSED)
             {
-                bmp = m_active_close_bmp;
+                bmp = m_activeCloseBmpLookup;
             }
 
             IndentPressedBitmap(&rect, close_button_state);
@@ -651,44 +647,46 @@ void CfwTabArt::DrawTab(wxDC& dc,
 void CfwTabArt::SetSizingInfo(const wxSize& tab_ctrl_size,
                               size_t tab_count)
 {
-    m_fixed_tab_width = 100;
+    m_fixedTabWidth = 100;
 
     int tot_width = (int)tab_ctrl_size.x - GetIndentSize() - 4;
 
     if (m_flags & wxAUI_NB_CLOSE_BUTTON)
-        tot_width -= m_active_close_bmp.GetWidth();
+        tot_width -= m_activeCloseBmpLookup.GetWidth();
     if (m_flags & wxAUI_NB_WINDOWLIST_BUTTON)
-        tot_width -= m_active_windowlist_bmp.GetWidth();
+        tot_width -= m_activeWindowListBmpLookup.GetWidth();
 
     if (tab_count > 0)
     {
-        m_fixed_tab_width = tot_width/(int)tab_count;
+        m_fixedTabWidth = tot_width/(int)tab_count;
     }
 
 
-    if (m_fixed_tab_width < 100)
-        m_fixed_tab_width = 100;
+    if (m_fixedTabWidth < 100)
+        m_fixedTabWidth = 100;
 
-    if (m_fixed_tab_width > tot_width/2)
-        m_fixed_tab_width = tot_width/2;
+    if (m_fixedTabWidth > tot_width/2)
+        m_fixedTabWidth = tot_width/2;
 
-    if (m_fixed_tab_width > 250)
-        m_fixed_tab_width = 250;
+    if (m_fixedTabWidth > 250)
+        m_fixedTabWidth = 250;
 
-    m_tab_ctrl_height = tab_ctrl_size.y;
+    m_tabCtrlHeight = tab_ctrl_size.y;
 }
 
 wxSize CfwTabArt::GetTabSize(wxDC& dc,
-                             wxWindow* WXUNUSED(wnd),
+                             wxWindow* wnd,
                              const wxString& caption,
                              const wxBitmap& bitmap,
                              bool WXUNUSED(active),
                              int close_button_state,
                              int* x_extent)
 {
+    EnsureBitmaps(wnd);
+
     wxCoord measured_textx, measured_texty, tmp;
 
-    dc.SetFont(m_measuring_font);
+    dc.SetFont(m_measuringFont);
     dc.GetTextExtent(caption, &measured_textx, &measured_texty);
     dc.GetTextExtent(wxT("ABCDEFXj"), &tmp, &measured_texty);
 
@@ -697,22 +695,29 @@ wxSize CfwTabArt::GetTabSize(wxDC& dc,
 
     // if the close button is showing, add space for it
     if (close_button_state != wxAUI_BUTTON_STATE_HIDDEN)
-        tab_width += m_active_close_bmp.GetWidth() + PADDING;
+        tab_width += m_activeCloseBmpLookup.GetWidth() + m_standardPadding;
 
     // if there's a bitmap, add space for it
     if (bitmap.IsOk())
     {
         tab_width += bitmap.GetWidth();
-        tab_width += PADDING; // right side bitmap padding
+        tab_width += m_standardPadding; // right side bitmap padding
         tab_height = wxMax(tab_height, bitmap.GetHeight());
     }
 
-    // add padding
-    tab_width += 16;
-    tab_height += 7;
+    // add additional padding
+    wxSize additional_padding = wnd->FromDIP(wxSize(16, 7));
 
     if (m_flags & wxAUI_NB_TAB_FIXED_WIDTH)
-        tab_width = m_fixed_tab_width;
+    {
+        tab_width = m_fixedTabWidth;
+        tab_height += additional_padding.y;
+    }
+     else
+    {
+        tab_width += additional_padding.x;
+        tab_width += additional_padding.y;
+    }
 
     *x_extent = tab_width;
 
