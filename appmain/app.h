@@ -24,6 +24,7 @@ class wxHelpController;
 class wxHelpControllerBase;
 class wxCHMHelpController;
 class wxPrintPaperDatabase;
+class wxLocale;
 class LinkBar;
 
 
@@ -128,6 +129,7 @@ private:
     ExtensionMgr* m_extension_mgr;
     WebServer* m_web_server;
     wxFrame* m_frame_wnd;
+    wxLocale* m_locale;
     wxCmdLineParser* m_command_line;
     DbDoc* m_dbdoc;
     LinkBar* m_linkbar;

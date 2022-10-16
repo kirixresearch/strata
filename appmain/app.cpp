@@ -46,7 +46,7 @@ AppMacroRecorder g_macro;
 paladin::Authentication* g_auth = NULL;
 #endif
 
-wxLocale g_locale;
+
 time_t g_app_start_time = 0;
 
 
@@ -305,6 +305,7 @@ void UpdateTimer::Notify()
 MainApp::MainApp()
 {
     m_frame = NULL;
+    m_locale = NULL;
     m_app_controller = NULL;
     m_frame_wnd = NULL;
     m_database = xcm::null;
@@ -415,9 +416,10 @@ bool MainApp::OnInit()
         i18n_base_path += wxT("i18n");
     }
     
-    g_locale.Init(wxLANGUAGE_DEFAULT);
-    g_locale.AddCatalogLookupPathPrefix(i18n_base_path);
-    g_locale.AddCatalog(wxT("messages"));
+    m_locale = new wxLocale();
+    m_locale->Init(wxLANGUAGE_DEFAULT);
+    m_locale->AddCatalogLookupPathPrefix(i18n_base_path);
+    m_locale->AddCatalog(wxT("messages"));
     
     wxSocketBase::Initialize();
 
@@ -720,6 +722,7 @@ int MainApp::OnExit()
     delete m_app_controller;
     delete m_extension_mgr;
     delete m_command_line;
+    delete m_locale;
 
 #ifdef __WXMSW__
     if (m_taskbar_icon)
