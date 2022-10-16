@@ -445,7 +445,6 @@ BitmapComboControl::BitmapComboControl(wxWindow* parent,
         SetButtonBitmaps(normal_bmp, false, pressed_bmp, hover_bmp);
     }
 
-    
     wxTextCtrl* textctrl = GetTextCtrl();
     textctrl->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(BitmapComboControl::onMouseLeftDown), NULL, this);
     textctrl->Connect(wxEVT_LEFT_UP, wxMouseEventHandler(BitmapComboControl::onMouseLeftUp), NULL, this);
