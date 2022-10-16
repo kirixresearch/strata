@@ -1597,10 +1597,10 @@ bool MainFrame::create(wxWindow* parent,
     // floating window, otherwise the caption size returned will be that of the top 
     // level window; may want to put this in the art provider rather than here
     
-    //int caption_size = wxSystemSettings::GetMetric(wxSYS_CAPTION_Y);
-    m_mgr.GetArtProvider()->SetMetric(wxAUI_DOCKART_CAPTION_SIZE, 21);
+    int caption_size = wxSystemSettings::GetMetric(wxSYS_CAPTION_Y);
+    m_mgr.GetArtProvider()->SetMetric(wxAUI_DOCKART_CAPTION_SIZE, caption_size);
+
     m_mgr.SetFlags(m_mgr.GetFlags() ^ flags);
-    
     m_mgr.Update();
 
     // set notebook flags

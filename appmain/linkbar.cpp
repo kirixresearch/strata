@@ -111,17 +111,9 @@ public:
                                              kcl::getBorderPen());
         }
 
-        #if wxCHECK_VERSION(2,9,3)
-        int x = rect.x+1+(rect.width-m_overflowBmp.GetWidth())/2;
-        int y = rect.y+1+(rect.height-m_overflowBmp.GetHeight())/2;
-        dc.DrawBitmap(m_overflowBmp, x, y, true);
-        #else
-        int x = rect.x+1+(rect.width-m_overflow_bmp.GetWidth())/2;
-        int y = rect.y+1+(rect.height-m_overflow_bmp.GetHeight())/2;
-        dc.DrawBitmap(m_overflow_bmp, x, y, true);
-        #endif
-
-        
+        int x = rect.x+1+(rect.width-m_overflowBmp.GetBitmapFor(wnd).GetWidth())/2;
+        int y = rect.y+1+(rect.height-m_overflowBmp.GetBitmapFor(wnd).GetHeight())/2;
+        dc.DrawBitmap(m_overflowBmp.GetBitmapFor(wnd), x, y, true);
     }
 };
 
