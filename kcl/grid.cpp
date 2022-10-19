@@ -1499,8 +1499,10 @@ void Grid::construct()
                 optVertGridLines |
                 optActivateHyperlinks;
     m_cursor_type = cursorNormal;
+    m_dip_row_height = 0;
     m_row_height = 0;
-    m_rowlabel_width = 12;
+    m_dip_rowlabel_width = 12;
+    m_rowlabel_width = fromDIP(m_dip_rowlabel_width);
     m_border_type = wxNO_BORDER;
     m_bmp_alloc_width = 0;
     m_bmp_alloc_height = 0;
@@ -1953,12 +1955,26 @@ void Grid::setCursorVisible(bool show)
     m_cursor_visible = show;
 }
 
-bool Grid::SetFont(const wxFont& font)
+bool Grid::SetFont(const wxFont& _font)
 {
-    if (!wxControl::SetFont(font))
+    if (!wxControl::SetFont(_font))
         return false;
 
-    m_font = font;
+    if (fromDIP(100) > 100)
+    {
+        // fonts in their normal size on high DPI are just too small
+        wxFont font(_font);
+        double pt = (double)font.GetPointSize();
+        pt = pt * (double)fromDIP(100) / 105.0;
+        int new_font_size = (int)kl::dblround(pt,0);
+        font.SetPointSize(new_font_size);
+        m_font = font;
+    }
+     else
+    {
+        m_font = _font;
+    }
+
     initFont();
 
     return true;
@@ -1988,15 +2004,21 @@ void Grid::initFont()
         int x, y;
         m_memdc.GetTextExtent(wxT("ABCDXHM"), &x, &y);
 
-        m_row_height = y+6;
-        m_header_height = m_row_height - 1;
+        m_row_height = y + fromDIP(6);
+        m_dip_row_height = toDIP(m_row_height);
+
+        m_dip_header_height = m_dip_row_height - 1;
+        m_header_height = fromDIP(m_dip_header_height);
     }
      else
     {
         // bitmap could not be created, so set some default dumb values
         // so that there is no division by zero
-        m_row_height = 18;
-        m_header_height = 18;
+        m_dip_row_height = 18;
+        m_row_height = fromDIP(m_dip_row_height);
+
+        m_dip_header_height = 18;
+        m_header_height = fromDIP(m_dip_header_height);
     }
 }
 
@@ -2027,7 +2049,8 @@ void Grid::createDefaultView()
         vc->m_bgcolor = wxNullColour;
         vc->m_caption = col->getName();
         vc->m_colname = col->getName();
-        vc->m_pixwidth = 80;
+        vc->m_dip_pixwidth = 80;
+        vc->m_pixwidth = fromDIP(vc->m_dip_pixwidth);
         vc->m_prop_size = 0;
         vc->m_modelcol = i;
         vc->m_draw = true;
@@ -2217,7 +2240,8 @@ int Grid::insertColumnSeparator(int position)
     vc->m_separator = true;
     vc->m_resizable = true;
     vc->m_modelcol = -1;
-    vc->m_pixwidth = 100;
+    vc->m_dip_pixwidth = 100;
+    vc->m_pixwidth = fromDIP(vc->m_dip_pixwidth);
     vc->m_caption = wxT("");
 
     if (position >= (int)m_viewcols.size())
@@ -2237,7 +2261,7 @@ int Grid::insertColumnSeparator(int position)
         m_cursor_modelcol = m_viewcols[m_cursor_col]->m_modelcol;
 
     return m_viewcols.size()-1;
-}
+}   
 
 int Grid::insertColumn(int position, int modelcol_idx)
 {
@@ -2258,7 +2282,8 @@ int Grid::insertColumn(int position, int modelcol_idx)
     vc->m_alignment = alignDefault;
     vc->m_bitmap_alignment = alignLeft;
     vc->m_modelcol = modelcol_idx;
-    vc->m_pixwidth = 100;
+    vc->m_dip_pixwidth = 100;
+    vc->m_pixwidth = fromDIP(vc->m_dip_pixwidth);
     vc->m_caption = col->getName();
     
     /*
@@ -2557,7 +2582,8 @@ void Grid::setRowHeight(int row_height)
         initFont();
     }
 
-    m_row_height = row_height;
+    m_dip_row_height = row_height;
+    m_row_height = fromDIP(row_height);
 
     GridEvent evt;
     evt.SetInt(row_height);
@@ -2567,7 +2593,7 @@ void Grid::setRowHeight(int row_height)
 
 int Grid::getRowHeight()
 {
-    return m_row_height;
+    return m_dip_row_height;
 }
 
 
@@ -2934,16 +2960,17 @@ void Grid::autoColumnResizeInternal(std::vector<int>& columns)
             continue;
         }
         
-        if (col_sizes[i] > 980)
-            col_sizes[i] = 980;
+        if (col_sizes[i] > fromDIP(980))
+            col_sizes[i] = fromDIP(980);
 
         if (m_viewcols[*it]->m_pixwidth != col_sizes[i]+20)
         {
             m_viewcols[*it]->m_pixwidth = col_sizes[i]+20;
+            m_viewcols[*it]->m_dip_pixwidth = toDIP(m_viewcols[*it]->m_pixwidth);
 
             GridEvent evt;
             evt.SetColumn(*it);
-            evt.SetInt(col_sizes[i]+20);
+            evt.SetInt(m_viewcols[*it]->m_dip_pixwidth);
             evt.SetUserEvent(false);
             fireEvent(wxEVT_KCLGRID_COLUMN_RESIZE, evt);
         }
@@ -2960,23 +2987,25 @@ void Grid::autoColumnResizeInternal(std::vector<int>& columns)
 
 void Grid::setRowLabelSize(int new_value)
 {
-    m_rowlabel_width = new_value;
+    m_dip_rowlabel_width = new_value;
+    m_rowlabel_width = fromDIP(new_value);
 }
 
 int Grid::getRowLabelSize()
 {
-    return m_rowlabel_width;
+    return m_dip_rowlabel_width;
 }
 
 
 void Grid::setHeaderSize(int new_val)
 {
-    m_header_height = new_val;
+    m_dip_header_height = new_val;
+    m_header_height = fromDIP(new_val);
 }
 
 int Grid::getHeaderSize()
 {
-    return m_header_height;
+    return m_dip_header_height;
 }
 
 
@@ -2985,7 +3014,8 @@ void Grid::setColumnSize(int col, int pixwidth)
     if (col < 0 || col >= (int)m_viewcols.size())
         return;
 
-    m_viewcols[col]->m_pixwidth = pixwidth;
+    m_viewcols[col]->m_dip_pixwidth = pixwidth;
+    m_viewcols[col]->m_pixwidth = fromDIP(m_viewcols[col]->m_dip_pixwidth);
 
     GridEvent evt;
     evt.SetColumn(col);
@@ -3109,7 +3139,7 @@ int Grid::getColumnSize(int col)
     if (col < 0 || col >= (int)m_viewcols.size())
         return -1;
 
-    return m_viewcols[col]->m_pixwidth;
+    return m_viewcols[col]->m_dip_pixwidth;
 }
 
 int Grid::getColumnProportionalSize(int col)
@@ -3587,6 +3617,18 @@ void Grid::onEraseBackground(wxEraseEvent& event)
 {
 }
 
+int Grid::fromDIP(int d)
+{
+    return this->FromDIP(d);
+}
+
+int Grid::toDIP(int d)
+{
+    return this->ToDIP(d);
+}
+
+
+
 void Grid::drawColumnHeaderRectangle(int x1, int y1, int width, int height, bool selected)
 {
     m_memdc.GradientFillLinear(wxRect(x1,y1,width,height),
@@ -3997,7 +4039,8 @@ void Grid::initGui()
     m_total_width = 0;
     m_frozen_width = 0;
     m_row_offset = 0;
-    m_header_height = 18;
+    m_dip_header_height = 18;
+    m_header_height = fromDIP(m_dip_header_height);
 
     // set row break count (group break count)
     m_row_break_count = 0;
@@ -4086,7 +4129,10 @@ void Grid::calcColumnWidths()
         for (col = 0; col < col_count; ++col)
         {
             if (m_viewcols[col]->m_prop_size > 0)
-                m_viewcols[col]->m_pixwidth = (((m_cliwidth-xoff-1)*(m_viewcols[col]->m_prop_size*100))/(m_total_pwidth*100));
+            {
+                m_viewcols[col]->m_pixwidth = (((m_cliwidth - xoff - 1) * (m_viewcols[col]->m_prop_size * 100)) / (m_total_pwidth * 100));
+                m_viewcols[col]->m_dip_pixwidth = toDIP(m_viewcols[col]->m_pixwidth);
+            }
         }
 
         // determine total width
@@ -4106,6 +4152,7 @@ void Grid::calcColumnWidths()
                     if (m_viewcols[col]->m_prop_size > 0)
                     {
                         m_viewcols[col]->m_pixwidth += adj;
+                        m_viewcols[col]->m_dip_pixwidth = toDIP(m_viewcols[col]->m_pixwidth);
                         m_total_width += adj;
                         break;
                     }
@@ -4760,7 +4807,6 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
             for (col = 0; col < col_count; col++)
             {
                 col_width = m_viewcols[col]->m_pixwidth;
-
 
                 if (!(m_options & optVertGridLines))
                 {
@@ -5574,7 +5620,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
 
                 // draw the cursor row and ghost row markers, but only
                 // if there's enough space
-                if (m_rowlabel_width > 8)
+                if (m_rowlabel_width > fromDIP(8))
                 {
                     if (row < (int)m_rowdata.size())
                     {
@@ -7255,6 +7301,7 @@ void Grid::onMouse(wxMouseEvent& event)
                 if (m_row_height != new_row_height)
                 {
                     m_row_height = new_row_height;
+                    m_dip_row_height = toDIP(m_row_height);
                 
                     updateData();
                     render();
@@ -7810,11 +7857,13 @@ void Grid::onMouse(wxMouseEvent& event)
             }
 
             int old_width = m_action_col->m_pixwidth;
-            int new_width = std::max(5, event.m_x - m_action_colxoff);
+            int new_width = std::max(fromDIP(5), event.m_x - m_action_colxoff);
 
             if (new_width != old_width)
             {
+                int new_dip_width = toDIP(new_width);
                 m_action_col->m_pixwidth = new_width;
+                m_action_col->m_dip_pixwidth = new_dip_width;
 
                 m_memdc.Blit(m_action_colxoff+new_width, 0, m_cliwidth-(m_action_colxoff+old_width), m_cliheight,
                         &m_memdc, m_action_colxoff+old_width, 0);
@@ -7834,7 +7883,7 @@ void Grid::onMouse(wxMouseEvent& event)
 
                 GridEvent evt;
                 evt.SetColumn(m_action_viewcol);
-                evt.SetInt(new_width);
+                evt.SetInt(new_dip_width);
                 evt.SetUserEvent(true);
                 fireEvent(wxEVT_KCLGRID_COLUMN_RESIZE, evt);
             }

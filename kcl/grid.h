@@ -441,6 +441,7 @@ public:
 
     wxString m_caption;
     wxString m_colname;
+    int m_dip_pixwidth;
     int m_pixwidth;
     int m_alignment;
     int m_text_wrap;
@@ -809,6 +810,9 @@ public:
 
 private:
 
+    int fromDIP(int d);
+    int toDIP(int d);
+
     //void drawChiselRectangle(int x1, int y1, int width, int height, bool selected);
     void drawColumnHeaderRectangle(int x1, int y1, int width, int height, bool selected);
     void drawRowGripperRectangle(int x1, int y1, int width, int height, bool selected);
@@ -916,9 +920,16 @@ private:
     int m_total_width;      // total pixel width
     int m_invalid_yoffset;
     int m_frozen_width;     // total frozen width
+
+    int m_dip_header_height;
     int m_header_height;
+
+    int m_dip_rowlabel_width;
     int m_rowlabel_width;
+
+    int m_dip_row_height;
     int m_row_height;
+
     int m_xoff;
     int m_row_offset;
     int m_row_count;

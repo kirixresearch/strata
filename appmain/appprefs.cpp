@@ -38,9 +38,9 @@ wxColor getDefaultGreenBarColor(const wxColor& color, int ialpha)
 wxFont getDefaultWindowsFont()
 {
     if (wxFontEnumerator::IsValidFacename(wxT("Tahoma")))
-        return wxFont (8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Tahoma"));
-        
-    return wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+        return wxFont(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Tahoma"));
+         else
+        return wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
 }
 
 
