@@ -1879,8 +1879,8 @@ void AppController::onCreateBookmark(wxCommandEvent& evt)
     dlg.setMode(LinkPropsDialog::ModeCreate);
     dlg.setName(s);
     dlg.SetTitle(_("New Bookmark"));
-    dlg.SetSize(360,145);
-    dlg.SetMinSize(wxSize(370,165));
+    dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370,200)));
+    dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370,175)));
     dlg.CenterOnScreen();
 
     if (dlg.ShowModal() != wxID_OK)
