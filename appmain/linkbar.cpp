@@ -74,6 +74,25 @@ static void drawInactiveTabBackground(wxDC& dc,
 }
 
 
+static wxBitmap rescaleBitmap(wxWindow* wnd, wxBitmap bitmap)
+{
+    int x = bitmap.GetWidth();
+    int y = bitmap.GetHeight();
+    int dx = wnd->FromDIP(x);
+    int dy = wnd->FromDIP(y);
+
+    if (x != dx || y != dy)
+    {
+        wxImage image = bitmap.ConvertToImage();
+        image.Rescale(dx, dy);
+        return wxBitmap(image);
+    }
+    else
+    {
+        return bitmap;
+    }
+}
+
 
 // this art provider is exactly the same as wxAuiDefaultToolbarArt,
 // with the exception that it draw a border line at the top to
@@ -401,7 +420,7 @@ LinkBar::LinkBar(wxWindow* parent,
     // top padding needs to be one greater since the top pixel
     // of the linkbar is actually the border line; left padding
     // is 5 pixels to match the left padding of the standard toolbar
-    SetMargins(5,2,3,2);
+    SetMargins(FromDIP(5), FromDIP(2) , FromDIP(3), FromDIP(2));
         
     SetGripperVisible(false);
     SetOverflowVisible(false);
@@ -724,7 +743,7 @@ void LinkBar::recalcPopupWindowSize()
     doc_wnd->SetClientSize(s);
     
     wxWindow* cont_wnd = doc_wnd->GetParent();
-    cont_wnd->SetClientSize(s+wxSize(2,2));     // extra pixels for border
+    cont_wnd->SetClientSize(s+cont_wnd->FromDIP(wxSize(2,2)));     // extra pixels for border
 }
 
 void LinkBar::repositionPopupWindow()
@@ -1092,8 +1111,10 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             LinkPropsDialog dlg(this);
             dlg.setStartFolder(start_folder);
             dlg.SetTitle(_("\"New Bookmark\" Properties"));
+            dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
+            dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 175)));
             dlg.CenterOnScreen();
-            
+
             if (dlg.ShowModal() == wxID_OK)
             {
                 // create the bookmark
@@ -1124,8 +1145,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             dlg.setMessage(message);
             dlg.setName(_("New Folder"));
             dlg.SetTitle(_("New Folder"));
-            dlg.SetSize(320, 155);
-            dlg.SetMinSize(wxSize(320, 155));
+            dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
+            dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 175)));
             dlg.CenterOnScreen();
             
             if (dlg.ShowModal() == wxID_OK)
@@ -1199,6 +1220,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 dlg.setDescription(b.description);
                 dlg.setRunTarget(b.run_target);
                 dlg.SetTitle(title);
+                dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
+                dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 175)));
                 dlg.CenterOnScreen();
                     
                 if (dlg.ShowModal() == wxID_OK)
@@ -1248,8 +1271,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             dlg.setMessage(message);
             dlg.setName(item->getLabel());
             dlg.SetTitle(title);
-            dlg.SetSize(320,155);
-            dlg.SetMinSize(wxSize(320,155));
+            dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
+            dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 175)));
             dlg.CenterOnScreen();
                 
             if (dlg.ShowModal() == wxID_OK)
@@ -1419,23 +1442,23 @@ void LinkBar::refresh()
     m_items.clear();  // clear our items vector
     
     // add command buttons
-    AddTool(ID_Project_New, ID2BMP16(ID_Project_New), wxNullBitmap, false);
+    AddTool(ID_Project_New, rescaleBitmap(this, ID2BMP16(ID_Project_New)), wxNullBitmap, false);
     AddSpacer(3);
-    AddTool(ID_Project_OpenFile, ID2BMP16(ID_Project_OpenFile), wxNullBitmap, false);
+    AddTool(ID_Project_OpenFile, rescaleBitmap(this, ID2BMP16(ID_Project_OpenFile)), wxNullBitmap, false);
     AddSpacer(3);
-    AddTool(ID_File_Save, ID2BMP16(ID_File_Save), wxNullBitmap, false);
+    AddTool(ID_File_Save, rescaleBitmap(this, ID2BMP16(ID_File_Save)), wxNullBitmap, false);
     AddSpacer(3);
     AddSeparator();
     AddSpacer(3);
-    AddTool(ID_Data_Sort, ID2BMP16(ID_Data_Sort), wxNullBitmap, false);
+    AddTool(ID_Data_Sort, rescaleBitmap(this, ID2BMP16(ID_Data_Sort)), wxNullBitmap, false);
     AddSpacer(3);
-    AddTool(ID_Data_CreateDynamicField, ID2BMP16(ID_Data_CreateDynamicField), wxNullBitmap, false);
+    AddTool(ID_Data_CreateDynamicField, rescaleBitmap(this, ID2BMP16(ID_Data_CreateDynamicField)), wxNullBitmap, false);
     AddSpacer(3);
-    AddTool(ID_Data_GroupRecords, ID2BMP16(ID_Data_GroupRecords), wxNullBitmap, false);
+    AddTool(ID_Data_GroupRecords, rescaleBitmap(this, ID2BMP16(ID_Data_GroupRecords)), wxNullBitmap, false);
     AddSpacer(3);
-    AddTool(ID_Data_Filter, ID2BMP16(ID_Data_Filter), wxNullBitmap, false);
+    AddTool(ID_Data_Filter, rescaleBitmap(this, ID2BMP16(ID_Data_Filter)), wxNullBitmap, false);
     AddSpacer(3);
-    AddTool(ID_App_ToggleRelationshipSync, ID2BMP16(ID_App_ToggleRelationshipSync), wxNullBitmap, false);
+    AddTool(ID_App_ToggleRelationshipSync, rescaleBitmap(this, ID2BMP16(ID_App_ToggleRelationshipSync)), wxNullBitmap, false);
     AddSpacer(3);
     AddSeparator();
     AddSpacer(3);

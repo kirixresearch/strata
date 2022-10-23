@@ -132,14 +132,35 @@ StandardToolbar::StandardToolbar(wxWindow* parent,
     SetOverflowVisible(false);
 }
 
+static wxBitmap rescaleBitmap(wxWindow* wnd, wxBitmap bitmap)
+{
+    int x = bitmap.GetWidth();
+    int y = bitmap.GetHeight();
+    int dx = wnd->FromDIP(x);
+    int dy = wnd->FromDIP(y);
+
+    if (x != dx || y != dy)
+    {
+        wxImage image = bitmap.ConvertToImage();
+        image.Rescale(dx, dy);
+        return wxBitmap(image);
+    }
+     else
+    {
+        return bitmap;
+    }
+}
+
 static void AddSizedTool(wxAuiToolBar* toolbar, int id, bool small_icon)
 {
-    toolbar->AddTool(id, small_icon ? ID2BMP16(id) : ID2BMP(id), wxNullBitmap, false, 0);
+    wxBitmap bitmap = small_icon ? ID2BMP16(id) : ID2BMP(id);
+    toolbar->AddTool(id, rescaleBitmap(toolbar, bitmap), wxNullBitmap, false, 0);
 }
 
 static void AddSizedToggleTool(wxAuiToolBar* toolbar, int id, bool small_icon)
 {
-    toolbar->AddTool(id, small_icon ? ID2BMP16(id) : ID2BMP(id), wxNullBitmap, true, 0);
+    wxBitmap bitmap = small_icon ? ID2BMP16(id) : ID2BMP(id);
+    toolbar->AddTool(id, rescaleBitmap(toolbar, bitmap), wxNullBitmap, true, 0);
 }
 
 bool StandardToolbar::getSmallIcons()
