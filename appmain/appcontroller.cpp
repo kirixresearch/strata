@@ -1055,6 +1055,7 @@ bool AppController::init()
 
     // create the linkbar and dock it
     m_linkbar = new LinkBar(m_frame->getFrameWindow());
+
     m_frame->dockWindow(m_linkbar,
                         _("Bookmarks Toolbar"),
                         sitetypeDockable |
@@ -1293,6 +1294,13 @@ bool AppController::init()
     //       of the frame's children (must be done because of toolbar sizing)
     doPreferenceRefresh();
 
+    // on high-resolution displays, a sizing problem in the link bar
+    // manifests itself quite often; this seems to cure the problem,
+    // but is only a band-aid fix. Remove the following line to manifest
+    // the problem and search for a better long-term solution.
+    // Symtoms: the link bar appears squished vertically
+    refreshLinkBar();
+
     // update the frame's titlebar
     updateTitle();
 
@@ -1334,6 +1342,7 @@ bool AppController::init()
     // and closes the default project (which closes all of
     // the documents that have been opened)
     showStartupPage();
+
 
     // display the database manager dialog screen
     int startup_action = getAppPrefsLong(wxT("general.startup.default_action"));
@@ -1385,7 +1394,6 @@ bool AppController::init()
     // if we don't have an open database yet, the user did not start with
     // a project open and exited the Project Manager dialog without
     // selecting a project, so bail out and exit the application
-
     if (g_app->getDatabase().isNull())
     {
         // post the event instead of calling Close().  This solves a problem
