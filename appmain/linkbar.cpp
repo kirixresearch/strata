@@ -1497,7 +1497,7 @@ void LinkBar::refresh()
         IFsItemPtr item = children->getItem(i);
         
         int id = ID_FirstLinkBarId + i;
-        wxBitmap bmp = item->getBitmap();
+        wxBitmap bmp = rescaleBitmap(this, item->getBitmap());
         wxString label = item->getLabel();
         label.Trim(false).Trim(true);
         
