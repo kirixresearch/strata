@@ -91,7 +91,7 @@ enum
     // toolbars are added that are displayed be default, or default sizes
     // have been changed.  Incrementing this number will cause everybody's
     // UI to be reset to the default layout.
-    ClearPerspectiveCounter = 25
+    ClearPerspectiveCounter = 30
 };
 
 
@@ -1245,11 +1245,24 @@ bool AppController::init()
 
 
 
-    // load frame perspective
+    // load frame perspective (if any has been saved)
+
+    wxSize navigation_best_size = m_frame->getAuiManager().GetPane("NavigationToolbar").best_size;
+    wxSize bookmarks_best_size = m_frame->getAuiManager().GetPane("BookmarksToolbar").best_size;
+    wxSize format_best_size = m_frame->getAuiManager().GetPane("FormatToolbar").best_size;
+    wxSize status_best_size = m_frame->getAuiManager().GetPane("StatusBar").best_size;
 
     if (perspective.length() > 0)
+    {
         m_frame->getAuiManager().LoadPerspective(perspective, false);
 
+        // if a perspective was saved with a lower or higher DPI monitor, the pixel
+        // sizes for the toolbar height will be wrong. This fixes this problem.
+        m_frame->getAuiManager().GetPane("NavigationToolbar").BestSize(navigation_best_size);
+        m_frame->getAuiManager().GetPane("BookmarksToolbar").BestSize(bookmarks_best_size);
+        m_frame->getAuiManager().GetPane("FormatToolbar").BestSize(format_best_size);
+        m_frame->getAuiManager().GetPane("StatusBar").BestSize(status_best_size);
+    }
 
     // create the relationship diagram watcher (watches for files that are
     // renamed in order to update its own internal structures)
@@ -1308,12 +1321,15 @@ bool AppController::init()
     m_frame->getFrameWindow()->Update();
     m_frame->show(true);
 
+    /*
     // if frame is maximized, this is necessary to prevent drawing
     // problems (for unknown reasons).  Problem started happening
     // on Oct 9th 2007 when work commenced on the new status bar;
     if (maximized)
+    {
         m_frame->refreshFrameLayout();
-
+    }
+    */
 
     // we need to add the find panel here (hidden, of course),
     // because we want to be able to add items to the find combobox;
