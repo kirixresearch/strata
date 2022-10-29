@@ -1078,12 +1078,10 @@ bool AppController::init()
 
 
 
-
-
-
     // create and add global items to IStatusBar
     IStatusBarPtr statusbar;
-    statusbar = static_cast<IStatusBar*>(new StatusBar(m_frame));
+    StatusBar* pstatusbar = new StatusBar(m_frame);
+    statusbar = static_cast<IStatusBar*>(pstatusbar);
     statusbar->sigItemLeftClick().connect(this, &AppController::onStatusBarItemLeftClick);
     statusbar->sigItemLeftDblClick().connect(this, &AppController::onStatusBarItemLeftDblClick);
     statusbar->sigRefresh().connect(this, &AppController::onStatusBarRefresh);
@@ -1092,9 +1090,9 @@ bool AppController::init()
     wxDoubleClickGauge* job_progress_gauge;
     job_progress_gauge = new wxDoubleClickGauge(statusbar->getStatusBarCtrl(),
                                                 -1,
-                                                100,
+                                                pstatusbar->FromDIP(100),
                                                 wxDefaultPosition,
-                                                wxSize(130, 16));
+                                                pstatusbar->FromDIP(wxSize(130, 16)));
 
     // NOTE: The extra padding that is added to these items has been added
     //       so that the spacing of these items matches the spacing of the
@@ -1103,22 +1101,22 @@ bool AppController::init()
     // add panel toggle statusbar items
     IStatusBarItemPtr item;
     item = statusbar->addItem(wxT("app_toggle_projectpanel"), StatusBar::LocationLeft);
-    item->setBitmap(GETBMP(gf_project_16));
+    item->setBitmap(rescaleBitmap(pstatusbar, GETBMP(gf_project_16)));
     item->setToolTip(_("Show/Hide Project Panel"));
     item->setPadding(3,1);
 
     item = statusbar->addItem(wxT("app_toggle_fieldspanel"), StatusBar::LocationLeft);
-    item->setBitmap(GETBMP(gf_field_16));
+    item->setBitmap(rescaleBitmap(pstatusbar, GETBMP(gf_field_16)));
     item->setToolTip(_("Show/Hide Fields Panel"));
     item->setPadding(0,1);
 
     item = statusbar->addItem(wxT("app_toggle_markspanel"), StatusBar::LocationLeft);
-    item->setBitmap(GETBMP(gf_highlight_16));
+    item->setBitmap(rescaleBitmap(pstatusbar, GETBMP(gf_highlight_16)));
     item->setToolTip(_("Show/Hide Marks Panel"));
     item->setPadding(0,1);
 
     item = statusbar->addItem(wxT("app_toggle_relationshipspanel"), StatusBar::LocationLeft);
-    item->setBitmap(GETBMP(gf_related_field_16));
+    item->setBitmap(rescaleBitmap(pstatusbar, GETBMP(gf_related_field_16)));
     item->setToolTip(_("Show/Hide Relationships Panel"));
 
     // add separator
@@ -1126,14 +1124,14 @@ bool AppController::init()
 
     // add job statusbar items
     item = statusbar->addItem(wxT("app_job_failed"), StatusBar::LocationLeft);
-    item->setBitmap(GETBMP(gf_exclamation_16));
+    item->setBitmap(rescaleBitmap(pstatusbar, GETBMP(gf_exclamation_16)));
     item->show(false);
 
     item = statusbar->addControl(job_progress_gauge, wxT("app_job_gauge"), StatusBar::LocationLeft);
     item->show(false);
 
     item = statusbar->addItem(wxT("app_job_text"), StatusBar::LocationLeft);
-    item->setWidth(180);
+    item->setWidth(pstatusbar->FromDIP(180));
     item->show(false);
 
     // store job text item for later use

@@ -124,11 +124,11 @@ StatusBar::StatusBar(IFramePtr frame) :
     // set wxAuiToolBar options
     SetArtProvider(new StatusBarArt);
     SetToolTextOrientation(wxAUI_TBTOOL_TEXT_RIGHT);
-    SetToolPacking(2);
-    SetMargins(2,2,2,2);
+    SetToolPacking(FromDIP(2));
+    SetMargins(FromDIP(2), FromDIP(2), FromDIP(2), FromDIP(2));
     SetGripperVisible(false);
     SetOverflowVisible(false);
-    SetMinSize(wxSize(30,26));
+    SetMinSize(FromDIP(wxSize(30,26)));
 
     // add frame event handler
     frame->sigActiveChildChanged().connect(this, &StatusBar::onActiveChildChanged);
@@ -291,7 +291,7 @@ void StatusBar::addItems(IStatusBarItemEnumPtr items)
             if (proportion > 0)
                 SetToolProportion(control->GetId(), proportion);
             
-            // set the tootlip for the item if it exists
+            // set the tooltip for the item if it exists
             if (!tooltip.IsEmpty())
                 SetToolShortHelp(m_id_counter, tooltip);
             
@@ -309,7 +309,7 @@ void StatusBar::addItems(IStatusBarItemEnumPtr items)
             if (proportion > 0)
                 SetToolProportion(m_id_counter, proportion);
             
-            // set the tootlip for the item if it exists
+            // set the tooltip for the item if it exists
             if (!tooltip.IsEmpty())
                 SetToolShortHelp(m_id_counter, tooltip);
             
@@ -328,7 +328,7 @@ void StatusBar::addItems(IStatusBarItemEnumPtr items)
             if (proportion > 0)
                 SetToolProportion(m_id_counter, proportion);
             
-            // set the tootlip for the item if it exists
+            // set the tooltip for the item if it exists
             if (!tooltip.IsEmpty())
                 SetToolShortHelp(m_id_counter, tooltip);
             
@@ -409,11 +409,13 @@ void StatusBar::showResizeGripper(bool show)
     // should show a window resize gripper
     art->showResizeGripper(show);
     
+    int pad = FromDIP(2);
+
     // add extra space to allow for the gripper drawing
     if (show)
-        SetMargins(2,RESIZE_GRIPPER_WIDTH+2,2,2);
+        SetMargins(pad, RESIZE_GRIPPER_WIDTH + pad, pad, pad);
          else
-        SetMargins(2,2,2,2);
+        SetMargins(pad, pad, pad, pad);
     
     Realize();
 }
