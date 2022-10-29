@@ -563,8 +563,8 @@ void IndexPanel::insertIndexColumn(int row,
     // set the cell text and bitmap information
     
     m_index_fields->setCellString(row, 0, col_name);
-    m_index_fields->setCellBitmap(row, 0, calculated ? GETBMP(gf_lightning_16) :
-                                                       GETBMP(gf_field_16),
+    m_index_fields->setCellBitmap(row, 0, calculated ? GETBMPSMALL(gf_lightning) :
+                                                       GETBMPSMALL(gf_field),
                                                        kcl::Grid::alignLeft);
     if (index_col_info)
         m_index_fields->setCellComboSel(row, 1, index_col_info->ascending ? 0 : 1);

@@ -17,7 +17,9 @@
 
 
 #define GETBMP(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeNormal)
+#define GETBMPSMALL(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeNormal | BitmapMgr::typeAppendSize, BitmapMgr::getSmallIconSize())
 #define GETDISBMP(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeDisabled)
+#define GETDISBMPSMALL(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeDisabled | BitmapMgr::typeAppendSize, BitmapMgr::getSmallIconSize())
 
 #define ID2BMP(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeNormal)
 #define ID2BMP16(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeNormal, 16)
@@ -44,7 +46,8 @@ public:
     {
         typeNormal = 0,
         typeDisabled = 1,
-        typeHot = 2
+        typeHot = 2,
+        typeAppendSize = 4
     };
     
 public:
@@ -70,7 +73,8 @@ public:
     static void initBitmapMgr();
     static BitmapMgr* getBitmapMgr();
     static void uninitBitmapMgr();
-    
+    static int getSmallIconSize();
+
     // calls to this function will not
     // add the bitmap to the bitmap manager
     static wxBitmap makeDisabledBitmap(const wxBitmap& bitmap);

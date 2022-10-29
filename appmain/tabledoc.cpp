@@ -5816,11 +5816,11 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 
         if (colinfo.calculated)
         {
-            item.bitmap = in_view ? GETBMP(gf_lightning_16) : GETDISBMP(gf_lightning_16);
+            item.bitmap = in_view ? GETBMPSMALL(gf_lightning) : GETDISBMPSMALL(gf_lightning);
         }
          else
         {
-            item.bitmap = in_view ? GETBMP(gf_field_16) : GETDISBMP(gf_field_16);
+            item.bitmap = in_view ? GETBMPSMALL(gf_field) : GETDISBMPSMALL(gf_field);
         }
 
         list.push_back(item);

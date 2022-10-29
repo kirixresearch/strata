@@ -2219,9 +2219,9 @@ void ReportDoc::getColumnListItems(std::vector<ColumnListItem>& list)
             ColumnListItem item;
             item.text = makeProperIfNecessary(colinfo.name);
             if (colinfo.calculated)
-                item.bitmap = GETBMP(gf_lightning_16);
+                item.bitmap = GETBMPSMALL(gf_lightning);
                  else
-                item.bitmap = GETBMP(gf_field_16);
+                item.bitmap = GETBMPSMALL(gf_field);
 
             item.active = true;
             list.push_back(item);

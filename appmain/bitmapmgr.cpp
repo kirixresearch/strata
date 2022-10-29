@@ -201,6 +201,17 @@ void BitmapMgr::uninitBitmapMgr()
     delete g_bitmapmgr;
 }
 
+int BitmapMgr::getSmallIconSize()
+{
+    static int size = -1;
+    if (size == -1)
+    {
+        size = wxTheApp->GetMainTopWindow()->FromDIP(100) > 100 ? 24 : 16;
+    }
+
+    return size;
+}
+
 BitmapMgr* BitmapMgr::getBitmapMgr()
 {
     if (!g_bitmapmgr)
@@ -226,6 +237,12 @@ wxBitmap BitmapMgr::getBitmap(int id, int status, int size)
 wxBitmap BitmapMgr::lookupBitmap(const wxString& bitmap_name, int status, int size)
 {
     wxString name = bitmap_name;
+
+    if (status & BitmapMgr::typeAppendSize)
+    {
+        name += wxString::Format("_%d", size);
+        status &= ~BitmapMgr::typeAppendSize;
+    }
 
     BitmapEntry& entry = m_entries[name];
     if (!entry.bitmap.Ok())

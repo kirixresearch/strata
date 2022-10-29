@@ -1094,8 +1094,6 @@ bool AppController::init()
                                                 wxDefaultPosition,
                                                 pstatusbar->FromDIP(wxSize(130, 16)));
 
-    bool highres = pstatusbar->FromDIP(100) > 100 ? true : false;
-
     // NOTE: The extra padding that is added to these items has been added
     //       so that the spacing of these items matches the spacing of the
     //       static items on the far left of the LinkBar
@@ -1103,22 +1101,22 @@ bool AppController::init()
     // add panel toggle statusbar items
     IStatusBarItemPtr item;
     item = statusbar->addItem(wxT("app_toggle_projectpanel"), StatusBar::LocationLeft);
-    item->setBitmap(highres ? GETBMP(gf_project_24) : GETBMP(gf_project_16));
+    item->setBitmap(GETBMPSMALL(gf_project));
     item->setToolTip(_("Show/Hide Project Panel"));
     item->setPadding(3,1);
 
     item = statusbar->addItem(wxT("app_toggle_fieldspanel"), StatusBar::LocationLeft);
-    item->setBitmap(highres ? GETBMP(gf_field_24) : GETBMP(gf_field_16));
+    item->setBitmap(GETBMPSMALL(gf_field));
     item->setToolTip(_("Show/Hide Fields Panel"));
     item->setPadding(0,1);
 
     item = statusbar->addItem(wxT("app_toggle_markspanel"), StatusBar::LocationLeft);
-    item->setBitmap(highres ? GETBMP(gf_highlight_24) : GETBMP(gf_highlight_16));
+    item->setBitmap(GETBMPSMALL(gf_highlight));
     item->setToolTip(_("Show/Hide Marks Panel"));
     item->setPadding(0,1);
 
     item = statusbar->addItem(wxT("app_toggle_relationshipspanel"), StatusBar::LocationLeft);
-    item->setBitmap(highres ? GETBMP(gf_related_field_24) : GETBMP(gf_related_field_16));
+    item->setBitmap(GETBMPSMALL(gf_related_field));
     item->setToolTip(_("Show/Hide Relationships Panel"));
 
     // add separator
@@ -1126,7 +1124,7 @@ bool AppController::init()
 
     // add job statusbar items
     item = statusbar->addItem(wxT("app_job_failed"), StatusBar::LocationLeft);
-    item->setBitmap(rescaleBitmap(pstatusbar, GETBMP(gf_exclamation_16)));
+    item->setBitmap(GETBMPSMALL(gf_exclamation));
     item->show(false);
 
     item = statusbar->addControl(job_progress_gauge, wxT("app_job_gauge"), StatusBar::LocationLeft);

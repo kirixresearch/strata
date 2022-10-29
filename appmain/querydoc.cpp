@@ -740,9 +740,9 @@ void QueryDoc::getColumnListItems(std::vector<ColumnListItem>& items)
             item.text += ".";
             item.text += makeProperIfNecessary(colinfo.name);
             if (colinfo.calculated)
-                item.bitmap = GETBMP(gf_lightning_16);
+                item.bitmap = GETBMPSMALL(gf_lightning);
                  else
-                item.bitmap = GETBMP(gf_field_16);
+                item.bitmap = GETBMPSMALL(gf_field);
             item.active = true;
             items.push_back(item);
         }

@@ -1153,11 +1153,11 @@ void RelationBox::populate()
 
         if (colinfo.calculated)
         {
-            icon = GETBMP(gf_lightning_16);
+            icon = GETBMPSMALL(gf_lightning);
         }
          else
         {
-            icon = GETBMP(gf_field_16);
+            icon = GETBMPSMALL(gf_field);
         }
         
         wxString text = makeProperIfNecessary(colinfo.name);

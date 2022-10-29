@@ -573,7 +573,7 @@ void TextDoc::getColumnListItems(std::vector<ColumnListItem>& list)
         
         ColumnListItem item;
         item.text = makeProperIfNecessary(colinfo.name);
-        item.bitmap = GETBMP(gf_field_16);
+        item.bitmap = GETBMPSMALL(gf_field);
         item.active = true;
         list.push_back(item);
     }
