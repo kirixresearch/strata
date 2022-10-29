@@ -132,25 +132,6 @@ StandardToolbar::StandardToolbar(wxWindow* parent,
     SetOverflowVisible(false);
 }
 
-static wxBitmap rescaleBitmap(wxWindow* wnd, wxBitmap bitmap)
-{
-    int x = bitmap.GetWidth();
-    int y = bitmap.GetHeight();
-    int dx = wnd->FromDIP(x);
-    int dy = wnd->FromDIP(y);
-
-    if (x != dx || y != dy)
-    {
-        wxImage image = bitmap.ConvertToImage();
-        image.Rescale(dx, dy);
-        return wxBitmap(image);
-    }
-     else
-    {
-        return bitmap;
-    }
-}
-
 static void AddSizedTool(wxAuiToolBar* toolbar, int id, bool small_icon)
 {
     wxBitmap bitmap = small_icon ? ID2BMP16(id) : ID2BMP(id);
@@ -308,25 +289,25 @@ FontSizeComboControl::FontSizeComboControl(wxWindow* parent,
                        id,
                        wxEmptyString,
                        wxDefaultPosition,
-                       wxSize(50,-1));
+                       FromDIP(wxSize(50,-1)));
 
     // append the default font sizes to the combobox
-    Append(wxT("8"));
-    Append(wxT("9"));
-    Append(wxT("10"));
-    Append(wxT("11"));
-    Append(wxT("12"));
-    Append(wxT("14"));
-    Append(wxT("16"));
-    Append(wxT("18"));
-    Append(wxT("20"));
-    Append(wxT("22"));
-    Append(wxT("24"));
-    Append(wxT("26"));
-    Append(wxT("36"));
-    Append(wxT("48"));
-    Append(wxT("72"));
-    SetStringSelection(wxT("12"));
+    Append("8");
+    Append("9");
+    Append("10");
+    Append("11");
+    Append("12");
+    Append("14");
+    Append("16");
+    Append("18");
+    Append("20");
+    Append("22");
+    Append("24");
+    Append("26");
+    Append("36");
+    Append("48");
+    Append("72");
+    SetStringSelection("12");
 }
 
 

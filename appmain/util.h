@@ -328,6 +328,8 @@ bool windowOrChildHasFocus(wxWindow* wnd);
 // on Windows or 50px for other operating systems
 int getTaskBarHeight();
 
+wxBitmap rescaleBitmap(wxWindow* wnd, wxBitmap bitmap);
+
 // returns the default location for the user's document storage;
 // on Windows, this will normally be the user's "My Documents" directory;
 // on other systems, the user's home folder

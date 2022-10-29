@@ -1965,6 +1965,25 @@ int getTaskBarHeight()
 #endif
 }
 
+wxBitmap rescaleBitmap(wxWindow* wnd, wxBitmap bitmap)
+{
+    int x = bitmap.GetWidth();
+    int y = bitmap.GetHeight();
+    int dx = wnd->FromDIP(x);
+    int dy = wnd->FromDIP(y);
+
+    if (x != dx || y != dy)
+    {
+        wxImage image = bitmap.ConvertToImage();
+        image.Rescale(dx, dy);
+        return wxBitmap(image);
+    }
+    else
+    {
+        return bitmap;
+    }
+}
+
 wxString getUserDocumentFolder()
 {
 #ifdef WIN32

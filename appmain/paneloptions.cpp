@@ -2466,14 +2466,14 @@ bool OptionsPanel::initDoc(IFramePtr frame,
 
 
     kcl::ButtonBar* button_bar = new kcl::ButtonBar(this, -1);
-    button_bar->setItemMinSize(64, -1);
+    button_bar->setItemMinSize(FromDIP(64), -1);
     
-    button_bar->addItem(ID_GeneralOptionsButton, GETBMP(gf_switch_32),  _("General"));
-    button_bar->addItem(ID_InternetOptionsButton, GETBMP(gf_globe_32), _("Internet"));
-    button_bar->addItem(ID_PrivacyOptionsButton, GETBMP(gf_lock_32), _("Privacy"));
-    button_bar->addItem(ID_DatasheetOptionsButton, GETBMP(gf_table_32), _("Datasheet"));
-    button_bar->addItem(ID_ReportOptionsButton, GETBMP(gf_report_32), _("Report"));
-    button_bar->addItem(ID_ScriptOptionsButton, GETBMP(gf_script_32), _("Script"));
+    button_bar->addItem(ID_GeneralOptionsButton, rescaleBitmap(this, GETBMP(gf_switch_32)),  _("General"));
+    button_bar->addItem(ID_InternetOptionsButton, rescaleBitmap(this, GETBMP(gf_globe_32)), _("Internet"));
+    button_bar->addItem(ID_PrivacyOptionsButton, rescaleBitmap(this, GETBMP(gf_lock_32)), _("Privacy"));
+    button_bar->addItem(ID_DatasheetOptionsButton, rescaleBitmap(this, GETBMP(gf_table_32)), _("Datasheet"));
+    button_bar->addItem(ID_ReportOptionsButton, rescaleBitmap(this, GETBMP(gf_report_32)), _("Report"));
+    button_bar->addItem(ID_ScriptOptionsButton, rescaleBitmap(this, GETBMP(gf_script_32)), _("Script"));
     
 
     wxButton* restore_defaults_button = new wxButton(this,
@@ -2489,12 +2489,12 @@ bool OptionsPanel::initDoc(IFramePtr frame,
     ok_cancel_sizer->AddButton(new wxButton(this, wxID_CANCEL));
     ok_cancel_sizer->AddButton(new wxButton(this, wxID_APPLY));
     ok_cancel_sizer->Realize();
-    ok_cancel_sizer->Prepend(restore_defaults_button, 0, wxALIGN_CENTER | wxLEFT, 8);
-    ok_cancel_sizer->AddSpacer(5);
+    ok_cancel_sizer->Prepend(restore_defaults_button, 0, wxALIGN_CENTER | wxLEFT, FromDIP(8));
+    ok_cancel_sizer->AddSpacer(FromDIP(5));
     
     // this code is necessary to get the sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
-    min_size.SetHeight(min_size.GetHeight()+16);
+    min_size.SetHeight(min_size.GetHeight()+FromDIP(16));
     ok_cancel_sizer->SetMinSize(min_size);
     
     
@@ -2502,13 +2502,13 @@ bool OptionsPanel::initDoc(IFramePtr frame,
     
     m_sizer = new wxBoxSizer(wxVERTICAL);
     m_sizer->Add(button_bar, 0, wxEXPAND);
-    m_sizer->AddSpacer(8);
-    m_sizer->Add(m_general_page, 1, wxEXPAND | wxLEFT | wxRIGHT, 8);
-    m_sizer->Add(m_internet_page, 1, wxEXPAND | wxLEFT | wxRIGHT, 8);
-    m_sizer->Add(m_privacy_page, 1, wxEXPAND | wxLEFT | wxRIGHT, 8);
-    m_sizer->Add(m_datasheet_page, 1, wxEXPAND | wxLEFT | wxRIGHT, 8);
-    m_sizer->Add(m_report_page, 1, wxEXPAND | wxLEFT | wxRIGHT, 8);
-    m_sizer->Add(m_script_page, 1, wxEXPAND | wxLEFT | wxRIGHT, 8);
+    m_sizer->AddSpacer(FromDIP(8));
+    m_sizer->Add(m_general_page, 1, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
+    m_sizer->Add(m_internet_page, 1, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
+    m_sizer->Add(m_privacy_page, 1, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
+    m_sizer->Add(m_datasheet_page, 1, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
+    m_sizer->Add(m_report_page, 1, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
+    m_sizer->Add(m_script_page, 1, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
     m_sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
 
 
