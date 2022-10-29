@@ -10,6 +10,7 @@
 
 #include "buttonbar.h"
 #include <wx/tokenzr.h>
+#include <kl/math.h>
 #include "util.h"
 
 
@@ -68,6 +69,23 @@ END_EVENT_TABLE()
 
 
 
+static wxFont resizeFont(wxWindow* wnd, wxFont _font)
+{
+    if (wnd->FromDIP(100) > 100)
+    {
+        // fonts in their normal size on high DPI are just too small
+        wxFont font(_font);
+        double pt = (double)font.GetPointSize();
+        pt = pt * (double)wnd->FromDIP(100) / 105.0;
+        int new_font_size = (int)kl::dblround(pt, 0);
+        font.SetPointSize(new_font_size);
+        return font;
+    }
+    else
+    {
+        return _font;
+    }
+}
 
 ButtonBar::ButtonBar(wxWindow* parent,
                      wxWindowID id,
@@ -113,6 +131,8 @@ ButtonBar::ButtonBar(wxWindow* parent,
     
     // allocate the bitmap for bit blitting
     allocBitmap(100, 100);
+
+    m_font = resizeFont(this, *wxNORMAL_FONT);
 }
 
 ButtonBar::~ButtonBar()
@@ -400,7 +420,7 @@ void ButtonBar::calcItemSize(ButtonBarItem* item)
     int w, h, tw = 0, th = 0;
     
     wxClientDC cdc(this);
-    cdc.SetFont(*wxNORMAL_FONT);
+    cdc.SetFont(m_font);
 
     if (!m_multiline)
     {
@@ -616,7 +636,7 @@ void ButtonBar::render()
     
     // draw the items
     m_memdc.SetTextForeground(*wxBLACK);
-    m_memdc.SetFont(*wxNORMAL_FONT);
+    m_memdc.SetFont(m_font);
 
     // calculate spacer size if we're spacing the items evenly
     int space_w = m_cli_width;

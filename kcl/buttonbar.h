@@ -158,6 +158,7 @@ private:
 
     wxBitmap m_bmp;
     wxMemoryDC m_memdc;
+    wxFont m_font;
 
     bool m_multiline;
     bool m_space_evenly;
