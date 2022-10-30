@@ -330,16 +330,16 @@ public:
                            NULL);
 
         // append the default zoom values to the combobox
-        Append(wxT("500%"));
-        Append(wxT("200%"));
-        Append(wxT("175%"));
-        Append(wxT("150%"));
-        Append(wxT("125%"));
-        Append(wxT("100%"));
-        Append(wxT("75%"));
-        Append(wxT("50%"));
-        Append(wxT("25%"));
-        SetStringSelection(wxT("100%"));
+        Append("500%");
+        Append("200%");
+        Append("175%");
+        Append("150%");
+        Append("125%");
+        Append("100%");
+        Append("75%");
+        Append("50%");
+        Append("25%");
+        SetStringSelection("100%");
     }
 };
 
