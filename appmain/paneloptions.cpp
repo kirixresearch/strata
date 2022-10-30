@@ -2464,16 +2464,15 @@ bool OptionsPanel::initDoc(IFramePtr frame,
     aggregate_min_size.y = wxMax(aggregate_min_size.y, page_min_size.y);
 
 
-
     kcl::ButtonBar* button_bar = new kcl::ButtonBar(this, -1);
     button_bar->setItemMinSize(FromDIP(64), -1);
     
-    button_bar->addItem(ID_GeneralOptionsButton, rescaleBitmap(this, GETBMP(gf_switch_32)),  _("General"));
-    button_bar->addItem(ID_InternetOptionsButton, rescaleBitmap(this, GETBMP(gf_globe_32)), _("Internet"));
-    button_bar->addItem(ID_PrivacyOptionsButton, rescaleBitmap(this, GETBMP(gf_lock_32)), _("Privacy"));
-    button_bar->addItem(ID_DatasheetOptionsButton, rescaleBitmap(this, GETBMP(gf_table_32)), _("Datasheet"));
-    button_bar->addItem(ID_ReportOptionsButton, rescaleBitmap(this, GETBMP(gf_report_32)), _("Report"));
-    button_bar->addItem(ID_ScriptOptionsButton, rescaleBitmap(this, GETBMP(gf_script_32)), _("Script"));
+    button_bar->addItem(ID_GeneralOptionsButton, GETBMPMEDIUM(gf_switch),  _("General"));
+    button_bar->addItem(ID_InternetOptionsButton, GETBMPMEDIUM(gf_globe), _("Internet"));
+    button_bar->addItem(ID_PrivacyOptionsButton, GETBMPMEDIUM(gf_lock), _("Privacy"));
+    button_bar->addItem(ID_DatasheetOptionsButton, GETBMPMEDIUM(gf_table), _("Datasheet"));
+    button_bar->addItem(ID_ReportOptionsButton, GETBMPMEDIUM(gf_report), _("Report"));
+    button_bar->addItem(ID_ScriptOptionsButton, GETBMPMEDIUM(gf_script), _("Script"));
     
 
     wxButton* restore_defaults_button = new wxButton(this,

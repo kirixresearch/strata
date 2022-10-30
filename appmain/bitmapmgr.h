@@ -17,9 +17,14 @@
 
 
 #define GETBMP(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeNormal)
-#define GETBMPSMALL(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeNormal | BitmapMgr::typeAppendSize, BitmapMgr::getSmallIconSize())
 #define GETDISBMP(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeDisabled)
+
+#define GETBMPSMALL(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeNormal | BitmapMgr::typeAppendSize, BitmapMgr::getSmallIconSize())
 #define GETDISBMPSMALL(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeDisabled | BitmapMgr::typeAppendSize, BitmapMgr::getSmallIconSize())
+
+#define GETBMPMEDIUM(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeNormal | BitmapMgr::typeAppendSize, BitmapMgr::getMediumIconSize())
+#define GETDISBMPMEDIUM(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeDisabled | BitmapMgr::typeAppendSize, BitmapMgr::getMediumIconSize())
+
 
 #define ID2BMP(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeNormal)
 #define ID2BMP16(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeNormal, 16)
@@ -74,6 +79,7 @@ public:
     static BitmapMgr* getBitmapMgr();
     static void uninitBitmapMgr();
     static int getSmallIconSize();
+    static int getMediumIconSize();
 
     // calls to this function will not
     // add the bitmap to the bitmap manager

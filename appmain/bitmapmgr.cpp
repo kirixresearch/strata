@@ -212,6 +212,17 @@ int BitmapMgr::getSmallIconSize()
     return size;
 }
 
+int BitmapMgr::getMediumIconSize()
+{
+    static int size = -1;
+    if (size == -1)
+    {
+        size = wxTheApp->GetMainTopWindow()->FromDIP(100) > 100 ? 48 : 32;
+    }
+
+    return size;
+}
+
 BitmapMgr* BitmapMgr::getBitmapMgr()
 {
     if (!g_bitmapmgr)
