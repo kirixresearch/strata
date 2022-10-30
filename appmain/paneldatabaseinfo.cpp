@@ -55,7 +55,7 @@ bool DatabaseInfoPanel::initDoc(IFramePtr frame,
                                          -1,
                                          wxEmptyString,
                                          wxDefaultPosition,
-                                         wxSize(100, 21));
+                                         FromDIP(wxSize(100, 21)));
     m_project_name = g_app->getProjectName();
     
     if (m_project_name.Length() == 0)
@@ -146,31 +146,31 @@ bool DatabaseInfoPanel::initDoc(IFramePtr frame,
     ok_cancel_sizer->AddButton(new wxButton(this, wxID_OK));
     ok_cancel_sizer->AddButton(new wxButton(this, wxID_CANCEL));
     ok_cancel_sizer->Realize();
-    ok_cancel_sizer->AddSpacer(5);
+    ok_cancel_sizer->AddSpacer(FromDIP(5));
     
 
     // this code is necessary to get the sizer's bottom margin to 8
 
     wxSize min_size = ok_cancel_sizer->GetMinSize();
-    min_size.SetHeight(min_size.GetHeight()+16);
+    min_size.SetHeight(min_size.GetHeight()+FromDIP(16));
     ok_cancel_sizer->SetMinSize(min_size);
 
 
     // make sure the sizers are the same height
-    project_name_sizer->SetMinSize(-1, 20);
-    project_location_sizer->SetMinSize(-1, 20);
-    project_size_sizer->SetMinSize(-1, 20);
+    project_name_sizer->SetMinSize(-1, FromDIP(20));
+    project_location_sizer->SetMinSize(-1, FromDIP(20));
+    project_size_sizer->SetMinSize(-1, FromDIP(20));
 
 
     // create main sizer
     
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
-    main_sizer->AddSpacer(12);
-    main_sizer->Add(project_name_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 16);
-    main_sizer->AddSpacer(8);
-    main_sizer->Add(project_location_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 16);
-    main_sizer->AddSpacer(8);
-    main_sizer->Add(project_size_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 16);
+    main_sizer->AddSpacer(FromDIP(12));
+    main_sizer->Add(project_name_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(16));
+    main_sizer->AddSpacer(FromDIP(8));
+    main_sizer->Add(project_location_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(16));
+    main_sizer->AddSpacer(FromDIP(8));
+    main_sizer->Add(project_size_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(16));
     main_sizer->AddStretchSpacer(1);
     main_sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
     

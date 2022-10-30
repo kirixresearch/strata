@@ -7260,8 +7260,8 @@ void AppController::showProjectProperties()
     {
         DatabaseInfoPanel* panel = new DatabaseInfoPanel;
         site = g_app->getMainFrame()->createSite(panel, sitetypeModeless,
-                                                 -1, -1, 420, 200);
-        site->setMinSize(420,200);
+                                                 -1, -1, fromDIP(420), fromDIP(200));
+        site->setMinSize(fromDIP(420), fromDIP(200));
         site->setName(wxT("ProjectPropertiesPanel"));
     }
      else
