@@ -2539,6 +2539,12 @@ void AppController::doViewSwitcher(bool drop_down_menu)
     delete list;
 }
 
+int AppController::fromDIP(int d)
+{
+    return g_app->getMainWindow()->FromDIP(d);
+}
+
+
 void AppController::onViewSwitcher(wxCommandEvent& evt)
 {
     doViewSwitcher(false);
@@ -6457,8 +6463,8 @@ void AppController::showCreateExternalConnectionWizard()
         wizard->sigConnectionWizardFinished.connect(&onCreateExternalConnectionWizardFinished);
 
         site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
-            -1, -1, 540, 480);
-        site->setMinSize(540, 480);
+            -1, -1, fromDIP(540), fromDIP(480));
+        site->setMinSize(fromDIP(540), fromDIP(480));
         site->setName(wxT("CreateConnectionWizard"));
     }
     else
@@ -6589,8 +6595,8 @@ void AppController::showImportWizard(const ImportInfo& info, const wxString& loc
         }
 
         site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
-                                                 -1, -1, 540, 480);
-        site->setMinSize(540,480);
+                                                 -1, -1, fromDIP(540), fromDIP(480));
+        site->setMinSize(fromDIP(540), fromDIP(480));
         site->setName(wxT("ImportWizard"));
     }
      else
@@ -6615,8 +6621,8 @@ void AppController::showExportWizard(const ExportInfo& info,
             wizard->getTemplate().m_ei = info;
 
         site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
-                                                 -1, -1, 540, 480);
-        site->setMinSize(540,480);
+                                                 -1, -1, fromDIP(540), fromDIP(480));
+        site->setMinSize(fromDIP(540), fromDIP(480));
         site->setName(wxT("ExportWizard"));
 
         if (!location.IsEmpty())

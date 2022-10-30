@@ -321,6 +321,8 @@ private:
     bool checkForTemporaryFiles();
     void doViewSwitcher(bool drop_down_menu);
 
+    int fromDIP(int d);
+
 private:
 
     IFramePtr m_frame;

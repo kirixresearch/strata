@@ -112,7 +112,7 @@ void ConnectionBar::populate()
         m_types & dbtypeXbase)
     {
         item = addItem(ConnectionBar::typeFile,
-                       GETBMP(gf_blank_document_32),
+                       GETBMPMEDIUM(gf_blank_document),
                        _("File"));
         if (default_item == NULL)
             default_item = item;

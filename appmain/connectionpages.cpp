@@ -153,11 +153,11 @@ PathSelectionPage::PathSelectionPage(kcl::Wizard* parent,
     m_filetype_choice->SetSelection(filetypeTextDelimited);
     
     m_filetype_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_filetype_sizer->Add(50,23);
+    m_filetype_sizer->Add(FromDIP(50), FromDIP(23));
     m_filetype_sizer->Add(m_filetype_label, 0, wxALIGN_CENTER);
     m_filetype_sizer->AddSpacer(FromDIP(10));
     m_filetype_sizer->Add(m_filetype_choice, 1, wxALIGN_CENTER);
-    m_filetype_sizer->Add(50,23);
+    m_filetype_sizer->Add(FromDIP(50), FromDIP(23));
 
     // create path sizer
     m_default_path_label = _("Folder:");
@@ -168,7 +168,7 @@ PathSelectionPage::PathSelectionPage(kcl::Wizard* parent,
                                      ID_PathTextCtrl,
                                      m_ci->path,
                                      wxDefaultPosition,
-                                     wxSize(200,21),
+                                     FromDIP(wxSize(200, 21)),
                                      wxTE_PROCESS_ENTER);
 
     wxButton* browse_button = new wxButton(this,
@@ -176,20 +176,20 @@ PathSelectionPage::PathSelectionPage(kcl::Wizard* parent,
                                            _("Browse..."));
 
     m_path_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_path_sizer->Add(50,23);
+    m_path_sizer->Add(FromDIP(50), FromDIP(23));
     m_path_sizer->Add(m_path_label, 0, wxALIGN_CENTER);
     m_path_sizer->AddSpacer(FromDIP(10));
     m_path_sizer->Add(m_path_textctrl, 1, wxALIGN_CENTER);
-    m_path_sizer->AddSpacer(5);
+    m_path_sizer->AddSpacer(FromDIP(5));
     m_path_sizer->Add(browse_button);
-    m_path_sizer->Add(50,23);
+    m_path_sizer->Add(FromDIP(50), FromDIP(23));
 
     // create filter sizer
     m_filter_label = new wxStaticText(this, -1, _("Filter:"));
     m_filter_choice = new wxChoice(this,
                                    ID_FilterChoice,
                                    wxDefaultPosition,
-                                   wxSize(200,21),
+                                   FromDIP(wxSize(200, 21)),
                                    0,
                                    NULL);
 
@@ -202,18 +202,18 @@ PathSelectionPage::PathSelectionPage(kcl::Wizard* parent,
     m_filter_choice->SetSelection(filter2ChoiceSelection(m_ci->filter));
 
     m_filter_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_filter_sizer->Add(50,23);
+    m_filter_sizer->Add(FromDIP(50), FromDIP(23));
     m_filter_sizer->Add(m_filter_label, 0, wxALIGN_CENTER);
     m_filter_sizer->AddSpacer(FromDIP(10));
     m_filter_sizer->Add(m_filter_choice, 1, wxALIGN_CENTER);
-    m_filter_sizer->Add(50,23);
+    m_filter_sizer->Add(FromDIP(50), FromDIP(23));
 
     // create version sizer
     m_version_label = new wxStaticText(this, -1, _("Version:"));
     m_version_choice = new wxChoice(this,
                                     ID_VersionChoice,
                                     wxDefaultPosition,
-                                    wxSize(200,21),
+                                    FromDIP(wxSize(200, 21)),
                                     0,
                                     NULL);
 
@@ -222,11 +222,11 @@ PathSelectionPage::PathSelectionPage(kcl::Wizard* parent,
     m_version_choice->SetSelection(m_ci->kpg_version - 1);
 
     m_version_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_version_sizer->Add(50,23);
+    m_version_sizer->Add(FromDIP(50), FromDIP(23));
     m_version_sizer->Add(m_version_label, 0, wxALIGN_CENTER);
     m_version_sizer->AddSpacer(FromDIP(10));
     m_version_sizer->Add(m_version_choice, 1, wxALIGN_CENTER);
-    m_version_sizer->Add(50,23);
+    m_version_sizer->Add(FromDIP(50), FromDIP(23));
 
     m_compress_checkbox = new wxCheckBox(this,
                                          ID_CompressCheckBox,
@@ -235,25 +235,25 @@ PathSelectionPage::PathSelectionPage(kcl::Wizard* parent,
     
     // create compression sizer
     m_compression_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_compression_sizer->Add(50,23);
+    m_compression_sizer->Add(FromDIP(50), FromDIP(23));
     m_compression_sizer->Add(1,1);      // placeholder sizer item (we remove and insert
                                         // this spacer item in showElements()
     m_compression_sizer->Add(m_compress_checkbox, 0, wxEXPAND);
-    m_compression_sizer->Add(50,23);
+    m_compression_sizer->Add(FromDIP(50), FromDIP(23));
 
     // create main sizer
     m_main_sizer = new wxBoxSizer(wxVERTICAL);
-    m_main_sizer->AddSpacer(20);
-    m_main_sizer->Add(m_message, 0, wxEXPAND | wxLEFT | wxRIGHT, 20);
-    m_main_sizer->AddSpacer(4);
+    m_main_sizer->AddSpacer(FromDIP(20));
+    m_main_sizer->Add(m_message, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(20));
+    m_main_sizer->AddSpacer(FromDIP(4));
     m_main_sizer->Add(new wxStaticLine(this, -1, wxDefaultPosition, wxSize(1,1)),
-                      0, wxEXPAND | wxLEFT | wxRIGHT, 20);
-    m_main_sizer->AddSpacer(2);
-    m_main_sizer->Add(m_filetype_sizer, 0, wxEXPAND | wxTOP, 10);
-    m_main_sizer->Add(m_path_sizer, 0, wxEXPAND | wxTOP, 10);
-    m_main_sizer->Add(m_filter_sizer, 0, wxEXPAND | wxTOP, 10);
-    m_main_sizer->Add(m_version_sizer, 0, wxEXPAND | wxTOP, 10);
-    m_main_sizer->Add(m_compression_sizer, 0, wxEXPAND | wxTOP, 10);
+                      0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(20));
+    m_main_sizer->AddSpacer(FromDIP(2));
+    m_main_sizer->Add(m_filetype_sizer, 0, wxEXPAND | wxTOP, FromDIP(10));
+    m_main_sizer->Add(m_path_sizer, 0, wxEXPAND | wxTOP, FromDIP(10));
+    m_main_sizer->Add(m_filter_sizer, 0, wxEXPAND | wxTOP, FromDIP(10));
+    m_main_sizer->Add(m_version_sizer, 0, wxEXPAND | wxTOP, FromDIP(10));
+    m_main_sizer->Add(m_compression_sizer, 0, wxEXPAND | wxTOP, FromDIP(10));
     SetSizer(m_main_sizer);
 
     // this functions calls Layout()
@@ -950,13 +950,13 @@ ServerPropertiesPage::ServerPropertiesPage(kcl::Wizard* parent,
                                        ID_ServerTextCtrl, 
                                        m_ci->server,
                                        wxDefaultPosition,
-                                       wxSize(200,21));
+                                       FromDIP(wxSize(200,21)));
     
     m_server_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_server_sizer->Add(50,23);
+    m_server_sizer->Add(FromDIP(50), FromDIP(23));
     m_server_sizer->Add(label_server, 0, wxALIGN_CENTER);
     m_server_sizer->Add(m_server_textctrl, 1, wxALIGN_CENTER);
-    m_server_sizer->Add(50,23);
+    m_server_sizer->Add(FromDIP(50), FromDIP(23));
     
     // create the database sizer
     wxStaticText* label_database = new wxStaticText(this,
@@ -969,13 +969,13 @@ ServerPropertiesPage::ServerPropertiesPage(kcl::Wizard* parent,
                                          ID_DatabaseTextCtrl,
                                          m_ci->database,
                                          wxDefaultPosition,
-                                         wxSize(200,21));
+                                         FromDIP(wxSize(200,21)));
     
     m_database_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_database_sizer->Add(50,23);
+    m_database_sizer->Add(FromDIP(50), FromDIP(23));
     m_database_sizer->Add(label_database, 0, wxALIGN_CENTER);
     m_database_sizer->Add(m_database_textctrl, 1, wxALIGN_CENTER);
-    m_database_sizer->Add(50,23);
+    m_database_sizer->Add(FromDIP(50), FromDIP(23));
 
     // create the port number sizer
     wxStaticText* label_port = new wxStaticText(this,
@@ -988,13 +988,13 @@ ServerPropertiesPage::ServerPropertiesPage(kcl::Wizard* parent,
                                      ID_PortTextCtrl, 
                                      wxString::Format(wxT("%d"), m_ci->port),
                                      wxDefaultPosition,
-                                     wxSize(200,21));
+                                     FromDIP(wxSize(200,21)));
     
     m_port_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_port_sizer->Add(50,23);
+    m_port_sizer->Add(FromDIP(50), FromDIP(23));
     m_port_sizer->Add(label_port, 0, wxALIGN_CENTER);
     m_port_sizer->Add(m_port_textctrl, 1, wxALIGN_CENTER);
-    m_port_sizer->Add(50,23);
+    m_port_sizer->Add(FromDIP(50), FromDIP(23));
 
     // create the username sizer
     wxStaticText* label_username = new wxStaticText(this,
@@ -1007,13 +1007,13 @@ ServerPropertiesPage::ServerPropertiesPage(kcl::Wizard* parent,
                                          ID_UsernameTextCtrl,
                                          m_ci->username,
                                          wxDefaultPosition,
-                                         wxSize(200,21));
+                                         FromDIP(wxSize(200,21)));
     
     m_username_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_username_sizer->Add(50,23);
+    m_username_sizer->Add(FromDIP(50), FromDIP(23));
     m_username_sizer->Add(label_username, 0, wxALIGN_CENTER);
     m_username_sizer->Add(m_username_textctrl, 1, wxALIGN_CENTER);
-    m_username_sizer->Add(50,23);
+    m_username_sizer->Add(FromDIP(50), FromDIP(23));
 
     // create the password sizer
     wxStaticText* label_password = new wxStaticText(this,
@@ -1026,14 +1026,14 @@ ServerPropertiesPage::ServerPropertiesPage(kcl::Wizard* parent,
                                          ID_PasswordTextCtrl,
                                          m_ci->password,
                                          wxDefaultPosition,
-                                         wxSize(200,21),
+                                         FromDIP(wxSize(200,21)),
                                          wxTE_PASSWORD);
     
     m_password_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_password_sizer->Add(50,23);
+    m_password_sizer->Add(FromDIP(50), FromDIP(23));
     m_password_sizer->Add(label_password, 0, wxALIGN_CENTER);
     m_password_sizer->Add(m_password_textctrl, 1, wxALIGN_CENTER);
-    m_password_sizer->Add(50,23);
+    m_password_sizer->Add(FromDIP(50), FromDIP(23));
 
     // measure the label widths
     wxSize label_size = getMaxTextSize(label_server,
@@ -1052,10 +1052,10 @@ ServerPropertiesPage::ServerPropertiesPage(kcl::Wizard* parent,
                                                  _("Save Password"));
 
         m_savepassword_sizer = new wxBoxSizer(wxHORIZONTAL);
-        m_savepassword_sizer->Add(50,15);
+        m_savepassword_sizer->Add(FromDIP(50), FromDIP(15));
         m_savepassword_sizer->Add(label_size.x, 0);
         m_savepassword_sizer->Add(m_savepassword_checkbox, 0, wxALIGN_CENTER);
-        m_savepassword_sizer->Add(50,15);
+        m_savepassword_sizer->Add(FromDIP(50), FromDIP(15));
     }        
 
     m_server_sizer->SetItemMinSize(label_server, label_size);
@@ -1066,20 +1066,20 @@ ServerPropertiesPage::ServerPropertiesPage(kcl::Wizard* parent,
 
     // create main sizer
     m_main_sizer = new wxBoxSizer(wxVERTICAL);
-    m_main_sizer->AddSpacer(20);
+    m_main_sizer->AddSpacer(FromDIP(20));
     m_main_sizer->Add(m_message, 0, wxEXPAND | wxLEFT | wxRIGHT, 20);
-    m_main_sizer->AddSpacer(4);
+    m_main_sizer->AddSpacer(FromDIP(4));
     m_main_sizer->Add(new wxStaticLine(this, -1, wxDefaultPosition, wxSize(1,1)),
                       0, wxEXPAND | wxLEFT | wxRIGHT, 20);
-    m_main_sizer->AddSpacer(2);
-    m_main_sizer->Add(m_server_sizer, 0, wxEXPAND | wxTOP, 10);
-    m_main_sizer->Add(m_database_sizer, 0, wxEXPAND | wxTOP, 10);
-    m_main_sizer->Add(m_port_sizer, 0, wxEXPAND | wxTOP, 10);
-    m_main_sizer->Add(m_username_sizer, 0, wxEXPAND | wxTOP, 10);
-    m_main_sizer->Add(m_password_sizer, 0, wxEXPAND | wxTOP, 10);
+    m_main_sizer->AddSpacer(FromDIP(2));
+    m_main_sizer->Add(m_server_sizer, 0, wxEXPAND | wxTOP, FromDIP(10));
+    m_main_sizer->Add(m_database_sizer, 0, wxEXPAND | wxTOP, FromDIP(10));
+    m_main_sizer->Add(m_port_sizer, 0, wxEXPAND | wxTOP, FromDIP(10));
+    m_main_sizer->Add(m_username_sizer, 0, wxEXPAND | wxTOP, FromDIP(10));
+    m_main_sizer->Add(m_password_sizer, 0, wxEXPAND | wxTOP, FromDIP(10));
     
     if (enable_save_password)
-        m_main_sizer->Add(m_savepassword_sizer, 0, wxEXPAND | wxTOP, 10);
+        m_main_sizer->Add(m_savepassword_sizer, 0, wxEXPAND | wxTOP, FromDIP(10));
     
     SetSizer(m_main_sizer);
 
