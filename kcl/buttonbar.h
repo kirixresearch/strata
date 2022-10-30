@@ -107,6 +107,7 @@ public:
     void setMode(int mode);
     void setMultiLine(bool multiline);
     void setSpaceEvenly(bool space_evenly);
+    void setUniformSize(bool uniform_size);
     void setGradientDirection(int direction);
     void setStartColor(const wxColor& color);
     void setEndColor(const wxColor& color);
@@ -162,6 +163,7 @@ private:
 
     bool m_multiline;
     bool m_space_evenly;
+    bool m_uniform_size;
     int m_mode;
     int m_border_sides;
     int m_background_gradient_direction;

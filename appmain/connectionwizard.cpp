@@ -58,7 +58,7 @@ ConnectionBar::ConnectionBar(wxWindow* parent,
               : kcl::ButtonBar(parent, id)
 {
     setSpaceEvenly(true);
-    setItemMinSize(56, -1);
+    setItemMinSize(FromDIP(56), -1);
     
     m_types = (ConnectionTypes)conn_types;
     m_default_item = NULL;
@@ -121,7 +121,7 @@ void ConnectionBar::populate()
     if (m_types & dbtypeFilesystem)
     {
         item = addItem(ConnectionBar::typeFolder,
-                       GETBMP(gf_folder_open_32),
+                       GETBMPMEDIUM(gf_folder_open),
                        _("Folder"));
         if (default_item == NULL)
             default_item = item;
@@ -130,7 +130,7 @@ void ConnectionBar::populate()
     if (m_types & dbtypeMySql)
     {
         item = addItem(ConnectionBar::typeMySql,
-                       GETBMP(gf_db_my_32),
+                       GETBMPMEDIUM(gf_db_my),
                        _("MySQL"));
         if (default_item == NULL)
             default_item = item;
@@ -139,7 +139,7 @@ void ConnectionBar::populate()
     if (m_types & dbtypePostgres)
     {
         item = addItem(ConnectionBar::typePostgres,
-                       GETBMP(gf_db_pg_32),
+                       GETBMPMEDIUM(gf_db_pg),
                        _("Postgres"));
         if (default_item == NULL)
             default_item = item;
@@ -148,7 +148,7 @@ void ConnectionBar::populate()
     if (m_types & dbtypeSqlServer)
     {
         item = addItem(ConnectionBar::typeSqlServer,
-                       GETBMP(gf_db_sq_32),
+                       GETBMPMEDIUM(gf_db_sq),
                        _("SQL Server"));
         if (default_item == NULL)
             default_item = item;
@@ -157,7 +157,7 @@ void ConnectionBar::populate()
     if (m_types & dbtypeOracle)
     {
         item = addItem(ConnectionBar::typeOracle,
-                       GETBMP(gf_db_or_32),
+                       GETBMPMEDIUM(gf_db_or),
                        _("Oracle"));
         if (default_item == NULL)
             default_item = item;
@@ -167,7 +167,7 @@ void ConnectionBar::populate()
     if (m_types & dbtypeDb2)
     {
         item = addItem(ConnectionBar::typeDb2,
-                       GETBMP(gf_db_db_32),
+                       GETBMPMEDIUM(gf_db_db),
                        _("DB2"));
         if (default_item == NULL)
             default_item = item;
@@ -176,7 +176,7 @@ void ConnectionBar::populate()
     if (m_types & dbtypeOdbc)
     {
         item = addItem(ConnectionBar::typeOdbc,
-                       GETBMP(gf_db_od_32),
+                       GETBMPMEDIUM(gf_db_od),
                        _("ODBC"));
         if (default_item == NULL)
             default_item = item;
@@ -187,7 +187,7 @@ void ConnectionBar::populate()
     if (m_types & dbtypeClient)
     {
         item = addItem(ConnectionBar::typeClient,
-                       GETBMP(gf_globe_32),
+                       GETBMPMEDIUM(gf_globe),
                        _("Http"));
         if (default_item == NULL)
             default_item = item;

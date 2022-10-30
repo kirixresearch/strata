@@ -104,23 +104,25 @@ ButtonBar::ButtonBar(wxWindow* parent,
     m_selected_item = NULL;
     m_multiline = false;
     m_space_evenly = false;
+    m_uniform_size = false;
     m_mode = modeNormal;
     m_border_sides = borderBottom;
     m_background_gradient_direction = gradientNone;
 
-    // set colors
+    // set fonts and colors
+    m_font = resizeFont(this, *wxNORMAL_FONT);
     m_highlight_color = wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT);
     m_border_color = kcl::getBorderColor();
     m_item_border_color = wxNullColour;
     m_start_color = *wxWHITE;
     m_end_color = *wxWHITE;
     
-    m_item_padding_left = DEFAULT_ITEM_PADDING_LEFT;
-    m_item_padding_top = DEFAULT_ITEM_PADDING_TOP;
-    m_item_padding_right = DEFAULT_ITEM_PADDING_RIGHT;
-    m_item_padding_bottom = DEFUALT_ITEM_PADDING_BOTTOM;
-    m_item_min_width = DEFAULT_ITEM_MIN_WIDTH;
-    m_item_min_height = DEFAULT_ITEM_MIN_HEIGHT;
+    m_item_padding_left = FromDIP(DEFAULT_ITEM_PADDING_LEFT);
+    m_item_padding_top = FromDIP(DEFAULT_ITEM_PADDING_TOP);
+    m_item_padding_right = FromDIP(DEFAULT_ITEM_PADDING_RIGHT);
+    m_item_padding_bottom = FromDIP(DEFUALT_ITEM_PADDING_BOTTOM);
+    m_item_min_width = FromDIP(DEFAULT_ITEM_MIN_WIDTH);
+    m_item_min_height = FromDIP(DEFAULT_ITEM_MIN_HEIGHT);
     
     m_allitems_max_height = 0;
     m_bmp_width = 0;
@@ -131,8 +133,6 @@ ButtonBar::ButtonBar(wxWindow* parent,
     
     // allocate the bitmap for bit blitting
     allocBitmap(100, 100);
-
-    m_font = resizeFont(this, *wxNORMAL_FONT);
 }
 
 ButtonBar::~ButtonBar()
@@ -289,12 +289,33 @@ void ButtonBar::sizeAllItems()
 {
     int min_width = 0;
     int min_height = 0;
-    
+
+    int max_item_width = wxMax(m_item_min_width, 0);
+    int max_item_height = wxMax(m_item_min_height, 0);
+
     std::vector<ButtonBarItem*>::iterator it;
     for (it = m_items.begin(); it != m_items.end(); ++it)
     {
         calcItemSize(*it);
-        
+
+        if ((*it)->height > max_item_height)
+            max_item_height = (*it)->height;
+        if ((*it)->width > max_item_width)
+            max_item_width = (*it)->width;
+    }
+
+    if (m_uniform_size)
+    {
+        for (it = m_items.begin(); it != m_items.end(); ++it)
+        {
+            (*it)->height = max_item_height;
+            (*it)->width = max_item_width;
+        }
+    }
+
+
+    for (it = m_items.begin(); it != m_items.end(); ++it)
+    {
         // make sure all items have the same height
         if ((*it)->height < m_allitems_max_height)
             (*it)->height = m_allitems_max_height;
@@ -371,6 +392,11 @@ void ButtonBar::setSpaceEvenly(bool space_evenly)
     m_space_evenly = space_evenly;
 }
 
+void ButtonBar::setUniformSize(bool uniform_size)
+{
+    m_uniform_size = uniform_size;
+}
+
 void ButtonBar::setGradientDirection(int direction)
 {
     m_background_gradient_direction = direction;
@@ -420,7 +446,8 @@ void ButtonBar::calcItemSize(ButtonBarItem* item)
     int w, h, tw = 0, th = 0;
     
     wxClientDC cdc(this);
-    cdc.SetFont(m_font);
+    wxDC* dc = m_memdc.IsOk() ? (wxDC*)&m_memdc : (wxDC*)&cdc;
+    dc->SetFont(m_font);
 
     if (!m_multiline)
     {
@@ -428,7 +455,7 @@ void ButtonBar::calcItemSize(ButtonBarItem* item)
         label.Replace(wxT("\n"), wxT(" "), true);
         label.Trim(false);
         label.Trim();
-        cdc.GetTextExtent(label, &tw, &th);
+        dc->GetTextExtent(label, &tw, &th);
     }
      else
     {
@@ -438,7 +465,7 @@ void ButtonBar::calcItemSize(ButtonBarItem* item)
         wxStringTokenizer t(item->label, wxT("\n"));
         while (t.HasMoreTokens())
         {
-            cdc.GetTextExtent(t.GetNextToken(), &lw, &lh);
+            dc->GetTextExtent(t.GetNextToken(), &lw, &lh);
             
             // calculate the total text height
             th += lh;
@@ -524,7 +551,7 @@ void ButtonBar::drawItem(ButtonBarItem* item, int x, int y)
     }
      else
     {
-        if (!m_multiline)
+       // if (!m_multiline)
             text_y = (m_allitems_max_height-text_h)/2;
     }
 
@@ -644,6 +671,10 @@ void ButtonBar::render()
     for (it = m_items.begin(); it != m_items.end(); ++it)
     {
         space_w -= (*it)->width;
+    }
+    if (space_w < 0)
+    {
+        space_w = 0;
     }
     space_w /= (m_items.size()+1);
     
