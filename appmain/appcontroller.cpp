@@ -1338,8 +1338,8 @@ bool AppController::init()
 
     site = m_frame->createSite(find_panel,
                                sitetypeModeless | siteHidden,
-                               -1, -1, 340, 190);
-    site->setMinSize(340,190);
+                               -1, -1, fromDIP(340), fromDIP(190));
+    site->setMinSize(fromDIP(340), fromDIP(190));
     site->setName(wxT("FindPanel"));
 
 
@@ -1901,8 +1901,8 @@ void AppController::onCreateBookmark(wxCommandEvent& evt)
     dlg.setMode(LinkPropsDialog::ModeCreate);
     dlg.setName(s);
     dlg.SetTitle(_("New Bookmark"));
-    dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370,200)));
-    dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370,175)));
+    dlg.SetSize(wxSize(fromDIP(370), fromDIP(200)));
+    dlg.SetMinSize(wxSize(fromDIP(370), fromDIP(175)));
     dlg.CenterOnScreen();
 
     if (dlg.ShowModal() != wxID_OK)
@@ -2926,8 +2926,8 @@ void AppController::onMergeTable(wxCommandEvent& evt)
     if (site.isNull())
     {
         MergePanel* panel = new MergePanel;
-        site = g_app->getMainFrame()->createSite(panel, sitetypeModeless, -1, -1, 460, 420);
-        site->setMinSize(460,420);
+        site = g_app->getMainFrame()->createSite(panel, sitetypeModeless, -1, -1, fromDIP(460), fromDIP(420));
+        site->setMinSize(fromDIP(460), fromDIP(420));
         site->setName(wxT("MergePanel"));
     }
      else
@@ -3006,8 +3006,8 @@ void AppController::onRemoveDupRecs(wxCommandEvent& evt)
     if (site.isNull())
     {
         RemoveDupRecWizard* wizard = new RemoveDupRecWizard;
-        site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless, -1, -1, 540, 440);
-        site->setMinSize(540,440);
+        site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless, -1, -1, fromDIP(540), fromDIP(440));
+        site->setMinSize(fromDIP(540), fromDIP(440));
         site->setName(wxT("RemoveDuplicateRecordsWizard"));
     }
      else
@@ -5128,8 +5128,8 @@ bool AppController::openAccess(const wxString& location)
 
     IDocumentSitePtr site;
     site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
-                                             -1, -1, 540, 480);
-    site->setMinSize(540, 480);
+                                             -1, -1, fromDIP(540), fromDIP(480));
+    site->setMinSize(fromDIP(540), fromDIP(480));
     return true;
 }
 
@@ -5176,8 +5176,8 @@ bool AppController::openPackage(const wxString& location)
 
     IDocumentSitePtr site;
     site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
-                                             -1, -1, 540, 480);
-    site->setMinSize(540, 480);
+                                             -1, -1, fromDIP(540), fromDIP(480));
+    site->setMinSize(fromDIP(540), fromDIP(480));
     return true;
 
 }
@@ -7085,20 +7085,20 @@ void AppController::showRelationshipManager()
 
         x = prefs->getLong(wxT("window_dimensions.relationship_mgr.x"), -1);
         y = prefs->getLong(wxT("window_dimensions.relationship_mgr.y"), -1);
-        width = prefs->getLong(wxT("window_dimensions.relationship_mgr.width"), 700);
-        height = prefs->getLong(wxT("window_dimensions.relationship_mgr.height"), 500);
+        width = prefs->getLong(wxT("window_dimensions.relationship_mgr.width"), fromDIP(700));
+        height = prefs->getLong(wxT("window_dimensions.relationship_mgr.height"), fromDIP(500));
 
         x = wxMax(x, -2);
         y = wxMax(y, -2);
-        width = wxMax(width, 50);
-        height = wxMax(height, 50);
+        width = wxMax(width, fromDIP(50));
+        height = wxMax(height, fromDIP(50));
 
         RelationshipPanel* panel = new RelationshipPanel;
         site = m_frame->createSite(panel,
                                    sitetypeModeless |
                                    siteMaximizeButton,
                                    x, y, width, height);
-        site->setMinSize(450,300);
+        site->setMinSize(fromDIP(450), fromDIP(300));
         site->setCaption(_("Relationships"));
         site->setName(wxT("RelationshipsPanel"));
     }
@@ -7190,8 +7190,8 @@ void AppController::showJobScheduler()
     {
         JobSchedulerPanel* panel = new JobSchedulerPanel;
         site = g_app->getMainFrame()->createSite(panel, sitetypeModeless,
-                                                 -1, -1, 640, 420);
-        site->setMinSize(640,420);
+                                                 -1, -1, fromDIP(640), fromDIP(420));
+        site->setMinSize(fromDIP(640), fromDIP(420));
         site->setName(wxT("JobSchedulerPanel"));
     }
      else
@@ -7210,8 +7210,8 @@ void AppController::showJobManager(bool show)
     {
         JobManagerPanel* panel = new JobManagerPanel;
         site = g_app->getMainFrame()->createSite(panel, sitetypeModeless,
-                                                 -1, -1, 520, 560);
-        site->setMinSize(520,320);
+                                                 -1, -1, fromDIP(520), fromDIP(560));
+        site->setMinSize(fromDIP(520), fromDIP(320));
         site->setName(wxT("JobsPanel"));
     }
      else
@@ -7232,8 +7232,8 @@ void AppController::showExtensionManager()
     {
         ExtensionManagerPanel* panel = new ExtensionManagerPanel;
         site = g_app->getMainFrame()->createSite(panel, sitetypeModeless,
-                                                 -1, -1, 520, 560);
-        site->setMinSize(520,320);
+                                                 -1, -1, fromDIP(520), fromDIP(560));
+        site->setMinSize(fromDIP(520), fromDIP(320));
         site->setName(wxT("ExtensionsPanel"));
     }
      else
