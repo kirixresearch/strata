@@ -5562,8 +5562,8 @@ void TableDoc::showCreateDynamicField()
         panel->setModifyField(column_name);
 
         site = m_frame->createSite(panel, sitetypeModeless,
-                                   -1, -1, 560, 310);
-        site->setMinSize(560,310);
+                                   -1, -1, FromDIP(560), FromDIP(310));
+        site->setMinSize(FromDIP(560), FromDIP(310));
         site->setName(wxT("CalculatedFieldPropertiesPanel"));
     }
 }
@@ -5587,8 +5587,8 @@ void TableDoc::showEditDynamicField(const wxString& column_name)
 
         site = m_frame->createSite(panel,
                                    sitetypeModeless,
-                                   -1, -1, 560, 310);
-        site->setMinSize(560,310);
+                                   -1, -1, FromDIP(560), FromDIP(310));
+        site->setMinSize(FromDIP(560), FromDIP(310));
         site->setName(wxT("CalculatedFieldPropertiesPanel"));
     }
 }
@@ -7332,8 +7332,8 @@ void TableDoc::onSetOrder(wxCommandEvent& evt)
         panel->setOKText(_("Run"));
         panel->setOverlayText(_("Select fields from the list on the left and\ndrag them here to define the table sort order"));
         site = m_frame->createSite(panel, sitetypeModeless,
-                                   -1, -1, 600, 360);
-        site->setMinSize(520,300);
+                                   -1, -1, FromDIP(600), FromDIP(360));
+        site->setMinSize(FromDIP(520), FromDIP(300));
         site->setName(wxT("SortPanel"));
         panel->setStructure(structure);
 
@@ -7640,8 +7640,8 @@ void TableDoc::onCopyRecords(wxCommandEvent& evt)
             site = m_frame->createSite(panel,
                                        sitetypeModeless |
                                        siteHidden,
-                                       -1, -1, 560, 310);
-            site->setMinSize(560,310);
+                                       -1, -1, FromDIP(560), FromDIP(310));
+            site->setMinSize(FromDIP(560), FromDIP(310));
             site->setCaption(makeCaption(_("Copy")));
             site->setName(wxT("CopyPanel"));
 
@@ -7678,8 +7678,8 @@ void TableDoc::onAppendRecords(wxCommandEvent& evt)
         panel->setAppend(m_path);
         site = g_app->getMainFrame()->createSite(panel, 
                                                  sitetypeModeless,
-                                                 -1, -1, 460, 420);
-        site->setMinSize(460,420);
+                                                 -1, -1, FromDIP(460), FromDIP(420));
+        site->setMinSize(FromDIP(460), FromDIP(420));
         site->setName(wxT("AppendPanel"));
     }
      else
@@ -7798,8 +7798,8 @@ void TableDoc::onFilter(wxCommandEvent& evt)
             site = m_frame->createSite(panel,
                                        sitetypeModeless |
                                        siteHidden,
-                                       -1, -1, 560, 310);
-            site->setMinSize(560,310);
+                                       -1, -1, FromDIP(560), FromDIP(310));
+            site->setMinSize(FromDIP(560), FromDIP(310));
             site->setCaption(makeCaption(_("Filter")));
             site->setName(wxT("FilterPanel"));
 
@@ -7951,8 +7951,8 @@ void TableDoc::onDeleteRecords(wxCommandEvent& evt)
             site = m_frame->createSite(panel,
                                        sitetypeModeless |
                                        siteHidden,
-                                       -1, -1, 560, 310);
-            site->setMinSize(560,310);
+                                       -1, -1, FromDIP(560), FromDIP(310));
+            site->setMinSize(FromDIP(560), FromDIP(310));
             site->setCaption(makeCaption(_("Delete")));
             site->setName(wxT("DeletePanel"));
 
@@ -8082,8 +8082,8 @@ void TableDoc::showViewPanel()
 
         site = g_app->getMainFrame()->createSite(panel,
                                                  sitetypeModeless,
-                                                 -1, -1, 600, 400);
-        site->setMinSize(600,400);
+                                                 -1, -1, FromDIP(600), FromDIP(400));
+        site->setMinSize(FromDIP(600), FromDIP(400));
         site->setName(wxT("ColumnViewsPanel"));
     }
      else
@@ -8322,8 +8322,8 @@ void TableDoc::showIndexPanel()
         
         site = g_app->getMainFrame()->createSite(panel,
                                                  sitetypeModeless,
-                                                 -1, -1, 640, 400);
-        site->setMinSize(640,400);
+                                                 -1, -1, FromDIP(640), FromDIP(400));
+        site->setMinSize(FromDIP(640), FromDIP(400));
         site->setName(wxT("IndexPanel"));
     }
      else
@@ -8411,9 +8411,9 @@ void TableDoc::onGroup(wxCommandEvent& evt)
 
         site = g_app->getMainFrame()->createSite(panel,
                                                  sitetypeModeless,
-                                                 -1, -1, 600, 360);
+                                                 -1, -1, FromDIP(600), FromDIP(360));
 
-        site->setMinSize(600,360);
+        site->setMinSize(FromDIP(600), FromDIP(360));
         site->setName(wxT("GroupPanel"));
         setGroupFields(m_grid, panel);
     }

@@ -597,69 +597,69 @@ void ExprBuilderPanel::construct()
 
     wxBitmapButton* plus_button = new wxBitmapButton(this,
                                        ID_OperPlus,
-                                       GETBMP(gf_ebbc9_16));
+                                       GETBMPSMALL(gf_ebbc9));
 
     wxBitmapButton* minus_button = new wxBitmapButton(this,
                                        ID_OperMinus,
-                                       GETBMP(gf_ebbc10_16));
+                                       GETBMPSMALL(gf_ebbc10));
 
     wxBitmapButton* mult_button = new wxBitmapButton(this,
                                        ID_OperMult,
-                                       GETBMP(gf_ebbc8_16));
+                                       GETBMPSMALL(gf_ebbc8));
 
     wxBitmapButton* div_button = new wxBitmapButton(this,
                                        ID_OperDiv,
-                                       GETBMP(gf_ebbc7_16));
+                                       GETBMPSMALL(gf_ebbc7));
 
     wxBitmapButton* lparen_button = new wxBitmapButton(this,
                                        ID_OperLParen,
-                                       GETBMP(gf_ebbc12_16));
+                                       GETBMPSMALL(gf_ebbc12));
 
     wxBitmapButton* rparen_button = new wxBitmapButton(this,
                                        ID_OperRParen,
-                                       GETBMP(gf_ebbc11_16));
+                                       GETBMPSMALL(gf_ebbc11));
 
     wxBitmapButton* eq_button = new wxBitmapButton(this,
                                        ID_OperEq,
-                                       GETBMP(gf_ebbc3_16));
+                                       GETBMPSMALL(gf_ebbc3));
 
     wxBitmapButton* neq_button = new wxBitmapButton(this,
                                        ID_OperNeq,
-                                       GETBMP(gf_ebbc4_16));
+                                       GETBMPSMALL(gf_ebbc4));
 
     wxBitmapButton* lt_button = new wxBitmapButton(this,
                                        ID_OperLt,
-                                       GETBMP(gf_ebbc2_16));
+                                       GETBMPSMALL(gf_ebbc2));
 
     wxBitmapButton* gt_button = new wxBitmapButton(this,
                                        ID_OperGt,
-                                       GETBMP(gf_ebbc1_16));
+                                       GETBMPSMALL(gf_ebbc1));
 
     wxBitmapButton* lte_button = new wxBitmapButton(this,
                                        ID_OperLte,
-                                       GETBMP(gf_ebbc6_16));
+                                       GETBMPSMALL(gf_ebbc6));
 
     wxBitmapButton* gte_button = new wxBitmapButton(this,
                                        ID_OperGte,
-                                       GETBMP(gf_ebbc5_16));
+                                       GETBMPSMALL(gf_ebbc5));
 
     wxBitmapButton* and_button = new wxBitmapButton(this,
                                        ID_OperAnd,
                                        GETBMP(gf_and),
                                        wxDefaultPosition,
-                                       wxSize(40,24));
+                                       FromDIP(wxSize(40, 24)));
 
     wxBitmapButton* or_button = new wxBitmapButton(this,
                                        ID_OperOr,
                                        GETBMP(gf_or),
                                        wxDefaultPosition,
-                                       wxSize(40,24));
+                                       FromDIP(wxSize(40, 24)));
 
     wxBitmapButton* not_button = new wxBitmapButton(this, 
                                        ID_OperNot,
                                        GETBMP(gf_not),
                                        wxDefaultPosition,
-                                       wxSize(40,24));
+                                       FromDIP(wxSize(40, 24)));
 
     int spacer = 2;
     
@@ -697,8 +697,8 @@ void ExprBuilderPanel::construct()
     oper_sizer3->Add(not_button, 0);
 
     m_valid_control = new kcl::ValidControl(this, -1);
-    m_valid_control->setValidBitmap(GETBMP(gf_checkmark_16));
-    m_valid_control->setInvalidBitmap(GETBMP(gf_x_16));
+    m_valid_control->setValidBitmap(GETBMPSMALL(gf_checkmark));
+    m_valid_control->setInvalidBitmap(GETBMPSMALL(gf_x));
 
     wxBoxSizer* button_sizer = new wxBoxSizer(wxVERTICAL);
     button_sizer->Add(m_valid_control, 0, wxEXPAND);

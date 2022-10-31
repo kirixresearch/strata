@@ -141,16 +141,16 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
                                      ID_ColType,
                                      _("Character"),
                                      wxDefaultPosition,
-                                     wxSize(110,14),
+                                     FromDIP(wxSize(110, 14)),
                                      9,
                                      cbChoices,
                                      wxCB_READONLY);
                                      
     m_colwidth_text = new wxSpinCtrl(this,
                                      ID_ColWidth,
-                                     wxT("0"),
+                                     "0",
                                      wxDefaultPosition,
-                                     wxSize(60,14),
+                                     FromDIP(wxSize(60, 14)),
                                      wxSP_ARROW_KEYS,
                                      1,
                                      65535,
@@ -158,9 +158,9 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
                                      
     m_colscale_text = new wxSpinCtrl(this,
                                      ID_ColScale,
-                                     wxT("0"),
+                                     "0",
                                      wxDefaultPosition,
-                                     wxSize(60,14),
+                                     FromDIP(wxSize(60, 14)),
                                      wxSP_ARROW_KEYS,
                                      0,
                                      xd::max_numeric_scale);
@@ -168,19 +168,19 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
     wxBoxSizer* colparam_sizer = new wxBoxSizer(wxHORIZONTAL);
 
     colparam_sizer->Add(static_name, 0, wxALIGN_CENTER);
-    colparam_sizer->AddSpacer(4);
+    colparam_sizer->AddSpacer(FromDIP(4));
     colparam_sizer->Add(m_colname_text, 1, wxEXPAND);
-    colparam_sizer->AddSpacer(8);
+    colparam_sizer->AddSpacer(FromDIP(8));
     colparam_sizer->Add(static_type, 0, wxALIGN_CENTER);
-    colparam_sizer->AddSpacer(4);
+    colparam_sizer->AddSpacer(FromDIP(4));
     colparam_sizer->Add(m_coltype_combo, 0, wxEXPAND);
-    colparam_sizer->AddSpacer(8);
+    colparam_sizer->AddSpacer(FromDIP(8));
     colparam_sizer->Add(static_width, 0, wxALIGN_CENTER);
-    colparam_sizer->AddSpacer(4);
+    colparam_sizer->AddSpacer(FromDIP(4));
     colparam_sizer->Add(m_colwidth_text, 0, wxEXPAND);
-    colparam_sizer->AddSpacer(8);
+    colparam_sizer->AddSpacer(FromDIP(8));
     colparam_sizer->Add(static_scale, 0, wxALIGN_CENTER);
-    colparam_sizer->AddSpacer(4);
+    colparam_sizer->AddSpacer(FromDIP(4));
     colparam_sizer->Add(m_colscale_text, 0, wxEXPAND);
 
     wxStaticLine* div_line = new wxStaticLine(this,
@@ -194,9 +194,9 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
     m_expr_panel->sigOkPressed.connect(this, &ColPropsPanel::onOkPressed);
     m_expr_panel->sigCancelPressed.connect(this, &ColPropsPanel::onCancelPressed);
 
-    main_sizer->AddSpacer(4);
-    main_sizer->Add(colparam_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 8);
-    main_sizer->AddSpacer(4);
+    main_sizer->AddSpacer(FromDIP(4));
+    main_sizer->Add(colparam_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
+    main_sizer->AddSpacer(FromDIP(4));
     main_sizer->Add(div_line, 0, wxEXPAND);
     main_sizer->Add(m_expr_panel, 1, wxEXPAND);
 

@@ -98,7 +98,7 @@ ValidControl::ValidControl(wxWindow* parent, wxWindowID id,
     
     wxSize s = GetSize();
     m_minWidth = s.x;
-    m_minHeight = s.y;
+    m_minHeight = wxMax(s.y, FromDIP(16 + 6));
 }
 
 void ValidControl::setValidLabel(const wxString& label)
@@ -116,12 +116,14 @@ void ValidControl::setInvalidLabel(const wxString& label)
 void ValidControl::setValidBitmap(const wxBitmap& bitmap)
 {
     m_valid_bitmap = bitmap;
+    m_minHeight = wxMax(m_minHeight, m_valid_bitmap.GetHeight() + FromDIP(6));
     Refresh(true);
 }
 
 void ValidControl::setInvalidBitmap(const wxBitmap& bitmap)
 {
     m_invalid_bitmap = bitmap;
+    m_minHeight = wxMax(m_minHeight, m_invalid_bitmap.GetHeight() + FromDIP(6));
     Refresh(true);
 }
 
