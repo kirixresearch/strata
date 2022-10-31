@@ -102,13 +102,13 @@ bool MergePanel::initDoc(IFramePtr frame,
     wxButton* browse_button = new wxButton(this, ID_BrowseButton, _("Browse..."));
 
     wxBoxSizer* output_table_sizer = new wxBoxSizer(wxHORIZONTAL);
-    output_table_sizer->AddSpacer(5);
+    output_table_sizer->AddSpacer(FromDIP(5));
     output_table_sizer->Add(label_output_table, 0, wxALIGN_CENTER);
-    output_table_sizer->AddSpacer(5);
+    output_table_sizer->AddSpacer(FromDIP(5));
     output_table_sizer->Add(static_output_table, 1, wxALIGN_CENTER);
     output_table_sizer->Add(m_output_table, 1, wxALIGN_CENTER);
-    output_table_sizer->Add(browse_button, 0, wxALIGN_CENTER | wxLEFT, 5);
-    output_table_sizer->SetMinSize(100, 23);
+    output_table_sizer->Add(browse_button, 0, wxALIGN_CENTER | wxLEFT, FromDIP(5));
+    output_table_sizer->SetMinSize(FromDIP(100), FromDIP(23));
     
     if (m_append)
     {
@@ -146,25 +146,29 @@ bool MergePanel::initDoc(IFramePtr frame,
     ok_cancel_sizer->AddButton(m_ok_button);
     ok_cancel_sizer->AddButton(new wxButton(this, wxID_CANCEL));
     ok_cancel_sizer->Realize();
-    ok_cancel_sizer->AddSpacer(5);
+    ok_cancel_sizer->AddSpacer(FromDIP(5));
     
     // this code is necessary to get the sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
-    min_size.SetHeight(min_size.GetHeight()+16);
+    min_size.SetHeight(min_size.GetHeight() + FromDIP(16));
     ok_cancel_sizer->SetMinSize(min_size);
     
     // create main sizer
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
-    main_sizer->AddSpacer(8);
-    main_sizer->Add(m_grid, 1, wxEXPAND | wxLEFT | wxRIGHT, 8);
-    main_sizer->Add(output_table_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP | wxBOTTOM, 8);
+    main_sizer->AddSpacer(FromDIP(8));
+    main_sizer->Add(m_grid, 1, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
+    main_sizer->Add(output_table_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP | wxBOTTOM, FromDIP(8));
     if (!m_append)
+    {
         main_sizer->Add(new wxStaticLine(this, -1), 0, wxEXPAND);
+    }
     main_sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
 
     // only show the output table sizer when performing a merge operation
     if (m_append)
+    {
         main_sizer->Show(output_table_sizer, false, true);
+    }
     
     SetSizer(main_sizer);
     Layout();

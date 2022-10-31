@@ -364,23 +364,23 @@ bool JobSchedulerPanel::initDoc(IFramePtr frame,
     ok_cancel_sizer->AddButton(new wxButton(this, wxID_OK));
     ok_cancel_sizer->AddButton(new wxButton(this, wxID_CANCEL));
     ok_cancel_sizer->Realize();
-    ok_cancel_sizer->AddSpacer(5);
+    ok_cancel_sizer->AddSpacer(FromDIP(5));
     
     // this code is necessary to get the OK/Cancel sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
-    min_size.SetHeight(min_size.GetHeight()+16);
+    min_size.SetHeight(min_size.GetHeight()+FromDIP(16));
     ok_cancel_sizer->SetMinSize(min_size);
 
     // create horizontal sizer
     wxBoxSizer* horz_sizer = new wxBoxSizer(wxHORIZONTAL);
     horz_sizer->Add(m_joblist_grid, 1, wxEXPAND);
-    horz_sizer->AddSpacer(8);
+    horz_sizer->AddSpacer(FromDIP(8));
     horz_sizer->Add(createVerticalSizer(), 0, wxEXPAND);
 
     // create main sizer
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
-    main_sizer->AddSpacer(8);
-    main_sizer->Add(horz_sizer, 1, wxLEFT | wxRIGHT | wxEXPAND, 8);
+    main_sizer->AddSpacer(FromDIP(8));
+    main_sizer->Add(horz_sizer, 1, wxLEFT | wxRIGHT | wxEXPAND, FromDIP(8));
     main_sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
     SetSizer(main_sizer);
     Layout();
@@ -556,7 +556,7 @@ wxBoxSizer* JobSchedulerPanel::createVerticalSizer()
     m_frequency_choice = new wxChoice(this,
                                     ID_Frequency_Choice,
                                     wxDefaultPosition,
-                                    wxSize(100,21),
+                                    FromDIP(wxSize(100, 21)),
                                     0,
                                     NULL);
     m_frequency_choice->Append(_("Once"));
@@ -579,24 +579,24 @@ wxBoxSizer* JobSchedulerPanel::createVerticalSizer()
                                     ID_FinishTime_TextCtrl,
                                     wxT("08:00 AM"),
                                     wxDefaultPosition,
-                                    wxSize(65,21));
+                                    FromDIP(wxSize(65, 21)));
     m_finishtime_textctrl->SetCursor(*wxSTANDARD_CURSOR);
     m_finishtime_textctrl->SetEditable(false);
 
     m_finishtime_spinbutton = new wxSpinButton(this,
                                     ID_FinishTime_SpinButton,
                                     wxDefaultPosition,
-                                    wxSize(17,21));
+                                    FromDIP(wxSize(17, 21)));
     m_finishtime_datectrl = new wxDatePickerCtrl(this, ID_FinishDate_DateCtrl);
 
     m_finishtime_sizer = new wxBoxSizer(wxHORIZONTAL);
     m_finishtime_sizer->Add(m_finishtime_active_checkbox, 0, wxALIGN_CENTER);
-    m_finishtime_sizer->AddSpacer(5);
+    m_finishtime_sizer->AddSpacer(FromDIP(5));
     m_finishtime_sizer->Add(label_finish, 0, wxALIGN_CENTER);
     m_finishtime_sizer->Add(m_finishtime_textctrl, 0, wxEXPAND);
-    m_finishtime_sizer->AddSpacer(1);
+    m_finishtime_sizer->AddSpacer(FromDIP(1));
     m_finishtime_sizer->Add(m_finishtime_spinbutton, 0, wxEXPAND);
-    m_finishtime_sizer->AddSpacer(2);
+    m_finishtime_sizer->AddSpacer(FromDIP(2));
     m_finishtime_sizer->Add(m_finishtime_datectrl, 1, wxEXPAND);
 
     // create start sizer
@@ -605,32 +605,31 @@ wxBoxSizer* JobSchedulerPanel::createVerticalSizer()
                                     ID_StartTime_TextCtrl,
                                     wxT("08:00 AM"),
                                     wxDefaultPosition,
-                                    wxSize(65,21));
+                                    FromDIP(wxSize(65, 21)));
     m_starttime_textctrl->SetCursor(*wxSTANDARD_CURSOR);
     m_starttime_textctrl->SetEditable(false);
 
     m_starttime_spinbutton = new wxSpinButton(this,
                                     ID_StartTime_SpinButton,
                                     wxDefaultPosition,
-                                    wxSize(17,21));
+                                    FromDIP(wxSize(17, 21)));
     m_starttime_datectrl = new wxDatePickerCtrl(this, ID_StartDate_DateCtrl);
     
     // make sure the labels are lined up by adding this space
     // to the beginning of the start time sizer
-    int w = m_finishtime_active_checkbox->GetClientSize().GetWidth()+5;
+    int w = m_finishtime_active_checkbox->GetClientSize().GetWidth() + FromDIP(5);
     
     m_starttime_sizer = new wxBoxSizer(wxHORIZONTAL);
     m_starttime_sizer->AddSpacer(w);
     m_starttime_sizer->Add(label_start, 0, wxALIGN_CENTER);
     m_starttime_sizer->Add(m_starttime_textctrl, 0, wxEXPAND);
-    m_starttime_sizer->AddSpacer(1);
+    m_starttime_sizer->AddSpacer(FromDIP(1));
     m_starttime_sizer->Add(m_starttime_spinbutton, 0, wxEXPAND);
-    m_starttime_sizer->AddSpacer(2);
+    m_starttime_sizer->AddSpacer(FromDIP(2));
     m_starttime_sizer->Add(m_starttime_datectrl, 1, wxEXPAND);
     
     // measure the label widths
-    wxSize label_size = getMaxTextSize(label_start,
-                                            label_finish);
+    wxSize label_size = getMaxTextSize(label_start, label_finish);
     label_size.x += 5;
     m_starttime_sizer->SetItemMinSize(label_start, label_size);
     m_finishtime_sizer->SetItemMinSize(label_finish, label_size);
@@ -638,9 +637,9 @@ wxBoxSizer* JobSchedulerPanel::createVerticalSizer()
     // create top sizer
     m_top_sizer = new wxBoxSizer(wxVERTICAL);
     m_top_sizer->Add(frequency_sizer, 0, wxEXPAND);
-    m_top_sizer->AddSpacer(8);
+    m_top_sizer->AddSpacer(FromDIP(8));
     m_top_sizer->Add(m_starttime_sizer, 0, wxEXPAND);
-    m_top_sizer->Add(m_finishtime_sizer, 0, wxEXPAND | wxTOP, 8);
+    m_top_sizer->Add(m_finishtime_sizer, 0, wxEXPAND | wxTOP, FromDIP(8));
     
     wxBoxSizer* daily_sizer = createDailySizer();
     wxBoxSizer* weekly_sizer = createWeeklySizer();
@@ -650,9 +649,9 @@ wxBoxSizer* JobSchedulerPanel::createVerticalSizer()
     m_vert_sizer = new wxBoxSizer(wxVERTICAL);
     m_vert_sizer->Add(m_top_sizer, 0, wxEXPAND);
     m_vert_sizer->AddSpacer(8);
-    m_vert_sizer->Add(daily_sizer, 0, wxEXPAND | wxBOTTOM, 8);
-    m_vert_sizer->Add(weekly_sizer, 0, wxEXPAND | wxBOTTOM, 8);
-    m_vert_sizer->Add(monthly_sizer, 0, wxEXPAND | wxBOTTOM, 8);
+    m_vert_sizer->Add(daily_sizer, 0, wxEXPAND | wxBOTTOM, FromDIP(8));
+    m_vert_sizer->Add(weekly_sizer, 0, wxEXPAND | wxBOTTOM, FromDIP(8));
+    m_vert_sizer->Add(monthly_sizer, 0, wxEXPAND | wxBOTTOM, FromDIP(8));
     m_vert_sizer->Add(m_commandlist_grid, 1, wxEXPAND);
     m_vert_sizer->Layout();
     
