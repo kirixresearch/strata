@@ -198,7 +198,7 @@ bool IndexPanel::initDoc(IFramePtr frame,
 
     // add rules for validating index names (and do an initial check)
     
-    m_indexes_list_validator = new kcl::GridActionValidator(m_indexes_list, GETBMP(gf_exclamation_16));
+    m_indexes_list_validator = new kcl::GridActionValidator(m_indexes_list, GETBMPSMALL(gf_exclamation));
     
     kcl::GridActionRule* rule;
     rule = m_indexes_list_validator->addRule(0, kcl::GridActionValidator::RuleNoDuplicates);

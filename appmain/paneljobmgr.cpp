@@ -188,13 +188,13 @@ void JobListCtrl::addJobItem(jobs::IJobInfoPtr job_info)
     // create bitmap element
     kcl::ScrollListElement* bitmap;
     bitmap = item->addElement(GETBMP(gf_gear_32), wxPoint(15,15));
-    bitmap->setPadding(0,0,0,15);
+    bitmap->setPadding(0, 0, 0, FromDIP(15));
     bitmap->setName(wxT("bitmap"));
 
     // create title text element
     kcl::ScrollListElement* title;
     title = item->addElement(job_info->getTitle(), wxPoint(60,15));
-    title->setPadding(0,0,15,8);
+    title->setPadding(0, 0, FromDIP(15), FromDIP(8));
     title->setTextBold(true);
     title->setTextWrap(false);
     title->setName(wxT("title"));
@@ -204,7 +204,7 @@ void JobListCtrl::addJobItem(jobs::IJobInfoPtr job_info)
                                           -1,
                                           100,
                                           create_pt,
-                                          wxSize(200,16));
+                                          FromDIP(wxSize(200,16)));
 
     // the job's finish time is indeterminate
     if (kl::dblcompare(job_info->getMaxCount(), 0.0) == 0)
@@ -212,7 +212,7 @@ void JobListCtrl::addJobItem(jobs::IJobInfoPtr job_info)
 
     kcl::ScrollListElement* gauge;
     gauge = item->addElement(progress_gauge);
-    gauge->setPadding(0,0,15,8);
+    gauge->setPadding(0, 0, FromDIP(15), FromDIP(8));
     gauge->setRelativePosition(title, kcl::ScrollListElement::positionBelow);
     gauge->setStretchable(true);
     gauge->setName(wxT("progress_gauge"));
@@ -228,7 +228,7 @@ void JobListCtrl::addJobItem(jobs::IJobInfoPtr job_info)
     
     kcl::ScrollListElement* cancel;
     cancel = item->addElement(cancel_button);
-    cancel->setPadding(0,0,15,15);
+    cancel->setPadding(0, 0, FromDIP(15), FromDIP(15));
     cancel->setRelativePosition(gauge,
                                 kcl::ScrollListElement::positionBelow,
                                 kcl::ScrollListElement::alignRight);
@@ -237,7 +237,7 @@ void JobListCtrl::addJobItem(jobs::IJobInfoPtr job_info)
     // create record count text element
     kcl::ScrollListElement* record_count;
     record_count = item->addElement(job_info->getProgressString());
-    record_count->setPadding(0,0,0,5);
+    record_count->setPadding(0, 0, 0, FromDIP(5));
     record_count->setRelativePosition(gauge,
                                       kcl::ScrollListElement::positionBelow);
     record_count->setName(wxT("record_count_text"));
@@ -245,7 +245,7 @@ void JobListCtrl::addJobItem(jobs::IJobInfoPtr job_info)
     // create description text element
     kcl::ScrollListElement* job_state;
     job_state = item->addElement(wxEmptyString);
-    job_state->setPadding(0,0,0,15);
+    job_state->setPadding(0, 0, 0, FromDIP(15));
     job_state->setRelativePosition(record_count,
                                      kcl::ScrollListElement::positionBelow);
     job_state->setStretchable(true);
