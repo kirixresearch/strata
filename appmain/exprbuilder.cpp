@@ -568,11 +568,10 @@ bool ExprBuilderPanel::create(wxWindow* parent)
 
 void ExprBuilderPanel::construct()
 {
-
     m_expr_text = new ExprEditorControl(this,
                                         ID_Expr,
                                         wxDefaultPosition,
-                                        wxSize(100,40),
+                                        FromDIP(wxSize(100,40)),
                                         kcl::DEFAULT_BORDER | wxVSCROLL);
 
     // make the m_expr_text text control a drop target for these grids
@@ -717,9 +716,9 @@ void ExprBuilderPanel::construct()
     {
         // hide the sizer, and add a little static space at the top
         // and the bottom to compensate
-        button_sizer->Prepend(1, 10);
+        button_sizer->Prepend(FromDIP(1), FromDIP(10));
         button_sizer->Show(m_valid_control, false);
-        button_sizer->Add(1, 10);
+        button_sizer->Add(FromDIP(1), FromDIP(10));
     }
     
 
@@ -807,7 +806,7 @@ void ExprBuilderPanel::construct()
     
     // this code is necessary to get the sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
-    min_size.SetHeight(min_size.GetHeight()+16);
+    min_size.SetHeight(min_size.GetHeight()+FromDIP(16));
     ok_cancel_sizer->SetMinSize(min_size);
     
     // create main sizer
