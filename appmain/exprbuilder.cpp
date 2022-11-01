@@ -594,6 +594,7 @@ void ExprBuilderPanel::construct()
     m_cancel_button = new wxButton(this, wxID_CANCEL);
     m_ok_button->SetDefault();
 
+    int highres = FromDIP(100) > 100 ? true : false;
 
     wxBitmapButton* plus_button = new wxBitmapButton(this,
                                        ID_OperPlus,
@@ -645,19 +646,19 @@ void ExprBuilderPanel::construct()
 
     wxBitmapButton* and_button = new wxBitmapButton(this,
                                        ID_OperAnd,
-                                       GETBMP(gf_and),
+                                       highres ? GETBMP(gf_and_24) : GETBMP(gf_and_16),
                                        wxDefaultPosition,
                                        FromDIP(wxSize(40, 24)));
 
     wxBitmapButton* or_button = new wxBitmapButton(this,
                                        ID_OperOr,
-                                       GETBMP(gf_or),
+                                       highres ? GETBMP(gf_or_24) : GETBMP(gf_or_16),
                                        wxDefaultPosition,
                                        FromDIP(wxSize(40, 24)));
 
     wxBitmapButton* not_button = new wxBitmapButton(this, 
                                        ID_OperNot,
-                                       GETBMP(gf_not),
+                                       highres ? GETBMP(gf_not_24) : GETBMP(gf_not_16),
                                        wxDefaultPosition,
                                        FromDIP(wxSize(40, 24)));
 
