@@ -356,10 +356,10 @@ ScrollListControl::ScrollListControl(wxWindow* parent,
     m_highlight_colour = kcl::stepColor(m_highlight_colour, 170); // same as toolbar
     
     // set our fonts
-    m_font = resizeFont(this, *wxNORMAL_FONT);
-    m_bold_font = resizeFont(this, *wxNORMAL_FONT);
+    m_font = *wxNORMAL_FONT;
+    m_bold_font = *wxNORMAL_FONT;
     m_bold_font.SetWeight(wxFONTWEIGHT_BOLD);
-    m_overlay_font = resizeFont(this, wxFont(9, wxSWISS, wxNORMAL, wxNORMAL, false));
+    m_overlay_font =  wxFont(9, wxSWISS, wxNORMAL, wxNORMAL, false);
 
     // set initial properties for the control
     SetScrollRate(SCROLL_STEP, SCROLL_STEP);
@@ -490,7 +490,9 @@ void ScrollListControl::allocBitmap(int width, int height)
     if (width <= m_bmp_width && height <= m_bmp_height)
         return;
 
-    m_bmp.Create(width, height, -1);
+    // create a bitmap for our memdc with the same scaling factor as the screen
+    wxClientDC dc(this);
+    m_bmp.Create(width, height, dc);
     m_memdc.SelectObject(m_bmp);
     
     m_bmp_width = width;
@@ -541,7 +543,7 @@ void ScrollListControl::calcItemHeight(kcl::ScrollListItem* item)
         if (element->isStretchable())
             element->setWidth(w);
     }
-    
+
     // find the bottom-most element to calculate the item height
     for (it = item->m_elements.begin(); it != item->m_elements.end(); ++it)
     {
@@ -549,17 +551,20 @@ void ScrollListControl::calcItemHeight(kcl::ScrollListItem* item)
 
         if (!element->isVisible())
             continue;
-        
+
         h = element->getPosition().y + element->getHeight()
                                      + element->getPaddingTop()
                                      + element->getPaddingBottom();
+
         if (h > new_height)
             new_height = h;
     }
     
     // update the item's height
     if (new_height != item->getHeight())
+    {
         item->setHeight(new_height);
+    }
 }
 
 void ScrollListControl::drawItem(kcl::ScrollListItem* item, int item_y)
