@@ -275,7 +275,7 @@ bool IndexPanel::initDoc(IFramePtr frame,
                                              wxDefaultSize,
                                              wxBU_EXACTFIT);
     wxSize s = add_index_button->GetSize();
-    s.SetWidth(s.GetWidth()+10);
+    s.SetWidth(s.GetWidth() + FromDIP(10));
     add_index_button->SetMinSize(s);
     
 
@@ -288,7 +288,7 @@ bool IndexPanel::initDoc(IFramePtr frame,
                                          wxDefaultSize,
                                          wxBU_EXACTFIT);
     s = m_delete_index_button->GetSize();
-    s.SetWidth(s.GetWidth()+10);
+    s.SetWidth(s.GetWidth() + FromDIP(10));
     m_delete_index_button->SetMinSize(s);
     
 
@@ -304,9 +304,9 @@ bool IndexPanel::initDoc(IFramePtr frame,
 
     wxBoxSizer* horz_sizer = new wxBoxSizer(wxHORIZONTAL);
     horz_sizer->Add(m_indexes_list, 1, wxEXPAND);
-    horz_sizer->AddSpacer(8);
+    horz_sizer->AddSpacer(FromDIP(8));
     horz_sizer->Add(m_available_fields, 1, wxEXPAND);
-    horz_sizer->AddSpacer(8);
+    horz_sizer->AddSpacer(FromDIP(8));
     horz_sizer->Add(m_index_fields, 1, wxEXPAND);
     
     
@@ -318,21 +318,21 @@ bool IndexPanel::initDoc(IFramePtr frame,
     ok_cancel_sizer->AddButton(m_ok_button);
     ok_cancel_sizer->AddButton(new wxButton(this, wxID_CANCEL));
     ok_cancel_sizer->Realize();
-    ok_cancel_sizer->Prepend(m_delete_index_button, 0, wxALIGN_CENTER | wxLEFT, 4);
-    ok_cancel_sizer->Prepend(add_index_button, 0, wxALIGN_CENTER | wxLEFT, 8);
-    ok_cancel_sizer->AddSpacer(5);
+    ok_cancel_sizer->Prepend(m_delete_index_button, 0, wxALIGN_CENTER | wxLEFT, FromDIP(4));
+    ok_cancel_sizer->Prepend(add_index_button, 0, wxALIGN_CENTER | wxLEFT, FromDIP(8));
+    ok_cancel_sizer->AddSpacer(FromDIP(5));
     
 
     // this code is necessary to get the OK/Cancel sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
-    min_size.SetHeight(min_size.GetHeight()+16);
+    min_size.SetHeight(min_size.GetHeight() + FromDIP(16));
     ok_cancel_sizer->SetMinSize(min_size);
     
 
     // create main sizer
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
-    main_sizer->AddSpacer(8);
-    main_sizer->Add(horz_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 8);
+    main_sizer->AddSpacer(FromDIP(8));
+    main_sizer->Add(horz_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
     main_sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
     SetSizer(main_sizer);
     Layout();
@@ -341,6 +341,8 @@ bool IndexPanel::initDoc(IFramePtr frame,
     // create pseudo-proportional columns in the index fields list
     int w, h;
     m_index_fields->GetClientSize(&w, &h);
+    w = ToDIP(w);
+    h = ToDIP(h);
     m_index_fields->setColumnSize(0, w/2);
     m_index_fields->setColumnSize(1, w-(w/2));
     
