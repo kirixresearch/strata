@@ -168,11 +168,8 @@ bool RelationshipPanel::initDoc(IFramePtr frame,
     site->setCaption(_("Relationships"));
 
     // create button sizer
-    m_add_button = new wxButton(this, ID_AddTable,
-                                _("Add Table..."));
-
-    m_update_button = new wxButton(this, ID_UpdateRelationships,
-                                   _("Update Relationships"));
+    m_add_button = new wxButton(this, ID_AddTable, _("Add Table..."));
+    m_update_button = new wxButton(this, ID_UpdateRelationships, _("Update Relationships"));
     m_update_button->Enable(false);
     
     // this button is created so that the ESC key can be used to
@@ -181,13 +178,13 @@ bool RelationshipPanel::initDoc(IFramePtr frame,
     close_button = new wxButton(this, wxID_CANCEL, wxEmptyString, wxDefaultPosition, wxSize(0,0));
 
     wxBoxSizer* button_sizer = new wxBoxSizer(wxHORIZONTAL);
-    button_sizer->AddSpacer(5);
+    button_sizer->AddSpacer(FromDIP(5));
     button_sizer->Add(m_add_button, 0, wxALIGN_CENTER);
     button_sizer->AddStretchSpacer();
     button_sizer->Add(close_button, 0, wxALIGN_CENTER);
     button_sizer->Add(m_update_button, 0, wxALIGN_CENTER);
-    button_sizer->AddSpacer(5);
-    button_sizer->SetMinSize(100, 31);
+    button_sizer->AddSpacer(FromDIP(5));
+    button_sizer->SetMinSize(FromDIP(100), FromDIP(31));
 
     m_diagram = new RelationDiagram(this,
                                     -1,

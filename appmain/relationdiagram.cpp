@@ -45,7 +45,7 @@ static const char* xpm_relationshipbox_close[] = {
 
 
 
-const int BOX_CAPTION_HEIGHT = 18;
+#define BOX_CAPTION_HEIGHT FromDIP(18)
 const int BOX_ROW_HEIGHT = 19;
 const int BOX_SNAP_VALUE = 19;
 const int BOX_BORDER_SIZE = 3;
@@ -2849,8 +2849,10 @@ void RelationDiagram::onSize(wxSizeEvent& evt)
         cli_width > m_bmp.GetWidth() ||
         cli_height > m_bmp.GetHeight())
     {
+        wxClientDC dc(this);
+
         m_memdc.SelectObject(wxNullBitmap);
-        m_bmp.Create(cli_width+1, cli_height+1, -1);
+        m_bmp.Create(cli_width+1, cli_height+1, dc);
         m_memdc.SelectObject(m_bmp);
     }
 #endif
