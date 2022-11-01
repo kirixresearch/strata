@@ -45,7 +45,7 @@ static const char* xpm_relationshipbox_close[] = {
 
 
 
-#define BOX_CAPTION_HEIGHT FromDIP(18)
+const int BOX_CAPTION_HEIGHT = 18;
 const int BOX_ROW_HEIGHT = 19;
 const int BOX_SNAP_VALUE = 19;
 const int BOX_BORDER_SIZE = 3;
