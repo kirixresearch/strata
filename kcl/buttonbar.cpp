@@ -69,24 +69,6 @@ END_EVENT_TABLE()
 
 
 
-static wxFont resizeFont(wxWindow* wnd, wxFont _font)
-{
-    if (wnd->FromDIP(100) > 100)
-    {
-        // fonts in their normal size on high DPI are just too small
-        wxFont font(_font);
-        double pt = (double)font.GetPointSize();
-        pt = pt * (double)wnd->FromDIP(100) / 105.0;
-        int new_font_size = (int)kl::dblround(pt, 0);
-        font.SetPointSize(new_font_size);
-        return font;
-    }
-    else
-    {
-        return _font;
-    }
-}
-
 ButtonBar::ButtonBar(wxWindow* parent,
                      wxWindowID id,
                      const wxPoint& pos,

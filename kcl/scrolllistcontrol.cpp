@@ -356,10 +356,10 @@ ScrollListControl::ScrollListControl(wxWindow* parent,
     m_highlight_colour = kcl::stepColor(m_highlight_colour, 170); // same as toolbar
     
     // set our fonts
-    m_font = *wxNORMAL_FONT;
-    m_bold_font = *wxNORMAL_FONT;
+    m_font = resizeFont(this, *wxNORMAL_FONT);
+    m_bold_font = resizeFont(this, *wxNORMAL_FONT);
     m_bold_font.SetWeight(wxFONTWEIGHT_BOLD);
-    m_overlay_font = wxFont(9, wxSWISS, wxNORMAL, wxNORMAL, false);
+    m_overlay_font = resizeFont(this, wxFont(9, wxSWISS, wxNORMAL, wxNORMAL, false));
 
     // set initial properties for the control
     SetScrollRate(SCROLL_STEP, SCROLL_STEP);

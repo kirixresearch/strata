@@ -187,13 +187,13 @@ void JobListCtrl::addJobItem(jobs::IJobInfoPtr job_info)
     
     // create bitmap element
     kcl::ScrollListElement* bitmap;
-    bitmap = item->addElement(GETBMP(gf_gear_32), wxPoint(15,15));
+    bitmap = item->addElement(GETBMP(gf_gear_32), FromDIP(wxPoint(15,15)));
     bitmap->setPadding(0, 0, 0, FromDIP(15));
     bitmap->setName(wxT("bitmap"));
 
     // create title text element
     kcl::ScrollListElement* title;
-    title = item->addElement(job_info->getTitle(), wxPoint(60,15));
+    title = item->addElement(job_info->getTitle(), FromDIP(wxPoint(60,15)));
     title->setPadding(0, 0, FromDIP(15), FromDIP(8));
     title->setTextBold(true);
     title->setTextWrap(false);
@@ -583,7 +583,7 @@ bool JobManagerPanel::initDoc(IFramePtr frame,
     SetWindowStyle(GetWindowStyle() & ~wxTAB_TRAVERSAL);
 
     m_doc_site = site;
-    m_doc_site->setMinSize(200,150);
+    m_doc_site->setMinSize(FromDIP(200), FromDIP(150));
     m_doc_site->setCaption(_("Jobs"));
 
     // create controls for the panel
@@ -602,11 +602,11 @@ bool JobManagerPanel::initDoc(IFramePtr frame,
     
     // create the main sizer
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
-    main_sizer->AddSpacer(8);
-    main_sizer->Add(m_job_list, 1, wxEXPAND | wxLEFT | wxRIGHT, 8);
-    main_sizer->AddSpacer(8);
-    main_sizer->Add(button_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 8);
-    main_sizer->AddSpacer(8);
+    main_sizer->AddSpacer(FromDIP(8));
+    main_sizer->Add(m_job_list, 1, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
+    main_sizer->AddSpacer(FromDIP(8));
+    main_sizer->Add(button_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
+    main_sizer->AddSpacer(FromDIP(8));
     
     SetSizer(main_sizer);
     Layout();
