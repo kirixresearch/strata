@@ -35,8 +35,6 @@ wxPen getBorderPen();
 
 void* getHdcFrom(wxDC& dc); // retrieve HDC from wxDC
 
-wxFont resizeFont(wxWindow* wnd, wxFont font);
-
 };  // namespace kcl
 
 

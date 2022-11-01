@@ -1507,7 +1507,7 @@ void Grid::construct()
     m_bmp_alloc_width = 0;
     m_bmp_alloc_height = 0;
 
-    m_overlay_font = resizeFont(wxFont(9, wxSWISS, wxNORMAL, wxNORMAL, false));
+    m_overlay_font = wxFont(9, wxSWISS, wxNORMAL, wxNORMAL, false);
 
     m_base_color = kcl::getBaseColor();
     m_def_bgcolor.Set(255, 255, 255);
@@ -1955,38 +1955,12 @@ void Grid::setCursorVisible(bool show)
     m_cursor_visible = show;
 }
 
-wxFont Grid::resizeFont(wxFont _font)
-{
-    if (fromDIP(100) > 100)
-    {
-        // fonts in their normal size on high DPI are just too small
-        wxFont font(_font);
-        double pt = (double)font.GetPointSize();
-        pt = pt * (double)fromDIP(100) / 105.0;
-        int new_font_size = (int)kl::dblround(pt, 0);
-        font.SetPointSize(new_font_size);
-        return font;
-    }
-    else
-    {
-        return _font;
-    }
-}
-
 bool Grid::SetFont(const wxFont& _font)
 {
     if (!wxControl::SetFont(_font))
         return false;
 
-    if (fromDIP(100) > 100)
-    {
-        m_font = resizeFont(_font);
-    }
-     else
-    {
-        m_font = _font;
-    }
-
+    m_font = _font;
     initFont();
 
     return true;
@@ -2000,7 +1974,7 @@ bool Grid::setCaptionFont(const wxFont& font)
 
 bool Grid::setOverlayFont(const wxFont& font)
 {
-    m_overlay_font = resizeFont(font);
+    m_overlay_font = font;
     return true;
 }
 
@@ -4249,13 +4223,13 @@ bool Grid::allocBitmap(int width, int height)
         return false;
     }
 
-    m_bmp.Create(width, height, -1);
+    wxClientDC cdc(this);
+    m_bmp.Create(width, height, cdc);
     m_memdc.SelectObject(m_bmp);
 
     m_bmp_alloc_width = width;
     m_bmp_alloc_height = height;
     
-
     // it was necessary to allocate a new bitmap
     return true;
 }

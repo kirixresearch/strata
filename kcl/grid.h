@@ -812,7 +812,6 @@ private:
 
     int fromDIP(int d);
     int toDIP(int d);
-    wxFont resizeFont(wxFont font);
 
     //void drawChiselRectangle(int x1, int y1, int width, int height, bool selected);
     void drawColumnHeaderRectangle(int x1, int y1, int width, int height, bool selected);

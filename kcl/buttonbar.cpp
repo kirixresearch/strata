@@ -92,7 +92,7 @@ ButtonBar::ButtonBar(wxWindow* parent,
     m_background_gradient_direction = gradientNone;
 
     // set fonts and colors
-    m_font = resizeFont(this, *wxNORMAL_FONT);
+    m_font = *wxNORMAL_FONT;
     m_highlight_color = wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT);
     m_border_color = kcl::getBorderColor();
     m_item_border_color = wxNullColour;
@@ -415,7 +415,8 @@ void ButtonBar::allocBitmap(int width, int height)
     if (width <= m_bmp_width && height <= m_bmp_height)
         return;
 
-    m_bmp.Create(width, height, -1);
+    wxClientDC cdc(this);
+    m_bmp.Create(width, height, cdc);
     m_memdc.SelectObject(m_bmp);
 
     m_bmp_width = width;
