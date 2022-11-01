@@ -644,25 +644,27 @@ void ExprBuilderPanel::construct()
                                        ID_OperGte,
                                        GETBMPSMALL(gf_ebbc5));
 
+    int height = gte_button->GetSize().y;
+
     wxBitmapButton* and_button = new wxBitmapButton(this,
                                        ID_OperAnd,
                                        highres ? GETBMP(gf_and_24) : GETBMP(gf_and_16),
                                        wxDefaultPosition,
-                                       FromDIP(wxSize(40, 24)));
+                                       wxSize(FromDIP(40), height));
 
     wxBitmapButton* or_button = new wxBitmapButton(this,
                                        ID_OperOr,
                                        highres ? GETBMP(gf_or_24) : GETBMP(gf_or_16),
                                        wxDefaultPosition,
-                                       FromDIP(wxSize(40, 24)));
+                                       wxSize(FromDIP(40), height));
 
     wxBitmapButton* not_button = new wxBitmapButton(this, 
                                        ID_OperNot,
                                        highres ? GETBMP(gf_not_24) : GETBMP(gf_not_16),
                                        wxDefaultPosition,
-                                       FromDIP(wxSize(40, 24)));
+                                       wxSize(FromDIP(40), height));
 
-    int spacer = 2;
+    int spacer = FromDIP(2);
     
     wxBoxSizer* oper_sizer1 = new wxBoxSizer(wxHORIZONTAL);
     oper_sizer1->Add(plus_button, 1);
