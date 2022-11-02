@@ -181,6 +181,11 @@ private:
     wxRect m_closebutton_rect;
     wxRect m_sortbutton_rect;
     
+    int m_box_caption_height;
+    int m_box_border_size;
+    int m_box_min_width;
+    int m_box_min_height;
+
     int m_action;
     int m_action_offx;
     int m_action_offy;

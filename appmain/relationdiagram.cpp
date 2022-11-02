@@ -46,13 +46,11 @@ static const char* xpm_relationshipbox_close[] = {
 
 
 const int BOX_CAPTION_HEIGHT = 18;
-const int BOX_ROW_HEIGHT = 19;
-const int BOX_SNAP_VALUE = 19;
 const int BOX_BORDER_SIZE = 3;
 const int BOX_DEFAULT_WIDTH = 160;
 const int BOX_DEFAULT_HEIGHT = 180;
-const int BOX_MINWIDTH = 100;
-const int BOX_MINHEIGHT = 120;
+const int BOX_MIN_WIDTH = 100;
+const int BOX_MIN_HEIGHT = 120;
 
 const int DIAGRAM_SCROLL_WIDTH = 1600;
 const int DIAGRAM_SCROLL_HEIGHT = 1200;
@@ -112,18 +110,18 @@ static bool DrawUxThemeCloseButton(wxDC& dc,
 
             RECT rc;
             wxCopyRectToRECT(rect, rc);
-            rc.top += (rect.height-13)/2;
-            rc.right = rc.left+13;
-            rc.bottom = rc.top+13;
+            rc.top += (rect.height-wnd->FromDIP(13))/2;
+            rc.right = rc.left+wnd->FromDIP(13);
+            rc.bottom = rc.top+wnd->FromDIP(13);
             
             // draw the themed close button
 #if wxCHECK_VERSION(3,1,1)
-            ::DrawThemeBackground(hTheme, (HDC)kcl::getHdcFrom(dc), 19 /*WP_SMALLCLOSEBUTTON*/, state, &rc, NULL);
+            ::DrawThemeBackground(hTheme, (HDC)kcl::getHdcFrom(dc), WP_SMALLCLOSEBUTTON, state, &rc, NULL);
 #else
             wxUxThemeEngine::Get()->DrawThemeBackground(
                                 hTheme, 
                                 (HDC)kcl::getHdcFrom(dc), 
-                                19 /*WP_SMALLCLOSEBUTTON*/,
+                                WP_SMALLCLOSEBUTTON,
                                 state, &rc, NULL);
 #endif
 
@@ -227,6 +225,11 @@ RelationBox::RelationBox(RelationDiagram* parent,
     m_closebutton_rect = wxRect(0,0,0,0);
     m_closebutton_bitmap = wxBitmap(xpm_relationshipbox_close);
     
+    m_box_caption_height = FromDIP(BOX_CAPTION_HEIGHT);
+    m_box_border_size = FromDIP(BOX_BORDER_SIZE);
+    m_box_min_height = FromDIP(BOX_MIN_HEIGHT);
+    m_box_min_width = FromDIP(BOX_MIN_WIDTH);
+
     m_action = RelationBox::ActionNone;
 
     m_grid = new kcl::Grid(this, ID_FieldList, wxPoint(0,0), wxSize(0,0));
@@ -333,7 +336,7 @@ int RelationBox::getItemY(const wxString& expr)
             if (i < row_offset)
             {
                 // before the begin
-                return BOX_BORDER_SIZE+(BOX_CAPTION_HEIGHT/2);
+                return m_box_border_size+(m_box_caption_height/2);
             }
 
             if (i > row_offset + vis_rows)
@@ -352,7 +355,7 @@ int RelationBox::getItemY(const wxString& expr)
     if (!found)
     {
         // before the begin
-        return BOX_BORDER_SIZE+(BOX_CAPTION_HEIGHT/2);
+        return m_box_border_size+(m_box_caption_height/2);
     }
 
     y -= (row_offset*row_height);
@@ -444,14 +447,14 @@ void RelationBox::onPaint(wxPaintEvent& evt)
     dc.SetPen(m_border_pen);
     dc.SetBrush(*wxWHITE);
     dc.DrawRectangle(0,
-                     BOX_CAPTION_HEIGHT+BOX_BORDER_SIZE-1,
+                     m_box_caption_height+m_box_border_size-1,
                      cli_width,
-                     cli_height-(BOX_CAPTION_HEIGHT+BOX_BORDER_SIZE-1));
+                     cli_height-(m_box_caption_height+m_box_border_size-1));
 
 
     // draw the caption background
 
-    wxRect r(1, 1, cli_width, BOX_CAPTION_HEIGHT+BOX_BORDER_SIZE);
+    wxRect r(1, 1, cli_width, m_box_caption_height+m_box_border_size);
     r.height /= 2;
     r.height++;
 
@@ -471,40 +474,40 @@ void RelationBox::onPaint(wxPaintEvent& evt)
     // caption border
     dc.SetPen(m_border_pen);
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
-    dc.DrawRectangle(0,0, cli_width, BOX_CAPTION_HEIGHT+BOX_BORDER_SIZE+1);
+    dc.DrawRectangle(0,0, cli_width, m_box_caption_height+m_box_border_size+1);
 
     // create the close button rect for future use
     if (IsUxThemed())
     {
-        m_closebutton_rect = wxRect(cli_width-BOX_BORDER_SIZE-15,
-                                    BOX_BORDER_SIZE+1,
-                                    13, 13);
+        m_closebutton_rect = wxRect(cli_width-m_box_border_size-FromDIP(15),
+                                    m_box_border_size+FromDIP(1),
+                                    FromDIP(13), FromDIP(13));
 
         // create the sort button rect for future use
         m_sortbutton_rect = m_closebutton_rect;
-        m_sortbutton_rect.x -= 17;
-        m_sortbutton_rect.y -= 1;
+        m_sortbutton_rect.x -= FromDIP(17);
+        m_sortbutton_rect.y -= FromDIP(1);
     }
      else
     {
-        m_closebutton_rect = wxRect(cli_width-BOX_BORDER_SIZE-16,
-                                    BOX_BORDER_SIZE-1,
-                                    16, 16);
+        m_closebutton_rect = wxRect(cli_width-m_box_border_size-FromDIP(16),
+                                    m_box_border_size-FromDIP(1),
+                                    FromDIP(16), FromDIP(16));
 
         // create the sort button rect for future use
         m_sortbutton_rect = m_closebutton_rect;
-        m_sortbutton_rect.x -= 16;
-        m_sortbutton_rect.y += 1;
+        m_sortbutton_rect.x -= FromDIP(16);
+        m_sortbutton_rect.y += FromDIP(1);
     }
 
     wxCoord caption_width, caption_height;
     dc.GetTextExtent(m_paint_caption, &caption_width, &caption_height);
 
-    int caption_y = (BOX_CAPTION_HEIGHT+BOX_BORDER_SIZE-caption_height+2)/2;
+    int caption_y = (m_box_caption_height+m_box_border_size-caption_height+2)/2;
     dc.SetFont(m_caption_font);
     dc.SetTextForeground(m_caption_textcolor);
-    dc.SetClippingRegion(0, 0, cli_width, 20);
-    dc.DrawText(m_paint_caption, BOX_BORDER_SIZE+4, caption_y);
+    dc.SetClippingRegion(0, 0, cli_width, FromDIP(21));
+    dc.DrawText(m_paint_caption, m_box_border_size+4, caption_y);
 
 
     wxBitmap sort_bmp;
@@ -549,7 +552,7 @@ void RelationBox::doSizing()
     wxRect r1(1, oldsize.y-3, oldsize.x-1, oldsize.y-1);
     Refresh(FALSE, &r1);
 
-    wxRect r2(oldsize.x-3, BOX_CAPTION_HEIGHT+BOX_BORDER_SIZE+2, oldsize.x-1, oldsize.y-1);
+    wxRect r2(oldsize.x-3, m_box_caption_height+m_box_border_size+2, oldsize.x-1, oldsize.y-1);
     Refresh(FALSE, &r2);
 
     recalcCaption();
@@ -557,9 +560,9 @@ void RelationBox::doSizing()
     // redraw grid
 
     m_grid->SetSize(1,
-                    BOX_CAPTION_HEIGHT+BOX_BORDER_SIZE+1,
-                    cli_width-BOX_BORDER_SIZE-1,
-                    cli_height-BOX_CAPTION_HEIGHT-((BOX_BORDER_SIZE*2))-1);
+                    m_box_caption_height+m_box_border_size+1,
+                    cli_width-m_box_border_size-1,
+                    cli_height-m_box_caption_height-((m_box_border_size*2))-1);
 
     m_grid->refresh(kcl::Grid::refreshPaint);
 }
@@ -578,7 +581,7 @@ void RelationBox::recalcCaption()
     temp_caption = caption;
     dc.GetTextExtent(caption, &caption_width, &caption_height);
 
-    while (caption_width+(BOX_BORDER_SIZE*2)+24 > oldsize.x)
+    while (caption_width+(m_box_border_size*2)+24 > oldsize.x)
     {
         caption = caption.RemoveLast();
         if (caption.IsEmpty())
@@ -593,10 +596,10 @@ void RelationBox::recalcCaption()
     {
         caption = temp_caption;
 
-        int caption_y = (BOX_CAPTION_HEIGHT+BOX_BORDER_SIZE-caption_height+2)/2;
+        int caption_y = (m_box_caption_height+m_box_border_size-caption_height+2)/2;
 
         m_paint_caption = caption;
-        wxRect r3(1, 1, oldsize.x-1, BOX_CAPTION_HEIGHT-1);
+        wxRect r3(1, 1, oldsize.x-1, m_box_caption_height-1);
         Refresh(FALSE, &r3);
     }
 }
@@ -741,7 +744,7 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             return;
         }
 
-        if (evt.m_y < BOX_CAPTION_HEIGHT)
+        if (evt.m_y < m_box_caption_height)
         {
             m_action = RelationBox::ActionMove;
             m_action_offx = evt.m_x;
@@ -845,10 +848,10 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             wxSize oldsize = GetClientSize();
             wxPoint pt = ::wxGetMousePosition();
             pt = ScreenToClient(pt);
-            if (pt.x < BOX_MINWIDTH)
-                pt.x = BOX_MINWIDTH;
-            if (pt.y < BOX_MINHEIGHT)
-                pt.y = BOX_MINHEIGHT;
+            if (pt.x < m_box_min_width)
+                pt.x = m_box_min_width;
+            if (pt.y < m_box_min_height)
+                pt.y = m_box_min_height;
             SetSize(pt.x, pt.y);
             wxRect r(oldsize.x-50, 0, pt.x-(oldsize.x-50)+1, pt.y);
             Refresh(FALSE, &r);
@@ -862,8 +865,8 @@ void RelationBox::onMouse(wxMouseEvent& evt)
 
             wxPoint pt = ::wxGetMousePosition();
             pt = ScreenToClient(pt);
-            if (pt.y < BOX_MINHEIGHT)
-                pt.y = BOX_MINHEIGHT;
+            if (pt.y < m_box_min_height)
+                pt.y = m_box_min_height;
             SetSize(-1, pt.y);
             wxRect r(0, oldsize.y, oldsize.x, pt.y-oldsize.y+1);
             Refresh(FALSE, &r);
@@ -876,8 +879,8 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             wxSize oldsize = GetClientSize();
             wxPoint pt = ::wxGetMousePosition();
             pt = ScreenToClient(pt);
-            if (pt.x < BOX_MINWIDTH)
-                pt.x = BOX_MINWIDTH;
+            if (pt.x < m_box_min_width)
+                pt.x = m_box_min_width;
             SetSize(pt.x, -1);
             wxRect r(oldsize.x-50, 0, pt.x-(oldsize.x-50)+1, pt.y);
             Refresh(FALSE, &r);
@@ -894,8 +897,8 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             wxPoint pt = ::wxGetMousePosition();
             pt = GetParent()->ScreenToClient(pt);
             int new_w = old_w + (old_x - pt.x);
-            if (new_w < BOX_MINWIDTH)
-                new_w = BOX_MINWIDTH;
+            if (new_w < m_box_min_width)
+                new_w = m_box_min_width;
             if (pt.x > old_x+old_w-new_w)
                 pt.x = old_x+old_w-new_w;
             SetSize(pt.x, old_y, new_w, old_h);
@@ -915,8 +918,8 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             if (pt.y < 0)
                 pt.y = 0;
             int new_h = old_h + (old_y - pt.y);
-            if (new_h < BOX_MINHEIGHT)
-                new_h = BOX_MINHEIGHT;
+            if (new_h < m_box_min_height)
+                new_h = m_box_min_height;
             if (pt.y > old_y+old_h-new_h)
                 pt.y = old_y+old_h-new_h;
             SetSize(old_x, pt.y, old_w, new_h);
@@ -934,11 +937,11 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             wxPoint pt = ::wxGetMousePosition();
             pt = GetParent()->ScreenToClient(pt);
             int new_h = pt.y - old_y;
-            if (new_h < BOX_MINHEIGHT)
-                new_h = BOX_MINHEIGHT;
+            if (new_h < m_box_min_height)
+                new_h = m_box_min_height;
             int new_w = old_w + (old_x - pt.x);
-            if (new_w < BOX_MINWIDTH)
-                new_w = BOX_MINWIDTH;
+            if (new_w < m_box_min_width)
+                new_w = m_box_min_width;
             if (pt.x > old_x+old_w-new_w)
                 pt.x = old_x+old_w-new_w;
             SetSize(pt.x, old_y, new_w, new_h);
@@ -958,11 +961,11 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             if (pt.y < 0)
                 pt.y = 0;
             int new_h = old_h + (old_y - pt.y);
-            if (new_h < BOX_MINHEIGHT)
-                new_h = BOX_MINHEIGHT;
+            if (new_h < m_box_min_height)
+                new_h = m_box_min_height;
             int new_w = old_w + (old_x - pt.x);
-            if (new_w < BOX_MINWIDTH)
-                new_w = BOX_MINWIDTH;
+            if (new_w < m_box_min_width)
+                new_w = m_box_min_width;
             if (pt.x > old_x+old_w-new_w)
                 pt.x = old_x+old_w-new_w;
             if (pt.y > old_y+old_h-new_h)
@@ -984,11 +987,11 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             if (pt.y < 0)
                 pt.y = 0;
             int new_h = old_h + (old_y - pt.y);
-            if (new_h < BOX_MINHEIGHT)
-                new_h = BOX_MINHEIGHT;
+            if (new_h < m_box_min_height)
+                new_h = m_box_min_height;
             int new_w = pt.x - old_x;
-            if (new_w < BOX_MINWIDTH)
-                new_w = BOX_MINWIDTH;
+            if (new_w < m_box_min_width)
+                new_w = m_box_min_width;
             if (pt.y > old_y+old_h-new_h)
                 pt.y = old_y+old_h-new_h;
             SetSize(old_x, pt.y, new_w, new_h);
@@ -1536,10 +1539,10 @@ bool RelationDiagram::save()
 
         kl::JsonNode boxes_child_node = boxes_node.appendElement();
         boxes_child_node["path"].setString(towstr((*it)->getSetPath()));
-        boxes_child_node["xpos"].setInteger(x);
-        boxes_child_node["ypos"].setInteger(y);
-        boxes_child_node["width"].setInteger(width);
-        boxes_child_node["height"].setInteger(height);
+        boxes_child_node["xpos"].setInteger(ToDIP(x));
+        boxes_child_node["ypos"].setInteger(ToDIP(y));
+        boxes_child_node["width"].setInteger(ToDIP(width));
+        boxes_child_node["height"].setInteger(ToDIP(height));
     }
 
     // save the job
@@ -1587,19 +1590,19 @@ bool RelationDiagram::load()
 
             kl::JsonNode boxes_child_node = *it;
             path = boxes_child_node["path"].getString();
-            x = boxes_child_node["xpos"].getInteger();
-            y = boxes_child_node["ypos"].getInteger();
-            width = boxes_child_node["width"].getInteger();
-            height = boxes_child_node["height"].getInteger();
+            x = FromDIP(boxes_child_node["xpos"].getInteger());
+            y = FromDIP(boxes_child_node["ypos"].getInteger());
+            width = FromDIP(boxes_child_node["width"].getInteger());
+            height = FromDIP(boxes_child_node["height"].getInteger());
 
             if (x < 0)
                 x = 0;
             if (y < 0)
                 y = 0;
-            if (width > 500)
-                width = 500;
-            if (height > 500)
-                height = 500;
+            if (width > FromDIP(500))
+                width = FromDIP(500);
+            if (height > FromDIP(500))
+                height = FromDIP(500);
             if (x > DIAGRAM_SCROLL_WIDTH-width)
                 x = DIAGRAM_SCROLL_WIDTH-width;
             if (y > DIAGRAM_SCROLL_HEIGHT-height)
@@ -2103,9 +2106,9 @@ bool RelationDiagram::addBox(const wxString& path,
     }
 
     if (width <= 0)
-        width = BOX_DEFAULT_WIDTH;
+        width = FromDIP(BOX_DEFAULT_WIDTH);
     if (height <= 0)
-        height = BOX_DEFAULT_HEIGHT;
+        height = FromDIP(BOX_DEFAULT_HEIGHT);
 
     xd::Structure structure = g_app->getDatabase()->describeTable(towstr(path));
     if (structure.isNull())
