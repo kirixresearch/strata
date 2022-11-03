@@ -205,19 +205,19 @@ void ColumnListPanel::populate()
     {
         std::sort(cols.begin(), cols.end(), ColumnListInfoLess());
 
-        m_grid->setColumnBitmap(0, GETBMP(xpm_columnsortup),
+        m_grid->setColumnBitmap(0, GETBMPSMALL(gf_columnsortup),
                                 kcl::Grid::alignRight);
     }
      else if (m_sort_state == sortDescending)
     {
         std::sort(cols.rbegin(), cols.rend(), ColumnListInfoLess());
 
-        m_grid->setColumnBitmap(0, GETBMP(xpm_columnsortdown),
+        m_grid->setColumnBitmap(0, GETBMPSMALL(gf_columnsortdown),
                                 kcl::Grid::alignRight);
     }
      else
     {
-        m_grid->setColumnBitmap(0, GETBMP(xpm_columnsortnone),
+        m_grid->setColumnBitmap(0, GETBMPSMALL(gf_columnsortnone),
                                 kcl::Grid::alignRight);
     }
 

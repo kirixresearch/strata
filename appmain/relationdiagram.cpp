@@ -513,10 +513,10 @@ void RelationBox::onPaint(wxPaintEvent& evt)
     wxBitmap sort_bmp;
     switch (m_sort_order)
     {
-        case 1: sort_bmp = GETBMP(xpm_columnsortup); break;
-        case 2: sort_bmp = GETBMP(xpm_columnsortdown); break;
+        case 1: sort_bmp = GETBMPSMALL(gf_columnsortup); break;
+        case 2: sort_bmp = GETBMPSMALL(gf_columnsortdown); break;
         default:
-        case 3: sort_bmp = GETBMP(xpm_columnsortnone); break;
+        case 3: sort_bmp = GETBMPSMALL(gf_columnsortnone); break;
     }
 
     dc.DrawBitmap(sort_bmp,

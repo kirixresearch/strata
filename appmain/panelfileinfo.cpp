@@ -343,7 +343,7 @@ bool MultiFileInfoPanel::initDoc(IFramePtr frame,
     
     std::sort(m_info.begin(), m_info.end(), sortByNameA);
     m_grid->setColumnBitmap(0,
-                            GETBMP(xpm_columnsortup),
+                            GETBMPSMALL(gf_columnsortup),
                             kcl::Grid::alignRight);
     m_sort_ascending = true;
     m_sort_column = 0;
@@ -615,7 +615,7 @@ void MultiFileInfoPanel::onGridColumnLeftClick(kcl::GridEvent& event)
         {
             wxBitmap bmp;
             if (i == col)
-                bmp = GETBMP(xpm_columnsortup);
+                bmp = GETBMPSMALL(gf_columnsortup);
                  else
                 bmp = wxNullBitmap;
             
@@ -637,7 +637,7 @@ void MultiFileInfoPanel::onGridColumnLeftClick(kcl::GridEvent& event)
         {
             wxBitmap bmp;
             if (i == col)
-                bmp = GETBMP(xpm_columnsortdown);
+                bmp = GETBMPSMALL(gf_columnsortdown);
                  else
                 bmp = wxNullBitmap;
             

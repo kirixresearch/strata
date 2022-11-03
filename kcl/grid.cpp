@@ -4684,27 +4684,28 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
             if (m_viewcols[col]->m_bitmap.Ok())
             {
                 int bitmapx;
+                int bitmapy = (m_header_height / 2) - (m_viewcols[col]->m_bitmap.GetHeight() / 2);
 
                 switch (m_viewcols[col]->m_bitmap_alignment)
                 {
                     default:
                     case alignLeft:
-                        bitmapx = colx+2;
+                        bitmapx = colx + FromDIP(2);
                         break;
 
                     case alignCenter:
-                        bitmapx = textx - m_viewcols[col]->m_bitmap.GetWidth() - 2;
+                        bitmapx = textx - m_viewcols[col]->m_bitmap.GetWidth() - FromDIP(2);
                         if (bitmapx < colx+2)
                             bitmapx = colx+2;
                         break;
 
                     case alignRight:
-                        bitmapx = colx+colw - m_viewcols[col]->m_bitmap.GetWidth() - 2;
+                        bitmapx = colx+colw - m_viewcols[col]->m_bitmap.GetWidth() - FromDIP(2);
                         break;
                 }
 
 
-                m_memdc.DrawBitmap(m_viewcols[col]->m_bitmap, bitmapx, 1, true);
+                m_memdc.DrawBitmap(m_viewcols[col]->m_bitmap, bitmapx, bitmapy, true);
             }
 
             m_memdc.DestroyClippingRegion();

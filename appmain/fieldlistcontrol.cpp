@@ -350,18 +350,18 @@ void FieldListControl::populate()
     if (m_sort_state == SortAscending)
     {
         std::sort(fields.begin(), fields.end(), sortByNameA);
-        m_grid->setColumnBitmap(0, GETBMP(xpm_columnsortup),
+        m_grid->setColumnBitmap(0, GETBMPSMALL(gf_columnsortup),
                                 kcl::Grid::alignRight);
     }
      else if (m_sort_state == SortDescending)
     {
         std::sort(fields.begin(), fields.end(), sortByNameD);
-        m_grid->setColumnBitmap(0, GETBMP(xpm_columnsortdown),
+        m_grid->setColumnBitmap(0, GETBMPSMALL(gf_columnsortdown),
                                 kcl::Grid::alignRight);
     }
      else
     {
-        m_grid->setColumnBitmap(0, GETBMP(xpm_columnsortnone),
+        m_grid->setColumnBitmap(0, GETBMPSMALL(gf_columnsortnone),
                                 kcl::Grid::alignRight);
     }
 
