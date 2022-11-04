@@ -386,10 +386,10 @@ bool TextDoc::initDoc(IFramePtr frame,
     IStatusBarItemPtr item;
 
     item = addStatusBarItem(wxT("textdoc_column_offset"));
-    item->setWidth(120);
+    item->setWidth(FromDIP(120));
     
     item = addStatusBarItem(wxT("textdoc_field_count"));
-    item->setWidth(120);
+    item->setWidth(FromDIP(120));
 
     // connect signals
     m_textview->sigColumnAdded.connect(this, &TextDoc::onTextViewColumnAdded);
@@ -1002,28 +1002,28 @@ wxBoxSizer* TextDoc::createMainSettingsSizer()
         m_encoding_choice->Append(m_encoding_labels[i]);
     
     wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
-    sizer->AddSpacer(5);
+    sizer->AddSpacer(FromDIP(5));
     sizer->Add(static_filetype, 0, wxALIGN_CENTER);
-    sizer->AddSpacer(5);
+    sizer->AddSpacer(FromDIP(5));
     sizer->Add(m_filetype_choice, 0, wxALIGN_CENTER);
-    sizer->AddSpacer(10);
+    sizer->AddSpacer(FromDIP(10));
     sizer->Add(static_encoding, 0, wxALIGN_CENTER);
-    sizer->AddSpacer(5);
+    sizer->AddSpacer(FromDIP(5));
     sizer->Add(m_encoding_choice, 0, wxALIGN_CENTER);
     sizer->AddStretchSpacer(1);
     sizer->Add(m_fixedlength_settings_sizer, 0, wxEXPAND);
     sizer->Add(m_textdelimited_settings_sizer, 0, wxEXPAND);
-    sizer->AddSpacer(5);
+    sizer->AddSpacer(FromDIP(5));
     
     wxMouseState state = ::wxGetMouseState();
     
     if (state.ControlDown())
     {
-        sizer->Add(new wxBitmapButton(this, ID_OptionsMenu, GETBMP(gf_gear_16)), 0);
+        sizer->Add(new wxBitmapButton(this, ID_OptionsMenu, GETBMPSMALL(gf_gear)), 0);
         sizer->AddSpacer(5);
     }
     
-    sizer->SetMinSize(100, 31);
+    sizer->SetMinSize(FromDIP(100), FromDIP(31));
     return sizer;
 }
 
@@ -1041,7 +1041,7 @@ wxBoxSizer* TextDoc::createFixedLengthSettingsSizer()
                                           ID_SkipCharsSpinCtrl,
                                           wxT(""),
                                           wxDefaultPosition,
-                                          wxSize(90,21),
+                                          FromDIP(wxSize(90, 21)),
                                           wxSP_ARROW_KEYS | wxTE_PROCESS_ENTER,
                                           0,
                                           MAX_SKIPCHARS);
@@ -1050,7 +1050,7 @@ wxBoxSizer* TextDoc::createFixedLengthSettingsSizer()
                                          ID_RowWidthSpinCtrl,
                                          wxT(""),
                                          wxDefaultPosition,
-                                         wxSize(60,21),
+                                         FromDIP(wxSize(60, 21)),
                                          wxSP_ARROW_KEYS | wxTE_PROCESS_ENTER,
                                          1,
                                          MAX_ROWWIDTH);
@@ -1061,15 +1061,15 @@ wxBoxSizer* TextDoc::createFixedLengthSettingsSizer()
 
     wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
     sizer->Add(static_skipchars, 0, wxALIGN_CENTER);
-    sizer->AddSpacer(4);
+    sizer->AddSpacer(FromDIP(4));
     sizer->Add(m_skipchars_spinctrl, 0, wxALIGN_CENTER);
-    sizer->AddSpacer(8);
+    sizer->AddSpacer(FromDIP(8));
     sizer->Add(static_rowwidth, 0, wxALIGN_CENTER);
-    sizer->AddSpacer(4);
+    sizer->AddSpacer(FromDIP(4));
     sizer->Add(m_rowwidth_spinctrl, 0, wxALIGN_CENTER);
-    sizer->AddSpacer(10);
+    sizer->AddSpacer(FromDIP(10));
     sizer->Add(m_linedelimited_checkbox, 0, wxALIGN_CENTER);
-    sizer->SetMinSize(100, 31);
+    sizer->SetMinSize(FromDIP(100), FromDIP(31));
     return sizer;
 }
 
@@ -1117,15 +1117,15 @@ wxBoxSizer* TextDoc::createTextDelimitedSettingsSizer()
 
     wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
     sizer->Add(static_delimiters, 0, wxALIGN_CENTER);
-    sizer->AddSpacer(5);
+    sizer->AddSpacer(FromDIP(5));
     sizer->Add(m_delimiters_combobox, 0, wxALIGN_CENTER);
-    sizer->AddSpacer(10);
+    sizer->AddSpacer(FromDIP(10));
     sizer->Add(static_text_qualifier, 0, wxALIGN_CENTER);
-    sizer->AddSpacer(5);
+    sizer->AddSpacer(FromDIP(5));
     sizer->Add(m_textqualifier_combobox, 0, wxALIGN_CENTER);
-    sizer->AddSpacer(10);
+    sizer->AddSpacer(FromDIP(10));
     sizer->Add(m_firstrowfieldnames_checkbox, 0, wxALIGN_CENTER);
-    sizer->SetMinSize(100, 31);
+    sizer->SetMinSize(FromDIP(100), FromDIP(31));
     return sizer;
 }
 
