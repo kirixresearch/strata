@@ -232,7 +232,7 @@ bool QueryDoc::initDoc(IFramePtr frame,
     
     // update the caption and set the bitmap
     updateCaption();
-    m_doc_site->setBitmap(GETBMP(gf_query_16));
+    m_doc_site->setBitmap(GETBMPSMALL(gf_query));
 
     // create settings sizer
     
@@ -251,24 +251,24 @@ bool QueryDoc::initDoc(IFramePtr frame,
                                            ID_OutputPath_TextCtrl,
                                            wxEmptyString,
                                            wxDefaultPosition,
-                                           wxSize(200,21));
+                                           FromDIP(wxSize(200, 21)));
     m_browse_button = new wxButton(this,
                                    ID_Browse_Button,
                                    _("Browse..."));
     
     m_settings_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_settings_sizer->AddSpacer(5);
+    m_settings_sizer->AddSpacer(FromDIP(5));
     m_settings_sizer->Add(m_add_button, 0, wxALIGN_CENTER);
-    m_settings_sizer->AddSpacer(5);
+    m_settings_sizer->AddSpacer(FromDIP(5));
     m_settings_sizer->Add(m_selectdistinct_checkbox, 0, wxALIGN_CENTER);
     m_settings_sizer->AddStretchSpacer();
     m_settings_sizer->Add(outputpath_label, 0, wxALIGN_CENTER);
-    m_settings_sizer->AddSpacer(5);
+    m_settings_sizer->AddSpacer(FromDIP(5));
     m_settings_sizer->Add(m_outputpath_textctrl, 0, wxALIGN_CENTER);
-    m_settings_sizer->AddSpacer(5);
+    m_settings_sizer->AddSpacer(FromDIP(5));
     m_settings_sizer->Add(m_browse_button, 0, wxALIGN_CENTER);
-    m_settings_sizer->AddSpacer(5);
-    m_settings_sizer->SetMinSize(100, 31);
+    m_settings_sizer->AddSpacer(FromDIP(5));
+    m_settings_sizer->SetMinSize(FromDIP(100), FromDIP(31));
     
     wxFont banner_font = wxFont(8, wxSWISS, wxNORMAL, wxFONTWEIGHT_BOLD, false);
     
@@ -280,7 +280,7 @@ bool QueryDoc::initDoc(IFramePtr frame,
     kcl::BannerControl* query_def_banner = new kcl::BannerControl(this,
                                                        _("Query Definition"),
                                                        wxPoint(0,0),
-                                                       wxSize(200, 24));
+                                                       FromDIP(wxSize(200, 24)));
     query_def_banner->setStartColor(kcl::stepColor(base_color, 170));
     query_def_banner->setEndColor(kcl::stepColor(base_color, 90));
     query_def_banner->setGradientDirection(kcl::BannerControl::gradientVertical);
@@ -297,10 +297,10 @@ bool QueryDoc::initDoc(IFramePtr frame,
     m_sash = new wxSashWindow(this,
                               ID_Sash,
                               wxPoint(0,0),
-                              wxSize(200,sash_height),
+                              wxSize(FromDIP(200), sash_height),
                               wxCLIP_CHILDREN | wxSW_NOBORDER);
     m_sash->SetSashVisible(wxSASH_BOTTOM, true);
-    m_sash->SetDefaultBorderSize(4);
+    m_sash->SetDefaultBorderSize(FromDIP(4));
     
     m_diagram = new RelationDiagram(m_sash, 
                                     ID_RelationWindow,

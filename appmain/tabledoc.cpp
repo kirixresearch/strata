@@ -486,7 +486,7 @@ bool TableDoc::initDoc(IFramePtr frame,
     m_doc_site = doc_site;
 
     doc_site->setCaption(m_caption);
-    doc_site->setBitmap(GETBMP(gf_table_16));
+    doc_site->setBitmap(GETBMPSMALL(gf_table));
 
     // create document's window
     bool result = Create(docsite_wnd,
@@ -746,7 +746,7 @@ void TableDoc::onSiteActivated()
     
     IQueryDocPtr querydoc = lookupOtherDocument(m_doc_site, "appmain.QueryDoc");
     if (querydoc)
-        m_doc_site->setBitmap(GETBMP(gf_query_16));
+        m_doc_site->setBitmap(GETBMPSMALL(gf_query));
 
     // we've activated the cursor, so post an event to repaint; 
     // we could repaint here, but in cases where the grid cursor

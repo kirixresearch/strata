@@ -310,7 +310,7 @@ bool TextDoc::initDoc(IFramePtr frame,
 
     // set the document's caption and icon
     updateCaption();
-    m_doc_site->setBitmap(GETBMP(gf_table_16));
+    m_doc_site->setBitmap(GETBMPSMALL(gf_table));
 
     Hide();     // prevent flicker when creating TextDoc
 

@@ -1042,7 +1042,7 @@ bool EditorDoc::initDoc(IFramePtr frame,
     m_doc_site = doc_site;
 
     SetBackgroundColour(kcl::getBaseColor());
-    doc_site->setBitmap(GETBMP(gf_script_16));
+    doc_site->setBitmap(GETBMPSMALL(gf_script));
     
     
     // create editor control

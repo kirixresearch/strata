@@ -2236,7 +2236,7 @@ bool WebDoc::initDoc(IFramePtr frame,
 
     // set the caption
     doc_site->setCaption(_("(Untitled)"));
-    doc_site->setBitmap(GETBMP(gf_document_16));
+    doc_site->setBitmap(GETBMPSMALL(gf_document));
     m_doc_site = doc_site;
     
     m_bitmap_updater.setDocSite(m_doc_site);
@@ -2664,7 +2664,7 @@ void WebDoc::openURI(const wxString& uri, wxWebPostData* post_data)
     }
 
 
-    m_doc_site->setBitmap(GETBMP(gf_document_16));
+    m_doc_site->setBitmap(GETBMPSMALL(gf_document));
 
 
     // don't allow thse locations to be loaded -- most restricted locations are handled

@@ -563,7 +563,7 @@ bool StructureDoc::initDoc(IFramePtr frame,
     
     // update the caption
     updateCaption();
-    m_doc_site->setBitmap(GETBMP(gf_table_16));
+    m_doc_site->setBitmap(GETBMPSMALL(gf_table));
 
     wxFont overlay_font = wxFont(16, wxSWISS, wxNORMAL, wxNORMAL, false);
     

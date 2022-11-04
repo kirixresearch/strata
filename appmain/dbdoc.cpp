@@ -1054,7 +1054,7 @@ bool DbDoc::initAsDocument(IFsItemPtr item)
         return false;
     }
     
-    m_dbdoc_site->setBitmap(GETBMP(gf_project_16));
+    m_dbdoc_site->setBitmap(GETBMPSMALL(gf_project));
     m_dbdoc_site->setMinSize(200, 400);
     m_dbdoc_site->setCaption(caption);
     m_dbdoc_site->setVisible(true);

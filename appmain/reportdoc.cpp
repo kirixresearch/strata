@@ -1973,7 +1973,7 @@ bool ReportDoc::initDoc(IFramePtr frame,
     // set the docsite
     m_doc_site = doc_site;
     m_doc_site->setUIContext(getUserInterface());
-    m_doc_site->setBitmap(GETBMP(gf_report_16));
+    m_doc_site->setBitmap(GETBMPSMALL(gf_report));
     updateCaption();
     
     // set the frame and connect the handlers

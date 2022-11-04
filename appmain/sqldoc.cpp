@@ -227,7 +227,7 @@ bool SqlDoc::initDoc(IFramePtr frame,
         m_doc_site->setCaption(_("(Untitled)"));
     }
     
-    m_doc_site->setBitmap(GETBMP(gf_query_16));
+    m_doc_site->setBitmap(GETBMPSMALL(gf_query));
     
     
     // -- create text control --
