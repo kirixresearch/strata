@@ -307,7 +307,6 @@ bool BookmarkFs::loadBookmark(const std::wstring& path, Bookmark& bookmark)
         return false;
 
     return bookmark.fromJson(json);
-
 }
 
 bool BookmarkFs::saveBookmark(const std::wstring& path, Bookmark& bookmark)
@@ -588,7 +587,7 @@ void BookmarkFolder::populate()
     if (fspath.length() > 0 && fspath[0] == '/')
         fspath.erase(0,1);
         
-    fspath = getBookmarksLocation() + (fspath.length()>0?PATH_SEPARATOR_STR:L"") + fspath;
+    fspath = getBookmarksLocation() + (fspath.length() > 0 ? PATH_SEPARATOR_STR : L"") + fspath;
         
     xf_dirhandle_t handle = xf_opendir(fspath);
     xf_direntry_t info;
@@ -605,7 +604,7 @@ void BookmarkFolder::populate()
 
         if (info.m_name.find(L".json") != info.m_name.npos)
         {
-            wxBitmap bmp = GETBMP(gf_document_16);
+            wxBitmap bmp = GETBMPSMALL(gf_document);
             std::wstring name = kl::beforeLast(info.m_name, '.');
             std::wstring bookmark_path = appendPaths(m_path, name);
 
@@ -629,7 +628,7 @@ void BookmarkFolder::populate()
         {
             BookmarkFolder* folder = new BookmarkFolder;
             folder->setLabel(info.m_name);
-            folder->setBitmap(GETBMP(gf_folder_closed_16));
+            folder->setBitmap(GETBMPSMALL(gf_folder_closed));
             folder->setPath(appendPaths(m_path, info.m_name));
 
             IFsItemPtr f = static_cast<IFsItem*>(folder);
