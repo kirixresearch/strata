@@ -33,7 +33,7 @@ class UrlComboPopup : public kcl::BitmapComboPopup
     void SetStringValue(const wxString& s)
     {
 #if !wxCHECK_VERSION(2,9,0)
-        if (s.StartsWith(wxT("https")))
+        if (s.StartsWith("https"))
             m_combo->SetBackgroundColour(wxColour(255,255,190));
              else
             m_combo->SetBackgroundColour(wxColour(*wxWHITE));
@@ -49,24 +49,24 @@ void initIdBitmapMap()
 {
     BitmapMgr* mgr = BitmapMgr::getBitmapMgr();
     
-    mgr->addIdBitmapMap(ID_Project_New, wxT("gf_blank_document"));
-    mgr->addIdBitmapMap(ID_Project_OpenFile, wxT("gf_folder_open"));
-    mgr->addIdBitmapMap(ID_File_Save, wxT("gf_save"));
-    mgr->addIdBitmapMap(ID_View_ViewSwitcher, wxT("gf_switch_view"));
-    mgr->addIdBitmapMap(ID_File_Back, wxT("gf_back_arrow"));
-    mgr->addIdBitmapMap(ID_File_Forward, wxT("gf_forward_arrow"));
-    mgr->addIdBitmapMap(ID_File_Reload, wxT("gf_reload"));
-    mgr->addIdBitmapMap(ID_File_Stop, wxT("gf_stop"));
-    mgr->addIdBitmapMap(ID_Project_Home, wxT("gf_home"));
-    mgr->addIdBitmapMap(ID_File_Bookmark, wxT("gf_favorities"));
-    mgr->addIdBitmapMap(ID_Data_QuickFilter, wxT("gf_quick_filter"));
-    mgr->addIdBitmapMap(ID_Edit_FindNext, wxT("gf_find_next"));
-    mgr->addIdBitmapMap(ID_Data_Filter, wxT("gf_filter"));
-    mgr->addIdBitmapMap(ID_Data_CreateDynamicField, wxT("gf_lightning"));
-    mgr->addIdBitmapMap(ID_Data_Sort, wxT("gf_sort_a"));
-    mgr->addIdBitmapMap(ID_Data_GroupRecords, wxT("gf_sum"));
-    mgr->addIdBitmapMap(ID_Project_Relationship, wxT("gf_related_field"));
-    mgr->addIdBitmapMap(ID_App_ToggleRelationshipSync, wxT("gf_filter_related"));
+    mgr->addIdBitmapMap(ID_Project_New, "gf_blank_document");
+    mgr->addIdBitmapMap(ID_Project_OpenFile, "gf_folder_open");
+    mgr->addIdBitmapMap(ID_File_Save, "gf_save");
+    mgr->addIdBitmapMap(ID_View_ViewSwitcher, "gf_switch_view");
+    mgr->addIdBitmapMap(ID_File_Back, "gf_back_arrow");
+    mgr->addIdBitmapMap(ID_File_Forward, "gf_forward_arrow");
+    mgr->addIdBitmapMap(ID_File_Reload, "gf_reload");
+    mgr->addIdBitmapMap(ID_File_Stop, "gf_stop");
+    mgr->addIdBitmapMap(ID_Project_Home, "gf_home");
+    mgr->addIdBitmapMap(ID_File_Bookmark, "gf_favorities");
+    mgr->addIdBitmapMap(ID_Data_QuickFilter, "gf_quick_filter");
+    mgr->addIdBitmapMap(ID_Edit_FindNext, "gf_find_next");
+    mgr->addIdBitmapMap(ID_Data_Filter, "gf_filter");
+    mgr->addIdBitmapMap(ID_Data_CreateDynamicField, "gf_lightning");
+    mgr->addIdBitmapMap(ID_Data_Sort, "gf_sort_a");
+    mgr->addIdBitmapMap(ID_Data_GroupRecords, "gf_sum");
+    mgr->addIdBitmapMap(ID_Project_Relationship, "gf_related_field");
+    mgr->addIdBitmapMap(ID_App_ToggleRelationshipSync, "gf_filter_related");
 }
 
 
@@ -152,7 +152,7 @@ bool StandardToolbar::getSmallIcons()
 void StandardToolbar::setSmallIcons(bool small_icons)
 {
     m_small_icons = small_icons;
-    int spacer = (small_icons ? 3 : 5);
+    int spacer = (small_icons ? FromDIP(3) : FromDIP(5));
     
     Clear();
 
@@ -266,7 +266,7 @@ FontComboControl::FontComboControl(wxWindow* parent, wxWindowID id)
                        choices,
                        wxCB_READONLY);
     
-    wxString font_name = getAppPrefsDefaultString(wxT("grid.font.face_name"));
+    wxString font_name = getAppPrefsDefaultString("grid.font.face_name");
     SetStringSelection(font_name);
 
     #ifdef __WXMSW__

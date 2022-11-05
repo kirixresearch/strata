@@ -84,20 +84,20 @@ static wxString getAppDataPath()
     if (!xf_get_directory_exist(towstr(default_appdata_path)))
     {
         // migrate old standard path setting to new value
-        prefs->remove(wxT("standard_paths.application_data"));
+        prefs->remove("standard_paths.application_data");
         xf_mkdir(towstr(default_appdata_path));
     }
     
-    if (!prefs->exists(wxT("standard_paths.application_data")))
+    if (!prefs->exists("standard_paths.application_data"))
     {
         retval = default_appdata_path;
-        prefs->setString(wxT("standard_paths.application_data"),
+        prefs->setString("standard_paths.application_data",
                          default_appdata_path);
         prefs->flush();
     }
      else
     {
-        retval = prefs->getString(wxT("standard_paths.application_data"),
+        retval = prefs->getString("standard_paths.application_data",
                                   default_appdata_path);
     }
     
@@ -257,10 +257,10 @@ void UpdateTimer::Notify()
         return;
         
     // user does not want updates
-    if (!getAppPrefsBoolean(wxT("general.updater.check_for_updates")))
+    if (!getAppPrefsBoolean("general.updater.check_for_updates"))
         return;
         
-    time_t last_update = (time_t)getAppPrefsLong(wxT("general.updater.last_check"));
+    time_t last_update = (time_t)getAppPrefsLong("general.updater.last_check");
     time_t now_time = time(NULL);
     
     struct tm last_tm, now_tm;
@@ -335,7 +335,7 @@ void MainApp::processIdle()
 bool MainApp::OnInit()
 {
 #ifdef _DEBUG
-    wxLog::AddTraceMask(wxT("ole"));
+    wxLog::AddTraceMask("ole");
 #endif
 
     srand((unsigned)time(NULL));
@@ -354,12 +354,12 @@ bool MainApp::OnInit()
 
     if (argc > 1)
     {
-        if (g_app->getCommandLine()->Found(wxT("s")))
+        if (g_app->getCommandLine()->Found("s"))
         {
             m_is_service = true;
         }
 
-        if (g_app->getCommandLine()->Found(wxT("svccfg")))
+        if (g_app->getCommandLine()->Found("svccfg"))
         {
             m_is_service_config = true;
         }
@@ -405,21 +405,21 @@ bool MainApp::OnInit()
     wxString i18n_base_path;
     i18n_base_path = m_install_path;
     i18n_base_path += PATH_SEPARATOR_STR;
-    i18n_base_path += wxT("..");
+    i18n_base_path += "..";
     i18n_base_path += PATH_SEPARATOR_STR;
-    i18n_base_path += wxT("i18n");
+    i18n_base_path += "i18n";
     if (!wxDir::Exists(i18n_base_path))
     {
         // try old location: <bin_dir>/i18n/de
         i18n_base_path = m_install_path;
         i18n_base_path += PATH_SEPARATOR_STR;
-        i18n_base_path += wxT("i18n");
+        i18n_base_path += "i18n";
     }
     
     m_locale = new wxLocale();
     m_locale->Init(wxLANGUAGE_DEFAULT);
     m_locale->AddCatalogLookupPathPrefix(i18n_base_path);
-    m_locale->AddCatalog(wxT("messages"));
+    m_locale->AddCatalog("messages");
     
     wxSocketBase::Initialize();
 
@@ -428,10 +428,10 @@ bool MainApp::OnInit()
     // initialize help controller
     wxString help_path = m_install_path;
     #ifdef __WXMSW__
-    help_path += wxT("\\..\\help\\help.chm");
+    help_path += "\\..\\help\\help.chm";
     #else
     wxFileSystem::AddHandler(new wxZipFSHandler);
-    help_path += wxT("/../help/help.zip");
+    help_path += "/../help/help.zip";
     #endif
 
     if (xf_get_file_exist(towstr(help_path)))
@@ -485,7 +485,7 @@ bool MainApp::OnInit()
     // initialize bitmap manager
     wxString bmpres_path = m_install_path;
     bmpres_path += PATH_SEPARATOR_STR;
-    bmpres_path += wxT("imgres.zip");
+    bmpres_path += "imgres.zip";
 
     defineCommandsMain();
     apphookInitCommands();
@@ -501,7 +501,7 @@ bool MainApp::OnInit()
     m_app_default_preferences = createMemoryAppPreferencesObject();
     if (!m_app_default_preferences)
     {
-        appMessageBox(wxT("Could not create a MemoryAppPreferences object"));
+        appMessageBox("Could not create a MemoryAppPreferences object");
         return false;
     }
 
@@ -515,7 +515,7 @@ bool MainApp::OnInit()
     m_app_preferences = createAppPreferencesObject();
     if (!m_app_preferences)
     {
-        appMessageBox(wxT("Could not create an AppPreferences object"));
+        appMessageBox("Could not create an AppPreferences object");
         return FALSE;
     }
 
@@ -549,7 +549,7 @@ bool MainApp::OnInit()
         if (xf_get_file_exist(towstr(argv[1])))
         {
 #if APP_GUI==1
-            wxFrame* f = new wxFrame(NULL, -1, wxT(""));
+            wxFrame* f = new wxFrame(NULL, -1, "");
             if (!runCommandLineScript())
                 return FALSE;
             SetExitOnFrameDelete(false);
@@ -582,9 +582,9 @@ void MainApp::initWebClient()
     // add some common plugin directories to MOZ_PLUGIN_PATH
     #ifdef __WXMSW__
     wxString program_files_dir;
-    if (!::wxGetEnv(wxT("ProgramFiles(x86)"), &program_files_dir))
+    if (!::wxGetEnv("ProgramFiles(x86)", &program_files_dir))
     {
-        ::wxGetEnv(wxT("ProgramFiles"), &program_files_dir);
+        ::wxGetEnv("ProgramFiles", &program_files_dir);
     }
     if (program_files_dir.Length() == 0 || program_files_dir.Last() != '\\')
         program_files_dir += "\\";
@@ -598,11 +598,11 @@ void MainApp::initWebClient()
 
     
     wxString dir1 = program_files_dir;
-    dir1 += wxT("Mozilla Firefox\\plugins");
+    dir1 += "Mozilla Firefox\\plugins";
     wxWebControl::AddPluginPath(dir1);
     
     wxString dir2 = system_dir;
-    dir2 += wxT("Macromed\\Flash");
+    dir2 += "Macromed\\Flash";
     wxWebControl::AddPluginPath(dir2);
     
     #else
@@ -614,7 +614,7 @@ void MainApp::initWebClient()
     wxString web_engine_path = m_install_path;
     web_engine_path = web_engine_path.BeforeLast(PATH_SEPARATOR_CHAR);
     web_engine_path += PATH_SEPARATOR_CHAR;
-    web_engine_path += wxT("xr");
+    web_engine_path += "xr";
     
     
     // on vista and windows 7, sometimes old versions of the files
@@ -630,17 +630,17 @@ void MainApp::initWebClient()
     {
         wxString s = wxStandardPaths::Get().GetUserLocalDataDir();
         s = s.BeforeLast('\\'); // strip off app name
-        s += wxT("\\VirtualStore");
+        s += "\\VirtualStore";
         if (web_engine_path.Length() > 2 && web_engine_path.GetChar(1) == ':')
         {
             s += web_engine_path.substr(2);
             if (::wxDirExists(s))
             {
                 wxString fname;
-                fname = s + wxT("\\components\\compreg.dat");
+                fname = s + "\\components\\compreg.dat";
                 if (::wxFileExists(fname))
                     ::wxRemoveFile(fname);
-                fname = s + wxT("\\components\\xpti.dat");
+                fname = s + "\\components\\xpti.dat";
                 if (::wxFileExists(fname))
                     ::wxRemoveFile(fname);
             }
@@ -654,7 +654,7 @@ void MainApp::initWebClient()
     wxString app_data_path = this->getAppDataPath();
     if (app_data_path.Right(1) != PATH_SEPARATOR_STR)
         app_data_path += PATH_SEPARATOR_CHAR;
-    app_data_path += wxT("Browser");
+    app_data_path += "Browser";
     if (!xf_get_directory_exist(towstr(app_data_path)))
         xf_mkdir(towstr(app_data_path));
 
@@ -696,10 +696,10 @@ void MainApp::populatePaperDatabaseClean()
         // such: "Letter, 8 1/2 x 11 in", and there are also sizes
         // that we don't want to include such as "11 x 17 in"
         wxString name = paper->GetName();
-        if (name.Find(wxT(',')) == wxNOT_FOUND)
+        if (name.Find(',') == wxNOT_FOUND)
             continue;
         
-        wxString clean_name = name.BeforeFirst(wxT(','));
+        wxString clean_name = name.BeforeFirst(',');
         m_paper_database->AddPaperType(paper->GetId(),
                                        clean_name,
                                        paper->GetWidth(),
@@ -1123,17 +1123,17 @@ bool MainApp::isDatabaseOpen()
 
 bool MainApp::isDatabaseReadOnly()
 {
-    return m_app_preferences->getBoolean(wxT("app.data_locked"), true);
+    return m_app_preferences->getBoolean("app.data_locked", true);
 }
 
 wxString MainApp::getProjectName()
 {
     if (m_database.isNull())
-        return wxT("");
+        return "";
 
     xd::IAttributesPtr attr = m_database->getAttributes();
     if (attr.isNull())
-        return wxT("");
+        return "";
 
     return attr->getStringAttribute(xd::dbattrDatabaseName);
 }
@@ -1180,7 +1180,7 @@ void MainApp::showApp(bool show)
             }
             
             wxIcon logo;
-            logo.LoadFile(wxT("AA_APPICON_9"), wxBITMAP_TYPE_ICO_RESOURCE);
+            logo.LoadFile("AA_APPICON_9", wxBITMAP_TYPE_ICO_RESOURCE);
             
             m_taskbar_icon->SetIcon(logo, wxEmptyString);
         }
@@ -1266,7 +1266,7 @@ void AppMacroRecorder::reset()
 void AppMacroRecorder::addLine(const wxString& s)
 {
     wxString line;
-    line.Append(wxT(' '), m_indent);
+    line.Append(' ', m_indent);
     line += s;
     m_lines.push_back(line);
 
@@ -1274,12 +1274,12 @@ void AppMacroRecorder::addLine(const wxString& s)
     IFramePtr frame = g_app->getMainFrame();
     if (frame.isOk())
     {
-        IDocumentSitePtr site = frame->lookupSite(wxT("ConsolePanel"));
+        IDocumentSitePtr site = frame->lookupSite("ConsolePanel");
         if (site.isOk())
         {
             IConsolePanelPtr console = site->getDocument();
             if (console.isOk())
-                console->print(line + wxT("\n"));
+                console->print(line + "\n");
         }
     }
 }

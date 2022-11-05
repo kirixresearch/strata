@@ -254,7 +254,9 @@ wxBitmap BitmapMgr::getBitmap(int id, int status, int size)
 
 wxBitmap BitmapMgr::lookupBitmap(const wxString& bitmap_name, int status, int size)
 {
-    static int sizes[] = { 64, 48, 32, 24, 16 };
+    const int sizes_count = 5;
+    static int sizes[sizes_count] = { 64, 48, 32, 24, 15 };
+
     wxString name = bitmap_name;
 
     int desired_size = -1;
@@ -303,34 +305,27 @@ wxBitmap BitmapMgr::lookupBitmap(const wxString& bitmap_name, int status, int si
         bool res;
         wxBitmapType entry_type = wxBITMAP_TYPE_PNG;
 
-        if (name.Left(3) == wxT("xpm"))
+        // load the bitmap from the catalog -- first try the exact size wanted;
+        // if the precise size is not available, load the largest available and
+        // scale it up or down
+        res = m_bundle->getEntry(name + wxString::Format("_%d.png", size), buf);
+        if (!res)
         {
-            res = m_bundle->getEntry(name + ".xpm", buf);
-            entry_type = wxBITMAP_TYPE_XPM;
-        }
-        else
-        {
-            res = m_bundle->getEntry(name + wxString::Format("_%d.png", size), buf);
-            if (!res)
+            // try different sizes and scale
+            for (int i = 0; i < sizes_count; ++i)
             {
-                // try different sizes and scale
-                for (int i = 0; i < sizeof(sizes); ++i)
+                res = m_bundle->getEntry(name + wxString::Format("_%d.png", sizes[i]), buf);
+                if (res)
                 {
-                    res = m_bundle->getEntry(name + wxString::Format("_%d.png", sizes[i]), buf);
-                    if (res)
-                    {
-                        break;
-                    }
+                    break;
                 }
-
             }
         }
 
-        // load the bitmap from the catalog
 
         if (!res)
         {
-            wxFAIL_MSG(wxT("Image not found in imgres.zip"));
+            wxFAIL_MSG("Image not found in imgres.zip");
             return wxBitmap();
         }
 
@@ -339,7 +334,7 @@ wxBitmap BitmapMgr::lookupBitmap(const wxString& bitmap_name, int status, int si
         wxImage img;
         if (!img.LoadFile(stream, entry_type))
         {
-            wxFAIL_MSG(wxT("Image failed to load"));
+            wxFAIL_MSG("Image failed to load");
             return wxBitmap();
         }
         

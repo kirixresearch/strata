@@ -573,7 +573,7 @@ bool StructureDoc::initDoc(IFramePtr frame,
                                        wxPoint(0,0),
                                        docsite_wnd->GetClientSize(),
                                        wxBORDER_NONE);
-    m_grid->setDragFormat(wxT("structuredoc"));
+    m_grid->setDragFormat("structuredoc");
     m_grid->setRowSelectionGridFlags(kcl::RowSelectionGrid::refreshNone);
     m_grid->setOverlayFont(overlay_font);
     m_grid->setCursorType(kcl::Grid::cursorThin);
@@ -662,15 +662,15 @@ bool StructureDoc::initDoc(IFramePtr frame,
     // create the statusbar items for this document
     IStatusBarItemPtr item;
     
-    item = addStatusBarItem(wxT("structuredoc_field_count"));
+    item = addStatusBarItem("structuredoc_field_count");
     item->setWidth(120);
     
-    item = addStatusBarItem(wxT("structuredoc_row_width"));
+    item = addStatusBarItem("structuredoc_row_width");
     item->setWidth(150);
 
     // make this grid a drop target and connect the signal
     kcl::GridDataDropTarget* drop_target = new kcl::GridDataDropTarget(m_grid);
-    drop_target->setGridDataObjectFormats(wxT("structuredoc"), wxT("fieldspanel"));
+    drop_target->setGridDataObjectFormats("structuredoc", "fieldspanel");
     drop_target->sigDropped.connect(this, &StructureDoc::onGridDataDropped);
     m_grid->SetDropTarget(drop_target);
 
@@ -824,7 +824,7 @@ void StructureDoc::insertRow(int row, bool dynamic)
     m_grid->setCellInteger(row, colFieldScale, f->scale);
     m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
     if (dynamic)
-        m_grid->setCellString(row, colFieldFormula, wxT("\"\""));
+        m_grid->setCellString(row, colFieldFormula, "\"\"");
 
     updateRowCellProps(row);
     checkOverlayText();
@@ -870,7 +870,7 @@ void StructureDoc::updateNumberColumn()
     int row_count = m_grid->getRowCount();
     for (int i = 0; i < row_count; ++i)
     {
-        text = wxString::Format(wxT("%d"), i+1);
+        text = wxString::Format("%d", i+1);
         m_grid->setCellString(i, colRowNumber, text);
         cdc.GetTextExtent(text, &w, &h, &descent, &leading, &font);
         if (w > max_width)
@@ -879,7 +879,7 @@ void StructureDoc::updateNumberColumn()
     
     if (row_count == 0)
     {
-        cdc.GetTextExtent(wxT("1"), &w, &h, &descent, &leading, &font);
+        cdc.GetTextExtent("1", &w, &h, &descent, &leading, &font);
         if (w > max_width)
             max_width = w;
     }
@@ -1119,7 +1119,7 @@ void StructureDoc::updateCaption()
      else
     {
         caption = kl::afterLast(m_path, '/');
-        caption.Append(isChanged() ? wxT("*") : wxT(""));
+        caption.Append(isChanged() ? "*" : "");
     }
 
     m_doc_site->setCaption(caption);
@@ -1149,10 +1149,10 @@ void StructureDoc::updateStatusBar()
     wxString row_width_str = wxString::Format(_("Record Width: %d"), total_width);
     
     IStatusBarItemPtr item;
-    item = m_frame->getStatusBar()->getItem(wxT("structuredoc_field_count"));
+    item = m_frame->getStatusBar()->getItem("structuredoc_field_count");
     if (item.isOk())
         item->setValue(field_count_str);
-    item = m_frame->getStatusBar()->getItem(wxT("structuredoc_row_width"));
+    item = m_frame->getStatusBar()->getItem("structuredoc_row_width");
     if (item.isOk())
         item->setValue(row_width_str);
 
@@ -2217,14 +2217,14 @@ void StructureDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
     // check to see if what type of data object we're dealing with
     if (drop_data->isGridData())
     {
-        if (fmt.GetId() == kcl::getGridDataFormat(wxT("structuredoc")))
+        if (fmt.GetId() == kcl::getGridDataFormat("structuredoc"))
         {
             // if we've reordered the rows, we need to renumber the rows
             drop_target->doRowDrag(false);
             updateNumberColumn();
             m_grid->refresh(kcl::Grid::refreshAll);
         }
-         else if (fmt.GetId() == kcl::getGridDataFormat(wxT("fieldspanel")))
+         else if (fmt.GetId() == kcl::getGridDataFormat("fieldspanel"))
         {
             // we can only drag in fields from the fields panel
             // if we're modifying an existing table
