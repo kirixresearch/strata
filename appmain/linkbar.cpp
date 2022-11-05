@@ -74,17 +74,15 @@ static void drawInactiveTabBackground(wxDC& dc,
 }
 
 
-static wxBitmap rescaleBitmap(wxWindow* wnd, wxBitmap bitmap)
+static wxBitmap rescaleBitmapTo(wxBitmap bitmap, int to_size)
 {
     int x = bitmap.GetWidth();
     int y = bitmap.GetHeight();
-    int dx = wnd->FromDIP(x);
-    int dy = wnd->FromDIP(y);
 
-    if (x != dx || y != dy)
+    if (x != to_size || y != to_size)
     {
         wxImage image = bitmap.ConvertToImage();
-        image.Rescale(dx, dy);
+        image.Rescale(to_size, to_size);
         return wxBitmap(image);
     }
     else
@@ -1438,6 +1436,8 @@ void LinkBar::drawDropHighlight()
 
 void LinkBar::refresh()
 {
+    int desired_icon_size = FromDIP(100) > 100 ? 24 : 16;
+
     this->Clear();    // remove items from toolbar
     m_items.clear();  // clear our items vector
     
@@ -1497,7 +1497,7 @@ void LinkBar::refresh()
         IFsItemPtr item = children->getItem(i);
         
         int id = ID_FirstLinkBarId + i;
-        wxBitmap bmp = rescaleBitmap(this, item->getBitmap());
+        wxBitmap bmp = rescaleBitmapTo(item->getBitmap(), desired_icon_size);
         wxString label = item->getLabel();
         label.Trim(false).Trim(true);
         

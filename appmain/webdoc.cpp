@@ -552,7 +552,7 @@ public:
         if (target_site.isOk())
         {
             m_bitmap_updater.setDocSite(target_site);
-            m_bitmap_updater.setFinishBitmap(GETBMP(gf_table_16));
+            m_bitmap_updater.setFinishBitmap(GETBMPSMALL(gf_table));
             m_bitmap_updater.start();
         }
         
@@ -3450,8 +3450,10 @@ void WebDoc::onShouldHandleContent(wxWebEvent& evt)
 
 void WebDoc::onFavIconAvailable(wxWebEvent& evt)
 {
+    int favicon_size = FromDIP(100) > 0 ? 24 : 16;
+
     wxImage img = m_webcontrol->GetFavIcon();
-    img.Rescale(16, 16);
+    img.Rescale(favicon_size, favicon_size);
     
     wxBitmap bitmap = wxBitmap(img);
     m_favicon = img;
