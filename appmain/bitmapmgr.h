@@ -19,19 +19,23 @@
 #define GETBMP(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeNormal)
 #define GETDISBMP(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeDisabled)
 
-#define GETBMPSMALL(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeNormal | BitmapMgr::typeAppendSize, BitmapMgr::getSmallIconSize())
-#define GETDISBMPSMALL(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeDisabled | BitmapMgr::typeAppendSize, BitmapMgr::getSmallIconSize())
+#define GETBMPSMALL(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeNormal, BitmapMgr::sizeSmallIcon)
+#define GETDISBMPSMALL(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeDisabled, BitmapMgr::sizeSmallIcon)
 
-#define GETBMPMEDIUM(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeNormal | BitmapMgr::typeAppendSize, BitmapMgr::getMediumIconSize())
-#define GETDISBMPMEDIUM(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeDisabled | BitmapMgr::typeAppendSize, BitmapMgr::getMediumIconSize())
+#define GETBMPMEDIUM(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeNormal, BitmapMgr::sizeMediumIcon)
+#define GETDISBMPMEDIUM(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeDisabled, BitmapMgr::sizeMediumIcon)
+
+#define GETBMPLARGE(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeNormal, BitmapMgr::sizeLargeIcon)
+#define GETDISBMPLARGE(bitmap_name) BitmapMgr::getBitmap(wxT(#bitmap_name), BitmapMgr::typeDisabled, BitmapMgr::sizeLargeIcon)
 
 
 #define ID2BMP(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeNormal)
-#define ID2BMP16(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeNormal, 16)
+#define ID2BMPSMALL(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeNormal, BitmapMgr::sizeSmallIcon)
+#define ID2BMPMEDIUM(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeNormal, BitmapMgr::sizeMediumIcon)
 
 #define ID2DISBMP(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeDisabled)
-#define ID2DISBMP16(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeDisabled, 16)
-
+#define ID2DISBMPSMALL(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeDisabled, BitmapMgr::sizeSmallIcon)
+#define ID2DISBMPMEDIUM(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeNormal, BitmapMgr::sizeMediumIcon)
 
 class BitmapEntry
 {
@@ -53,6 +57,13 @@ public:
         typeDisabled = 1,
         typeHot = 2,
         typeAppendSize = 4
+    };
+
+    enum
+    {
+        sizeSmallIcon = -100,   // 16px, or 24/32px on higher dpi/resolution displays
+        sizeMediumIcon = -200,  // 24px, or 32/48px on higher dpi/resolution displays
+        sizeLargeIcon = -300    // 32px, or 48/64px on higher dpi/resolution displays
     };
     
 public:
@@ -78,8 +89,7 @@ public:
     static void initBitmapMgr();
     static BitmapMgr* getBitmapMgr();
     static void uninitBitmapMgr();
-    static int getSmallIconSize();
-    static int getMediumIconSize();
+    static int getBitmapIconSize(int size_id);
 
     // calls to this function will not
     // add the bitmap to the bitmap manager

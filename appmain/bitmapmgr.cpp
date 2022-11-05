@@ -201,27 +201,34 @@ void BitmapMgr::uninitBitmapMgr()
     delete g_bitmapmgr;
 }
 
-int BitmapMgr::getSmallIconSize()
+int BitmapMgr::getBitmapIconSize(int size_id)
 {
-    static int size = -1;
-    if (size == -1)
+    static int small_size = -1, medium_size = -1, large_size = -1;
+    
+    switch (size_id)
     {
-        size = wxTheApp->GetMainTopWindow()->FromDIP(100) > 100 ? 24 : 16;
+        default:
+        case BitmapMgr::sizeSmallIcon:
+            if (small_size == -1)
+            {
+                small_size = wxTheApp->GetMainTopWindow()->FromDIP(100) <= 100 ? 16 : 24;
+            }
+            return small_size;
+        case BitmapMgr::sizeMediumIcon:
+            if (medium_size == -1)
+            {
+                medium_size = wxTheApp->GetMainTopWindow()->FromDIP(100) <= 100 ? 24 : 32;
+            }
+            return medium_size;
+        case BitmapMgr::sizeLargeIcon:
+            if (large_size == -1)
+            {
+                large_size = wxTheApp->GetMainTopWindow()->FromDIP(100) <= 100 ? 32 : 48;
+            }
+            return large_size;
     }
-
-    return size;
 }
 
-int BitmapMgr::getMediumIconSize()
-{
-    static int size = -1;
-    if (size == -1)
-    {
-        size = wxTheApp->GetMainTopWindow()->FromDIP(100) > 100 ? 48 : 32;
-    }
-
-    return size;
-}
 
 BitmapMgr* BitmapMgr::getBitmapMgr()
 {
@@ -247,47 +254,86 @@ wxBitmap BitmapMgr::getBitmap(int id, int status, int size)
 
 wxBitmap BitmapMgr::lookupBitmap(const wxString& bitmap_name, int status, int size)
 {
+    static int sizes[] = { 64, 48, 32, 24, 16 };
     wxString name = bitmap_name;
 
-    if (status & BitmapMgr::typeAppendSize)
+    int desired_size = -1;
+    if (name.EndsWith("_16"))
     {
-        name += wxString::Format("_%d", size);
-        status &= ~BitmapMgr::typeAppendSize;
+        desired_size = 16;
+        name = name.Left(bitmap_name.Length() - 3);
+    }
+    else if (name.EndsWith("_24"))
+    {
+        desired_size = 24;
+        name = name.Left(bitmap_name.Length() - 3);
+    }
+    else if (name.EndsWith("_32"))
+    {
+        desired_size = 32;
+        name = name.Left(bitmap_name.Length() - 3);
+    }
+    else if (name.EndsWith("_48"))
+    {
+        desired_size = 48;
+        name = name.Left(bitmap_name.Length() - 3);
     }
 
-    BitmapEntry& entry = m_entries[name];
-    if (!entry.bitmap.Ok())
+    if (size == BitmapMgr::sizeSmallIcon || size == BitmapMgr::sizeMediumIcon || size == BitmapMgr::sizeLargeIcon)
     {
-        wxString entry_base = name;
-        wxString entry_name = entry_base;
+        size = getBitmapIconSize(size);
+    }
+
+    if (size == -1)
+    {
+        size = (desired_size == -1 ? getBitmapIconSize(BitmapMgr::sizeSmallIcon) : desired_size);
+    }
+
+
+    wxString key = name + ";" + wxString::Format("%d", size) + ";" + (status == typeDisabled ? "d" : "n");
+
+    BitmapEntry& entry = m_entries[key];
+    if (entry.bitmap.Ok())
+    {
+        return entry.bitmap;
+    }
+    else
+    {
+        wxMemoryBuffer buf;
+        bool res;
         wxBitmapType entry_type = wxBITMAP_TYPE_PNG;
-        
+
         if (name.Left(3) == wxT("xpm"))
         {
-            entry_name += wxT(".xpm");
+            res = m_bundle->getEntry(name + ".xpm", buf);
             entry_type = wxBITMAP_TYPE_XPM;
         }
-         else
+        else
         {
-            entry_name += wxT(".png");
-        }
-    
-        // load the bitmap from the catalog
-        wxMemoryBuffer buf;
-        if (!m_bundle->getEntry(entry_name, buf))
-        {
-            // if png and xpm fail, try gif
-            entry_name = entry_base;
-            entry_name += wxT(".gif");
-            entry_type = wxBITMAP_TYPE_GIF;
-            
-            if (!m_bundle->getEntry(entry_name, buf))
+            res = m_bundle->getEntry(name + wxString::Format("_%d.png", size), buf);
+            if (!res)
             {
-                wxFAIL_MSG(wxT("Image not found in imgres.zip"));
-                return wxBitmap();
+                // try different sizes and scale
+                for (int i = 0; i < sizeof(sizes); ++i)
+                {
+                    res = m_bundle->getEntry(name + wxString::Format("_%d.png", sizes[i]), buf);
+                    if (res)
+                    {
+                        break;
+                    }
+                }
+
             }
         }
-    
+
+        // load the bitmap from the catalog
+
+        if (!res)
+        {
+            wxFAIL_MSG(wxT("Image not found in imgres.zip"));
+            return wxBitmap();
+        }
+
         wxMemoryInputStream stream(buf.GetData(), buf.GetDataLen());
         
         wxImage img;
@@ -297,57 +343,20 @@ wxBitmap BitmapMgr::lookupBitmap(const wxString& bitmap_name, int status, int si
             return wxBitmap();
         }
         
+        if (img.GetHeight() != size)
+        {
+            img.Rescale(size, size);
+        }
+
         entry.bitmap = wxBitmap(img);
-    }
-    
-    
-    if (size == -1 || (size == entry.bitmap.GetWidth() &&
-                       size == entry.bitmap.GetHeight()))
-    {
+
         if (status == typeDisabled)
-            return MakeDisabledBitmap(entry.bitmap);
-            
+        {
+            entry.bitmap = MakeDisabledBitmap(entry.bitmap);
+        }
+
         return entry.bitmap;
     }
-        
-    if (size == 16)
-    {
-        // if the 16x16 bitmap exists, return it
-        if (entry.bitmap16.IsOk())
-        {
-            if (status == typeDisabled)
-                return MakeDisabledBitmap(entry.bitmap16);
-
-            return entry.bitmap16;
-        }
-        
-        // try to look up the 16x16 bitmap
-        wxString bmp16_name = bitmap_name.BeforeLast(wxT('_'));
-        bmp16_name += wxT("_16");
-        entry.bitmap16 = lookupBitmap(bmp16_name, status, size);
-        if (entry.bitmap16.IsOk())
-        {
-            if (status == typeDisabled)
-                return MakeDisabledBitmap(entry.bitmap16);
-
-            return entry.bitmap16;
-        }
-        
-        // no 16x16 bitmap exists, so resize the larger-sized bitmap
-        wxImage image = entry.bitmap.ConvertToImage();
-        image.Rescale(16,16);
-        entry.bitmap16 = wxBitmap(image);
-
-        if (status == typeDisabled)
-            return MakeDisabledBitmap(entry.bitmap);
-
-        return entry.bitmap16;
-    }
-
-    if (status == typeDisabled)
-        return MakeDisabledBitmap(entry.bitmap);
-
-    return entry.bitmap;
 }
 
 wxBitmap BitmapMgr::lookupBitmap(int id,

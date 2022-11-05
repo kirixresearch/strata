@@ -49,24 +49,24 @@ void initIdBitmapMap()
 {
     BitmapMgr* mgr = BitmapMgr::getBitmapMgr();
     
-    mgr->addIdBitmapMap(ID_Project_New, wxT("gf_blank_document_24"));
-    mgr->addIdBitmapMap(ID_Project_OpenFile, wxT("gf_folder_open_24"));
-    mgr->addIdBitmapMap(ID_File_Save, wxT("gf_save_24"));
-    mgr->addIdBitmapMap(ID_View_ViewSwitcher, wxT("gf_switch_view_24"));
-    mgr->addIdBitmapMap(ID_File_Back, wxT("gf_back_arrow_24"));
-    mgr->addIdBitmapMap(ID_File_Forward, wxT("gf_forward_arrow_24"));
-    mgr->addIdBitmapMap(ID_File_Reload, wxT("gf_reload_24"));
-    mgr->addIdBitmapMap(ID_File_Stop, wxT("gf_stop_24"));
-    mgr->addIdBitmapMap(ID_Project_Home, wxT("gf_home_24"));
-    mgr->addIdBitmapMap(ID_File_Bookmark, wxT("gf_favorities_24"));
-    mgr->addIdBitmapMap(ID_Data_QuickFilter, wxT("gf_quick_filter_24"));
-    mgr->addIdBitmapMap(ID_Edit_FindNext, wxT("gf_find_next_24"));
-    mgr->addIdBitmapMap(ID_Data_Filter, wxT("gf_filter_24"));
-    mgr->addIdBitmapMap(ID_Data_CreateDynamicField, wxT("gf_lightning_24"));
-    mgr->addIdBitmapMap(ID_Data_Sort, wxT("gf_sort_a_24"));
-    mgr->addIdBitmapMap(ID_Data_GroupRecords, wxT("gf_sum_24"));
-    mgr->addIdBitmapMap(ID_Project_Relationship, wxT("gf_related_field_24"));
-    mgr->addIdBitmapMap(ID_App_ToggleRelationshipSync, wxT("gf_filter_related_16"));
+    mgr->addIdBitmapMap(ID_Project_New, wxT("gf_blank_document"));
+    mgr->addIdBitmapMap(ID_Project_OpenFile, wxT("gf_folder_open"));
+    mgr->addIdBitmapMap(ID_File_Save, wxT("gf_save"));
+    mgr->addIdBitmapMap(ID_View_ViewSwitcher, wxT("gf_switch_view"));
+    mgr->addIdBitmapMap(ID_File_Back, wxT("gf_back_arrow"));
+    mgr->addIdBitmapMap(ID_File_Forward, wxT("gf_forward_arrow"));
+    mgr->addIdBitmapMap(ID_File_Reload, wxT("gf_reload"));
+    mgr->addIdBitmapMap(ID_File_Stop, wxT("gf_stop"));
+    mgr->addIdBitmapMap(ID_Project_Home, wxT("gf_home"));
+    mgr->addIdBitmapMap(ID_File_Bookmark, wxT("gf_favorities"));
+    mgr->addIdBitmapMap(ID_Data_QuickFilter, wxT("gf_quick_filter"));
+    mgr->addIdBitmapMap(ID_Edit_FindNext, wxT("gf_find_next"));
+    mgr->addIdBitmapMap(ID_Data_Filter, wxT("gf_filter"));
+    mgr->addIdBitmapMap(ID_Data_CreateDynamicField, wxT("gf_lightning"));
+    mgr->addIdBitmapMap(ID_Data_Sort, wxT("gf_sort_a"));
+    mgr->addIdBitmapMap(ID_Data_GroupRecords, wxT("gf_sum"));
+    mgr->addIdBitmapMap(ID_Project_Relationship, wxT("gf_related_field"));
+    mgr->addIdBitmapMap(ID_App_ToggleRelationshipSync, wxT("gf_filter_related"));
 }
 
 
@@ -134,14 +134,14 @@ StandardToolbar::StandardToolbar(wxWindow* parent,
 
 static void AddSizedTool(wxAuiToolBar* toolbar, int id, bool small_icon)
 {
-    wxBitmap bitmap = small_icon ? ID2BMP16(id) : ID2BMP(id);
-    toolbar->AddTool(id, rescaleBitmap(toolbar, bitmap), wxNullBitmap, false, 0);
+    wxBitmap bitmap = small_icon ? ID2BMPSMALL(id) : ID2BMPMEDIUM(id);
+    toolbar->AddTool(id, bitmap, wxNullBitmap, false, 0);
 }
 
 static void AddSizedToggleTool(wxAuiToolBar* toolbar, int id, bool small_icon)
 {
-    wxBitmap bitmap = small_icon ? ID2BMP16(id) : ID2BMP(id);
-    toolbar->AddTool(id, rescaleBitmap(toolbar, bitmap), wxNullBitmap, true, 0);
+    wxBitmap bitmap = small_icon ? ID2BMPSMALL(id) : ID2BMPMEDIUM(id);
+    toolbar->AddTool(id, bitmap, wxNullBitmap, true, 0);
 }
 
 bool StandardToolbar::getSmallIcons()

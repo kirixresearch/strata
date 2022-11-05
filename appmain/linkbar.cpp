@@ -1442,23 +1442,23 @@ void LinkBar::refresh()
     m_items.clear();  // clear our items vector
     
     // add command buttons
-    AddTool(ID_Project_New, rescaleBitmap(this, ID2BMP16(ID_Project_New)), wxNullBitmap, false);
+    AddTool(ID_Project_New, ID2BMPSMALL(ID_Project_New), wxNullBitmap, false);
     AddSpacer(3);
-    AddTool(ID_Project_OpenFile, rescaleBitmap(this, ID2BMP16(ID_Project_OpenFile)), wxNullBitmap, false);
+    AddTool(ID_Project_OpenFile, ID2BMPSMALL(ID_Project_OpenFile), wxNullBitmap, false);
     AddSpacer(3);
-    AddTool(ID_File_Save, rescaleBitmap(this, ID2BMP16(ID_File_Save)), wxNullBitmap, false);
+    AddTool(ID_File_Save, ID2BMPSMALL(ID_File_Save), wxNullBitmap, false);
     AddSpacer(3);
     AddSeparator();
     AddSpacer(3);
-    AddTool(ID_Data_Sort, rescaleBitmap(this, ID2BMP16(ID_Data_Sort)), wxNullBitmap, false);
+    AddTool(ID_Data_Sort, ID2BMPSMALL(ID_Data_Sort), wxNullBitmap, false);
     AddSpacer(3);
-    AddTool(ID_Data_CreateDynamicField, rescaleBitmap(this, ID2BMP16(ID_Data_CreateDynamicField)), wxNullBitmap, false);
+    AddTool(ID_Data_CreateDynamicField, ID2BMPSMALL(ID_Data_CreateDynamicField), wxNullBitmap, false);
     AddSpacer(3);
-    AddTool(ID_Data_GroupRecords, rescaleBitmap(this, ID2BMP16(ID_Data_GroupRecords)), wxNullBitmap, false);
+    AddTool(ID_Data_GroupRecords, ID2BMPSMALL(ID_Data_GroupRecords), wxNullBitmap, false);
     AddSpacer(3);
-    AddTool(ID_Data_Filter, rescaleBitmap(this, ID2BMP16(ID_Data_Filter)), wxNullBitmap, false);
+    AddTool(ID_Data_Filter, ID2BMPSMALL(ID_Data_Filter), wxNullBitmap, false);
     AddSpacer(3);
-    AddTool(ID_App_ToggleRelationshipSync, rescaleBitmap(this, ID2BMP16(ID_App_ToggleRelationshipSync)), wxNullBitmap, false);
+    AddTool(ID_App_ToggleRelationshipSync, ID2BMPSMALL(ID_App_ToggleRelationshipSync), wxNullBitmap, false);
     AddSpacer(3);
     AddSeparator();
     AddSpacer(3);
