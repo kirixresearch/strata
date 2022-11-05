@@ -11,6 +11,7 @@
 
 #include "bitmapcombo.h"
 #include <wx/settings.h>
+#include <wx/listctrl.h>
 #include <wx/imaglist.h>
 #include <wx/dc.h>
 #include <wx/dcmemory.h>
@@ -54,9 +55,9 @@ DEFINE_EVENT_TYPE(wxEVT_KCLBITMAPCOMBO_BEGIN_DRAG)
 
 // total width before the text control begins is equal to
 // BMP_INDENT + width of the bitmap + BMP_PADDING
-const int CTRL_PADDING = 3;
-const int BMP_PADDING = 5;
-const int CUSTOM_PAINT_WIDTH = 19;
+#define CTRL_PADDING FromDIP(3)
+#define BMP_PADDING FromDIP(5)
+#define CUSTOM_PAINT_WIDTH FromDIP(19)
 
 
 namespace kcl
@@ -71,8 +72,7 @@ static void autoSizeListHeader(wxListCtrl* ctrl)
     ctrl->GetClientSize(&cli_width, &cli_height);
     if (ctrl->GetColumnCount() > 0)
     {
-        // leave space for vscroll bar
-        ctrl->SetColumnWidth(0, cli_width-35);
+        ctrl->SetColumnWidth(0, cli_width);
     }
 }
 
@@ -110,7 +110,9 @@ bool BitmapComboPopup::Create(wxWindow* parent)
     if (m_options & BitmapComboPopup::ShowItemBitmap)
     {
         wxImageList* list = new wxImageList;
-        list->Create(16, 16, true, 0);
+        
+        int size = FromDIP(100) > 100 ? 24 : 16;
+        list->Create(size, size, true, 0);
         AssignImageList(list, wxIMAGE_LIST_SMALL);
     }
     
@@ -307,7 +309,7 @@ void BitmapComboPopup::PaintComboControl(wxDC& dc, const wxRect& rect)
         dc.GetTextExtent(overlay_text, &text_w, &text_h);
         
         int text_x = rect.x + BMP_PADDING;
-        int text_y = rect.y+(rect.height-text_h-1)/2;
+        int text_y = rect.y + (rect.height-text_h-1) / 2;
         
         // draw the overlay text
         dc.SetTextForeground(*wxLIGHT_GREY);
@@ -327,8 +329,8 @@ void BitmapComboPopup::PaintComboControl(wxDC& dc, const wxRect& rect)
             return;
         
         // draw the bitmap
-        int bmp_x = rect.x+CTRL_PADDING;
-        int bmp_y = rect.y+(rect.height-bmp.GetHeight())/2;
+        int bmp_x = rect.x + CTRL_PADDING;
+        int bmp_y = rect.y + (rect.height-bmp.GetHeight()) / 2;
         dc.DrawBitmap(bmp, bmp_x, bmp_y, true);
     }
 }
@@ -588,14 +590,14 @@ void BitmapComboControl::onMouseLeftUp(wxMouseEvent& evt)
     if (m_single_click_select && !m_had_focus &&
         abs(m_action_pos.x-x) <= m_drag_x_threshold)
     {
-        GetTextCtrl()->SetSelection(-1,-1);
+        GetTextCtrl()->SetSelection(-1, -1);
     }
     
     if (m_dragging)
     {
         // reset drag and drop member variables
         m_dragging = false;
-        m_action_pos = wxPoint(-1,-1);
+        m_action_pos = wxPoint(-1, -1);
     }
     
     evt.Skip();
@@ -694,10 +696,4 @@ void BitmapComboControl::onSize(wxSizeEvent& evt)
 }
 
 
-
-
 };  // namespace kcl
-
-
-
-

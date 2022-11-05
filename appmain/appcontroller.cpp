@@ -3698,7 +3698,7 @@ void AppController::updateURLToolbar()
         // icon doesn't show up as the document icon in the URL bar
         IWebDocPtr webdoc = doc;
         if (webdoc.isOk())
-            bitmap = GETBMP(gf_document_16);
+            bitmap = GETBMPSMALL(gf_document);
     }
 
     // if it doesn't exist in the url bar, add it

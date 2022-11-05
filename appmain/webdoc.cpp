@@ -3378,7 +3378,6 @@ void WebDoc::onCreateBrowserRequest(wxWebEvent& evt)
     }
      else
     {
-
         IDocumentSitePtr site;
         
         WebDoc* doc = new WebDoc;

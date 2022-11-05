@@ -118,7 +118,7 @@ StandardToolbar::StandardToolbar(wxWindow* parent,
     // url combo box
     UrlComboPopup* url_popup = new UrlComboPopup;
     m_url = new kcl::BitmapComboControl(this, ID_Frame_UrlCtrl, url_popup);
-    m_url->setDefaultBitmap(GETBMP(gf_blank_document_16));
+    m_url->setDefaultBitmap(GETBMPSMALL(gf_blank_document));
     m_url->setSingleClickSelect(true);
     //m_url = new wxBitmapComboBox(this, ID_Frame_UrlCtrl);
     
