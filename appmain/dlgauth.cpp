@@ -544,7 +544,7 @@ void DlgAuth::updateValidControl()
 {
     if (m_internet_radio->GetValue())
     {
-        m_activation_valid->setInvalidBitmap(GETBMP(xpm_blank_16));
+        m_activation_valid->setInvalidBitmap(GETBMP(gf_blank_16));
         m_activation_valid->setValid(false);
         return;
     }
@@ -557,7 +557,7 @@ void DlgAuth::updateValidControl()
     
     if (activation_code.Length() < 16)
     {
-        m_activation_valid->setInvalidBitmap(GETBMP(xpm_blank_16));
+        m_activation_valid->setInvalidBitmap(GETBMP(gf_blank_16));
         m_activation_valid->setValid(false);
     }
      else if (activation_code.Length() == 16)

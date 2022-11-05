@@ -747,14 +747,14 @@ void TransformationDoc::insertRow(int row, bool calculated)
     
     m_grid->insertRow(row);
     m_grid->setRowData(row, (long)f);
-    m_grid->setCellBitmap(row, colRowNumber, calculated ? GETBMP(gf_lightning_16) : GETBMP(xpm_blank_16));
+    m_grid->setCellBitmap(row, colRowNumber, calculated ? GETBMP(gf_lightning_16) : GETBMP(gf_blank_16));
     m_grid->setCellComboSel(row, colFieldType, xd2choice(f->output_type));
     m_grid->setCellString(row, colFieldName, f->output_name);
     m_grid->setCellInteger(row, colFieldWidth, f->output_width);
     m_grid->setCellInteger(row, colFieldScale, f->output_scale);
     m_grid->setCellString(row, colSourceName, EMPTY_SOURCENAME_STR);
     m_grid->setCellString(row, colFieldFormula, f->output_expression);
-    m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
+    m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
 
     // make sure either a source field or an expression is specified
     int valid_res = validateExpression(getSourceStructure(), f->output_expression, f->output_type);
@@ -824,7 +824,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
     if (f->calculated)
         m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_lightning_16));
      else
-        m_grid->setCellBitmap(row, colRowNumber, GETBMP(xpm_blank_16));
+        m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_blank_16));
     
     // we need to update the row's cell props here so that the expression
     // cell's combobox is populated before we set its cell info
@@ -852,7 +852,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
         if (m_grid->getCellComboSel(row, colSourceName) == -1)
             m_grid->setCellString(row, colSourceName, EMPTY_SOURCENAME_STR);
             
-        m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
+        m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
         
         // only set the expression cell's text if the column info's
         // expression was not a source name
@@ -867,7 +867,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
 
         // we found a match, so populate the cells with the matched info
         m_grid->setCellString(row, colSourceName, source_name);
-        m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
+        m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
         m_grid->setCellComboSel(row, colFieldFormula, format_comboidx);
     }
     
@@ -1002,11 +1002,11 @@ void TransformationDoc::updateExpressionIcon(int row, int validation_res)
         if (m_grid->isEditing() && cursor_col == colFieldFormula)
             m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_checkmark_16));
          else
-            m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
+            m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
     }
      else
     {
-        m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
+        m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
     }
 }
 
@@ -1266,7 +1266,7 @@ void TransformationDoc::clearProblemRows()
         if (isFieldCalculated(m_grid, row))
             m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_lightning_16));
          else
-            m_grid->setCellBitmap(row, colRowNumber, GETBMP(xpm_blank_16));
+            m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_blank_16));
     }
 }
 
@@ -2083,7 +2083,7 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
         }
          else
         {
-            m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
+            m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
         }
     }
     
@@ -2119,7 +2119,7 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
         {
             // this field doesn't have a custom expression,
             // so don't show any icon next to the expression
-            m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
+            m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
         }
         
         updateRowWidthAndScale(row);

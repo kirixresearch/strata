@@ -277,7 +277,7 @@ void BitmapButton::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     // eliminate ASSERT failures
     if (!bitmap.IsOk())
-        bitmap = GETBMP(xpm_blank_16);
+        bitmap = GETBMP(gf_blank_16);
     
     if (param_count < 2)
     {

@@ -415,7 +415,7 @@ void MultiFileInfoPanel::populate()
             
             default:
                 other_count++;
-                m_grid->setCellBitmap(row, 0, GETBMP(xpm_blank_16), kcl::Grid::alignLeft);
+                m_grid->setCellBitmap(row, 0, GETBMP(gf_blank_16), kcl::Grid::alignLeft);
                 m_grid->setCellString(row, 1, _("Other"));
                 break;
         }

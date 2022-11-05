@@ -753,7 +753,7 @@ void JobSchedulerPanel::populateCommandList(JobSchedulerPanelEntry& entry)
         if (item.isOk())
             m_commandlist_grid->setCellBitmap(row, 0, item->getBitmap());
          else
-            m_commandlist_grid->setCellBitmap(row, 0, GETBMP(xpm_blank_16));
+            m_commandlist_grid->setCellBitmap(row, 0, GETBMP(gf_blank_16));
         m_commandlist_grid->setCellString(row, 0, *it);
         row++;
     }
@@ -1424,7 +1424,7 @@ void JobSchedulerPanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
         if (item.isOk())
             m_commandlist_grid->setCellBitmap(insert_row, 0, item->getBitmap());
          else
-            m_commandlist_grid->setCellBitmap(insert_row, 0, GETBMP(xpm_blank_16));
+            m_commandlist_grid->setCellBitmap(insert_row, 0, GETBMP(gf_blank_16));
         m_commandlist_grid->setCellString(insert_row, 0, res[i]);
         insert_row++;
     }

@@ -433,7 +433,7 @@ void ExportTableSelectionPage::onGridDataDropped(kcl::GridDataDropTarget* drop_t
         m_grid->insertRow(drop_row);
         m_grid->setCellString(drop_row, SOURCE_TABLENAME_IDX, *it);
         m_grid->setCellString(drop_row, DEST_TABLENAME_IDX, output);
-        m_grid->setCellBitmap(drop_row, DEST_TABLENAME_IDX, GETBMP(xpm_blank_16));
+        m_grid->setCellBitmap(drop_row, DEST_TABLENAME_IDX, GETBMP(gf_blank_16));
         m_grid->setCellBoolean(drop_row, APPEND_IDX, false);
         drop_row++;
     }
@@ -589,7 +589,7 @@ void ExportTableSelectionPage::clearProblemRows()
 {
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
-        m_grid->setCellBitmap(row, DEST_TABLENAME_IDX, GETBMP(xpm_blank_16));
+        m_grid->setCellBitmap(row, DEST_TABLENAME_IDX, GETBMP(gf_blank_16));
 }
 
 void ExportTableSelectionPage::setExportPathLabel(const wxString& label)

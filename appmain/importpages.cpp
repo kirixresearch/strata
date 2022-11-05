@@ -360,7 +360,7 @@ void ImportTableSelectionPage::onPageChanged()
                 m_grid->setCellBoolean(row, ONOFF_IDX, it->selected);
                 m_grid->setCellString(row, SOURCE_TABLENAME_IDX, it->input_tablename);
                 m_grid->setCellString(row, DEST_TABLENAME_IDX, it->output_tablename);
-                m_grid->setCellBitmap(row, DEST_TABLENAME_IDX, GETBMP(xpm_blank_16));
+                m_grid->setCellBitmap(row, DEST_TABLENAME_IDX, GETBMP(gf_blank_16));
                 m_grid->setCellBoolean(row, APPEND_IDX, it->append);
                 row++;
             }
@@ -471,7 +471,7 @@ void ImportTableSelectionPage::onPageChanged()
         m_grid->setCellBoolean(row, ONOFF_IDX, selected);
         m_grid->setCellString(row, SOURCE_TABLENAME_IDX, src_tablename);
         m_grid->setCellString(row, DEST_TABLENAME_IDX, out_tablename);
-        m_grid->setCellBitmap(row, DEST_TABLENAME_IDX, GETBMP(xpm_blank_16));
+        m_grid->setCellBitmap(row, DEST_TABLENAME_IDX, GETBMP(gf_blank_16));
         m_grid->setCellBoolean(row, APPEND_IDX, append);
         row++;
     }
@@ -735,7 +735,7 @@ void ImportTableSelectionPage::clearProblemRows()
 {
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
-        m_grid->setCellBitmap(row, DEST_TABLENAME_IDX, GETBMP(xpm_blank_16));
+        m_grid->setCellBitmap(row, DEST_TABLENAME_IDX, GETBMP(gf_blank_16));
 }
 
 void ImportTableSelectionPage::onSelectAllTables(wxCommandEvent& evt)

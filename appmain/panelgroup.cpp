@@ -348,8 +348,8 @@ bool GroupPanel::initDoc(IFramePtr frame,
         return false;
 
     // save structure for later
-    m_tablecols->addCustomItem(getCountLabel(), GETBMP(xpm_blank_16));
-    m_tablecols->addCustomItem(getGroupIdLabel(), GETBMP(xpm_blank_16));
+    m_tablecols->addCustomItem(getCountLabel(), GETBMP(gf_blank_16));
+    m_tablecols->addCustomItem(getGroupIdLabel(), GETBMP(gf_blank_16));
     m_tablecols->setStructure(m_structure);
     m_doc_site->setCaption(caption);
 

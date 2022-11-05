@@ -818,11 +818,11 @@ void StructureDoc::insertRow(int row, bool dynamic)
     m_grid->insertRow(row);
     m_grid->setRowData(row, (long)f);
     m_grid->setCellBitmap(row, colRowNumber, dynamic ? GETBMP(gf_lightning_16)
-                                                     : GETBMP(xpm_blank_16));
+                                                     : GETBMP(gf_blank_16));
     m_grid->setCellComboSel(row, colFieldType, xd2choice(f->type));
     m_grid->setCellInteger(row, colFieldWidth, f->width);
     m_grid->setCellInteger(row, colFieldScale, f->scale);
-    m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
+    m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
     if (dynamic)
         m_grid->setCellString(row, colFieldFormula, wxT("\"\""));
 
@@ -907,11 +907,11 @@ void StructureDoc::updateExpressionIcon(int row, bool editing, int validation_re
         if (editing && cursor_col == colFieldFormula)
             m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_checkmark_16));
          else
-            m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
+            m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
     }
      else
     {
-        m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
+        m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
     }
 }
 
@@ -1348,12 +1348,12 @@ void StructureDoc::clearProblemRows()
     {
         if (!isCalculatedField(m_grid, row))
         {
-            m_grid->setCellBitmap(row, colRowNumber, GETBMP(xpm_blank_16));
+            m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_blank_16));
         }
          else
         {
             m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_lightning_16));
-            m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
+            m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
         }
 
     }
@@ -1475,13 +1475,13 @@ void StructureDoc::populateGridFromStructure()
 
         m_grid->insertRow(i);
         m_grid->setRowData(i, (long)f);
-        m_grid->setCellBitmap(i,   colRowNumber,    col.calculated ? GETBMP(gf_lightning_16) : GETBMP(xpm_blank_16));
+        m_grid->setCellBitmap(i,   colRowNumber,    col.calculated ? GETBMP(gf_lightning_16) : GETBMP(gf_blank_16));
         m_grid->setCellString(i,   colFieldName,    col.name);
         m_grid->setCellComboSel(i, colFieldType,    xd2choice(col.type));
         m_grid->setCellInteger(i,  colFieldWidth,   col.width);
         m_grid->setCellInteger(i,  colFieldScale,   col.scale);
         m_grid->setCellString(i,   colFieldFormula, col.expression);
-        m_grid->setCellBitmap(i,   colFieldFormula, GETBMP(xpm_blank_16));
+        m_grid->setCellBitmap(i,   colFieldFormula, GETBMP(gf_blank_16));
 
         updateRowCellProps(i);
     }
@@ -1849,7 +1849,7 @@ void StructureDoc::onConvertDynamicToFixed(wxCommandEvent& evt)
             f->dynamic = false;
             
             // remove the lightning bitmap and gray out the formula text
-            m_grid->setCellBitmap(row, colRowNumber, GETBMP(xpm_blank_16));
+            m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_blank_16));
             updateRowCellProps(row);
         }
     }
