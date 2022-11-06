@@ -123,7 +123,7 @@ bool MergePanel::initDoc(IFramePtr frame,
         wxString caption = _("Append");
 
         std::wstring path = table_doc->getPath();
-        if (xd::isTemporaryPath(path))
+        if (!xd::isTemporaryPath(path))
         {
             std::wstring name = kl::afterLast(path, '/');
             
