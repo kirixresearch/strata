@@ -761,6 +761,9 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             m_diagram->refresh();
             ReleaseMouse();
             m_action = RelationBox::ActionNone;
+
+            raise();
+            redraw();
         }
          else if (m_action == RelationBox::ActionSEResize ||
                   m_action == RelationBox::ActionSWResize ||
