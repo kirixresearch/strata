@@ -827,7 +827,7 @@ double ExIndexIterator::_ascendGetPos(int level, double pct)
     }
 
     double d1 = level_pos;
-    double d2 = level_entry_count+1;
+    double d2 = (double)(level_entry_count + 1);
     double ret;
 
     ret = (d1/d2);
