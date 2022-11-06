@@ -726,77 +726,22 @@ xf_off_t xf_get_free_disk_space(const std::wstring& _path)
         }
     }
 
-#ifdef _UNICODE
-    typedef BOOL (WINAPI *GetDiskFreeSpaceExFunc)(LPCWSTR,
-                                                PULARGE_INTEGER,
-                                                PULARGE_INTEGER,
-                                                PULARGE_INTEGER);
-#else
-    typedef BOOL (WINAPI *GetDiskFreeSpaceExFunc)(LPCSTR,
-                                                PULARGE_INTEGER,
-                                                PULARGE_INTEGER,
-                                                PULARGE_INTEGER);
-#endif
 
-    static GetDiskFreeSpaceExFunc pGetDiskFreeSpaceEx = NULL;
-
-    if (!pGetDiskFreeSpaceEx)
-    {
-        HMODULE hKernel32 = ::GetModuleHandleW(L"kernel32.dll");
-        if (hKernel32)
-        {
-#ifdef _UNICODE
-            pGetDiskFreeSpaceEx = (GetDiskFreeSpaceExFunc)::GetProcAddress(hKernel32, "GetDiskFreeSpaceExW");
-#else
-            pGetDiskFreeSpaceEx = (GetDiskFreeSpaceExFunc)::GetProcAddress(hKernel32, "GetDiskFreeSpaceExA");
-#endif
-        }
-    }
-
-    if (pGetDiskFreeSpaceEx)
-    {
-        ULARGE_INTEGER bytesFree, bytesTotal;
+    ULARGE_INTEGER bytesFree, bytesTotal;
 
 #ifdef _UNICODE
-        if ( !pGetDiskFreeSpaceEx(path.c_str(),
-                                  &bytesFree,
-                                  &bytesTotal,
-                                  NULL) )
-        {
-            return 0;
-        }
+    if (!GetDiskFreeSpaceEx(path.c_str(),
 #else
-        if ( !pGetDiskFreeSpaceEx(kl::tstr(path),
-                                  &bytesFree,
-                                  &bytesTotal,
-                                  NULL) )
-        {
-            return 0;
-        }
+    if (!GetDiskFreeSpaceEx(kl::tstr(path),
 #endif
-
-        return bytesFree.QuadPart;
-    }
-     else
+                            &bytesFree,
+                            &bytesTotal,
+                            NULL))
     {
-        DWORD lSectorsPerCluster, lBytesPerSector,
-              lNumberOfFreeClusters, lTotalNumberOfClusters;
-
-        if ( !::GetDiskFreeSpace(kl::tstr(path),
-                                 &lSectorsPerCluster,
-                                 &lBytesPerSector,
-                                 &lNumberOfFreeClusters,
-                                 &lTotalNumberOfClusters) )
-        {
-            return 0;
-        }
-
-        xf_off_t retval = lSectorsPerCluster;
-        retval *= lBytesPerSector;
-        retval *= lNumberOfFreeClusters;
-
-        return retval;
+        return 0;
     }
+
+    return bytesFree.QuadPart;
 }
 
 
