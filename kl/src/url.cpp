@@ -167,12 +167,14 @@ static std::wstring doEncode(const std::wstring& input, const wchar_t* to_encode
  
             if (c <= 255)
             {
-                swprintf(buf, 64, L"%%%02X", c);
+                swprintf(buf, 63, L"%%%02X", c);
+                buf[63] = 0;
                 result += buf;
             }
              else
             {
-                swprintf(buf, 64, L"%%u%04X", c);
+                swprintf(buf, 63, L"%%u%04X", c);
+                buf[63] = 0;
                 result += buf;
             }
             
@@ -182,7 +184,8 @@ static std::wstring doEncode(const std::wstring& input, const wchar_t* to_encode
         
         if (c <= 0x1f || wcschr(to_encode, *ch))
         {
-            swprintf(buf, 64, L"%%%02X", c);
+            swprintf(buf, 63, L"%%%02X", c);
+            buf[63] = 0;
             result += buf;
         }
          else

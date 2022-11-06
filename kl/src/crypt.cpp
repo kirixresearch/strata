@@ -438,6 +438,7 @@ std::wstring encryptString(const std::wstring& source_string, const std::wstring
     for (i = 0; i < buf_size; ++i)
     {
         swprintf(ch, 9, L"%02X", buf[i]);
+        ch[9] = 0;
         retval += ch;
     }
     

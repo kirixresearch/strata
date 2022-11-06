@@ -21,7 +21,8 @@ namespace kl
 std::wstring Uint64ToHex(unsigned long long num)
 {
     wchar_t buf[64];
-    swprintf(buf, 64, L"%016llX", num);
+    swprintf(buf, 63, L"%016llX", num);
+    buf[63] = 0;
     return buf;
 }
 

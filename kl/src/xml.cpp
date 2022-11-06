@@ -492,10 +492,11 @@ void xmlnode::setNodeValue(int contents)
 {
     wchar_t buf[24];
     #ifndef _MSC_VER
-    swprintf(buf, 24, L"%d", contents);
+    swprintf(buf, 23, L"%d", contents);
     #else
-    _snwprintf(buf, 24, L"%d", contents);
+    _snwprintf(buf, 23, L"%d", contents);
     #endif
+    buf[23] = 0;
     m_contents = buf;
 }
 

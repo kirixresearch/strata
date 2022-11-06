@@ -742,15 +742,15 @@ xf_off_t xf_get_free_disk_space(const std::wstring& _path)
 
     if (!pGetDiskFreeSpaceEx)
     {
+        HMODULE hKernel32 = ::GetModuleHandleW(L"kernel32.dll");
+        if (hKernel32)
+        {
 #ifdef _UNICODE
-        pGetDiskFreeSpaceEx = (GetDiskFreeSpaceExFunc)::GetProcAddress(
-                            ::GetModuleHandleW(L"kernel32.dll"),
-                            "GetDiskFreeSpaceExW");
+            pGetDiskFreeSpaceEx = (GetDiskFreeSpaceExFunc)::GetProcAddress(hKernel32, "GetDiskFreeSpaceExW");
 #else
-        pGetDiskFreeSpaceEx = (GetDiskFreeSpaceExFunc)::GetProcAddress(
-                            ::GetModuleHandleA("kernel32.dll"),
-                            "GetDiskFreeSpaceExA");
+            pGetDiskFreeSpaceEx = (GetDiskFreeSpaceExFunc)::GetProcAddress(hKernel32, "GetDiskFreeSpaceExA");
 #endif
+        }
     }
 
     if (pGetDiskFreeSpaceEx)

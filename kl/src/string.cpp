@@ -98,8 +98,9 @@ void trimLeft(std::wstring& s)
 
 std::wstring itowstring(int val)
 {
-    wchar_t buf[80];
-    swprintf(buf, 80, L"%d", val);
+    wchar_t buf[64];
+    swprintf(buf, 63, L"%d", val);
+    buf[63] = 0;
     return buf;
 }
 
@@ -107,8 +108,9 @@ std::wstring itowstring(int val)
 
 std::string itostring(int val)
 {
-    char buf[80];
-    snprintf(buf, 80, "%d", val);
+    char buf[64];
+    snprintf(buf, 63, "%d", val);
+    buf[63] = 0;
     return buf;
 }
 
