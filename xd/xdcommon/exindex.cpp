@@ -826,17 +826,17 @@ double ExIndexIterator::_ascendGetPos(int level, double pct)
             return 0.0;
     }
 
-    double d1 = level_pos;
-    double d2 = (double)(level_entry_count + 1);
+    double d1 = (double)level_pos;
+    double d2 = (double)level_entry_count + 1.0;
     double ret;
 
-    ret = (d1/d2);
-    ret += (pct/d2);
+    ret = (d1 / d2);
+    ret += (pct / d2);
 
     if (level == 0)
         return ret;
 
-    return _ascendGetPos(level-1, ret);
+    return _ascendGetPos(level - 1, ret);
 }
 
 
