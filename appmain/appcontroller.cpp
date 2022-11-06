@@ -2935,6 +2935,10 @@ void AppController::onMergeTable(wxCommandEvent& evt)
         if (!site->getVisible())
             site->setVisible(true);
     }
+
+    // if items are left selected, this causes problems when dragging
+    // and dropping items that are already selected into the panel
+    g_app->getDbDoc()->getFsPanel()->unselectAll();
 }
 
 void AppController::onRelationshipManager(wxCommandEvent& evt)
@@ -2997,6 +3001,10 @@ void AppController::onSplitTable(wxCommandEvent& evt)
         if (!site->getVisible())
             site->setVisible(true);
     }
+
+    // if items are left selected, this causes problems when dragging
+    // and dropping items that are already selected into the panel
+    g_app->getDbDoc()->getFsPanel()->unselectAll();
 }
 
 void AppController::onRemoveDupRecs(wxCommandEvent& evt)
@@ -7107,6 +7115,10 @@ void AppController::showRelationshipManager()
         if (!site->getVisible())
             site->setVisible(true);
     }
+
+    // if items are left selected, this causes problems when dragging
+    // and dropping items that are already selected into the panel
+    g_app->getDbDoc()->getFsPanel()->unselectAll();
 }
 
 void AppController::showProjectPanel(bool show, bool focus)

@@ -12,6 +12,7 @@
 #include "appmain.h"
 #include "app.h"
 #include "appcontroller.h"
+#include "dbdoc.h"
 #include "tabledoc.h"
 #include "tabledoc_private.h"
 #include "xdgridmodel.h"
@@ -7687,6 +7688,10 @@ void TableDoc::onAppendRecords(wxCommandEvent& evt)
         if (!site->getVisible())
             site->setVisible(true);
     }
+
+    // if items are left selected, this causes problems when dragging
+    // and dropping items that are already selected into the panel
+    g_app->getDbDoc()->getFsPanel()->unselectAll();
 }
 
 
