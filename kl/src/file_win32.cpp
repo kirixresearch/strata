@@ -688,7 +688,7 @@ xf_off_t xf_get_free_disk_space(const std::wstring& _path)
     {
         std::wstring unc;
 
-        // -- UNC path name --
+        // UNC path name
         path = _path.substr(2);
 
         int pos = path.find_first_of(L"\\");
@@ -747,7 +747,7 @@ xf_off_t xf_get_free_disk_space(const std::wstring& _path)
 
 std::wstring xf_get_temp_path()
 {
-    // -- find a suitable tempfile path default --
+    // find a suitable tempfile path default
     
     #ifdef _UNICODE
         wchar_t buf[512];

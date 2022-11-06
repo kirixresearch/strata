@@ -156,7 +156,7 @@ DlgDatabaseFile::DlgDatabaseFile(wxWindow* parent, int mode) :
     setRootFolder(wxT("/"));
     
     
-    // -- create name sizer --
+    // create name sizer
     
     wxStaticText* label_name = new wxStaticText(this, -1, _("Name:"));
     
@@ -391,7 +391,7 @@ void DlgDatabaseFile::onOK(wxCommandEvent& evt)
 
     if (m_mode == modeSave || m_mode == modeSaveSmall)
     {
-        // -- make sure user is saving the file in a valid folder --
+        // make sure user is saving the file to a valid folder
 
         wxStringTokenizer tkz(path, wxT("/"));
         wxString stub = wxT("/");
@@ -434,7 +434,7 @@ void DlgDatabaseFile::onOK(wxCommandEvent& evt)
                        m_mode == modeSave ||
                        m_mode == modeSaveSmall))
         {
-            // -- make sure it's a file --
+            // make sure it's a file
             xd::IFileInfoPtr file_info = db->getFileInfo(towstr(path));
 
             if (file_info)

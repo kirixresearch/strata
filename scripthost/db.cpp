@@ -1068,7 +1068,7 @@ static bool parseBulkInsertDateTime(const std::wstring& input,
 
     std::vector<int> parts;
 
-    // -- parse out the parts --
+    // parse out the parts
     wchar_t part[80];
     int idx = 0;
 
@@ -1098,7 +1098,7 @@ static bool parseBulkInsertDateTime(const std::wstring& input,
     }
 
 
-    // -- extract information --
+    // extract information
 
     int part_count = parts.size();
 
@@ -1107,7 +1107,7 @@ static bool parseBulkInsertDateTime(const std::wstring& input,
 
     int y = 0, m = 0, d = 0, hh = -1, mm = -1, ss = 0;
 
-    // -- first assign date portion --
+    // first assign date portion
     y = parts[0];
     m = parts[1];
     d = parts[2];
@@ -1117,7 +1117,7 @@ static bool parseBulkInsertDateTime(const std::wstring& input,
 
     if (part_count >= 5)
     {
-        // -- time is included --
+        // time is included
         hh = parts[3];
         mm = parts[4];
 
@@ -1126,7 +1126,7 @@ static bool parseBulkInsertDateTime(const std::wstring& input,
     }
 
 
-    // -- check validity --
+    // check validity
     if (m <= 0 || m > 12)
         return false;
     

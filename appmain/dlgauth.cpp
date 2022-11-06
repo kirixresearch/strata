@@ -162,7 +162,7 @@ public:
         top_sizer->Add(vert_sizer, 1, wxEXPAND | wxTOP, 7);
         
         
-        // -- create a platform standards-compliant OK/Cancel sizer --
+        // create a platform standards-compliant OK/Cancel sizer
         
         wxButton* ok_button = new wxButton(this, wxID_OK);
         wxStdDialogButtonSizer* ok_cancel_sizer = new wxStdDialogButtonSizer;
@@ -170,7 +170,7 @@ public:
         ok_cancel_sizer->Realize();
         ok_cancel_sizer->AddSpacer(5);
         
-        // -- this code is necessary to get the sizer's bottom margin to 8 --
+        // this code is necessary to get the sizer's bottom margin to 8
         wxSize min_size = ok_cancel_sizer->GetMinSize();
         min_size.SetHeight(min_size.GetHeight()+16);
         ok_cancel_sizer->SetMinSize(min_size);
@@ -238,15 +238,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
                          wxCENTER |
                          wxRESIZE_BORDER)
 {
-    //SetMinSize(wxSize(480,360));
-    //SetMaxSize(wxSize(640,480));
-    
-    #ifdef __WXGTK__
-    SetSize(wxSize(560,400));
-    SetMinSize(wxSize(560,400));
-    #endif
-    
-    // -- create paladin authentication object --
+    // create paladin authentication object
     
     m_site_code = global_auth->getSiteCode();
     m_company_regkey = global_auth->getCompanyRegKey();
@@ -265,7 +257,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     m_internet_radio = new wxRadioButton(this, ID_Internet_Radio, _("Activate automatically"));
 
 
-    // -- create authentication code sizer --
+    // create authentication code sizer
     
     wxStaticText* label_authcode = new wxStaticText(this, -1, _("Activation Code:"));
     m_authcode_textctrl = new wxTextCtrl(this, ID_ActivationCode);
@@ -285,7 +277,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     authcode_sizer->Add(m_activation_valid, 0, wxALIGN_CENTER);
     
     
-    // -- create site code sizer --
+    // create site code sizer
     
     wxStaticText* label_sitecode = new wxStaticText(this, -1, _("Site Code:"));
     m_sitecode_textctrl = new wxTextCtrl(this,
@@ -302,7 +294,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     sitecode_sizer->Add(m_activation_valid->GetSize().GetWidth(), 1);
     
     
-    // -- create serial code sizer --
+    // create serial code sizer
     
     wxStaticText* label_serial = new wxStaticText(this, -1, _("Serial Number:"));
     m_serial_textctrl = new wxTextCtrl(this, -1);
@@ -329,7 +321,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     serial_sizer->SetItemMinSize(m_serial_textctrl, min_size_sitecode);
     authcode_sizer->SetItemMinSize(m_authcode_textctrl, min_size_sitecode);
 
-    // -- create status label --
+    // create status label
     
     wxString activation_str;
     activation_str += _("Status");
@@ -398,14 +390,14 @@ DlgAuth::DlgAuth(wxWindow* parent,
     top_sizer->Add(vert_sizer, 1, wxEXPAND | wxTOP, 7);
     
     
-    // -- create a platform standards-compliant OK/Cancel sizer --
+    // create a platform standards-compliant OK/Cancel sizer
     
     wxButton* ok_button = new wxButton(this, wxID_OK);
     wxButton* cancel_button = new wxButton(this, wxID_CANCEL);
     
     wxStaticText* serial_label = new wxStaticText(this, -1, wxEmptyString);
 
-    wxString serial = getAppPrefsString(wxT("license_mgr.login"));
+    wxString serial = getAppPrefsString("license_mgr.login");
     serial.Trim(false);
     serial.Trim();
     
@@ -427,7 +419,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     ok_cancel_sizer->Prepend(serial_label, 0, wxALIGN_CENTER | wxLEFT, 15);
     ok_cancel_sizer->AddSpacer(5);
     
-    // -- this code is necessary to get the sizer's bottom margin to 8 --
+    // this code is necessary to get the sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
     min_size.SetHeight(min_size.GetHeight()+16);
     ok_cancel_sizer->SetMinSize(min_size);
@@ -459,7 +451,6 @@ DlgAuth::DlgAuth(wxWindow* parent,
 
 DlgAuth::~DlgAuth()
 {
-
 }
 
 static void licenseServerError(wxWindow* parent)
@@ -728,7 +719,7 @@ void DlgAuth::onOK(wxCommandEvent& evt)
         IAppPreferencesPtr prefs = g_app->getAppPreferences();
         if (prefs)
         {
-            // -- save the license login --
+            // save the license login
             prefs->setString(wxT("license_mgr.login"), license_login);
             prefs->flush();
         }
@@ -755,7 +746,7 @@ void DlgAuth::onActivationCodeChanged(wxCommandEvent& evt)
 
 bool DlgAuth::validateManualCode(const wxString& code, bool save)
 {
-    // -- this will make if difficult to machine-crack --
+    // this will make it more difficult to machine-crack
     ::wxMilliSleep(40);
     
     if (save)

@@ -3099,7 +3099,7 @@ void DbDoc::onFsItemRightClicked(IFsItemPtr item)
             root_selected = true;
         }
 
-        // -- new submenu --
+        // new submenu
         wxMenu* submenuNew = new wxMenu;
         submenuNew->Append(ID_NewFolder, _("&Folder"));
         submenuNew->AppendSeparator();

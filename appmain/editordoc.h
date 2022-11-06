@@ -110,8 +110,7 @@ public:
 
     void setText(const wxString& text);
 
-    // -- checks for external changes; public simply so
-    //    it can work with timer class --
+    // checks for external changes; public simply so it can work with timer class
     void checkForExternalChanges();
     
 private:

@@ -299,8 +299,7 @@ void Des::crypt(unsigned char* data, int size, bool encrypt)
     
     if (size % 8 != 0)
     {
-        // -- fail. input data size must
-        //    be a multiple of 8 --
+        // fail; input data size must be a multiple of 8
         return;
     }
 

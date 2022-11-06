@@ -55,7 +55,7 @@ static unsigned char fingerprint_key[] = { 0x22, 0xc9, 0x98, 0xb8, 0x32, 0x54, 0
 
 
 
-// -- activation code timestamp--
+// -- activation code timestamp --
 
 //  16-bit crc of the site code
 //  16-bit Expiration date (Julian day - 1/1/2000)

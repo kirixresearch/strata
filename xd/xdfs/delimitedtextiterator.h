@@ -32,7 +32,7 @@ struct DelimitedTextDataAccessInfo
     bool calculated;
     std::wstring expr_text;
 
-    // -- expression stuff --
+    // expression stuff
     kscript::ExprParser* expr;
     KeyLayout* key_layout;
     kscript::Value expr_result;

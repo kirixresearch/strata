@@ -189,7 +189,7 @@ ReportPropsDialog::~ReportPropsDialog()
 
 int ReportPropsDialog::ShowModal()
 {
-    // -- create source sizer --
+    // create source sizer
     
     m_source = new wxTextCtrl(this, ID_Source);
     wxStaticText* label_source = new wxStaticText(this, -1, _("Source:"));
@@ -208,7 +208,7 @@ int ReportPropsDialog::ShowModal()
     m_pagesize_panel = new PageSizePanel(this);
 
     
-    // -- create header/footer sizer --
+    // create header/footer sizer
     
     m_report_header = new wxCheckBox(this, ID_ReportHeader, _("Show Report Header"));
     m_report_footer = new wxCheckBox(this, ID_ReportFooter, _("Show Report Footer"));
@@ -256,7 +256,7 @@ int ReportPropsDialog::ShowModal()
     top_sizer->AddGrowableCol(0, 1);
 
 
-    // -- create group parameter grid --
+    // create group parameter grid
 
     m_grid = new kcl::RowSelectionGrid(this);
     m_grid->setRowSelectionGridFlags(kcl::RowSelectionGrid::refreshNone);
@@ -362,7 +362,7 @@ int ReportPropsDialog::ShowModal()
     m_orientation_panel->sigOrientationChanged.connect(m_pagesize_panel, &PageSizePanel::onOrientationChanged);
     m_pagesize_panel->sigDimensionsChanged.connect(m_orientation_panel, &OrientationPanel::onPageDimensionsChanged);
     
-    // -- set control values --
+    // set control values
     
     m_source->SetValue(m_settings.source);
     
@@ -381,7 +381,7 @@ int ReportPropsDialog::ShowModal()
     m_page_header->SetValue(m_settings.page_header);
     m_page_footer->SetValue(m_settings.page_footer);
     
-    // -- populate group grid --
+    // populate group grid
     
     m_grid->deleteAllRows();
     
@@ -628,7 +628,7 @@ void ReportPropsDialog::onOK(wxCommandEvent& evt)
     m_settings.page_header = m_page_header->GetValue();
     m_settings.page_footer = m_page_footer->GetValue();
     
-    // -- fill out the group info --
+    // fill out the group info
     
     m_settings.clearGroups();
     
