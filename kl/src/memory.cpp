@@ -86,8 +86,13 @@ membuf::membuf(const membuf& c)
         m_size = c.m_size;
         m_alloc_size = 0;
         m_buf = NULL;
+
         alloc(c.m_alloc_size);
-        memcpy(m_buf, c.m_buf, c.m_alloc_size);
+
+        if (m_buf)
+        {
+            memcpy(m_buf, c.m_buf, c.m_alloc_size);
+        }
     }
      else
     {
@@ -103,13 +108,14 @@ bool membuf::alloc(size_t size)
     if (size <= m_alloc_size)
         return true;
 
-    m_buf = (unsigned char*)realloc(m_buf, size);
-    if (!m_buf)
+    void* new_buf = realloc(m_buf, size);
+    if (!new_buf)
     {
-        m_alloc_size = 0;
+        // realloc() failed -- don't change m_buf and return failure
         return false;
     }
 
+    m_buf = (unsigned char*)new_buf;
     m_alloc_size = size;
     return true;
 }
