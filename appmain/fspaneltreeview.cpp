@@ -120,8 +120,10 @@ FsPanelTreeView::FsPanelTreeView(wxWindow* parent, wxWindowID id,
     m_highlight_item.m_pItem = 0;
     m_delete_item.m_pItem = 0;
 
+    int iconsize = FromDIP(100) > 100 ? 24 : 16;
+
     m_image_list = new wxImageList;
-    m_image_list->Create(16, 16, true, 10);
+    m_image_list->Create(iconsize, iconsize, true, 10);
     
     SetImageList(m_image_list);
 

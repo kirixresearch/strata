@@ -468,6 +468,14 @@ void DbFolderFsItem::setChildrenOverride(xd::IFileInfoEnumPtr children_override)
 }
 
 
+#ifdef WIN32
+#include <shlobj.h>
+#include <shlguid.h>
+#include <shellapi.h>
+#include <commctrl.h>
+#include <commoncontrols.h>
+#endif
+
 class ExtensionBitmapMgr
 {
 public:
@@ -485,15 +493,22 @@ public:
         wxImageList* image_list = wxTheFileIconsTable->GetSmallImageList();
         bmp = image_list->GetBitmap(id);
 
-        #ifdef WIN32
-        HIMAGELIST il = (HIMAGELIST)image_list->GetHIMAGELIST();
-        HICON il_icon = ImageList_GetIcon(il, id, ILD_NORMAL);
-        wxIcon icon;
-        icon.SetHICON((WXHICON)il_icon);
-        bmp.CopyFromIcon(icon);
-        #else
-        bmp = image_list->GetBitmap(id);
-        #endif
+        if (!bmp.IsOk())
+        {
+            bmp = GETBMPSMALL(gf_blank);
+        }
+
+        int x = bmp.GetWidth();
+        int y = bmp.GetHeight();
+
+        static int iconsize = g_app->getMainWindow()->FromDIP(100) > 100 ? 24 : 16;
+        if (iconsize != x || iconsize != y)
+        {
+            wxClientDC dc(g_app->getMainWindow());
+            wxImage img = bmp.ConvertToImage();
+            img.Rescale(iconsize, iconsize);
+            bmp = wxBitmap(img, dc);
+        }
 
         m_ext_bitmaps[ext] = bmp;
         return bmp;
@@ -510,7 +525,7 @@ ExtensionBitmapMgr g_ext_bitmaps;
 
 // DECIDE_BMP() simply chooses a shortcut version of the
 // bitmap, if the file is a mount, or the regular bitmap if not
-#define DECIDE_BMP(bmp) ((info.isOk() && info->isMount()) ? (getShortcutBitmap(GETBMP(bmp))) : (GETBMP(bmp)))
+#define DECIDE_BMP(bmp) ((info.isOk() && info->isMount()) ? (getShortcutBitmap(GETBMPSMALL(bmp))) : (GETBMPSMALL(bmp)))
 
 IFsItemEnumPtr DbFolderFsItem::getChildren()
 {
@@ -618,9 +633,9 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
         if (item_type == xd::filetypeFolder)
         {
             DbFolderFsItem* item = new DbFolderFsItem;
-            item->setBitmap(DECIDE_BMP(gf_folder_closed_16), fsbmpSmall);
-            item->setBitmap(DECIDE_BMP(gf_folder_open_16), fsbmpSmallExpanded);
-            item->setBitmap(DECIDE_BMP(gf_folder_closed_16), fsbmpLarge);
+            item->setBitmap(DECIDE_BMP(gf_folder_closed), fsbmpSmall);
+            item->setBitmap(DECIDE_BMP(gf_folder_open), fsbmpSmallExpanded);
+            item->setBitmap(DECIDE_BMP(gf_folder_closed), fsbmpLarge);
             item->setLabel(item_name);
             item->setPath(appendPath(m_path, item_name));
             item->setDatabase(m_db);
@@ -642,8 +657,8 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
 
                 if (kl::icontains(cstr, L"dbdoccloudfolder="))
                 {
-                    item->setBitmap(GETBMP(gf_globe_16), fsbmpSmall);
-                    item->setBitmap(GETBMP(gf_globe_16), fsbmpSmallExpanded);
+                    item->setBitmap(GETBMPSMALL(gf_globe), fsbmpSmall);
+                    item->setBitmap(GETBMPSMALL(gf_globe), fsbmpSmallExpanded);
                 }
             }
                 
@@ -656,7 +671,7 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
             // are of type xd::filetypeTable, so we need to determine
             // the db object type based on the file's extension
 
-            wxBitmap bmp = DECIDE_BMP(gf_table_16);
+            wxBitmap bmp = DECIDE_BMP(gf_table);
                 
             int dbobject_type = dbobjtypeSet;
 
@@ -735,26 +750,26 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
 
             if (script)
             {
-                item->setBitmap(DECIDE_BMP(gf_script_16), fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_script_16), fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_script), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_script), fsbmpLarge);
                 item->setType(dbobjtypeScript);
             }
              else if (report)
             {
-                item->setBitmap(DECIDE_BMP(gf_report_16), fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_report_16), fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_report), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_report), fsbmpLarge);
                 item->setType(dbobjtypeReport);
             }
              else if (query)
             {
-                item->setBitmap(DECIDE_BMP(gf_query_16), fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_query_16), fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_query), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_query), fsbmpLarge);
                 item->setType(dbobjtypeTemplate);
             }
              else
             {
-                item->setBitmap(DECIDE_BMP(gf_gear_16), fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_gear_16), fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_gear), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_gear), fsbmpLarge);
                 item->setType(dbobjtypeTemplate);
             }
 
@@ -769,8 +784,8 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
                 item->setLabel(item_name);
                 item->setPath(appendPath(m_path, item_name));
                 item->setOwner(this);
-                item->setBitmap(DECIDE_BMP(gf_report_16), fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_report_16), fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_report), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_report), fsbmpLarge);
                 item->setType(dbobjtypeReport);
                 vec->append(static_cast<IFsItem*>(item));
             }
@@ -780,8 +795,8 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
                 item->setLabel(item_name);
                 item->setPath(appendPath(m_path, item_name));
                 item->setOwner(this);
-                item->setBitmap(DECIDE_BMP(gf_query_16), fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_query_16), fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_query), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_query), fsbmpLarge);
                 item->setType(dbobjtypeTemplate);
                 vec->append(static_cast<IFsItem*>(item));
             }
@@ -791,8 +806,8 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
                 item->setLabel(item_name);
                 item->setPath(appendPath(m_path, item_name));
                 item->setOwner(this);
-                item->setBitmap(DECIDE_BMP(gf_gear_16), fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_gear_16), fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_gear), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_gear), fsbmpLarge);
                 item->setType(dbobjtypeTemplate);
                 vec->append(static_cast<IFsItem*>(item));
             }
@@ -802,8 +817,8 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
                 item->setLabel(item_name);
                 item->setPath(appendPath(m_path, item_name));
                 item->setOwner(this);
-                item->setBitmap(DECIDE_BMP(gf_script_16), fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_script_16), fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_script), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_script), fsbmpLarge);
                 item->setType(dbobjtypeScript);
                 vec->append(static_cast<IFsItem*>(item));
             }
@@ -1106,7 +1121,7 @@ void DbDoc::setDatabase(xd::IDatabasePtr db, const wxString& root_path)
         wxString db_label = getDatabaseNameProjectLabel();
         
         root->setLabel(db_label);
-        root->setBitmap(GETBMP(gf_project_16));
+        root->setBitmap(GETBMPSMALL(gf_project));
         m_fspanel->setRootItem(root);
     }
      else
@@ -2237,7 +2252,7 @@ void DbDoc::onNewFolder(wxCommandEvent& evt)
     new_item = m_fspanel->insertItem(m_newitem_parent,
                                      previous_item,
                                      wxT(""),
-                                     GETBMP(gf_folder_open_16));
+                                     GETBMPSMALL(gf_folder_open));
     m_edit_mode = editNewFolder;
 
     m_fspanel->expand(m_newitem_parent);
