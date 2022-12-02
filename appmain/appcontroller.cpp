@@ -5896,12 +5896,13 @@ void AppController::createDefaultLinks()
         BookmarkFs::createBookmark(towstr(_("Developer Resources")), towstr(developer_resources));
     }
 
+/* removed in v5.0
     wxString support_forums = getAppPrefsDefaultString("general.location.support");
     if (support_forums.Length() > 0)
     {
         BookmarkFs::createBookmark(towstr(_("Support Forums")), towstr(support_forums));
     }
-
+*/
 
     int idx = 0;
     if (home_page.Length() > 0)
@@ -5919,10 +5920,12 @@ void AppController::createDefaultLinks()
         BookmarkFs::setFileVisualLocation(towstr(_("Developer Resources")), idx++);
     }
 
+/* removed in v5.0
     if (support_forums.Length() > 0)
     {
         BookmarkFs::setFileVisualLocation(towstr(_("Support Forums")), idx++);
     }
+*/
 }
 
 
