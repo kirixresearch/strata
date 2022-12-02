@@ -4789,10 +4789,11 @@ bool AppController::openWeb(const wxString& _location,
     // if we don't have a webdoc, create one
     if (doc.isNull())
     {
+        bool use_wxwebview = (location == APP_WEBLOCATION_HELP ? true : false); // prevent certificate error before v5 release -- remove once XULRunner is gone
         int state = sitetypeNormal;
         if (!(open_mask & appOpenActivateNewWindow))
             state |= siteNoInitialActivate;
-        doc = static_cast<IWebDoc*>(new WebDoc);
+        doc = static_cast<IWebDoc*>(new WebDoc(use_wxwebview));
         IDocumentSitePtr site;
         site = m_frame->createSite(doc, state, -1, -1, -1, -1);
         if (site.isOk() && site_id)

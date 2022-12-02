@@ -174,7 +174,7 @@ public:
 
 public:
 
-    WebDoc();
+    WebDoc(bool use_wxwebview = false);
     virtual ~WebDoc();
 
     bool isWebBrowserOk() const;
@@ -287,6 +287,7 @@ private:
     wxString m_title;
     ProgressBitmapUpdater m_bitmap_updater;
     wxImage m_favicon;
+    bool m_use_wxwebview;
 
 private:
 

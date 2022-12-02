@@ -2182,11 +2182,12 @@ END_EVENT_TABLE()
 
 
 
-WebDoc::WebDoc()
+WebDoc::WebDoc(bool use_wxwebview)
 {
     m_webcontrol = NULL;
     m_webview = NULL;
     m_web = NULL;
+    m_use_wxwebview = use_wxwebview;
 }
 
 WebDoc::~WebDoc()
@@ -2242,7 +2243,7 @@ bool WebDoc::initDoc(IFramePtr frame,
     m_bitmap_updater.setDocSite(m_doc_site);
     
     // create the web component itself
-    if (wxWebControl::IsEngineOk())
+    if (wxWebControl::IsEngineOk() && !m_use_wxwebview)
     {
         m_webcontrol = new wxWebControl(this, wxID_WEB, wxPoint(0,0), docsite_wnd->GetClientSize());
         m_web = m_webcontrol;
