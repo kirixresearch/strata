@@ -709,7 +709,7 @@ bool AppController::init()
     // TODO: application icon for non-msw platforms
 
     //wxBitmap bmp_logo;
-    //bmp_logo = GETBMP(logo_16);
+    //bmp_logo = GETBMPSMALL(logo);
     //wxIcon logo;
     //logo.CopyFromBitmap(bmp_logo);
     //m_frame->setIcon(logo);
@@ -966,6 +966,7 @@ bool AppController::init()
     bool append_help_resources_separator = false;
     bool append_help_update_separator = false;
 
+/*  removed in v5.0
     // local help contents should always exist; other help-related
     // items may or may not exist
     if (true)
@@ -973,6 +974,7 @@ bool AppController::init()
         menuHelp->Append(ID_Project_Help, _("&Help Contents\tF1"));
         append_help_contents_separator = true;
     }
+*/
 
     help_item = APP_WEBLOCATION_HELP;
     if (help_item.Length() > 0)
@@ -989,6 +991,7 @@ bool AppController::init()
     if (append_help_contents_separator)
         menuHelp->AppendSeparator();
 
+/*  removed in v5.0
     // help resources info
     help_item = APP_WEBLOCATION_SUPPORT;
     if (help_item.Length() > 0)
@@ -996,6 +999,9 @@ bool AppController::init()
         menuHelp->Append(ID_Project_Support, _("Support &Forums"));
         append_help_resources_separator = true;
     }
+*/
+
+/*  removed in v5.0
     help_item = APP_WEBLOCATION_CONTACT;
     if (help_item.Length() > 0)
     {
@@ -1004,6 +1010,7 @@ bool AppController::init()
     }
     if (append_help_resources_separator)
         menuHelp->AppendSeparator();
+*/
 
     // help update info
 #if PALADIN_ENABLED
@@ -1015,6 +1022,7 @@ bool AppController::init()
     }
 #endif
 
+/*  removed in v5.0
     help_item = APP_UPDATE_URL;
     if (help_item.Length() > 0)
     {
@@ -1023,6 +1031,7 @@ bool AppController::init()
     }
     if (append_help_update_separator)
         menuHelp->AppendSeparator();
+*/
 
     // help about info; always include
     menuHelp->Append(ID_App_About, _("A&bout..."));
@@ -1655,23 +1664,23 @@ void AppController::onNew(wxCommandEvent& evt)
     wxMenu menuPopup;
 
     wxMenuItem* m1 =  new wxMenuItem(&menuPopup, ID_Project_NewTab, _("Tab"));
-    m1->SetBitmap(GETBMP(gf_document_16));
+    m1->SetBitmap(GETBMPSMALL(gf_document));
     menuPopup.Append(m1);
 
     wxMenuItem* m2 =  new wxMenuItem(&menuPopup, ID_Project_NewTable, _("Table"));
-    m2->SetBitmap(GETBMP(gf_table_16));
+    m2->SetBitmap(GETBMPSMALL(gf_table));
     menuPopup.Append(m2);
 
     wxMenuItem* m3 =  new wxMenuItem(&menuPopup, ID_Project_NewReport, _("Report"));
-    m3->SetBitmap(GETBMP(gf_report_16));
+    m3->SetBitmap(GETBMPSMALL(gf_report));
     menuPopup.Append(m3);
 
     wxMenuItem* m4 =  new wxMenuItem(&menuPopup, ID_Project_NewQuery, _("Query"));
-    m4->SetBitmap(GETBMP(gf_query_16));
+    m4->SetBitmap(GETBMPSMALL(gf_query));
     menuPopup.Append(m4);
 
     wxMenuItem* m5 =  new wxMenuItem(&menuPopup, ID_Project_NewScript, _("Script"));
-    m5->SetBitmap(GETBMP(gf_script_16));
+    m5->SetBitmap(GETBMPSMALL(gf_script));
     menuPopup.Append(m5);
 
     wxRect rect = m_linkbar->GetToolRect(evt.GetId());
@@ -3410,7 +3419,7 @@ void AppController::onFrameEvent(FrameworkEvent& evt)
     if (evt.name == FRAMEWORK_EVT_APPMAIN_ADD_FIND_COMBO_ITEM)
     {
         wxString str = evt.s_param;
-        wxBitmap bitmap = GETBMP(gf_find_16);
+        wxBitmap bitmap = GETBMPSMALL(gf_find);
 
         // if the find/filter string doesn't exist in the find combobox, add it
         if (m_project_toolbar->m_find->FindString(str) == wxNOT_FOUND &&
