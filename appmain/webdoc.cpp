@@ -3450,7 +3450,7 @@ void WebDoc::onShouldHandleContent(wxWebEvent& evt)
 
 void WebDoc::onFavIconAvailable(wxWebEvent& evt)
 {
-    int favicon_size = FromDIP(100) > 0 ? 24 : 16;
+    int favicon_size = FromDIP(100) > 100 ? 24 : 16;
 
     wxImage img = m_webcontrol->GetFavIcon();
     img.Rescale(favicon_size, favicon_size);
