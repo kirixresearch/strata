@@ -145,22 +145,6 @@
                     </Component>
                     
                 </Directory>
-                
-                <Directory Id="PKG_HELPDIR" Name="help">
-                    <Component Id="Help" Guid="53928A7C-4566-4535-B42C-5EAB8C651068">
-                        <File Id="help" Name="help.chm" DiskId="1" Source="$(env.buildsrc)\help\help.chm" KeyPath="yes">
-                            <Shortcut Id="KirixStrataHelpMenuShortcut"
-                                Directory="ProgramMenuDir"
-                                Name="Kirix Strata Help"
-                                Advertise="yes"
-                                Icon="HelpShortcutIcon.exe">
-
-                                <Icon Id="HelpShortcutIcon.exe" SourceFile="$(env.buildsrc)\setup\help.exe" />
-
-                            </Shortcut>
-                        </File>
-                    </Component>
-                </Directory>
 
 
                 <Directory Id="PKG_I18N" Name="i18n">
