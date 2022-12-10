@@ -179,7 +179,6 @@
         <MergeRef Id="CRT"/>
         <ComponentRef Id="Core"/>
         <ComponentRef Id="CoreRegistry"/>
-        <ComponentRef Id="Help"/>
         <ComponentRef Id="Samples"/>
         <ComponentRef Id="Translation_de"/>
         <ComponentGroupRef Id="xr"/>
