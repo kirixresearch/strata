@@ -125,13 +125,13 @@ ExtensionInfo ExtensionMgr::getInfo(ExtensionPkg* pkg)
              else
             {
                 // assign a default bitmap for the extension
-                info.bitmap = GETBMP(kx_extension_32);
+                info.bitmap = GETBMP(gf_extension_32);
             }
         }
          else
         {
             // assign a default bitmap for the extension
-            info.bitmap = GETBMP(kx_extension_32);
+            info.bitmap = GETBMP(gf_extension_32);
         }
     }
     

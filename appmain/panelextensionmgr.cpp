@@ -180,7 +180,7 @@ static wxBitmap getExtensionBitmap(const wxString& path)
     ExtensionInfo info = g_app->getExtensionMgr()->getInfo(path);
     if (info.bitmap.IsOk())
         return info.bitmap;
-    return GETBMP(kx_extension_32);
+    return GETBMP(gf_extension_32);
 }
 
 void ExtensionManagerPanel::addItem(ExtensionInfo& info)

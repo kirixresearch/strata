@@ -52,18 +52,18 @@ public:
     ProgressBitmapUpdater()
     {
         m_progress_idx = 0;
-        m_bitmaps[0]  = GETBMPSMALL(kx_progress1);
-        m_bitmaps[1]  = GETBMPSMALL(kx_progress2);
-        m_bitmaps[2]  = GETBMPSMALL(kx_progress3);
-        m_bitmaps[3]  = GETBMPSMALL(kx_progress4);
-        m_bitmaps[4]  = GETBMPSMALL(kx_progress5);
-        m_bitmaps[5]  = GETBMPSMALL(kx_progress6);
-        m_bitmaps[6]  = GETBMPSMALL(kx_progress7);
-        m_bitmaps[7]  = GETBMPSMALL(kx_progress8);
-        m_bitmaps[8]  = GETBMPSMALL(kx_progress9);
-        m_bitmaps[9]  = GETBMPSMALL(kx_progress10);
-        m_bitmaps[10] = GETBMPSMALL(kx_progress11);
-        m_bitmaps[11] = GETBMPSMALL(kx_progress12);
+        m_bitmaps[0]  = GETBMPSMALL(gf_progress1);
+        m_bitmaps[1]  = GETBMPSMALL(gf_progress2);
+        m_bitmaps[2]  = GETBMPSMALL(gf_progress3);
+        m_bitmaps[3]  = GETBMPSMALL(gf_progress4);
+        m_bitmaps[4]  = GETBMPSMALL(gf_progress5);
+        m_bitmaps[5]  = GETBMPSMALL(gf_progress6);
+        m_bitmaps[6]  = GETBMPSMALL(gf_progress7);
+        m_bitmaps[7]  = GETBMPSMALL(gf_progress8);
+        m_bitmaps[8]  = GETBMPSMALL(gf_progress9);
+        m_bitmaps[9]  = GETBMPSMALL(gf_progress10);
+        m_bitmaps[10] = GETBMPSMALL(gf_progress11);
+        m_bitmaps[11] = GETBMPSMALL(gf_progress12);
     }
     
     void setDocSite(IDocumentSitePtr doc_site)

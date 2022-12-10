@@ -1366,7 +1366,7 @@ void QueryDoc::onDiagramLineRightClicked(RelationLine* line, int* command)
      else if (*command == MenuID_LeftOuterJoin)
     {
         line->user = QueryJoinLeftOuter;
-        line->left_bitmap = GETBMP(kx_asterisk_16);
+        line->left_bitmap = GETBMP(gf_asterisk_16);
         line->right_bitmap = wxNullBitmap;
     }
     
@@ -1612,7 +1612,7 @@ void QueryDoc::populateDiagramFromTemplate()
                     }
                      else if (join_type == QueryJoinLeftOuter)
                     {
-                        line->left_bitmap = GETBMP(kx_asterisk_16);
+                        line->left_bitmap = GETBMP(gf_asterisk_16);
                         line->right_bitmap = wxNullBitmap;
                     }
                 }
