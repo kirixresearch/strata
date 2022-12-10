@@ -4789,7 +4789,7 @@ bool AppController::openWeb(const wxString& _location,
     // if we don't have a webdoc, create one
     if (doc.isNull())
     {
-        bool use_wxwebview = (location == APP_WEBLOCATION_HELP ? true : false); // prevent certificate error before v5 release -- remove once XULRunner is gone
+        bool use_wxwebview = (location.Contains(APP_WEBLOCATION_WEBSITENAME) ? true : false); // prevent certificate error before v5 release -- remove once XULRunner is gone
         int state = sitetypeNormal;
         if (!(open_mask & appOpenActivateNewWindow))
             state |= siteNoInitialActivate;
