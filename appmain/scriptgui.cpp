@@ -2994,9 +2994,12 @@ void PictureBox::onEvent(wxEvent& event)
         if (clisize.y <= 0)
             clisize.y = 20;
 
-        wxImage img = m_img.Scale(clisize.x, clisize.y);
-        m_bmp = wxBitmap(img);
-        m_ctrl->SetBitmap(m_bmp);
+        if (m_img.IsOk())
+        {
+            wxImage img = m_img.Scale(clisize.x, clisize.y);
+            m_bmp = wxBitmap(img);
+            m_ctrl->SetBitmap(m_bmp);
+        }
 
         m_form_wnd->Thaw();
     }
