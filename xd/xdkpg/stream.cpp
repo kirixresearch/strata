@@ -69,8 +69,7 @@ bool KpgStream::read(void* buf,
         m_reader->loadNextBlock(&info_block_size);
     }
 
-    size_t size = m_membuf.getDataSize();
-    if (read_size > size)
+    while (read_size > m_membuf.getDataSize())
     {
         // caller wants more data than we presently have;
         // try to get more
@@ -80,8 +79,11 @@ bool KpgStream::read(void* buf,
         {
             m_membuf.append((unsigned char*)data, (size_t)block_size);
         }
+        else
+        {
+            break;
+        }
     }
-
 
     if (read_size > m_membuf.getDataSize())
         read_size = m_membuf.getDataSize();
