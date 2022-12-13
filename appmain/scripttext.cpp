@@ -138,7 +138,10 @@ void TextBox::realize()
         m_ctrl->Enable(false);
 
     listenEvent(wxEVT_COMMAND_TEXT_UPDATED);
-    listenEvent(wxEVT_COMMAND_TEXT_ENTER);
+    if (m_orig_style & wxTE_PROCESS_ENTER)
+    {
+        listenEvent(wxEVT_COMMAND_TEXT_ENTER);
+    }
     listenEvent(wxEVT_COMMAND_TEXT_MAXLEN);
 }
 
@@ -605,6 +608,8 @@ void TextBox::setMultiline(kscript::ExprEnv* env, kscript::Value* retval)
         // add the multiline flag to the style
         style |= wxTE_MULTILINE;
     }
+
+    m_orig_style = style;
 
     wxWindow* parent = m_ctrl->GetParent();
     wxString text = m_ctrl->GetValue();
