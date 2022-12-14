@@ -52,7 +52,7 @@ function fetchPort(group, callback, error)
         
 	
         var cmd = "D:\\build32\\src\\trunk\\debugu\\sdserv.exe";
-        var args = [ "--host=pdb001b.c1bah52kyx7w.us-east-1.rds.amazonaws.com", "--port=5432", "--user=flexio", "--password=flexio", "--database="+group, "--http-port="+info.port, "--strip-path=1", "--idle-quit=28800" ];
+        //var args = [ "--host=myhost", "--port=5432", "--user=", "--password=", "--database="+group, "--http-port="+info.port, "--strip-path=1", "--idle-quit=28800" ];
 		
         
         //var cmd = "c:\\Program Files\\nodejs\\node.exe";
