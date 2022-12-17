@@ -303,54 +303,67 @@ wxBitmap BitmapMgr::lookupBitmap(const wxString& bitmap_name, int status, int si
     {
         wxMemoryBuffer buf;
         bool res;
-        wxBitmapType entry_type = wxBITMAP_TYPE_PNG;
+        bool is_svg = false;
 
-        // load the bitmap from the catalog -- first try the exact size wanted;
-        // if the precise size is not available, load the largest available and
-        // scale it up or down
-        res = m_bundle->getEntry(name + wxString::Format("_%d.png", size), buf);
-        if (!res)
+        res = m_bundle->getEntry(name + ".svg", buf);
+        if (res)
         {
-            // try different sizes and scale
-            for (int i = 0; i < sizes_count; ++i)
+            // file is an svg
+            wxSize size_obj(size, size);
+            wxBitmapBundle bundle = wxBitmapBundle::FromSVG((char*)buf.GetData(), size_obj);
+            entry.bitmap = bundle.GetBitmap(size_obj);
+
+            if (status == typeDisabled)
             {
-                res = m_bundle->getEntry(name + wxString::Format("_%d.png", sizes[i]), buf);
-                if (res)
+                entry.bitmap = MakeDisabledBitmap(entry.bitmap);
+            }
+
+            return entry.bitmap;
+        }
+        else
+        {
+            // file is not an svg
+
+            // load the bitmap from the catalog -- first try the exact size wanted;
+            // if the precise size is not available, load the largest available and
+            // scale it up or down
+            res = m_bundle->getEntry(name + wxString::Format("_%d.png", size), buf);
+            if (!res)
+            {
+                // try different sizes and scale
+                for (int i = 0; i < sizes_count; ++i)
                 {
-                    break;
+                    res = m_bundle->getEntry(name + wxString::Format("_%d.png", sizes[i]), buf);
+                    if (res)
+                    {
+                        break;
+                    }
                 }
             }
+ 
+            if (!res)
+            {
+                wxFAIL_MSG("Image not found in imgres.zip");
+                return wxBitmap();
+            }
+
+            wxMemoryInputStream stream(buf.GetData(), buf.GetDataLen());
+
+            wxImage img;
+            if (!img.LoadFile(stream, wxBITMAP_TYPE_PNG))
+            {
+                wxFAIL_MSG("Image failed to load");
+                return wxBitmap();
+            }
+
+            if (img.GetHeight() != size)
+            {
+                img.Rescale(size, size);
+            }
+
+            entry.bitmap = wxBitmap(img);
+            return entry.bitmap;
         }
-
-
-        if (!res)
-        {
-            wxFAIL_MSG("Image not found in imgres.zip");
-            return wxBitmap();
-        }
-
-        wxMemoryInputStream stream(buf.GetData(), buf.GetDataLen());
-        
-        wxImage img;
-        if (!img.LoadFile(stream, entry_type))
-        {
-            wxFAIL_MSG("Image failed to load");
-            return wxBitmap();
-        }
-        
-        if (img.GetHeight() != size)
-        {
-            img.Rescale(size, size);
-        }
-
-        entry.bitmap = wxBitmap(img);
-
-        if (status == typeDisabled)
-        {
-            entry.bitmap = MakeDisabledBitmap(entry.bitmap);
-        }
-
-        return entry.bitmap;
     }
 }
 
