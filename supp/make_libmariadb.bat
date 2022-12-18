@@ -11,20 +11,19 @@ unzip zip\libmariadb.zip
 
 cd libmariadb
 
-if "%PLATFORM%"=="X64" goto x64
+if "%VisualStudioVersion%"=="16.0" SET CMAKE_VISUAL_STUDIO_VERSION=Visual Studio 16 2019
+if "%VisualStudioVersion%"=="17.0" SET CMAKE_VISUAL_STUDIO_VERSION=Visual Studio 17 2022
 
+if "%PLATFORM%"=="X64" goto x64
 :x86
-%~dp0\util\cmakewin32\bin\cmake -G "Visual Studio 16 2019" -DCMAKE_GENERATOR_PLATFORM=Win32 .
+%~dp0\util\cmakewin32\bin\cmake -G "%CMAKE_VISUAL_STUDIO_VERSION%" -DCMAKE_GENERATOR_PLATFORM=Win32 .
 SET MSBUILD_PLATFORM=Win32
 goto done
-
 :x64
-%~dp0\util\cmakewin32\bin\cmake -G "Visual Studio 16 2019" -DCMAKE_GENERATOR_PLATFORM=x64 .
+%~dp0\util\cmakewin32\bin\cmake -G "%CMAKE_VISUAL_STUDIO_VERSION%" -DCMAKE_GENERATOR_PLATFORM=x64 .
 SET MSBUILD_PLATFORM=x64
 goto done
-
 :done
-
 
 cscript %~dp0\util\replace.vbs %~dp0\libmariadb\libmariadb\mariadbclient.vcxproj ">MultiThreadedDebug<" ">MultiThreadedDebugDll<"
 cscript %~dp0\util\replace.vbs %~dp0\libmariadb\libmariadb\mariadbclient.vcxproj ">MultiThreaded<" ">MultiThreadedDll<"
@@ -41,7 +40,6 @@ mkdir %~dp0\..\debugu
 mkdir %~dp0\..\releaseu
 copy %~dp0\libmariadb\libmariadb\Debug\libmariadb.dll %~dp0\..\debugu
 copy %~dp0\libmariadb\libmariadb\Release\libmariadb.dll %~dp0\..\releaseu
-
 
 popd
 
