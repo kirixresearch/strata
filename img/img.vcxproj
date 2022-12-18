@@ -77,17 +77,17 @@
     <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak all</NMakeBuildCommandLine>
-    <NMakeOutput>..\debugu\imgres.zip</NMakeOutput>
-    <NMakeCleanCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean all</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak all</NMakeBuildCommandLine>
+    <NMakeOutput>..\releaseu\imgres.zip</NMakeOutput>
+    <NMakeCleanCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak clean all</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak all</NMakeBuildCommandLine>
-    <NMakeOutput>..\debugu\imgres.zip</NMakeOutput>
-    <NMakeCleanCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean all</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak all</NMakeBuildCommandLine>
+    <NMakeOutput>..\releaseu\imgres.zip</NMakeOutput>
+    <NMakeCleanCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak clean all</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <ItemDefinitionGroup>
