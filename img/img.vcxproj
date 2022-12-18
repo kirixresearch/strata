@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,30 +19,30 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{AF765C81-B79E-4E98-871D-D9BC8C25CA71}</ProjectGuid>
-    <Keyword>MakeFileProj</Keyword>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{78D3C34B-868C-4C83-B0EA-C989ECE96E8F}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -63,44 +63,36 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak </NMakeBuildCommandLine>
-    <NMakeOutput>$(SolutionDir)..\debugu\imgres.zip</NMakeOutput>
+    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak all</NMakeBuildCommandLine>
+    <NMakeOutput>..\debugu\imgres.zip</NMakeOutput>
     <NMakeCleanCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean all  </NMakeReBuildCommandLine>
+    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean all</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(SolutionDir)..\debugu\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak </NMakeBuildCommandLine>
-    <NMakeOutput>$(SolutionDir)..\releaseu\imgres.zip</NMakeOutput>
-    <NMakeCleanCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak clean all  </NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(SolutionDir)..\releaseu\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak </NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak clean all  </NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>nmake basedir=$(SolutionDir)..\releaseu /c /f imgres.mak clean</NMakeCleanCommandLine>
-    <NMakeOutput>$(SolutionDir)..\releaseu\imgres.zip</NMakeOutput>
-    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(SolutionDir)..\releaseu\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak </NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean all  </NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak all</NMakeBuildCommandLine>
+    <NMakeOutput>..\debugu\imgres.zip</NMakeOutput>
     <NMakeCleanCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean</NMakeCleanCommandLine>
-    <NMakeOutput>$(SolutionDir)..\debugu\imgres.zip</NMakeOutput>
-    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(SolutionDir)..\debugu\</OutDir>
+    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean all</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak all</NMakeBuildCommandLine>
+    <NMakeOutput>..\debugu\imgres.zip</NMakeOutput>
+    <NMakeCleanCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean all</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <NMakeBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak all</NMakeBuildCommandLine>
+    <NMakeOutput>..\debugu\imgres.zip</NMakeOutput>
+    <NMakeCleanCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake basedir=$(SolutionDir)..\debugu /c /f imgres.mak clean all</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="imgres.mak" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
