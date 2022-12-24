@@ -265,8 +265,8 @@ DlgAuth::DlgAuth(wxWindow* parent,
     m_activation_valid = new kcl::ValidControl(this, -1,
                                                wxDefaultPosition,
                                                wxSize(16,16));
-    m_activation_valid->setValidBitmap(GETBMP(gf_checkmark_16));
-    m_activation_valid->setInvalidBitmap(GETBMP(gf_x_16));
+    m_activation_valid->setValidBitmap(GETBMPSMALL(gf_checkmark));
+    m_activation_valid->setInvalidBitmap(GETBMPSMALL(gf_x));
     m_activation_valid->setBorderVisible(false);
     m_activation_valid->setLabelVisible(false);
     
@@ -358,8 +358,8 @@ DlgAuth::DlgAuth(wxWindow* parent,
                                                wxDefaultPosition,
                                                wxSize(34,34));
 
-    bmp->setValidBitmap(GETBMP(gf_globe_32));
-    bmp->setInvalidBitmap(GETBMP(gf_globe_32));
+    bmp->setValidBitmap(GETBMPLARGE(gf_globe));
+    bmp->setInvalidBitmap(GETBMPLARGE(gf_globe));
     bmp->setBorderVisible(false);
     bmp->setLabelVisible(false);
     bmp->setValid(true);
@@ -535,7 +535,7 @@ void DlgAuth::updateValidControl()
 {
     if (m_internet_radio->GetValue())
     {
-        m_activation_valid->setInvalidBitmap(GETBMP(gf_blank_16));
+        m_activation_valid->setInvalidBitmap(GETBMPSMALL(gf_blank));
         m_activation_valid->setValid(false);
         return;
     }
@@ -548,12 +548,12 @@ void DlgAuth::updateValidControl()
     
     if (activation_code.Length() < 16)
     {
-        m_activation_valid->setInvalidBitmap(GETBMP(gf_blank_16));
+        m_activation_valid->setInvalidBitmap(GETBMPSMALL(gf_blank));
         m_activation_valid->setValid(false);
     }
      else if (activation_code.Length() == 16)
     {
-        m_activation_valid->setInvalidBitmap(GETBMP(gf_x_16));
+        m_activation_valid->setInvalidBitmap(GETBMPSMALL(gf_x));
 
         if (validateManualCode(activation_code))
             m_activation_valid->setValid(true);
@@ -562,7 +562,7 @@ void DlgAuth::updateValidControl()
     }
      else
     {
-        m_activation_valid->setInvalidBitmap(GETBMP(gf_x_16));
+        m_activation_valid->setInvalidBitmap(GETBMPSMALL(gf_x));
         m_activation_valid->setValid(false);
     }
 }
