@@ -173,14 +173,25 @@ bool writeRegKey(int scope, LPCTSTR path, LPCTSTR val)
 
 bool getSpecialFolderPath(int folder_id, TCHAR* path)
 {
+    LPMALLOC pIMalloc = NULL;
+    if (S_OK != SHGetMalloc(&pIMalloc))
+        return false;
+
     LPITEMIDLIST pidl = NULL;
     if (FAILED(SHGetSpecialFolderLocation(NULL, CSIDL_PERSONAL, &pidl)))
+    {
+        pIMalloc->Release();
         return false;
+    }
+
     if (!pidl)
+    {
+        pIMalloc->Release();
         return false;
+    }
+
     SHGetPathFromIDList(pidl, path);
-    LPMALLOC pIMalloc;
-    SHGetMalloc(&pIMalloc);
+
     pIMalloc->Free(pidl);
     pIMalloc->Release();
     return true;
