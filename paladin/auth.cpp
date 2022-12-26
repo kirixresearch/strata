@@ -1117,7 +1117,7 @@ void buildCLSIDPath(LPCTSTR path1, const GUID& guid, TCHAR* path)
     wchar_t guidstr[255];
     _tcscpy(path, path1);
     _tcscat(path, _T("\\"));
-    StringFromGUID2(guid, guidstr, 255);
+    (void)StringFromGUID2(guid, guidstr, 254);
     _tcscat(path, kl::tstr(guidstr));
     _tcscat(path, _T("\\Option"));
 }
@@ -1343,14 +1343,14 @@ void AuthImpl::saveSiteCodeSeed(int seed)
 
 #ifdef WIN32
 
-    TCHAR path[255];
-    TCHAR seed_str[255];
+    TCHAR path[512];
+    TCHAR seed_str[256];
 
     _sntprintf(seed_str, 255, _T("%d"), seed);
 
     // write seed into registry
 
-    _sntprintf(path, 255, _T("SOFTWARE\\%s\\LicenseInfo\\%s\\ExtraInfo1"),
+    _sntprintf(path, 511, _T("SOFTWARE\\%s\\LicenseInfo\\%s\\ExtraInfo1"),
                     (TCHAR*)kl::tstr(m_company_regkey),
                     (TCHAR*)kl::tstr(m_app_tag));
 
@@ -1362,7 +1362,7 @@ void AuthImpl::saveSiteCodeSeed(int seed)
 
     // also write seed into home directory
 
-    if (GetEnvironmentVariable(_T("HOMEPATH"), path, 512))
+    if (GetEnvironmentVariable(_T("HOMEPATH"), path, 511))
     {
         TCHAR tag_crc[255];
         _sntprintf(tag_crc, 255, _T("%08X.INF"), crc32((unsigned char*)m_app_tag, strlen(m_app_tag)));
@@ -1405,8 +1405,8 @@ int AuthImpl::loadSiteCodeSeed()
 
 #ifdef WIN32
 
-    TCHAR path[255];
-    TCHAR seed_str[255];
+    TCHAR path[512];
+    TCHAR seed_str[256];
 
     // load seed from registry
 
@@ -1423,7 +1423,7 @@ int AuthImpl::loadSiteCodeSeed()
     // also read the seed from the home directory
 
     TCHAR filename[255];
-    if (GetEnvironmentVariable(_T("HOMEPATH"), filename, 512))
+    if (GetEnvironmentVariable(_T("HOMEPATH"), filename, 511))
     {
         TCHAR crc[255];
         _sntprintf(crc, 255, _T("%08X.INF"), crc32((unsigned char*)m_app_tag, strlen(m_app_tag)));
