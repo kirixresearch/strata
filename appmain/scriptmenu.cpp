@@ -818,7 +818,11 @@ void zMenu::getMenuItems(kscript::ExprEnv* env, kscript::Value* retval)
 void zMenu::getMenuItemCount(kscript::ExprEnv* env, kscript::Value* retval)
 {
     if (!m_ctrl)
+    {
         retval->setInteger(0);
+        return;
+    }
+
         
     retval->setInteger(m_ctrl->GetMenuItemCount());
 }
@@ -1166,7 +1170,10 @@ void MenuBar::getMenus(kscript::ExprEnv* env, kscript::Value* retval)
 void MenuBar::getMenuCount(kscript::ExprEnv* env, kscript::Value* retval)
 {
     if (!m_ctrl)
+    {
         retval->setInteger(0);
+        return;
+    }
         
     retval->setInteger(m_ctrl->GetMenuCount());
 }
