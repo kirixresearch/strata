@@ -346,7 +346,7 @@ bool parseJsonString(wchar_t* expr, wchar_t** endloc, JsonNode& node)
                 int hex_converted = 0;
                 for (int i = 0; i < 4; ++i)
                 {
-                    *expr++;
+                    expr++;
                     int hex_value = 0;
                     if (*expr == '0')
                         hex_value = 0;

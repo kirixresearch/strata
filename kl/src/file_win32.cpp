@@ -247,7 +247,7 @@ int xf_read(xf_file_t fileh,
     DWORD read = 0;
     if (read_size == 0)
         return 0;
-    ReadFile(fileh, buffer, read_size*read_count, &read, NULL);
+    (void)ReadFile(fileh, buffer, read_size*read_count, &read, NULL);
     return (read/read_size);
 }
 

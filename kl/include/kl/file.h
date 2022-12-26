@@ -158,9 +158,7 @@ public:
 private:
 
     std::wstring m_path;
-    int m_timeout;
     xf_file_t m_f;
-    time_t m_time;
     bool m_existed;
 };
 
