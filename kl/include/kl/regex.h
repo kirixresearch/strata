@@ -2431,7 +2431,7 @@ private:
 
 
             const charT* oper_start = next;
-            const charT* oper_end;
+            const charT* oper_end = NULL;
             if (*oper_start && quickStrchr<wchar_t>(L"+*?{", *oper_start))
             {
                 if (getNextTerm(oper_start, end, &oper_end, &error))
