@@ -160,6 +160,7 @@ void BannerControl::onPaint(wxPaintEvent& evt)
     // calculate text x-offset
     switch (m_alignment)
     {
+        default:
         case alignLeft:
             xoff = m_padding;
             break;

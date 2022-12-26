@@ -437,7 +437,7 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
 
 #ifdef WIN32
     TCHAR buf[255];
-    GetLogicalDriveStrings(sizeof(buf), buf);
+    GetLogicalDriveStrings(254, buf);
     TCHAR* drive = buf;
     int icon;
     while (*drive)
@@ -480,8 +480,8 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
         }
          else
         {
-            TCHAR volname[255];
-            volname[0];
+            TCHAR volname[256];
+            volname[0] = 0;
             GetVolumeInformation(path, volname, 255, NULL, NULL, NULL, NULL, NULL);
             if (_tcslen(volname) > 0)
                 label = volname + (" " + label);
