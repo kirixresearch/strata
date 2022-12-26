@@ -634,6 +634,7 @@ public:
     {
         wchar_t port_s[25];
         swprintf(port_s, 24, L"%d", port);
+        port_s[24] = 0;
 
         switch (dbtype)
         {
