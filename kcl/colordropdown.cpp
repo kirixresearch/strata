@@ -29,6 +29,7 @@ ColorDropDown::ColorDropDown(wxWindow* parent,
                               : kcl::Button(parent, id, pos, size, wxEmptyString, wxNullBitmap)
 {
     m_color_panel = NULL;
+    m_popup_container = NULL;
     setDropDown(true);
 }
 
