@@ -2992,7 +2992,7 @@ void WebDoc::onZoomIn(wxCommandEvent& evt)
             case wxWEBVIEW_ZOOM_SMALL:     m_webview->SetZoom(wxWEBVIEW_ZOOM_MEDIUM);  break;
             default:
             case wxWEBVIEW_ZOOM_MEDIUM:    m_webview->SetZoom(wxWEBVIEW_ZOOM_LARGE);   break;
-            case wxWEBVIEW_ZOOM_LARGE:	    m_webview->SetZoom(wxWEBVIEW_ZOOM_LARGEST); break;
+            case wxWEBVIEW_ZOOM_LARGE:	   m_webview->SetZoom(wxWEBVIEW_ZOOM_LARGEST); break;
             case wxWEBVIEW_ZOOM_LARGEST:   break;
         }
     }
@@ -3014,7 +3014,7 @@ void WebDoc::onZoomOut(wxCommandEvent& evt)
             case wxWEBVIEW_ZOOM_SMALL:     m_webview->SetZoom(wxWEBVIEW_ZOOM_TINY);  break;
             default:
             case wxWEBVIEW_ZOOM_MEDIUM:    m_webview->SetZoom(wxWEBVIEW_ZOOM_SMALL);  break;
-            case wxWEBVIEW_ZOOM_LARGE:	    m_webview->SetZoom(wxWEBVIEW_ZOOM_MEDIUM); break;
+            case wxWEBVIEW_ZOOM_LARGE:	   m_webview->SetZoom(wxWEBVIEW_ZOOM_MEDIUM); break;
             case wxWEBVIEW_ZOOM_LARGEST:   m_webview->SetZoom(wxWEBVIEW_ZOOM_LARGE);  break;
         }
     }
@@ -3198,7 +3198,6 @@ void WebDoc::onShowContextMenu(wxWebEvent& evt)
     PopupMenu(&menuPopup, pt_mouse);
     int command = cc->getLastCommandId();
     PopEventHandler(true);
-    
     
     switch (command)
     {
