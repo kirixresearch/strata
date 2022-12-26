@@ -271,6 +271,7 @@ public:
     {
         m_target_grid = target_grid;
         m_highlight_row = -1;
+        m_drop_row = -1;
     }
 
     wxDragResult OnDragOver(wxCoord x, wxCoord y, wxDragResult def)
