@@ -395,7 +395,8 @@ int SummarizeJob::runJob()
                 if (!dt.isNull())
                 {
                     wchar_t buf[64];
-                    swprintf(buf, 64, L"%04d-%02d-%02d", dt.getYear(), dt.getMonth(), dt.getDay());
+                    swprintf(buf, 63, L"%04d-%02d-%02d", dt.getYear(), dt.getMonth(), dt.getDay());
+                    buf[63] = 0;
                     s = buf;
                 }
 
