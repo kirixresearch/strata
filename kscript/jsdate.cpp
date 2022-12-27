@@ -1341,7 +1341,7 @@ void Date::parse(ExprEnv* env, void* param, Value* retval)
     // parse JsDateTime returns months with an offset of 1,
     // but localDateTimeToMs uses months with an offset of 0,
     // so adjust the month parameter in the input
-    double res = localDateTimeToMs(pyy, pmm - 1, pdd, ph, pm, ps, 0);
+    double res = localDateTimeToMs(pyy, (double)pmm - 1.0, pdd, ph, pm, ps, 0);
     retval->setDouble(res);
 }
 
