@@ -2188,6 +2188,7 @@ WebDoc::WebDoc(bool use_wxwebview)
     m_webview = NULL;
     m_web = NULL;
     m_use_wxwebview = use_wxwebview;
+    m_site_id = 0;
 }
 
 WebDoc::~WebDoc()
@@ -3317,8 +3318,9 @@ void WebDoc::onShowContextMenu(wxWebEvent& evt)
                 degrees -= 90;
                 if (degrees < 0)
                     degrees = 360+degrees;
-                wchar_t buf[255];
+                wchar_t buf[256];
                 swprintf(buf, 255, L"rotate(%ddeg)", degrees);
+                buf[255] = 0;
                 regex.replace(style, buf);
             }
              else
