@@ -8256,6 +8256,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         }
         
         // try to find the original index
+        found = false;
         for (i = 0; i < count; ++i)
         {
             index = orig_indexes[i];
