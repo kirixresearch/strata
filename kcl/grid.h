@@ -238,6 +238,12 @@ struct CellProperties
     CellProperties()
     {
         mask = 0;
+        ctrltype = 0;
+        alignment = 0;
+        text_wrap = 0;
+        bitmap_alignment = 0;
+        editable = false;
+        visible = false;
     }
 
     wxColour fgcolor;

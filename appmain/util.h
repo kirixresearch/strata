@@ -118,8 +118,9 @@ inline std::wstring color2string(const wxColor& color)
 {
     if (!color.Ok())
         return L"null";
-    wchar_t buf[24];
+    wchar_t buf[25];
     swprintf(buf, 24, L"#%02x%02x%02x", color.Red(), color.Green(), color.Blue());
+    buf[24] = 0;
     return buf;
 }
 
