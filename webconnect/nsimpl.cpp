@@ -174,7 +174,11 @@ nsresult XPCOMGlueStartup(const char* xpcom_dll_path)
     // now load the functions from xpcom.dll
     
     HMODULE h = LoadLibraryExA(xpcom_dll_path, 0, LOAD_WITH_ALTERED_SEARCH_PATH);
-    
+    if (!h)
+    {
+        return NS_ERROR_FAILURE;
+    }
+
     GetFrozenFunctionsFunc f;
     f = (GetFrozenFunctionsFunc)GetProcAddress(h, "NS_GetFrozenFunctions");
     
