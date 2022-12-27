@@ -46,7 +46,10 @@ bool apphookOpenTemplate(const wxString& location,
                          bool* handled)
 {
     wxASSERT(handled);
-    *handled = false;
+    if (handled)
+    {
+        *handled = false;
+    }
     return true;
 }
 
@@ -55,7 +58,10 @@ jobs::IJobPtr apphookExecute(const wxString& path,
                              bool* handled)
 {
     wxASSERT(handled);
-    *handled = false;
+    if (handled)
+    {
+        *handled = false;
+    }
     return xcm::null;
 }
 
