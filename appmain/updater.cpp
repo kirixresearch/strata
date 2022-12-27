@@ -357,7 +357,7 @@ public:
             j->m_job_info->setMaxCount(content_length);
         }
         
-        j->m_total_downloaded += (amt * size);
+        j->m_total_downloaded += ((double)amt * (double)size);
         j->m_job_info->setCurrentCount(j->m_total_downloaded);
         
         return amt*size;
