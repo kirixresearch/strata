@@ -1422,11 +1422,12 @@ int AuthImpl::loadSiteCodeSeed()
 
     // also read the seed from the home directory
 
-    TCHAR filename[255];
+    TCHAR filename[512];
     if (GetEnvironmentVariable(_T("HOMEPATH"), filename, 511))
     {
-        TCHAR crc[255];
+        TCHAR crc[256];
         _sntprintf(crc, 255, _T("%08X.INF"), crc32((unsigned char*)m_app_tag, strlen(m_app_tag)));
+        crc[255] = 0;
         appendPathPart(filename, crc);
     }
      else
