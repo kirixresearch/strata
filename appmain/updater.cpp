@@ -203,6 +203,7 @@ public:
         m_f = 0;
         m_curl = (CURL*)0;
         m_fetched_content_length = false;
+        m_total_downloaded = 0.0;
         
         // set the job title and format the job progress string
         m_job_info->setTitle(towstr(_("Downloading Update")));
@@ -299,7 +300,7 @@ public:
         if (m_basic_auth.length() > 0)
             curl_result = curl_easy_setopt(m_curl, CURLOPT_USERPWD, m_basic_auth.c_str());
 
-        // -- set the result functions --
+        // set the result functions
         curl_result = curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, (void*)this);
         if (curl_result != CURLE_OK)
             return 0;
@@ -308,17 +309,17 @@ public:
         if (curl_result != CURLE_OK)
             return 0;
         
-        // -- set the GET option --    
+        // set the GET option   
         curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPGET, TRUE);
         if (curl_result != CURLE_OK)
             return 0;
 
-        // -- get the full body --    
+        // get the full body    
         curl_result = curl_easy_setopt(m_curl, CURLOPT_NOBODY, FALSE);
         if (curl_result != CURLE_OK)
             return 0;
         
-        // -- retrieve the data from the URL --
+        // retrieve the data from the URL
         curl_result = curl_easy_perform(m_curl);
 
         m_curl = (CURL*)0;
