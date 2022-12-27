@@ -164,10 +164,20 @@ void getBitmapContentArea(const wxBitmap& bitmap,
         }
     }
     
-    *x = x1;
-    *y = y1;
-    *w = x2 - x1 + 1;
-    *h = y2 - y1 + 1;
+    if (entered_image)
+    {
+        *x = x1;
+        *y = y1;
+        *w = x2 - x1 + 1;
+        *h = y2 - y1 + 1;
+    }
+    else
+    {
+        *x = 0;
+        *y = 0;
+        *w = 0;
+        *h = 0;
+    }
 }
 
 void setFontFromProperties(const PropertyValue& facename,
