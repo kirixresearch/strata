@@ -901,6 +901,7 @@ NS_IMETHODIMP BrowserChrome::HandleEvent(nsIDOMEvent* evt)
          else
         {
             wxFAIL_MSG(wxT("NS event type needs to be mapped to wxWebConnect event type"));
+            return NS_OK;
         }
          
         
