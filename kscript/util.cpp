@@ -1163,7 +1163,7 @@ int dblcompare(double x1, double x2)
     double delta;
     double difference;
 
-    frexp(fabs(x1) > fabs(x2) ? x1 : x2, &exponent);
+    (void)frexp(fabs(x1) > fabs(x2) ? x1 : x2, &exponent);
 
     delta = ldexp(def_epsilon, exponent);
 
