@@ -471,13 +471,14 @@ static bool isVersionHit(const std::wstring& app,
     #endif
 
 
-    wchar_t cur_ver[99];
+    wchar_t cur_ver[100];
     swprintf(cur_ver, 99, L"%d.%d.%d.%d",
                     APP_VERSION_MAJOR,
                     APP_VERSION_MINOR,
                     APP_VERSION_SUBMINOR,
                     APP_VERSION_BUILDSERIAL);
-                    
+    cur_ver[99] = 0;
+
     int v_cur, v_min, v_max;
     
     if (min_ver == L"*" || min_ver == L"")
