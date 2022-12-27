@@ -240,8 +240,8 @@ long long TextViewModel::guessDelimitedRowWidth()
 
 long long TextViewModel::guessFixedRowWidth()
 {
-    int i;
-    int max_char_read = 20000;
+    long long i;
+    long long max_char_read = 20000;
 
     for (i = 0; i < max_char_read; ++i)
     {
