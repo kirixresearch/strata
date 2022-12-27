@@ -2139,6 +2139,7 @@ wxWebControl::wxWebControl(wxWindow* parent,
 
     m_favicon_progress = NULL;
     m_main_uri_listener = NULL;
+    m_favicon_fetched = false;
     
     m_ptrs = new EmbeddingPtrs;
     
