@@ -734,3 +734,66 @@ wxAuiTabArt* CfwTabArt::Clone()
     return static_cast<wxAuiTabArt*>(new CfwTabArt);
 }
 
+
+
+
+
+
+void LinkBarArt::DrawBackground(wxDC& dc, wxWindow* wnd, const wxRect& rect)
+{
+    wxColor start_color = kcl::stepColor(kcl::getBaseColor(), 150);
+    wxColor end_color = kcl::stepColor(kcl::getBaseColor(), 90);
+    dc.GradientFillLinear(rect, start_color, end_color, wxSOUTH);
+    dc.SetPen(kcl::getBorderPen());
+    dc.DrawLine(rect.x, rect.y, rect.x + rect.width, rect.y);
+}
+
+
+void LinkBarArt::DrawOverflowButton(wxDC& dc, wxWindow* wnd, const wxRect& rect, int state)
+{
+    if (state & wxAUI_BUTTON_STATE_HOVER ||
+        state & wxAUI_BUTTON_STATE_PRESSED)
+    {
+        wxRect cli_rect = wnd->GetClientRect();
+        wxRect r(rect.x, 1, rect.width + 1, cli_rect.height - 1);
+
+        drawInactiveTabBackground(dc, r, kcl::getBaseColor(),
+            kcl::getBorderPen(),
+            kcl::getBorderPen());
+    }
+
+    int x = rect.x + 1 + (rect.width - m_overflowBmp.GetBitmapFor(wnd).GetWidth()) / 2;
+    int y = rect.y + 1 + (rect.height - m_overflowBmp.GetBitmapFor(wnd).GetHeight()) / 2;
+    dc.DrawBitmap(m_overflowBmp.GetBitmapFor(wnd), x, y, true);
+}
+
+
+
+// this art provider is exactly the same as wxAuiDefaultToolbarArt,
+// with the exception that it draws a border line at the top to
+// separate it from the StandardToolbar (copied from linkbar.cpp)
+
+void ToolbarArt::DrawBackground(wxDC& dc, wxWindow* wnd, const wxRect& rect)
+{
+    wxColor start_color = kcl::stepColor(kcl::getBaseColor(), 150);
+    wxColor end_color = kcl::stepColor(kcl::getBaseColor(), 90);
+    dc.GradientFillLinear(rect, start_color, end_color, wxSOUTH);
+    //dc.SetPen(kcl::getBorderPen());
+    //dc.DrawLine(rect.x, rect.y, rect.x + rect.width, rect.y);
+}
+
+
+
+// this art provider is exactly the same as wxAuiDefaultToolbarArt,
+// with the exception that it draws a border line at the top to
+// separate it from the StandardToolbar (copied from linkbar.cpp)
+
+
+void FormatToolbarArt::DrawBackground(wxDC& dc, wxWindow* wnd, const wxRect& rect)
+{
+    wxColor start_color = kcl::stepColor(kcl::getBaseColor(), 150);
+    wxColor end_color = kcl::stepColor(kcl::getBaseColor(), 90);
+    dc.GradientFillLinear(rect, start_color, end_color, wxSOUTH);
+    dc.SetPen(kcl::getBorderPen());
+    dc.DrawLine(rect.x, rect.y, rect.x + rect.width, rect.y);
+}

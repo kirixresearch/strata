@@ -104,5 +104,31 @@ private:
 
 
 
+class ToolbarArt : public wxAuiDefaultToolBarArt
+{
+public:
+
+    void DrawBackground(wxDC& dc, wxWindow* wnd, const wxRect& rect);
+};
+
+
+class LinkBarArt : public wxAuiDefaultToolBarArt
+{
+public:
+
+    void DrawBackground(wxDC& dc, wxWindow* wnd, const wxRect& rect);
+    void DrawOverflowButton(wxDC& dc, wxWindow* wnd, const wxRect& rect, int state);
+};
+
+
+class FormatToolbarArt : public wxAuiDefaultToolBarArt
+{
+public:
+
+    void DrawBackground(wxDC& dc, wxWindow* wnd, const wxRect& rect);
+};
+
+
+
 #endif  // __APP_ARTPROVIDER_H
 

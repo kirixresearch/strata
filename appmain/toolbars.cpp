@@ -13,6 +13,7 @@
 #include "toolbars.h"
 #include "panelfind.h"
 #include "dbdoc.h"
+#include "artprovider.h"
 
 
 // this typedef is a workaround for the C2352 problem in VC++ 6.0
@@ -71,27 +72,6 @@ void initIdBitmapMap()
 
 
 
-
-// this art provider is exactly the same as wxAuiDefaultToolbarArt,
-// with the exception that it draw a border line at the top to
-// separate it from the StandardToolbar
-
-
-class ToolbarArt : public wxAuiDefaultToolBarArt
-{
-public:
-
-    void DrawBackground(wxDC& dc,
-        wxWindow* wnd,
-        const wxRect& rect)
-    {
-        wxColor start_color = kcl::stepColor(kcl::getBaseColor(), 150);
-        wxColor end_color = kcl::stepColor(kcl::getBaseColor(), 90);
-        dc.GradientFillLinear(rect, start_color, end_color, wxSOUTH);
-        //dc.SetPen(kcl::getBorderPen());
-        //dc.DrawLine(rect.x, rect.y, rect.x + rect.width, rect.y);
-    }
-};
 
 // -- Standard Toolbar implementation --
 
@@ -340,29 +320,6 @@ public:
         Append("50%");
         Append("25%");
         SetStringSelection("100%");
-    }
-};
-
-
-
-
-// this art provider is exactly the same as wxAuiDefaultToolbarArt,
-// with the exception that it draw a border line at the top to
-// separate it from the StandardToolbar (copied from linkbar.cpp)
-
-class FormatToolbarArt : public wxAuiDefaultToolBarArt
-{
-public:
-
-    void DrawBackground(wxDC& dc,
-                        wxWindow* wnd,
-                        const wxRect& rect)
-    {
-        wxColor start_color = kcl::stepColor(kcl::getBaseColor(), 150);
-        wxColor end_color = kcl::stepColor(kcl::getBaseColor(), 90);
-        dc.GradientFillLinear(rect, start_color, end_color, wxSOUTH);
-        dc.SetPen(kcl::getBorderPen());
-        dc.DrawLine(rect.x, rect.y, rect.x+rect.width, rect.y);
     }
 };
 
