@@ -1,13 +1,10 @@
 
 all: imgres.zip
 
-imgres.zip: $(basedir)\imgres.zip
+imgres.zip: $(outdir)\imgres.zip
 
-$(basedir)/imgres.zip:
-	..\zip -0 $(basedir)\imgres.zip *.svg *.png
-	IF EXIST c rmdir c /s /q
-	mkdir c
-	FOR %%X IN (*.png) DO CALL .\processimg %%X
+$(outdir)/imgres.zip:
+	$(basedir)\zip -0 $(outdir)\imgres.zip *.svg *.png
 
 clean:
-	IF EXIST $(basedir)\imgres.zip erase $(basedir)\imgres.zip
+	IF EXIST $(outdir)\imgres.zip erase /q /f $(outdir)\imgres.zip
