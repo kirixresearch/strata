@@ -7006,10 +7006,14 @@ bool TableDoc::saveAsStructure(const wxString& path)
         std::wstring name = colinfo.name;
         std::wstring type = xd::dbtypeToString(colinfo.type);
 
-        wchar_t buf[30];
+        wchar_t buf[32];
+
         swprintf(buf, 30, L"%d", colinfo.width);
+        buf[30] = 0;
         std::wstring width(buf);
+
         swprintf(buf, 30, L"%d", colinfo.scale);
+        buf[30] = 0;
         std::wstring scale(buf);
 
         result_text += L"        ";
