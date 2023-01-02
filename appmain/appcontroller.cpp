@@ -1777,7 +1777,7 @@ static bool setReportCreateInfo(IDocumentSitePtr doc_site,
             // set the field info
             ReportCreateField field;
             field.field_name = model->getColumnInfo(model_idx)->getName();
-            field.caption = makeProperIfNecessary(field.field_name);
+            field.caption = field.field_name;
             field.alignment = alignment;
             field.column_width = grid->getColumnSize(i)*(kcanvas::CANVAS_MODEL_DPI/kcanvas::CANVAS_SCREEN_DPI);
             data.content_fields.push_back(field);

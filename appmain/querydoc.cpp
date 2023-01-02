@@ -738,7 +738,7 @@ void QueryDoc::getColumnListItems(std::vector<ColumnListItem>& items)
             ColumnListItem item;
             item.text = it->alias;
             item.text += ".";
-            item.text += makeProperIfNecessary(colinfo.name);
+            item.text += colinfo.name;
             if (colinfo.calculated)
                 item.bitmap = GETBMPSMALL(gf_lightning);
                  else

@@ -3126,7 +3126,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
         }
     }
 
-    wxString column_name = makeProperIfNecessary(col_name);
+    wxString column_name = col_name;
     wxString column_expr;
 
     column_expr = wxT("FIRST(");
@@ -4729,7 +4729,7 @@ void TableDoc::onGridNeedTooltipText(kcl::GridEvent& event)
             return;
 
         event.SetString(wxString::Format(_("Name: %s, Type: %s, Width: %d, Decimals: %d"),
-                            makeProperIfNecessary(colinfo.name).c_str(),
+                            colinfo.name.c_str(),
                             getDbColumnTypeText(colinfo.type).c_str(),
                             colinfo.width,
                             colinfo.scale));
@@ -5813,7 +5813,7 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
         ColumnListItem item;
 
         item.active = true;
-        item.text = makeProperIfNecessary(colinfo.name);
+        item.text = colinfo.name;
 
         if (colinfo.calculated)
         {
@@ -5859,8 +5859,8 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
                 const xd::ColumnInfo& colinfo = right_structure.getColumnInfoByIdx(i);
 
                 s = wxString::Format(wxT("%s.%s"),
-                            makeProperIfNecessary(rel->getTag()).c_str(),
-                            makeProperIfNecessary(colinfo.name).c_str());
+                            rel->getTag().c_str(),
+                            colinfo.name.c_str());
                 
                 ColumnListItem item;
                 item.text = s;
@@ -6066,7 +6066,7 @@ void TableDoc::deleteSelectedColumns()
     for (it = cols.begin(); it != cols.end(); ++it)
     {
         message += wxT("\n\t");
-        message += makeProperIfNecessary(*it);
+        message += *it;
     }
     
     int res = wxMessageBox(message,
@@ -6954,7 +6954,7 @@ void TableDoc::getReportCreateInfo(ReportCreateInfo& data)
 
             ReportCreateField field;
             field.field_name = model->getColumnInfo(model_idx)->getName();
-            field.caption = makeProperIfNecessary(field.field_name);
+            field.caption = field.field_name;
             field.column_width = m_grid->getColumnSize(i)*(kcanvas::CANVAS_MODEL_DPI/kcanvas::CANVAS_SCREEN_DPI);
             data.content_fields.push_back(field);
         }
@@ -8719,7 +8719,7 @@ void TableDoc::refreshActiveView(bool repaint)
 
             if (model_idx >= 0)
             {
-                wxString caption = makeProperIfNecessary(col_name);
+                wxString caption = col_name;
 
                 int colpos = m_grid->insertColumn(-1, model_idx);
                 m_grid->setColumnCaption(colpos, caption);

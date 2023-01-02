@@ -335,7 +335,7 @@ void FieldListControl::populate()
         const xd::ColumnInfo& colinfo = m_structure.getColumnInfoByIdx(i);
 
         FieldListItem fli;
-        fli.name = makeProperIfNecessary(colinfo.name);
+        fli.name = colinfo.name;
         fli.bitmap = colinfo.calculated ? GETBMP(gf_lightning_16) : GETBMP(gf_field_16);
         fli.type = colinfo.type;
         fli.width = colinfo.width;

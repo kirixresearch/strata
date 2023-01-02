@@ -167,7 +167,7 @@ void ReplaceRowsPanel::populate()
     size_t i, col_count = m_structure.getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        fields.push_back(makeProperIfNecessary(m_structure.getColumnName(i)));
+        fields.push_back(m_structure.getColumnName(i));
     }
 
     std::sort(fields.begin(), fields.end());

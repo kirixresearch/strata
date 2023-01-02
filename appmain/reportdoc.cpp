@@ -2217,7 +2217,7 @@ void ReportDoc::getColumnListItems(std::vector<ColumnListItem>& list)
             const xd::ColumnInfo& colinfo = structure.getColumnInfoByIdx(i);
 
             ColumnListItem item;
-            item.text = makeProperIfNecessary(colinfo.name);
+            item.text = colinfo.name;
             if (colinfo.calculated)
                 item.bitmap = GETBMPSMALL(gf_lightning);
                  else
@@ -2259,8 +2259,8 @@ void ReportDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 
         // ad the field to the list
         ColumnListItem item;
-        item.text = makeProperIfNecessary(it->output_field);
-        item.bitmap = GETBMP(gf_field_16);  // query output always static
+        item.text = it->output_field;
+        item.bitmap = GETBMPSMALL(gf_field);  // query output always static
 
         item.active = true;
         list.push_back(item);

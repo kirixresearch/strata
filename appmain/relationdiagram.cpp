@@ -1166,7 +1166,7 @@ void RelationBox::populate()
             icon = GETBMPSMALL(gf_field);
         }
         
-        wxString text = makeProperIfNecessary(colinfo.name);
+        wxString text = colinfo.name;
 
 
         m_grid->insertRow(-1);

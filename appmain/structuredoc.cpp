@@ -745,7 +745,7 @@ void StructureDoc::getColumnListItems(std::vector<ColumnListItem>& items)
         const xd::ColumnInfo& colinfo = m_structure.getColumnInfoByIdx(i);
      
         ColumnListItem item;
-        item.text = makeProperIfNecessary(colinfo.name);
+        item.text = colinfo.name;
         if (colinfo.calculated)
             item.bitmap = GETBMPSMALL(gf_lightning);
              else
