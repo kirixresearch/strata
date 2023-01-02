@@ -18,7 +18,7 @@
 #include "dlglinkprops.h"
 #include "tabledoc.h"
 #include "webdoc.h"
-#include "artprovider.h"
+#include <artprovider.h>   // angle brackets to allow overriding
 #include <wx/popupwin.h>
 #include <wx/stopwatch.h>
 #include <wx/dcbuffer.h>

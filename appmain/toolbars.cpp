@@ -13,7 +13,7 @@
 #include "toolbars.h"
 #include "panelfind.h"
 #include "dbdoc.h"
-#include "artprovider.h"
+#include <artprovider.h>   // angle brackets to allow overriding
 
 
 // this typedef is a workaround for the C2352 problem in VC++ 6.0

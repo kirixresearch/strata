@@ -315,6 +315,7 @@ public:
     virtual void setIcon(const wxIcon& icon) = 0;
     virtual void setIcons(const wxIconBundle& icons) = 0;
     virtual void show(bool visible) = 0;
+    virtual void setBorderSize(int px) = 0;
 
     virtual IUIContextPtr createUIContext(const wxString& name) = 0;
     virtual IUIContextPtr lookupUIContext(const wxString& name) = 0;

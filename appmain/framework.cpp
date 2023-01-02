@@ -15,7 +15,7 @@
 #include "framework.h"
 #include "framework_private.h"
 #include "statusbar.h"
-#include "artprovider.h"
+#include <artprovider.h>
 
 #include <wx/aui/aui.h>
 #include <wx/minifram.h>
@@ -1559,6 +1559,7 @@ bool MainFrame::create(wxWindow* parent,
     m_invisible->Show(false);
     g_invisible = m_invisible;
 
+
     wxMDIClientWindow* mdi_client = GetClientWindow();
 
 /*
@@ -1805,6 +1806,12 @@ void MainFrame::show(bool visible)
     UpdateMenuBarSize();
 #endif
 #endif
+}
+
+void MainFrame::setBorderSize(int px)
+{
+    wxAuiManager& notebook_aui_manager = const_cast<wxAuiManager&>(this->GetNotebook()->GetAuiManager());
+    notebook_aui_manager.GetArtProvider()->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, px);
 }
 
 

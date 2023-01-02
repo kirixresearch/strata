@@ -285,6 +285,7 @@ public:
     void setIcon(const wxIcon& icon);
     void setIcons(const wxIconBundle& icons);
     void show(bool visible);
+    void setBorderSize(int px);
 
     IUIContextPtr createUIContext(const wxString& name);
     IUIContextPtr lookupUIContext(const wxString& name);
