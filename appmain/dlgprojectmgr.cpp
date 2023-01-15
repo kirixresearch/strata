@@ -67,9 +67,6 @@ void ProjectMgr::refresh()
 {
     m_projects.clear();
 
-    // setting for displaying project size
-    bool display_project_size = g_app->getAppPreferences()->getBoolean(wxT("app.project_mgr.display_project_size"), true);
-
     // read all data from the sysconfig
     IAppConfigPtr config = g_app->getAppConfig();
     config->setPath(L"/RecentDatabases");
