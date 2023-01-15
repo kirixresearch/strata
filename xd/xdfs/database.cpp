@@ -1917,7 +1917,7 @@ IXdsqlTablePtr FsDatabase::openTable(const std::wstring& path, const xd::FormatD
     if (path.substr(0, 12) == L"/.temp/.ptr/")
     {
         std::wstring ptr_string = kl::afterLast(path, L'/');
-        unsigned long l = (unsigned long)kl::hexToUint64(ptr_string);
+        std::uintptr_t l = (std::uintptr_t)kl::hexToUint64(ptr_string);
         IXdsqlTablePtr sptr = (IXdsqlTable*)l;
         return sptr;
     }
