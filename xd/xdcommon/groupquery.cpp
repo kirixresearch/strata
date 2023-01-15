@@ -1149,7 +1149,7 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
     int vallen = 0;
     unsigned char* keybuf = NULL;
     unsigned char* valuebuf = NULL;
-
+    bool add_record;
     std::wstring index_filename;
 
     ExIndex* idx = NULL;
@@ -1191,8 +1191,6 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
         std::vector<GroupIndexInputInfo>::iterator sf_it;
         std::vector<GroupIndexInputInfo>::iterator begin_sf_it = gi.m_store_fields.begin();
         std::vector<GroupIndexInputInfo>::iterator end_sf_it = gi.m_store_fields.end();
-
-        bool add_record;
 
         iter->goFirst();
         while (!iter->eof())
@@ -1345,10 +1343,6 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
 
     gi.releaseStoreFieldHandles(iter);
 
-    if (where_handle)
-    {
-        iter->releaseHandle(where_handle);
-    }
 
 
 
@@ -1357,6 +1351,7 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
 
     int group_id = 1;
     int group_row_count = 0;
+    int group_hit_count = 0;
     bool first_row = true;
     bool group_changed = false;
     cancelled = false;
@@ -1417,12 +1412,27 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
 
     while (!eof)
     {
+        add_record = true;
+
         if (idx)
         {
+            // where filter already happened above
+
             valptr = (unsigned char*)idx_iter->getValue();
         }
+        else
+        {
+            if (where_handle)
+            {
+                if (!iter->getBoolean(where_handle))
+                {
+                    add_record = false;
+                }
+            }
+        }
 
-        for (it = begin_it; it != end_it; ++it)
+
+        for (it = begin_it; add_record && (it != end_it); ++it)
         {
             if ((*it)->m_group_func == GroupFunc_Count)
             {
@@ -1673,7 +1683,12 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
 
         
         group_row_count++;
-        first_row = false;
+
+        if (add_record)
+        {
+            group_hit_count++;
+            first_row = false;
+        }
 
         if (idx)
         {
@@ -1707,7 +1722,7 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
             {
                 if ((*it)->m_group_func == GroupFunc_Avg)
                 {
-                    (*it)->m_val_double /= group_row_count;
+                    (*it)->m_val_double /= group_hit_count;
                 }
                  else if ((*it)->m_group_func == GroupFunc_MaxDistance)
                 {
@@ -1946,6 +1961,7 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
             }
 
             group_row_count = 0;
+            group_hit_count = 0;
         }
 
 
@@ -1961,6 +1977,11 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
                 break;
             }
         }
+    }
+
+    if (where_handle)
+    {
+        iter->releaseHandle(where_handle);
     }
 
     delete[] keybuf;
