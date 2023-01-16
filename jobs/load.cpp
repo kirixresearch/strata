@@ -400,6 +400,13 @@ int LoadJob::runJob()
 
             xd::Structure output_structure = source_iter->getStructure();
 
+            if (it->output_format.format == xd::formatDelimitedText || it->output_format.format == xd::formatTypedDelimitedText || it->output_format.format == xd::formatFixedLengthText)
+            {
+                for (auto& col : output_structure.columns)
+                {
+                    col.calculated = false;
+                }
+            }
 
             output_format.columns = output_structure.columns;
             output_format.columns.deleteColumn(L"xdrowid");
