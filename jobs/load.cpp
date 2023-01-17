@@ -400,6 +400,7 @@ int LoadJob::runJob()
 
             xd::Structure output_structure = source_iter->getStructure();
 
+            // when loading files into various text formats, make calculated fields fixed
             if (it->output_format.format == xd::formatDelimitedText || it->output_format.format == xd::formatTypedDelimitedText || it->output_format.format == xd::formatFixedLengthText)
             {
                 for (auto& col : output_structure.columns)

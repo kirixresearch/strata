@@ -604,6 +604,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\appmain\prefs.cpp" />
+    <ClCompile Include="..\appmain\projectmgr.cpp" />
     <ClCompile Include="..\appmain\querydoc.cpp" />
     <ClCompile Include="..\appmain\querytemplate.cpp" />
     <ClCompile Include="..\appmain\relationdiagram.cpp" />
@@ -808,6 +809,7 @@
     <ClInclude Include="..\appmain\panelview.h" />
     <ClInclude Include="..\appmain\prefs.h" />
     <ClInclude Include="..\appmain\prefs_private.h" />
+    <ClInclude Include="..\appmain\projectmgr.h" />
     <ClInclude Include="..\appmain\querydoc.h" />
     <ClInclude Include="..\appmain\querytemplate.h" />
     <ClInclude Include="..\appmain\relationdiagram.h" />
