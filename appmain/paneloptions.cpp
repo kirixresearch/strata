@@ -15,7 +15,7 @@
 #include "tabledoc.h"
 #include "webdoc.h"
 #include "appcontroller.h"
-#include "dlgprojectmgr.h"
+#include "projectmgr.h"
 #include "dlgpagesetup.h"
 #include "../kcanvas/kcanvas.h"
 #include "../kcanvas/property.h"

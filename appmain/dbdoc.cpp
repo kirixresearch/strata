@@ -25,7 +25,7 @@
 #include "jsonconfig.h"
 #include "toolbars.h"
 #include "dlgdatabasefile.h"
-#include "dlgprojectmgr.h"
+#include "projectmgr.h"
 #include "importtemplate.h"
 #include "dbdoc.h"
 #include "structuredoc.h"
