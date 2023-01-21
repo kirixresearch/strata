@@ -16,6 +16,7 @@ call make_zlib
 call make_libzip
 REM call make_libwebsockets
 call make_expat
+call make_xlnt
 call make_oracle
 
 
