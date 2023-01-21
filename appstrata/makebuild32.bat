@@ -73,6 +73,7 @@ erase %VC_OUTPUT_PATH%\appstrata.exe /f/q 2> nul
 erase %VC_OUTPUT_PATH%\gpasvc.exe /f/q 2> nul
 erase %VC_OUTPUT_PATH%\xdfs.dll /f/q 2> nul
 erase %VC_OUTPUT_PATH%\xdkpg.dll /f/q 2> nul
+erase %VC_OUTPUT_PATH%\xdexcel.dll /f/q 2> nul
 erase %VC_OUTPUT_PATH%\xdmysql.dll /f/q 2> nul
 erase %VC_OUTPUT_PATH%\xdnative.dll /f/q 2> nul
 erase %VC_OUTPUT_PATH%\xdodbc.dll /f/q 2> nul
@@ -91,6 +92,7 @@ IF NOT EXIST %VC_OUTPUT_PATH%\appstrata.exe goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\gpasvc.exe goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\xdfs.dll goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\xdkpg.dll goto err
+IF NOT EXIST %VC_OUTPUT_PATH%\xdexcel.dll goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\xdmysql.dll goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\xdnative.dll goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\xdodbc.dll goto err
@@ -133,6 +135,7 @@ copy %VC_OUTPUT_PATH%\appstrata.exe %BUILDSRC%\bin\kstrata.exe /Y
 copy %VC_OUTPUT_PATH%\gpasvc.exe %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdfs.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdkpg.dll %BUILDSRC%\bin /Y
+copy %VC_OUTPUT_PATH%\xdexcel.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdmysql.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdnative.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdodbc.dll %BUILDSRC%\bin /Y
@@ -154,6 +157,7 @@ echo Signing build output files...
 %SIGNCMD% %BUILDSRC%\bin\gpasvc.exe
 %SIGNCMD% %BUILDSRC%\bin\xdfs.dll
 %SIGNCMD% %BUILDSRC%\bin\xdkpg.dll
+%SIGNCMD% %BUILDSRC%\bin\xdexcel.dll
 %SIGNCMD% %BUILDSRC%\bin\xdmysql.dll
 %SIGNCMD% %BUILDSRC%\bin\xdnative.dll
 %SIGNCMD% %BUILDSRC%\bin\xdodbc.dll
