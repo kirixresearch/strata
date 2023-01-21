@@ -82,6 +82,7 @@
 
 
                         <File Id="xdfs"     Name="xdfs.dll"     DiskId="1" Source="$(env.buildsrc)\bin\xdfs.dll"/>
+                        <File Id="xdexcel"  Name="xdexcel.dll"  DiskId="1" Source="$(env.buildsrc)\bin\xdexcel.dll"/>
                         <File Id="xdkpg"    Name="xdkpg.dll"    DiskId="1" Source="$(env.buildsrc)\bin\xdkpg.dll"/>
                         <File Id="xdmysql"  Name="xdmysql.dll"  DiskId="1" Source="$(env.buildsrc)\bin\xdmysql.dll"/>
                         <File Id="xdnative" Name="xdnative.dll" DiskId="1" Source="$(env.buildsrc)\bin\xdnative.dll"/>
