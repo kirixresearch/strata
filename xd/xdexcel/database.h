@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDPGSQL_DATABASE_H
-#define __XDPGSQL_DATABASE_H
+#ifndef __XDEXCEL_DATABASE_H
+#define __XDEXCEL_DATABASE_H
 
 
 #include <map>

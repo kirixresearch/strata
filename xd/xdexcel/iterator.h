@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDPGSQL_ITERATOR_H
-#define __XDPGSQL_ITERATOR_H
+#ifndef __XDEXCEL_ITERATOR_H
+#define __XDEXCEL_ITERATOR_H
 
 
 

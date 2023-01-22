@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDPGSQL_INSERTER_H
-#define __XDPGSQL_INSERTER_H
+#ifndef __XDEXCEL_INSERTER_H
+#define __XDEXCEL_INSERTER_H
 
 
 const int insert_row_count = 500;
