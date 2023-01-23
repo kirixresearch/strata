@@ -365,8 +365,8 @@ void RelationshipPanel::onLineAdded(RelationLine* line, bool* allowed)
     if (lines.size() == 1)
     {
         // first line added
-        line->left_bitmap = GETBMP(gf_ebbc13_16);
-        line->right_bitmap = GETBMP(gf_ebbc14_16);
+        line->left_bitmap = GETBMPSMALL(gf_ebbc13);
+        line->right_bitmap = GETBMPSMALL(gf_ebbc14);
     }
      else
     {

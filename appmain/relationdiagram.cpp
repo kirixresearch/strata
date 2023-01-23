@@ -314,7 +314,7 @@ bool RelationBox::getItemExists(const wxString& expr)
 int RelationBox::getItemY(const wxString& expr)
 {
     int row_count = m_grid->getRowCount();
-    int row_height = m_grid->getRowHeight();
+    int row_height = FromDIP(m_grid->getRowHeight());
     int row_offset = m_grid->getRowOffset();
     int vis_rows = m_grid->getVisibleRowCount();
     int item = -1;
@@ -395,12 +395,25 @@ void RelationBox::fireSizedMovedSignal()
 
 void RelationBox::raise()
 {
-    Raise();
-    
     // make sure the boxes are in the right order in the m_boxes
     // vector in the RelationDiagram -- this is really important
     // since the boxes will draw in whatever order they are in
     std::vector<RelationBox*>::iterator it;
+
+    for (it = m_diagram->m_boxes.begin(); it != m_diagram->m_boxes.end(); ++it)
+    {
+        if ((*it) == this)
+        {
+            (*it)->m_grid->Raise();
+            (*it)->Raise();
+        }
+        else
+        {
+            (*it)->m_grid->Lower();
+            (*it)->Lower();
+        }
+    }
+
     for (it = m_diagram->m_boxes.begin(); it != m_diagram->m_boxes.end(); ++it)
     {
         if ((*it) == this)
@@ -415,6 +428,8 @@ void RelationBox::raise()
             break;
         }
     }
+
+    ::wxYield();
 }
 
 void RelationBox::redraw()
@@ -818,6 +833,11 @@ void RelationBox::onMouse(wxMouseEvent& evt)
     }
      else if (evt_type == wxEVT_MOTION)
     {
+        if (m_action == RelationBox::ActionNone)
+        {
+            raise();
+        }
+
         wxCursor cursor = wxNullCursor;
 
         int cli_width, cli_height;
@@ -2507,14 +2527,14 @@ void RelationDiagram::drawConnectingLine(wxDC* dc,
     {
         dc->DrawLine(x1, y1, x1+TAB_LEN, y1);
         if (from_bmp.Ok())
-            dc->DrawBitmap(from_bmp, x1, y1-16, true);
+            dc->DrawBitmap(from_bmp, x1, y1-from_bmp.GetHeight(), true);
         startx = x1+TAB_LEN;
     }
      else
     {
         dc->DrawLine(x1, y1, x1-TAB_LEN, y1);
         if (from_bmp.Ok())
-            dc->DrawBitmap(from_bmp, x1-TAB_LEN-2, y1-16, true);
+            dc->DrawBitmap(from_bmp, x1-TAB_LEN-2, y1-from_bmp.GetHeight(), true);
         startx = x1-TAB_LEN;
     }
 
@@ -2522,14 +2542,14 @@ void RelationDiagram::drawConnectingLine(wxDC* dc,
     {
         dc->DrawLine(x2+TAB_LEN, y2, x2+2, y2);
         if (to_bmp.Ok())
-            dc->DrawBitmap(to_bmp, x2, y2-16, true);
+            dc->DrawBitmap(to_bmp, x2, y2-to_bmp.GetHeight(), true);
         endx = x2+TAB_LEN;
     }
      else
     {
         dc->DrawLine(x2-TAB_LEN, y2, x2-2, y2);
         if (to_bmp.Ok())
-            dc->DrawBitmap(to_bmp, x2-TAB_LEN-2, y2-16, true);
+            dc->DrawBitmap(to_bmp, x2-to_bmp.GetWidth(), y2 - to_bmp.GetHeight(), true);
         endx = x2-TAB_LEN;
     }
 
