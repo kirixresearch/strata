@@ -4648,6 +4648,12 @@ bool AppController::openTable(const wxString& _location, int* site_id)
 
     if (fileinfo->getType() == xd::filetypeStream || format == xd::formatDelimitedText || format == xd::formatFixedLengthText)
     {
+        wxString phys_location = getPhysPathFromDatabasePath(location);
+        if (phys_location.Length() > 0)
+        {
+            location = filenameToUrl(phys_location);
+        }
+
         // open text set
         createTextDoc(location, NULL, site_id);
     }
