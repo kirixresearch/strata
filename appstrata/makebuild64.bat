@@ -116,7 +116,7 @@ goto end
 REM -- zip up the graphics images --
 
 IF EXIST %VC_OUTPUT_PATH%\imgres.zip erase %VC_OUTPUT_PATH%\imgres.zip
-%SOURCE_PATH%\zip -0 -j %VC_OUTPUT_PATH%\imgres.zip %SOURCE_PATH%\img\*.xpm %SOURCE_PATH%\img\*.png
+%SOURCE_PATH%\zip -0 -j %VC_OUTPUT_PATH%\imgres.zip %SOURCE_PATH%\appstrata\img\*.svg %SOURCE_PATH%\appstrata\img\*.png
 
 REM -- zip up the webres files --
 
