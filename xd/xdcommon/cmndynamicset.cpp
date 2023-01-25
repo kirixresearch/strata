@@ -320,7 +320,16 @@ int CommonDynamicSet::insert(xd::IIteratorPtr source_iter,
 
     if (job)
     {
-        ijob->setMaxCount(max_rows);
+        if (source_iter->getIteratorFlags() & xd::ifFastRowCount)
+        {
+            ijob->setMaxCount(source_iter->getRowCount());
+        }
+
+        if (max_rows > 0)
+        {
+            ijob->setMaxCount(max_rows);
+        }
+
         ijob->setCurrentCount(0);
         ijob->setStatus(xd::jobRunning);
         ijob->setStartTime(time(NULL));
