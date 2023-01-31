@@ -2815,6 +2815,16 @@ bool XdnativeDatabase::cleanup()
     int max_ordinal = (int)getMaximumOrdinal();
 
     getFolderUsedOrdinals(L"/", used_ordinals);
+    
+    if (used_ordinals.empty())
+    {
+        // prevent deletion of the entire ordinals directory
+        // if there is a file locking problem
+        
+        deleteTempData();
+        emptyTrash();
+        return true;
+    }
 
     int i;
     std::wstring filename;
