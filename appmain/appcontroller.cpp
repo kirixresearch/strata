@@ -1184,14 +1184,8 @@ bool AppController::init()
 
 
 
-
-
-
-
     // get the setting for m_data_locked ("Protect Data")
-
     m_data_locked = g_app->getAppPreferences()->getBoolean(wxT("app.data_locked"), true);
-
 
     IDocumentSitePtr site;
 
@@ -1392,9 +1386,7 @@ bool AppController::init()
             std::vector<ProjectInfo>& projects = projmgr.getProjectEntries();
 
             // if we can't open the project, show the project manager
-            if (!openProject(projects[idx].location,
-                             projects[idx].user_id,
-                             projects[idx].passwd))
+            if (!openProject(projects[idx]))
             {
                 // we can't find the project, reset the default startup action
                 prefs->setLong(wxT("general.startup.default_action"), prefStartupProjectMgr);
@@ -5703,7 +5695,7 @@ bool AppController::print(const wxString& location)
     return true;
 }
 
-static void addDefaultItemsToProject(const wxString& project_path)
+void AppController::addDefaultItemsToProject()
 {
     wxFrame* wnd = g_app->getMainWindow();
     if (!wnd)
@@ -5712,44 +5704,31 @@ static void addDefaultItemsToProject(const wxString& project_path)
     // don't show any of this happening
     wnd->Freeze();
 
-
-    if (!g_app->getAppController()->openProject(project_path, "admin", ""))
-    {
-        wnd->Thaw();
-        return;
-    }
-
     // get the path of the startup sample file
     wxString filename = g_app->getInstallPath();
     #ifdef WIN32
-    filename += wxT("\\..\\samples\\startup.kpg");
+    filename += "\\..\\samples\\startup.kpg";
     #else
-    filename += wxT("/../samples/startup.kpg");
+    filename += "/../samples/startup.kpg";
     #endif
-
 
 
     IConnectionPtr conn = createUnmanagedConnection();
     conn->setType(dbtypePackage);
     conn->setPath(towstr(filename));
 
-    xd::IDatabasePtr db;
+    xd::IDatabasePtr pkgdb;
 
     if (conn->open())
-        db = conn->getDatabasePtr();
+        pkgdb = conn->getDatabasePtr();
 
-    if (db.isNull())
+    if (pkgdb.isNull())
     {
-        // make sure we close the project
-        g_app->getAppController()->closeProject();
         wnd->Thaw();
         return;
     }
 
-
-
-    xd::IFileInfoEnumPtr objects = db->getFolderInfo(L"");
-
+    xd::IFileInfoEnumPtr objects = pkgdb->getFolderInfo(L"");
 
     // populate the item names vector from the package file stream
     std::vector<std::wstring> item_names;
@@ -5768,8 +5747,7 @@ static void addDefaultItemsToProject(const wxString& project_path)
     // sort the tablenames vector
     std::sort(item_names.begin(), item_names.end());
 
-
-
+    // import all of the items from the package into the current database
     ImportTemplate templ;
     templ.m_ii.type = dbtypePackage;
     templ.m_ii.path = towstr(filename);
@@ -5787,7 +5765,6 @@ static void addDefaultItemsToProject(const wxString& project_path)
         templ.m_ii.tables.push_back(tbl);
     }
 
-
     // run the job
     jobs::IJobPtr job = templ.createJob();
     if (job.isOk())
@@ -5796,11 +5773,7 @@ static void addDefaultItemsToProject(const wxString& project_path)
         job->runPostJob();
     }
 
-    // make sure the project is closed again
-    // (since we'll be opening it again shortly)
-    g_app->getAppController()->closeProject();
     wnd->Thaw();
-
 }
 
 bool AppController::createDefaultProject()
@@ -5830,14 +5803,14 @@ bool AppController::createDefaultProject()
 
     project_path = test;
 
-
-
     // create and open the project
     bool created = createProject(project_path, wxEmptyString, true);
 
     // add default items to the project
     if (created)
-        addDefaultItemsToProject(project_path);
+    {
+        addDefaultItemsToProject();
+    }
 
     // set a flag indicating that a default project has been created
     IAppPreferencesPtr prefs = g_app->getAppPreferences();
@@ -5848,7 +5821,7 @@ bool AppController::createDefaultProject()
         // if they don't already have a default startup action,
         // add one that loads the default project we just created
 
-         // lookup the connection number
+        // lookup the connection number
         ProjectMgr projectmgr;
         int idx = projectmgr.getIdxFromLocation(project_path);
 
@@ -5858,6 +5831,7 @@ bool AppController::createDefaultProject()
             projectmgr.addProjectEntry(wxEmptyString,
                                     project_path,
                                     wxT("admin"),
+                                    wxEmptyString,
                                     wxEmptyString,
                                     true);
 
@@ -5968,9 +5942,10 @@ bool AppController::createProject(const wxString& location,
     // add an entry in the project manager
     ProjectMgr projmgr;
     projmgr.addProjectEntry(db_name,
-                            cstr,
+                            location,
                             wxT("admin"),
                             wxEmptyString,
+                            cstr,
                             true);
 
     // open the project we just created
@@ -5987,9 +5962,7 @@ bool AppController::createProject(const wxString& location,
     return true;
 }
 
-bool AppController::openProject(const wxString& location,
-                                const wxString& uid,
-                                const wxString& password)
+bool AppController::openProject(const ProjectInfo& info)
 {
     AppBusyCursor bc;
 
@@ -6003,164 +5976,121 @@ bool AppController::openProject(const wxString& location,
     if (dbmgr.isNull())
     {
         appMessageBox(_("Your system is missing a software component.  To correct this problem, please reinstall the software."),
-                           APPLICATION_NAME,
-                           wxOK | wxICON_INFORMATION | wxCENTER);
+            APPLICATION_NAME,
+            wxOK | wxICON_INFORMATION | wxCENTER);
 
         return false;
     }
 
-    wxString lower_location = location;
-    lower_location.MakeLower();
+    std::wstring connection_string = info.connection_string;
 
-
-    if (lower_location.Find(L"xdprovider=") == -1 &&
-        lower_location.SubString(0,6) != wxT("http://") &&
-        lower_location.SubString(0,7) != wxT("https://"))
+    // some simple checks for project integrity
+    if (kl::icontains(connection_string, L"xdprovider=xdnative") ||
+        kl::icontains(connection_string, L"xdprovider=xdfs"))
     {
-        if (!xf_get_directory_exist(towstr(location)))
+        xd::ConnectionString cstr(connection_string);
+        std::wstring location = cstr.getValue(L"Database");
+
+        if (location.empty() || !xf_get_directory_exist(location))
         {
             appMessageBox(_("The specified project could not be opened.  The path does not exist or is invalid."),
-                               APPLICATION_NAME,
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
+                APPLICATION_NAME,
+                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
             return false;
         }
 
-
-        wxString ofs_path = location;
-        ofs_path += PATH_SEPARATOR_STR;
-        ofs_path += wxT("ofs");
-
-        if (!xf_get_directory_exist(towstr(ofs_path)))
+        if (kl::icontains(connection_string, L"xdprovider=xdnative"))
         {
-            appMessageBox(_("The specified path does not contain a valid database project."),
-                               APPLICATION_NAME,
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
+            std::wstring ofs_path = location;
+            ofs_path += PATH_SEPARATOR_STR;
+            ofs_path += L"ofs";
 
-            return false;
-        }
+            if (!xf_get_directory_exist(ofs_path))
+            {
+                appMessageBox(_("The specified path does not contain a valid database project."),
+                    APPLICATION_NAME,
+                    wxOK | wxICON_EXCLAMATION | wxCENTER);
 
-        // check the project's database version
-        wxString ver_file = location;
-        if (ver_file.IsEmpty() || ver_file.Last() != PATH_SEPARATOR_CHAR)
-            ver_file += PATH_SEPARATOR_CHAR;
-        ver_file += wxT("ofs");
-        ver_file += PATH_SEPARATOR_CHAR;
-        ver_file += wxT(".system");
-        ver_file += PATH_SEPARATOR_CHAR;
-        ver_file += wxT("database_version.xml");
-
-
-        if (!xf_get_file_exist(towstr(ver_file)))
-        {
-            int res;
-            res = appMessageBox(_("This project is currently stored in an older format and must be \nconverted to a newer format before it can be used by this application.\nAfter the project is converted to the newer format, it can no longer\nbe used by other applications that utilize the older format.\nWould you like to upgrade this project to the newer format?"),
-                                     APPLICATION_NAME,
-                                     wxYES_NO | wxICON_QUESTION | wxCENTER);
-
-            if (res != wxYES)
                 return false;
+            }
+
+            // check the project's database version
+            wxString ver_file = location;
+            if (ver_file.IsEmpty() || ver_file.Last() != PATH_SEPARATOR_CHAR)
+                ver_file += PATH_SEPARATOR_CHAR;
+            ver_file += "ofs";
+            ver_file += PATH_SEPARATOR_CHAR;
+            ver_file += ".system";
+            ver_file += PATH_SEPARATOR_CHAR;
+            ver_file += "database_version.xml";
+
+            if (!xf_get_file_exist(towstr(ver_file)))
+            {
+                int res;
+                res = appMessageBox(_("This project is currently stored in an older format and must be \nconverted to a newer format before it can be used by this application.\nAfter the project is converted to the newer format, it can no longer\nbe used by other applications that utilize the older format.\nWould you like to upgrade this project to the newer format?"),
+                    APPLICATION_NAME,
+                    wxYES_NO | wxICON_QUESTION | wxCENTER);
+
+                if (res != wxYES)
+                    return false;
+            }
         }
     }
 
-
-    wxString cstr;
-    if (lower_location.Find(wxT("xdprovider=")) != -1)
+    if (info.user_id.size() > 0 || info.passwd.size() > 0)
     {
-        // location string is already a connection string
-        cstr = location;
-        if (cstr.Length() == 0 || cstr.Last() != ';')
-            cstr += wxT(";");
-
-        if (lower_location.Find(wxT("user id=")) == -1)
+        xd::ConnectionString cstr(connection_string);
+        if (info.user_id.size() > 0)
         {
-            cstr += wxT("user id=");
-            cstr += uid;
-            cstr += wxT(";");
-            cstr += wxT("password=");
-            cstr += password;
-            cstr += wxT(";");
+            cstr.setValue(L"User Id", info.user_id);
         }
-    }
-     else if (lower_location.SubString(0,6) == wxT("http://"))
-    {
-        // TODO: extract out database from path
-        wxString database = wxT("default");
-        wxString port = wxT("4800");
 
-        cstr = wxT("xdprovider=xdclient;");
-        cstr += wxT("host=");
-        cstr += location.Mid(7);
-        cstr += wxT(";");
-        cstr += wxT("port=");
-        cstr += port;
-        cstr += wxT(";");
-        cstr += wxT("database=");
-        cstr += database;
-        cstr += wxT(";");
-        cstr += wxT("user id=");
-        cstr += uid;
-        cstr += wxT(";");
-        cstr += wxT("password=");
-        cstr += password;
-        cstr += wxT(";");
-    }
-     else if (lower_location.SubString(0,7) == wxT("https://"))
-    {
-    }
-     else
-    {
-        cstr = wxT("xdprovider=xdnative;");
-        cstr += wxT("database=");
-        cstr += location;
-        cstr += wxT(";");
-        cstr += wxT("user id=");
-        cstr += uid;
-        cstr += wxT(";");
-        cstr += wxT("password=");
-        cstr += password;
-        cstr += wxT(";");
+        if (info.passwd.size() > 0)
+        {
+            cstr.setValue(L"Passwd", info.passwd);
+        }
+
+        connection_string = cstr.getConnectionString();
     }
 
-    xd::IDatabasePtr database = dbmgr->open(towstr(cstr));
+
+    xd::IDatabasePtr database = dbmgr->open(connection_string);
     if (database.isNull())
     {
         appMessageBox(_("The specified project could not be opened."),
-                           APPLICATION_NAME,
-                           wxOK | wxICON_EXCLAMATION | wxCENTER);
+            APPLICATION_NAME,
+            wxOK | wxICON_EXCLAMATION | wxCENTER);
 
         return false;
     }
 
-    // get the project's name from the registry
-    ProjectMgr projmgr;
-    int project_idx = projmgr.getIdxFromLocation(location);
-    std::vector<ProjectInfo>& projects = projmgr.getProjectEntries();
-    wxString entry_name = (project_idx >= 0 ? projects[project_idx].entry_name : L"");
-    wxString name = (project_idx >= 0 ? projects[project_idx].name : L"");
-
-
     g_app->setDatabase(database);
-    g_app->setDatabaseLocation(location);
-    g_app->setDatabaseConnectionString(towstr(cstr));
+    g_app->setDatabaseLocation(info.location);
+    g_app->setDatabaseConnectionString(connection_string);
 
     if (m_dbdoc)
         m_dbdoc->setDatabase(database);
 
-    IAppPreferencesPtr prefs = g_app->getAppPreferences();
-    bool default_links_created = prefs->getBoolean(wxT("general.default_links_created_2"), false);
-    if (!default_links_created)
+    if (kl::icontains(info.connection_string, L"xdprovider=xdnative"))
     {
-        createDefaultLinks();
-        prefs->setBoolean(wxT("general.default_links_created_2"), true);
+        IAppPreferencesPtr prefs = g_app->getAppPreferences();
+        bool default_links_created = prefs->getBoolean(wxT("general.default_links_created_2"), false);
+        if (!default_links_created)
+        {
+            createDefaultLinks();
+            prefs->setBoolean(wxT("general.default_links_created_2"), true);
+        }
     }
 
-    if (project_idx >= 0)
+    if (info.entry_name.size() > 0)
     {
+        IAppPreferencesPtr prefs = g_app->getAppPreferences();
+
         // if the 'Last Open Project' preference has been set,
         // set this project as the default startup connection
-        if (getAppPrefsBoolean(wxT("general.startup.open_last_project")))
-            prefs->setString(wxT("general.startup.connection"), entry_name);
+        if (prefs.isOk() && getAppPrefsBoolean(wxT("general.startup.open_last_project")))
+            prefs->setString(wxT("general.startup.connection"), info.entry_name);
     }
 
     // let application hook handle post open project operations
@@ -6169,6 +6099,7 @@ bool AppController::openProject(const wxString& location,
     refreshDbDoc();
     return true;
 }
+
 
 
 bool AppController::openProject(xd::IDatabasePtr database)
@@ -7094,7 +7025,7 @@ void AppController::showProjectManager()
                 return;
         }
 
-        openProject(info.location, info.user_id, info.passwd);
+        openProject(info);
     }
 }
 

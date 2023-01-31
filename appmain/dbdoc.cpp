@@ -3224,7 +3224,7 @@ void DbDoc::onFsItemRightClicked(IFsItemPtr item)
                     {
                         // user clicked on one of the projects;
                         // set that project to the active project
-                        g_app->getAppController()->openProject(info.location, info.user_id, info.passwd);
+                        g_app->getAppController()->openProject(info);
                     }
                 }
             }

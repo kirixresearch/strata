@@ -68,11 +68,11 @@ public:
 
     std::wstring getDbDriver();
 
-    void setDatabaseLocation(const wxString& string);
+    void setDatabaseLocation(const wxString& value);
     wxString getDatabaseLocation();
 
-    void setDatabaseConnectionString(const std::wstring& string) { m_db_connstr = string; }
-    std::wstring getDatabaseConnectionString() { return m_db_connstr; }
+    void setDatabaseConnectionString(const std::wstring& value);
+    std::wstring getDatabaseConnectionString();
 
     DbDoc* getDbDoc();
     void setDbDoc(DbDoc* dbdoc);

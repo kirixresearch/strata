@@ -18,9 +18,14 @@
 
 // utility functions
 
-static std::wstring getLocationFromString(const std::wstring& location_or_cstr)
+bool isConnectionString(const std::wstring& str)
 {
-    if (kl::icontains(location_or_cstr, L"xdprovider="))
+    return kl::icontains(str, L"xdprovider=");
+}
+
+std::wstring getLocationFromConnectionString(const std::wstring& location_or_cstr)
+{
+    if (isConnectionString(location_or_cstr))
     {
         xd::ConnectionString cstr(location_or_cstr);
         std::wstring provider = cstr.getLowerValue(L"xdprovider");
@@ -40,8 +45,8 @@ static std::wstring getLocationFromString(const std::wstring& location_or_cstr)
 
 static bool isSameLocation(const std::wstring& location1, std::wstring& location2)
 {
-    std::wstring loc1 = getLocationFromString(location1);
-    std::wstring loc2 = getLocationFromString(location2);
+    std::wstring loc1 = getLocationFromConnectionString(location1);
+    std::wstring loc2 = getLocationFromConnectionString(location2);
 
 #ifdef WIN32
     return kl::iequals(loc1, loc2);
@@ -50,6 +55,28 @@ static bool isSameLocation(const std::wstring& location1, std::wstring& location
 #endif
 }
 
+std::wstring getDefaultConnectionStringForLocation(const std::wstring& location)
+{
+    if (xf_get_directory_exist(location))
+    {
+        std::wstring ofs_path = location;
+        ofs_path += PATH_SEPARATOR_STR;
+        ofs_path += L"ofs";
+
+        if (xf_get_directory_exist(ofs_path))
+        {
+            return L"Xdprovider=xdnative;Database=" + location + L";User Id=admin;Password=";
+        }
+        else
+        {
+            return L"Xdprovider=xdfs;Database=" + location;
+        }
+    }
+    else
+    {
+        return L"";
+    }
+}
 
 
 // ProjectMgr class implementation
@@ -72,29 +99,42 @@ void ProjectMgr::refresh()
     config->setPath(L"/RecentDatabases");
 
     std::vector<std::wstring> project_keys = config->getGroups();
-    std::vector<std::wstring>::iterator it;
 
-
-    std::wstring dbname, dblocation, dbuser, dbpasswd;
+    std::wstring dbname, dblocation, dbuser, dbpasswd, dbcstr;
     bool local;
     ProjectInfo c;
 
-    for (it = project_keys.begin(); it != project_keys.end(); ++it)
+    // first, find out if we need to upgrade the structure; we will
+    // check for the existence of a "ConnectionString" parameter
+    if (project_keys.size() > 0)
     {
-        config->setPath(L"/RecentDatabases/" + *it);
+        config->setPath(L"/RecentDatabases/" + project_keys[0]);
+        config->read(L"ConnectionString", dbcstr, L"!exist");
+        if (dbcstr == L"!exist")
+        {
+            this->upgrade();
+        }
+    }
 
-        config->read(L"Local",    &local,     true);
-        config->read(L"Name",     dbname,     L"");
-        config->read(L"Location", dblocation, L"");
-        config->read(L"User",     dbuser,     L"");
-        config->read(L"Password", dbpasswd,   L"");
 
-        c.entry_name = *it;
+    for (auto& project_key : project_keys)
+    {
+        config->setPath(L"/RecentDatabases/" + project_key);
+
+        config->read(L"Local",            &local,     true);
+        config->read(L"Name",             dbname,     L"");
+        config->read(L"Location",         dblocation, L"");
+        config->read(L"User",             dbuser,     L"");
+        config->read(L"Password",         dbpasswd,   L"");
+        config->read(L"ConnectionString", dbcstr,     L"");
+
+        c.entry_name = project_key;
         c.local = local;
         c.name = dbname;
         c.location = dblocation;
         c.user_id = dbuser;
         c.passwd = dbpasswd;
+        c.connection_string = dbcstr;
 
         if (c.name.length() == 0)
         {
@@ -109,13 +149,85 @@ void ProjectMgr::refresh()
                     c.name = c.name.substr(idx+1);
             }
         }
-        
-        
-        // fix stupid bug we had
-        if (c.user_id == "admin" && c.passwd == "admin")
-            c.passwd = wxT("");
 
         m_projects.push_back(c);
+    }
+}
+
+void ProjectMgr::upgrade()
+{
+    // read all data from the sysconfig
+    IAppConfigPtr config = g_app->getAppConfig();
+    config->setPath(L"/RecentDatabases");
+
+    std::vector<std::wstring> project_keys = config->getGroups();
+    std::vector<std::wstring>::iterator it;
+
+    std::wstring dbname, dblocation, dbuser, dbpasswd, dbcstr;
+    bool local;
+    bool need_flush = false;
+
+    // first, find out if we need to upgrade the structure; we will
+    // check for the existence of a "ConnectionString" parameter
+    for (auto key : project_keys)
+    {
+        config->setPath(L"/RecentDatabases/" + key);
+
+        config->read(L"Local", &local, true);
+        config->read(L"Name", dbname, L"");
+        config->read(L"Location", dblocation, L"");
+        config->read(L"User", dbuser, L"");
+        config->read(L"Password", dbpasswd, L"");
+        config->read(L"ConnectionString", dbcstr, L"");
+
+        // fix stupid bug we had
+        if (dbuser == "admin" && dbpasswd == "admin")
+        {
+            config->write(L"Password", L"");
+            need_flush = true;
+        }
+
+        // In interim versions after 4.5.4, 'Location' used to store either a path or a
+        // connection string (mixed); in 5.x this is separated; location reflects the
+        // local path of the database and 'connection string'ConnectionString' is used to
+        // store the connection string
+        if (isConnectionString(dblocation))
+        {
+            dbcstr = dblocation;
+            dblocation = getLocationFromConnectionString(dbcstr);
+
+            config->write(L"Location", dblocation);
+            config->write(L"ConnectionString", dbcstr);
+
+            need_flush = true;
+        }
+
+        if (dbcstr.empty() && !dblocation.empty())
+        {
+            // generate a connection string for an old version entry that
+            // only had a location without a connection string
+            dbcstr = L"Xdprovider=xdnative;Database=" + dblocation + L";";
+            dbcstr += L"User Id=admin;Password=";
+            config->write(L"ConnectionString", dbcstr);
+            need_flush = true;
+        }
+
+        if (dbname.empty() && !dblocation.empty())
+        {
+            // older versions used to supply the name dynamically from
+            // the last portion of the path. This upgrade code makes
+            // it permanent
+
+            wxFileName fn(dblocation);
+            dbname = fn.GetFullName();
+            config->write(L"Name", dbname);
+            need_flush = true;
+        }
+    }
+
+    if (need_flush)
+    {
+        config->flush();
     }
 }
 
@@ -123,6 +235,7 @@ bool ProjectMgr::addProjectEntry(const wxString& name,
                                  const wxString& location,
                                  const wxString& user_id,
                                  const wxString& password,
+                                 const wxString& connection_string,
                                  bool local)
 {
     IAppConfigPtr config = g_app->getAppConfig();
@@ -132,17 +245,18 @@ bool ProjectMgr::addProjectEntry(const wxString& name,
     int counter = 0;
     while (1)
     {
-        new_connection = wxString::Format(wxT("connection%03d"), counter++);
+        new_connection = wxString::Format("connection%03d", counter++);
         if (!config->exists(towstr(new_connection)))
             break;
     }
 
     config->setPath(towstr(new_connection));
-    config->write(wxT("Local"), local);
-    config->write(wxT("Name"), towstr(name));
-    config->write(wxT("Location"), towstr(location));
-    config->write(wxT("User"), towstr(user_id));
-    config->write(wxT("Password"), towstr(password));
+    config->write(L"Local", local);
+    config->write(L"Name", towstr(name));
+    config->write(L"Location", towstr(location));
+    config->write(L"User", towstr(user_id));
+    config->write(L"Password", towstr(password));
+    config->write(L"ConnectionString", towstr(connection_string));
 
     config->flush();
 
@@ -155,7 +269,8 @@ bool ProjectMgr::modifyProjectEntry(int idx,
                                     const wxString& name,
                                     const wxString& location,
                                     const wxString& user_id,
-                                    const wxString& password)
+                                    const wxString& password,
+                                    const wxString& connection_string)
 {
     IAppConfigPtr config = g_app->getAppConfig();
     config->setPath(L"/RecentDatabases");
@@ -173,6 +288,9 @@ bool ProjectMgr::modifyProjectEntry(int idx,
     if (password.Length() > 0)
         config->write(wxT("Password"), towstr(password));
     
+    if (connection_string.Length() > 0)
+        config->write(wxT("ConnectionString"), towstr(connection_string));
+
     refresh();
 
     return true;

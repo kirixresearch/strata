@@ -51,9 +51,6 @@ static bool isSameLocation(const std::wstring& location1, std::wstring& location
 }
 
 
-
-
-
 // Add Project Dialog class implementation
 
 enum
@@ -314,6 +311,7 @@ public:
         //  check when adding an existing project
         
         m_info->name = wxEmptyString;
+        m_info->local = true;
         m_info->location = m_add_loc_textctrl->GetValue().Trim(true).Trim(false);
 
 
@@ -327,35 +325,29 @@ public:
             return false;
         }
 
-        // if we're not using a raw connection string or a remote location, 
-        // do some checks on the location that's been provided
-        if (m_info->location.find(L"xdprovider=") == m_info->location.npos && 
-            m_info->location.substr(0,6) != L"http://" && 
-            m_info->location.substr(0,7) != L"https://")
+
+        // if a connection string was entered (mostly for development purposes), then record that to
+        // directly to the connection string
+        if (isConnectionString(m_info->location))
+        {
+            m_info->connection_string = m_info->location;
+            m_info->location = getLocationFromConnectionString(m_info->connection_string);
+        }
+        else
         {
             if (!xf_get_directory_exist(m_info->location))
             {
                 appMessageBox(_("The specified folder does not exist or is invalid."),
-                                   APPLICATION_NAME,
-                                   wxOK | wxICON_EXCLAMATION | wxCENTER);
+                    APPLICATION_NAME,
+                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 resetFocus();
                 return false;
             }
-        
-            std::wstring test_path = m_info->location;
-            test_path += PATH_SEPARATOR_STR;
-            test_path += L"ofs";
 
-            if (!xf_get_directory_exist(test_path))
-            {
-                appMessageBox(_("The specified folder does not contain a valid project."),
-                                   APPLICATION_NAME,
-                                   wxOK | wxICON_EXCLAMATION | wxCENTER);
-                resetFocus();
-                return false;
-            }
+            m_info->connection_string = getDefaultConnectionStringForLocation(m_info->location);
         }
-        
+
+
         // now check to see if this project already
         // exists in the project manager list
         ProjectMgr project_mgr;
@@ -365,11 +357,15 @@ public:
         {
             if (kl::iequals(it->location, m_info->location))
             {
-                appMessageBox(_("The specified project already exists in the project manager list."),
+                int result = appMessageBox(_("The specified project already exists in the project manager list. Would you like to add it anyway?"),
                                    APPLICATION_NAME,
-                                   wxOK | wxICON_EXCLAMATION | wxCENTER);
-                resetFocus();
-                return false;
+                                   wxYES_NO | wxICON_QUESTION | wxCENTER);
+
+                if (result != wxYES)
+                {
+                    resetFocus();
+                    return false;
+                }
             }
         }
         
@@ -592,7 +588,7 @@ DlgProjectMgr::DlgProjectMgr(wxWindow* parent, wxWindowID id) :
 
     m_grid->setColumnSize(colName, 160);
     m_grid->setColumnSize(colType, 60);
-    m_grid->setColumnSize(colLocation, 160);
+    m_grid->setColumnProportionalSize(colLocation, 1);
     m_grid->setColumnSize(colSize, 60);
     m_grid->setColumnSize(colUser, 100);
     
@@ -685,8 +681,6 @@ DlgProjectMgr::DlgProjectMgr(wxWindow* parent, wxWindowID id) :
     m_grid->moveCursor(0, colName, false);
     m_grid->refresh(kcl::Grid::refreshAll);
 
-
-
     Center();
 }
 
@@ -741,38 +735,36 @@ void DlgProjectMgr::populate()
             name = _("(Untitled)");
         }
 
-        std::wstring local_location = it->location;
-        if (kl::icontains(local_location, L"xdprovider="))
+        wxString size_str = wxT("");
+
+        if (it->connection_string.size() > 0)
         {
-            xd::ConnectionString cstr(it->location);
+            xd::ConnectionString cstr(it->connection_string);
             std::wstring provider = cstr.getLowerValue(L"xdprovider");
 
             if (provider == L"xdnative" || provider == L"xdfs")
             {
-                local_location = cstr.getLowerValue(L"database");
+                std::wstring local_location = cstr.getLowerValue(L"database");
+
+                t2 = time(NULL);
+                if (display_project_size && (t2 - t1) < 8)
+                {
+                    double size = getProjectSize(local_location);
+                    double mb_size = size / 1048576.0;
+                    double gb_size = size / 1073741824.0;
+                    if (gb_size >= 1.0)
+                        size_str = wxString::Format(wxT("%.2f GB"), gb_size);
+                    else
+                        size_str = wxString::Format(wxT("%.2f MB"), mb_size);
+                }
             }
         }
-
-        // calculate the project size
-        wxString size_str = wxT("");
-        
-        t2 = time(NULL);
-        if (display_project_size && (t2-t1) < 8)
-        {
-            double size = getProjectSize(local_location);
-            double mb_size = size/1048576.0;
-            double gb_size = size/1073741824.0;
-            if (gb_size >= 1.0)
-                size_str = wxString::Format(wxT("%.2f GB"), gb_size);
-                 else
-                size_str = wxString::Format(wxT("%.2f MB"), mb_size);
-        }
-
+ 
         m_grid->insertRow(-1);
         m_grid->setCellString(row, colName, name);
-        m_grid->setCellBitmap(row, colName, GETBMP(gf_project_16), kcl::Grid::alignLeft);
+        m_grid->setCellBitmap(row, colName, GETBMPSMALL(gf_project), kcl::Grid::alignLeft);
         m_grid->setCellString(row, colType, it->local ? _("Local") : _("Network"));
-        m_grid->setCellString(row, colLocation, local_location);
+        m_grid->setCellString(row, colLocation, it->location);
         m_grid->setCellString(row, colSize, size_str);
         m_grid->setCellString(row, colUser, it->user_id);
         ++row;
@@ -832,10 +824,12 @@ void DlgProjectMgr::onGridEndEdit(kcl::GridEvent& evt)
         if (row >= 0 && (size_t)row < connections.size())
         {
             wxString new_name = evt.GetString();
-            m_projmgr.modifyProjectEntry(row, new_name,
-                                              wxEmptyString,
-                                              wxEmptyString,
-                                              wxEmptyString);
+            m_projmgr.modifyProjectEntry(row,
+                                         new_name,
+                                         wxEmptyString,
+                                         wxEmptyString,
+                                         wxEmptyString,
+                                         wxEmptyString);
         }
     }
     
@@ -884,10 +878,11 @@ void DlgProjectMgr::onAddProject(wxCommandEvent& evt)
 {
     ProjectInfo info;
     info.local = true;
-    info.location = wxEmptyString;
-    info.name = wxEmptyString;
-    info.passwd = wxEmptyString;
-    info.user_id = wxT("admin");
+    info.location = L"";
+    info.name = L"";
+    info.passwd = L"";
+    info.user_id = L"admin";
+    info.connection_string = L"";
 
     DlgAddProject* dlg = new DlgAddProject(g_app->getMainWindow(), &info);
     if (dlg->ShowModal() == wxID_OK)
@@ -900,6 +895,7 @@ void DlgProjectMgr::onAddProject(wxCommandEvent& evt)
                                       info.location,
                                       info.user_id,
                                       info.passwd,
+                                      info.connection_string,
                                       info.local);
         }
         

@@ -13,13 +13,49 @@
 #define __APP_PROJECTMGR_H
 
 
-struct ProjectInfo
+class ProjectInfo
 {
+public:
+    ProjectInfo()
+    {
+        local = true;
+    }
+
+    ProjectInfo(const ProjectInfo& c)
+    {
+        entry_name = c.entry_name;
+        name = c.name;
+        location = c.location;
+        user_id = c.user_id;
+        passwd = c.passwd;
+        connection_string = c.connection_string;
+        local = c.local;
+    }
+
+    ProjectInfo& operator=(const ProjectInfo& c)
+    {
+        entry_name = c.entry_name;
+        name = c.name;
+        location = c.location;
+        user_id = c.user_id;
+        passwd = c.passwd;
+        connection_string = c.connection_string;
+        local = c.local;
+        return *this;
+    }
+
+    bool isOk() const
+    {
+        return !entry_name.empty();
+    }
+    
+public:
     std::wstring entry_name;
     std::wstring name;
     std::wstring location;
     std::wstring user_id;
     std::wstring passwd;
+    std::wstring connection_string;
     bool local;
 };
 
@@ -35,6 +71,9 @@ public:
     }
 };
 
+bool isConnectionString(const std::wstring& str);
+std::wstring getLocationFromConnectionString(const std::wstring& location_or_cstr);
+std::wstring getDefaultConnectionStringForLocation(const std::wstring& location);
 
 class ProjectMgr
 {
@@ -48,17 +87,27 @@ public:
         const wxString& location,
         const wxString& user_id,
         const wxString& password,
+        const wxString& connection_string,
         bool local);
-    bool modifyProjectEntry(int idx, const wxString& name,
+
+    bool modifyProjectEntry(int idx,
+        const wxString& name,
         const wxString& location,
         const wxString& user_id,
-        const wxString& password);
+        const wxString& password,
+        const wxString& connection_string
+    );
+
     bool deleteProjectEntry(int idx);
 
     void refresh();
     std::vector<ProjectInfo>& getProjectEntries();
     int getIdxFromEntryName(const wxString& entry_name);
     int getIdxFromLocation(const wxString& entry_name);
+
+private:
+
+    void upgrade();
 
 private:
 

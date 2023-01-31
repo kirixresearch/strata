@@ -1086,15 +1086,26 @@ std::wstring MainApp::getDbDriver()
     return kl::beforeFirst(class_name,'.');
 }
 
-void MainApp::setDatabaseLocation(const wxString& string)
+void MainApp::setDatabaseLocation(const wxString& value)
 {
-    m_db_location = string;
+    m_db_location = value;
 }
 
 wxString MainApp::getDatabaseLocation()
 {
     return m_db_location;
 }
+
+void MainApp::setDatabaseConnectionString(const std::wstring& value)
+{
+    m_db_connstr = value;
+}
+
+std::wstring MainApp::getDatabaseConnectionString()
+{
+    return m_db_connstr;
+}
+
 
 DbDoc* MainApp::getDbDoc()
 {
@@ -1155,7 +1166,7 @@ void MainApp::setProjectName(const wxString& name)
     int idx = projmgr.getIdxFromLocation(getDatabaseLocation());
     if (idx != -1)
     {
-        projmgr.modifyProjectEntry(idx, name, wxEmptyString, wxEmptyString, wxEmptyString);
+        projmgr.modifyProjectEntry(idx, name, wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString);
     }
 }
 
