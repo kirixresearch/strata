@@ -173,21 +173,29 @@ std::wstring decryptConnectionStringPassword(const std::wstring& connection_str)
     if (cstr.getValueExist(L"Pwd"))
     {
         pw = cstr.getValue(L"Pwd");
-        pw = kl::decryptString(pw, getConnectionStringEncryptionKey());
-        cstr.setValue(L"Pwd", pw);
-        changed = true;
+        if (pw.length() > 0)
+        {
+            pw = kl::decryptString(pw, getConnectionStringEncryptionKey());
+            cstr.setValue(L"Pwd", pw);
+            changed = true;
+        }
     }
     
     if (cstr.getValueExist(L"Password"))
     {
         pw = cstr.getValue(L"Password");
-        pw = kl::decryptString(pw, getConnectionStringEncryptionKey());
-        cstr.setValue(L"Password", pw);
-        changed = true;
+        if (pw.length() > 0)
+        {
+            pw = kl::decryptString(pw, getConnectionStringEncryptionKey());
+            cstr.setValue(L"Password", pw);
+            changed = true;
+        }
     }
     
     if (!changed)
+    {
         return connection_str;
+    }
         
     return cstr.getConnectionString();
 }
@@ -207,21 +215,29 @@ std::wstring encryptConnectionStringPassword(const std::wstring& connection_str)
     if (cstr.getValueExist(L"Pwd"))
     {
         pw = cstr.getValue(L"Pwd");
-        pw = kl::encryptString(pw, getConnectionStringEncryptionKey());
-        cstr.setValue(L"Pwd", pw);
-        changed = true;
+        if (pw.length() > 0)
+        {
+            pw = kl::encryptString(pw, getConnectionStringEncryptionKey());
+            cstr.setValue(L"Pwd", pw);
+            changed = true;
+        }
     }
     
     if (cstr.getValueExist(L"Password"))
     {
         pw = cstr.getValue(L"Password");
-        pw = kl::encryptString(pw, getConnectionStringEncryptionKey());
-        cstr.setValue(L"Password", pw);
-        changed = true;
+        if (pw.length() > 0)
+        {
+            pw = kl::encryptString(pw, getConnectionStringEncryptionKey());
+            cstr.setValue(L"Password", pw);
+            changed = true;
+        }
     }
     
     if (!changed)
+    {
         return connection_str;
+    }
         
     return cstr.getConnectionString();
 }

@@ -14,7 +14,13 @@
 #include "appcontroller.h"
 #include "paneloptions.h"
 #include <wx/dir.h>
+#include <kl/crypt.h>
 
+
+inline std::wstring getConnectionStringEncryptionKey()
+{
+    return std::wstring(L"jgk5]4X4$z(fq#[v8%43nFbgfer5^tnh").substr(7, 8);
+}
 
 // utility functions
 
@@ -79,6 +85,91 @@ std::wstring getDefaultConnectionStringForLocation(const std::wstring& location)
 }
 
 
+static std::wstring encryptConnectionString(const std::wstring& dbcstr)
+{
+    if (dbcstr.length() == 0)
+    {
+        return L"";
+    }
+
+    xd::ConnectionString cstr(dbcstr);
+    bool changed = false;
+
+    if (cstr.getValueExist(L"Pwd"))
+    {
+        std::wstring pw = cstr.getValue(L"Pwd");
+        if (pw.length() > 0 && !kl::isEncryptedString(pw))
+        {
+            pw = kl::encryptString(pw, getConnectionStringEncryptionKey());
+            cstr.setValue(L"Pwd", pw);
+            changed = true;
+        }
+    }
+
+    if (cstr.getValueExist(L"Password"))
+    {
+        std::wstring pw = cstr.getValue(L"Password");
+        if (pw.length() > 0 && !kl::isEncryptedString(pw))
+        {
+            pw = kl::encryptString(pw, getConnectionStringEncryptionKey());
+            cstr.setValue(L"Password", pw);
+            changed = true;
+        }
+    }
+
+    if (!changed)
+    {
+        return dbcstr;
+    }
+    else
+    {
+        return cstr.getConnectionString();
+    }
+}
+
+static std::wstring decryptConnectionString(const std::wstring& dbcstr)
+{
+    if (dbcstr.length() == 0)
+    {
+        return L"";
+    }
+
+    xd::ConnectionString cstr(dbcstr);
+    bool changed = false;
+
+    if (cstr.getValueExist(L"Pwd"))
+    {
+        std::wstring pw = cstr.getValue(L"Pwd");
+        if (kl::isEncryptedString(pw))
+        {
+            pw = kl::decryptString(pw, getConnectionStringEncryptionKey());
+            cstr.setValue(L"Pwd", pw);
+            changed = true;
+        }
+    }
+
+    if (cstr.getValueExist(L"Password"))
+    {
+        std::wstring pw = cstr.getValue(L"Password");
+        if (kl::isEncryptedString(pw))
+        {
+            pw = kl::decryptString(pw, getConnectionStringEncryptionKey());
+            cstr.setValue(L"Password", pw);
+            changed = true;
+        }
+    }
+
+    if (!changed)
+    {
+        return dbcstr;
+    }
+    else
+    {
+        return cstr.getConnectionString();
+    }
+}
+
+
 // ProjectMgr class implementation
 
 ProjectMgr::ProjectMgr()
@@ -127,6 +218,14 @@ void ProjectMgr::refresh()
         config->read(L"User",             dbuser,     L"");
         config->read(L"Password",         dbpasswd,   L"");
         config->read(L"ConnectionString", dbcstr,     L"");
+
+        if (dbpasswd.length() > 0 && kl::isEncryptedString(dbpasswd))
+        {
+            dbpasswd = kl::decryptString(dbpasswd, getConnectionStringEncryptionKey());
+        }
+
+        dbcstr = decryptConnectionString(dbcstr);
+
 
         c.entry_name = project_key;
         c.local = local;
@@ -183,7 +282,15 @@ void ProjectMgr::upgrade()
         // fix stupid bug we had
         if (dbuser == "admin" && dbpasswd == "admin")
         {
-            config->write(L"Password", L"");
+            dbpasswd = L"";
+            config->write(L"Password", dbpasswd);
+            need_flush = true;
+        }
+
+        if (dbpasswd.length() > 0 && !kl::isEncryptedString(dbpasswd))
+        {
+            dbpasswd = kl::encryptString(dbpasswd, getConnectionStringEncryptionKey());
+            config->write(L"Password", dbpasswd);
             need_flush = true;
         }
 
@@ -193,7 +300,7 @@ void ProjectMgr::upgrade()
         // store the connection string
         if (isConnectionString(dblocation))
         {
-            dbcstr = dblocation;
+            dbcstr = encryptConnectionString(dblocation);
             dblocation = getLocationFromConnectionString(dbcstr);
 
             config->write(L"Location", dblocation);
@@ -208,7 +315,7 @@ void ProjectMgr::upgrade()
             // only had a location without a connection string
             dbcstr = L"Xdprovider=xdnative;Database=" + dblocation + L";";
             dbcstr += L"User Id=admin;Password=";
-            config->write(L"ConnectionString", dbcstr);
+            config->write(L"ConnectionString", encryptConnectionString(dbcstr));
             need_flush = true;
         }
 
@@ -250,12 +357,21 @@ bool ProjectMgr::addProjectEntry(const wxString& name,
             break;
     }
 
+    std::wstring cstr = towstr(connection_string);
+    cstr = encryptConnectionString(cstr);
+
+    std::wstring encrypted_password = towstr(password);
+    if (encrypted_password.length() > 0)
+    {
+        encrypted_password = kl::encryptString(encrypted_password, getConnectionStringEncryptionKey());
+    }
+
     config->setPath(towstr(new_connection));
     config->write(L"Local", local);
     config->write(L"Name", towstr(name));
     config->write(L"Location", towstr(location));
     config->write(L"User", towstr(user_id));
-    config->write(L"Password", towstr(password));
+    config->write(L"Password", encrypted_password);
     config->write(L"ConnectionString", towstr(connection_string));
 
     config->flush();
@@ -286,10 +402,19 @@ bool ProjectMgr::modifyProjectEntry(int idx,
         config->write(wxT("User"), towstr(user_id));
 
     if (password.Length() > 0)
-        config->write(wxT("Password"), towstr(password));
+    {
+        std::wstring encrypted_password = towstr(password);
+        encrypted_password = kl::encryptString(encrypted_password, getConnectionStringEncryptionKey());
+        config->write(wxT("Password"), encrypted_password);
+    }
     
     if (connection_string.Length() > 0)
-        config->write(wxT("ConnectionString"), towstr(connection_string));
+    {
+        std::wstring cstr = towstr(connection_string);
+        cstr = encryptConnectionString(cstr);
+
+        config->write(wxT("ConnectionString"), cstr);
+    }
 
     refresh();
 
