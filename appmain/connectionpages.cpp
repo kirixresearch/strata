@@ -140,7 +140,7 @@ PathSelectionPage::PathSelectionPage(kcl::Wizard* parent,
     m_filetype_choice = new wxChoice(this,
                                      ID_FileTypeChoice,
                                      wxDefaultPosition,
-                                     wxSize(200,21),
+                                     wxSize(200,FromDIP(21)),
                                      0,
                                      NULL);
 
