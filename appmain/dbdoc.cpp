@@ -3449,6 +3449,15 @@ void DbDoc::onDragDrop(IFsItemPtr target,
         xd::IDatabasePtr dest_db = getItemDatabase(target);
         std::wstring dest_driver = getDbDriver(dest_db);
 
+
+        std::wstring src_cstr, src_rpath;
+        std::wstring dest_cstr, dest_rpath;
+
+        bool src_ismount = getMountPointHelper(db, src_path, src_cstr, src_rpath);
+        bool dest_ismount = getMountPointHelper(db, dest_folder, dest_cstr, dest_rpath);
+        bool cross_mount = (src_ismount != dest_ismount || src_cstr != dest_cstr) ? true : false;
+
+
         std::wstring dest_name = src_name;
         if (g_app->getDbDriver() != L"xdfs" && dest_driver == L"xdfs")
         {
@@ -3468,9 +3477,12 @@ void DbDoc::onDragDrop(IFsItemPtr target,
          else
         {
             // dest database is not a filesystem
-            dest_name = stripExtension(dest_name);
-            kl::replaceStr(dest_name, L".", L"_");
-            dest_name = makeValidObjectName(dest_name, dest_db);
+            if (cross_mount)
+            {
+                dest_name = stripExtension(dest_name);
+                kl::replaceStr(dest_name, L".", L"_");
+                dest_name = makeValidObjectName(dest_name, dest_db);
+            }
         }
 
         std::wstring dest_path = dest_folder;
@@ -3479,15 +3491,10 @@ void DbDoc::onDragDrop(IFsItemPtr target,
         dest_path += dest_name;
 
 
-        bool cross_mount = false;
-        std::wstring cstr, rpath;
-        //if (db->getMountPoint(dest_folder, cstr, rpath))
-        if (getMountPointHelper(db, dest_folder, cstr, rpath))
-            cross_mount = true;
-
-
         if (cross_mount)
         {
+            // the file is being dragged across a mount barrier, which
+            // precludes a simple move
             jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
 
             kl::JsonNode params;
@@ -3499,6 +3506,8 @@ void DbDoc::onDragDrop(IFsItemPtr target,
         }
          else
         {
+            // the file is being dragged within a mount, which allows
+            // us to perform a simple move
             if (db->moveFile(src_path, dest_path))
             {
                 if (tree_data->getSourceId() != ID_Toolbar_Link)
