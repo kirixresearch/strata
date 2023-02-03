@@ -18,13 +18,13 @@
 
 
 // NOTE: The current way we've implemented statusbars does not 
-//       allow the ability  to create indexes for each statusbar 
+//       allow the ability to create indexes for each status bar 
 //       item (which would allow the notion of inserting an item 
-//       at a certain place in the statusbar).  If this becomes 
+//       at a certain place in the statusbar). If this becomes 
 //       necessary, we'll deal with it at that point.  The way 
 //       things are done right now, left-aligned global items are 
-//       added to the statusbar, then the statusbar provider's 
-//       items are added to the statusbar and then right-aligned 
+//       added to the statusbar, then the status bar provider's 
+//       items are added to the status bar, and then right-aligned 
 //       global items are added at the end
 
 

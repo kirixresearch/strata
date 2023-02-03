@@ -413,7 +413,7 @@ void StatusBar::showResizeGripper(bool show)
 
     // add extra space to allow for the gripper drawing
     if (show)
-        SetMargins(pad, RESIZE_GRIPPER_WIDTH + pad, pad, pad);
+        SetMargins(pad, FromDIP(RESIZE_GRIPPER_WIDTH) + pad, pad, pad);
          else
         SetMargins(pad, pad, pad, pad);
     

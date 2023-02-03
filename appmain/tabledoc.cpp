@@ -573,14 +573,14 @@ bool TableDoc::initDoc(IFramePtr frame,
     IStatusBarItemPtr item;
     
     item = addStatusBarItem(wxT("tabledoc_sum"));
-    item->setWidth(110);
+    item->setWidth(FromDIP(110));
     item->show(false);
     
     item = addStatusBarItem(wxT("tabledoc_position"));
-    item->setWidth(120);
+    item->setWidth(FromDIP(120));
     
     item = addStatusBarItem(wxT("tabledoc_record_count"));
-    item->setWidth(150);
+    item->setWidth(FromDIP(150));
     
     return true;
 }
