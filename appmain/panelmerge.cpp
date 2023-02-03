@@ -49,13 +49,12 @@ MergePanel::~MergePanel()
 
 }
 
-// -- IDocument --
 bool MergePanel::initDoc(IFramePtr frame,
                          IDocumentSitePtr doc_site,
                          wxWindow* docsite_wnd,
                          wxWindow* panesite_wnd)
 {
-    // -- create document's window --
+    // create document's window
     bool result = Create(docsite_wnd,
                          -1,
                          wxDefaultPosition,
@@ -458,6 +457,20 @@ void MergePanel::onOK(wxCommandEvent& evt)
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
             return;
+        }
+
+        if (m_append)
+        {
+            if (isSamePath(table_path, towstr(m_output_path)))
+            {
+                wxString message = wxString::Format(_("'%s' cannot be appended to itself."), table_path.c_str());
+
+                appMessageBox(message,
+                    APPLICATION_NAME,
+                    wxOK | wxICON_EXCLAMATION | wxCENTER);
+
+                return;
+            }
         }
 
         table_paths.push_back(table_path);

@@ -198,8 +198,9 @@ public:
     static bool isItemInMount(IFsItemPtr item);
     static wxString getFsItemPath(IFsItemPtr source);
     static void getFsItemPaths(IFsItemEnumPtr source,
-                               std::vector<wxString>& result,
-                               bool expand_subfolders);
+        std::vector<wxString>& result,
+        bool expand_subfolders);
+
 public:
 
     DbDoc();

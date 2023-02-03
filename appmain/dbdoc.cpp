@@ -1296,6 +1296,16 @@ void DbDoc::getFsItemPaths(IFsItemEnumPtr source,
         if (!found)
             result.push_back(path);
     }
+
+
+    for (auto& path : result)
+    {
+        if (path.StartsWith('/') && path.Freq('/') == 1)
+        {
+            path.erase(0, 1);
+        }
+    }
+
 }
 
 wxString DbDoc::getFsItemPath(IFsItemPtr source)
