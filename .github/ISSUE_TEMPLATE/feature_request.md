@@ -16,11 +16,11 @@ assignees: "biwillia"
 -
 -
 
-## Expected Behavior
+### Expected Behavior
 
 <!--- If you're suggesting a change/improvement, tell us how it should work. -->
 
-## Current Behavior
+### Current Behavior
 
 <!--- If suggesting a change/improvement, explain the difference from current behavior. -->
 
