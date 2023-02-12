@@ -3357,6 +3357,22 @@ IXdsqlTablePtr XdnativeDatabase::openTable(const std::wstring& path, const xd::F
         return sptr;
     }
 
+    std::wstring cstr, rpath, mount_root;
+    if (detectMountPoint(path, &cstr, &rpath, &mount_root))
+    {
+        // action takes place in a mount
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        IXdsqlDatabasePtr xdsqldb = db;
+        if (xdsqldb.isNull())
+            return xcm::null;
+        
+        return xdsqldb->openTable(rpath, format_definition, job);
+    }
+
+
     // fix up set name problems
     std::wstring fixed_name = path;
     kl::trim(fixed_name);
