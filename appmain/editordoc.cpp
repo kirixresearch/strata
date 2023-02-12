@@ -166,14 +166,8 @@ public:
         SetModEventMask(wxSTC_MOD_INSERTTEXT | wxSTC_MOD_DELETETEXT);
 
         //MarkerDefine(0, wxSTC_MARK_ARROW);
-        MarkerDefineBitmap(0, GETBMP(gf_exclamation_16));
-        
-        //#ifdef __WXMSW__
-        //StyleSetSpec(2, _T("fore:#007f00,bold,face:Arial,size:9"));
-        //#else
-        //StyleSetSpec(2, _T("fore:#007f00,bold,face:Helvetica,size:9"));
-        //#endif
-        
+        MarkerDefineBitmap(0, GETBMPSMALL(gf_exclamation));
+
         EmptyUndoBuffer();
         
         // set the left and right margins
@@ -202,7 +196,7 @@ public:
         
         m_show_line_numbers = true;
         m_show_syntax_highlighting = true;
-        m_lexer = wxT(""); // default lexer;
+        m_lexer = ""; // default lexer
         m_last_pos = -1;
         m_local_modified = false;
         UpdateLexer();
@@ -230,7 +224,7 @@ public:
                 wxString keywords2 = wxString::From8BitData(html_keywords);
                 SetKeyWords(2, keywords1 + wxT(" ") + keywords2);
             }
-             else */
+            else */
             if (m_lexer == wxT("ASP"))
             {
                 SetLexer(wxSTC_LEX_HTML);
@@ -239,14 +233,14 @@ public:
                 // set control to use vbscript as the default embedded language
                 SetProperty(wxT("asp.default.language"), wxT("2"));
             }
-             else
+            else
             {
                 // default lexer is CPP
                 SetLexer(wxSTC_LEX_CPP);
                 SetKeyWords(0, wxString::From8BitData(js_keywords));
             }
         }
-         else
+        else
         {
             // no syntax highlighting
             SetKeyWords(0, wxEmptyString);
@@ -360,7 +354,7 @@ public:
                 {
                     quote_char = ch;
                 }
-                 else
+                else
                 {
                     if (quote_char == ch)
                         quote_char = 0;
@@ -406,9 +400,7 @@ public:
     {
         evt.Skip();
         
-
         wxChar key = evt.GetKey();
-
 
         if (key == wxT('(') || key == wxT(')') || key == wxT('{') || key == wxT('}'))
         {
@@ -421,7 +413,6 @@ public:
                 return;
             }
         }
-
 
         BraceHighlight(wxSTC_INVALID_POSITION, wxSTC_INVALID_POSITION);
                 
@@ -484,8 +475,7 @@ public:
             int sel_start_line = LineFromPosition(sel_start);
             int sel_end_line = LineFromPosition(sel_end);
             
-            // multiple lines selected;
-            // wxStyledTextCtrl handles this case properly
+            // multiple lines selected; wxStyledTextCtrl handles this case properly
             if (sel_start_line != sel_end_line)
             {
                 wxStyledTextCtrl::OnKeyDown(evt);
@@ -497,8 +487,7 @@ public:
             wxString line_text = stripCRLF(GetLine(line));
             wxString sel_text = stripCRLF(GetSelectedText());
             
-            // whole single line selected;
-            // wxStyledTextCtrl handles this case properly
+            // whole single line selected; wxStyledTextCtrl handles this case properly
             if (sel_text.Cmp(line_text) == 0)
             {
                 wxStyledTextCtrl::OnKeyDown(evt);
@@ -544,7 +533,7 @@ public:
                 replace_text = line_text.Mid(0,offset);
                 replace_text += line_text.Mid(offset+removed);
             }
-             else if (line_text.GetChar(offset-1) == wxT(' '))
+            else if (line_text.GetChar(offset-1) == wxT(' '))
             {
                 // remove the preceding spaces (up to the indent size)
                 while (offset > 0 && (indent--) > 0 &&
@@ -599,8 +588,7 @@ public:
     {
         int flags = (whole ? wxSTC_FIND_WHOLEWORD : 0) |
                     (match_case ? wxSTC_FIND_MATCHCASE : 0);
-                   
-                   
+        
         // get the line number of the first visible line
         // and the anchor position
         int line_offset = GetFirstVisibleLine();
@@ -649,7 +637,7 @@ public:
             GotoPos(x1);
             SetSelection(x1, x2);
         }
-         else
+        else
         {
             // clear the selection and reset the search start point to the current
             // anchor position
@@ -694,7 +682,6 @@ public:
             GotoPos(x1);
             SetSelection(x1, x2);
         }
-                   
 
         return (x1 != -1 ? true : false);
     }
@@ -732,21 +719,21 @@ public:
             return;
         
         int line_count = GetLineCount();
-        int width;
+        int width = FromDIP(100); // default
         
         // always make the width enough to show numbers up to 99
         if (line_count <= 99)
             width = TextWidth(wxSTC_STYLE_LINENUMBER, wxT("99 "));
-             else if (line_count > 99 && line_count <= 999)
+        else if (line_count > 99 && line_count <= 999)
             width = TextWidth(wxSTC_STYLE_LINENUMBER, wxT("999 "));
-             else if (line_count > 999 && line_count <= 9999)
+        else if (line_count > 999 && line_count <= 9999)
             width = TextWidth(wxSTC_STYLE_LINENUMBER, wxT("9999 "));
-             else if (line_count > 9999 && line_count < 99999)
+        else if (line_count > 9999 && line_count < 99999)
             width = TextWidth(wxSTC_STYLE_LINENUMBER, wxT("99999 "));
-             else if (line_count > 99999)
+        else if (line_count > 99999)
             width = TextWidth(wxSTC_STYLE_LINENUMBER, wxT("999999 "));
-        
-        SetMarginWidth(0,width);
+
+        SetMarginWidth(0, width);
     }
     
 public: // signals
@@ -790,6 +777,7 @@ public:
     {
         m_editorctrl = ctrl;
         m_layout_dc = layout_dc;    // dc used for laying out document
+        m_printer_dc = NULL;
         m_text_length = 0;          // total number of lines in the document
         
         m_page_width = 0.0f;        // page width in inches
@@ -1065,9 +1053,7 @@ bool EditorDoc::initDoc(IFramePtr frame,
     // been updated externally
     m_text->sigFocus.connect(this, &EditorDoc::updateContent);
 
-
     // create main sizer
-    
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->Add(m_text, 1, wxEXPAND);
     SetSizer(main_sizer);
@@ -1083,14 +1069,16 @@ bool EditorDoc::initDoc(IFramePtr frame,
                                 this, &EditorDoc::onStatusBarItemLeftDblClick);
 
     // create the statusbar items for this document
-    IStatusBarItemPtr item;
-    
-    item = addStatusBarItem(wxT("editordoc_line_number"));
-    item->setWidth(90);
-    
-    item = addStatusBarItem(wxT("editordoc_column_number"));
-    item->setWidth(90);
-    
+    {
+        IStatusBarItemPtr item;
+
+        item = addStatusBarItem(wxT("editordoc_line_number"));
+        item->setWidth(90);
+
+        item = addStatusBarItem(wxT("editordoc_column_number"));
+        item->setWidth(90);
+    }
+
     // make sure the control's preferences match the stored preferences
     refreshControlPreferences();
 
@@ -1104,29 +1092,29 @@ bool EditorDoc::newFile(const wxString& path)
     return g_app->getDatabase()->createStream(towstr(path), L"text/plain");
 }
 
-
-
 void EditorDoc::updateCaption()
 {
     if (m_temporary)
         m_doc_site->setCaption(_("(Untitled)"));
-     else if (m_external)
+    else if (m_external)
         m_doc_site->setCaption(m_path.AfterLast(PATH_SEPARATOR_CHAR));
-     else
-     {
+    else
+    {
         wxString caption;
         caption.Append(m_path.AfterLast(wxT('/')));
         caption.Append(isModified() ? wxT("*") : wxT(""));
         
         m_doc_site->setCaption(caption);
-     }
+    }
 }
 
 void EditorDoc::updateContent()
 {
     // if a timer is already running, don't run another one
     if (m_timer)
+    {
         return;
+    }
     
     // check to see if the content needs to be updated; this gets called on a
     // focus event in the editor control and creates a timed object to check
@@ -1153,7 +1141,7 @@ void EditorDoc::gotoLine()
         int line = wxAtoi(dlg.GetValue());
         if (line < 1)
             line = 1;
-         else if (line > line_count)
+        else if (line > line_count)
             line = line_count;
         
         line -= 1; // lines are 0-based;
@@ -1255,7 +1243,7 @@ bool EditorDoc::findReplaceAll(const wxString& find_val,
             wregex_match_str += *p;
             wregex_match_str += L']';
         }
-         else
+        else
         {
             wregex_match_str += *p;
         }
@@ -1312,7 +1300,6 @@ bool EditorDoc::findIsReplaceAllowed()
 {
     return true;
 }
-
 
 void EditorDoc::onSize(wxSizeEvent& evt)
 {
@@ -1461,7 +1448,7 @@ void EditorDoc::setCurrentEolMode(const wxString& value)
         
         if (*(ch-1) == '\r')
             m = wxSTC_EOL_CRLF;
-             else
+        else
             m = wxSTC_EOL_LF;
         
         if (mode == -1)
@@ -1469,7 +1456,7 @@ void EditorDoc::setCurrentEolMode(const wxString& value)
             // first char encountered
             mode = m;
         }
-         else
+        else
         {
             if (mode != m)
             {
@@ -1490,7 +1477,7 @@ void EditorDoc::setCurrentEolMode(const wxString& value)
         m_eol_mode = wxSTC_EOL_LF;
         #endif
     }
-     else
+    else
     {
         m_eol_mode = mode;
     }
@@ -1522,7 +1509,6 @@ bool EditorDoc::loadFile(const wxString& _path)
     // fire this event so that the URL will be updated with the new path
     m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
 
-
     setCurrentEolMode(value);
     
     return true;
@@ -1544,12 +1530,17 @@ bool EditorDoc::readFile(const wxString _path,
         // file is not in project, try disk filesystem
         xf_file_t f = xf_open(path, xfOpen, xfRead, xfShareReadWrite);
         if (!f)
+        {
             return false;
+        }
             
         xf_off_t fsize = xf_get_file_size(path);
         unsigned char* buf = new unsigned char[fsize+1];
         if (!buf)
+        {
             return false;
+        }
+
         xf_off_t readbytes = xf_read(f, buf, 1, fsize);
         buf[readbytes] = 0;
         
@@ -1560,7 +1551,7 @@ bool EditorDoc::readFile(const wxString _path,
             kl::ucsle2wstring(wval, buf+2, (readbytes-2)/2);
             value = wval;
         }
-         else if (readbytes >= 3 && buf[0] == 0xef && buf[1] == 0xbb && buf[2] == 0xbf)
+        else if (readbytes >= 3 && buf[0] == 0xef && buf[1] == 0xbb && buf[2] == 0xbf)
         {
             // utf-8
             wchar_t* tempbuf = new wchar_t[fsize+1];
@@ -1568,7 +1559,7 @@ bool EditorDoc::readFile(const wxString _path,
             value = tempbuf;
             delete[] tempbuf;
         }
-         else
+        else
         {
             value = (const char*)buf;
         }
@@ -1579,11 +1570,13 @@ bool EditorDoc::readFile(const wxString _path,
         // set the external flag
         external = true;
     }
-     else
+    else
     {
         xd::IFileInfoPtr file_info = db->getFileInfo(path);
         if (!file_info)
+        {
             return false;
+        }
 
         // note: no nead to handle old node format any longer; node
         // format for scripts was never used in a release per previous
@@ -1591,7 +1584,9 @@ bool EditorDoc::readFile(const wxString _path,
 
         xd::IStreamPtr stream = db->openStream(path);
         if (!stream)
+        {
             return false;
+        }
             
         wxMemoryBuffer buf;
             
@@ -1621,7 +1616,7 @@ bool EditorDoc::readFile(const wxString _path,
             kl::ucsle2wstring(wval, ptr+2, (buf_len-2)/2);
             value = wval;
         }
-            else if (buf_len >= 3 && ptr[0] == 0xef && ptr[1] == 0xbb && ptr[2] == 0xbf)
+        else if (buf_len >= 3 && ptr[0] == 0xef && ptr[1] == 0xbb && ptr[2] == 0xbf)
         {
             // utf-8
             wchar_t* tempbuf = new wchar_t[buf_len+1];
@@ -1629,14 +1624,12 @@ bool EditorDoc::readFile(const wxString _path,
             value = tempbuf;
             delete[] tempbuf;
         }
-
-            else
+        else
         {
             buf.AppendByte(0);
             value = wxString::From8BitData((char*)buf.GetData());
         }
-                    
-            
+
         // set the mime type and external flag
         mime_type = file_info->getMimeType();
         external = false;
@@ -1692,7 +1685,6 @@ bool EditorDoc::getFileHash(const wxString path, std::wstring& hash)
             return true;
         }
     }
-
 
     wxString value;
     wxString mime_type;
@@ -1757,7 +1749,7 @@ bool EditorDoc::saveFile()
         kl::wstring2ucsle(buf+2, val, val.length());
         buf_len = (val.length() * 2) + 2;
     }*/
-     else
+    else
     {
         // just save as 7-bit ascii because we don't use
         // any characters > char code 127
@@ -1780,11 +1772,14 @@ bool EditorDoc::saveFile()
         xf_write(f, buf, 1, buf_len);
         xf_close(f);
     }
-     else
+    else
     {
         xd::IDatabasePtr db = g_app->getDatabase();
         if (db.isNull())
+        {
+            delete[] buf;
             return false;
+        }
       
         if (!db->createStream(towstr(m_path), towstr(m_mime_type)))
         {
@@ -1864,7 +1859,7 @@ bool EditorDoc::doSave()
         
         return false;
     }
-     else
+    else
     {
         DlgDatabaseFile dlg(g_app->getMainWindow(), DlgDatabaseFile::modeSave);
         dlg.setCaption(_("Save As"));
@@ -1891,7 +1886,7 @@ bool EditorDoc::doSave()
 
             return true;
         }
-         else
+        else
         {
             return false;
         }
@@ -1946,7 +1941,7 @@ void EditorDoc::onFrameEvent(FrameworkEvent& evt)
             }
         }
     }
-     else if (evt.name == FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE)
+    else if (evt.name == FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE)
     {
         wxString text = m_text->GetSelectedText();
         if (text.Length() > 0 && text.Find(wxT('\n')) == wxNOT_FOUND)
@@ -1955,7 +1950,7 @@ void EditorDoc::onFrameEvent(FrameworkEvent& evt)
             *val = text;
         }
     }
-     else if (evt.name == FRAMEWORK_EVT_APPMAIN_PREFERENCES_SAVED)
+    else if (evt.name == FRAMEWORK_EVT_APPMAIN_PREFERENCES_SAVED)
     {
         refreshControlPreferences();
     }
@@ -2262,7 +2257,7 @@ void EditorDoc::refreshControlPreferences()
     insert_spaces = getAppPrefsBoolean(wxT("script.insert_spaces"));
     if (insert_spaces)
         insert_size = getAppPrefsLong(wxT("script.insert_spaces_count"));
-         else
+    else
         insert_size = getAppPrefsLong(wxT("script.tab_size"));
     
     m_text->showLineNumbers(show_line_numbers);
@@ -2320,21 +2315,6 @@ void EditorDoc::updateStatusBar()
         }
     }
 
-/*
-    // the area we'll display the error message is a global item, so
-    // do the lookup for that item in the statusbar
-    item = m_frame->getStatusBar()->getItem(wxT("app_statusbar_text"));
-    if (item.isOk())
-    {
-        old_value = item->getValue();
-        if (m_error_message != old_value)
-        {
-            item->setValue(m_error_message);
-            update = true;
-        }
-    }
-*/
-
     // post an event to update the statusbar
     if (update)
     {
@@ -2342,4 +2322,3 @@ void EditorDoc::updateStatusBar()
         g_app->getMainFrame()->getStatusBar()->refresh();
     }
 }
-
