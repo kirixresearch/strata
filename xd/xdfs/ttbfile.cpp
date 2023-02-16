@@ -527,7 +527,6 @@ int TtbTable::getRows(unsigned char* buf,
                       bool include_deleted)
 {
     int i;
-    bool deleted_found = false;
     unsigned long long byte_offset;
     xd::rowpos_t row_offset;
     int rows_read;
@@ -556,7 +555,9 @@ int TtbTable::getRows(unsigned char* buf,
     {
         // specific optimization for skip 0 or 1 (if there are no deleted rows in the block)
 
-        row_offset = start_row+skip;
+        start_row += skip;
+        row_offset = start_row;
+        skip = 0;
 
         byte_offset = row_offset-1;
         byte_offset *= m_row_width;
@@ -564,7 +565,13 @@ int TtbTable::getRows(unsigned char* buf,
         xf_seek(m_file, byte_offset, xfSeekSet);
         rows_read = xf_read(m_file, buf, m_row_width, row_count);
 
+        if (rows_read == 0)
+        {
+            return 0; // can't read any rows, we're done
+        }
+
         // check for deleted records
+        bool deleted_found = false;
         for (i = 0; i < rows_read; ++i)
         {
             rowpos_arr[i] = row_offset+i;
@@ -575,25 +582,25 @@ int TtbTable::getRows(unsigned char* buf,
             }
         }
         if (!deleted_found)
+        {
             return rows_read;
+        }
+
         reuse_buffer = true;
-        if (skip == 1)
-            skip--;
     }
 
 
-    int rows_per_buffer = row_count;
-    if (rows_per_buffer < 100)
-        rows_per_buffer *= 2;
-    if (rows_per_buffer < 10)
-        rows_per_buffer = 10;
+    int rows_per_work_buffer = row_count;
+    if (rows_per_work_buffer < 100)
+        rows_per_work_buffer *= 2;
+    if (rows_per_work_buffer < 10)
+        rows_per_work_buffer = 10;
 
     m_workbuf_mutex.lock();
 
-    m_workbuf.alloc(rows_per_buffer * m_row_width);
+    m_workbuf.alloc(rows_per_work_buffer * m_row_width);
     unsigned char* workbuf = m_workbuf.getData();
     unsigned char* p;
-
 
     int filled = 0;
     int fill_iteration_count = 0;
@@ -618,7 +625,7 @@ int TtbTable::getRows(unsigned char* buf,
                 byte_offset *= m_row_width;
                 byte_offset += m_data_offset;
                 xf_seek(m_file, byte_offset, xfSeekSet);
-                rows_read = xf_read(m_file, workbuf, m_row_width, rows_per_buffer);
+                rows_read = xf_read(m_file, workbuf, m_row_width, rows_per_work_buffer);
                 if (rows_read == 0)
                 {
                     m_workbuf_mutex.unlock();
@@ -657,17 +664,16 @@ int TtbTable::getRows(unsigned char* buf,
             if (fill_iteration_count++ == 10)
             {
                 // make row buffer bigger after ten iterations
-                int new_rows_per_buffer = (1000000 / m_row_width);
-                if (new_rows_per_buffer < 1)
-                    new_rows_per_buffer = 1;
-                if (new_rows_per_buffer > rows_per_buffer)
+                int new_rows_per_work_buffer = (1000000 / m_row_width);
+                if (new_rows_per_work_buffer < 1)
+                    new_rows_per_work_buffer = 1;
+                if (new_rows_per_work_buffer > rows_per_work_buffer)
                 {
-                    rows_per_buffer = new_rows_per_buffer;
-                    m_workbuf.alloc(rows_per_buffer * m_row_width);
+                    rows_per_work_buffer = new_rows_per_work_buffer;
+                    m_workbuf.alloc(rows_per_work_buffer * m_row_width);
                     workbuf = m_workbuf.getData();
                 }
             }
-
         }
     }
      else
@@ -684,7 +690,7 @@ int TtbTable::getRows(unsigned char* buf,
 
         while (row_offset > 1)
         {
-            rows_to_read = rows_per_buffer;
+            rows_to_read = rows_per_work_buffer;
             if (row_offset-1 < rows_to_read)
                 rows_to_read = (int)row_offset-1;
             row_offset -= rows_to_read;
@@ -736,6 +742,7 @@ int TtbTable::getRows(unsigned char* buf,
         m_workbuf_mutex.unlock();
         return filled; // all done
     }
+
 
 }
 
