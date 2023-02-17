@@ -335,9 +335,11 @@ public:
         }
         else
         {
-            if (!xf_get_directory_exist(m_info->location))
+            wxString invalid_error_message = _("The specified folder or file does not contain a valid database project.");
+
+            if (!xf_get_directory_exist(m_info->location) && !xf_get_file_exist(m_info->location))
             {
-                appMessageBox(_("The specified folder does not exist or is invalid."),
+                appMessageBox(invalid_error_message,
                     APPLICATION_NAME,
                     wxOK | wxICON_EXCLAMATION | wxCENTER);
                 resetFocus();
@@ -345,6 +347,15 @@ public:
             }
 
             m_info->connection_string = getDefaultConnectionStringForLocation(m_info->location);
+
+            if (m_info->connection_string.empty())
+            {
+                appMessageBox(invalid_error_message,
+                    APPLICATION_NAME,
+                    wxOK | wxICON_EXCLAMATION | wxCENTER);
+                resetFocus();
+                return false;
+            }
         }
 
 

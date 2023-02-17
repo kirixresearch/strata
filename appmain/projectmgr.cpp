@@ -61,6 +61,22 @@ static bool isSameLocation(const std::wstring& location1, std::wstring& location
 #endif
 }
 
+static bool is_file_sqlite(const std::wstring& path)
+{
+    char buf[16];
+    memset(buf, 0, 16);
+
+    xf_file_t f = xf_open(path, xfOpen, xfRead, xfShareReadWrite);
+    if (!f)
+    {
+        return false;
+    }
+
+    xf_off_t readbytes = xf_read(f, buf, 1, 16);
+    xf_close(f);
+    return (0 == memcmp(buf, "SQLite format 3\0", 16) ? true : false);
+}
+
 std::wstring getDefaultConnectionStringForLocation(const std::wstring& location)
 {
     if (xf_get_directory_exist(location))
@@ -76,6 +92,17 @@ std::wstring getDefaultConnectionStringForLocation(const std::wstring& location)
         else
         {
             return L"Xdprovider=xdfs;Database=" + location;
+        }
+    }
+    else if (xf_get_file_exist(location))
+    {
+        if (is_file_sqlite(location))
+        {
+            return L"Xdprovider=xdsqlite;Database=" + location;
+        }
+        else
+        {
+            return L"";
         }
     }
     else
