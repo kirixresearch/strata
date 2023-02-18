@@ -144,55 +144,6 @@ bool SlDatabase::createDatabase(const std::wstring& path)
         return false;
     }
 
-
-    // create catalog table
-
-    const char* sql1 = "CREATE TABLE catalog ("
-                           "id INTEGER PRIMARY KEY, "
-                           "folder_id INTEGER, "
-                           "name TEXT, "
-                           "type TEXT, "
-                           "obj_name TEXT);";
-
-    if (SQLITE_OK != sqlite3_exec(db, sql1, NULL, NULL, NULL))
-    {
-        sqlite3_close(db);
-        xf_remove(path);
-        return false;
-    }
-
-    // create columns table
-
-    const char* sql2 = "CREATE TABLE columns ("
-                           "obj_id INTEGER, "
-                           "name TEXT, "
-                           "type INTEGER, "
-                           "width INTEGER, "
-                           "scale INTEGER, "
-                           "expr TEXT);";
-
-    if (SQLITE_OK != sqlite3_exec(db, sql2, NULL, NULL, NULL))
-    {
-        sqlite3_close(db);
-        xf_remove(path);
-        return false;
-    }
-
-
-    // insert entry for root folder
-
-    const char* sql3 = "INSERT INTO catalog "
-                          "(id, folder_id, name, type, obj_name) "
-                          "VALUES (1, 0, '/', 'FOLDER', '');";
-
-    if (SQLITE_OK != sqlite3_exec(db, sql3, NULL, NULL, NULL))
-    {
-        sqlite3_close(db);
-        xf_remove(path);
-        return false;
-    }
-
-
     m_sqlite = db;
     m_path = path;
 
