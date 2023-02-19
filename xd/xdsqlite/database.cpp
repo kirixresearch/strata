@@ -77,28 +77,52 @@ const wchar_t* sql92_keywords =
                 L"WHENEVER,WHERE,WITH,WORK,WRITE,YEAR,ZONE";
 
 
+#define XDSQLITE_PATH_SEPARATOR L"___"
+#define XDSQLITE_PATH_SEPARATOR_LEN 3
+#define XDSQLITE_PATH_SEPARATOR_LIKE L"\\_\\_\\_"
 
-
-std::wstring sqliteGetTablenameFromPath(const std::wstring& path)
+std::wstring sqliteGetTablenameFromPath(const std::wstring& path, bool quote /* = false */)
 {
     const wchar_t* p = path.c_str();
-    while (iswspace(*p))
-        p++;
-    if (*p == '/')
-        p++;
-    
-    std::wstring result;
-    result.reserve(path.length());
-    while (*p)
+    if (*p == L'/')
     {
-        if (*p == '/')
-            result += L"$$$";
-             else
-            result += *p;
-        p++;
+        ++p;
     }
-    
-    return result;
+
+    if (NULL == std::wcspbrk(p, L" /\""))
+    {
+        return p;
+    }
+    else
+    {
+        std::wstring result;
+
+        std::vector<std::wstring> parts;
+        kl::parseDelimitedList(path, parts, L'/');
+        for (auto& part : parts)
+        {
+            if (!result.empty())
+            {
+                result += XDSQLITE_PATH_SEPARATOR;
+            }
+
+            result += part;
+        }
+
+        if (result.find('"') != result.npos)
+        {
+            kl::replaceStr(result, L"\"", L"\"\"");
+        }
+
+        if (quote)
+        {
+            return L"\"" + result + L"\"";
+        }
+        else
+        {
+            return result;
+        }
+    }
 }
 
 
@@ -251,7 +275,7 @@ xd::IJobPtr SlDatabase::createJob()
 
 bool SlDatabase::createFolder(const std::wstring& path)
 {
-    std::wstring objname = sqliteGetTablenameFromPath(path);
+    std::wstring objname = sqliteGetTablenameFromPath(path, true);
     
     std::wstring sql = L"CREATE TABLE ";
     sql += objname;
@@ -262,9 +286,33 @@ bool SlDatabase::createFolder(const std::wstring& path)
 }
 
 bool SlDatabase::createStream(const std::wstring& path,
-                              const std::wstring& mime_type)
+                              const std::wstring& _mime_type)
 {
-    return false;
+    std::string objname = kl::toUtf8(sqliteGetTablenameFromPath(path, true));
+    std::string mime_type = kl::toUtf8(_mime_type);
+
+    std::string sql = "CREATE TABLE ";
+    sql += objname;
+    sql += " (xdsqlite_stream text, mime_type text)";
+
+    if (SQLITE_OK != sqlite3_exec(m_sqlite, sql.c_str(), NULL, NULL, NULL))
+    {
+        return false;
+    }
+
+    sql = "INSERT INTO " + objname + " (xdsqlite_stream, mime_type) VALUES ('', ?)";
+
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(m_sqlite, sql.c_str(), -1, &stmt, NULL))
+    {
+        return false;
+    }
+
+    sqlite3_bind_text(stmt, 1, mime_type.c_str(), mime_type.size(), NULL);
+    sqlite3_step(stmt);
+    sqlite3_finalize(stmt);
+
+    return true;
 }
 
 bool SlDatabase::renameFile(const std::wstring& path,
@@ -279,8 +327,8 @@ bool SlDatabase::renameFile(const std::wstring& path,
 bool SlDatabase::moveFile(const std::wstring& path,
                           const std::wstring& dest_path)
 {
-    std::wstring src_objname = sqliteGetTablenameFromPath(path);
-    std::wstring dest_objname = sqliteGetTablenameFromPath(dest_path);
+    std::wstring src_objname = sqliteGetTablenameFromPath(path, true);
+    std::wstring dest_objname = sqliteGetTablenameFromPath(dest_path, true);
 
     std::wstring command;
     command.reserve(1024);
@@ -311,7 +359,7 @@ bool SlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 
 bool SlDatabase::deleteFile(const std::wstring& path)
 {
-    std::wstring objname = sqliteGetTablenameFromPath(path);
+    std::wstring objname = sqliteGetTablenameFromPath(path, true);
 
     std::wstring command;
     command.reserve(1024);
@@ -349,16 +397,15 @@ bool SlDatabase::getFileExist(const std::wstring& path)
 
 xd::IFileInfoPtr SlDatabase::getFileInfo(const std::wstring& path)
 {
-    std::wstring objname = kl::afterFirst(path, L'/');
-
     int rc = 0;
     
     char** result;
     int rows = 0;
     int cat_id = 0;
 
-    wchar_t query[512];
-    swprintf(query, 512, L"SELECT tbl_name, sql FROM sqlite_master WHERE name='%ls'", objname.c_str());
+    std::wstring query = L"SELECT tbl_name, sql FROM sqlite_master WHERE name='";
+    query += sqliteGetTablenameFromPath(path, false);
+    query += L"'";
     
     rc = sqlite3_get_table(m_sqlite, kl::toUtf8(query), &result, &rows, NULL, NULL);
     if (rc != SQLITE_OK || rows < 1)
@@ -370,7 +417,7 @@ xd::IFileInfoPtr SlDatabase::getFileInfo(const std::wstring& path)
     
     
     xdcommon::FileInfo* f = new xdcommon::FileInfo;
-    f->name = objname;
+    f->name = kl::afterLast(path, L'/');
     f->type = xd::filetypeTable;
 
     std::wstring str = m_path + L":" + path;
@@ -379,6 +426,8 @@ xd::IFileInfoPtr SlDatabase::getFileInfo(const std::wstring& path)
     
     if (type.find(L"xdsqlite_folder") != -1)
         f->type = xd::filetypeFolder;
+    else if (type.find(L"xdsqlite_stream") != -1)
+        f->type = xd::filetypeStream;
 
     return static_cast<xd::IFileInfo*>(f);
 }
@@ -399,13 +448,13 @@ xd::IFileInfoEnumPtr SlDatabase::getFolderInfo(const std::wstring& path)
     
     if (path == L"" || path == L"/")
     {
-        sql += L" WHERE name not like '%$$$%'";
+        sql += L" WHERE name not like '%" XDSQLITE_PATH_SEPARATOR_LIKE "%' ESCAPE '\\'";
     }
      else
     {
         sql += L" WHERE name like '";
-        sql += sqliteGetTablenameFromPath(path);
-        sql += L"$$$%'";
+        sql += sqliteGetTablenameFromPath(path + XDSQLITE_PATH_SEPARATOR_LIKE, false);
+        sql += L"%' ESCAPE '\\'";
     }
 
     rc = sqlite3_get_table(m_sqlite, kl::toUtf8(sql), &result, &rows, NULL, NULL);
@@ -419,9 +468,9 @@ xd::IFileInfoEnumPtr SlDatabase::getFolderInfo(const std::wstring& path)
         const char* s_sql = result[(i*2)+1];
 
         std::wstring name = kl::fromUtf8(s_tbl_name);
-        size_t pos = name.find_last_of(L"$$$");
+        size_t pos = name.rfind(XDSQLITE_PATH_SEPARATOR);
         if (pos != -1)
-            name = name.substr(pos+1);
+            name = name.substr(pos + XDSQLITE_PATH_SEPARATOR_LEN);
 
         xdcommon::FileInfo* f = new xdcommon::FileInfo;
         f->name = name;
@@ -430,7 +479,9 @@ xd::IFileInfoEnumPtr SlDatabase::getFolderInfo(const std::wstring& path)
         std::wstring sql = kl::fromUtf8(s_sql);
         if (sql.find(L"xdsqlite_folder") != -1)
             f->type = xd::filetypeFolder;
-            
+        else if (sql.find(L"xdsqlite_stream") != -1)
+            f->type = xd::filetypeStream;
+
         retval->append(f);
     }
 
@@ -445,7 +496,7 @@ bool SlDatabase::createTable(const std::wstring& path, const xd::FormatDefinitio
 
     std::wstring sql;
     sql = L"CREATE TABLE ";
-    sql += sqliteGetTablenameFromPath(path);
+    sql += sqliteGetTablenameFromPath(path, true);
     sql += L" (";
     
     std::vector<xd::ColumnInfo>::const_iterator it;
@@ -522,7 +573,7 @@ xd::IIteratorPtr SlDatabase::query(const xd::QueryParams& qp)
 
     std::wstring sql = L"SELECT %columns% FROM %table%";
     kl::replaceStr(sql, L"%columns%", columns);
-    kl::replaceStr(sql, L"%table%", sqliteGetTablenameFromPath(qp.from));
+    kl::replaceStr(sql, L"%table%", sqliteGetTablenameFromPath(qp.from, true));
 
     if (qp.where.length() > 0)
         sql += L" WHERE " + qp.where;
@@ -579,7 +630,7 @@ xd::IRowInserterPtr SlDatabase::bulkInsert(const std::wstring& path)
 
 xd::Structure SlDatabase::describeTable(const std::wstring& _path)
 {
-    std::wstring path = sqliteGetTablenameFromPath(_path);
+    std::wstring path = sqliteGetTablenameFromPath(_path, false);
 
     int rc = 0;
     

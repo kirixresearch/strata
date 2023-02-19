@@ -16,7 +16,7 @@
 #include "sqlite3.h"
 #include "../xdcommon/errorinfo.h"
 
-std::wstring sqliteGetTablenameFromPath(const std::wstring& path);
+std::wstring sqliteGetTablenameFromPath(const std::wstring& path, bool quote = false);
 
 class JobInfo;
 class SlDatabase : public xd::IDatabase
