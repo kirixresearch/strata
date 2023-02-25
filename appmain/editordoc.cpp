@@ -1677,7 +1677,7 @@ bool EditorDoc::getFileHash(const wxString path, std::wstring& hash)
         xcm::class_info* class_info = xcm::get_class_info(db.p);
         wxString class_name = class_info->get_name();
         wxString driver = class_name.BeforeFirst('.');
-        if (driver == wxT("xdclient") || driver == wxT("xdpgsql"))
+        if (driver == "xdclient" || driver == "xdpgsql" || driver == "xdsqlite")
         {
             // don't do this operation when running in xdclient or xdpgsql mode
             m_file_hash = L"";

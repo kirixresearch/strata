@@ -23,6 +23,7 @@ class SlDatabase : public xd::IDatabase
 {
     friend class SlRowInserter;
     friend class SlIterator;
+    friend class SlStream;
 
     XCM_CLASS_NAME("xdsqlite.Database")
     XCM_BEGIN_INTERFACE_MAP(SlDatabase)
@@ -44,8 +45,6 @@ public:
 
     void close();
 
-    void setDatabaseName(const std::wstring& name);
-    std::wstring getDatabaseName();
     int getDatabaseType();
     xd::IAttributesPtr getAttributes();
     std::wstring getActiveUid();

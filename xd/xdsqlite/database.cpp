@@ -27,6 +27,7 @@
 
 #include <xd/xd.h>
 #include "database.h"
+#include "stream.h"
 #include "inserter.h"
 #include "iterator.h"
 #include "util.h"
@@ -288,27 +289,40 @@ bool SlDatabase::createFolder(const std::wstring& path)
 bool SlDatabase::createStream(const std::wstring& path,
                               const std::wstring& _mime_type)
 {
+    std::string sql;
     std::string objname = kl::toUtf8(sqliteGetTablenameFromPath(path, true));
-    std::string mime_type = kl::toUtf8(_mime_type);
+    std::string info = kl::toUtf8(_mime_type);
+    sqlite3_stmt* stmt;
+    
+    sql = "DROP TABLE IF EXISTS " + objname;
+    sqlite3_exec(m_sqlite, sql.c_str(), NULL, NULL, NULL);
 
-    std::string sql = "CREATE TABLE ";
-    sql += objname;
-    sql += " (xdsqlite_stream text, mime_type text)";
+    sql = "CREATE TABLE " + objname;
+    sql += " (xdsqlite_stream text, block_id integer primary key autoincrement, data blob)";
 
     if (SQLITE_OK != sqlite3_exec(m_sqlite, sql.c_str(), NULL, NULL, NULL))
     {
         return false;
     }
 
-    sql = "INSERT INTO " + objname + " (xdsqlite_stream, mime_type) VALUES ('', ?)";
-
-    sqlite3_stmt* stmt;
+    // insert header row
+    sql = "INSERT INTO " + objname + " (xdsqlite_stream, block_id, data) VALUES (?, 0, ZEROBLOB(0))";
     if (sqlite3_prepare_v2(m_sqlite, sql.c_str(), -1, &stmt, NULL))
     {
         return false;
     }
 
-    sqlite3_bind_text(stmt, 1, mime_type.c_str(), mime_type.size(), NULL);
+    sqlite3_bind_text(stmt, 1, info.c_str(), info.size(), NULL);
+    sqlite3_step(stmt);
+
+    // insert first block with zero-length blob
+    sql = "INSERT INTO " + objname + " (xdsqlite_stream, block_id, data) VALUES (?, 1, ZEROBLOB(0))";
+    if (sqlite3_prepare_v2(m_sqlite, sql.c_str(), -1, &stmt, NULL))
+    {
+        return false;
+    }
+
+    sqlite3_bind_text(stmt, 1, info.c_str(), info.size(), NULL);
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
 
@@ -377,21 +391,18 @@ bool SlDatabase::deleteFile(const std::wstring& path)
 
 bool SlDatabase::getFileExist(const std::wstring& path)
 {
-    xd::IFileInfoEnumPtr files = getFolderInfo(L"");
-    if (!files)
-        return false;
+    std::wstring query = L"SELECT *  from '";
+    query += sqliteGetTablenameFromPath(path, false);
+    query += L"' LIMIT 0";
 
-    size_t i, count = files->size();
-
-    for (i = 0 ; i < count; ++i)
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(m_sqlite, kl::toUtf8(query), -1, &stmt, NULL))
     {
-        xd::IFileInfoPtr info = files->getItem(i);
-        
-        if (wcscasecmp(info->getName().c_str(), path.c_str()) == 0)
-            return true;
+        return false;
     }
 
-    return false;
+    sqlite3_finalize(stmt);
+    return true;
 }
 
 
@@ -427,7 +438,10 @@ xd::IFileInfoPtr SlDatabase::getFileInfo(const std::wstring& path)
     if (type.find(L"xdsqlite_folder") != -1)
         f->type = xd::filetypeFolder;
     else if (type.find(L"xdsqlite_stream") != -1)
+    {
         f->type = xd::filetypeStream;
+        f->mime_type = L"text/plain";
+    }
 
     return static_cast<xd::IFileInfo*>(f);
 }
@@ -561,7 +575,33 @@ bool SlDatabase::createTable(const std::wstring& path, const xd::FormatDefinitio
 
 xd::IStreamPtr SlDatabase::openStream(const std::wstring& path)
 {
-    return xcm::null;
+    std::wstring object_name = sqliteGetTablenameFromPath(path, false);
+    std::wstring escaped_object_name = sqliteGetTablenameFromPath(path, true);
+    std::wstring sql = L"SELECT xdsqlite_stream from " + escaped_object_name;
+    sql += L" ORDER BY block_id LIMIT 1";
+
+    sqlite3_stmt* stmt = NULL;
+    sqlite3_prepare_v2(m_sqlite, kl::toUtf8(sql), -1, &stmt, NULL);
+    if (!stmt)
+    {
+        // could not open stream
+        return xcm::null;
+    }
+
+    if (sqlite3_step(stmt) == SQLITE_DONE)
+    {
+        return xcm::null;
+    }
+
+    const char* s_mime_type = (const char*)sqlite3_column_text(stmt, 0);
+    std::wstring mime_type = kl::towstring(s_mime_type);
+    sqlite3_finalize(stmt);
+
+    SlStream* stream = new SlStream(this);
+    xd::IStreamPtr sp_stream = stream;
+    stream->init(object_name, mime_type);
+
+    return sp_stream;
 }
 
 
