@@ -16,13 +16,12 @@
 #include "stream.h"
 #include <stdlib.h>
 
-#define BLOCK_SIZE 4096
 
 SlStream::SlStream(SlDatabase* database)
 {
-    m_fd = -1;
     m_mime_type = L"application/octet-stream";
     m_offset = 0;
+    m_block_size = SlStream::DEFAULT_BLOCK_SIZE;
 
     m_database = database;
     m_database->ref();
@@ -33,11 +32,11 @@ SlStream::~SlStream()
     m_database->unref();
 }
 
-bool SlStream::init(const std::wstring& stream_object_name, const std::wstring& mime_type)
+bool SlStream::init(const std::wstring& stream_object_name, const std::wstring& mime_type, int block_size)
 {
     m_mime_type = mime_type;
     m_stream = kl::toUtf8(sqliteGetTablenameFromPath(stream_object_name, true));
-
+    m_block_size = block_size;
     return true;
 }
 
@@ -70,9 +69,9 @@ bool SlStream::readBlock(long long block, void* buf, unsigned long* read_count)
         return false;
     }
 
-    if (blob_len > BLOCK_SIZE)
+    if (blob_len > m_block_size)
     {
-        blob_len = BLOCK_SIZE;
+        blob_len = m_block_size;
     }
 
 
@@ -114,28 +113,29 @@ bool SlStream::writeBlock(long long block, void* buf, unsigned long size)
     // now create blocks up to the block we want to write to
     for (long long block_i = max_block_id+1; block_i < block; ++block_i)
     {
-        sql = kl::stdsprintf("INSERT INTO %s (block_id, data) VALUES (%lld, ZEROBLOCK(%d))", m_stream.c_str(), block_i, BLOCK_SIZE);
+        sql = kl::stdsprintf("INSERT INTO %s (block_id, data) VALUES (%lld, ZEROBLOCK(%d))", m_stream.c_str(), block_i, m_block_size);
         if (SQLITE_OK != sqlite3_exec(m_database->m_sqlite, sql.c_str(), NULL, NULL, NULL))
             return false;
     }
 
     // now write the block we were called to write
-    sql = kl::stdsprintf("INSERT INTO %s (block_id, data) VALUES (%lld, ?) ON CONFLICT(block_id) DO UPDATE SET data=excluded.data", m_stream.c_str(), block, BLOCK_SIZE);
+    sql = kl::stdsprintf("INSERT INTO %s (block_id, data) VALUES (%lld, ?) ON CONFLICT(block_id) DO UPDATE SET data=excluded.data", m_stream.c_str(), block, m_block_size);
 
     if (sqlite3_prepare_v2(m_database->m_sqlite, sql.c_str(), -1, &stmt, NULL))
     {
         return false;
     }
 
-    if (block < max_block_id && size < BLOCK_SIZE)
+    if (block < max_block_id && size < (unsigned long)m_block_size)
     {
         // need to pad
-        unsigned char writebuf[BLOCK_SIZE];
-        memset(writebuf, 0, BLOCK_SIZE);
+        unsigned char* writebuf = new unsigned char[m_block_size];
+        memset(writebuf, 0, m_block_size);
         memcpy(writebuf, buf, size);
-        sqlite3_bind_blob(stmt, 1, writebuf, BLOCK_SIZE, SQLITE_STATIC);
+        sqlite3_bind_blob(stmt, 1, writebuf, m_block_size, SQLITE_STATIC);
         sqlite3_step(stmt);
         sqlite3_finalize(stmt);
+        delete[] writebuf;
     }
     else
     {
@@ -153,9 +153,9 @@ bool SlStream::read(void* buf,
                     unsigned long* read_count)
 {
     unsigned char* cbuf = (unsigned char*)buf;
-    long long block = (m_offset / BLOCK_SIZE) + 1;
-    int block_offset = (int)(m_offset % BLOCK_SIZE);
-    char data[BLOCK_SIZE];
+    long long block = (m_offset / m_block_size) + 1;
+    int block_offset = (int)(m_offset % m_block_size);
+    char* data = new char[m_block_size];
     unsigned long data_size;
     bool done = false;
 
@@ -190,6 +190,8 @@ bool SlStream::read(void* buf,
         cbuf += data_size;
     }
 
+
+    delete[] data;
     return true;
 }
                   
@@ -198,31 +200,31 @@ bool SlStream::write(const void* buf,
                      unsigned long* written_count)
 {
     unsigned char* cbuf = (unsigned char*)buf;
-    long long block = (m_offset / BLOCK_SIZE) + 1;
-    int block_offset = (int)(m_offset % BLOCK_SIZE);
+    long long block = (m_offset / m_block_size) + 1;
+    int block_offset = (int)(m_offset % m_block_size);
     long max_write;
-    char data[BLOCK_SIZE];
+    char* data = new char[m_block_size];
     unsigned long data_size;
 
     while (write_size > 0)
     {
         max_write = (long)write_size;
-        if (max_write > BLOCK_SIZE - block_offset)
+        if (max_write > m_block_size - block_offset)
         {
-            max_write = BLOCK_SIZE - block_offset;
+            max_write = m_block_size - block_offset;
         }
 
         if (block_offset > 0)
         {
             // writing a partial block; first read in the existing block
-            memset(data, 0, BLOCK_SIZE);
+            memset(data, 0, m_block_size);
             readBlock(block, data, &data_size);
             memcpy(data + block_offset, cbuf, max_write);
-            writeBlock(block, data, BLOCK_SIZE);
+            writeBlock(block, data, m_block_size);
         }
         else
         {
-            memset(data, 0, BLOCK_SIZE);
+            memset(data, 0, m_block_size);
             memcpy(data + block_offset, cbuf, max_write);
             writeBlock(block, data, max_write);
         }
@@ -232,6 +234,7 @@ bool SlStream::write(const void* buf,
         ++block;
     }
 
+    delete[] data;
     return true;
 }
 

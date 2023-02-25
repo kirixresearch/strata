@@ -23,14 +23,16 @@ class SlStream : public xd::IStream
 
 public:
 
-    const int block_size = 4096;
+    static const int DEFAULT_BLOCK_SIZE = 4096;
 
 public:
 
     SlStream(SlDatabase* database);
     ~SlStream();
 
-    bool init(const std::wstring& stream_object_name, const std::wstring& mime_type = L"application/octet-stream");
+    bool init(const std::wstring& stream_object_name,
+              const std::wstring& mime_type = L"application/octet-stream",
+              int block_size = SlStream::DEFAULT_BLOCK_SIZE);
 
     bool read(void* buf,
               unsigned long read_size,
@@ -56,7 +58,7 @@ private:
     std::wstring m_mime_type;
     std::string m_stream;
     long long m_offset;
-    int m_fd;
+    int m_block_size;
 };
 
 
