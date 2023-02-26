@@ -188,6 +188,7 @@ bool SlStream::read(void* buf,
         read_size -= data_size;
         *read_count += data_size;
         cbuf += data_size;
+        m_offset += data_size;
     }
 
 

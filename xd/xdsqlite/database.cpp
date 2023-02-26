@@ -287,13 +287,15 @@ bool SlDatabase::createFolder(const std::wstring& path)
 }
 
 bool SlDatabase::createStream(const std::wstring& path,
-                              const std::wstring& _mime_type)
+                              const std::wstring& mime_type)
 {
     std::string sql;
     std::string objname = kl::toUtf8(sqliteGetTablenameFromPath(path, true));
-    std::string info = kl::toUtf8(_mime_type);
+    std::string info;
     sqlite3_stmt* stmt;
-    
+
+    info = kl::stdsprintf("block_size=%d,mime_type=%s", SlStream::DEFAULT_BLOCK_SIZE, (const char*)kl::toUtf8(mime_type));
+
     sql = "DROP TABLE IF EXISTS " + objname;
     sqlite3_exec(m_sqlite, sql.c_str(), NULL, NULL, NULL);
 
@@ -316,13 +318,12 @@ bool SlDatabase::createStream(const std::wstring& path,
     sqlite3_step(stmt);
 
     // insert first block with zero-length blob
-    sql = "INSERT INTO " + objname + " (xdsqlite_stream, block_id, data) VALUES (?, 1, ZEROBLOB(0))";
+    sql = "INSERT INTO " + objname + " (xdsqlite_stream, block_id, data) VALUES ('', 1, ZEROBLOB(0))";
     if (sqlite3_prepare_v2(m_sqlite, sql.c_str(), -1, &stmt, NULL))
     {
         return false;
     }
 
-    sqlite3_bind_text(stmt, 1, info.c_str(), info.size(), NULL);
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
 
@@ -593,13 +594,35 @@ xd::IStreamPtr SlDatabase::openStream(const std::wstring& path)
         return xcm::null;
     }
 
-    const char* s_mime_type = (const char*)sqlite3_column_text(stmt, 0);
-    std::wstring mime_type = kl::towstring(s_mime_type);
+    int block_size = SlStream::DEFAULT_BLOCK_SIZE;
+    std::wstring mime_type = L"text/plain";
+
+    const char* s_info = (const char*)sqlite3_column_text(stmt, 0);
+
+    std::vector<std::wstring> vec;
+    kl::parseDelimitedList(kl::towstring(s_info), vec, L',');
+    for (auto& el : vec)
+    {
+        std::wstring key = kl::beforeFirst(el, '=');
+        std::wstring val = kl::afterFirst(el, L'=');
+        kl::trim(key);
+        kl::trim(val);
+
+        if (key == L"block_size")
+        {
+            block_size = kl::wtoi(val);
+        }
+        else if (key == L"mime_type")
+        {
+            mime_type = val;
+        }
+    }
+
     sqlite3_finalize(stmt);
 
     SlStream* stream = new SlStream(this);
     xd::IStreamPtr sp_stream = stream;
-    stream->init(object_name, mime_type);
+    stream->init(object_name, mime_type, block_size);
 
     return sp_stream;
 }
