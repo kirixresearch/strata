@@ -65,6 +65,7 @@
 #include <wx/paper.h>
 #include <wx/print.h>
 #include <wx/stdpaths.h>
+#include <wx/display.h>
 #include <kl/utf8.h>
 #include <kl/thread.h>
 #include <kl/url.h>
@@ -7041,15 +7042,23 @@ void AppController::showRelationshipManager()
 
         IAppPreferencesPtr prefs = g_app->getAppPreferences();
 
-        x = prefs->getLong(wxT("window_dimensions.relationship_mgr.x"), -1);
-        y = prefs->getLong(wxT("window_dimensions.relationship_mgr.y"), -1);
-        width = prefs->getLong(wxT("window_dimensions.relationship_mgr.width"), fromDIP(700));
-        height = prefs->getLong(wxT("window_dimensions.relationship_mgr.height"), fromDIP(500));
+        x = prefs->getLong("window_dimensions.relationship_mgr.x", -1);
+        y = prefs->getLong("window_dimensions.relationship_mgr.y", -1);
+        width = prefs->getLong("window_dimensions.relationship_mgr.width", fromDIP(700));
+        height = prefs->getLong("window_dimensions.relationship_mgr.height", fromDIP(500));
 
         x = wxMax(x, -2);
         y = wxMax(y, -2);
         width = wxMax(width, fromDIP(50));
         height = wxMax(height, fromDIP(50));
+
+        // make sure window is not created off screen
+        wxSize display_size = ::wxGetDisplaySize();
+        if (x > display_size.x - fromDIP(100) || y > display_size.y - fromDIP(100))
+        {
+            x = 20;
+            y = 20;
+        }
 
         RelationshipPanel* panel = new RelationshipPanel;
         site = m_frame->createSite(panel,

@@ -133,10 +133,10 @@ RelationshipPanel::~RelationshipPanel()
         g_app->getMainWindow()->ClientToScreen(&x, &y);
         parent->GetSize(&width, &height);
 
-        prefs->setLong(wxT("window_dimensions.relationship_mgr.x"), x);
-        prefs->setLong(wxT("window_dimensions.relationship_mgr.y"), y);
-        prefs->setLong(wxT("window_dimensions.relationship_mgr.width"), width);
-        prefs->setLong(wxT("window_dimensions.relationship_mgr.height"), height);
+        prefs->setLong("window_dimensions.relationship_mgr.x", x);
+        prefs->setLong("window_dimensions.relationship_mgr.y", y);
+        prefs->setLong("window_dimensions.relationship_mgr.width", width);
+        prefs->setLong("window_dimensions.relationship_mgr.height", height);
         prefs->flush();
     }
 }
