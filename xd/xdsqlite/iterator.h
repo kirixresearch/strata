@@ -26,6 +26,7 @@ struct SlDataAccessInfo
     int col_ordinal;
     char* buf;
     int datalen;
+    bool calculated;
 
     std::string result_str;
     std::wstring result_wstr;

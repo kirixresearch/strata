@@ -9,9 +9,6 @@
  */
 
 
-#include "sqlite3.h"
-
-
 #include <kl/klib.h>
 #include <kl/md5.h>
 #include <kl/utf8.h>

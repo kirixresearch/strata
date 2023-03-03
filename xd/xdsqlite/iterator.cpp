@@ -13,7 +13,6 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #endif
 
-#include "sqlite3.h"
 
 #include <kl/portable.h>
 #include <kl/string.h>
@@ -132,6 +131,7 @@ bool SlIterator::init(const std::wstring& _query)
         dai.name = kl::towstring((char*)sqlite3_column_name(m_stmt, i));
         dai.sqlite_type = sqlite3_column_type(m_stmt, i);
         dai.col_ordinal = i;
+        dai.calculated = false;
 
         switch (dai.sqlite_type)
         {
@@ -152,6 +152,7 @@ bool SlIterator::init(const std::wstring& _query)
                 dai.xd_type = colinfo.type;
                 dai.width = colinfo.width;
                 dai.scale = colinfo.scale;
+                dai.calculated = colinfo.calculated;
             }
         }
         
@@ -297,6 +298,7 @@ xd::Structure SlIterator::getStructure()
         col.width = it->width;
         col.scale = it->scale;
         col.column_ordinal = it->col_ordinal;
+        col.calculated = it->calculated;
         m_structure.createColumn(col);
     }
     
@@ -349,7 +351,8 @@ xd::ColumnInfo SlIterator::getInfo(xd::objhandle_t data_handle)
     colinfo.width = dai->width;
     colinfo.scale = dai->scale;
     colinfo.column_ordinal = dai->col_ordinal;
-    
+    colinfo.calculated = dai->calculated;
+
     return colinfo;
 }
 

@@ -141,38 +141,56 @@ xd::ColumnInfo parseSqliteColumnDescription(const std::wstring& _col_desc)
     kl::makeUpper(type);
     kl::trim(type);
     kl::trim(col_desc);
-    
-    
-    if (type == L"DOUBLE")
-    {
-        // "DOUBLE PRECISION" -- pop off the second word
-        std::wstring next_token = peekToken(col_desc);
-        kl::makeUpper(next_token);
-        if (next_token == L"PRECISION")
-            popToken(col_desc);
-    }
-          
-    
-    std::wstring expr = col_desc;
-    
-    // get type parameters (width, scale) etc
+
+    std::wstring expr;
     int width = 0;
     int scale = 0;
-    if (!col_desc.empty() && col_desc[0] == L'(')
+    bool generated = false;
+
+    if (type == L"GENERATED")
     {
-        std::wstring type_params = kl::beforeFirst(col_desc.substr(1), ')');
-        
-        std::wstring w = kl::beforeFirst(type_params, L',');
-        std::wstring s = L"0";
-        if (type_params.find(L',') != -1)
-            s = kl::afterFirst(type_params, L',');
-        width = kl::wtoi(w);
-        scale = kl::wtoi(s);    
-        
-        expr = kl::afterFirst(col_desc, L')');
+        type = L"TEXT";
+        std::wstring next_token = peekToken(col_desc);
+        kl::makeUpper(next_token);
+        if (next_token == L"ALWAYS")
+            popToken(col_desc);
+
+        expr = col_desc;
+        generated = true;
     }
-    
-    
+    else
+    {
+        if (type == L"DOUBLE")
+        {
+            // "DOUBLE PRECISION" -- pop off the second word
+            std::wstring next_token = peekToken(col_desc);
+            kl::makeUpper(next_token);
+            if (next_token == L"PRECISION")
+                popToken(col_desc);
+        }
+
+
+        expr = col_desc;
+
+        // get type parameters (width, scale) etc
+
+        if (!col_desc.empty() && col_desc[0] == L'(')
+        {
+            std::wstring type_params = kl::beforeFirst(col_desc.substr(1), ')');
+
+            std::wstring w = kl::beforeFirst(type_params, L',');
+            std::wstring s = L"0";
+            if (type_params.find(L',') != -1)
+                s = kl::afterFirst(type_params, L',');
+            width = kl::wtoi(w);
+            scale = kl::wtoi(s);
+
+            expr = kl::afterFirst(col_desc, L')');
+        }
+
+
+    }
+
 
 
     // make column info
@@ -236,14 +254,34 @@ xd::ColumnInfo parseSqliteColumnDescription(const std::wstring& _col_desc)
     
     if (!expr.empty())
     {
-        std::wstring as = popToken(expr);
-        if (0 != wcscasecmp(as.c_str(), L"AS"))
+        std::wstring next = popToken(expr);
+
+        if (0 == wcscasecmp(next.c_str(), L"GENERATED"))
+        {
+            if (0 == wcscasecmp(peekToken(expr).c_str(), L"ALWAYS"))
+                popToken(expr);
+
+            next = popToken(expr);
+            generated = true;
+        }
+
+        if (0 != wcscasecmp(next.c_str(), L"AS"))
         {
             // missing AS
             return xd::ColumnInfo();
         }
         
         kl::trim(expr);
+
+        // trim off trailing VIRTUAL
+        if (expr.length() > 7 && (0 == wcscasecmp(expr.substr(expr.length() - 7).c_str(), L"VIRTUAL") ||
+                                  0 == wcscasecmp(expr.substr(expr.length() - 6).c_str(), L"STORED")))
+        {
+            expr = expr.substr(0, expr.length()-7); // " STORED" will take the preceding space with it
+            kl::trim(expr);
+        }
+
+
         
         if (expr.empty())
         {
@@ -254,6 +292,9 @@ xd::ColumnInfo parseSqliteColumnDescription(const std::wstring& _col_desc)
         colinfo.expression = expr;
         colinfo.type = true;
     }
+
+    if (generated)
+        colinfo.calculated = true;
     
     return colinfo;
 }

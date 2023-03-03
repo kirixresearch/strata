@@ -12,7 +12,7 @@
 #ifndef __XDSQLITE_DATABASE_H
 #define __XDSQLITE_DATABASE_H
 
-
+#define SQLITE_THREADSAFE 1
 #include "sqlite3.h"
 #include "../xdcommon/errorinfo.h"
 
