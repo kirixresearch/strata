@@ -62,8 +62,9 @@ SlIterator::SlIterator(SlDatabase* database)
     m_ordinal = 0;
 
     m_database = database;
-    m_sqlite = database->m_sqlite;
     m_database->ref();
+
+    m_sqlite = m_database->getPoolDatabase();
 }
 
 SlIterator::~SlIterator()
@@ -73,7 +74,7 @@ SlIterator::~SlIterator()
         sqlite3_finalize(m_stmt);
     }
 
-
+    m_database->freePoolDatabase(m_sqlite);
     m_database->unref();
 }
 

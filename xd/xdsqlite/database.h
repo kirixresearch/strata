@@ -19,6 +19,8 @@
 std::wstring sqliteGetTablenameFromPath(const std::wstring& path, bool quote = false);
 
 class JobInfo;
+class SlConnectionPool;
+
 class SlDatabase : public xd::IDatabase
 {
     friend class SlRowInserter;
@@ -40,6 +42,9 @@ public:
     bool openDatabase(const std::wstring& path,
                       const std::wstring& username,
                       const std::wstring& password);
+
+    sqlite3* getPoolDatabase();
+    void freePoolDatabase(sqlite3* db);
 
     // xd::IDatabase interface
 
@@ -110,6 +115,8 @@ public:
     bool groupQuery(xd::GroupQueryParams* info, xd::IJob* job);
 
 private:
+
+    SlConnectionPool* m_connection_pool;
 
     std::wstring m_path;
     std::wstring m_db_name;

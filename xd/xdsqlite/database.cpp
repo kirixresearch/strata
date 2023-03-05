@@ -13,6 +13,7 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #endif
 
+#include <queue>
 
 #include <kl/portable.h>
 #include <kl/string.h>
@@ -124,9 +125,91 @@ std::wstring sqliteGetTablenameFromPath(const std::wstring& path, bool quote /* 
 }
 
 
+#define MAX_POOL_SIZE 10
+
+class SlConnectionPool
+{
+
+public:
+
+    SlConnectionPool()
+    {
+        
+    }
+
+    void setPath(const std::wstring& path)
+    {
+        m_path = kl::tostring(path);
+    }
+
+    sqlite3* getDatabase()
+    {
+        m_mutex.lock();
+        if (!m_queue.empty())
+        {
+            sqlite3* ret = m_queue.front();
+            m_queue.pop();
+            m_mutex.unlock();
+            return ret;
+        }
+        else
+        {
+            m_mutex.unlock();
+            sqlite3* db = NULL;
+            if (m_path.empty() || SQLITE_OK != sqlite3_open(m_path.c_str(), &db))
+                return NULL;
+            return db;
+        }
+    }
+
+    void freeDatabase(sqlite3* db)
+    {
+        m_mutex.lock();
+        if (m_queue.size() >= MAX_POOL_SIZE)
+        {
+            m_mutex.unlock();
+            sqlite3_close(db);
+        }
+        else
+        {
+            m_queue.push(db);
+            m_mutex.unlock();
+        }
+    }
+
+    void closeAll()
+    {
+        sqlite3* db;
+
+        while (true)
+        {
+            m_mutex.lock();
+            if (m_queue.empty())
+            {
+                m_mutex.unlock();
+                break;
+            }
+            db = m_queue.front();
+            m_queue.pop();
+            m_mutex.unlock();
+
+            sqlite3_close(db);
+        }
+    }
+
+private:
+
+    std::string m_path;
+    std::queue<sqlite3*> m_queue;
+    kl::mutex m_mutex;
+};
+
+
+
 
 SlDatabase::SlDatabase()
 {
+    m_connection_pool = new SlConnectionPool;
     m_sqlite = NULL;
     m_last_job = 0;
 }
@@ -140,6 +223,9 @@ SlDatabase::~SlDatabase()
     {
         (*it)->unref();
     }
+
+    delete m_connection_pool;
+    m_connection_pool = NULL;
 }
 
 bool SlDatabase::createDatabase(const std::wstring& path)
@@ -169,6 +255,8 @@ bool SlDatabase::createDatabase(const std::wstring& path)
     m_sqlite = db;
     m_path = path;
 
+    m_connection_pool->setPath(m_path);
+
     return true;
 }
 
@@ -196,6 +284,8 @@ bool SlDatabase::openDatabase(const std::wstring& path,
     m_sqlite = db;
     m_path = path;
 
+    m_connection_pool->setPath(m_path);
+
     return true;
 }
 
@@ -206,7 +296,12 @@ void SlDatabase::close()
     {
         sqlite3_close(m_sqlite);
     }
+
+    m_connection_pool->closeAll();
+    m_connection_pool->setPath(L"");
 }
+
+
 
 int SlDatabase::getDatabaseType()
 {
@@ -256,6 +351,17 @@ bool SlDatabase::cleanup()
 {
     return true;
 }
+
+sqlite3* SlDatabase::getPoolDatabase()
+{
+    return m_connection_pool->getDatabase();
+}
+
+void SlDatabase::freePoolDatabase(sqlite3* db)
+{
+    m_connection_pool->freeDatabase(db);
+}
+
 
 
 xd::IJobPtr SlDatabase::createJob()
