@@ -46,6 +46,7 @@ bool CopyJob::isInputValid()
         {
             "input" : <path>,
             "output" : <path>,
+            "columns" : [],          // if omitted, all columns are copied
             "where" : <expr>,
             "order" : <expr>
         }
@@ -113,10 +114,45 @@ int CopyJob::runJob()
     }
     */
 
+    if (params_node.childExists("columns"))
+    {
+        std::vector<std::wstring> vec;
+
+        kl::JsonNode columns_node = params_node.getChild("columns");
+        if (columns_node.isArray())
+        {
+            std::vector<kl::JsonNode> children = columns_node.getChildren();
+            for (auto& col : children)
+            {
+                vec.push_back(col.getString());
+            }
+        }
+        else
+        {
+            kl::parseDelimitedList(params_node["columns"].getString(), vec, L',', true);
+
+            for (auto& colname : vec)
+            {
+                xd::dequoteIdentifier(colname, '[', ']');
+                xd::dequoteIdentifier(colname, '"', '"');
+            }
+        }
+
+        for (auto& colname : vec)
+        {
+            info.addCopyColumn(colname, colname);
+        }
+    }
+
     if (params_node.childExists("order"))
+    {
         info.order = params_node["order"].getString();
+    }
+
     if (params_node.childExists("where"))
+    {
         info.where = params_node["where"].getString();
+    }
 
     m_db->copyData(&info, xd_job.p);
 

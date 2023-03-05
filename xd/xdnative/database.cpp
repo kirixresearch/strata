@@ -1566,6 +1566,23 @@ bool XdnativeDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
     }
 
 
+    if (info->copy_columns.size() > 0)
+    {
+        xd::Structure new_structure;
+
+        for (auto& colpair : info->copy_columns)
+        {
+            xd::ColumnInfo colinfo = structure.getColumnInfo(colpair.second);
+            if (colinfo.isOk())
+            {
+                colinfo.name = colpair.first;
+                new_structure.createColumn(colinfo);
+            }
+        }
+
+        structure = new_structure;
+    }
+
     
     if (info->append)
     {

@@ -7556,6 +7556,7 @@ void TableDoc::copyRecords(const std::wstring& condition)
     // when the copy job finishes
     flushActiveView();
 
+    wxString columns = buildSelectedColumnExpression(m_grid);
 
     xd::IIteratorPtr iter = m_iter->clone();
     if (iter.isOk())
@@ -7577,6 +7578,9 @@ void TableDoc::copyRecords(const std::wstring& condition)
         params["input_iterator"].setString(kl::stdswprintf(L"%p", (const void*)iter.p));
         params["output"].setString(xd::getTemporaryPath());
         params["where"].setString(condition);
+
+        if (columns.Length() > 0)
+            params["columns"] = towstr(columns);
 
         job->setParameters(params.toString());
         job->setRefObject(iter); // job will hold on to this object for object lifetime reasons
@@ -7618,6 +7622,9 @@ void TableDoc::copyRecords(const std::wstring& condition)
         params["output"].setString(xd::getTemporaryPath());
         params["where"].setString(final_condition);
         params["order"].setString(getSortOrder());
+
+        if (columns.Length() > 0)
+            params["columns"] = towstr(columns);
 
         job->setParameters(params.toString());
         job->setExtraValue(L"source_tabledoc_model_path", getPath());
