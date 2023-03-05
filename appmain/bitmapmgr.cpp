@@ -362,6 +362,12 @@ wxBitmap BitmapMgr::lookupBitmap(const wxString& bitmap_name, int status, int si
             }
 
             entry.bitmap = wxBitmap(img);
+
+            if (status == typeDisabled)
+            {
+                entry.bitmap = MakeDisabledBitmap(entry.bitmap);
+            }
+
             return entry.bitmap;
         }
     }
