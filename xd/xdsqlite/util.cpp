@@ -281,8 +281,12 @@ xd::ColumnInfo parseSqliteColumnDescription(const std::wstring& _col_desc)
             kl::trim(expr);
         }
 
+        // sqlite syntax surrounds that expression in parentheses
+        if (expr.length() >= 2 && expr[0] == '(' && expr[expr.length() - 1] == ')')
+        {
+            expr = expr.substr(1, expr.length()-2);
+        }
 
-        
         if (expr.empty())
         {
             // empty expression
@@ -290,7 +294,6 @@ xd::ColumnInfo parseSqliteColumnDescription(const std::wstring& _col_desc)
         }
         
         colinfo.expression = expr;
-        colinfo.type = true;
     }
 
     if (generated)

@@ -110,7 +110,7 @@ bool SlIterator::init(const std::wstring& _query)
 
     std::string ascsql = kl::tostring(_query);
 
-    int rc =  sqlite3_prepare(m_sqlite,
+    int rc =  sqlite3_prepare_v2(m_sqlite,
                               ascsql.c_str(),
                               ascsql.length(),
                               &m_stmt,
@@ -207,6 +207,7 @@ void SlIterator::skip(int delta)
         while (1)
         {
             rc = sqlite3_step(m_stmt);
+
             if (rc == SQLITE_ROW)
             {
                 // record rowid
