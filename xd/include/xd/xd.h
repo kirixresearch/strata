@@ -286,7 +286,7 @@ enum
                               //  forward-only, but require skip(-value),
     ifFastRowCount = 0x08,    // (read-only) set if IIterator::getRowCount()
                               //  can be executed in O(1) time (fast)
-    ifTemporary = 0x10        // (read-write) object should be cleaned up
+    ifTemporary = 0x10,       // (read-write) object should be cleaned up
                               //  after object destruction
 };
 
@@ -303,12 +303,13 @@ enum
 
 
 
-// flags for execute()
+// flags for execute() and query()
 
 enum
 {
-    sqlPassThrough = 0x01,
-    sqlAlwaysCopy = 0x02
+    sqlPassThrough = 0x01,   // pass the query through to the underlying database without modification
+    sqlAlwaysCopy = 0x02,    // if set, a temporary result set table is created
+    sqlBrowse = 0x04         // the iterator is made suitable for viewing and forwards/backwards scrolling         
 };
 
 
@@ -607,10 +608,13 @@ struct CopyParams
 
 struct QueryParams
 {
+    QueryParams() { executeFlags = 0; }
+
     std::wstring from;
     std::wstring columns;
     std::wstring where;
     std::wstring order;
+    int executeFlags;
 
     FormatDefinition format;
 

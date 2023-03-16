@@ -733,26 +733,10 @@ xd::IStreamPtr SlDatabase::openStream(const std::wstring& path)
 
 xd::IIteratorPtr SlDatabase::query(const xd::QueryParams& qp)
 {
-    std::wstring columns = qp.columns;
-    if (columns.length() == 0)
-        columns = L"*";
-
-    std::wstring sql = L"SELECT %columns% FROM %table%";
-    kl::replaceStr(sql, L"%columns%", columns);
-    kl::replaceStr(sql, L"%table%", sqliteGetTablenameFromPath(qp.from, true));
-
-    if (qp.where.length() > 0)
-        sql += L" WHERE " + qp.where;
-
-    if (qp.order.length() > 0)
-        sql += L" ORDER BY " + qp.order;
-
-
     SlIterator* iter = new SlIterator(this);
-    iter->m_tablename = qp.from;
     iter->ref();
 
-    if (!iter->init(sql))
+    if (!iter->init(qp))
     {
         iter->unref();
         return xcm::null;

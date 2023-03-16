@@ -45,6 +45,13 @@ friend class SlSet;
 
     xd::IDatabase* cmniterGetDatabase() { return static_cast<xd::IDatabase*>(m_database); }
 
+    enum
+    {
+        modeSqliteResult = 0,
+        modeOffsetLimit = 1,
+        modeRowidTable = 2
+    };
+
 private:
     void clearFieldData();
 
@@ -54,6 +61,7 @@ public:
     ~SlIterator();
 
     bool init(const std::wstring& query);
+    bool init(const xd::QueryParams& qp);
 
     // xd::IIterator
 
@@ -113,6 +121,8 @@ private:
     bool m_eof;
     sqlite3* m_sqlite;
     sqlite3_stmt* m_stmt;
+
+    int m_mode;
 };
 
 #endif

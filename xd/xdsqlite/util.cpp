@@ -220,7 +220,8 @@ xd::ColumnInfo parseSqliteColumnDescription(const std::wstring& _col_desc)
      else if (type == L"DEC" ||
               type == L"DECIMAL" ||
               type == L"NUMERIC" ||
-              type == L"NUMBER")
+              type == L"NUMBER" ||
+              type == L"NUM")
     {
         colinfo.type = xd::typeNumeric;
     }

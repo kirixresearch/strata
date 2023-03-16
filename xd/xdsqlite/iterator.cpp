@@ -164,6 +164,28 @@ bool SlIterator::init(const std::wstring& _query)
 }
 
 
+bool SlIterator::init(const xd::QueryParams& qp)
+{
+    std::wstring columns = qp.columns;
+    if (columns.length() == 0)
+        columns = L"*";
+
+    std::wstring sql = L"SELECT %columns% FROM %table%";
+    kl::replaceStr(sql, L"%columns%", columns);
+    kl::replaceStr(sql, L"%table%", sqliteGetTablenameFromPath(qp.from, true));
+
+    if (qp.where.length() > 0)
+        sql += L" WHERE " + qp.where;
+
+    if (qp.order.length() > 0)
+        sql += L" ORDER BY " + qp.order;
+
+    setTable(qp.from);
+
+    return init(sql);
+}
+
+
 void SlIterator::setTable(const std::wstring& tbl)
 {
     m_path = tbl;
