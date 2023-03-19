@@ -48,7 +48,11 @@ static unsigned int STDCALL thread_entry_proxy(void* t)
     thread* lthread = static_cast<thread*>(t);
     lthread->entry();
     lthread->exit();
-    delete lthread;
+
+    if (lthread->isAutoDelete())
+    {
+        delete lthread;
+    }
     
     // TODO: more comprehensive return code
     return 0;

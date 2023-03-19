@@ -51,6 +51,8 @@ public:
 
     virtual unsigned int entry();
     virtual void exit();
+
+    virtual bool isAutoDelete() { return true; }
 };
 
 
