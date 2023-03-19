@@ -60,6 +60,7 @@ SlIterator::SlIterator(SlDatabase* database)
     m_stmt = NULL;
     m_oid = 0;
     m_ordinal = 0;
+    m_row_count = -1;  // -1 means unknown
 
     m_database = database;
     m_database->ref();
@@ -164,15 +165,129 @@ bool SlIterator::init(const std::wstring& _query)
 }
 
 
+class SlFetchRowCountBackground : public kl::thread
+{
+public:
+
+    SlFetchRowCountBackground(SlDatabase* database, const std::wstring quoted_object_name)
+    {
+        m_mutex.lock();
+
+        m_database = database;
+        m_database->ref();
+        m_sqlite = NULL;
+        m_row_count = -1;
+        m_done = false;
+
+        m_mutex.unlock();
+
+        m_quoted_object_name = kl::toUtf8(quoted_object_name);
+    }
+
+    virtual ~SlFetchRowCountBackground()
+    {
+    }
+
+    virtual bool isAutoDelete()
+    {
+        return false; // this thread object should not be deleted when the thread exits
+    }
+
+    unsigned int entry()
+    {
+        sqlite3* sqlite = m_database->getPoolDatabase();
+
+        m_mutex.lock();
+        m_sqlite = sqlite;
+        m_mutex.unlock();
+
+        std::string sql = "select count(rowid) from " + m_quoted_object_name;
+
+        sqlite3_stmt* stmt = NULL;
+        sqlite3_prepare_v2(sqlite, sql.c_str(), -1, &stmt, NULL);
+        if (stmt)
+        {
+            int res = sqlite3_step(stmt);
+
+            if (res == SQLITE_ROW)
+            {
+                long long row_count = sqlite3_column_int64(stmt, 0);
+
+                m_mutex.lock();
+                m_row_count = row_count;
+                m_mutex.unlock();
+            }
+
+            sqlite3_finalize(stmt);
+        }
+
+        m_mutex.lock();
+        m_sqlite = NULL;
+        m_mutex.unlock();
+
+        m_database->freePoolDatabase(sqlite);
+
+        m_mutex.lock();
+        m_done = true;
+        m_mutex.unlock();
+
+        return 0;
+    }
+
+    void cancel()
+    {
+        m_mutex.lock();
+        if (m_sqlite)
+        {
+            sqlite3_interrupt(m_sqlite);
+        }
+        m_mutex.unlock();
+    }
+
+    bool isDone()
+    {
+        bool done;
+
+        m_mutex.lock();
+        done = m_done;
+        m_mutex.unlock();
+
+        return done;
+    }
+
+    long long getRowCount()
+    {
+        long long row_count;
+
+        m_mutex.lock();
+        row_count = m_row_count;
+        m_mutex.unlock();
+
+        return row_count;
+    }
+
+private:
+    
+    kl::mutex m_mutex;
+    SlDatabase* m_database;
+    sqlite3* m_sqlite;
+    long long m_row_count;
+    std::string m_quoted_object_name;
+    bool m_done;
+};
+
+
 bool SlIterator::init(const xd::QueryParams& qp)
 {
     std::wstring columns = qp.columns;
     if (columns.length() == 0)
         columns = L"*";
 
+    std::wstring quoted_object_name = sqliteGetTablenameFromPath(qp.from, true);
+
     std::wstring sql = L"SELECT %columns% FROM %table%";
     kl::replaceStr(sql, L"%columns%", columns);
-    kl::replaceStr(sql, L"%table%", sqliteGetTablenameFromPath(qp.from, true));
+    kl::replaceStr(sql, L"%table%", quoted_object_name);
 
     if (qp.where.length() > 0)
         sql += L" WHERE " + qp.where;
@@ -181,6 +296,52 @@ bool SlIterator::init(const xd::QueryParams& qp)
         sql += L" ORDER BY " + qp.order;
 
     setTable(qp.from);
+
+
+    if (qp.executeFlags & xd::sqlBrowse)
+    {
+        // there are two strategies for a browse cursor/iterator:
+        // 1) select chunks with limit + offset
+        // 2) creating a temporary table with rowids
+
+        SlFetchRowCountBackground* job = new SlFetchRowCountBackground(m_database, quoted_object_name);
+        job->create();
+
+        // wait two seconds
+        for (int i = 0; i < 200; ++i)
+        {
+            kl::thread::sleep(10);
+
+            if (job->isDone())
+            {
+                break;
+            }
+        }
+
+        if (!job->isDone())
+        {
+            job->cancel();
+            while (!job->isDone())
+            {
+                kl::thread::sleep(10);
+            }
+        }
+
+
+        long long row_count = -1;
+        if (job->isDone())
+        {
+            row_count = job->getRowCount();
+        }
+
+        delete job;
+
+
+        if (row_count != -1)
+        {
+            m_row_count = row_count;
+        }
+    }
 
     return init(sql);
 }
@@ -199,7 +360,7 @@ std::wstring SlIterator::getTable()
 
 xd::rowpos_t SlIterator::getRowCount()
 {
-    return 0;
+    return m_row_count >= 0 ? m_row_count : 0;
 }
 
 xd::IDatabasePtr SlIterator::getDatabase()
@@ -214,7 +375,14 @@ xd::IIteratorPtr SlIterator::clone()
 
 unsigned int SlIterator::getIteratorFlags()
 {
-    return xd::ifForwardOnly;
+    unsigned int flags = xd::ifForwardOnly;
+
+    if (m_row_count >= 0)
+    {
+        flags |= xd::ifFastRowCount;
+    }
+
+    return flags;
 }
 
 void SlIterator::clearFieldData()

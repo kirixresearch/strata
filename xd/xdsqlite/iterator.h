@@ -117,6 +117,7 @@ private:
     std::wstring m_tablename;
     std::wstring m_path;
 
+    long long m_row_count;
     long long m_oid;
     bool m_eof;
     sqlite3* m_sqlite;
