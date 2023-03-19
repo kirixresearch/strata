@@ -2443,7 +2443,14 @@ bool TableDoc::open(const std::wstring& _path,
     }
      else
     {
-        browse_iter = db->query(path, L"", L"", L"", NULL);
+        xd::QueryParams qp;
+        qp.from = path;
+        qp.columns = L"";
+        qp.where = L"";
+        qp.order = L"";
+        qp.executeFlags = xd::sqlBrowse;
+
+        browse_iter = db->query(qp);
         if (browse_iter.isNull())
             return false; // something's wrong
     }
