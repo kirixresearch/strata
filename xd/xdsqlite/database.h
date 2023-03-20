@@ -13,7 +13,7 @@
 #define __XDSQLITE_DATABASE_H
 
 #define SQLITE_THREADSAFE 1
-#include "sqlite3.h"
+#include "../xdcommon/sqlite3.h"
 #include "../xdcommon/errorinfo.h"
 
 std::wstring sqliteGetTablenameFromPath(const std::wstring& path, bool quote = false);

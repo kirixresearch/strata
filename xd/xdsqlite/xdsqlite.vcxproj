@@ -285,7 +285,6 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="sqlite3.c" />
     <ClCompile Include="stream.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="xdsqlite.cpp">
@@ -303,7 +302,6 @@
     <ClInclude Include="database.h" />
     <ClInclude Include="inserter.h" />
     <ClInclude Include="iterator.h" />
-    <ClInclude Include="sqlite3.h" />
     <ClInclude Include="stream.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>

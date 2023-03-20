@@ -18,7 +18,7 @@
 #include "xlsx.h"
 #include "../xdcommon/util.h"
 #include "zip.h"
-#include "sqlite3.h"
+#include "../xdcommon/sqlite3.h"
 #define XML_STATIC
 #include "expat.h"
 

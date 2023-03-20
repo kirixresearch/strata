@@ -308,7 +308,6 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="rawtext.cpp" />
-    <ClCompile Include="sqlite3.c" />
     <ClCompile Include="ttbfile.cpp" />
     <ClCompile Include="ttbiterator.cpp" />
     <ClCompile Include="ttbset.cpp" />
