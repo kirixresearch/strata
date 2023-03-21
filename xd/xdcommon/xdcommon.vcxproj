@@ -277,6 +277,7 @@
     </ClCompile>
     <ClCompile Include="keylayout.cpp" />
     <ClCompile Include="localrowcache.cpp" />
+    <ClCompile Include="localrowcache2.cpp" />
     <ClCompile Include="rowidarray.cpp" />
     <ClCompile Include="sqlite3.c" />
     <ClCompile Include="util.cpp">
@@ -324,6 +325,7 @@
     <ClInclude Include="jobinfo.h" />
     <ClInclude Include="keylayout.h" />
     <ClInclude Include="localrowcache.h" />
+    <ClInclude Include="localrowcache2.h" />
     <ClInclude Include="relationinfo.h" />
     <ClInclude Include="rowidarray.h" />
     <ClInclude Include="sqlite3.h" />
