@@ -10,20 +10,101 @@
 
 
 #include <xd/xd.h>
+#include <kl/memory.h>
 #include "localrowcache2.h"
 #include "util.h"
 #include "../xdcommon/sqlite3.h"
 
 
 
-LocalRowValue& LocalRow2::getColumnData(size_t col_idx)
+LocalRowValue::LocalRowValue()
 {
-    if (col_idx >= m_values.size())
+    is_null = false;
+    data = NULL;
+    len = 0;
+}
+
+LocalRowValue::~LocalRowValue()
+{
+    if (data)
     {
-        m_values.resize(col_idx);
+        unsigned char* _data = data;
+        data = NULL;
+        free(_data);
+    }
+}
+
+void LocalRowValue::setData(unsigned char* _data, size_t _len)
+{
+    if (!_data)
+    {
+        return;
     }
 
-    return m_values[col_idx];
+    if (data)
+    {
+        if (len >= _len)
+        {
+            memcpy(data, _data, _len);
+            len = _len;
+            return;
+        }
+
+        free(data);
+    }
+
+    data = (unsigned char*)malloc(_len > 0 ? _len : 1);
+    if (_len)
+    {
+        memcpy(data, _data, _len);
+    }
+
+    len = _len;
+
+}
+
+
+
+LocalRow2::LocalRow2()
+{
+    m_buf = NULL;
+}
+
+LocalRow2::~LocalRow2()
+{
+    for (auto el : m_values)
+    {
+        delete el;
+    }
+}
+
+
+void LocalRow2::setColumnData(size_t col_idx, LocalRowValue& val)
+{
+    LocalRowValue* v;
+
+    while (col_idx >= m_values.size())
+    {
+        v = new LocalRowValue;
+        v->is_null = true;
+        m_values.push_back(v);
+    }
+
+    m_values[col_idx]->setData(val.getData(), val.getDataLength());
+}
+
+
+
+LocalRowValue& LocalRow2::getColumnData(size_t col_idx)
+{
+    while (col_idx >= m_values.size())
+    {
+        LocalRowValue* v = new LocalRowValue;
+        v->is_null = true;
+        m_values.push_back(v);
+    }
+
+    return *m_values[col_idx];
 }
 
 size_t LocalRow2::getColumnCount() const
@@ -33,6 +114,26 @@ size_t LocalRow2::getColumnCount() const
 
 void* LocalRow2::serialize(size_t* len)
 {
+    if (!m_buf)
+    {
+        m_buf = new kl::membuf;
+    }
+
+    size_t buf_alloc_len = 0;
+    for (auto el : m_values)
+    {
+        buf_alloc_len += el->getDataLength() + sizeof(int);
+    }
+
+    m_buf->alloc(buf_alloc_len);
+    m_buf->setDataSize(0);
+
+    for (auto el : m_values)
+    {
+        // TODO: fill out
+
+    }
+
     return NULL;
 }
 
@@ -51,7 +152,7 @@ LocalRowCache2::LocalRowCache2()
 
 LocalRowCache2::~LocalRowCache2()
 {
-    
+
 }
 
 bool LocalRowCache2::init()

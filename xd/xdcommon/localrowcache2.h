@@ -16,34 +16,18 @@
 #include <map>
 #include <kl/file.h>
 
+namespace kl { class membuf; }
 
 class LocalRowValue
 {
+    friend class LocalRow2;
+
 public:
 
-    LocalRowValue()
-    {
-        is_null = false;
-        data = NULL;
-        len = 0;
-    }
+    LocalRowValue();
+    ~LocalRowValue();
 
-    LocalRowValue(const LocalRowValue& c)
-    {
-        is_null = c.is_null;
-        data = c.data;
-        len = c.len;
-    }
-
-    LocalRowValue& operator=(const LocalRowValue& c)
-    {
-        is_null = c.is_null;
-        data = c.data;
-        len = c.len;
-        return *this;
-    }
-
-    void setData(unsigned char* _data, size_t _len) { data = _data; len = _len; }
+    void setData(unsigned char* _data, size_t _len);
     unsigned char* getData() { return data; }
     size_t getDataLength() { return len; }
     bool isNull() { return is_null; }
@@ -68,12 +52,15 @@ public:
     LocalRowValue& getColumnData(size_t col_idx);
     size_t getColumnCount() const;
 
+    void setColumnData(size_t col_idx, LocalRowValue& val);
+
     void* serialize(size_t* len);
     void unserialize(const void* buf, size_t len);
 
 private:
 
-    std::vector<LocalRowValue> m_values;
+    std::vector<LocalRowValue*> m_values;
+    kl::membuf* m_buf;
 };
 
 
