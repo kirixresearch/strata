@@ -34,11 +34,24 @@ LocalRowValue::~LocalRowValue()
     }
 }
 
-void LocalRowValue::setData(unsigned char* _data, size_t _len)
+void LocalRowValue::setNull()
+{
+    if (data)
+    {
+        free(data);
+        data = NULL;
+    }
+
+    len = 0;
+    is_null = true;
+}
+
+bool LocalRowValue::setData(unsigned char* _data, size_t _len)
 {
     if (!_data)
     {
-        return;
+        setNull();
+        return true;
     }
 
     if (data)
@@ -47,20 +60,29 @@ void LocalRowValue::setData(unsigned char* _data, size_t _len)
         {
             memcpy(data, _data, _len);
             len = _len;
-            return;
+            is_null = false;
+            return true;
         }
 
         free(data);
     }
 
-    data = (unsigned char*)malloc(_len > 0 ? _len : 1);
+    unsigned char* newbuf = (unsigned char*)malloc(_len > 0 ? _len : 1);
+    if (!newbuf)
+    {
+        return false;
+    }
+
+    data = newbuf;
+
     if (_len)
     {
         memcpy(data, _data, _len);
     }
 
     len = _len;
-
+    is_null = false;
+    return true;
 }
 
 
@@ -76,6 +98,8 @@ LocalRow2::~LocalRow2()
     {
         delete el;
     }
+
+    delete m_buf;
 }
 
 
@@ -128,13 +152,65 @@ void* LocalRow2::serialize(size_t* len)
     m_buf->alloc(buf_alloc_len);
     m_buf->setDataSize(0);
 
+    unsigned char col_flags;
+    unsigned char length_code[4];
+    size_t col_length;
+
     for (auto el : m_values)
     {
-        // TODO: fill out
+        if (el->isNull())
+        {
+            col_flags = 0xff;
+            m_buf->append(&col_flags, 1);
+        }
+        else
+        {
+            col_length = el->getDataLength();
+  
+            if (col_length <= 0xff)
+            {
+                col_flags = 1;
+                m_buf->append(&col_flags, 1);
+                length_code[0] = (unsigned char)(col_length & 0x000000ff);
+                m_buf->append(length_code, 1);
+            }
+            else if (col_length <= 0xffff)
+            {
+                col_flags = 2;
+                m_buf->append(&col_flags, 1);
+                length_code[0] = (unsigned char)((col_length & 0x0000ff00) >> 8);;
+                length_code[1] = (unsigned char)(col_length & 0x000000ff);
+                m_buf->append(length_code, 2);
+            }
+            else if (col_length <= 0xffffff)
+            {
+                col_flags = 3;
+                m_buf->append(&col_flags, 1);
+                length_code[0] = (unsigned char)((col_length & 0x00ff0000) >> 16);
+                length_code[1] = (unsigned char)((col_length & 0x0000ff00) >> 8);
+                length_code[2] = (unsigned char)(col_length & 0x000000ff);
+                m_buf->append(length_code, 3);
+            }
+            else
+            {
+                col_flags = 4;
+                m_buf->append(&col_flags, 1);
+                length_code[0] = (unsigned char)((col_length & 0xff000000) >> 24);
+                length_code[1] = (unsigned char)((col_length & 0x00ff0000) >> 16);
+                length_code[2] = (unsigned char)((col_length & 0x0000ff00) >> 8);
+                length_code[3] = (unsigned char)(col_length & 0x000000ff);
+                m_buf->append(length_code, 4);
+            }
 
+            m_buf->append(el->getData(), el->getDataLength());
+        }
     }
 
-    return NULL;
+    col_flags = 0;
+    m_buf->append(&col_flags, 1);
+
+    *len = m_buf->getDataSize();
+    return m_buf->getData();
 }
 
 void LocalRow2::unserialize(const void* buf, size_t len)

@@ -12,7 +12,7 @@
 #ifndef __XDCOMMON_LOCALROWCACHE2_H
 #define __XDCOMMON_LOCALROWCACHE2_H
 
-
+#include <vector>
 #include <map>
 #include <kl/file.h>
 
@@ -27,7 +27,8 @@ public:
     LocalRowValue();
     ~LocalRowValue();
 
-    void setData(unsigned char* _data, size_t _len);
+    void setNull();
+    bool setData(unsigned char* _data, size_t _len);
     unsigned char* getData() { return data; }
     size_t getDataLength() { return len; }
     bool isNull() { return is_null; }
