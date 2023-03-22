@@ -131,6 +131,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xdexcel", "..\..\xd\xdexcel
 		{F59C6A53-D53D-47C8-89A9-10679DE0D6C1} = {F59C6A53-D53D-47C8-89A9-10679DE0D6C1}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ztest_xdcommon", "..\..\tests\ztest_xdcommon\ztest_xdcommon.vcxproj", "{6A179CA5-51ED-479E-96CC-E6A1CB27931F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -339,6 +341,14 @@ Global
 		{1EA2584F-52F1-4BE7-C03E-D7B8BF35F228}.Release|Win32.Build.0 = Release|Win32
 		{1EA2584F-52F1-4BE7-C03E-D7B8BF35F228}.Release|x64.ActiveCfg = Release|x64
 		{1EA2584F-52F1-4BE7-C03E-D7B8BF35F228}.Release|x64.Build.0 = Release|x64
+		{6A179CA5-51ED-479E-96CC-E6A1CB27931F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6A179CA5-51ED-479E-96CC-E6A1CB27931F}.Debug|Win32.Build.0 = Debug|Win32
+		{6A179CA5-51ED-479E-96CC-E6A1CB27931F}.Debug|x64.ActiveCfg = Debug|x64
+		{6A179CA5-51ED-479E-96CC-E6A1CB27931F}.Debug|x64.Build.0 = Debug|x64
+		{6A179CA5-51ED-479E-96CC-E6A1CB27931F}.Release|Win32.ActiveCfg = Release|Win32
+		{6A179CA5-51ED-479E-96CC-E6A1CB27931F}.Release|Win32.Build.0 = Release|Win32
+		{6A179CA5-51ED-479E-96CC-E6A1CB27931F}.Release|x64.ActiveCfg = Release|x64
+		{6A179CA5-51ED-479E-96CC-E6A1CB27931F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
