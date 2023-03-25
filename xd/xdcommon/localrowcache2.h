@@ -55,8 +55,8 @@ public:
 
     void setColumnData(size_t col_idx, LocalRowValue& val);
 
-    void* serialize(size_t* len);
-    void unserialize(const void* buf, size_t len);
+    unsigned char* serialize(size_t* len);
+    void unserialize(const unsigned char* buf, size_t len);
 
 private:
 
