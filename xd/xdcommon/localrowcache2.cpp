@@ -338,6 +338,14 @@ bool LocalRowCache2::init()
 
 bool LocalRowCache2::getRow(long long rowid, LocalRow2& row)
 {
+    if (m_sqlite == NULL)
+    {
+        if (!init())
+        {
+            return false;
+        }
+    }
+
     sqlite3* db = (sqlite3*)m_sqlite;
 
     std::string sql = "SELECT data from rows WHERE id=";
@@ -375,6 +383,14 @@ bool LocalRowCache2::getRow(long long rowid, LocalRow2& row)
 
 bool LocalRowCache2::putRow(long long rowid, LocalRow2& row)
 {
+    if (m_sqlite == NULL)
+    {
+        if (!init())
+        {
+            return false;
+        }
+    }
+
     sqlite3* db = (sqlite3*)m_sqlite;
 
     // now write the block we were called to write
