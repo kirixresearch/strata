@@ -28,7 +28,7 @@ public:
     ~LocalRowValue();
 
     void setNull();
-    bool setData(unsigned char* _data, size_t _len);
+    bool setData(const unsigned char* _data, size_t _len);
     unsigned char* getData() { return data; }
     size_t getDataLength() { return len; }
     bool isNull() { return is_null; }
@@ -55,7 +55,7 @@ public:
 
     void setColumnData(size_t col_idx, LocalRowValue& val);
 
-    unsigned char* serialize(size_t* len);
+    const unsigned char* serialize(size_t* len);
     void unserialize(const unsigned char* buf, size_t len);
 
 private:

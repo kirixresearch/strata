@@ -106,5 +106,67 @@ namespace ztestxdcommon
 			Assert::AreEqual((size_t)7, len);
 			Assert::AreEqual(0, memcmp(test, control, 7));
 		}
+
+		TEST_METHOD(TestLocalRowSerializeUnserialize1)
+		{
+			LocalRow2 row1, row2;
+
+			LocalRowValue v1;
+			v1.setNull();
+			row1.setColumnData(0, v1);
+
+			LocalRowValue v2;
+			unsigned char buf1[3] = { 1, 2, 3 };
+			v2.setData(buf1, 3);
+			row1.setColumnData(1, v2);
+
+			size_t size = 0;
+			const unsigned char* data = row1.serialize(&size);
+
+			row2.unserialize(data, size);
+
+			LocalRowValue& t1 = row2.getColumnData(0);
+			Assert::AreEqual(true, t1.isNull());
+
+			LocalRowValue& t2 = row2.getColumnData(1);
+			Assert::AreEqual(0, memcmp(t2.getData(), buf1, 3));
+
+			Assert::AreEqual((size_t)2, row2.getColumnCount());
+		}
+
+
+		TEST_METHOD(TestLocalRowCorrectColumnCountAfterUnserialize)
+		{
+			LocalRow2 row1, row2;
+
+			LocalRowValue v1;
+			v1.setNull();
+			row1.setColumnData(0, v1);
+
+			LocalRowValue v2;
+			unsigned char buf1[3] = { 1, 2, 3 };
+			v2.setData(buf1, 3);
+			row1.setColumnData(1, v2);
+
+			size_t size = 0;
+			const unsigned char* data = row1.serialize(&size);
+
+			row2.setColumnData(0, v1);
+			row2.setColumnData(1, v1);
+			row2.setColumnData(2, v1);
+			row2.setColumnData(3, v1);
+			row2.setColumnData(4, v1);
+
+			row2.unserialize(data, size);
+
+			LocalRowValue& t1 = row2.getColumnData(0);
+			Assert::AreEqual(true, t1.isNull());
+
+			LocalRowValue& t2 = row2.getColumnData(1);
+			Assert::AreEqual(0, memcmp(t2.getData(), buf1, 3));
+
+			Assert::AreEqual((size_t)2, row2.getColumnCount());
+		}
+
 	};
 }

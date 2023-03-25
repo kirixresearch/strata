@@ -46,7 +46,7 @@ void LocalRowValue::setNull()
     is_null = true;
 }
 
-bool LocalRowValue::setData(unsigned char* _data, size_t _len)
+bool LocalRowValue::setData(const unsigned char* _data, size_t _len)
 {
     if (!_data)
     {
@@ -65,6 +65,7 @@ bool LocalRowValue::setData(unsigned char* _data, size_t _len)
         }
 
         free(data);
+        data = NULL;
     }
 
     unsigned char* newbuf = (unsigned char*)malloc(_len > 0 ? _len : 1);
@@ -136,7 +137,7 @@ size_t LocalRow2::getColumnCount() const
     return m_values.size();
 }
 
-void* LocalRow2::serialize(size_t* len)
+const unsigned char* LocalRow2::serialize(size_t* len)
 {
     if (!m_buf)
     {
@@ -213,13 +214,92 @@ void* LocalRow2::serialize(size_t* len)
     return m_buf->getData();
 }
 
-void LocalRow2::unserialize(const void* buf, size_t len)
+void LocalRow2::unserialize(const unsigned char* buf, size_t len)
 {
+    size_t col_idx = 0;
+    LocalRowValue* v = new LocalRowValue;
+    size_t col_length;
+
+    while (*buf)
+    {
+        if (col_idx >= m_values.size())
+        {
+            v = new LocalRowValue;
+            m_values.push_back(v);
+        }
+        else
+        {
+            v = m_values[col_idx];
+        }
+
+        col_length = 0;
+
+        if (*buf == 0xff)
+        {
+            ++buf;
+            v->setNull();
+        }
+        else if (*buf == 1)
+        {
+            ++buf;
+            col_length |= (size_t)*buf;
+            ++buf;
+            v->setData(buf, col_length);
+            buf += col_length;
+        }
+        else if (*buf == 2)
+        {
+            ++buf;
+            col_length |= ((size_t)*buf) << 8;
+            ++buf;
+            col_length |= ((size_t)*buf);
+            ++buf;
+            v->setData(buf, col_length);
+            buf += col_length;
+        }
+        else if (*buf == 3)
+        {
+            ++buf;
+            col_length |= ((size_t)*buf) << 16;
+            ++buf;
+            col_length |= ((size_t)*buf) << 8;
+            ++buf;
+            col_length |= ((size_t)*buf);
+            ++buf;
+            v->setData(buf, col_length);
+            buf += col_length;
+        }
+        else if (*buf == 4)
+        {
+            ++buf;
+            col_length |= ((size_t)*buf) << 24;
+            ++buf;
+            col_length |= ((size_t)*buf) << 16;
+            ++buf;
+            col_length |= ((size_t)*buf) << 8;
+            ++buf;
+            col_length |= ((size_t)*buf);
+            ++buf;
+            v->setData(buf, col_length);
+            buf += col_length;
+        }
+
+        ++col_idx;
+    }
+
+    if (col_idx < m_values.size())
+    {
+        for (size_t i = col_idx; i < m_values.size(); ++i)
+        {
+            delete m_values[i];
+        }
+
+        m_values.resize(col_idx);
+    }
 }
 
 
 // -- LocalRowCache implementation --
-
 
 LocalRowCache2::LocalRowCache2()
 {
@@ -287,7 +367,7 @@ bool LocalRowCache2::getRow(long long rowid, LocalRow2& row)
         return false;
     }
 
-    row.unserialize(blob, (size_t)blob_len);
+    row.unserialize((unsigned char*)blob, (size_t)blob_len);
 
     sqlite3_finalize(stmt);
     return true;
