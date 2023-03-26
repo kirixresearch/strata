@@ -58,6 +58,21 @@ namespace ztestxdcommon
 			Assert::AreEqual(false, v.isNull());
 		}
 
+		TEST_METHOD(TestLocalRowValueSetNullAfterData)
+		{
+			LocalRowValue v;
+
+			unsigned char buf1[3] = { 1, 2, 3 };
+			v.setData(buf1, 3);
+			Assert::AreEqual(0, memcmp(v.getData(), buf1, 3));
+			Assert::AreEqual(false, v.isNull());
+
+			v.setNull();
+			Assert::AreEqual(true, v.isNull());
+			Assert::IsNull(v.getData());
+			Assert::AreEqual((size_t)0, v.getDataLength());
+		}
+
 
 		TEST_METHOD(TestLocalRowGetColumnData)
 		{
@@ -78,6 +93,24 @@ namespace ztestxdcommon
 			LocalRowValue& t2 = r.getColumnData(1);
 			Assert::AreEqual(0, memcmp(t2.getData(), buf1, 3));
 		}
+
+		TEST_METHOD(TestLocalRowAutoResize)
+		{
+			LocalRow2 r;
+
+			Assert::AreEqual((size_t)0, r.getColumnCount());
+
+			LocalRowValue& t1 = r.getColumnData(0);
+			Assert::AreEqual((size_t)1, r.getColumnCount());
+
+			LocalRowValue& t2 = r.getColumnData(999);
+			Assert::AreEqual((size_t)1000, r.getColumnCount());
+
+			LocalRowValue& t3 = r.getColumnData(500);
+			Assert::AreEqual((size_t)1000, r.getColumnCount());
+			Assert::IsTrue(t2.isNull());
+		}
+
 		TEST_METHOD(TestLocalRowSerialize)
 		{
 			LocalRow2 r;
@@ -372,41 +405,64 @@ namespace ztestxdcommon
 
 		TEST_METHOD(TestLocalRowCacheSetGetRow5000)
 		{
-			LocalRowCache2 cache;
+			uint32_t number_of_test_rows;
 
-			for (uint32_t i = 0; i < 5000; ++i)
+			// once in memory, once on disk
+			for (int is_disk = 0; is_disk < 2; ++is_disk)
 			{
-				LocalRow2 row;
+				LocalRowCache2 cache;
 
-				LocalRowValue v0;
-				unsigned char rand[255];
-				memset(rand, i % 255, sizeof(rand));
-				v0.setData(rand, i % 255);
-				row.setColumnData(0, v0);
+				if (is_disk)
+				{
+					number_of_test_rows = 500;
 
-				LocalRowValue v1;
-				unsigned char data[sizeof(uint32_t)];
-				memcpy(data, &i, sizeof(uint32_t));
-				v1.setData(data, sizeof(uint32_t));
-				row.setColumnData(1, v1);
+					char path[255];
+					tmpnam_s(path, 254);
+					std::string spath = path;
+					std::wstring wpath(spath.begin(), spath.end());
+					bool result = cache.init(wpath);
+					Assert::IsTrue(result);
+				}
+				else
+				{
+					number_of_test_rows = 5000;
+				}
 
-				cache.putRow(i, row);
+				for (uint32_t i = 0; i < number_of_test_rows; ++i)
+				{
+					LocalRow2 row;
+
+					LocalRowValue v0;
+					unsigned char rand[255];
+					memset(rand, i % 255, sizeof(rand));
+					v0.setData(rand, i % 255);
+					row.setColumnData(0, v0);
+
+					LocalRowValue v1;
+					unsigned char data[sizeof(uint32_t)];
+					memcpy(data, &i, sizeof(uint32_t));
+					v1.setData(data, sizeof(uint32_t));
+					row.setColumnData(1, v1);
+
+					cache.putRow(i, row);
+				}
+
+				for (uint32_t i = 0; i < number_of_test_rows; ++i)
+				{
+					uint32_t desired_row_num = rand() % number_of_test_rows;
+
+					LocalRow2 row;
+					cache.getRow(desired_row_num, row);
+
+					LocalRowValue& v = row.getColumnData(1);
+
+					uint32_t check_row_num;
+					memcpy(&check_row_num, v.getData(), sizeof(uint32_t));
+
+					Assert::AreEqual(desired_row_num, check_row_num);
+				}
 			}
 
-			for (uint32_t i = 0; i < 5000; ++i)
-			{
-				uint32_t desired_row_num = rand() % 5000;
-
-				LocalRow2 row;
-				cache.getRow(desired_row_num, row);
-
-				LocalRowValue& v = row.getColumnData(1);
-
-				uint32_t check_row_num;
-				memcpy(&check_row_num, v.getData(), sizeof(uint32_t));
-
-				Assert::AreEqual(desired_row_num, check_row_num);
-			}
 		}
 
 	};

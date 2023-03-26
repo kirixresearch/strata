@@ -73,7 +73,7 @@ public:
     LocalRowCache2();
     ~LocalRowCache2();
 
-    bool init();
+    bool init(const std::wstring& path = L"");
 
     bool getRow(long long rowid, LocalRow2& row);
     bool putRow(long long rowid, LocalRow2& row);
@@ -81,6 +81,7 @@ public:
 private:
 
     void* m_sqlite;
+    std::wstring m_path;
 };
 
 

@@ -10,6 +10,7 @@
 
 
 #include <xd/xd.h>
+#include <kl/utf8.h>
 #include <kl/memory.h>
 #include "localrowcache2.h"
 #include "util.h"
@@ -308,14 +309,38 @@ LocalRowCache2::LocalRowCache2()
 
 LocalRowCache2::~LocalRowCache2()
 {
+    if (m_sqlite)
+    {
+        sqlite3* sqlite = (sqlite3*)m_sqlite;
+        m_sqlite = NULL;
+        sqlite3_close(sqlite);
+    }
 
+    if (m_path.length() > 0)
+    {
+        xf_remove(m_path);
+    }
 }
 
-bool LocalRowCache2::init()
+bool LocalRowCache2::init(const std::wstring& path)
 {
+    m_path = path;
+
+    std::string utf8_path;
+
+    if (path.length() == 0)
+    {
+        utf8_path = ":memory:";
+    }
+    else
+    {
+        utf8_path = kl::toUtf8(path);
+    }
+
+
     sqlite3* db = NULL;
 
-    if (SQLITE_OK != sqlite3_open(":memory:", &db))
+    if (SQLITE_OK != sqlite3_open(utf8_path.c_str(), &db))
     {
         // database could not be opened
         return false;
@@ -331,7 +356,6 @@ bool LocalRowCache2::init()
 
 
     m_sqlite = (void*)db;
-
 
     return true;
 }
