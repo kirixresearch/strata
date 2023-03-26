@@ -239,7 +239,7 @@ xd::ColumnInfo parseSqliteColumnDescription(const std::wstring& _col_desc)
     {
         colinfo.type = xd::typeDateTime;
     }
-     else if (type == L"BOOLEAN")
+     else if (type == L"BOOLEAN" || type == L"BOOL")
     {
         colinfo.type = xd::typeBoolean;
     }

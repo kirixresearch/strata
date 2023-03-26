@@ -14,6 +14,7 @@
 
 
 #include "../xdcommon/cmnbaseiterator.h"
+#include "../xdcommon/localrowcache2.h"
 
 
 struct SlDataAccessInfo
@@ -85,6 +86,7 @@ public:
     bool setPos(double pct);
     double getPos();
     void goRow(const xd::rowid_t& rowid);
+    void loadRow();
 
     xd::Structure getStructure();
     bool refreshStructure();
@@ -105,6 +107,11 @@ public:
     bool getBoolean(xd::objhandle_t data_handle);
     bool isNull(xd::objhandle_t data_handle);
 
+
+private:
+
+    const unsigned char* getColumnDataPtr(SlDataAccessInfo* dai);
+
 private:
 
     SlDatabase* m_database;
@@ -119,11 +126,13 @@ private:
 
     long long m_row_count;
     long long m_oid;
+    long long m_position;
     bool m_eof;
     sqlite3* m_sqlite;
     sqlite3_stmt* m_stmt;
 
     int m_mode;
+    LocalRowCache2 m_cache;
 };
 
 #endif

@@ -60,7 +60,9 @@ SlIterator::SlIterator(SlDatabase* database)
     m_stmt = NULL;
     m_oid = 0;
     m_ordinal = 0;
+    m_position = 1;
     m_row_count = -1;  // -1 means unknown
+    m_mode = SlIterator::modeSqliteResult;
 
     m_database = database;
     m_database->ref();
@@ -336,10 +338,11 @@ bool SlIterator::init(const xd::QueryParams& qp)
 
         delete job;
 
-
         if (row_count != -1)
         {
             m_row_count = row_count;
+
+            //m_mode = SlIterator::modeOffsetLimit;
         }
     }
 
@@ -350,6 +353,7 @@ bool SlIterator::init(const xd::QueryParams& qp)
 void SlIterator::setTable(const std::wstring& tbl)
 {
     m_path = tbl;
+    m_tablename = tbl;
 }
 
 
@@ -391,6 +395,13 @@ void SlIterator::clearFieldData()
 
 void SlIterator::skip(int delta)
 {
+    if (m_mode == SlIterator::modeOffsetLimit)
+    {
+        m_position += delta;
+        loadRow();
+        return;
+    }
+
     int i, rc;
     for (i = 0; i < delta; ++i)
     {
@@ -418,12 +429,25 @@ void SlIterator::skip(int delta)
             {
                 return;
             }
-        }    
+        }
+
+        m_position++;
     }
 }
 
+void SlIterator::loadRow()
+{
+
+}
+
+
 void SlIterator::goFirst()
 {
+    if (m_mode == SlIterator::modeOffsetLimit)
+    {
+        m_position = 1;
+        loadRow();
+    }
 
 }
 
@@ -474,6 +498,12 @@ double SlIterator::getPos()
 
 void SlIterator::goRow(const xd::rowid_t& rowid)
 {
+    if (m_mode == SlIterator::modeOffsetLimit)
+    {
+        m_position = (long long)rowid;
+        loadRow();
+    }
+    
 }
 
 xd::Structure SlIterator::getStructure()
@@ -556,6 +586,14 @@ int SlIterator::getType(xd::objhandle_t data_handle)
 
     return dai->xd_type;
 }
+
+
+
+const unsigned char* SlIterator::getColumnDataPtr(SlDataAccessInfo* dai)
+{
+    return sqlite3_column_text(m_stmt, dai->col_ordinal);
+}
+
 
 int SlIterator::getRawWidth(xd::objhandle_t data_handle)
 {
