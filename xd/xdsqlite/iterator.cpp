@@ -437,6 +437,15 @@ void SlIterator::skip(int delta)
 
 void SlIterator::loadRow()
 {
+    // first, see if the row is already in our cache
+    if (m_cache.getRow(m_position, m_cache_row))
+    {
+        // row is loaded, we're all set
+        return;
+    }
+
+
+
 
 }
 
@@ -588,13 +597,6 @@ int SlIterator::getType(xd::objhandle_t data_handle)
 }
 
 
-
-const unsigned char* SlIterator::getColumnDataPtr(SlDataAccessInfo* dai)
-{
-    return sqlite3_column_text(m_stmt, dai->col_ordinal);
-}
-
-
 int SlIterator::getRawWidth(xd::objhandle_t data_handle)
 {
     return 0;
@@ -615,7 +617,19 @@ const std::string& SlIterator::getString(xd::objhandle_t data_handle)
     }
      else
     {
-        dai->result_str = kl::tostring(kl::fromUtf8((char*)sqlite3_column_text(m_stmt, dai->col_ordinal)));
+        const unsigned char* ptr = sqlite3_column_text(m_stmt, dai->col_ordinal);
+
+        if (m_mode == SlIterator::modeOffsetLimit)
+        {
+            LocalRowValue& val = m_cache_row.getColumnData(dai->col_ordinal);
+            ptr = val.getData();
+        }
+        else
+        {
+            ptr = sqlite3_column_text(m_stmt, dai->col_ordinal);
+        }
+        
+        dai->result_str = kl::tostring(kl::fromUtf8((const char*)ptr));
     }
 
     return dai->result_str;
@@ -631,7 +645,19 @@ const std::wstring& SlIterator::getWideString(xd::objhandle_t data_handle)
     }
      else
     {
-        dai->result_wstr = kl::fromUtf8((char*)sqlite3_column_text(m_stmt, dai->col_ordinal));
+        const unsigned char* ptr = sqlite3_column_text(m_stmt, dai->col_ordinal);
+
+        if (m_mode == SlIterator::modeOffsetLimit)
+        {
+            LocalRowValue& val = m_cache_row.getColumnData(dai->col_ordinal);
+            ptr = val.getData();
+        }
+        else
+        {
+            ptr = sqlite3_column_text(m_stmt, dai->col_ordinal);
+        }
+
+        dai->result_wstr = kl::fromUtf8((const char*)ptr);
     }
 
     return dai->result_wstr;
@@ -646,6 +672,13 @@ xd::datetime_t SlIterator::getDateTime(xd::objhandle_t data_handle)
     {
         return 0;
     }
+
+    if (m_mode == SlIterator::modeOffsetLimit)
+    {
+        // TODO:
+        return 0;
+    }
+
 
     xd::datetime_t dt, tm;
     
@@ -709,6 +742,12 @@ double SlIterator::getDouble(xd::objhandle_t data_handle)
     if (m_eof || isNull(data_handle))
         return 0.0;
 
+    if (m_mode == SlIterator::modeOffsetLimit)
+    {
+        // TODO:
+        return 0.0;
+    }
+
     return sqlite3_column_double(m_stmt, dai->col_ordinal);
 }
 
@@ -719,6 +758,12 @@ int SlIterator::getInteger(xd::objhandle_t data_handle)
     if (m_eof || isNull(data_handle))
         return 0;
 
+    if (m_mode == SlIterator::modeOffsetLimit)
+    {
+        // TODO:
+        return 0;
+    }
+
     return sqlite3_column_int(m_stmt, dai->col_ordinal);
 }
 
@@ -728,6 +773,12 @@ bool SlIterator::getBoolean(xd::objhandle_t data_handle)
 
     if (m_eof || isNull(data_handle))
         return 0;
+
+    if (m_mode == SlIterator::modeOffsetLimit)
+    {
+        // TODO:
+        return false;
+    }
         
     return (sqlite3_column_int(m_stmt, dai->col_ordinal) == 0) ? false : true;
 }
@@ -738,11 +789,14 @@ bool SlIterator::isNull(xd::objhandle_t data_handle)
     if (!dai)
         return true;
 
+    if (m_mode == SlIterator::modeOffsetLimit)
+    {
+        LocalRowValue& val = m_cache_row.getColumnData(dai->col_ordinal);
+        return val.isNull();
+    }
+
     if (sqlite3_column_type(m_stmt, dai->col_ordinal) == SQLITE_NULL)
         return true;
 
     return false;
 }
-
-
-

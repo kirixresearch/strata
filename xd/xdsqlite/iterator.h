@@ -107,11 +107,6 @@ public:
     bool getBoolean(xd::objhandle_t data_handle);
     bool isNull(xd::objhandle_t data_handle);
 
-
-private:
-
-    const unsigned char* getColumnDataPtr(SlDataAccessInfo* dai);
-
 private:
 
     SlDatabase* m_database;
@@ -133,6 +128,7 @@ private:
 
     int m_mode;
     LocalRowCache2 m_cache;
+    LocalRow2 m_cache_row;
 };
 
 #endif
