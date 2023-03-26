@@ -462,8 +462,6 @@ namespace ztestxdcommon
 					Assert::AreEqual(desired_row_num, check_row_num);
 				}
 			}
-
 		}
-
 	};
 }
