@@ -355,6 +355,21 @@ namespace ztestxdcommon
 			Assert::AreEqual((size_t)3, row2.getColumnCount());
 		}
 
+		TEST_METHOD(TestLocalRowCacheGetNonexistantRow)
+		{
+			LocalRowCache2 cache;
+			LocalRow2 row1, row2;
+
+			LocalRowValue v1;
+			v1.setNull();
+			row1.setColumnData(0, v1);
+
+			cache.putRow(1, row1);
+
+			Assert::IsFalse(cache.getRow(50, row2));
+			Assert::IsTrue(cache.getRow(1, row2));
+		}
+
 		TEST_METHOD(TestLocalRowCacheSetGetRow5000)
 		{
 			LocalRowCache2 cache;
