@@ -112,6 +112,148 @@ namespace ztestxdcommon
 			Assert::AreEqual(0, memcmp(test, control, control_size));
 		}
 
+
+		TEST_METHOD(TestLocalRowSerialize16it)
+		{
+			LocalRow2 r;
+
+			LocalRowValue v1;
+			v1.setNull();
+			r.setColumnData(0, v1);
+
+			LocalRowValue v2;
+			size_t test_size = 260;
+			unsigned char* buf1 = new unsigned char[test_size]; // 24-bit size
+			memset(buf1, 1, test_size);
+			v2.setData(buf1, test_size);
+			r.setColumnData(1, v2);
+
+			LocalRowValue& t1 = r.getColumnData(0);
+			Assert::AreEqual(true, t1.isNull());
+
+			LocalRowValue& t2 = r.getColumnData(1);
+			Assert::AreEqual(0, memcmp(t2.getData(), buf1, sizeof(buf1)));
+
+			LocalRowValue v3;
+			v3.setNull();
+			r.setColumnData(2, v3);
+
+			size_t control_size = test_size + 6;
+			unsigned char* control = new unsigned char[control_size];
+			memset(control, 1, control_size);
+			control[0] = 0xff;
+			control[1] = 0x02; // three bytes for size
+			control[2] = (test_size >> 8) & 0xff;
+			control[3] = (test_size >> 0) & 0xff;
+			control[control_size - 2] = 0xff;
+			control[control_size - 1] = 0x00;
+
+			unsigned char* test;
+			size_t len;
+			test = (unsigned char*)r.serialize(&len);
+
+			Assert::AreEqual(control_size, len);
+			Assert::AreEqual(0, memcmp(test, control, control_size));
+
+			delete[] control;
+			delete[] buf1;
+		}
+
+		TEST_METHOD(TestLocalRowSerialize24bit)
+		{
+			LocalRow2 r;
+
+			LocalRowValue v1;
+			v1.setNull();
+			r.setColumnData(0, v1);
+
+			LocalRowValue v2;
+			size_t test_size = 65570;
+			unsigned char* buf1 = new unsigned char[test_size]; // 24-bit size
+			memset(buf1, 1, test_size);
+			v2.setData(buf1, test_size);
+			r.setColumnData(1, v2);
+
+			LocalRowValue& t1 = r.getColumnData(0);
+			Assert::AreEqual(true, t1.isNull());
+
+			LocalRowValue& t2 = r.getColumnData(1);
+			Assert::AreEqual(0, memcmp(t2.getData(), buf1, sizeof(buf1)));
+
+			LocalRowValue v3;
+			v3.setNull();
+			r.setColumnData(2, v3);
+
+			size_t control_size = test_size + 7;
+			unsigned char* control = new unsigned char[control_size];
+			memset(control, 1, control_size);
+			control[0] = 0xff;
+			control[1] = 0x03; // three bytes for size
+			control[2] = (test_size >> 16) & 0xff;
+			control[3] = (test_size >> 8) & 0xff;
+			control[4] = (test_size >> 0) & 0xff;
+			control[control_size-2] = 0xff;
+			control[control_size-1] = 0x00;
+
+			unsigned char* test;
+			size_t len;
+			test = (unsigned char*)r.serialize(&len);
+
+			Assert::AreEqual(control_size, len);
+			Assert::AreEqual(0, memcmp(test, control, control_size));
+
+			delete[] control;
+			delete[] buf1;
+		}
+
+		TEST_METHOD(TestLocalRowSerialize32bit)
+		{
+			LocalRow2 r;
+
+			LocalRowValue v1;
+			v1.setNull();
+			r.setColumnData(0, v1);
+
+			LocalRowValue v2;
+			size_t test_size = 0x1000004;
+			unsigned char* buf1 = new unsigned char[test_size]; // 24-bit size
+			memset(buf1, 1, test_size);
+			v2.setData(buf1, test_size);
+			r.setColumnData(1, v2);
+
+			LocalRowValue& t1 = r.getColumnData(0);
+			Assert::AreEqual(true, t1.isNull());
+
+			LocalRowValue& t2 = r.getColumnData(1);
+			Assert::AreEqual(0, memcmp(t2.getData(), buf1, sizeof(buf1)));
+
+			LocalRowValue v3;
+			v3.setNull();
+			r.setColumnData(2, v3);
+
+			size_t control_size = test_size + 8;
+			unsigned char* control = new unsigned char[control_size];
+			memset(control, 1, control_size);
+			control[0] = 0xff;
+			control[1] = 0x04; // four bytes for size
+			control[2] = (test_size >> 24) & 0xff;
+			control[3] = (test_size >> 16) & 0xff;
+			control[4] = (test_size >> 8) & 0xff;
+			control[5] = (test_size >> 0) & 0xff;
+			control[control_size - 2] = 0xff;
+			control[control_size - 1] = 0x00;
+
+			unsigned char* test;
+			size_t len;
+			test = (unsigned char*)r.serialize(&len);
+
+			Assert::AreEqual(control_size, len);
+			Assert::AreEqual(0, memcmp(test, control, control_size));
+
+			delete[] control;
+			delete[] buf1;
+		}
+
 		TEST_METHOD(TestLocalRowSerializeUnserialize1)
 		{
 			LocalRow2 row1, row2;
@@ -180,8 +322,6 @@ namespace ztestxdcommon
 			Assert::AreEqual((size_t)2, row2.getColumnCount());
 		}
 
-
-
 		TEST_METHOD(TestLocalRowCacheSetGetRow)
 		{
 			LocalRow2 row1, row2;
@@ -215,7 +355,44 @@ namespace ztestxdcommon
 			Assert::AreEqual((size_t)3, row2.getColumnCount());
 		}
 
+		TEST_METHOD(TestLocalRowCacheSetGetRow5000)
+		{
+			LocalRowCache2 cache;
 
+			for (uint32_t i = 0; i < 5000; ++i)
+			{
+				LocalRow2 row;
+
+				LocalRowValue v0;
+				unsigned char rand[255];
+				memset(rand, i % 255, sizeof(rand));
+				v0.setData(rand, i % 255);
+				row.setColumnData(0, v0);
+
+				LocalRowValue v1;
+				unsigned char data[sizeof(uint32_t)];
+				memcpy(data, &i, sizeof(uint32_t));
+				v1.setData(data, sizeof(uint32_t));
+				row.setColumnData(1, v1);
+
+				cache.putRow(i, row);
+			}
+
+			for (uint32_t i = 0; i < 5000; ++i)
+			{
+				uint32_t desired_row_num = rand() % 5000;
+
+				LocalRow2 row;
+				cache.getRow(desired_row_num, row);
+
+				LocalRowValue& v = row.getColumnData(1);
+
+				uint32_t check_row_num;
+				memcpy(&check_row_num, v.getData(), sizeof(uint32_t));
+
+				Assert::AreEqual(desired_row_num, check_row_num);
+			}
+		}
 
 	};
 }
