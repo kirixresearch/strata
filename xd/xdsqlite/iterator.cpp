@@ -83,21 +83,6 @@ SlIterator::~SlIterator()
 
 bool SlIterator::init(const std::wstring& _query)
 {
-/*
-    // add rowid to the select statement
-    const wchar_t* q = _query.c_str();
-    while (iswspace(*q))
-        q++;
-    if (0 == wcsncasecmp(q, L"SELECT", 6))
-        q += 6;
-    while (iswspace(*q))
-        q++;
-
-    std::wstring query;
-    query = L"SELECT oid,";
-    query += q;
-*/
-    
     if (!m_tablename.empty())
     {
         // if we are iterating on a simple table, we can
@@ -124,16 +109,22 @@ bool SlIterator::init(const std::wstring& _query)
 
     skip(1);
 
-    
+    initColumns(m_stmt);
+
+    return true;
+}
+
+void SlIterator::initColumns(sqlite3_stmt* stmt)
+{
     m_columns.clear();
-    int i, col_count = sqlite3_column_count(m_stmt);
+    int i, col_count = sqlite3_column_count(stmt);
 
     for (i = 0; i < col_count; ++i)
     {
         SlDataAccessInfo dai;
 
-        dai.name = kl::towstring((char*)sqlite3_column_name(m_stmt, i));
-        dai.sqlite_type = sqlite3_column_type(m_stmt, i);
+        dai.name = kl::towstring((char*)sqlite3_column_name(stmt, i));
+        dai.sqlite_type = sqlite3_column_type(stmt, i);
         dai.col_ordinal = i;
         dai.calculated = false;
 
@@ -159,13 +150,10 @@ bool SlIterator::init(const std::wstring& _query)
                 dai.calculated = colinfo.calculated;
             }
         }
-        
+
         m_columns.push_back(dai);
     }
-
-    return true;
 }
-
 
 class SlFetchRowCountBackground : public kl::thread
 {
@@ -179,6 +167,7 @@ public:
         m_database->ref();
         m_sqlite = NULL;
         m_row_count = -1;
+        m_max_rowid = -1;
         m_done = false;
 
         m_mutex.unlock();
@@ -203,9 +192,32 @@ public:
         m_sqlite = sqlite;
         m_mutex.unlock();
 
-        std::string sql = "select count(rowid) from " + m_quoted_object_name;
-
+        std::string sql;
         sqlite3_stmt* stmt = NULL;
+        
+        // get max row id
+        sql = "select max(rowid) from " + m_quoted_object_name;
+
+        sqlite3_prepare_v2(sqlite, sql.c_str(), -1, &stmt, NULL);
+        if (stmt)
+        {
+            int res = sqlite3_step(stmt);
+
+            if (res == SQLITE_ROW)
+            {
+                long long max_rowid = sqlite3_column_int64(stmt, 0);
+
+                m_mutex.lock();
+                m_max_rowid = max_rowid;
+                m_mutex.unlock();
+            }
+
+            sqlite3_finalize(stmt);
+        }
+
+        // get record count in table
+        sql = "select count(rowid) from " + m_quoted_object_name;
+
         sqlite3_prepare_v2(sqlite, sql.c_str(), -1, &stmt, NULL);
         if (stmt)
         {
@@ -268,12 +280,24 @@ public:
         return row_count;
     }
 
+    long long getMaxRowid()
+    {
+        long long max_rowid;
+
+        m_mutex.lock();
+        max_rowid = m_max_rowid;
+        m_mutex.unlock();
+
+        return max_rowid;
+    }
+
 private:
     
     kl::mutex m_mutex;
     SlDatabase* m_database;
     sqlite3* m_sqlite;
     long long m_row_count;
+    long long m_max_rowid;
     std::string m_quoted_object_name;
     bool m_done;
 };
@@ -302,15 +326,16 @@ bool SlIterator::init(const xd::QueryParams& qp)
 
     if (qp.executeFlags & xd::sqlBrowse)
     {
-        // there are two strategies for a browse cursor/iterator:
+        // there are three strategies for a browse cursor/iterator:
         // 1) select chunks with limit + offset
+        // 2) select chunks with rowid >= x and rowid <= y (only works when table has no deleted records)
         // 2) creating a temporary table with rowids
 
         SlFetchRowCountBackground* job = new SlFetchRowCountBackground(m_database, quoted_object_name);
         job->create();
 
-        // wait two seconds
-        for (int i = 0; i < 200; ++i)
+        // wait up to eight seconds
+        for (int i = 0; i < 800; ++i)
         {
             kl::thread::sleep(10);
 
@@ -331,18 +356,32 @@ bool SlIterator::init(const xd::QueryParams& qp)
 
 
         long long row_count = -1;
+        long long max_rowid = -1;
         if (job->isDone())
         {
             row_count = job->getRowCount();
+            max_rowid = job->getMaxRowid();
         }
 
         delete job;
 
-        if (row_count != -1)
+        if (row_count != -1 && max_rowid != -1)
         {
-            m_row_count = row_count;
+           m_row_count = row_count;
 
-            //m_mode = SlIterator::modeOffsetLimit;
+           if (max_rowid == row_count)
+           {
+               m_mode = SlIterator::modeRowidRange;
+           }
+           else
+           {
+               m_mode = SlIterator::modeOffsetLimit;
+           }
+
+           m_qp = qp;
+           m_position = 1;
+           loadRow();
+           return true;
         }
     }
 
@@ -379,7 +418,12 @@ xd::IIteratorPtr SlIterator::clone()
 
 unsigned int SlIterator::getIteratorFlags()
 {
-    unsigned int flags = xd::ifForwardOnly;
+    unsigned int flags;
+
+    if (m_mode == SlIterator::modeOffsetLimit || m_mode == SlIterator::modeRowidRange)
+        flags = 0;
+    else
+        flags = xd::ifForwardOnly;
 
     if (m_row_count >= 0)
     {
@@ -395,7 +439,7 @@ void SlIterator::clearFieldData()
 
 void SlIterator::skip(int delta)
 {
-    if (m_mode == SlIterator::modeOffsetLimit)
+    if (m_mode == SlIterator::modeOffsetLimit || m_mode == SlIterator::modeRowidRange)
     {
         m_position += delta;
         loadRow();
@@ -444,15 +488,82 @@ void SlIterator::loadRow()
         return;
     }
 
+    const long long page_size = 500;
+    long long rown, page_start = ((m_position - 1) / page_size) * page_size;
 
+    std::wstring columns = m_qp.columns;
+    if (columns.length() == 0)
+        columns = L"*";
 
+    std::wstring quoted_object_name = sqliteGetTablenameFromPath(m_qp.from, true);
 
+    std::wstring sql = L"SELECT %columns% FROM %table%";
+    kl::replaceStr(sql, L"%columns%", columns);
+    kl::replaceStr(sql, L"%table%", quoted_object_name);
+
+    if (m_mode == SlIterator::modeRowidRange)
+    {
+        sql += kl::stdswprintf(L" WHERE rowid >= %lld AND rowid <= %lld", page_start+1, page_start+page_size);
+    }
+
+    sql += L" ORDER BY rowid";
+
+    if (m_mode == SlIterator::modeOffsetLimit)
+    {
+        sql += kl::stdswprintf(L" LIMIT %lld OFFSET %lld", page_size, page_start);
+    }
+
+    std::string asql = (const char*)kl::toUtf8(sql);
+
+    sqlite3_stmt* stmt = NULL;
+    sqlite3_prepare_v2(m_sqlite, asql.c_str(), -1, &stmt, NULL);
+    if (stmt)
+    {
+        int i, cnt = sqlite3_column_count(stmt);
+
+        int res;
+        const unsigned char* text;
+
+        rown = page_start+1;
+        while (true)
+        {
+            res = sqlite3_step(stmt);
+
+            if (m_columns.size() == 0)
+            {
+                initColumns(stmt);
+            }
+
+            if (res == SQLITE_ROW)
+            {
+                LocalRow2 row;
+
+                for (i = 0; i < cnt; ++i)
+                {
+                    text = sqlite3_column_text(stmt, i);
+                    LocalRowValue v;
+                    v.setData(text, strlen((const char*)text) + 1);
+                    row.setColumnData(i, v);
+                }
+
+                m_cache.putRow(rown, row);
+
+                ++rown;
+            }
+            else if (res == SQLITE_DONE)
+            {
+                break;
+            }
+        }
+
+        sqlite3_finalize(stmt);
+    }
 }
 
 
 void SlIterator::goFirst()
 {
-    if (m_mode == SlIterator::modeOffsetLimit)
+    if (m_mode == SlIterator::modeOffsetLimit || m_mode == SlIterator::modeRowidRange)
     {
         m_position = 1;
         loadRow();
@@ -507,7 +618,7 @@ double SlIterator::getPos()
 
 void SlIterator::goRow(const xd::rowid_t& rowid)
 {
-    if (m_mode == SlIterator::modeOffsetLimit)
+    if (m_mode == SlIterator::modeOffsetLimit || m_mode == SlIterator::modeRowidRange)
     {
         m_position = (long long)rowid;
         loadRow();
@@ -619,15 +730,16 @@ const std::string& SlIterator::getString(xd::objhandle_t data_handle)
     {
         const unsigned char* ptr = sqlite3_column_text(m_stmt, dai->col_ordinal);
 
-        if (m_mode == SlIterator::modeOffsetLimit)
+        if (m_mode == SlIterator::modeSqliteResult)
+        {
+            ptr = sqlite3_column_text(m_stmt, dai->col_ordinal);
+        }
+        else
         {
             LocalRowValue& val = m_cache_row.getColumnData(dai->col_ordinal);
             ptr = val.getData();
         }
-        else
-        {
-            ptr = sqlite3_column_text(m_stmt, dai->col_ordinal);
-        }
+
         
         dai->result_str = kl::tostring(kl::fromUtf8((const char*)ptr));
     }
@@ -647,15 +759,17 @@ const std::wstring& SlIterator::getWideString(xd::objhandle_t data_handle)
     {
         const unsigned char* ptr = sqlite3_column_text(m_stmt, dai->col_ordinal);
 
-        if (m_mode == SlIterator::modeOffsetLimit)
+        if (m_mode == SlIterator::modeSqliteResult)
+        {
+            ptr = sqlite3_column_text(m_stmt, dai->col_ordinal);
+        }
+        else
         {
             LocalRowValue& val = m_cache_row.getColumnData(dai->col_ordinal);
             ptr = val.getData();
         }
-        else
-        {
-            ptr = sqlite3_column_text(m_stmt, dai->col_ordinal);
-        }
+
+
 
         dai->result_wstr = kl::fromUtf8((const char*)ptr);
     }
@@ -673,7 +787,7 @@ xd::datetime_t SlIterator::getDateTime(xd::objhandle_t data_handle)
         return 0;
     }
 
-    if (m_mode == SlIterator::modeOffsetLimit)
+    if (m_mode == SlIterator::modeOffsetLimit || m_mode == SlIterator::modeRowidRange)
     {
         // TODO:
         return 0;
@@ -742,7 +856,7 @@ double SlIterator::getDouble(xd::objhandle_t data_handle)
     if (m_eof || isNull(data_handle))
         return 0.0;
 
-    if (m_mode == SlIterator::modeOffsetLimit)
+    if (m_mode == SlIterator::modeOffsetLimit || m_mode == SlIterator::modeRowidRange)
     {
         // TODO:
         return 0.0;
@@ -758,7 +872,7 @@ int SlIterator::getInteger(xd::objhandle_t data_handle)
     if (m_eof || isNull(data_handle))
         return 0;
 
-    if (m_mode == SlIterator::modeOffsetLimit)
+    if (m_mode == SlIterator::modeOffsetLimit || m_mode == SlIterator::modeRowidRange)
     {
         // TODO:
         return 0;
@@ -774,7 +888,7 @@ bool SlIterator::getBoolean(xd::objhandle_t data_handle)
     if (m_eof || isNull(data_handle))
         return 0;
 
-    if (m_mode == SlIterator::modeOffsetLimit)
+    if (m_mode == SlIterator::modeOffsetLimit || m_mode == SlIterator::modeRowidRange)
     {
         // TODO:
         return false;
@@ -789,7 +903,7 @@ bool SlIterator::isNull(xd::objhandle_t data_handle)
     if (!dai)
         return true;
 
-    if (m_mode == SlIterator::modeOffsetLimit)
+    if (m_mode == SlIterator::modeOffsetLimit || m_mode == SlIterator::modeRowidRange)
     {
         LocalRowValue& val = m_cache_row.getColumnData(dai->col_ordinal);
         return val.isNull();

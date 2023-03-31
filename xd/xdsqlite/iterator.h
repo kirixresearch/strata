@@ -50,7 +50,8 @@ friend class SlSet;
     {
         modeSqliteResult = 0,
         modeOffsetLimit = 1,
-        modeRowidTable = 2
+        modeRowidRange = 2,
+        modeRowidTable = 3
     };
 
 private:
@@ -109,6 +110,10 @@ public:
 
 private:
 
+    void initColumns(sqlite3_stmt* stmt);
+
+private:
+
     SlDatabase* m_database;
     xd::Structure m_structure;
     xd::Structure m_table_structure;
@@ -129,6 +134,7 @@ private:
     int m_mode;
     LocalRowCache2 m_cache;
     LocalRow2 m_cache_row;
+    xd::QueryParams m_qp;
 };
 
 #endif
