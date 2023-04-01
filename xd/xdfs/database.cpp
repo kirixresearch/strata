@@ -2722,7 +2722,15 @@ bool FsDatabase::execute(const std::wstring& command,
     m_error.clearError();
     result.clear();
 
-    return doSQL(static_cast<xd::IDatabase*>(this), command, flags, result, m_error, job);
+    bool res = doSQL(static_cast<xd::IDatabase*>(this), command, flags, result, m_error, job);
+
+    if (job && m_error.isError())
+    {
+        IJobInternalPtr ijob = job;
+        ijob->setError(m_error.getErrorCode(), m_error.getErrorString());
+    }
+
+    return res;
 }
 
 bool FsDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)

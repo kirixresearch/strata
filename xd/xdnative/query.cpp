@@ -96,8 +96,14 @@ bool XdnativeDatabase::execute(const std::wstring& command,
     // if the pass through flag is set to false, simply run the SQL locally
     if (!(flags & xd::sqlPassThrough))
     {
-        return doSQL(static_cast<xd::IDatabase*>(this),
-                     command, flags, result, m_error, job);
+        bool res = doSQL(static_cast<xd::IDatabase*>(this), command, flags, result, m_error, job);
+        if (job && m_error.isError())
+        {
+            IJobInternalPtr ijob = job;
+            ijob->setError(m_error.getErrorCode(), m_error.getErrorString());
+        }
+
+        return res;
     }
 
 
@@ -119,8 +125,14 @@ bool XdnativeDatabase::execute(const std::wstring& command,
     // in the SQL are part of different databases; run the SQL locally
     if (mount_db.isNull())
     {
-        return doSQL(static_cast<xd::IDatabase*>(this),
-                     command, flags, result, m_error, job);
+        bool res = doSQL(static_cast<xd::IDatabase*>(this), command, flags, result, m_error, job);
+        if (job && m_error.isError())
+        {
+            IJobInternalPtr ijob = job;
+            ijob->setError(m_error.getErrorCode(), m_error.getErrorString());
+        }
+
+        return res;
     }
     
     // find out what the mount databases uses as quote chars
@@ -147,7 +159,6 @@ bool XdnativeDatabase::execute(const std::wstring& command,
     {
         if (detectMountPoint(*it, &cstr, &rpath))
         {
-
             // remove any leading slash -- but if there are any remaining
             // slashes, put it back, because the target engine will process
             // it further

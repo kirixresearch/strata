@@ -297,11 +297,16 @@ bool sqlCreate(xd::IDatabasePtr db,
             return false;
         }
 
+        if (!db->getFileExist(table))
+        {
+            // object or table doesn't exist
+            error.setError(xd::errorGeneral, L"Unable to create index because table does not exist");
+            return false;
+        }
+
         std::wstring col_list = command.substr(0, command.length() - 1);
         
-        xd::IndexInfo index;
-        
-        index = db->createIndex(table, name, col_list, job);
+        xd::IndexInfo index = db->createIndex(table, name, col_list, job);
         
         if (!index.isOk())
         {

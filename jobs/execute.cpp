@@ -95,6 +95,7 @@ int ExecuteJob::runJob()
     if (!m_db->execute(sql, flags, result, xd_job))
     {
         m_job_info->setState(jobStateFailed);
+        m_job_info->setError(m_db->getErrorCode(), m_db->getErrorString());
         return 0;
     }
 
