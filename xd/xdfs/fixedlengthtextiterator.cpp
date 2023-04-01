@@ -834,6 +834,10 @@ bool FixedLengthTextIterator::modifyStructure(const xd::StructureModify& mod_par
     return true;
 }
 
+void FixedLengthTextIterator::func_recno(kscript::ExprEnv* env, void* param, kscript::Value* retval)
+{
+    retval->setDouble((double)((FixedLengthTextIterator*)param)->m_row_num);
+}
 
 void FixedLengthTextIterator::func_rawvalue(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
@@ -842,6 +846,7 @@ void FixedLengthTextIterator::func_rawvalue(kscript::ExprEnv* env, void* param, 
 
 void FixedLengthTextIterator::onParserInit(kscript::ExprParser* parser)
 {
+    parser->addFunction(L"recno", false, FixedLengthTextIterator::func_recno, false, L"f()", this);
     parser->addFunction(L"rawvalue", false, FixedLengthTextIterator::func_rawvalue, false, L"s(i)", this);
 }
 
