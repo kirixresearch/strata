@@ -40,6 +40,7 @@ DelimitedTextIterator::DelimitedTextIterator(FsDatabase* db)
     m_database = db;
     m_database->ref();
     m_set = NULL;
+    m_pos = 0;
 }
 
 DelimitedTextIterator::~DelimitedTextIterator()
@@ -138,6 +139,7 @@ unsigned int DelimitedTextIterator::getIteratorFlags()
 
 void DelimitedTextIterator::skip(int delta)
 {
+    m_pos += (long long)delta;
     m_file.skip(delta);
 }
 
@@ -150,6 +152,8 @@ void DelimitedTextIterator::goFirst()
         // read past the first row
         m_file.skip(1);
     }
+
+    m_pos = 1;
 }
 
 void DelimitedTextIterator::goLast()
@@ -533,6 +537,11 @@ bool DelimitedTextIterator::modifyStructure(const xd::StructureModify& mod_param
 }
 
 
+void DelimitedTextIterator::func_recno(kscript::ExprEnv* env, void* param, kscript::Value* retval)
+{
+    retval->setDouble((double) ((DelimitedTextIterator*)param)->m_pos);
+}
+
 void DelimitedTextIterator::func_rawvalue(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
     retval->setString(((DelimitedTextIterator*)param)->m_file.getString(env->m_eval_params[0]->getInteger() - 1));
@@ -540,6 +549,7 @@ void DelimitedTextIterator::func_rawvalue(kscript::ExprEnv* env, void* param, ks
 
 void DelimitedTextIterator::onParserInit(kscript::ExprParser* parser)
 {
+    parser->addFunction(L"recno", false, DelimitedTextIterator::func_recno, false, L"f()", this);
     parser->addFunction(L"rawvalue", false, DelimitedTextIterator::func_rawvalue, false, L"s(i)", this);
 }
 
