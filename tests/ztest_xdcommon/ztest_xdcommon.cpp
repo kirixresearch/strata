@@ -27,6 +27,12 @@ namespace ztestxdcommon
 			Assert::AreEqual((size_t)3, v.getDataLength());
 		}
 
+		TEST_METHOD(TestLocalRowValueGetType)
+		{
+			LocalRowValue v;
+			v.setType(LocalRowValue::typeBoolean);
+			Assert::AreEqual((unsigned char)LocalRowValue::typeBoolean, v.getType());
+		}
 		TEST_METHOD(TestLocalRowValueSetGetDataMultiple)
 		{
 			LocalRowValue v;
@@ -115,14 +121,23 @@ namespace ztestxdcommon
 		{
 			LocalRow2 r;
 
+			LocalRowValue v0;
+			v0.setNull();
+			r.setColumnData(0, v0);
+
 			LocalRowValue v1;
-			v1.setNull();
-			r.setColumnData(0, v1);
+			unsigned char buf1[3] = { 1, 2, 3 };
+			v1.setData(buf1, 3);
+			r.setColumnData(1, v1);
 
 			LocalRowValue v2;
-			unsigned char buf1[3] = { 1, 2, 3 };
-			v2.setData(buf1, 3);
-			r.setColumnData(1, v2);
+			v2.setNull();
+			r.setColumnData(2, v2);
+
+			LocalRowValue v3;
+			v3.setNull();
+			v3.setType(LocalRowValue::typeBoolean);
+			r.setColumnData(3, v3);
 
 			LocalRowValue& t1 = r.getColumnData(0);
 			Assert::AreEqual(true, t1.isNull());
@@ -130,11 +145,8 @@ namespace ztestxdcommon
 			LocalRowValue& t2 = r.getColumnData(1);
 			Assert::AreEqual(0, memcmp(t2.getData(), buf1, 3));
 
-			LocalRowValue v3;
-			v3.setNull();
-			r.setColumnData(2, v3);
 
-			unsigned char control[8] = { 0xff, 0x01, 0x03, 1, 2, 3, 0xff, 0x00 };
+			unsigned char control[9] = { 0x05, 0x01, 0x03, 1, 2, 3, 0x05, (LocalRowValue::typeBoolean << 3) | 0x05, 0x00 };
 			size_t control_size = sizeof(control);
 
 			unsigned char* test;
@@ -174,11 +186,11 @@ namespace ztestxdcommon
 			size_t control_size = test_size + 6;
 			unsigned char* control = new unsigned char[control_size];
 			memset(control, 1, control_size);
-			control[0] = 0xff;
+			control[0] = 0x05;
 			control[1] = 0x02; // three bytes for size
 			control[2] = (test_size >> 8) & 0xff;
 			control[3] = (test_size >> 0) & 0xff;
-			control[control_size - 2] = 0xff;
+			control[control_size - 2] = 0x05;
 			control[control_size - 1] = 0x00;
 
 			unsigned char* test;
@@ -220,12 +232,12 @@ namespace ztestxdcommon
 			size_t control_size = test_size + 7;
 			unsigned char* control = new unsigned char[control_size];
 			memset(control, 1, control_size);
-			control[0] = 0xff;
+			control[0] = 0x05;
 			control[1] = 0x03; // three bytes for size
 			control[2] = (test_size >> 16) & 0xff;
 			control[3] = (test_size >> 8) & 0xff;
 			control[4] = (test_size >> 0) & 0xff;
-			control[control_size-2] = 0xff;
+			control[control_size-2] = 0x05;
 			control[control_size-1] = 0x00;
 
 			unsigned char* test;
@@ -267,13 +279,13 @@ namespace ztestxdcommon
 			size_t control_size = test_size + 8;
 			unsigned char* control = new unsigned char[control_size];
 			memset(control, 1, control_size);
-			control[0] = 0xff;
+			control[0] = 0x05;
 			control[1] = 0x04; // four bytes for size
 			control[2] = (test_size >> 24) & 0xff;
 			control[3] = (test_size >> 16) & 0xff;
 			control[4] = (test_size >> 8) & 0xff;
 			control[5] = (test_size >> 0) & 0xff;
-			control[control_size - 2] = 0xff;
+			control[control_size - 2] = 0x05;
 			control[control_size - 1] = 0x00;
 
 			unsigned char* test;

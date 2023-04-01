@@ -23,6 +23,7 @@ LocalRowValue::LocalRowValue()
     is_null = false;
     data = NULL;
     len = 0;
+    type = LocalRowValue::typeBinary;
 }
 
 LocalRowValue::~LocalRowValue()
@@ -117,6 +118,7 @@ void LocalRow2::setColumnData(size_t col_idx, LocalRowValue& val)
     }
 
     m_values[col_idx]->setData(val.getData(), val.getDataLength());
+    m_values[col_idx]->setType(val.getType());
 }
 
 
@@ -160,9 +162,11 @@ const unsigned char* LocalRow2::serialize(size_t* len)
 
     for (auto el : m_values)
     {
+        col_flags = (el->getType() << 3);
+
         if (el->isNull())
         {
-            col_flags = 0xff;
+            col_flags |= 0x05;
             m_buf->append(&col_flags, 1);
         }
         else
@@ -171,14 +175,14 @@ const unsigned char* LocalRow2::serialize(size_t* len)
   
             if (col_length <= 0xff)
             {
-                col_flags = 1;
+                col_flags |= 0x01;
                 m_buf->append(&col_flags, 1);
                 length_code[0] = (unsigned char)(col_length & 0x000000ff);
                 m_buf->append(length_code, 1);
             }
             else if (col_length <= 0xffff)
             {
-                col_flags = 2;
+                col_flags |= 0x02;
                 m_buf->append(&col_flags, 1);
                 length_code[0] = (unsigned char)((col_length & 0x0000ff00) >> 8);;
                 length_code[1] = (unsigned char)(col_length & 0x000000ff);
@@ -186,7 +190,7 @@ const unsigned char* LocalRow2::serialize(size_t* len)
             }
             else if (col_length <= 0xffffff)
             {
-                col_flags = 3;
+                col_flags |= 0x03;
                 m_buf->append(&col_flags, 1);
                 length_code[0] = (unsigned char)((col_length & 0x00ff0000) >> 16);
                 length_code[1] = (unsigned char)((col_length & 0x0000ff00) >> 8);
@@ -195,7 +199,7 @@ const unsigned char* LocalRow2::serialize(size_t* len)
             }
             else
             {
-                col_flags = 4;
+                col_flags |= 0x04;
                 m_buf->append(&col_flags, 1);
                 length_code[0] = (unsigned char)((col_length & 0xff000000) >> 24);
                 length_code[1] = (unsigned char)((col_length & 0x00ff0000) >> 16);
@@ -220,6 +224,7 @@ void LocalRow2::unserialize(const unsigned char* buf, size_t len)
     size_t col_idx = 0;
     LocalRowValue* v = new LocalRowValue;
     size_t col_length;
+    unsigned char length_ind;
 
     while (*buf)
     {
@@ -234,13 +239,16 @@ void LocalRow2::unserialize(const unsigned char* buf, size_t len)
         }
 
         col_length = 0;
+        length_ind = *buf & 0b111;
 
-        if (*buf == 0xff)
+        v->setType(*buf >> 3);
+
+        if (length_ind == 0x05)
         {
             ++buf;
             v->setNull();
         }
-        else if (*buf == 1)
+        else if (length_ind == 0x01)
         {
             ++buf;
             col_length |= (size_t)*buf;
@@ -248,7 +256,7 @@ void LocalRow2::unserialize(const unsigned char* buf, size_t len)
             v->setData(buf, col_length);
             buf += col_length;
         }
-        else if (*buf == 2)
+        else if (length_ind == 0x02)
         {
             ++buf;
             col_length |= ((size_t)*buf) << 8;
@@ -258,7 +266,7 @@ void LocalRow2::unserialize(const unsigned char* buf, size_t len)
             v->setData(buf, col_length);
             buf += col_length;
         }
-        else if (*buf == 3)
+        else if (length_ind == 0x03)
         {
             ++buf;
             col_length |= ((size_t)*buf) << 16;
@@ -270,7 +278,7 @@ void LocalRow2::unserialize(const unsigned char* buf, size_t len)
             v->setData(buf, col_length);
             buf += col_length;
         }
-        else if (*buf == 4)
+        else if (length_ind == 0x04)
         {
             ++buf;
             col_length |= ((size_t)*buf) << 24;

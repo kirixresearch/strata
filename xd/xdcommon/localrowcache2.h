@@ -24,20 +24,34 @@ class LocalRowValue
 
 public:
 
+    enum
+    {
+        typeBinary = 0,
+        typeCstr = 1,
+        typeFloat = 2,
+        typeDouble = 3,
+        typeBoolean = 4
+    };
+
+public:
+
     LocalRowValue();
     ~LocalRowValue();
 
     void setNull();
     bool setData(const unsigned char* _data, size_t _len);
-    unsigned char* getData() { return data; }
-    size_t getDataLength() { return len; }
+    const unsigned char* getData() const { return data; }
+    size_t getDataLength() const { return len; }
     bool isNull() { return is_null; }
+    void setType(unsigned char _type) { type = _type; }
+    unsigned char getType() const { return type; }
 
 private:
 
-    bool is_null;
     unsigned char* data;
     size_t len;
+    bool is_null;
+    unsigned char type;
 };
 
 
