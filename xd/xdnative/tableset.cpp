@@ -1374,6 +1374,12 @@ xd::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
 
         xd::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
 
+        if (data_iter)
+        {
+            idx->unref();
+            return xcm::null;
+        }
+
         xd::IIteratorPtr res;
         res = createIteratorFromIndex(data_iter,
                                       idx,
@@ -1419,12 +1425,19 @@ xd::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
 
         if (!prepareIndexEntry(entry))
         {
+            idx->unref();
             return xcm::null;
         }
 
         m_indexes.push_back(entry);
 
         xd::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
+        
+        if (data_iter.isNull())
+        {
+            return xcm::null;
+        }
+
         return createIteratorFromIndex(data_iter,
                                        idx,
                                        columns,
