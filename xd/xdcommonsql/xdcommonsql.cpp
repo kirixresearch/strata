@@ -188,10 +188,12 @@ std::wstring peekToken(const std::wstring& str)
 
 
 // WARNING: until peekToken and popToken
-// are factored, if you make a change to popToken,
+// are not factored, if you make a change to popToken,
 // make sure to make the change to the function above
 
-std::wstring popToken(std::wstring& str)
+
+
+static std::wstring _popToken(std::wstring& str, const wchar_t* break_chars)
 {
     const wchar_t* start = str.c_str();
     const wchar_t* p = start;
@@ -218,7 +220,7 @@ std::wstring popToken(std::wstring& str)
     
     while (*p)
     {
-        if (0 != wcschr(L" \t\n\r!@#$%^&*-=|/+,()[]{}:'\"", *p))
+        if (0 != wcschr(break_chars, *p))
         {
             if (ret.empty())
             {
@@ -240,6 +242,19 @@ std::wstring popToken(std::wstring& str)
     str.erase(0, chars);
     return ret;
 }
+
+
+std::wstring popToken(std::wstring& str)
+{
+    return _popToken(str, L" \t\n\r!@#$%^&*-=|/+,()[]{}:'\"");
+}
+
+
+std::wstring popDatabaseObjectName(std::wstring& str)
+{
+    return _popToken(str, L" \t\n\r!@#$%^&*-=|+,()[]{}:'\"");
+}
+
 
 
 

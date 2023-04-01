@@ -277,7 +277,7 @@ bool sqlCreate(xd::IDatabasePtr db,
             return false;
         }
         
-        std::wstring table = popToken(command);
+        std::wstring table = popDatabaseObjectName(command);
         dequote(table, L'[', L']');
         
         std::wstring paren = popToken(command);
@@ -286,14 +286,19 @@ bool sqlCreate(xd::IDatabasePtr db,
             // missing open parenthesis
             // CREATE INDEX idx ON table(col1)
             //                          ^^
-            error.setError(xd::errorSyntax, L"Invalid syntax; INDEX clause missing open parenthesis");             
+            error.setError(xd::errorSyntax, L"Invalid syntax; INDEX clause missing open parenthesis '('");             
             return false;
         }
         
-        std::wstring col_list = kl::beforeLast(command, L')');
-        
-        
+        kl::trimRight(command);
+        if (command.length() == 0 || command[command.length() - 1] != L')')
+        {
+            error.setError(xd::errorSyntax, L"Invalid syntax; INDEX clause missing close parenthesis ')'");
+            return false;
+        }
 
+        std::wstring col_list = command.substr(0, command.length() - 1);
+        
         xd::IndexInfo index;
         
         index = db->createIndex(table, name, col_list, job);

@@ -192,6 +192,7 @@ bool sqlAlter(
            xd::IJob* job);
 
 std::wstring popToken(std::wstring& str);
+std::wstring popDatabaseObjectName(std::wstring& str);
 std::wstring peekToken(const std::wstring& str);
 std::wstring getTableNameFromSql(const std::wstring& sql);
 std::vector<std::wstring> getAllTableNamesFromSql(const std::wstring& sql);
