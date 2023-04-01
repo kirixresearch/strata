@@ -2778,7 +2778,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
                 // if the output field name is needlessly qualified
                 // with a table alias, remove the table alias
 
-                const wchar_t* period = wcschr(f.name.c_str(), L'.');
+                const wchar_t* period = zl_strchr((wchar_t*)f.name.c_str(), L'.', L"[", L"]"); //wcschr(f.name.c_str(), L'.');
                 if (period && !join_operation)
                 {
                     std::wstring fname = period+1;
