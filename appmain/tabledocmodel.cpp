@@ -774,13 +774,10 @@ bool TableDocModel::load()
     if (db.isNull())
         return false;
 
-    // try to load the path in the new JSON format
-    if (loadJson())
-        return true;
+    loadJson();
+    loadAndConvertOldVersionToNewJson();
 
-    // if we can't load it in the new format, try
-    // to open it with the old format
-    return loadAndConvertOldVersionToNewJson();
+    return true;
 }
 
 bool TableDocModel::save()
@@ -1085,9 +1082,6 @@ bool TableDocModel::saveJson()
     }
 
 
-
-    
-
     if (g_app->getDbDriver() == L"xdnative")
     {
         // with xdnative, tabledoc model stores its metadata in streams
@@ -1341,6 +1335,7 @@ bool TableDocModel::loadAndConvertOldVersionToNewJson()
             TableDocView* obj = new TableDocView;
             new_view_format_node["object_id"] = obj->getObjectId();
             obj->readFromNode(new_view_format_node);
+            obj->setDirty(true);
             m_views.push_back(static_cast<ITableDocObject*>(obj));
         }
 
@@ -1404,6 +1399,7 @@ bool TableDocModel::loadAndConvertOldVersionToNewJson()
             TableDocMark* obj = new TableDocMark;
             new_mark_format_node["object_id"] = obj->getObjectId();
             obj->readFromNode(new_mark_format_node);
+            obj->setDirty(true);
             m_marks.push_back(static_cast<ITableDocObject*>(obj));
         }
 
