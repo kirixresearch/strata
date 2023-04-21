@@ -1374,7 +1374,7 @@ xd::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
 
         xd::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
 
-        if (data_iter)
+        if (data_iter.isNull())
         {
             idx->unref();
             return xcm::null;
