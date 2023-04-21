@@ -2690,9 +2690,9 @@ void RelationDiagram::repaint(wxDC* dest_dc, bool render, wxRect* rect)
 
             for (box_it = m_boxes.begin(); box_it != m_boxes.end(); ++box_it)
             {
-                wxString set_path = (*box_it)->getSetPath();
+                wxString table_path = (*box_it)->getSetPath();
 
-                if (!from_box && set_path.CmpNoCase(line_it->left_path) == 0)
+                if (!from_box && isSamePath(towstr(table_path), towstr(line_it->left_path)))
                 {
                     from_box = *box_it;
                     from_box->GetClientSize(&from_box_width, &tempi);
@@ -2707,9 +2707,9 @@ void RelationDiagram::repaint(wxDC* dest_dc, bool render, wxRect* rect)
                  box_rit != m_boxes.rend();
                  ++box_rit)
             {
-                wxString set_path = (*box_rit)->getSetPath();
+                wxString table_path = (*box_rit)->getSetPath();
 
-                if (!to_box && set_path.CmpNoCase(line_it->right_path) == 0)
+                if (!to_box && isSamePath(towstr(table_path), towstr(line_it->right_path)))
                 {
                     to_box = *box_rit;
                     to_box->GetClientSize(&to_box_width, &tempi);
