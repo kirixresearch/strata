@@ -515,6 +515,8 @@ END_EVENT_TABLE()
 ConsolePanel::ConsolePanel()
 {
     m_text_ctrl = NULL;
+    m_lquote = L'[';
+    m_rquote = L']';
 }
 
 ConsolePanel::~ConsolePanel()

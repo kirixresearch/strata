@@ -128,6 +128,7 @@ IndexPanel::IndexPanel()
     m_index_fields = NULL;
     m_indexes_list_validator = NULL;
     m_indexes_list = NULL;
+    m_ok_button = NULL;
 }
 
 IndexPanel::~IndexPanel()

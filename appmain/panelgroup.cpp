@@ -185,6 +185,10 @@ END_EVENT_TABLE()
 
 GroupPanel::GroupPanel()
 {
+    m_grid = NULL;
+    m_adv_group_query = NULL;
+    m_adv_group_query_valid = NULL;
+    m_adv_checkbox = NULL;
     m_ok_button = NULL;
     m_tablecols = NULL;
 }

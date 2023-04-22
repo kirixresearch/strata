@@ -17,6 +17,7 @@
 ScriptJob::ScriptJob()
 {
     m_script_host = NULL;
+    m_rterror_code = kscript::rterrorNone;
     m_job_info->setTitle(towstr(_("Script")));
 
     m_job_info->setInfoMask(jobs::jobMaskTitle |

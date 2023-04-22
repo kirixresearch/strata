@@ -180,6 +180,7 @@ ReportPropsDialog::ReportPropsDialog(wxWindow* parent) :
                                      wxCLIP_CHILDREN |
                                      wxNO_FULL_REPAINT_ON_RESIZE)
 {
+    m_margins_panel = NULL;
 }
 
 ReportPropsDialog::~ReportPropsDialog()

@@ -40,6 +40,8 @@ public:
 
     CellRect()
     {
+        m_row = 0;
+        m_col = 0;
     }
     
     ~CellRect()
@@ -6285,6 +6287,8 @@ void CompTable::mouseMoveCells(IEventPtr evt)
                 // shouldn't happen, but it if it does,
                 // do nothing: our initial starting
                 // row and column is good enough
+                row1 = row_start;
+                col1 = col_start;
             }
 
             row_start = row1;

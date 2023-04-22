@@ -122,6 +122,7 @@ SplitPanel::SplitPanel()
     m_browse_button = NULL;
     m_ok_button = NULL;
     m_prefix_edited = false;
+    m_main_sizer = NULL;
 }
 
 SplitPanel::~SplitPanel()

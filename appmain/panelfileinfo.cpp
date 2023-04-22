@@ -119,6 +119,13 @@ END_EVENT_TABLE()
 
 MultiFileInfoPanel::MultiFileInfoPanel()
 {
+    m_folder_text = NULL;
+    m_table_text = NULL;
+    m_report_text = NULL;
+    m_query_text = NULL;
+    m_script_text = NULL;
+    m_grid = NULL;
+
     m_sort_column = -1;
     m_sort_ascending = true;
 }

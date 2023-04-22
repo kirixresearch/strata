@@ -22,6 +22,7 @@ END_EVENT_TABLE()
 
 DatabaseInfoPanel::DatabaseInfoPanel()
 {
+    m_project_name_text = NULL;
 }
 
 DatabaseInfoPanel::~DatabaseInfoPanel()

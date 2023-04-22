@@ -45,6 +45,7 @@ ColumnListPanel::ColumnListPanel()
 {
     m_grid = NULL;
     m_last_target_site_id = -1;
+    m_sort_state = sortNone;
 }
 
 ColumnListPanel::~ColumnListPanel()
