@@ -333,7 +333,7 @@ wxString QueryTemplate::getQueryString()
         {
             wxString piece = wxT("");
 
-            if (i >= 0 && i < param_it->conditions.size())
+            if (i < param_it->conditions.size())
             {
                 piece = param_it->conditions[i];
             }
@@ -373,7 +373,7 @@ wxString QueryTemplate::getQueryString()
         {
             wxString piece = wxT("");
 
-            if (i >= 0 && i < param_it->conditions.size())
+            if (i < param_it->conditions.size())
             {
                 piece = param_it->conditions[i];
             }

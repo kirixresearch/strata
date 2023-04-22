@@ -2415,7 +2415,7 @@ bool QueryDoc::execute()
         {
             wxString piece = wxT("");
 
-            if (i >= 0 && i < it->conditions.size())
+            if (i < it->conditions.size())
             {
                 piece = it->conditions[i];
             }

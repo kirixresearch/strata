@@ -159,11 +159,15 @@ public:
     
     ReportGroupItem getGroup(size_t idx)
     {
-        wxASSERT_MSG(idx >= 0 && idx < groups.size(), wxT("Report group item index out of bounds!"));
-        if (idx >= 0 && idx < groups.size())
+        wxASSERT_MSG(idx < groups.size(), wxT("Report group item index out of bounds!"));
+        if (idx < groups.size())
+        {
             return groups[idx];
-        
-        return ReportGroupItem();
+        }
+        else
+        {
+            return ReportGroupItem();
+        }
     }
     
     size_t getGroupCount()
