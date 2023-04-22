@@ -101,6 +101,7 @@ bool ClientRowInserter::putDouble(xd::objhandle_t column_handle, double value)
 
     wchar_t buf[64];
     swprintf(buf, 64, L"\"%.*f\"", data->m_xd_scale, value);
+    buf[63] = 0;
 
     data->m_text = buf;
     data->m_specified = true;
@@ -117,6 +118,7 @@ bool ClientRowInserter::putInteger(xd::objhandle_t column_handle, int value)
 
     wchar_t buf[64];
     swprintf(buf, 64, L"\"%d\"", value);
+    buf[63] = 0;
 
     data->m_text = buf;
     data->m_specified = true;
@@ -136,9 +138,15 @@ bool ClientRowInserter::putBoolean(xd::objhandle_t column_handle, bool value)
     wchar_t buf[8];
 
     if (value)
+    {
         swprintf(buf, 8, L"\"%d\"", 1);
-          else
+        buf[7] = 0;
+    }
+    else
+    {
         swprintf(buf, 8, L"\"%d\"", 0);
+        buf[7] = 0;
+    }
 
     data->m_text = buf;
     data->m_specified = true;

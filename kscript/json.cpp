@@ -53,6 +53,7 @@ static std::wstring escape_string(std::wstring& str)
                     {
                         wchar_t buf[25];
                         swprintf(buf, 25, L"\\u%04x", (int)ch);
+                        buf[24] = 0;
                         result.append(buf);
                     }
                 }
@@ -414,6 +415,7 @@ void Json::encode(ExprEnv* env,
         wchar_t buf[255];
         swprintf(buf, 255, L"%02d-%02d-%02dT%02d:%02d:%02d",
                   yy, mm + 1, dd, h, m, s);
+        buf[254] = 0;
 
         info.append_str = L"";
         info.append_str.append(L"\"");

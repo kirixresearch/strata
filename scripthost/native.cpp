@@ -194,8 +194,11 @@ void NativeModule::getFunction(kscript::ExprEnv* env, kscript::Value* retval)
         func_name2 = "_";
         func_name2 += func_name;
         func_name2 += "@";
+
         char buf[255];
         snprintf(buf, 255, "%d", stack_bytes);
+        buf[254] = 0;
+
         func_name2 += buf;
     }
     
@@ -222,7 +225,7 @@ void NativeModule::getFunction(kscript::ExprEnv* env, kscript::Value* retval)
     call->m_proc = proc;
     call->m_retval_type = retval_type;
     call->m_param_count = params.size();
-    call->m_params = new NativeCallParam[params.size()];
+    call->m_params = new NativeCallParam[params.size()+1];
     for (p = 0; p < params.size(); ++p)
         call->m_params[p].type = params[p];
     
@@ -236,6 +239,7 @@ NativeCall::NativeCall()
 {
     m_param_count = 0;
     m_module = NULL;
+    m_proc = NULL;
 }
 
 NativeCall::~NativeCall()

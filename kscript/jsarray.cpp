@@ -495,6 +495,7 @@ void Array::slice(ExprEnv* env, void*, Value* retval)
     for (i = start; i < end; ++i)
     {
         swprintf(buf, 32, L"%d", i);
+        buf[31] = 0;
         name = buf;
         
         if (vthis->getMemberExists(name))
@@ -704,6 +705,7 @@ void Array::splice(ExprEnv* env, void*, Value* retval)
                 num += total_to_insert;
                 
                 swprintf(buf, 32, L"%d", num);
+                buf[31] = 0;
                 it->name = buf;
             }
         }

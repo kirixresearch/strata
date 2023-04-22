@@ -500,6 +500,7 @@ void Number::toExponential(ExprEnv* env, void* param, Value* retval)
     // convert the double to a string
     wchar_t buf[1024];
     swprintf(buf, 1024, L"%.*e", digits, val->getDouble());
+    buf[1023] = 0;
     std::wstring result(buf);
 
     // get the mantissa

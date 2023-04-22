@@ -1159,7 +1159,10 @@ public:
         wxASSERT(abort);
         
         // set default behavior
-        *abort = PR_FALSE;
+        if (abort)
+        {
+            *abort = PR_FALSE;
+        }
         
         nsresult res;
         
@@ -1182,7 +1185,11 @@ public:
         {
             if (!evt.IsAllowed())
             {
-                *abort = PR_TRUE;
+                if (abort)
+                {
+                    *abort = PR_TRUE;
+                }
+                
                 return NS_OK;
             }
         }
@@ -1194,10 +1201,9 @@ public:
         for (i = 0; i < count; ++i)
         {
             arr.Item(i)->OnStartURIOpen(uri, abort);
-            if (*abort)
+            if (abort && *abort)
                 return NS_OK;
         }
-        
         
         return NS_OK;
     }

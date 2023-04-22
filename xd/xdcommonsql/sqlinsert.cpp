@@ -196,6 +196,7 @@ bool sqlInsert(xd::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Invalid syntax: Unable to get handle for column [%ls]", (*it).c_str());
+            buf[1023] = 0;
             error.setError(xd::errorSyntax, buf);        
             return false;
         }

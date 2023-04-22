@@ -1473,14 +1473,27 @@ static std::wstring num2str(Value* num,
     wchar_t res[255];
     
     if (scale == -1)
+    {
         swprintf(fmt, 32, L"%%%s%s%d%c", left_justify ? L"-" : L"", zero_padded ? L"0" : L"", pad, fmt_char);
-         else
+        fmt[31] = 0;
+    }
+    else
+    {
         swprintf(fmt, 32, L"%%%s%s%d.%d%c", left_justify ? L"-" : L"", zero_padded ? L"0" : L"", pad, scale, fmt_char);
+        fmt[31] = 0;
+    }
+        
     
     if (fmt_char == 'd' || fmt_char == 'u')
+    {
         swprintf(res, 255, fmt, num->getInteger());
-         else
+        res[254] = 0;
+    }
+    else
+    {
         swprintf(res, 255, fmt, num->getDouble());
+        res[254] = 0;
+    }
     
     return res;
 }
@@ -1715,6 +1728,7 @@ static std::wstring doEncode(const std::wstring& input, const wchar_t* to_encode
         if (c <= 0x1f || wcschr(to_encode, *ch))
         {
             swprintf(buf, 64, L"%%%02X", c);
+            buf[63] = 0;
             result += buf;
         }
          else
