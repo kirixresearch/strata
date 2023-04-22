@@ -58,17 +58,17 @@ int DbDatabaseType::toXdDatabaseType(int binding_database_type)
 {
     switch (binding_database_type)
     {
-        case DbDatabaseType::Xdnative:     return xd::dbtypeXdnative;   break;
-        case DbDatabaseType::Package:      return xd::dbtypeUndefined;  break;
-        case DbDatabaseType::Oracle:       return xd::dbtypeOracle;     break;
-        case DbDatabaseType::Postgres:     return xd::dbtypePostgres;   break;
-        case DbDatabaseType::SqlServer:    return xd::dbtypeSqlServer;  break;
-        case DbDatabaseType::MySQL:        return xd::dbtypeMySql;      break;
-        case DbDatabaseType::Odbc:         return xd::dbtypeOdbc;       break;
-        case DbDatabaseType::Access:       return xd::dbtypeAccess;     break;
-        case DbDatabaseType::Excel:        return xd::dbtypeExcel;      break;
-        case DbDatabaseType::Filesystem:   return xd::dbtypeFilesystem; break;
-        default:                           return xd::dbtypeUndefined;  break;
+        case DbDatabaseType::Xdnative:     return xd::dbtypeXdnative;  
+        case DbDatabaseType::Package:      return xd::dbtypeUndefined; 
+        case DbDatabaseType::Oracle:       return xd::dbtypeOracle;    
+        case DbDatabaseType::Postgres:     return xd::dbtypePostgres;  
+        case DbDatabaseType::SqlServer:    return xd::dbtypeSqlServer; 
+        case DbDatabaseType::MySQL:        return xd::dbtypeMySql;     
+        case DbDatabaseType::Odbc:         return xd::dbtypeOdbc;      
+        case DbDatabaseType::Access:       return xd::dbtypeAccess;    
+        case DbDatabaseType::Excel:        return xd::dbtypeExcel;     
+        case DbDatabaseType::Filesystem:   return xd::dbtypeFilesystem;
+        default:                           return xd::dbtypeUndefined; 
     }
 }
 
