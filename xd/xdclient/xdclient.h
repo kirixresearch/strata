@@ -1,3 +1,16 @@
+/*!
+ *
+ * Copyright (c) 2013, Kirix Research, LLC.  All rights reserved.
+ *
+ * Project:  XD Database Library
+ * Author:   Aaron L. Williams
+ * Created:  2009-12-22
+ *
+ */
+
+
+#ifndef __XDCLIENT_XDCLIENT_H
+#define __XDCLIENT_XDCLIENT_H
 
 #include <kl/klib.h>
 #include <kl/json.h>
@@ -17,6 +30,7 @@
 #include "inserter.h"
 #include "iterator.h"
 
+#endif
 
 
 
