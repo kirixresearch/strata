@@ -105,7 +105,7 @@ friend class ClientSet;
 public:
 
     ClientIterator(ClientDatabase* database);
-    ~ClientIterator();
+    virtual ~ClientIterator();
 
     bool init(const std::wstring& handle, const std::wstring& url_query);
     bool init(const xd::QueryParams& qp);
