@@ -204,6 +204,7 @@ Value* ValueObject::createMember(const std::wstring& name, unsigned int attr)
         
         wchar_t buf[32];
         swprintf(buf, 32, L"%d", m_highest_index);
+        buf[31] = 0;
         m_highest_index++;
 
         v.name = buf;
@@ -235,29 +236,33 @@ void ValueObject::setMember(const std::wstring& name, Value* value)
 
 void ValueObject::setMemberI(int idx, Value* value)
 {
-    wchar_t buf[16];
-    swprintf(buf, 16, L"%d", idx);
+    wchar_t buf[24];
+    swprintf(buf, 24, L"%d", idx);
+    buf[23] = 0;
     setMember(buf, value);
 }
 
 void ValueObject::appendMember(Value* value)
 {
-    wchar_t buf[16];
-    swprintf(buf, 16, L"%d", getHighestIndex());
+    wchar_t buf[24];
+    swprintf(buf, 24, L"%d", getHighestIndex());
+    buf[23] = 0;
     setMember(buf, value);
 }
 
 void ValueObject::getMemberI(int idx, Value* retval)
 {
-    wchar_t buf[16];
-    swprintf(buf, 16, L"%d", idx);
+    wchar_t buf[24];
+    swprintf(buf, 24, L"%d", idx);
+    buf[23] = 0;
     getMember(buf, retval);
 }
  
 Value* ValueObject::getMemberI(int idx)
 {
-    wchar_t buf[16];
-    swprintf(buf, 16, L"%d", idx);
+    wchar_t buf[24];
+    swprintf(buf, 24, L"%d", idx);
+    buf[23] = 0;
     return getMember(buf);
 }
 
@@ -389,8 +394,9 @@ bool ValueObject::deleteMember(const std::wstring& name)
 
 bool ValueObject::deleteMemberI(int idx)
 {
-    wchar_t buf[16];
-    swprintf(buf, 16, L"%d", idx);
+    wchar_t buf[24];
+    swprintf(buf, 24, L"%d", idx);
+    buf[23] = 0;
     return deleteMember(buf);
 }
 
@@ -956,8 +962,9 @@ Value* Value::getMember(const std::wstring& name)
 
 Value* Value::getMemberI(int idx)
 {
-    wchar_t buf[16];
-    swprintf(buf, 16, L"%d", idx);
+    wchar_t buf[24];
+    swprintf(buf, 24, L"%d", idx);
+    buf[23] = 0;
     return getMember(buf);
 }
 

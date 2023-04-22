@@ -188,6 +188,7 @@ bool sqlDelete(xd::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to restore deleted rows in table [%ls]", table.c_str());
+            buf[1023] = 0;
             error.setError(xd::errorGeneral, buf);
             return false;
         }

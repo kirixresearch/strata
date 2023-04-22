@@ -292,7 +292,8 @@ JobSchedulerPanel::JobSchedulerPanel()
     m_monthly_daynumber_spinctrl = NULL;
 
     m_current_job_entry = NULL;
-    
+
+    m_vert_sizer = NULL;
     
     // find out if the current locale uses AM and PM
     wxDateTime dt = wxDateTime::Now();

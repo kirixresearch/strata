@@ -6654,7 +6654,7 @@ void AppController::showFindPanel()
 {
     size_t child_count = g_app->getMainFrame()->getChildCount();
 
-    FindPanel* panel;
+    FindPanel* panel = NULL;
 
     IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("FindPanel"));
@@ -6700,7 +6700,7 @@ void AppController::showFindInFilesPanel()
 {
     size_t child_count = g_app->getMainFrame()->getChildCount();
 
-    FindPanel* panel;
+    FindPanel* panel = NULL;
 
     IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("FindPanel"));
@@ -6744,7 +6744,7 @@ void AppController::showFindInFilesPanel()
 
 void AppController::showReplacePanel()
 {
-    FindPanel* panel;
+    FindPanel* panel = NULL;
 
     IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("FindPanel"));

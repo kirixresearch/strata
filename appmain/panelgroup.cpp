@@ -186,6 +186,7 @@ END_EVENT_TABLE()
 GroupPanel::GroupPanel()
 {
     m_ok_button = NULL;
+    m_tablecols = NULL;
 }
 
 GroupPanel::~GroupPanel()

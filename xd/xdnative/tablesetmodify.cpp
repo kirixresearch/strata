@@ -222,12 +222,14 @@ inline void doCopy(xd::IRowInserter* dest,
                     if (ci.src_type == xd::typeInteger)
                     {
                         snprintf(buf, 64, "%d", src->getInteger(ci.src_handle));
+                        buf[63] = 0;
                     }
                      else
                     {
                         snprintf(buf, 64, "%.*f",
                                      ci.src_scale,
                                      src->getDouble(ci.src_handle));
+                        buf[63] = 0;
                     }
 
                     dest->putString(ci.dest_handle, buf);

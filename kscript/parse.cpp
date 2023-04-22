@@ -8093,6 +8093,14 @@ bool ExprParser::parse(const std::wstring& _expr)
     // loop at the end; look for "free all string buffers" below
     size_t bytes = sizeof(wchar_t)*(_expr.length()+1);
     wchar_t* expr = (wchar_t*)malloc(bytes);
+    if (!expr)
+    {
+        m_error_loc = NULL;
+        m_error_code = errorOutOfMemory;
+        m_error_text = L"";
+        return false;
+    }
+
     memcpy(expr, _expr.c_str(), bytes);
     
     

@@ -79,6 +79,7 @@ enum ExprCompileError
     errorUnknownEscapeSequence = 24,
     errorUnexpectedToken = 25,
     errorSyntaxError = 26,
+    errorOutOfMemory = 998,
     errorUnknown = 999
 };
 
@@ -1299,7 +1300,15 @@ union BoundClassMethodHolder { \
 }; \
 class BoundMemberInfo : public kscript::BoundMemberInfoBase { \
 public: \
-    BoundMemberInfo() { } \
+    BoundMemberInfo() { \
+        class_method.p = 0; \
+        func_ptr = NULL; \
+        is_static = false; \
+        method_name = NULL; \
+        param = NULL; \
+        class_id = 0; \
+        prototype = false; \
+    } \
     BoundMemberInfo(const wchar_t* _name, kscript::ExprBindFunc _funcptr, void* _param, int _class_id, bool _prototype) { \
         class_method.p = 0; \
         func_ptr = (void*)_funcptr; \
@@ -1311,6 +1320,7 @@ public: \
     } \
     BoundMemberInfo(const wchar_t* _name, BoundClassMethod _funcptr, void* _param, int _class_id, bool _prototype) { \
         class_method.method = _funcptr; \
+        func_ptr = NULL; \
         is_static = false; \
         method_name = _name; \
         param = _param; \

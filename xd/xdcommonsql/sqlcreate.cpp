@@ -153,7 +153,8 @@ xd::ColumnInfo parseColumnDescription(const std::wstring& _col_desc, ThreadError
     {
         // bad type
         wchar_t buf[1024]; // some paths might be long
-        swprintf(buf, 1024, L"Invalid syntax; invalid column type [%ls] in the column parameters", type.c_str()); 
+        swprintf(buf, 1024, L"Invalid syntax; invalid column type [%ls] in the column parameters", type.c_str());
+        buf[1023] = 0;
         error.setError(xd::errorSyntax, buf);        
         return xd::ColumnInfo();
     }
@@ -225,6 +226,7 @@ bool sqlCreate(xd::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to create directory [%ls]", param.c_str());
+            buf[1023] = 0;
             error.setError(xd::errorGeneral, buf);
             return false;
         }

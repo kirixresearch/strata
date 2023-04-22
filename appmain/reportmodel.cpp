@@ -984,7 +984,7 @@ bool XdModel::bog()
     bool result;
     result = (memcmp(a, b, len) != 0);
 
-    delete a;
+    delete[] a;
 
     return result;
 }
@@ -1050,6 +1050,7 @@ bool XdModel::eog()
     if (m_iter->eof())
     {
         m_iter->skip(-1);
+        delete[] a;
         return true;
     }
 
@@ -1062,7 +1063,7 @@ bool XdModel::eog()
     bool result;
     result = (memcmp(a, b, len) != 0);
 
-    delete a;
+    delete[] a;
 
     return result;
 }

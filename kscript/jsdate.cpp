@@ -657,17 +657,20 @@ static std::wstring dateToString(int year,
         {
             swprintf(buf, 255, L"%02d:%02d:%02d GMT",
                       hour, minute, second);
+            buf[254] = 0;
         }
          else
         {
             swprintf(buf, 255, L"%02d:%02d:%02d GMT%c%02d%02d",
                       hour, minute, second, sign, hour_offset, min_offset);
+            buf[254] = 0;
         }
     }
      else if (hour == -1)
     {
         swprintf(buf, 255, L"%ls %ls %02d %04d",
                   dow_str, mon_str, day, year);
+        buf[254] = 0;
     }
      else
     {
@@ -675,11 +678,13 @@ static std::wstring dateToString(int year,
         {
             swprintf(buf, 255, L"%ls %ls %02d %04d %02d:%02d:%02d GMT",
                       dow_str, mon_str, day, year, hour, minute, second);
+            buf[254] = 0;
         }
          else
         {
             swprintf(buf, 255, L"%ls %ls %02d %04d %02d:%02d:%02d GMT%c%02d%02d",
                       dow_str, mon_str, day, year, hour, minute, second, sign, hour_offset, min_offset);
+            buf[254] = 0;
         }
     }
     

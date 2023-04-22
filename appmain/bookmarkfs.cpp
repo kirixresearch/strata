@@ -50,9 +50,11 @@ static void bin2hex(const unsigned char* data, size_t len, std::wstring& output)
     
     std::wstring s;
     wchar_t buf[16];
+
     for (size_t i = 0; i < len; ++i)
     {
         swprintf(buf, 16, L"%02X", data[i]);
+        buf[15] = 0;
         output += buf;
     }
 }

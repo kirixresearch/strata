@@ -300,6 +300,7 @@ bool sqlAlter(xd::IDatabasePtr db,
                     // column doesn't exist
                     wchar_t buf[1024];
                     swprintf(buf, 1024, L"Unable to modify column [%ls] in ALTER statement", old_name.c_str());
+                    buf[1023] = 0;
                     error.setError(xd::errorGeneral, buf);                    
                     return false;
                 }

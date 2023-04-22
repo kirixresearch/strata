@@ -169,7 +169,7 @@ void zStatusBar::realize()
     m_ctrl->Reparent(m_form_wnd);
     
     int size = m_items.size();
-    int* widths = new int[size];
+    int* widths = new int[size+1];
     
     int i = 0;
     std::vector<zStatusBarItem*>::iterator it;

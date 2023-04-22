@@ -84,6 +84,7 @@ bool sqlMove(xd::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to rename [%ls] to [%ls]", src.c_str(), dest.c_str());
+            buf[1023] = 0;
             error.setError(xd::errorGeneral, buf);        
             return false;
         }
@@ -95,6 +96,7 @@ bool sqlMove(xd::IDatabasePtr db,
     {
         wchar_t buf[1024]; // some paths might be long
         swprintf(buf, 1024, L"Unable to move [%ls] to [%ls]", src.c_str(), dest.c_str());
+        buf[1023] = 0;
         error.setError(xd::errorGeneral, buf);
         return false;
     }

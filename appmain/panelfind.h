@@ -160,8 +160,6 @@ protected:
     void onFind(wxCommandEvent& evt);
    
 private:
-
-    bool m_is_empty;
     
     DECLARE_EVENT_TABLE()
 };

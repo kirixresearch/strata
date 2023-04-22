@@ -373,6 +373,7 @@ void Array::reverse(ExprEnv* env, void*, Value* retval)
             int num = wtoi(it->name.c_str());
             num = abs(topidx-num);
             swprintf(buf, 64, L"%d", num);
+            buf[63] = 0;
             it->name = buf;
         }
     }
@@ -416,6 +417,7 @@ void Array::shift(ExprEnv* env, void*, Value* retval)
         {
             int num = wtoi(it->name.c_str());
             swprintf(buf, 64, L"%d", --num);
+            buf[63] = 0;
             it->name = buf;
         }
     }
@@ -500,6 +502,7 @@ void Array::slice(ExprEnv* env, void*, Value* retval)
             Value* val = vthis->getMember(name);
             
             swprintf(buf, 32, L"%d", new_idx);
+            buf[31] = 0;
             arr->setMember(buf, val);
         }
         
@@ -722,6 +725,7 @@ void Array::splice(ExprEnv* env, void*, Value* retval)
     for (i = 0; i < total_to_insert; ++i)
     {
         swprintf(buf, 32, L"%d", start+i);
+        buf[31] = 0;
         orig_name = buf;
         
         vthis->setMember(orig_name, env->m_eval_params[i+2]);
@@ -763,6 +767,7 @@ void Array::unshift(ExprEnv* env, void*, Value* retval)
             num += param_count;
             wchar_t buf[32];
             swprintf(buf, 32, L"%d", num);
+            buf[31] = 0;
             it->name = buf;
         }
     }
@@ -827,6 +832,7 @@ void Array::reassignMemberIndexes(ValueObject* obj)
         if (it->name.length() == 0 || wcschr(L"1234567890", it->name[0]))
         {
             swprintf(buf, 64, L"%d", idx++);
+            buf[63] = 0;
             it->name = buf;
             numeric.push_back(*it);
         }
@@ -877,6 +883,7 @@ void Array::makeStringRetvalInternal(ValueObject* vthis,
     for (i = 0; i < member_count; ++i)
     {
         swprintf(buf, 64, L"%d", i);
+        buf[63] = 0;
         name = buf;
         
         if (vthis->getMemberExists(name))

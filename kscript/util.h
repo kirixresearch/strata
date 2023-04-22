@@ -88,7 +88,7 @@ inline bool isLineSeparator(wchar_t ch)
 
 struct SetCharOnExitScope
 {
-    SetCharOnExitScope() { ptr = NULL; }
+    SetCharOnExitScope() { ptr = NULL; ch = 0; }
     SetCharOnExitScope(wchar_t* p, wchar_t ch_onexit) { ptr = p; ch = ch_onexit; }
     SetCharOnExitScope(wchar_t* p, wchar_t ch_onexit, wchar_t ch_now)
     {

@@ -2029,7 +2029,7 @@ public:
     long toPref(double val)
     {
         val *= 100.0;
-        floor(val);
+        (void)floor(val);
         long retval = val;
         return retval;
     }
