@@ -35,7 +35,7 @@ void SvcReportEvent(LPTSTR szFunction);
 static void logInfo(const char* msg)
 {
 #ifdef _DEBUG
-    printf(msg);
+    printf("%s", msg);
 #endif
 }
 

@@ -60,7 +60,7 @@ void SvcInstall()
 
     if (!GetModuleFileName(NULL, path, MAX_PATH))
     {
-        printf("Cannot install service (%d)\n", GetLastError());
+        printf("Cannot install service (%u)\n", GetLastError());
         return;
     }
 
@@ -73,7 +73,7 @@ void SvcInstall()
  
     if (!scmgr)
     {
-        printf("OpenSCManager failed (%d)\n", GetLastError());
+        printf("OpenSCManager failed (%u)\n", GetLastError());
         return;
     }
 
@@ -96,7 +96,7 @@ void SvcInstall()
  
     if (!svc)
     {
-        printf("CreateService failed (%d)\n", GetLastError());
+        printf("CreateService failed (%u)\n", GetLastError());
         CloseServiceHandle(scmgr);
         return;
     }
