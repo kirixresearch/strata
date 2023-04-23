@@ -398,7 +398,7 @@ private:
 
     bool m_temporary_model;           // true if the tabledoc should use a temporary model (e.g. for query results)
     int m_relationship_sync;          // true if the tabledoc should update child windows when cursor is moved
-    bool m_enabled;                   // true if the tabledoc is enabled
+    bool m_tabledoc_enabled;          // true if the tabledoc is enabled
     bool m_default_view_created;
     bool m_override_beginedit;
     bool m_is_childset;               // true if the tabledoc is currently a synced child set

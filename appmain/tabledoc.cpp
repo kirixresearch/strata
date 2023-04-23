@@ -338,7 +338,7 @@ TableDoc::TableDoc()
     m_temporary_model = false;
     m_relationship_sync = g_app->getAppController()->getRelationshipSync();
     m_is_childset = false;
-    m_enabled = true;
+    m_tabledoc_enabled = true;
     m_default_view_created = false;
     m_override_beginedit = false;
     m_text_wrapping = tabledocWrapOff;
@@ -1094,7 +1094,7 @@ void TableDoc::onUpdateUI(wxUpdateUIEvent& evt)
 {
     int id = evt.GetId();
 
-    if (!m_enabled)
+    if (!m_tabledoc_enabled)
     {
         evt.Enable(false);
         return;
@@ -2500,10 +2500,10 @@ void TableDoc::closeSet()
 
 void TableDoc::setEnabled(bool new_val)
 {
-    if (m_enabled == new_val)
+    if (m_tabledoc_enabled == new_val)
         return;
 
-    m_enabled = new_val;
+    m_tabledoc_enabled = new_val;
 
     m_grid->setVisibleState(new_val ?
                             kcl::Grid::stateVisible :
@@ -2517,7 +2517,7 @@ void TableDoc::setEnabled(bool new_val)
 
 bool TableDoc::getEnabled()
 {
-    return m_enabled;
+    return m_tabledoc_enabled;
 }
 
 
@@ -3375,7 +3375,7 @@ static void extractAlterJobInfo(kl::JsonNode params,
 void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
 {
     // unlock this window
-    m_enabled = true;
+    m_tabledoc_enabled = true;
     m_grid->setVisibleState(kcl::Grid::stateVisible);
     m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_ENABLED_STATE_CHANGED));
 
