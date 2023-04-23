@@ -260,7 +260,7 @@ bool XdfsBaseSet::prepareIndexEntry(XdfsIndexEntry& e)
 
         kl::trim(piece);
 
-        if (piece.find_last_of(L' ') != -1)
+        if (piece.find_last_of(L' ') != piece.npos)
             colname = kl::beforeLast(piece, L' ');
              else
             colname = piece;
