@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDORACLE_DATABASE_H
-#define __XDORACLE_DATABASE_H
+#ifndef H_XDORACLE_DATABASE_H
+#define H_XDORACLE_DATABASE_H
 
 
 #include "../xdcommon/errorinfo.h"

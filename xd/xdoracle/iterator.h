@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDORACLE_ITERATOR_H
-#define __XDORACLE_ITERATOR_H
+#ifndef H_XDORACLE_ITERATOR_H
+#define H_XDORACLE_ITERATOR_H
 
 
 #include "../../kscript/kscript.h"

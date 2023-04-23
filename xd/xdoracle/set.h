@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDORACLE_SET_H
-#define __XDORACLE_SET_H
+#ifndef H_XDORACLE_SET_H
+#define H_XDORACLE_SET_H
 
 
 #include "../xdcommon/cmnbaseset.h"
