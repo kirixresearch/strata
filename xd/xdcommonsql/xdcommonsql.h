@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_SQLCOMMON_H
-#define __XDCOMMON_SQLCOMMON_H
+#ifndef H_XDCOMMON_SQLCOMMON_H
+#define H_XDCOMMON_SQLCOMMON_H
 
 
 #include <map>
