@@ -37,7 +37,7 @@ class CommonBaseIterator : public xd::IIterator, public xd::IIteratorRelation
 public:
 
     CommonBaseIterator();
-    ~CommonBaseIterator();
+    virtual ~CommonBaseIterator();
 
     virtual xd::IDatabase* cmniterGetDatabase() = 0; // derivers must implement
 
