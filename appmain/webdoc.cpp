@@ -1387,7 +1387,7 @@ static void nodeToString(wxDOMNode& cell, wxString& output)
 
 
 
-
+/*
 // HTML Table to Data Table routines
 
 static int lookupNodeIdx(wxDOMNodeList& list, const wxString& node_name)
@@ -1402,7 +1402,7 @@ static int lookupNodeIdx(wxDOMNodeList& list, const wxString& node_name)
     
     return -1;
 }
-
+*/
 
 static bool isNumericValue(const wxString& s)
 {
