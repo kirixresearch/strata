@@ -33,7 +33,7 @@ const wxString EVENT_DESIGN_GROUP_RESIZE        = wxT("event.design.group.resize
 const wxString TAG_TABLE_HEADER_DEFAULT     = wxT("table.header.default");
 
 
-static bool isColumnHeader(kcanvas::ICompTablePtr table)
+inline bool isColumnHeader(kcanvas::ICompTablePtr table)
 {
     if (table.isNull())
         return false;
@@ -46,7 +46,7 @@ static bool isColumnHeader(kcanvas::ICompTablePtr table)
     return false;
 }
 
-static bool isRowHeader(kcanvas::ICompTablePtr table)
+inline bool isRowHeader(kcanvas::ICompTablePtr table)
 {
     if (table.isNull())
         return false;
