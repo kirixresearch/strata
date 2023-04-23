@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCLIENT_XDCLIENT_H
-#define __XDCLIENT_XDCLIENT_H
+#ifndef H_XDCLIENT_XDCLIENT_H
+#define H_XDCLIENT_XDCLIENT_H
 
 #include <kl/klib.h>
 #include <kl/json.h>

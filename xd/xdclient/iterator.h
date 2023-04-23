@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCLIENT_ITERATOR_H
-#define __XDCLIENT_ITERATOR_H
+#ifndef H_XDCLIENT_ITERATOR_H
+#define H_XDCLIENT_ITERATOR_H
 
 
 #include "../xdcommon/cmnbaseiterator.h"

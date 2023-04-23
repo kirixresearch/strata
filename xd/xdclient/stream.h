@@ -8,8 +8,8 @@
  *
  */
 
-#ifndef __XDCLIENT_STREAM_H
-#define __XDCLIENT_STREAM_H
+#ifndef H_XDCLIENT_STREAM_H
+#define H_XDCLIENT_STREAM_H
 
 class ClientDatabase;
 

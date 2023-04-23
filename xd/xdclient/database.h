@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCLIENT_DATABASE_H
-#define __XDCLIENT_DATABASE_H
+#ifndef H_XDCLIENT_DATABASE_H
+#define H_XDCLIENT_DATABASE_H
 
 
 

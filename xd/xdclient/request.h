@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCLIENT_REQUEST_H
-#define __XDCLIENT_REQUEST_H
+#ifndef H_XDCLIENT_REQUEST_H
+#define H_XDCLIENT_REQUEST_H
 
 
 #include <string>
