@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __GPASVC_GPASVC_H
-#define __GPASVC_GPASVC_H
+#ifndef H_GPASVC_GPASVC_H
+#define H_GPASVC_GPASVC_H
 
 #include <windows.h>
 
