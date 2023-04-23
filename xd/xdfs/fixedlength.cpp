@@ -339,7 +339,7 @@ const std::wstring& FixedLengthRow::getWideString(int column_ordinal)
     }
      else if (dai->source_encoding == xd::encodingEBCDIC)
     {
-        for (int i = 0; i < dai->source_width; ++i)
+        for (i = 0; i < dai->source_width; ++i)
             m_wstr_result += (wchar_t)ebcdic2ascii(*(unsigned char*)(m_rowptr + dai->source_offset + i));
 
         kl::trim(m_wstr_result);
