@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCANVAS_CANVASPRINTOUT_H
-#define __KCANVAS_CANVASPRINTOUT_H
+#ifndef H_KCANVAS_CANVASPRINTOUT_H
+#define H_KCANVAS_CANVASPRINTOUT_H
 
 
 #include <wx/print.h>

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCANVAS_KCANVAS_INT_H
-#define __KCANVAS_KCANVAS_INT_H
+#ifndef H_KCANVAS_KCANVAS_INT_H
+#define H_KCANVAS_KCANVAS_INT_H
 
 
 // remove VC9 warnings - eventually commenting this

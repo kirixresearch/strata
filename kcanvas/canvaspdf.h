@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCANVAS_CANVASPDF_H
-#define __KCANVAS_CANVASPDF_H
+#ifndef H_KCANVAS_CANVASPDF_H
+#define H_KCANVAS_CANVASPDF_H
 
 
 #include "../supp/libharu/include/hpdf.h" 

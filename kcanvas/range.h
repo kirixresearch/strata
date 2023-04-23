@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCANVAS_RANGE_H
-#define __KCANVAS_RANGE_H
+#ifndef H_KCANVAS_RANGE_H
+#define H_KCANVAS_RANGE_H
 
 
 namespace kcanvas

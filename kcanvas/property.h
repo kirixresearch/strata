@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCANVAS_PROPERTY_H
-#define __KCANVAS_PROPERTY_H
+#ifndef H_KCANVAS_PROPERTY_H
+#define H_KCANVAS_PROPERTY_H
 
 
 namespace kcanvas

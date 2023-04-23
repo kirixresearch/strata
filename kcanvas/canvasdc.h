@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCANVAS_CANVASDC_H
-#define __KCANVAS_CANVASDC_H
+#ifndef H_KCANVAS_CANVASDC_H
+#define H_KCANVAS_CANVASDC_H
 
 
 #include "event.h"

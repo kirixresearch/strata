@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCANVAS_EVENT_H
-#define __KCANVAS_EVENT_H
+#ifndef H_KCANVAS_EVENT_H
+#define H_KCANVAS_EVENT_H
 
 
 #include <wx/timer.h>

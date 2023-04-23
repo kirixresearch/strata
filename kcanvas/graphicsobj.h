@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCANVAS_GRAPHICSOBJ_H
-#define __KCANVAS_GRAPHICSOBJ_H
+#ifndef H_KCANVAS_GRAPHICSOBJ_H
+#define H_KCANVAS_GRAPHICSOBJ_H
 
 
 namespace kcanvas

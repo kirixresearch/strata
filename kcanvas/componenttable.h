@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCANVAS_COMPONENTTABLE_H
-#define __KCANVAS_COMPONENTTABLE_H
+#ifndef H_KCANVAS_COMPONENTTABLE_H
+#define H_KCANVAS_COMPONENTTABLE_H
 
 
 #include "graphicsobj.h"

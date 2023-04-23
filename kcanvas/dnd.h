@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCANVAS_DND_H
-#define __KCANVAS_DND_H
+#ifndef H_KCANVAS_DND_H
+#define H_KCANVAS_DND_H
 
 
 namespace kcanvas

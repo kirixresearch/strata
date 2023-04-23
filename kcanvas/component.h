@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCANVAS_COMPONENT_H
-#define __KCANVAS_COMPONENT_H
+#ifndef H_KCANVAS_COMPONENT_H
+#define H_KCANVAS_COMPONENT_H
 
 
 #include "property.h"

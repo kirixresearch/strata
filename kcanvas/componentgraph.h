@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCANVAS_COMPONENTGRAPH_H
-#define __KCANVAS_COMPONENTGRAPH_H
+#ifndef H_KCANVAS_COMPONENTGRAPH_H
+#define H_KCANVAS_COMPONENTGRAPH_H
 
 
 namespace kcanvas

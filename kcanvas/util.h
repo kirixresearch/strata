@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCANVAS_UTIL_H
-#define __KCANVAS_UTIL_H
+#ifndef H_KCANVAS_UTIL_H
+#define H_KCANVAS_UTIL_H
 
 
 namespace kcanvas
