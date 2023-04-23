@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDFS_DELIMITEDTEXTSET_H
-#define __XDFS_DELIMITEDTEXTSET_H
+#ifndef H_XDFS_DELIMITEDTEXTSET_H
+#define H_XDFS_DELIMITEDTEXTSET_H
 
 
 #include "baseset.h"

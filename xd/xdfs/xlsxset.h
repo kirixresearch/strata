@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDFS_XLSXSET_H
-#define __XDFS_XLSXSET_H
+#ifndef H_XDFS_XLSXSET_H
+#define H_XDFS_XLSXSET_H
 
 
 #include "baseset.h"

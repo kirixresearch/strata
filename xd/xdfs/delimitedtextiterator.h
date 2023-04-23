@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDFS_DELIMITEDTEXTITERATOR_H
-#define __XDFS_DELIMITEDTEXTITERATOR_H
+#ifndef H_XDFS_DELIMITEDTEXTITERATOR_H
+#define H_XDFS_DELIMITEDTEXTITERATOR_H
 
 
 #include "../xdcommon/cmnbaseiterator.h"

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDFS_RAWTEXT_H
-#define __XDFS_RAWTEXT_H
+#ifndef H_XDFS_RAWTEXT_H
+#define H_XDFS_RAWTEXT_H
 
 
 class BufferedTextFile

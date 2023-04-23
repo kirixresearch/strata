@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDFS_XBASE_H
-#define __XDFS_XBASE_H
+#ifndef H_XDFS_XBASE_H
+#define H_XDFS_XBASE_H
 
 
 #include <xd/xd.h>

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDFS_FIXEDLENGTH_H
-#define __XDFS_FIXEDLENGTH_H
+#ifndef H_XDFS_FIXEDLENGTH_H
+#define H_XDFS_FIXEDLENGTH_H
 
 #include <kl/file.h>
 #include <kl/memory.h>

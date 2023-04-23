@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDFS_TTBSET_H
-#define __XDFS_TTBSET_H
+#ifndef H_XDFS_TTBSET_H
+#define H_XDFS_TTBSET_H
 
 
 #include "baseset.h"

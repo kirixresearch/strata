@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDFS_DELIMITEDTEXT_H
-#define __XDFS_DELIMITEDTEXT_H
+#ifndef H_XDFS_DELIMITEDTEXT_H
+#define H_XDFS_DELIMITEDTEXT_H
 
 
 #include <kl/klib.h>

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDFS_TTBTBL_H
-#define __XDFS_TTBTBL_H
+#ifndef H_XDFS_TTBTBL_H
+#define H_XDFS_TTBTBL_H
 
 #include <kl/file.h>
 #include <kl/memory.h>

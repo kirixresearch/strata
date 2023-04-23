@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDFS_FIXEDLENGTHTEXTSET_H
-#define __XDFS_FIXEDLENGTHTEXTSET_H
+#ifndef H_XDFS_FIXEDLENGTHTEXTSET_H
+#define H_XDFS_FIXEDLENGTHTEXTSET_H
 
 
 #include <kl/file.h>

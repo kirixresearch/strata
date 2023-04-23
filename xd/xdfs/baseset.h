@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDFS_BASESET_H
-#define __XDFS_BASESET_H
+#ifndef H_XDFS_BASESET_H
+#define H_XDFS_BASESET_H
 
 
 #include <kl/file.h>

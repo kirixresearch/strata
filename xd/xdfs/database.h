@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDFS_DATABASE_H
-#define __XDFS_DATABASE_H
+#ifndef H_XDFS_DATABASE_H
+#define H_XDFS_DATABASE_H
 
 
 

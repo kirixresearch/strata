@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDFS_TTBSETMODIFY_H
-#define __XDFS_TTBSETMODIFY_H
+#ifndef H_XDFS_TTBSETMODIFY_H
+#define H_XDFS_TTBSETMODIFY_H
 
 
 

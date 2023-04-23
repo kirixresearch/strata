@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDFS_TTBITERATOR_H
-#define __XDFS_TTBITERATOR_H
+#ifndef H_XDFS_TTBITERATOR_H
+#define H_XDFS_TTBITERATOR_H
 
 
 #include "../xdcommon/cmnbaseiterator.h"

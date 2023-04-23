@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDFS_XLSX_H
-#define __XDFS_XLSX_H
+#ifndef H_XDFS_XLSX_H
+#define H_XDFS_XLSX_H
 
 
 #include <xd/xd.h>
