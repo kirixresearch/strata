@@ -56,7 +56,7 @@ static wxBitmap xpmstrToBitmap(const std::wstring& str)
     std::vector<std::string>::iterator it;
     
     bool in_quote = false;
-    const char* p = (char*)s.c_str();
+    const char* p = (const char*)s.c_str();
     while (*p)
     {
         if (*p != 0x0a && *p != 0x0d && *p != '\t' &&
