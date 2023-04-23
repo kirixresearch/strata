@@ -108,7 +108,6 @@ public:
     
 private:
 
-    Process* m_process;
     kscript::ExprEnv* m_env;
     kscript::Value* m_retval;
     bool* m_done_flag;

@@ -109,7 +109,6 @@ private:
 
     Process* m_process;
     int m_type;
-    wxInputStream* m_stream;
     std::list<wxString>* m_lines;
 };
 
