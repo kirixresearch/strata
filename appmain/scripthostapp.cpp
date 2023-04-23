@@ -3052,6 +3052,7 @@ public:
     bool compress;
 };
 
+/*
 static int extensionToDbtype(const wxString& filename)
 {
     wxString ext;
@@ -3072,7 +3073,7 @@ static int extensionToDbtype(const wxString& filename)
 
     return dbtypeDelimitedText;
 }
-
+*/
 
 static wxString appendPath(const wxString& str1, const wxString& str2)
 {
