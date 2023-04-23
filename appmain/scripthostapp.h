@@ -103,14 +103,14 @@ public:
         KSCRIPT_GUI_METHOD("newDocument", HostApp::newDocument)
         KSCRIPT_GUI_METHOD("open", HostApp::open)
         KSCRIPT_GUI_METHOD("openWeb", HostApp::openWeb)
-        KSCRIPT_GUI_METHOD("sendWebRequest", HostApp::sendWebRequest);
-        KSCRIPT_GUI_METHOD("close", HostApp::close);
-        KSCRIPT_GUI_METHOD("getDocuments", HostApp::getDocuments);
-        KSCRIPT_GUI_METHOD("getDocumentById", HostApp::getDocumentById);
-        KSCRIPT_GUI_METHOD("getActiveDocument", HostApp::getActiveDocument);
-        KSCRIPT_GUI_METHOD("createPane", HostApp::createPane);
-        KSCRIPT_GUI_METHOD("createDocument", HostApp::createDocument);
-        KSCRIPT_GUI_METHOD("showPane", HostApp::showPane);
+        KSCRIPT_GUI_METHOD("sendWebRequest", HostApp::sendWebRequest)
+        KSCRIPT_GUI_METHOD("close", HostApp::close)
+        KSCRIPT_GUI_METHOD("getDocuments", HostApp::getDocuments)
+        KSCRIPT_GUI_METHOD("getDocumentById", HostApp::getDocumentById)
+        KSCRIPT_GUI_METHOD("getActiveDocument", HostApp::getActiveDocument)
+        KSCRIPT_GUI_METHOD("createPane", HostApp::createPane)
+        KSCRIPT_GUI_METHOD("createDocument", HostApp::createDocument)
+        KSCRIPT_GUI_METHOD("showPane", HostApp::showPane)
         KSCRIPT_GUI_METHOD("hang", HostApp::hang)
         KSCRIPT_GUI_METHOD("crash", HostApp::crash)
         KSCRIPT_GUI_METHOD("exit", HostApp::exit)
