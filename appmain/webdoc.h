@@ -280,7 +280,6 @@ private:
     wxWindow* m_web;
     wxWebControl* m_webcontrol;
     wxWebView* m_webview;
-    wxStatusBar* m_status_bar;
     int m_site_id;
     IFramePtr m_frame;
     wxString m_url;
