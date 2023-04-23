@@ -55,7 +55,7 @@ struct PaneInfo
 
 xcm_interface IUIContextInternal : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("cfw.IUIContextInternal");
+    XCM_INTERFACE_NAME("cfw.IUIContextInternal")
 
 public:
 
