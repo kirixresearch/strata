@@ -65,7 +65,6 @@ private:
 private:
 
     std::map<wxString, AppPreference, std::less<wxString> > m_map;
-    bool m_dirty;
     wxString m_vendor_name;
     wxString m_app_name;
 };
