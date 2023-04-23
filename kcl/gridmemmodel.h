@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_GRIDMEMMODEL_H
-#define __KCL_GRIDMEMMODEL_H
+#ifndef H_KCL_GRIDMEMMODEL_H
+#define H_KCL_GRIDMEMMODEL_H
 
 
 #include "grid.h"

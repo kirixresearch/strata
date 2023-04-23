@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_COLORDROPDOWN_H
-#define __KCL_COLORDROPDOWN_H
+#ifndef H_KCL_COLORDROPDOWN_H
+#define H_KCL_COLORDROPDOWN_H
 
 
 namespace kcl

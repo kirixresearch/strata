@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_RULERCONTROL_H
-#define __KCL_RULERCONTROL_H
+#ifndef H_KCL_RULERCONTROL_H
+#define H_KCL_RULERCONTROL_H
 
 
 #define RULER_MODEL_PPI 1440

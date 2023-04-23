@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_WIZARD_H
-#define __KCL_WIZARD_H
+#ifndef H_KCL_WIZARD_H
+#define H_KCL_WIZARD_H
 
 
 

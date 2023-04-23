@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_POPUPCONTAINER_H
-#define __KCL_POPUPCONTAINER_H
+#ifndef H_KCL_POPUPCONTAINER_H
+#define H_KCL_POPUPCONTAINER_H
 
 
 namespace kcl

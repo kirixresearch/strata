@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_GRIDVALIDATOR_H
-#define __KCL_GRIDVALIDATOR_H
+#ifndef H_KCL_GRIDVALIDATOR_H
+#define H_KCL_GRIDVALIDATOR_H
 
 
 #include <vector>

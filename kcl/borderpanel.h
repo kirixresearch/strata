@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_BORDERPANEL_H
-#define __KCL_BORDERPANEL_H
+#ifndef H_KCL_BORDERPANEL_H
+#define H_KCL_BORDERPANEL_H
 
 
 #include "util.h"

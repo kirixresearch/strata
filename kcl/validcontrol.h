@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_VALIDCONTROL_H
-#define __KCL_VALIDCONTROL_H
+#ifndef H_KCL_VALIDCONTROL_H
+#define H_KCL_VALIDCONTROL_H
 
 
 #include <wx/wx.h>

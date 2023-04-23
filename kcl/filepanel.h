@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_FILEPANEL_H
-#define __KCL_FILEPANEL_H
+#ifndef H_KCL_FILEPANEL_H
+#define H_KCL_FILEPANEL_H
 
 #include <wx/wx.h>
 #include <wx/listctrl.h>

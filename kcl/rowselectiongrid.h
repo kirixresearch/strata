@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_ROWSELECTIONGRID_H
-#define __KCL_ROWSELECTIONGRID_H
+#ifndef H_KCL_ROWSELECTIONGRID_H
+#define H_KCL_ROWSELECTIONGRID_H
 
 
 #include "grid.h"

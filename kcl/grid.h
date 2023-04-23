@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_GRID_H
-#define __KCL_GRID_H
+#ifndef H_KCL_GRID_H
+#define H_KCL_GRID_H
 
 
 #include <wx/wx.h>

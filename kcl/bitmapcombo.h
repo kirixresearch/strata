@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_BITMAPCOMBO_H
-#define __KCL_BITMAPCOMBO_H
+#ifndef H_KCL_BITMAPCOMBO_H
+#define H_KCL_BITMAPCOMBO_H
 
 
 #include <wx/combo.h>

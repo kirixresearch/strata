@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_BUTTONBAR_H
-#define __KCL_BUTTONBAR_H
+#ifndef H_KCL_BUTTONBAR_H
+#define H_KCL_BUTTONBAR_H
 
 
 #include <wx/wx.h>

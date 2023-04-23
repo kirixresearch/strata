@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_KCL_H
-#define __KCL_KCL_H
+#ifndef H_KCL_KCL_H
+#define H_KCL_KCL_H
 
 
 #include "button.h"

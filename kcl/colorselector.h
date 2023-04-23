@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_COLORSELECTOR_H
-#define __KCL_COLORSELECTOR_H
+#ifndef H_KCL_COLORSELECTOR_H
+#define H_KCL_COLORSELECTOR_H
 
 
 #include <wx/wx.h>

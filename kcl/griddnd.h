@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_GRIDDND_H
-#define __KCL_GRIDDND_H
+#ifndef H_KCL_GRIDDND_H
+#define H_KCL_GRIDDND_H
 
 
 #include <wx/dataobj.h>

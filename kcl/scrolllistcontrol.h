@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_SCROLLLISTCONTROL_H
-#define __KCL_SCROLLLISTCONTROL_H
+#ifndef H_KCL_SCROLLLISTCONTROL_H
+#define H_KCL_SCROLLLISTCONTROL_H
 
 
 #include <wx/wx.h>

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_COLORPANEL_H
-#define __KCL_COLORPANEL_H
+#ifndef H_KCL_COLORPANEL_H
+#define H_KCL_COLORPANEL_H
 
 
 #include "util.h"

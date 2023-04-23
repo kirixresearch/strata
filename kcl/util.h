@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_UTIL_H
-#define __KCL_UTIL_H
+#ifndef H_KCL_UTIL_H
+#define H_KCL_UTIL_H
 
 
 namespace kcl

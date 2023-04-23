@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KCL_BANNERCONTROL_H
-#define __KCL_BANNERCONTROL_H
+#ifndef H_KCL_BANNERCONTROL_H
+#define H_KCL_BANNERCONTROL_H
 
 
 #include <wx/wx.h>
