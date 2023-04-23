@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDEXCEL_DATABASE_H
-#define __XDEXCEL_DATABASE_H
+#ifndef H_XDEXCEL_DATABASE_H
+#define H_XDEXCEL_DATABASE_H
 
 
 #include <map>

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDEXCEL_INSERTER_H
-#define __XDEXCEL_INSERTER_H
+#ifndef H_XDEXCEL_INSERTER_H
+#define H_XDEXCEL_INSERTER_H
 
 
 const int insert_row_count = 500;

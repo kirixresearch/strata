@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDEXCEL_STREAM_H
-#define __XDEXCEL_STREAM_H
+#ifndef H_XDEXCEL_STREAM_H
+#define H_XDEXCEL_STREAM_H
 
 
 #include <kl/memory.h>

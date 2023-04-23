@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDEXCEL_ITERATOR_H
-#define __XDEXCEL_ITERATOR_H
+#ifndef H_XDEXCEL_ITERATOR_H
+#define H_XDEXCEL_ITERATOR_H
 
 
 

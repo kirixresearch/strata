@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDEXCEL_UTIL_H
-#define __XDEXCEL_UTIL_H
+#ifndef H_XDEXCEL_UTIL_H
+#define H_XDEXCEL_UTIL_H
 
 
 #endif
