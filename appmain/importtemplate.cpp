@@ -27,7 +27,7 @@
 #endif
 
 
-// tableselection grid column indexes
+// table selection grid column indexes
 
 enum
 {
@@ -37,12 +37,6 @@ enum
     APPEND_IDX = 3,
     FIELDMAPPING_IDX = 4
 };
-
-
-const int COMBO_DEFAULT_IDX = 0;
-
-
-
 
 
 
@@ -271,8 +265,8 @@ bool ImportTemplate::loadJsonFromNode(const std::wstring& path)
     if (!kpp_template_node.isOk())
         return false;
 
-    kl::JsonNode type_node = kpp_template_node["type"];
-    if (!type_node.isOk() || type_node.getString() != L"import")
+    kl::JsonNode template_type_node = kpp_template_node["type"];
+    if (!template_type_node.isOk() || template_type_node.getString() != L"import")
         return false;
 
     kl::JsonNode version_node = kpp_template_node["version"];
