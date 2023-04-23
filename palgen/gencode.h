@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __PALGEN_GENCODE_H
-#define __PALGEN_GENCODE_H
+#ifndef H_PALGEN_GENCODE_H
+#define H_PALGEN_GENCODE_H
 
 
 wxString calcActivationCode(const wxString& input_app_tag,

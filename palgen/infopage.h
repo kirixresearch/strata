@@ -9,8 +9,8 @@
  */
  
 
-#ifndef __PALGEN_INFOPAGE_H
-#define __PALGEN_INFOPAGE_H
+#ifndef H_PALGEN_INFOPAGE_H
+#define H_PALGEN_INFOPAGE_H
 
 
 class InfoPage : public wxPanel

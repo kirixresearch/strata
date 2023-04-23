@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __PALGEN_GENERATEPAGE_H
-#define __PALGEN_GENERATEPAGE_H
+#ifndef H_PALGEN_GENERATEPAGE_H
+#define H_PALGEN_GENERATEPAGE_H
 
 
 class wxTextCtrl;

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __PALGEN_APP_H
-#define __PALGEN_APP_H
+#ifndef H_PALGEN_APP_H
+#define H_PALGEN_APP_H
 
 
 #include <wx/wx.h>

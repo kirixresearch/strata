@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __PALGEN_MAINFRAME_H
-#define __PALGEN_MAINFRAME_H
+#ifndef H_PALGEN_MAINFRAME_H
+#define H_PALGEN_MAINFRAME_H
 
 
 class MainFrame : public wxFrame
