@@ -141,7 +141,6 @@ private:
     std::wstring m_db_connstr;
     
     wxString m_install_path;
-    bool m_inited;
     bool m_is_service;
     bool m_is_service_config;
 
