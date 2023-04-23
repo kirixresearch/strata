@@ -373,7 +373,7 @@ static bool determineSetFormatInfo(xd::IStream* stream, xd::FormatDefinition* in
     const wchar_t* p;
     for (it = lines.begin(); it != lines.end(); ++it)
     {
-        p = (wchar_t*)it->c_str();
+        p = (const wchar_t*)it->c_str();
         while (*p)
         {
             if (*p == ',')
