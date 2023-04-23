@@ -2596,7 +2596,7 @@ void RelationDiagram::drawConnectingLine(wxDC* dc,
 }
 
 
-
+/*
 static bool _rectInRect(wxRect* rect, int x, int y, int width, int height)
 {
     if (x+width < 0 || y+height < 0)
@@ -2615,7 +2615,7 @@ static bool _rectInRect(wxRect* rect, int x, int y, int width, int height)
 
     return true;
 }
-
+*/
 
 void RelationDiagram::refresh()
 {
