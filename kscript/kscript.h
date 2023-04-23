@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KSCRIPT_KSCRIPT_H
-#define __KSCRIPT_KSCRIPT_H
+#ifndef H_KSCRIPT_KSCRIPT_H
+#define H_KSCRIPT_KSCRIPT_H
 
 
 #include <vector>

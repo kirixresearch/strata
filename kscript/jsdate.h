@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KSCRIPT_JSDATE_H
-#define __KSCRIPT_JSDATE_H
+#ifndef H_KSCRIPT_JSDATE_H
+#define H_KSCRIPT_JSDATE_H
 
 
 #include "jsobject.h"

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KSCRIPT_JSREGEXP_H
-#define __KSCRIPT_JSREGEXP_H
+#ifndef H_KSCRIPT_JSREGEXP_H
+#define H_KSCRIPT_JSREGEXP_H
 
 
 #include "../kl/include/kl/regex.h"

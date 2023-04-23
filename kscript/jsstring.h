@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KSCRIPT_JSSTRING_H
-#define __KSCRIPT_JSSTRING_H
+#ifndef H_KSCRIPT_JSSTRING_H
+#define H_KSCRIPT_JSSTRING_H
 
 
 #include "jsobject.h"

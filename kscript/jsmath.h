@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KSCRIPT_JSMATH_H
-#define __KSCRIPT_JSMATH_H
+#ifndef H_KSCRIPT_JSMATH_H
+#define H_KSCRIPT_JSMATH_H
 
 
 namespace kscript

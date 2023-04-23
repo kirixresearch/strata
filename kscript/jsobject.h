@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KSCRIPT_JSOBJECT_H
-#define __KSCRIPT_JSOBJECT_H
+#ifndef H_KSCRIPT_JSOBJECT_H
+#define H_KSCRIPT_JSOBJECT_H
 
 
 namespace kscript

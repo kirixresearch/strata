@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KSCRIPT_JSARRAY_H
-#define __KSCRIPT_JSARRAY_H
+#ifndef H_KSCRIPT_JSARRAY_H
+#define H_KSCRIPT_JSARRAY_H
 
 
 #include "jsobject.h"

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KSCRIPT_JSBOOLEAN_H
-#define __KSCRIPT_JSBOOLEAN_H
+#ifndef H_KSCRIPT_JSBOOLEAN_H
+#define H_KSCRIPT_JSBOOLEAN_H
 
 
 #include "jsobject.h"

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KSCRIPT_JSERROR_H
-#define __KSCRIPT_JSERROR_H
+#ifndef H_KSCRIPT_JSERROR_H
+#define H_KSCRIPT_JSERROR_H
 
 
 #include "jsobject.h"

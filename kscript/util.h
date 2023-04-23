@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KSCRIPT_UTIL_H
-#define __KSCRIPT_UTIL_H
+#ifndef H_KSCRIPT_UTIL_H
+#define H_KSCRIPT_UTIL_H
 
 
 #include <cwctype>

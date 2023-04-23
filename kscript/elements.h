@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KSCRIPT_ELEMENTS_H
-#define __KSCRIPT_ELEMENTS_H
+#ifndef H_KSCRIPT_ELEMENTS_H
+#define H_KSCRIPT_ELEMENTS_H
 
 
 namespace kscript
