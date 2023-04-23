@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDPGSQL_ITERATOR_H
-#define __XDPGSQL_ITERATOR_H
+#ifndef H_XDKPG_ITERATOR_H
+#define H_XDKPG_ITERATOR_H
 
 
 

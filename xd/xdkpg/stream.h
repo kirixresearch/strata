@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDPGSQL_STREAM_H
-#define __XDPGSQL_STREAM_H
+#ifndef H_XDKPG_STREAM_H
+#define H_XDKPG_STREAM_H
 
 
 #include <kl/memory.h>

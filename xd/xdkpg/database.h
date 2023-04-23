@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDPGSQL_DATABASE_H
-#define __XDPGSQL_DATABASE_H
+#ifndef H_XDKPG_DATABASE_H
+#define H_XDKPG_DATABASE_H
 
 
 #include <map>

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PKGFILE_H
-#define __APP_PKGFILE_H
+#ifndef H_XDKPG_PKGFILE_H
+#define H_XDKPG_PKGFILE_H
 
 
 class PkgFile;
