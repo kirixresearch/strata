@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDMYSQL_SET_H
-#define __XDMYSQL_SET_H
+#ifndef H_XDMYSQL_SET_H
+#define H_XDMYSQL_SET_H
 
 class MysqlDatabase;
 

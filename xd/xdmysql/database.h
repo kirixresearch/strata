@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDMYSQL_DATABASE_H
-#define __XDMYSQL_DATABASE_H
+#ifndef H_XDMYSQL_DATABASE_H
+#define H_XDMYSQL_DATABASE_H
 
 
 #include <string>

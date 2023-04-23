@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDMYSQL_ITERATOR_H
-#define __XDMYSQL_ITERATOR_H
+#ifndef H_XDMYSQL_ITERATOR_H
+#define H_XDMYSQL_ITERATOR_H
 
 
 #include <kl/xcm.h>
