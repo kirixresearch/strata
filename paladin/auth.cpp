@@ -73,6 +73,8 @@ public:
              const std::string& eval_tag,
              int mode);
 
+    virtual ~AuthImpl() { }
+
     int checkAuth();
     int getDaysLeft();
     bool isPerpetual();
