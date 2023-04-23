@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_URL_H
-#define __KL_URL_H
+#ifndef H_KL_URL_H
+#define H_KL_URL_H
 
 
 #include <kl/string.h>

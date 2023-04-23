@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_PORTABLE_H
-#define __KL_PORTABLE_H
+#ifndef H_KL_PORTABLE_H
+#define H_KL_PORTABLE_H
 
 
 #include <cstdio>

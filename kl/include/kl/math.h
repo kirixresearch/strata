@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_MATH_H
-#define __KL_MATH_H
+#ifndef H_KL_MATH_H
+#define H_KL_MATH_H
 
 #include <string>
 #include <cmath>

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_MD5_H
-#define __KL_MD5_H
+#ifndef H_KL_MD5_H
+#define H_KL_MD5_H
 
 
 #include <string>

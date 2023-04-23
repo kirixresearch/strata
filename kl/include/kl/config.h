@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_CONFIG_H
-#define __KL_CONFIG_H
+#ifndef H_KL_CONFIG_H
+#define H_KL_CONFIG_H
 
 #include <string>
 #include <vector>

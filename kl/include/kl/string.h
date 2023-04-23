@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_STRING_H
-#define __KL_STRING_H
+#ifndef H_KL_STRING_H
+#define H_KL_STRING_H
 
 
 // remove VC9 warnings - eventually commenting this

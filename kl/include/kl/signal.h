@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_SIGNAL_H
-#define __KL_SIGNAL_H
+#ifndef H_KL_SIGNAL_H
+#define H_KL_SIGNAL_H
 
 
 #include <vector>

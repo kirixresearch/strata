@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_MEMORY_H
-#define __KL_MEMORY_H
+#ifndef H_KL_MEMORY_H
+#define H_KL_MEMORY_H
 
 
 namespace kl

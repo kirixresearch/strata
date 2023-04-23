@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_XCM_H
-#define __KL_XCM_H
+#ifndef H_KL_XCM_H
+#define H_KL_XCM_H
 
 
 #include <vector>

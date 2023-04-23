@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_FILE_H
-#define __KL_FILE_H
+#ifndef H_KL_FILE_H
+#define H_KL_FILE_H
 
 
 #include <string>

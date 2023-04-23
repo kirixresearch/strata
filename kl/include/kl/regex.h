@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_REGEX_H
-#define __KL_REGEX_H
+#ifndef H_KL_REGEX_H
+#define H_KL_REGEX_H
 
 
 #include <vector>

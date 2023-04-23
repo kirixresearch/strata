@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_CRYPT_H
-#define __KL_CRYPT_H
+#ifndef H_KL_CRYPT_H
+#define H_KL_CRYPT_H
 
 
 #include <string>

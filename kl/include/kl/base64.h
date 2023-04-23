@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_BASE64_H
-#define __KL_BASE64_H
+#ifndef H_KL_BASE64_H
+#define H_KL_BASE64_H
 
 
 namespace kl

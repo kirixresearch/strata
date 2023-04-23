@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_XML_H
-#define __KL_XML_H
+#ifndef H_KL_XML_H
+#define H_KL_XML_H
 
 
 #include <vector>

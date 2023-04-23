@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_UTF8_H
-#define __KL_UTF8_H
+#ifndef H_KL_UTF8_H
+#define H_KL_UTF8_H
 
 
 #include <string>

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_JSON_H
-#define __KL_JSON_H
+#ifndef H_KL_JSON_H
+#define H_KL_JSON_H
 
 
 #include <string>

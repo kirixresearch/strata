@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_HEX_H
-#define __KL_HEX_H
+#ifndef H_KL_HEX_H
+#define H_KL_HEX_H
 
 
 namespace kl

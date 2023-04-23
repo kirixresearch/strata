@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_THREAD_H
-#define __KL_THREAD_H
+#ifndef H_KL_THREAD_H
+#define H_KL_THREAD_H
 
 
 #define KL_AUTO_LOCK(mutex) kl::safe_mutex_locker kl_safe_mutex_locker(mutex)

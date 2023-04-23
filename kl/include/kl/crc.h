@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __KL_CRC_H
-#define __KL_CRC_H
+#ifndef H_KL_CRC_H
+#define H_KL_CRC_H
 
 
 
