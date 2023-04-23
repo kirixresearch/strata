@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDODBC_DATABASE_H
-#define __XDODBC_DATABASE_H
+#ifndef H_XDODBC_DATABASE_H
+#define H_XDODBC_DATABASE_H
 
 
 #include <kl/string.h>

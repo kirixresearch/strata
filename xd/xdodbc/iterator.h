@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDODBC_ITERATOR_H
-#define __XDODBC_ITERATOR_H
+#ifndef H_XDODBC_ITERATOR_H
+#define H_XDODBC_ITERATOR_H
 
 
 #include "../xdcommon/cmnbaseiterator.h"

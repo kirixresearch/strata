@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDODBC_INSERTER_H
-#define __XDODBC_INSERTER_H
+#ifndef H_XDODBC_INSERTER_H
+#define H_XDODBC_INSERTER_H
 
 
 const int insert_row_count = 500;
