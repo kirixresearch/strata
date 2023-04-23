@@ -835,9 +835,11 @@ bool TextDoc::open(const wxString& filename)
         
         if (m_view == TextDoc::FixedLengthView)
             res = initFixedLengthView();
-        else if (m_view == TextDoc::TextDelimitedView)    
+        else if (m_view == TextDoc::TextDelimitedView)
             res = initDelimitedTextView();
-            
+        else
+            res = false;
+
         return res;
     }
 
