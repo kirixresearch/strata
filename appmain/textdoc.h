@@ -208,8 +208,6 @@ private:
     bool m_dirty;                   // changes have been made to the document
     bool m_loading_definition;      // if we're loading a defintion, don't fire any signals
     bool m_path_is_datafile;        // true if m_path is a datafile, or a path to a definition file
-    bool m_fixedlength_inited;      // fixed-length view initialized
-    bool m_textdelimited_inited;    // text-delimited view initialized
     int m_last_textqualifier_sel;   // last text qualifier combobox selection
     int m_last_delimiters_sel;      // last delimiters combobox selection
     wxString m_last_textqualifier;  // last text qualifier that was selected or typed in
