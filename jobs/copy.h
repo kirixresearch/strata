@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __JOBS_COPY_H
-#define __JOBS_COPY_H
+#ifndef H_JOBS_COPY_H
+#define H_JOBS_COPY_H
 
 
 namespace jobs

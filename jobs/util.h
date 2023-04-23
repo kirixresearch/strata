@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __JOBS_UTIL_H
-#define __JOBS_UTIL_H
+#ifndef H_JOBS_UTIL_H
+#define H_JOBS_UTIL_H
 
 
 #include <vector>

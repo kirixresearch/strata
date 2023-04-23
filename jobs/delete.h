@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __JOBS_DELETE_H
-#define __JOBS_DELETE_H
+#ifndef H_JOBS_DELETE_H
+#define H_JOBS_DELETE_H
 
 
 namespace jobs

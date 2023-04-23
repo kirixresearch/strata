@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __JOBS_JOBQUEUE_H
-#define __JOBS_JOBQUEUE_H
+#ifndef H_JOBS_JOBQUEUE_H
+#define H_JOBS_JOBQUEUE_H
 
 
 namespace jobs

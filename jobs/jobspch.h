@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __JOBS_JOBSPCH_H
-#define __JOBS_JOBSPCH_H
+#ifndef H_JOBS_JOBSPCH_H
+#define H_JOBS_JOBSPCH_H
 
 #include <kl/xcm.h>
 #include <kl/string.h>

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __JOBS_SUMMARIZE_H
-#define __JOBS_SUMMARIZE_H
+#ifndef H_JOBS_SUMMARIZE_H
+#define H_JOBS_SUMMARIZE_H
 
 
 namespace jobs

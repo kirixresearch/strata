@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __JOBS_JOBS_H
-#define __JOBS_JOBS_H
+#ifndef H_JOBS_JOBS_H
+#define H_JOBS_JOBS_H
 
 
 namespace xd

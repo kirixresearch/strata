@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __JOBS_QUERY_H
-#define __JOBS_QUERY_H
+#ifndef H_JOBS_QUERY_H
+#define H_JOBS_QUERY_H
 
 
 namespace jobs

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __JOBS_UNCOMPRESS_H
-#define __JOBS_UNCOMPRESS_H
+#ifndef H_JOBS_UNCOMPRESS_H
+#define H_JOBS_UNCOMPRESS_H
 
 
 namespace jobs

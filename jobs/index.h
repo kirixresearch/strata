@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __JOBS_INDEX_H
-#define __JOBS_INDEX_H
+#ifndef H_JOBS_INDEX_H
+#define H_JOBS_INDEX_H
 
 
 namespace jobs

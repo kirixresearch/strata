@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __JOBS_DIVIDE_H
-#define __JOBS_DIVIDE_H
+#ifndef H_JOBS_DIVIDE_H
+#define H_JOBS_DIVIDE_H
 
 
 namespace jobs

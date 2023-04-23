@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __JOBS_JOBBASE_H
-#define __JOBS_JOBBASE_H
+#ifndef H_JOBS_JOBBASE_H
+#define H_JOBS_JOBBASE_H
 
 
 #include <map>

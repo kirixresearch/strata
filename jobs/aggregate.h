@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __JOBS_AGGREGATE_H
-#define __JOBS_AGGREGATE_H
+#ifndef H_JOBS_AGGREGATE_H
+#define H_JOBS_AGGREGATE_H
 
 #include "jobinfo.h"
 
