@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __WXWEBCONNECT_NSSTR_H
-#define __WXWEBCONNECT_NSSTR_H
+#ifndef H_WXWEBCONNECT_NSSTR_H
+#define H_WXWEBCONNECT_NSSTR_H
 
 
 struct nsStringContainer

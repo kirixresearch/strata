@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __WXWEBCONNECT_NSPTR_H
-#define __WXWEBCONNECT_NSPTR_H
+#ifndef H_WXWEBCONNECT_NSPTR_H
+#define H_WXWEBCONNECT_NSPTR_H
 
 
 class ns_smartptr_unknown

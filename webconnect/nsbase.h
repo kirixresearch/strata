@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __WXWEBCONNECT_NSBASE_H
-#define __WXWEBCONNECT_NSBASE_H
+#ifndef H_WXWEBCONNECT_NSBASE_H
+#define H_WXWEBCONNECT_NSBASE_H
 
 
     

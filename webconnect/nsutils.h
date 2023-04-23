@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __WXWEBCONNECT_NSUTILS_H
-#define __WXWEBCONNECT_NSUTILS_H
+#ifndef H_WXWEBCONNECT_NSUTILS_H
+#define H_WXWEBCONNECT_NSUTILS_H
 
 
 wxString ns2wx(nsEmbedCString& str);

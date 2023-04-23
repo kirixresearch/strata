@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __WXWEBCONNECT_NSWEAK_H
-#define __WXWEBCONNECT_NSWEAK_H
+#ifndef H_WXWEBCONNECT_NSWEAK_H
+#define H_WXWEBCONNECT_NSWEAK_H
 
 
 class nsSupportsWeakReferenceBase : public nsISupportsWeakReference

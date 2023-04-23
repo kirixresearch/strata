@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __WXWEBCONNECT_WEBFRAME_H
-#define __WXWEBCONNECT_WEBFRAME_H
+#ifndef H_WXWEBCONNECT_WEBFRAME_H
+#define H_WXWEBCONNECT_WEBFRAME_H
 
 
 ///////////////////////////////////////////////////////////////////////////////

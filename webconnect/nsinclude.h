@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __WXWEBCONNECT_NSINCLUDE_H
-#define __WXWEBCONNECT_NSINCLUDE_H
+#ifndef H_WXWEBCONNECT_NSINCLUDE_H
+#define H_WXWEBCONNECT_NSINCLUDE_H
 
 
 #include "nsbase.h"

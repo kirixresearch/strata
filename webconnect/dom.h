@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __WXWEBCONNECT_DOM_H
-#define __WXWEBCONNECT_DOM_H
+#ifndef H_WXWEBCONNECT_DOM_H
+#define H_WXWEBCONNECT_DOM_H
 
 
 class wxDOMNode;
