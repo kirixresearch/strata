@@ -279,7 +279,7 @@ public:
     int getToPage() { return m_print_to_page; }
     
     void setAllPages(bool all_pages) { m_print_all_pages = all_pages; }
-    bool getAllPages() { return m_print_all_pages; };
+    bool getAllPages() { return m_print_all_pages; }
 
 private:
 
@@ -301,13 +301,24 @@ public:
 
     PageSegmentInfo()
     {
-        int m_section_idx = -1;
-        int m_row_start = 0;
-        int m_row_end = 0;
+        m_section_idx = -1;
+        m_row_start = 0;
+        m_row_end = 0;
     }
-    
-    virtual ~PageSegmentInfo()
+
+    PageSegmentInfo(const PageSegmentInfo& c)
     {
+        m_section_idx = c.m_section_idx;
+        m_row_start = c.m_row_start;
+        m_row_end = c.m_row_end;
+    }
+
+    PageSegmentInfo& operator=(const PageSegmentInfo& c)
+    {
+        m_section_idx = c.m_section_idx;
+        m_row_start = c.m_row_start;
+        m_row_end = c.m_row_end;
+        return *this;
     }
 
 public:
