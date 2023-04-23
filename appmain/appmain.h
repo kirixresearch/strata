@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_APPMAIN_H
-#define __APP_APPMAIN_H
+#ifndef H_APP_APPMAIN_H
+#define H_APP_APPMAIN_H
 
 
 #ifdef _MSC_VER

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELEXTENSIONMGR_H
-#define __APP_PANELEXTENSIONMGR_H
+#ifndef H_APP_PANELEXTENSIONMGR_H
+#define H_APP_PANELEXTENSIONMGR_H
 
 
 class ExtensionInfo;

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELCOLORDOC_H
-#define __APP_PANELCOLORDOC_H
+#ifndef H_APP_PANELCOLORDOC_H
+#define H_APP_PANELCOLORDOC_H
 
 
 class ColorDocPanel : public wxPanel,

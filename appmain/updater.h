@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_UPDATER_H
-#define __APP_UPDATER_H
+#ifndef H_APP_UPDATER_H
+#define H_APP_UPDATER_H
 
 
 struct UpdaterInfo

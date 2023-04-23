@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_COMMANDMGR_H
-#define __APP_COMMANDMGR_H
+#ifndef H_APP_COMMANDMGR_H
+#define H_APP_COMMANDMGR_H
 
 
 class CommandInfo

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_EXPORTPAGES_H
-#define __APP_EXPORTPAGES_H
+#ifndef H_APP_EXPORTPAGES_H
+#define H_APP_EXPORTPAGES_H
 
 
 // forward declarations

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_FRAMEWORK_H
-#define __APP_FRAMEWORK_H
+#ifndef H_APP_FRAMEWORK_H
+#define H_APP_FRAMEWORK_H
 
 
 #include <wx/aui/aui.h>

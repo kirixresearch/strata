@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_FEEDPARSER_H
-#define __APP_FEEDPARSER_H
+#ifndef H_APP_FEEDPARSER_H
+#define H_APP_FEEDPARSER_H
 
 
 

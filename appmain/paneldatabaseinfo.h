@@ -9,8 +9,8 @@
  */
  
 
-#ifndef __APP_PANELDATABASEINFO_H
-#define __APP_PANELDATABASEINFO_H
+#ifndef H_APP_PANELDATABASEINFO_H
+#define H_APP_PANELDATABASEINFO_H
 
 
 class DatabaseInfoPanel : public wxPanel,

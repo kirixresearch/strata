@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTFONT_H
-#define __APP_SCRIPTFONT_H
+#ifndef H_APP_SCRIPTFONT_H
+#define H_APP_SCRIPTFONT_H
 
 
 class zFont : public ScriptHostBase

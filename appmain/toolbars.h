@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_TOOLBARS_H
-#define __APP_TOOLBARS_H
+#ifndef H_APP_TOOLBARS_H
+#define H_APP_TOOLBARS_H
 
 
 const int ID_FirstToolbarId       = 5841;

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_CONNECTIONINFO_H
-#define __APP_CONNECTIONINFO_H
+#ifndef H_APP_CONNECTIONINFO_H
+#define H_APP_CONNECTIONINFO_H
 
 
 

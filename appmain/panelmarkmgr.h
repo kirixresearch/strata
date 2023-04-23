@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELMARKMGR_H
-#define __APP_PANELMARKMGR_H
+#ifndef H_APP_PANELMARKMGR_H
+#define H_APP_PANELMARKMGR_H
 
 
 #include "tabledoc.h"

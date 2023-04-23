@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_EXPORTTEMPLATE_H
-#define __APP_EXPORTTEMPLATE_H
+#ifndef H_APP_EXPORTTEMPLATE_H
+#define H_APP_EXPORTTEMPLATE_H
 
 #include "connectionwizard.h"
 

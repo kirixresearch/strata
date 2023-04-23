@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_QUERYTEMPLATE_H
-#define __APP_QUERYTEMPLATE_H
+#ifndef H_APP_QUERYTEMPLATE_H
+#define H_APP_QUERYTEMPLATE_H
 
 
 enum

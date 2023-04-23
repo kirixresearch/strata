@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_DBDOC_H
-#define __APP_DBDOC_H
+#ifndef H_APP_DBDOC_H
+#define H_APP_DBDOC_H
 
 
 

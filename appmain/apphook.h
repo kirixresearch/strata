@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_APPHOOK_H
-#define __APP_APPHOOK_H
+#ifndef H_APP_APPHOOK_H
+#define H_APP_APPHOOK_H
 
 
 void apphookInitFrame();

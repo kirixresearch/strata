@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_JOBQUEUE_H
-#define __APP_JOBQUEUE_H
+#ifndef H_APP_JOBQUEUE_H
+#define H_APP_JOBQUEUE_H
 
 
 #include "../jobs/jobqueue.h"

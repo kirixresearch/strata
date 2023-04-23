@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_REPORTDOC_H
-#define __APP_REPORTDOC_H
+#ifndef H_APP_REPORTDOC_H
+#define H_APP_REPORTDOC_H
 
 
 #include "reportdesign.h"

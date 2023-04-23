@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELGROUP_H
-#define __APP_PANELGROUP_H
+#ifndef H_APP_PANELGROUP_H
+#define H_APP_PANELGROUP_H
 
 
 class FieldListControl;

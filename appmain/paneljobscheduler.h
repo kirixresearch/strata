@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELJOBSCHEDULER_H
-#define __APP_PANELJOBSCHEDULER_H
+#ifndef H_APP_PANELJOBSCHEDULER_H
+#define H_APP_PANELJOBSCHEDULER_H
 
 
 #include <wx/datectrl.h>

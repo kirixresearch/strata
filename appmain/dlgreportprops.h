@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_DLGREPORTPROPS_H
-#define __APP_DLGREPORTPROPS_H
+#ifndef H_APP_DLGREPORTPROPS_H
+#define H_APP_DLGREPORTPROPS_H
 
 
 // forward declarations

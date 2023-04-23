@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_FSPANEL_H
-#define __APP_FSPANEL_H
+#ifndef H_APP_FSPANEL_H
+#define H_APP_FSPANEL_H
 
 
 #include <wx/dataobj.h>

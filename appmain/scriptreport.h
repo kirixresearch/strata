@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTREPORT_H
-#define __APP_SCRIPTREPORT_H
+#ifndef H_APP_SCRIPTREPORT_H
+#define H_APP_SCRIPTREPORT_H
 
 
 #include "../kcanvas/kcanvas.h"

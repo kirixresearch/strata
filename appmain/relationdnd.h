@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_RELATIONDND_H
-#define __APP_RELATIONDND_H
+#ifndef H_APP_RELATIONDND_H
+#define H_APP_RELATIONDND_H
 
 
 #define RELATIONLINE_DATA_OBJECT_FORMAT wxT("application/vnd.kx.relline")

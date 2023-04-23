@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTBUTTON_H
-#define __APP_SCRIPTBUTTON_H
+#ifndef H_APP_SCRIPTBUTTON_H
+#define H_APP_SCRIPTBUTTON_H
 
 
 class Button : public FormControl

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELINDEX_H
-#define __APP_PANELINDEX_H
+#ifndef H_APP_PANELINDEX_H
+#define H_APP_PANELINDEX_H
 
 
 #include "tabledoc.h"

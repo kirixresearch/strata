@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_ARTPROVIDER_H
-#define __APP_ARTPROVIDER_H
+#ifndef H_APP_ARTPROVIDER_H
+#define H_APP_ARTPROVIDER_H
 
 
 #include <wx/aui/aui.h>

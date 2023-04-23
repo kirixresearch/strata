@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTHOST_H
-#define __APP_SCRIPTHOST_H
+#ifndef H_APP_SCRIPTHOST_H
+#define H_APP_SCRIPTHOST_H
 
 
 #include <queue>

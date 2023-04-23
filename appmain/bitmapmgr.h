@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_BITMAPMGR_H
-#define __APP_BITMAPMGR_H
+#ifndef H_APP_BITMAPMGR_H
+#define H_APP_BITMAPMGR_H
 
 
 #include <map>

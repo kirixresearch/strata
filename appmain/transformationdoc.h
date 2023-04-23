@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_TRANSFORMATIONDOC_H
-#define __APP_TRANSFORMATIONDOC_H
+#ifndef H_APP_TRANSFORMATIONDOC_H
+#define H_APP_TRANSFORMATIONDOC_H
 
 
 #include "panelcolumnlist.h"

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_QUERYDOC_H
-#define __APP_QUERYDOC_H
+#ifndef H_APP_QUERYDOC_H
+#define H_APP_QUERYDOC_H
 
 
 #include "relationdnd.h"

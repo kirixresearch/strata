@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELMERGE_H
-#define __APP_PANELMERGE_H
+#ifndef H_APP_PANELMERGE_H
+#define H_APP_PANELMERGE_H
 
 
 class MergePanel :  public wxPanel,

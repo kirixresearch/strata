@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_STATUSBAR_H
-#define __APP_STATUSBAR_H
+#ifndef H_APP_STATUSBAR_H
+#define H_APP_STATUSBAR_H
 
 
 #include <kl/xcm.h>

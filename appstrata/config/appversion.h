@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_APPVERSION_H
-#define __APP_APPVERSION_H
+#ifndef H_APP_APPVERSION_H
+#define H_APP_APPVERSION_H
 
 
 #include "build_config.h"

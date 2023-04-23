@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTCOMBO_H
-#define __APP_SCRIPTCOMBO_H
+#ifndef H_APP_SCRIPTCOMBO_H
+#define H_APP_SCRIPTCOMBO_H
 
 
 class ComboBox : public FormControl

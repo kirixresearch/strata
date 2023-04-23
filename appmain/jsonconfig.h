@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_JSONCONFIG_H
-#define __APP_JSONCONFIG_H
+#ifndef H_APP_JSONCONFIG_H
+#define H_APP_JSONCONFIG_H
 
 
 class JsonConfig

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_JOBFINDINFILES_H
-#define __APP_JOBFINDINFILES_H
+#ifndef H_APP_JOBFINDINFILES_H
+#define H_APP_JOBFINDINFILES_H
 
 
 #include "../jobs/jobbase.h"

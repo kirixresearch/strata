@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_TABLEDOC_PRIVATE_H
-#define __APP_TABLEDOC_PRIVATE_H
+#ifndef H_APP_TABLEDOC_PRIVATE_H
+#define H_APP_TABLEDOC_PRIVATE_H
 
 
 class AppendPanel;

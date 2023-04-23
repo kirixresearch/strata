@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTLAYOUT_H
-#define __APP_SCRIPTLAYOUT_H
+#ifndef H_APP_SCRIPTLAYOUT_H
+#define H_APP_SCRIPTLAYOUT_H
 
 
 class Layout;

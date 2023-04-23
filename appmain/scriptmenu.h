@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTMENU_H
-#define __APP_SCRIPTMENU_H
+#ifndef H_APP_SCRIPTMENU_H
+#define H_APP_SCRIPTMENU_H
 
 
 class MenuItem : public ScriptHostBase

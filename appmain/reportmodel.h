@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_REPORTMODEL_H
-#define __APP_REPORTMODEL_H
+#ifndef H_APP_REPORTMODEL_H
+#define H_APP_REPORTMODEL_H
 
 
 #include "../../kscript/kscript.h"

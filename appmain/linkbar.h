@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_LINKBAR_H
-#define __APP_LINKBAR_H
+#ifndef H_APP_LINKBAR_H
+#define H_APP_LINKBAR_H
 
 
 typedef wxAuiToolBarItem LinkBarItem;

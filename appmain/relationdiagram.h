@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_RELATIONDIAGRAM_H
-#define __APP_RELATIONDIAGRAM_H
+#ifndef H_APP_RELATIONDIAGRAM_H
+#define H_APP_RELATIONDIAGRAM_H
 
 
 // -- forward declarations --

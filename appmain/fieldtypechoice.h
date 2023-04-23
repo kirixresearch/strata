@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_FIELDTYPECHOICE_H
-#define __APP_FIELDTYPECHOICE_H
+#ifndef H_APP_FIELDTYPECHOICE_H
+#define H_APP_FIELDTYPECHOICE_H
 
 
 // -- NOTE: The enum and the array of wxStrings below need to

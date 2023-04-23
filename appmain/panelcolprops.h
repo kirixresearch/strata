@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELCOLPROPS_H
-#define __APP_PANELCOLPROPS_H
+#ifndef H_APP_PANELCOLPROPS_H
+#define H_APP_PANELCOLPROPS_H
 
 
 #include "tabledoc.h"

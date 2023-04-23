@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_REPORTDESIGN_H
-#define __APP_REPORTDESIGN_H
+#ifndef H_APP_REPORTDESIGN_H
+#define H_APP_REPORTDESIGN_H
 
 
 #include "../kcanvas/kcanvas.h"

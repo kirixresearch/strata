@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_TABLEDOC_H
-#define __APP_TABLEDOC_H
+#ifndef H_APP_TABLEDOC_H
+#define H_APP_TABLEDOC_H
 
 
 

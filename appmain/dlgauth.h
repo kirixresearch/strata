@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_DLGAUTH_H
-#define __APP_DLGAUTH_H
+#ifndef H_APP_DLGAUTH_H
+#define H_APP_DLGAUTH_H
 
 
 namespace paladin

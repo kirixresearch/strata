@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELJOBMGR_H
-#define __APP_PANELJOBMGR_H
+#ifndef H_APP_PANELJOBMGR_H
+#define H_APP_PANELJOBMGR_H
 
 
 class JobListCtrlTimer;

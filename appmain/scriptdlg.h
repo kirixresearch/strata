@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTDLG_H
-#define __APP_SCRIPTDLG_H
+#ifndef H_APP_SCRIPTDLG_H
+#define H_APP_SCRIPTDLG_H
 
 
 #if wxCHECK_VERSION(2,9,0)

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTWEBBROWSER_H
-#define __APP_SCRIPTWEBBROWSER_H
+#ifndef H_APP_SCRIPTWEBBROWSER_H
+#define H_APP_SCRIPTWEBBROWSER_H
 
 
 class WebBrowser : public FormControl

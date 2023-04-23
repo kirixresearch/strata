@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTLISTVIEW_H
-#define __APP_SCRIPTLISTVIEW_H
+#ifndef H_APP_SCRIPTLISTVIEW_H
+#define H_APP_SCRIPTLISTVIEW_H
 
 
 class ListView;

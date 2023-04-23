@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTTREEVIEW_H
-#define __APP_SCRIPTTREEVIEW_H
+#ifndef H_APP_SCRIPTTREEVIEW_H
+#define H_APP_SCRIPTTREEVIEW_H
 
 
 class TreeView;

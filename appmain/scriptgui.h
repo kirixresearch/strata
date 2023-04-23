@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTGUI_H
-#define __APP_SCRIPTGUI_H
+#ifndef H_APP_SCRIPTGUI_H
+#define H_APP_SCRIPTGUI_H
 
 
 #include "../kscript/kscript.h"

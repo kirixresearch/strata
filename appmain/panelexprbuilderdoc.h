@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELEXPRBUILDERDOC_H
-#define __APP_PANELEXPRBUILDERDOC_H
+#ifndef H_APP_PANELEXPRBUILDERDOC_H
+#define H_APP_PANELEXPRBUILDERDOC_H
 
 
 #include "exprbuilder.h"

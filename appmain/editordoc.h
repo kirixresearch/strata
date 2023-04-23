@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_EDITORDOC_H
-#define __APP_EDITORDOC_H
+#ifndef H_APP_EDITORDOC_H
+#define H_APP_EDITORDOC_H
 
 
 #include "panelfind.h"

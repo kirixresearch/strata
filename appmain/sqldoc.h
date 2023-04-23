@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SQLDOC_H
-#define __APP_SQLDOC_H
+#ifndef H_APP_SQLDOC_H
+#define H_APP_SQLDOC_H
 
 
 xcm_interface ISqlDoc : public xcm::IObject

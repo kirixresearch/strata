@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTTOOLBAR_H
-#define __APP_SCRIPTTOOLBAR_H
+#ifndef H_APP_SCRIPTTOOLBAR_H
+#define H_APP_SCRIPTTOOLBAR_H
 
 
 class ToolBarItem : public ScriptHostBase

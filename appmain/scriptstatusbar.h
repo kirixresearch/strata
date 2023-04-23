@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTSTATUSBAR_H
-#define __APP_SCRIPTSTATUSBAR_H
+#ifndef H_APP_SCRIPTSTATUSBAR_H
+#define H_APP_SCRIPTSTATUSBAR_H
 
 
 class zStatusBarItem : public FormComponent

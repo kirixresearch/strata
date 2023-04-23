@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_JOBSCRIPT_H
-#define __APP_JOBSCRIPT_H
+#ifndef H_APP_JOBSCRIPT_H
+#define H_APP_JOBSCRIPT_H
 
 
 #include "scripthost.h"

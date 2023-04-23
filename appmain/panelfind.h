@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELFIND_H
-#define __APP_PANELFIND_H
+#ifndef H_APP_PANELFIND_H
+#define H_APP_PANELFIND_H
 
 // interface
 

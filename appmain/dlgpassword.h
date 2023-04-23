@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_DLGPASSWORD_H
-#define __APP_DLGPASSWORD_H
+#ifndef H_APP_DLGPASSWORD_H
+#define H_APP_DLGPASSWORD_H
 
 
 

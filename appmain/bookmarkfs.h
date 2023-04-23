@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_BOOKMARKFS_H
-#define __APP_BOOKMARKFS_H
+#ifndef H_APP_BOOKMARKFS_H
+#define H_APP_BOOKMARKFS_H
 
 
 class Bookmark

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_FSPANELTREEVIEW_H
-#define __APP_FSPANELTREEVIEW_H
+#ifndef H_APP_FSPANELTREEVIEW_H
+#define H_APP_FSPANELTREEVIEW_H
 
 
 class FsPanelTreeView : public CfwTreeCtrl

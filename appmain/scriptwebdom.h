@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTWEBDOM_H
-#define __APP_SCRIPTWEBDOM_H
+#ifndef H_APP_SCRIPTWEBDOM_H
+#define H_APP_SCRIPTWEBDOM_H
 
 
 #include "../webconnect/webcontrol.h"

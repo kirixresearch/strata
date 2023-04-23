@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_EXPRBUILDER_H
-#define __APP_EXPRBUILDER_H
+#ifndef H_APP_EXPRBUILDER_H
+#define H_APP_EXPRBUILDER_H
 
 
 #include <wx/stc/stc.h>

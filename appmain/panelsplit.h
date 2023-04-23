@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELSPLIT_H
-#define __APP_PANELSPLIT_H
+#ifndef H_APP_PANELSPLIT_H
+#define H_APP_PANELSPLIT_H
 
 
 class SplitPanel : public wxPanel,

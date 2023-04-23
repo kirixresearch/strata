@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_INETAUTH_H
-#define __APP_INETAUTH_H
+#ifndef H_APP_INETAUTH_H
+#define H_APP_INETAUTH_H
 
 
 namespace paladin

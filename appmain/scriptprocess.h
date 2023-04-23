@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTPROCESS_H
-#define __APP_SCRIPTPROCESS_H
+#ifndef H_APP_SCRIPTPROCESS_H
+#define H_APP_SCRIPTPROCESS_H
 
 
 #include <wx/process.h>

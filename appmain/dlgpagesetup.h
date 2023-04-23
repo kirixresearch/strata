@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_DLGPAGESETUP_H
-#define __APP_DLGPAGESETUP_H
+#ifndef H_APP_DLGPAGESETUP_H
+#define H_APP_DLGPAGESETUP_H
 
 
 class OrientationPanel : public wxPanel,

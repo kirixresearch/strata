@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_APPPRINT_H
-#define __APP_APPPRINT_H
+#ifndef H_APP_APPPRINT_H
+#define H_APP_APPPRINT_H
 
 
 #include <wx/timer.h>

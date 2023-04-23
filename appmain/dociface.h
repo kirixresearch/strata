@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_DOCIFACE_H
-#define __APP_DOCIFACE_H
+#ifndef H_APP_DOCIFACE_H
+#define H_APP_DOCIFACE_H
 
 
 // forward declarations

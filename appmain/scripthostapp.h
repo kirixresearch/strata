@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTHOSTAPP_H
-#define __APP_SCRIPTHOSTAPP_H
+#ifndef H_APP_SCRIPTHOSTAPP_H
+#define H_APP_SCRIPTHOSTAPP_H
 
 
 #include "scriptapp.h"

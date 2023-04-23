@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_FSPANEL_PRIVATE_H
-#define __APP_FSPANEL_PRIVATE_H
+#ifndef H_APP_FSPANEL_PRIVATE_H
+#define H_APP_FSPANEL_PRIVATE_H
 
 
 namespace kcl

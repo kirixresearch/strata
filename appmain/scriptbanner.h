@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTBANNER_H
-#define __APP_SCRIPTBANNER_H
+#ifndef H_APP_SCRIPTBANNER_H
+#define H_APP_SCRIPTBANNER_H
 
 
 class BannerBox : public FormControl

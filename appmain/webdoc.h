@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_WEBDOC_H
-#define __APP_WEBDOC_H
+#ifndef H_APP_WEBDOC_H
+#define H_APP_WEBDOC_H
 
 
 #include "panelfind.h"

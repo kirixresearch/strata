@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_TABLEDOCMODEL_H
-#define __APP_TABLEDOCMODEL_H
+#ifndef H_APP_TABLEDOCMODEL_H
+#define H_APP_TABLEDOCMODEL_H
 
 
 #include "tabledoc.h"

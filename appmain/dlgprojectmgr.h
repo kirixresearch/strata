@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_DLGPROJECTMGR_H
-#define __APP_DLGPROJECTMGR_H
+#ifndef H_APP_DLGPROJECTMGR_H
+#define H_APP_DLGPROJECTMGR_H
 
 #include "projectmgr.h"
 

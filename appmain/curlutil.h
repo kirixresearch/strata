@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_CURL_H
-#define __APP_CURL_H
+#ifndef H_APP_CURL_H
+#define H_APP_CURL_H
 
 
 typedef void CURL;

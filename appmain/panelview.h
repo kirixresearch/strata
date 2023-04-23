@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELVIEW_H
-#define __APP_PANELVIEW_H
+#ifndef H_APP_PANELVIEW_H
+#define H_APP_PANELVIEW_H
 
 
 #include "tabledocmodel.h"

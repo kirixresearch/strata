@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_APPPREFS_H
-#define __APP_APPPREFS_H
+#ifndef H_APP_APPPREFS_H
+#define H_APP_APPPREFS_H
 
 
 // IMPORTANT NOTE: The following preference values are immutable.

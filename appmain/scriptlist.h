@@ -9,8 +9,8 @@
  */
  
 
-#ifndef __APP_SCRIPTLIST_H
-#define __APP_SCRIPTLIST_H
+#ifndef H_APP_SCRIPTLIST_H
+#define H_APP_SCRIPTLIST_H
 
 
 class zListBox : public FormControl

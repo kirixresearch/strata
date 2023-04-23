@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_FIELDLISTCONTROL_H
-#define __APP_FIELDLISTCONTROL_H
+#ifndef H_APP_FIELDLISTCONTROL_H
+#define H_APP_FIELDLISTCONTROL_H
 
 
 class FieldListItem

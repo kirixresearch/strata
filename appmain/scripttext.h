@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTTEXT_H
-#define __APP_SCRIPTTEXT_H
+#ifndef H_APP_SCRIPTTEXT_H
+#define H_APP_SCRIPTTEXT_H
 
 
 class TextBox : public FormControl

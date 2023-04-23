@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTSPIN_H
-#define __APP_SCRIPTSPIN_H
+#ifndef H_APP_SCRIPTSPIN_H
+#define H_APP_SCRIPTSPIN_H
 
 
 class SpinButton : public FormControl

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_DLGLINKPROPS_H
-#define __APP_DLGLINKPROPS_H
+#ifndef H_APP_DLGLINKPROPS_H
+#define H_APP_DLGLINKPROPS_H
 
 
 class DbComboCtrl;

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_APPCONFIG_H
-#define __APP_APPCONFIG_H
+#ifndef H_APP_APPCONFIG_H
+#define H_APP_APPCONFIG_H
 
 
 #include <vector>

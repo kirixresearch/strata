@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_JOBSCHEDULER_H
-#define __APP_JOBSCHEDULER_H
+#ifndef H_APP_JOBSCHEDULER_H
+#define H_APP_JOBSCHEDULER_H
 
 
 class JobSchedulerEntry

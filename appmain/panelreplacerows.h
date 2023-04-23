@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELREPLACEROWS_H
-#define __APP_PANELREPLACEROWS_H
+#ifndef H_APP_PANELREPLACEROWS_H
+#define H_APP_PANELREPLACEROWS_H
 
 
 class ExprBuilderPanel;

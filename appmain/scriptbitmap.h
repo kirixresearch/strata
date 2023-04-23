@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTBITMAP_H
-#define __APP_SCRIPTBITMAP_H
+#ifndef H_APP_SCRIPTBITMAP_H
+#define H_APP_SCRIPTBITMAP_H
 
 
 #include "scriptgui.h"

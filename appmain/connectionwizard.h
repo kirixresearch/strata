@@ -9,8 +9,8 @@
 */
 
 
-#ifndef __APP_CONNECTIONWIZARD_H
-#define __APP_CONNECTIONWIZARD_H
+#ifndef H_APP_CONNECTIONWIZARD_H
+#define H_APP_CONNECTIONWIZARD_H
 
 
 #include "connectionmgr.h"

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_APP_H
-#define __APP_APP_H
+#ifndef H_APP_APP_H
+#define H_APP_APP_H
 
 
 

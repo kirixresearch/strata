@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_STRUCTUREDOC_H
-#define __APP_STRUCTUREDOC_H
+#ifndef H_APP_STRUCTUREDOC_H
+#define H_APP_STRUCTUREDOC_H
 
 
 #include "panelcolumnlist.h"

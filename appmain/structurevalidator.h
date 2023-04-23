@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_STRUCTUREVALIDATOR_H
-#define __APP_STRUCTUREVALIDATOR_H
+#ifndef H_APP_STRUCTUREVALIDATOR_H
+#define H_APP_STRUCTUREVALIDATOR_H
 
 
 class RowErrorChecker;

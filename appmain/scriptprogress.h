@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTPROGRESS_H
-#define __APP_SCRIPTPROGRESS_H
+#ifndef H_APP_SCRIPTPROGRESS_H
+#define H_APP_SCRIPTPROGRESS_H
 
 
 class ProgressBar : public FormControl

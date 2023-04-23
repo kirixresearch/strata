@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_CONNECTIONPAGES_H
-#define __APP_CONNECTIONPAGES_H
+#ifndef H_APP_CONNECTIONPAGES_H
+#define H_APP_CONNECTIONPAGES_H
 
 
 class ConnectionInfo;

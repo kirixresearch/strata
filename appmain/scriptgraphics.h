@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTGRAPHICS_H
-#define __APP_SCRIPTGRAPHICS_H
+#ifndef H_APP_SCRIPTGRAPHICS_H
+#define H_APP_SCRIPTGRAPHICS_H
 
 
 #include "scriptgui.h"

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_APPCONTROLLER_H
-#define __APP_APPCONTROLLER_H
+#ifndef H_APP_APPCONTROLLER_H
+#define H_APP_APPCONTROLLER_H
 
 
 class DbDoc;

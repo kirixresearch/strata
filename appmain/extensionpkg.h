@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_EXTENSIONPKG_H
-#define __APP_EXTENSIONPKG_H
+#ifndef H_APP_EXTENSIONPKG_H
+#define H_APP_EXTENSIONPKG_H
 
 
 class wxMemoryInputStream;

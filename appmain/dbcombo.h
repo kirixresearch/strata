@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_DBCOMBO_H
-#define __APP_DBCOMBO_H
+#ifndef H_APP_DBCOMBO_H
+#define H_APP_DBCOMBO_H
 
 
 

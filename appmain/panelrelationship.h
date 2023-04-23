@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELRELATIONSHIP_H
-#define __APP_PANELRELATIONSHIP_H
+#ifndef H_APP_PANELRELATIONSHIP_H
+#define H_APP_PANELRELATIONSHIP_H
 
 
 // this class watches for files that are being renamed and updates

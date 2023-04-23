@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_TEXTVIEW_H
-#define __APP_TEXTVIEW_H
+#ifndef H_APP_TEXTVIEW_H
+#define H_APP_TEXTVIEW_H
 
 
 #include "appmain.h"

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_XDGRIDMODEL_H
-#define __APP_XDGRIDMODEL_H
+#ifndef H_APP_XDGRIDMODEL_H
+#define H_APP_XDGRIDMODEL_H
 
 
 #include <xd/xd.h>

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_DLGSHAREVIEW_H
-#define __APP_DLGSHAREVIEW_H
+#ifndef H_APP_DLGSHAREVIEW_H
+#define H_APP_DLGSHAREVIEW_H
 
 
 

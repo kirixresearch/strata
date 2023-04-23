@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_EXTENSIONMGR_H
-#define __APP_EXTENSIONMGR_H
+#ifndef H_APP_EXTENSIONMGR_H
+#define H_APP_EXTENSIONMGR_H
 
 
 class ExtensionPkg;

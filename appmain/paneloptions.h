@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELOPTIONS_H
-#define __APP_PANELOPTIONS_H
+#ifndef H_APP_PANELOPTIONS_H
+#define H_APP_PANELOPTIONS_H
 
 
 struct PrefInfo

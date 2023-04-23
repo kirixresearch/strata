@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_PANELFILEINFO_H
-#define __APP_PANELFILEINFO_H
+#ifndef H_APP_PANELFILEINFO_H
+#define H_APP_PANELFILEINFO_H
 
 
 #include <set>

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_TEXTDOC_H
-#define __APP_TEXTDOC_H
+#ifndef H_APP_TEXTDOC_H
+#define H_APP_TEXTDOC_H
 
 
 

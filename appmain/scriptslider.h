@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTSLIDER_H
-#define __APP_SCRIPTSLIDER_H
+#ifndef H_APP_SCRIPTSLIDER_H
+#define H_APP_SCRIPTSLIDER_H
 
 
 class Slider : public FormControl

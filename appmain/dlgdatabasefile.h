@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_DLGDATABASEFILE_H
-#define __APP_DLGDATABASEFILE_H
+#ifndef H_APP_DLGDATABASEFILE_H
+#define H_APP_DLGDATABASEFILE_H
 
 
 class DbComboCtrl;

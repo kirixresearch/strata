@@ -9,8 +9,8 @@
  */
  
 
-#ifndef __APP_REPORTLAYOUT_H
-#define __APP_REPORTLAYOUT_H
+#ifndef H_APP_REPORTLAYOUT_H
+#define H_APP_REPORTLAYOUT_H
 
 
 #include "reportmodel.h"
