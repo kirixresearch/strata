@@ -15,8 +15,8 @@
 // encryption code available from: http://www.efgh.com/software/des.htm
 
 
-#ifndef __PALADIN_CRYPT_H
-#define __PALADIN_CRYPT_H
+#ifndef H_PALADIN_CRYPT_H
+#define H_PALADIN_CRYPT_H
 
 
 const int DES_KEY_SIZE = 56;

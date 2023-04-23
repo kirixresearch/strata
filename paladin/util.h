@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __PALADIN_UTIL_H
-#define __PALADIN_UTIL_H
+#ifndef H_PALADIN_UTIL_H
+#define H_PALADIN_UTIL_H
 
 
 namespace paladin

@@ -21,8 +21,8 @@
 // AT&T gives permission for the free use of the CRC-16 source code.
 
 
-#ifndef __PALADIN_CRC_H
-#define __PALADIN_CRC_H
+#ifndef H_PALADIN_CRC_H
+#define H_PALADIN_CRC_H
 
 
 namespace paladin
