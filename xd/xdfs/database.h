@@ -39,7 +39,8 @@ class FsDatabase : public xd::IDatabase,
 public:
 
     FsDatabase();
-    ~FsDatabase();
+    virtual ~FsDatabase();
+
     bool open(const std::wstring& path);
     
     // xd::IDatabase
