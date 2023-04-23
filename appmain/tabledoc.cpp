@@ -1750,7 +1750,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
         }
          else
         {
-            if (dbtype == dbtypeAccess || dbtype == dbtypeExcel || dbtype == dbtypePackage || dbtypeSqlite)
+            if (dbtype == dbtypeAccess || dbtype == dbtypeExcel || dbtype == dbtypePackage || dbtype == dbtypeSqlite)
                 templ.m_ei.path = towstr(dlg.GetPath());
 
             tbl.output_tablename = kl::beforeLast( kl::afterLast(this->m_path, '/'), '.');
