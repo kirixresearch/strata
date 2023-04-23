@@ -745,7 +745,7 @@ bool XbaseFile::isNull(size_t col_idx)
 bool XbaseFile::putRowBuffer(const unsigned char* value)
 {
     unsigned char* pos = m_currow_ptr;
-    size_t str_len = strlen((char*)value);
+    size_t str_len = strlen((const char*)value);
 
     // the raw length is longer than our row width, so trim
     // the raw data to fit our row's width
