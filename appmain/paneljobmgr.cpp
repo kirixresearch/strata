@@ -24,8 +24,6 @@ enum
 };
 
 
-const int SCROLL_STEP = 10;
-
 
 class JobListCtrlTimer : public wxTimer
 {
