@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_XD_PRIVATE_H
-#define __XDCOMMON_XD_PRIVATE_H
+#ifndef H_XDCOMMON_XD_PRIVATE_H
+#define H_XDCOMMON_XD_PRIVATE_H
 
 
 namespace xd

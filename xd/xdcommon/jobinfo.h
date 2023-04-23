@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_JOBINFO_H
-#define __XDCOMMON_JOBINFO_H
+#ifndef H_XDCOMMON_JOBINFO_H
+#define H_XDCOMMON_JOBINFO_H
 
 
 xcm_interface IJobInternal : public xcm::IObject

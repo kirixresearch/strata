@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_FILESTREAM_H
-#define __XDCOMMON_FILESTREAM_H
+#ifndef H_XDCOMMON_FILESTREAM_H
+#define H_XDCOMMON_FILESTREAM_H
 
 
 #include <kl/file.h>

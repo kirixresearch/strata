@@ -9,9 +9,8 @@
  */
 
 
-
-#ifndef __XDCOMMON_FORMATDEFINITION_H
-#define __XDCOMMON_FORMATDEFINITION_H
+#ifndef H_XDCOMMON_FORMATDEFINITION_H
+#define H_XDCOMMON_FORMATDEFINITION_H
 
 
 std::wstring saveDefinitionToString(const xd::FormatDefinition& def);

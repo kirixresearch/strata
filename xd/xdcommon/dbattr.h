@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_DBATTR_H
-#define __XDCOMMON_DBATTR_H
+#ifndef H_XDCOMMON_DBATTR_H
+#define H_XDCOMMON_DBATTR_H
 
 
 #include <map>

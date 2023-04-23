@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_FILEINFO_H
-#define __XDCOMMON_FILEINFO_H
+#ifndef H_XDCOMMON_FILEINFO_H
+#define H_XDCOMMON_FILEINFO_H
 
 
 namespace xdcommon

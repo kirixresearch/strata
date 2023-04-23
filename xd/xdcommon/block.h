@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_BLOCK_H
-#define __XDCOMMON_BLOCK_H
+#ifndef H_XDCOMMON_BLOCK_H
+#define H_XDCOMMON_BLOCK_H
 
 
 #include <vector>

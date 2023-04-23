@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_EXINDEX_H
-#define __XDCOMMON_EXINDEX_H
+#ifndef H_XDCOMMON_EXINDEX_H
+#define H_XDCOMMON_EXINDEX_H
 
 
 #include "util.h"

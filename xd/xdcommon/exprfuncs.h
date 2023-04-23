@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_EXPRFUNCS_H
-#define __XDCOMMON_EXPRFUNCS_H
+#ifndef H_XDCOMMON_EXPRFUNCS_H
+#define H_XDCOMMON_EXPRFUNCS_H
 
 
 void func_abs(kscript::ExprEnv* env, void* param, kscript::Value* retval);

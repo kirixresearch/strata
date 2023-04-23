@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_MODVERSION_H
-#define __XDCOMMON_MODVERSION_H
+#ifndef H_XDCOMMON_MODVERSION_H
+#define H_XDCOMMON_MODVERSION_H
 
 
 #include "build_config.h"

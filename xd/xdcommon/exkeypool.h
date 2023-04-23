@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_EXKEYPOOL_H
-#define __XDCOMMON_EXKEYPOOL_H
+#ifndef H_XDCOMMON_EXKEYPOOL_H
+#define H_XDCOMMON_EXKEYPOOL_H
 
 
 #include <string>

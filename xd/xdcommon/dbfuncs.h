@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_DBFUNCS_H
-#define __XDCOMMON_DBFUNCS_H
+#ifndef H_XDCOMMON_DBFUNCS_H
+#define H_XDCOMMON_DBFUNCS_H
 
 
 int xdcmnInsert(xd::IDatabasePtr db,

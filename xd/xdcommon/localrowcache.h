@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_LOCALROWCACHE_H
-#define __XDCOMMON_LOCALROWCACHE_H
+#ifndef H_XDCOMMON_LOCALROWCACHE_H
+#define H_XDCOMMON_LOCALROWCACHE_H
 
 
 #include <map>

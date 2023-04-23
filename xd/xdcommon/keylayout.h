@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_KEYLAYOUT_H
-#define __XDCOMMON_KEYLAYOUT_H
+#ifndef H_XDCOMMON_KEYLAYOUT_H
+#define H_XDCOMMON_KEYLAYOUT_H
 
 
 // -- key layout class --

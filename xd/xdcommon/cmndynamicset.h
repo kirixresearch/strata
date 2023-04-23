@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_CMNDYNAMICSET_H
-#define __XDCOMMON_CMNDYNAMICSET_H
+#ifndef H_XDCOMMON_CMNDYNAMICSET_H
+#define H_XDCOMMON_CMNDYNAMICSET_H
 
 #include "../xdcommonsql/xdcommonsql.h"
 

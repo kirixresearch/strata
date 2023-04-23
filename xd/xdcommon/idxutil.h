@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_IDXUTIL_H
-#define __XDCOMMON_IDXUTIL_H
+#ifndef H_XDCOMMON_IDXUTIL_H
+#define H_XDCOMMON_IDXUTIL_H
 
 
 #include "xd_private.h"

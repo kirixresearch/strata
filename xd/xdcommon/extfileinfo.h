@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_EXTFILEINFO_H
-#define __XDCOMMON_EXTFILEINFO_H
+#ifndef H_XDCOMMON_EXTFILEINFO_H
+#define H_XDCOMMON_EXTFILEINFO_H
 
 
 #include <kl/string.h>

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_ROWIDARRAY_H
-#define __XDCOMMON_ROWIDARRAY_H
+#ifndef H_XDCOMMON_ROWIDARRAY_H
+#define H_XDCOMMON_ROWIDARRAY_H
 
 
 // a class that provides a large sorted rowid array that can use the disk as storage

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_XDUTIL_H
-#define __XDCOMMON_XDUTIL_H
+#ifndef H_XDCOMMON_XDUTIL_H
+#define H_XDCOMMON_XDUTIL_H
 
 
 #include <map>

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_RELATIONINFO_H
-#define __XDCOMMON_RELATIONINFO_H
+#ifndef H_XDCOMMON_RELATIONINFO_H
+#define H_XDCOMMON_RELATIONINFO_H
 
 
 class RelationInfo : public xd::IRelation

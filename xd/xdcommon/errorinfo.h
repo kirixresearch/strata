@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_ERRORINFO_H
-#define __XDCOMMON_ERRORINFO_H
+#ifndef H_XDCOMMON_ERRORINFO_H
+#define H_XDCOMMON_ERRORINFO_H
 
 
 struct ErrInfo

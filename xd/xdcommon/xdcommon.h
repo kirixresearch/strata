@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_XDCOMMON_H
-#define __XDCOMMON_XDCOMMON_H
+#ifndef H_XDCOMMON_XDCOMMON_H
+#define H_XDCOMMON_XDCOMMON_H
 
 
 #include <xd/xd.h>

@@ -9,15 +9,12 @@
  */
 
 
-
-#ifndef __XDCOMMON_GROUPQUERYENGINE_H
-#define __XDCOMMON_GROUPQUERYENGINE_H
+#ifndef H_XDCOMMON_GROUPQUERYENGINE_H
+#define H_XDCOMMON_GROUPQUERYENGINE_H
 
 
 namespace xdcommon
 {
-
-
 
 
 bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* job);

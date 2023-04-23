@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_CONNECTIONSTR_H
-#define __XDCOMMON_CONNECTIONSTR_H
+#ifndef H_XDCOMMON_CONNECTIONSTR_H
+#define H_XDCOMMON_CONNECTIONSTR_H
 
 
 namespace xdcommon

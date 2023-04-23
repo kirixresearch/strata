@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_CMNBASEITERATOR_H
-#define __XDCOMMON_CMNBASEITERATOR_H
+#ifndef H_XDCOMMON_CMNBASEITERATOR_H
+#define H_XDCOMMON_CMNBASEITERATOR_H
 
 #include "xd_private.h"
 
