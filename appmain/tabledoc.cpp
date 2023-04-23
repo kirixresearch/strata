@@ -7031,8 +7031,9 @@ bool TableDoc::saveAsStructure(const wxString& path)
         result_text += (L", \"scale\": " + scale);
         
         if (colinfo.calculated)
+        {
             result_text += (L", \"formula\": \"" + kl::escape_string(colinfo.expression) + L"\"");
-            true;
+        }
         
         result_text += L" }";
     }
