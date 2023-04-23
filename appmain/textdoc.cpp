@@ -82,7 +82,7 @@ static int showOverwriteTransformationChangesDialog()
     return result;
 }
 
-
+/*
 // this function finds the best insert position in the destination structure
 // based on the offset of the column to the left of the column that we
 // inserted in the source structure
@@ -102,7 +102,7 @@ static int getBestDestinationInsertPosition(const xd::ColumnInfo& src_coltoleft,
     
     return -1;
 }
-
+*/
 
 
 // this function creates the TextDoc group of sites
