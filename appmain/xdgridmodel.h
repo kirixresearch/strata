@@ -200,7 +200,6 @@ private:
 
     xd::IIteratorPtr m_it;
     bool m_forward_only;
-    int m_fwdonly_row;
     std::vector<XdGridColumnInfo> m_columns;
     ColLookupHashMap m_column_lookup;
     kcl::Grid* m_grid;
