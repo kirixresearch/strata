@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDNATIVE_BASEITERATOR_H
-#define __XDNATIVE_BASEITERATOR_H
+#ifndef H_XDNATIVE_BASEITERATOR_H
+#define H_XDNATIVE_BASEITERATOR_H
 
 
 #include <set>

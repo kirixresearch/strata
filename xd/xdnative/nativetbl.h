@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDNATIVE_NATIVETBL_H
-#define __XDNATIVE_NATIVETBL_H
+#ifndef H_XDNATIVE_NATIVETBL_H
+#define H_XDNATIVE_NATIVETBL_H
 
 
 #include "xdnative_private.h"

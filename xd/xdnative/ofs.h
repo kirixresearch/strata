@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDNATIVE_OFS_H
-#define __XDNATIVE_OFS_H
+#ifndef H_XDNATIVE_OFS_H
+#define H_XDNATIVE_OFS_H
 
 
 #include <map>

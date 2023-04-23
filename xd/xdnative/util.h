@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDNATIVE_UTIL_H
-#define __XDNATIVE_UTIL_H
+#ifndef H_XDNATIVE_UTIL_H
+#define H_XDNATIVE_UTIL_H
 
 
 #include "../xdcommon/util.h"

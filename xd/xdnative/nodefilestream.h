@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDNATIVE_NODEFILESTREAM_H
-#define __XDNATIVE_NODEFILESTREAM_H
+#ifndef H_XDNATIVE_NODEFILESTREAM_H
+#define H_XDNATIVE_NODEFILESTREAM_H
 
 
 #include <kl/file.h>

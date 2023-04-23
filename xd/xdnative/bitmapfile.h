@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDNATIVE_BITMAPFILE_H
-#define __XDNATIVE_BITMAPFILE_H
+#ifndef H_XDNATIVE_BITMAPFILE_H
+#define H_XDNATIVE_BITMAPFILE_H
 
 
 #include <kl/file.h>

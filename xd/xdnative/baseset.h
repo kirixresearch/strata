@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDNATIVE_BASESET_H
-#define __XDNATIVE_BASESET_H
+#ifndef H_XDNATIVE_BASESET_H
+#define H_XDNATIVE_BASESET_H
 
 
 #include "../xdcommon/xd_private.h"

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDNATIVE_STDITER_H
-#define __XDNATIVE_STDITER_H
+#ifndef H_XDNATIVE_STDITER_H
+#define H_XDNATIVE_STDITER_H
 
 
 #include "baseiterator.h"

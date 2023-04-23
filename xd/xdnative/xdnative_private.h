@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDNATIVE_XDNATIVE_PRIVATE_H
-#define __XDNATIVE_XDNATIVE_PRIVATE_H
+#ifndef H_XDNATIVE_XDNATIVE_PRIVATE_H
+#define H_XDNATIVE_XDNATIVE_PRIVATE_H
 
 
 #include <kl/string.h>

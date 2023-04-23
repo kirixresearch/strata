@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDNATIVE_DBMGR_H
-#define __XDNATIVE_DBMGR_H
+#ifndef H_XDNATIVE_DBMGR_H
+#define H_XDNATIVE_DBMGR_H
 
 
 #include <xd/xd.h>

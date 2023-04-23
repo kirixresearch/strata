@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDNATIVE_TABLESET_H
-#define __XDNATIVE_TABLESET_H
+#ifndef H_XDNATIVE_TABLESET_H
+#define H_XDNATIVE_TABLESET_H
 
 
 
