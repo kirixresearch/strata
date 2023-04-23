@@ -25,7 +25,6 @@
 #include "kl/string.h"
 #include "kl/url.h"
 
-const int ROWS_TO_DETERMINE_STRUCTURE = 10000;
 
 
 // DelimitedTextSet class implementation
