@@ -10,7 +10,7 @@
 
 
 #ifndef __SCRIPTHOST_SCRIPTHOST_H
-#define __SCRIPTHOST_SCRIPTHOST_H
+#define H_SCRIPTHOST_SCRIPTHOST_H
 
 
 #include <queue>

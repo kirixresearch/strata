@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __SCRIPTHOST_SCRIPTHTTP_H
-#define __SCRIPTHOST_SCRIPTHTTP_H
+#ifndef H_SCRIPTHOST_SCRIPTHTTP_H
+#define H_SCRIPTHOST_SCRIPTHTTP_H
 
 
 #include <list>

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __SCRIPTHOST_SCRIPTDB_H
-#define __SCRIPTHOST_SCRIPTDB_H
+#ifndef H_SCRIPTHOST_SCRIPTDB_H
+#define H_SCRIPTHOST_SCRIPTDB_H
 
 
 #include <xd/xd.h>

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __SCRIPTHOST_SCRIPTMEMORY_H
-#define __SCRIPTHOST_SCRIPTMEMORY_H
+#ifndef H_SCRIPTHOST_SCRIPTMEMORY_H
+#define H_SCRIPTHOST_SCRIPTMEMORY_H
 
 
 namespace scripthost

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __SCRIPTHOST_EVENT_H
-#define __SCRIPTHOST_EVENT_H
+#ifndef H_SCRIPTHOST_EVENT_H
+#define H_SCRIPTHOST_EVENT_H
 
 
 namespace scripthost

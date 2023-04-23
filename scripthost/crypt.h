@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __SCRIPTHOST_SCRIPTCRYPT_H
-#define __SCRIPTHOST_SCRIPTCRYPT_H
+#ifndef H_SCRIPTHOST_SCRIPTCRYPT_H
+#define H_SCRIPTHOST_SCRIPTCRYPT_H
 
 namespace scripthost
 {

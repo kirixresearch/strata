@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __SCRIPTHOST_SCRIPTFILE_H
-#define __SCRIPTHOST_SCRIPTFILE_H
+#ifndef H_SCRIPTHOST_SCRIPTFILE_H
+#define H_SCRIPTHOST_SCRIPTFILE_H
 
 #include <kl/file.h>
 

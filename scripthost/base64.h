@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __SCRIPTHOST_SCRIPTBASE64_H
-#define __SCRIPTHOST_SCRIPTBASE64_H
+#ifndef H_SCRIPTHOST_SCRIPTBASE64_H
+#define H_SCRIPTHOST_SCRIPTBASE64_H
 
 namespace scripthost
 {
