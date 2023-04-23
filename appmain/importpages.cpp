@@ -330,7 +330,7 @@ void ImportTableSelectionPage::onPageChanged()
         
         // compare grid data with the vector to see if something's changed
         int row, row_count = m_grid->getRowCount();
-        if (row_count != m_ii->tables.size())
+        if (row_count != (int)m_ii->tables.size())
         {
             changes_made = true;
         }
