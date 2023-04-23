@@ -57,7 +57,7 @@ public:
         m_dirty = true;
     }
     
-    ~StatusBarItem()
+    virtual ~StatusBarItem()
     {
         if (m_control)
         {
@@ -241,7 +241,11 @@ protected:
         // create the statusbar item enumerator
         m_items = new xcm::IVectorImpl<IStatusBarItemPtr>;
     }
-    
+
+    virtual ~StatusBarProviderBase()
+    {
+    }
+
     // IStatusBarProvider methods
     
     IStatusBarItemEnumPtr getStatusBarItemEnum()
