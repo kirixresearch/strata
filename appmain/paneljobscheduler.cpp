@@ -201,7 +201,7 @@ wxString JobSchedulerPanel::createJobDescription(JobSchedulerPanelEntry* entry)
         wxString repl_str = _(" and ");
         
         size_t idx = weekly_days.find_last_of(find_str);
-        if (idx != -1)
+        if (idx != weekly_days.npos && idx > 0)
             weekly_days.replace(idx-1, find_str.Length(), repl_str, 0, repl_str.Length());
     }
     
