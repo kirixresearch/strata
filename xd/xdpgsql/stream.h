@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDPGSQL_STREAM_H
-#define __XDPGSQL_STREAM_H
+#ifndef H_XDPGSQL_STREAM_H
+#define H_XDPGSQL_STREAM_H
 
 
 class PgsqlDatabase;

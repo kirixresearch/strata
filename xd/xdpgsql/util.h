@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDPGSQL_UTIL_H
-#define __XDPGSQL_UTIL_H
+#ifndef H_XDPGSQL_UTIL_H
+#define H_XDPGSQL_UTIL_H
 
 
 #endif

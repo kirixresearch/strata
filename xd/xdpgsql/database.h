@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDPGSQL_DATABASE_H
-#define __XDPGSQL_DATABASE_H
+#ifndef H_XDPGSQL_DATABASE_H
+#define H_XDPGSQL_DATABASE_H
 
 
 

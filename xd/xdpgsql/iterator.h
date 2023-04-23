@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDPGSQL_ITERATOR_H
-#define __XDPGSQL_ITERATOR_H
+#ifndef H_XDPGSQL_ITERATOR_H
+#define H_XDPGSQL_ITERATOR_H
 
 
 #if _MSC_VER < 1300
