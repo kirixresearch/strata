@@ -338,7 +338,7 @@ private:
 class ValueObjectEvents
 {
 public:
-
+    virtual ~ValueObjectEvents() { }
     virtual void onDestroy(ValueObject*) { }
 };
 

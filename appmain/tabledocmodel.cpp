@@ -196,6 +196,10 @@ public:
         m_dirty = false;
     }
 
+    virtual ~TableDocObjectBase()
+    {
+    }
+
     const std::wstring& getObjectId()
     {
         return m_id;
