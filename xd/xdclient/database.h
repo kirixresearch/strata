@@ -59,7 +59,7 @@ class ClientDatabase : public xd::IDatabase,
 public:
 
     ClientDatabase();
-    ~ClientDatabase();
+    virtual ~ClientDatabase();
 
     void onDatabaseAttributeUpdated(int attr_id);
 
