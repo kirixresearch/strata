@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDSQLITE_DATABASE_H
-#define __XDSQLITE_DATABASE_H
+#ifndef H_XDSQLITE_DATABASE_H
+#define H_XDSQLITE_DATABASE_H
 
 #define SQLITE_THREADSAFE 1
 #include "../xdcommon/sqlite3.h"

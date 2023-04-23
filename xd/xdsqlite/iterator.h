@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDSQLITE_ITERATOR_H
-#define __XDSQLITE_ITERATOR_H
+#ifndef H_XDSQLITE_ITERATOR_H
+#define H_XDSQLITE_ITERATOR_H
 
 
 #include "../xdcommon/cmnbaseiterator.h"

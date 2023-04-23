@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDSQLITE_INSERTER_H
-#define __XDSQLITE_INSERTER_H
+#ifndef H_XDSQLITE_INSERTER_H
+#define H_XDSQLITE_INSERTER_H
 
 
 class SlRowInserterData

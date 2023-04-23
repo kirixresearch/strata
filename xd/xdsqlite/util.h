@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDSQLITE_UTIL_H
-#define __XDSQLITE_UTIL_H
+#ifndef H_XDSQLITE_UTIL_H
+#define H_XDSQLITE_UTIL_H
 
 
 xd::Structure parseCreateStatement(const std::wstring& create);

@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDSQLITE_STREAM_H
-#define __XDSQLITE_STREAM_H
+#ifndef H_XDSQLITE_STREAM_H
+#define H_XDSQLITE_STREAM_H
 
 
 class SlDatabase;
