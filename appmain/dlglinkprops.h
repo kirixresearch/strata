@@ -65,7 +65,6 @@ private:
     
 private:
 
-    DbComboCtrl* m_db_comboctrl;
     wxTextCtrl*  m_name_textctrl;
     wxTextCtrl*  m_location_textctrl;
     wxTextCtrl*  m_tags_textctrl;
