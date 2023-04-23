@@ -34,7 +34,6 @@
 #include <commctrl.h>
 #endif
 
-const int LOCATION_BAR_HEIGHT = 25;
 
 
 IFsPanelPtr createFsPanelObject()
