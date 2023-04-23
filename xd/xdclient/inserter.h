@@ -41,7 +41,7 @@ class ClientRowInserter : public xd::IRowInserter
 public:
 
     ClientRowInserter(ClientDatabase* database,  const std::wstring& path);
-    ~ClientRowInserter();
+    virtual ~ClientRowInserter();
 
     xd::objhandle_t getHandle(const std::wstring& column_name);
 

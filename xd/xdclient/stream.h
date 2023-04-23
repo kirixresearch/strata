@@ -23,7 +23,7 @@ class ClientStream : public xd::IStream
 public:
 
     ClientStream(ClientDatabase* database, const std::wstring& path, const std::wstring& handle);
-    ~ClientStream();
+    virtual ~ClientStream();
 
     bool read(void* pv,
               unsigned long read_size,
