@@ -104,12 +104,12 @@ void ConnectionBar::populate()
     kcl::ButtonBarItem* item;
     kcl::ButtonBarItem* default_item = NULL;
     
-    if (m_types & dbtypePackage ||
-        m_types & dbtypeAccess ||
-        m_types & dbtypeExcel ||
-        m_types & dbtypeDelimitedText ||
-        m_types & dbtypeFixedLengthText ||
-        m_types & dbtypeXbase)
+    if ((m_types & dbtypePackage) ||
+        (m_types & dbtypeAccess) ||
+        (m_types & dbtypeExcel) ||
+        (m_types & dbtypeDelimitedText) ||
+        (m_types & dbtypeFixedLengthText) ||
+        (m_types & dbtypeXbase))
     {
         item = addItem(ConnectionBar::typeFile,
                        GETBMPLARGE(gf_blank_document),
