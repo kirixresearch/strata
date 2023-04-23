@@ -217,9 +217,9 @@ static wxBitmap getShortcutBitmap(const wxBitmap& input_bmp)
     {
         for (x = 0; x < 7; ++x)
         {
-            int r = shortcut_image.GetRed(x,y);
-            int g = shortcut_image.GetGreen(x,y);
-            int b = shortcut_image.GetBlue(x,y);
+            unsigned char r = shortcut_image.GetRed(x,y);
+            unsigned char g = shortcut_image.GetGreen(x,y);
+            unsigned char b = shortcut_image.GetBlue(x,y);
 
             image.SetRGB(x, height+y-7, r, g, b);
             if (image.HasAlpha())
@@ -2573,7 +2573,7 @@ void DbDoc::deleteFsItem(IFsPanelPtr tree,
 
     
     
-        int problem_item_count = problem_items.size();
+        size_t problem_item_count = problem_items.size();
 
         IFsItemEnumPtr child_items = tree->getItemChildren(item);
         
