@@ -298,7 +298,7 @@ class WebDOMHTMLAnchorElement: public WebDOMHTMLElement
         KSCRIPT_GUI_METHOD("constructor", WebDOMHTMLAnchorElement::constructor)
         KSCRIPT_GUI_METHOD("getCharset", WebDOMHTMLAnchorElement::getCharset)
         KSCRIPT_GUI_METHOD("setCharset", WebDOMHTMLAnchorElement::setCharset)
-        KSCRIPT_GUI_METHOD("getCoords", WebDOMHTMLAnchorElement::getCoords);
+        KSCRIPT_GUI_METHOD("getCoords", WebDOMHTMLAnchorElement::getCoords)
         KSCRIPT_GUI_METHOD("setCoords", WebDOMHTMLAnchorElement::setCoords)
         KSCRIPT_GUI_METHOD("getHref", WebDOMHTMLAnchorElement::getHref)
         KSCRIPT_GUI_METHOD("setHref", WebDOMHTMLAnchorElement::setHref)

@@ -18,7 +18,7 @@ class WebBrowser : public FormControl
     BEGIN_KSCRIPT_DERIVED_CLASS("WebBrowser", WebBrowser, FormControl)
         KSCRIPT_GUI_METHOD("constructor", WebBrowser::constructor)
         KSCRIPT_GUI_METHOD("navigate", WebBrowser::navigate)
-        KSCRIPT_GUI_METHOD("showHypertext", WebBrowser::showHypertext);
+        KSCRIPT_GUI_METHOD("showHypertext", WebBrowser::showHypertext)
         KSCRIPT_METHOD    ("waitUntilReady", WebBrowser::waitUntilReady)
         KSCRIPT_GUI_METHOD("getLocation", WebBrowser::getLocation)
         KSCRIPT_GUI_METHOD("goForward", WebBrowser::goForward)
