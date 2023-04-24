@@ -53,7 +53,7 @@ static GridDraggedCells EMPTY_GRID_DRAGGED_CELLS;
 static GridDraggedRows  EMPTY_GRID_DRAGGED_ROWS;
 
 
-static wxString getGridDataFormat(const wxString& extended_format)
+inline wxString getGridDataFormat(const wxString& extended_format)
 {
     wxString retval = GRID_DATA_OBJECT_FORMAT;
     
