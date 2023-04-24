@@ -971,14 +971,14 @@ bool XdModel::bog()
     int len = m_iter->getRawWidth(group->m_handle);
 
     unsigned char* a = new unsigned char[len];
-    unsigned char* b = (unsigned char*)m_iter->getRawPtr(group->m_handle);
+    const unsigned char* b = m_iter->getRawPtr(group->m_handle);
     memcpy(a, b, len);
 
     // get the raw value of the previous row in the group; if 
     // it's different than the row before skipping, we're at 
     // the beginning of a group
     m_iter->skip(-1);
-    b = (unsigned char*)m_iter->getRawPtr(group->m_handle);
+    b = m_iter->getRawPtr(group->m_handle);
     m_iter->skip(1);
 
     bool result;
@@ -1039,7 +1039,7 @@ bool XdModel::eog()
     int len = m_iter->getRawWidth(group->m_handle);
 
     unsigned char* a = new unsigned char[len];
-    unsigned char* b = (unsigned char*)m_iter->getRawPtr(group->m_handle);
+    const unsigned char* b = m_iter->getRawPtr(group->m_handle);
     memcpy(a, b, len);
 
     // go forward a row
@@ -1057,7 +1057,7 @@ bool XdModel::eog()
     // get the raw value of the next row in the group; if 
     // it's different than the row before skipping, we're 
     // at the end of a group
-    b = (unsigned char*)m_iter->getRawPtr(group->m_handle);
+    b = m_iter->getRawPtr(group->m_handle);
     m_iter->skip(-1);
 
     bool result;
