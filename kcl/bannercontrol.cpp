@@ -25,11 +25,6 @@ BEGIN_EVENT_TABLE(BannerControl, wxControl)
 END_EVENT_TABLE()
 
 
-const int GRADIENT_START_POINT = 25;         // number between 0 and 100
-const int GRADIENT_END_POINT = 100;         // number between 0 and 100
-const int COLOR_STEP_COUNT = 75;
-
-
 BannerControl::BannerControl(wxWindow* parent,
                          const wxString& text = wxEmptyString,
                          const wxPoint& position = wxDefaultPosition,
