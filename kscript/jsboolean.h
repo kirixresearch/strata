@@ -28,7 +28,7 @@ class Boolean : public Object
         KSCRIPT_STATIC_METHOD("valueOf", Boolean::valueOf)
         KSCRIPT_STATIC_METHOD("toString", Boolean::toString)
         
-        KSCRIPT_CONSTANT_INTEGER("length", 1);
+        KSCRIPT_CONSTANT_INTEGER("length", 1)
 
     END_KSCRIPT_CLASS()
 
