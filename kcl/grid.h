@@ -273,7 +273,7 @@ public:
 
 xcm_interface IModelColumn : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("kcl.IModelColumn");
+    XCM_INTERFACE_NAME("kcl.IModelColumn")
 
 public:
 
