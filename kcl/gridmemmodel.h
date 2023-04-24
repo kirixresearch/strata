@@ -55,7 +55,6 @@ class MemColumnProperties : public CellProperties
 public:
 
     wxBitmap bitmap;
-    int bitmap_alignment;
 };
 
 

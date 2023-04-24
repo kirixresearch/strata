@@ -97,9 +97,9 @@ RowSelectionGrid::RowSelectionGrid(wxWindow* parent,
     // make this grid a drop target and connect the signal
     if (m_drop_target)
     {
-        kcl::GridDataDropTarget* drop_target = new kcl::GridDataDropTarget(this);
-        drop_target->sigDropped.connect(this, &RowSelectionGrid::onDataDropped);
-        SetDropTarget(drop_target);
+        kcl::GridDataDropTarget* dt = new kcl::GridDataDropTarget(this);
+        dt->sigDropped.connect(this, &RowSelectionGrid::onDataDropped);
+        SetDropTarget(dt);
     }
 }
 
