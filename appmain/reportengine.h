@@ -253,8 +253,31 @@ public:
         m_print_all_pages = false;    
     }
     
-    virtual ~ReportPrintInfo()
+	ReportPrintInfo(const ReportPrintInfo& c)
     {
+        m_page_width = c.m_page_width;
+        m_page_height = c.m_page_height;
+        m_print_quality = c.m_print_quality;
+        m_print_number_copies = c.m_print_number_copies;
+        m_print_min_page = c.m_print_min_page;
+        m_print_max_page = c.m_print_max_page;
+        m_print_from_page = c.m_print_from_page;
+        m_print_to_page = c.m_print_to_page;
+        m_print_all_pages = c.m_print_all_pages;
+    }
+
+    ReportPrintInfo& operator=(const ReportPrintInfo& c)
+    {
+        m_page_width = c.m_page_width;
+        m_page_height = c.m_page_height;
+        m_print_quality = c.m_print_quality;
+        m_print_number_copies = c.m_print_number_copies;
+        m_print_min_page = c.m_print_min_page;
+        m_print_max_page = c.m_print_max_page;
+        m_print_from_page = c.m_print_from_page;
+        m_print_to_page = c.m_print_to_page;
+        m_print_all_pages = c.m_print_all_pages;
+        return *this;
     }
 
     void setPageSize(int width, int height) { m_page_width = width; m_page_height = height; }
