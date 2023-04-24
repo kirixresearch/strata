@@ -42,10 +42,6 @@ public:
 
     virtual std::vector<std::wstring> getGroups(const std::wstring& path = L"") = 0;
     virtual bool deleteGroup(const std::wstring& path = L"") = 0;
-
-protected:
-
-    std::wstring m_path;
 };
 
 
