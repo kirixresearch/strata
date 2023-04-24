@@ -1470,14 +1470,14 @@ xd::DateTime XdModel::getDateTime(int col_idx, int function)
 double XdModel::getDouble(int col_idx, int function)
 {
     if (!m_iter)
-        return 0.0f;
+        return 0.0;
 
     double value;
     int col_type = m_columns[col_idx]->m_xd_type;
 
     // if the type is not double or numeric, return 0
     if (col_type != xd::typeDouble && col_type != xd::typeNumeric)
-        return 0.0f;
+        return 0.0;
 
     // find the value
     value = m_iter->getDouble(m_columns[col_idx]->m_handle);
@@ -1499,7 +1499,7 @@ double XdModel::getDouble(int col_idx, int function)
 
     // initialize value for count function
     if (function == funcCount)
-        value = 1.0f;
+        value = 1.0;
 
     while (!eog())
     {
