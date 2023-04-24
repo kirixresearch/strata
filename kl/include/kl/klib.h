@@ -9,7 +9,7 @@
  */
 
 
-#ifndef __KL_KLIB_H
+#ifndef H_KL_KLIB_H
 #define H_KL_KLIB_H
 
 
