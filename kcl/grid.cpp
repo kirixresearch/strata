@@ -7997,9 +7997,8 @@ void Grid::onMouse(wxMouseEvent& event)
  
 
             // determine the destination column index, if any
-            ViewColumn* dest_vc;
-            dest_vc = NULL;
-            int dest_vc_num;
+            ViewColumn* dest_vc = NULL;
+            int dest_vc_num = 0;
 
             bool past_action_col = false;
 
