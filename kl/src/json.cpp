@@ -122,7 +122,7 @@ std::wstring escape_string(const std::wstring& str)
             case L'\r':
                 result.append(L"\\r");
                 break;
-        };
+        }
     }
 
     return result;
@@ -252,12 +252,10 @@ bool parseJsonArray(wchar_t* expr, wchar_t** endloc, JsonNode& node)
         return true;
     }
 
-    std::wstring key;
 
     while (1)
     {
         bool result = false;
-        std::wstring key;    
 
         // parse the value
         JsonNode value_node;
