@@ -1676,7 +1676,7 @@ bool Grid::Create(wxWindow* parent,
 void Grid::updateData()
 {
     int col_count = m_model->getColumnCount();
-    if (m_empty_row.m_coldata.size() != col_count)
+    if (m_empty_row.m_coldata.size() != (size_t)col_count)
     {
         // initialize our empty row
         m_empty_row.m_coldata.resize(col_count, m_empty_cell);
