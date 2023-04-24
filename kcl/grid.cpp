@@ -9152,9 +9152,9 @@ void Grid::onEndEditCleanup(wxCommandEvent& event)
     }
 
 
-    int tempi;
-    double tempd;
-    bool tempb;
+    int tempi = 0;
+    double tempd = 0.0;
+    bool tempb = false;
 
     CellData* celldata = getCellData(row, modelcol);
 
