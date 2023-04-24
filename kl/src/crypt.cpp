@@ -239,14 +239,14 @@ void Des::doCrypt(unsigned char data[DES_DATA_SIZE],
 
         /* S-Box substitutions */
         {
-            pbuffer.dword[0] = * (unsigned long *) (MODIFIED_SBOX_1 + index(0));
-            pbuffer.dword[1] = * (unsigned long *) (MODIFIED_SBOX_2 + index(6));
-            pbuffer.dword[2] = * (unsigned long *) (MODIFIED_SBOX_3 + index(12));
-            pbuffer.dword[3] = * (unsigned long *) (MODIFIED_SBOX_4 + index(18));
-            pbuffer.dword[4] = * (unsigned long *) (MODIFIED_SBOX_5 + index(24));
-            pbuffer.dword[5] = * (unsigned long *) (MODIFIED_SBOX_6 + index(30));
-            pbuffer.dword[6] = * (unsigned long *) (MODIFIED_SBOX_7 + index(36));
-            pbuffer.dword[7] = * (unsigned long *) (MODIFIED_SBOX_8 + index(42));
+            pbuffer.dword[0] = * (const unsigned long *) (MODIFIED_SBOX_1 + index(0));
+            pbuffer.dword[1] = * (const unsigned long *) (MODIFIED_SBOX_2 + index(6));
+            pbuffer.dword[2] = * (const unsigned long *) (MODIFIED_SBOX_3 + index(12));
+            pbuffer.dword[3] = * (const unsigned long *) (MODIFIED_SBOX_4 + index(18));
+            pbuffer.dword[4] = * (const unsigned long *) (MODIFIED_SBOX_5 + index(24));
+            pbuffer.dword[5] = * (const unsigned long *) (MODIFIED_SBOX_6 + index(30));
+            pbuffer.dword[6] = * (const unsigned long *) (MODIFIED_SBOX_7 + index(36));
+            pbuffer.dword[7] = * (const unsigned long *) (MODIFIED_SBOX_8 + index(42));
         }
 
         /* XOR and swap */
