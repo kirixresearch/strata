@@ -982,7 +982,7 @@ void JsonNode::init()
     m_value->m_child_nodes.clear();
     m_value->m_child_nodes_ordered.clear();
     m_value->m_string.clear();
-    m_value->m_double = 0.0f;
+    m_value->m_double = 0.0;
     m_value->m_integer = 0;
     m_value->m_boolean = false;
     m_value->m_type = nodetypeUndefined;
