@@ -797,7 +797,7 @@ bool ReportOutputPdf::doCreatePage()
 
     // get the appropriate layout engine, and find out the page
     // idx we're creating within that particular engine
-    ReportLayoutEngine* layout_engine;
+    ReportLayoutEngine* layout_engine = NULL;
     int output_page_idx = m_pdf_output_page_idx;
 
     std::vector<ReportLayoutEngine*>::iterator it, it_end;
@@ -812,6 +812,11 @@ bool ReportOutputPdf::doCreatePage()
             break;
 
         output_page_idx -= count;
+    }
+
+    if (!layout_engine)
+    {
+        return false;
     }
 
     // create the page and add it to the pdf canvas;
