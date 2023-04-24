@@ -39,7 +39,7 @@ public:
     {
         m_child_nodes.clear();
         m_string.clear();
-        m_double = 0.0f;
+        m_double = 0.0;
         m_integer = 0;
         m_boolean = false;
         m_type = 0;         // undefined node type
