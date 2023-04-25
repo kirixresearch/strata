@@ -21,7 +21,7 @@ class Connection : public IConnection
     XCM_CLASS_NAME("appmain.Connection")
         XCM_BEGIN_INTERFACE_MAP(Connection)
         XCM_INTERFACE_ENTRY(IConnection)
-        XCM_END_INTERFACE_MAP()
+    XCM_END_INTERFACE_MAP()
 
 public:
 
