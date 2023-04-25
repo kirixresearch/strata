@@ -1182,10 +1182,10 @@ bool MysqlIterator::updateCacheRow(xd::rowid_t rowid,
 
             case xd::typeBoolean:
             {
-                int i = info->bool_val ? 1 : 0;
+                int val = info->bool_val ? 1 : 0;
                 
                 char buf[128];
-                sprintf(buf, "%d", i);
+                sprintf(buf, "%d", val);
                 
                 m_cache.updateValue(m_row_pos,
                                     column,

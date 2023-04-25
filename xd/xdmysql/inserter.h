@@ -38,7 +38,7 @@ class MysqlRowInserter : public xd::IRowInserter
 public:
 
     MysqlRowInserter(MysqlDatabase* db, const std::wstring& table);
-    ~MysqlRowInserter();
+    virtual ~MysqlRowInserter();
 
     xd::objhandle_t getHandle(const std::wstring& column_name);
 

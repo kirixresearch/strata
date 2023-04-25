@@ -243,7 +243,7 @@ class TableSetRowDeleter : public IXdsqlRowDeleter
 public:
 
     TableSetRowDeleter(XdnativeDatabase* db, TableSet* set);
-    ~TableSetRowDeleter();
+    virtual ~TableSetRowDeleter();
 
     void addIndex(IIndex* index, const std::wstring& expr);
 

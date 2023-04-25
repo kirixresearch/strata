@@ -36,7 +36,15 @@ class DatabaseMgr : public xd::IDatabaseMgr
     XCM_END_INTERFACE_MAP()
 
 public:
-    
+
+    DatabaseMgr()
+    {
+    }
+
+    virtual ~DatabaseMgr()
+    {
+    }
+
     bool createDatabase(const std::wstring& connection_str)
     {
         return false;

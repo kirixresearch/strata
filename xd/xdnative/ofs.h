@@ -168,7 +168,7 @@ public:
 private:
     
     OfsFile(XdnativeDatabase* database);
-    ~OfsFile();
+    virtual ~OfsFile();
 
     void setDirty(bool dirty);
 

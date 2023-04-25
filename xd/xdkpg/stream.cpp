@@ -77,7 +77,7 @@ bool KpgStream::read(void* buf,
         const void* data = m_reader->loadNextBlock(&block_size);
         if (data && block_size > 0)
         {
-            m_membuf.append((unsigned char*)data, (size_t)block_size);
+            m_membuf.append((const unsigned char*)data, (size_t)block_size);
         }
         else
         {

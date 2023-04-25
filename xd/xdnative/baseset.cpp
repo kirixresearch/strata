@@ -347,7 +347,7 @@ bool BaseSet::baseSetModifyStructure(const xd::StructureModify& mod_params, bool
         return false;
 
     std::vector<xd::StructureModify::Action>::const_iterator it;
-    int processed_action_count = 0;
+    size_t processed_action_count = 0;
 
     // handle delete
     for (it = mod_params.actions.cbegin(); it != mod_params.actions.cend(); ++it)

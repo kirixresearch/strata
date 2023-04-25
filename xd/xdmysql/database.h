@@ -41,7 +41,7 @@ class MysqlDatabase : public xd::IDatabase
 public:
 
     MysqlDatabase();
-    ~MysqlDatabase();
+    virtual ~MysqlDatabase();
     
     bool open(const std::wstring& server,
               int port,

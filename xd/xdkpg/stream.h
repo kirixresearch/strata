@@ -29,7 +29,7 @@ class KpgStream : public xd::IStream
 public:
 
     KpgStream(KpgDatabase* database);
-    ~KpgStream();
+    virtual ~KpgStream();
 
     bool init(const std::wstring& path, const std::wstring& mime_type);
 

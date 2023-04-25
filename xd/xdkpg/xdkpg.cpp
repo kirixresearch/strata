@@ -30,6 +30,10 @@ public:
     {
     }
 
+    virtual ~DatabaseMgr()
+    {
+    }
+
     xd::IDatabasePtr open(const std::wstring& connection_str)
     {
         // parse the connection string

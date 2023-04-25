@@ -256,7 +256,7 @@ bool NativeTable::create(const std::wstring& filename, const xd::FormatDefinitio
             case xd::typeBoolean:  col_width = 1; col_scale = 0; break;
             case xd::typeDateTime: col_width = 8; col_scale = 0; break;
             default:                  break;
-        };
+        }
         
         if (nulls_allowed)
         {

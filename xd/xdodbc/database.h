@@ -105,7 +105,7 @@ class OdbcDatabase : public xd::IDatabase,
 public:
 
     OdbcDatabase();
-    ~OdbcDatabase();
+    virtual ~OdbcDatabase();
     
     bool open(int type,
               const std::wstring& server,

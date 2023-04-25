@@ -39,7 +39,7 @@ friend class KpgStream;
 public:
 
     KpgDatabase();
-    ~KpgDatabase();
+	virtual ~KpgDatabase();
     
     bool open(const std::wstring& path);
     void close();

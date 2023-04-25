@@ -23,7 +23,6 @@
 #include <kl/md5.h>
 #include <kl/math.h>
 
-const int row_array_size = 1000;
 
 const std::string empty_string = "";
 const std::wstring empty_wstring = L"";
@@ -458,7 +457,7 @@ const std::string& KpgIterator::getString(xd::objhandle_t data_handle)
         const unsigned char* p = (const unsigned char*)memchr(col_data, 0, real_width);
         if (p)
             real_width = p-col_data;
-        dai->str_result.assign((char*)col_data, real_width);
+        dai->str_result.assign((const char*)col_data, real_width);
     }
 
     return dai->str_result;

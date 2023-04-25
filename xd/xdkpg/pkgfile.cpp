@@ -333,7 +333,7 @@ bool PkgStreamWriter::writeBlock(const void* data, int block_size, bool compress
     if (compressed)
     {
         unsigned long buflen = m_buf_size-32;
-        if (Z_OK == compress2((Bytef*)(m_buf+32), &buflen, (Bytef*)data, block_size, 9 /*(max compression)*/))
+        if (Z_OK == compress2((Bytef*)(m_buf+32), &buflen, (const Bytef*)data, block_size, 9 /*(max compression)*/))
         {
             write_size = buflen;
         }

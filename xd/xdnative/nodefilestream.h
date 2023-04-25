@@ -27,7 +27,7 @@ class NodeFileStream : public xd::IStream
 public:
 
     NodeFileStream(XdnativeDatabase* db);
-    ~NodeFileStream();
+    virtual ~NodeFileStream();
 
     bool create(const std::wstring& filename);
     bool open(const std::wstring& filename);

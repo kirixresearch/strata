@@ -28,6 +28,14 @@ class DatabaseMgr : public xd::IDatabaseMgr,
 
 public:
 
+    DatabaseMgr()
+    {
+    }
+
+    virtual ~DatabaseMgr()
+    {
+    }
+
     bool createDatabase(const std::wstring& connection_str);
 
     xd::IDatabasePtr open(const std::wstring& connection_str);
