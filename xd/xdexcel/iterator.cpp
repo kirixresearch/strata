@@ -26,8 +26,6 @@
 #include <xlnt/xlnt.hpp>
 
 
-const int row_array_size = 1000;
-
 const std::string empty_string = "";
 const std::wstring empty_wstring = L"";
 

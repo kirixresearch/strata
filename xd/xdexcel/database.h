@@ -41,7 +41,7 @@ friend class ExcelFileInfo;
 public:
 
     ExcelDatabase();
-    ~ExcelDatabase();
+    virtual ~ExcelDatabase();
     
     bool open(const std::wstring& path);
     void close();

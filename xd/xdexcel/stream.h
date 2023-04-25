@@ -29,7 +29,7 @@ class ExcelStream : public xd::IStream
 public:
 
     ExcelStream(ExcelDatabase* database);
-    ~ExcelStream();
+    virtual ~ExcelStream();
 
     bool init(const std::wstring& path, const std::wstring& mime_type);
 

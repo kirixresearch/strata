@@ -55,7 +55,7 @@ class ExcelRowInserter : public xd::IRowInserter
 public:
 
     ExcelRowInserter(ExcelDatabase* db, const std::wstring& table, const xd::Structure& format_definition);
-    ~ExcelRowInserter();
+    virtual ~ExcelRowInserter();
 
     xd::objhandle_t getHandle(const std::wstring& column_name);
 
@@ -78,11 +78,9 @@ private:
 
     ExcelDatabase* m_database;
 
-    bool m_inserting;
     std::wstring m_table;
 
     int m_buf_rows;
-    int m_row_width;
     int m_rows_per_buf;
     unsigned char* m_data;
 
