@@ -1765,7 +1765,7 @@ static bool setReportCreateInfo(IDocumentSitePtr doc_site,
                 case kcl::Grid::typeDateTime:
                     alignment = kcanvas::ALIGNMENT_CENTER;
                     break;
-            };
+            }
 
             // set the field info
             ReportCreateField field;
@@ -5436,21 +5436,21 @@ jobs::IJobPtr AppController::executeScript(const wxString& _location,
 
         wxMemoryBuffer buf;
 
-        char* tempbuf = new char[1025];
+        char* readbuf = new char[1025];
         unsigned long read = 0;
 
         while (1)
         {
-            if (!stream->read(tempbuf, 1024, &read))
+            if (!stream->read(readbuf, 1024, &read))
                 break;
 
-            buf.AppendData(tempbuf, read);
+            buf.AppendData(readbuf, read);
 
             if (read != 1024)
                 break;
         }
 
-        delete[] tempbuf;
+        delete[] readbuf;
 
 
         unsigned char* ptr = (unsigned char*)buf.GetData();

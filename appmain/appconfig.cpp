@@ -383,7 +383,7 @@ IAppConfigPtr createAppConfigObject()
             reg_root += APP_COMPANY_KEY;
 
             res->setRegRoot(wxRegKey::HKUSR, reg_root);
-        };
+        }
 #else
         AppConfigGenericImpl* res = new AppConfigGenericImpl;
 #endif
