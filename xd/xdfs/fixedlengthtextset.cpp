@@ -536,7 +536,7 @@ bool FixedLengthTextRowInserter::insertRow()
         diff = (*it)->m_width - (*it)->m_str_val.length();
         
         // add the string
-        char* p = (char*)(*it)->m_str_val.c_str();
+        const char* p = (const char*)(*it)->m_str_val.c_str();
 
         // for left-padded fields
         if ((*it)->m_align_right)
