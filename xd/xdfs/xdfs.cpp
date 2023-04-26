@@ -54,6 +54,13 @@ class DatabaseMgr : public xd::IDatabaseMgr
 
 public:
 
+    DatabaseMgr()
+    {
+    }
+
+    virtual ~DatabaseMgr()
+    {
+    }
     
     bool createDatabase(const std::wstring& connection_str)
     {
@@ -141,6 +148,14 @@ class XdUtil : public xd::IXdUtil
     XCM_END_INTERFACE_MAP()
 
 public:
+
+    XdUtil()
+    {
+    }
+
+    virtual ~XdUtil()
+    {
+    }
 
     std::wstring saveDefinitionToString(const xd::FormatDefinition& def) { return ::saveDefinitionToString(def); }
     bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def) { return ::loadDefinitionFromString(str, def); }

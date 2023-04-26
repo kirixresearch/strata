@@ -28,7 +28,7 @@ public:
 public:
 
     SlStream(SlDatabase* database);
-    ~SlStream();
+    virtual ~SlStream();
 
     bool init(const std::wstring& stream_object_name,
               const std::wstring& mime_type = L"application/octet-stream",

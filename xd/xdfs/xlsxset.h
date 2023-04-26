@@ -119,7 +119,7 @@ class XlsxRowInserter : public xd::IRowInserter
 public:
 
     XlsxRowInserter(XlsxSet* set);
-    ~XlsxRowInserter();
+    virtual ~XlsxRowInserter();
 
     xd::objhandle_t getHandle(const std::wstring& column_name);
 

@@ -33,6 +33,10 @@ public:
     {
     }
 
+    virtual ~DatabaseMgr()
+    {
+    }
+
     xd::IDatabasePtr open(const std::wstring& connection_str)
     {
         xd::ConnectionString c(connection_str);

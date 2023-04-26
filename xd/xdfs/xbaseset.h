@@ -121,7 +121,7 @@ class XbaseRowInserter : public xd::IRowInserter
 public:
 
     XbaseRowInserter(XbaseSet* set);
-    ~XbaseRowInserter();
+    virtual ~XbaseRowInserter();
 
     xd::objhandle_t getHandle(const std::wstring& column_name);
 

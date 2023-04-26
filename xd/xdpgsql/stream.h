@@ -24,7 +24,7 @@ class PgsqlStream : public xd::IStream
 public:
 
     PgsqlStream(PgsqlDatabase* database);
-    ~PgsqlStream();
+    virtual ~PgsqlStream();
 
     bool init(Oid oid, const std::wstring& mime_type = L"application/octet-stream", PGconn* conn = NULL);
 

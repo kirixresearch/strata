@@ -97,7 +97,7 @@ class OracleRowInserter : public xd::IRowInserter
 public:
 
     OracleRowInserter(OracleSet* set);
-    ~OracleRowInserter();
+    virtual ~OracleRowInserter();
 
     xd::objhandle_t getHandle(const std::wstring& column_name);
 

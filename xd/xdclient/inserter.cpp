@@ -14,8 +14,6 @@
 #include "inserter.h"
 #include "request.h"
 #include "kl/url.h"
-#include "kl/md5.h"
-#include "../xdcommon/dbfuncs.h"
 
 
 ClientRowInserter::ClientRowInserter(ClientDatabase* database, const std::wstring& path)

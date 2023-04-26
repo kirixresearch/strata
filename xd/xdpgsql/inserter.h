@@ -49,7 +49,7 @@ class PgsqlRowInserter : public xd::IRowInserter
 public:
 
     PgsqlRowInserter(PgsqlDatabase* db, const std::wstring& table);
-    ~PgsqlRowInserter();
+    virtual ~PgsqlRowInserter();
 
     xd::objhandle_t getHandle(const std::wstring& column_name);
 
@@ -73,7 +73,6 @@ private:
     PgsqlDatabase* m_database;
     PGconn* m_conn;
 
-    bool m_inserting;
     std::wstring m_table;
 
     int m_buf_rows;

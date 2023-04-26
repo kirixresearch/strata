@@ -40,6 +40,10 @@ public:
         m_conn = 0;
     }
 
+    virtual ~DatabaseMgr()
+    {
+    }
+
     bool createDatabase(const std::wstring& connection_str)
     {
         xd::ConnectionString c(connection_str);

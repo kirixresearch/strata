@@ -298,7 +298,7 @@ xd::Structure ClientDatabase::jsonToStructure(kl::JsonNode& node)
     xd::Structure s;
 
     kl::JsonNode columns = node["columns"];
-    size_t i = 0, cnt = columns.getChildCount();
+    size_t i, cnt = columns.getChildCount();
 
     for (i = 0; i < cnt; ++i)
     {

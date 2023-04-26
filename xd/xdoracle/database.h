@@ -74,7 +74,7 @@ class OracleDatabase : public xd::IDatabase,
 public:
 
     OracleDatabase();
-    ~OracleDatabase();
+    virtual ~OracleDatabase();
     
     bool open(const std::wstring& server,
               int port,

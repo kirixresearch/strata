@@ -35,7 +35,7 @@ class SlDatabase : public xd::IDatabase
 public:
 
     SlDatabase();
-    ~SlDatabase();
+    virtual ~SlDatabase();
 
     bool createDatabase(const std::wstring& path);
 

@@ -1491,6 +1491,7 @@ static unsigned char hex2byte(unsigned char b1, unsigned char b2)
     return (b1*16)+b2;
 }
 
+/*
 static void decodeHexString(const char* buf, std::string& out)
 {
     out = "";
@@ -1511,6 +1512,7 @@ static void decodeHexString(const char* buf, std::string& out)
         ++buf;
     }
 }
+*/
 
 const std::string& PgsqlIterator::getString(xd::objhandle_t data_handle)
 {

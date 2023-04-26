@@ -37,7 +37,7 @@ class SlRowInserter : public xd::IRowInserter
 public:
 
     SlRowInserter(SlDatabase* database, const std::wstring& table);
-    ~SlRowInserter();
+    virtual ~SlRowInserter();
 
     xd::objhandle_t getHandle(const std::wstring& column_name);
 

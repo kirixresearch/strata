@@ -63,7 +63,7 @@ class OdbcRowInserter : public xd::IRowInserter
 public:
 
     OdbcRowInserter(OdbcDatabase* database, const std::wstring& table);
-    ~OdbcRowInserter();
+    virtual ~OdbcRowInserter();
 
     xd::objhandle_t getHandle(const std::wstring& column_name);
 
