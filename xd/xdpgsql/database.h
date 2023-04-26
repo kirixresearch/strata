@@ -64,7 +64,7 @@ friend class PgsqlFileInfo;
 public:
 
     PgsqlDatabase();
-    ~PgsqlDatabase();
+    virtual ~PgsqlDatabase();
     
     bool open(const std::wstring& server,
               int port,
