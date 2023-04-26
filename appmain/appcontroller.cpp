@@ -579,6 +579,9 @@ AppController::AppController()
     m_script_command_router = NULL;
     m_data_locked = true;
     m_frame_caption = APPLICATION_NAME;
+    m_format_toolbar = NULL;
+    m_borderpanel_helper = NULL;
+    m_colorpanel_helper = NULL;
 }
 
 AppController::~AppController()
