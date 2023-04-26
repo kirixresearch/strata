@@ -192,7 +192,7 @@ xd::Structure FixedLengthTable::getStructure()
         col.source_offset = 0;
         col.calculated = false;
         col.column_ordinal = counter++;
-        col.table_ordinal = 0;;
+        col.table_ordinal = 0;
         col.nulls_allowed = it->nulls_allowed;
 
         structure.createColumn(col);

@@ -28,9 +28,6 @@
 #include <kl/url.h>
 
 
-
-const int GUESS_LINE_DELIMITERS_NEEDED = 20;
-const int GUESS_BUF_SIZE = 400000;
 const int BUF_ROW_COUNT = 10000;
 
 
