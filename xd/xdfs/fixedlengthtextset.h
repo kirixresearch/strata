@@ -127,7 +127,6 @@ private:
     char* m_buf;                    // buffer for rows
     char* m_buf_ptr;
     int m_row_width;
-    xf_off_t m_file_pos;
     bool m_crlf;
 
     bool m_inserting;
