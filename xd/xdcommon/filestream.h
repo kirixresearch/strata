@@ -26,7 +26,7 @@ class FileStream : public xd::IStream
 public:
 
     FileStream();
-    ~FileStream();
+    virtual ~FileStream();
 
     bool create(const std::wstring& filename);
     bool open(const std::wstring& filename);
