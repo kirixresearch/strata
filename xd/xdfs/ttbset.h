@@ -124,7 +124,7 @@ class TtbRowInserter : public xd::IRowInserter
 public:
 
     TtbRowInserter(TtbSet* set);
-    ~TtbRowInserter();
+    virtual ~TtbRowInserter();
 
     xd::objhandle_t getHandle(const std::wstring& column_name);
 
@@ -188,7 +188,7 @@ class TtbSetRowDeleter : public IXdsqlRowDeleter
 public:
 
     TtbSetRowDeleter(FsDatabase* db, TtbSet* set);
-    ~TtbSetRowDeleter();
+    virtual ~TtbSetRowDeleter();
 
     void addIndex(IIndex* index, const std::wstring& expr);
 
