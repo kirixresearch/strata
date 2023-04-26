@@ -26,6 +26,10 @@ public:
     {
     }
 
+    virtual ~RelationInfo()
+    {
+    }
+
     void setRelationId(const std::wstring& new_val)
     {
         m_relation_id = new_val;
