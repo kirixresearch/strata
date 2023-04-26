@@ -458,6 +458,7 @@ xd::datetime_t ExcelIterator::getDateTime(xd::objhandle_t data_handle)
     return 0;
 }
 
+/*
 static double decstr2dbl(const char* c, int width, int scale)
 {
     double res = 0;
@@ -485,7 +486,7 @@ static double decstr2dbl(const char* c, int width, int scale)
 
     return res;
 }
-
+*/
 
 double ExcelIterator::getDouble(xd::objhandle_t data_handle)
 {
