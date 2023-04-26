@@ -68,7 +68,7 @@ class OracleDatabase : public xd::IDatabase,
     XCM_CLASS_NAME("xdoracle.Database")
     XCM_BEGIN_INTERFACE_MAP(OracleDatabase)
         XCM_INTERFACE_ENTRY(xd::IDatabase)
-        XCM_INTERFACE_ENTRY(IOracleDatabase);
+        XCM_INTERFACE_ENTRY(IOracleDatabase)
     XCM_END_INTERFACE_MAP()
 
 public:
