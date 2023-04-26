@@ -301,7 +301,7 @@ class DelArrPtr
 public:
     T* ptr;
     DelArrPtr(T* t) : ptr(t) { }
-    ~DelArrPtr() { delete[] ptr; };
+    ~DelArrPtr() { delete[] ptr; }
 };
 
 

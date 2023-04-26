@@ -180,7 +180,7 @@ xd::ColumnInfo parseSqliteColumnDescription(const std::wstring& _col_desc)
 
             std::wstring w = kl::beforeFirst(type_params, L',');
             std::wstring s = L"0";
-            if (type_params.find(L',') != -1)
+            if (type_params.find(L',') != type_params.npos)
                 s = kl::afterFirst(type_params, L',');
             width = kl::wtoi(w);
             scale = kl::wtoi(s);
