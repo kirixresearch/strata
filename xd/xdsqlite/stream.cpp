@@ -200,7 +200,7 @@ bool SlStream::write(const void* buf,
                      unsigned long write_size,
                      unsigned long* written_count)
 {
-    unsigned char* cbuf = (unsigned char*)buf;
+    const unsigned char* cbuf = (const unsigned char*)buf;
     long long block = (m_offset / m_block_size) + 1;
     int block_offset = (int)(m_offset % m_block_size);
     long max_write;
