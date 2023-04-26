@@ -189,8 +189,8 @@ public:
     virtual jobs::IJobInfoEnumPtr getJobInfoEnum(int job_state_mask) = 0;
     virtual bool getJobsActive() = 0;
 
-    XCM_DECLARE_SIGNAL0(sigQueueChanged);
-    XCM_DECLARE_SIGNAL1(sigJobAdded, jobs::IJobInfoPtr);
+    XCM_DECLARE_SIGNAL0(sigQueueChanged)
+    XCM_DECLARE_SIGNAL1(sigJobAdded, jobs::IJobInfoPtr)
 };
 
 
