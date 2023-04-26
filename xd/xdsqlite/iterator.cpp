@@ -798,7 +798,7 @@ xd::datetime_t SlIterator::getDateTime(xd::objhandle_t data_handle)
     
     int y = 0, m = 0, d = 0, hh = 0, mm = 0, ss = 0;
     char buf[25];
-    char* coltext = (char*)sqlite3_column_text(m_stmt, dai->col_ordinal);
+    const char* coltext = (const char*)sqlite3_column_text(m_stmt, dai->col_ordinal);
     buf[0] = 0;
     if (coltext)
     {
