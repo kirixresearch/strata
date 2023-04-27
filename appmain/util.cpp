@@ -378,7 +378,7 @@ std::vector< std::pair<std::wstring, bool> > sortExprToVector(const std::wstring
         bool sort_desc = false;
  
         // see if the ascending flag is included
-        int offset = upper_field.find(L" ASC");
+        size_t offset = upper_field.find(L" ASC");
         if (offset != upper_field.npos)
         {
             // if the ascending flag is included,
