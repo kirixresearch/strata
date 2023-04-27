@@ -28,8 +28,8 @@ class JobQueue : public IJobQueue,
         XCM_INTERFACE_ENTRY(IJobQueue)
     XCM_END_INTERFACE_MAP()
 
-    XCM_IMPLEMENT_SIGNAL0(sigQueueChanged);
-    XCM_IMPLEMENT_SIGNAL1(sigJobAdded, IJobInfoPtr);
+    XCM_IMPLEMENT_SIGNAL0(sigQueueChanged)
+    XCM_IMPLEMENT_SIGNAL1(sigJobAdded, IJobInfoPtr)
 
 public:
     
