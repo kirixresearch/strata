@@ -189,7 +189,7 @@ int SummarizeJob::runJob()
     xd::GroupQueryParams info;
     info.input = input_path;
     info.output = group_output_set_path;
-    info.columns = column_param,
+    info.columns = column_param;
     info.where = where_param;
 
     bool res = m_db->groupQuery(&info, xd_job.p);
