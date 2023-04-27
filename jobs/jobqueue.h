@@ -34,7 +34,7 @@ class JobQueue : public IJobQueue,
 public:
     
     JobQueue();
-    ~JobQueue();
+    virtual ~JobQueue();
 
     int addJob(IJobPtr job, int initial_state);
     int addJobInfo(IJobInfoPtr job, int initial_state);
