@@ -72,6 +72,10 @@ public:
         params.setObject();
     }
 
+    virtual ~JobBase()
+    {
+    }
+
     int getJobId()
     {
         KL_AUTO_LOCK(m_jobbase_mutex);
