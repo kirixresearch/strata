@@ -306,7 +306,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     serial_sizer->Add(m_activation_valid->GetSize().GetWidth(), 1);
     
     
-    wxSize min_size_sitecode = m_serial_textctrl->GetTextExtent("XXXX XXXX XXXX XXXX").Scale(1.2f, 1.5f);
+    wxSize min_size_sitecode = m_serial_textctrl->GetTextExtent("XXXX XXXX XXXX XXXX").Scale(1.2, 1.5);
     
     // measure the label widths
     wxSize label_size = getMaxTextSize(label_serial,

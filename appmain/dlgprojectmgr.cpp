@@ -204,7 +204,7 @@ public:
         Layout();
         
 
-        min_size = main_sizer->GetMinSize().Scale(1.0f, 1.2f);
+        min_size = main_sizer->GetMinSize().Scale(1.0, 1.2);
         SetClientSize(min_size);
         SetMinClientSize(min_size);
         

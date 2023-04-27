@@ -41,7 +41,7 @@ public:
         m_db = xcm::null;
     }
 
-    ~Connection()
+    virtual ~Connection()
     {
     }
 

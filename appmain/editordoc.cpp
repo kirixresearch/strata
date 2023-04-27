@@ -1232,7 +1232,7 @@ bool EditorDoc::findReplaceAll(const wxString& find_val,
     std::wstring wregex_match_str;
     
     // bracket non-alphanumeric characters
-    wchar_t* p = (wchar_t*)wfind_val.c_str();
+    const wchar_t* p = (const wchar_t*)wfind_val.c_str();
     while (*p)
     {
         if (!iswalnum(*p))
