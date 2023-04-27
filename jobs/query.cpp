@@ -226,12 +226,12 @@ int QueryJob::runJob()
 
         if (add_xdrowid)
         {
-            xcm::IObjectPtr result;
+            xcm::IObjectPtr result2;
             sql = L"ALTER TABLE " + q_output_str + L" ADD COLUMN xdrowid SERIAL";
-            m_db->execute(sql, xd::sqlPassThrough, result, NULL);
+            m_db->execute(sql, xd::sqlPassThrough, result2, NULL);
 
             sql = L"CREATE INDEX ON " + q_output_str + L" (xdrowid)";
-            m_db->execute(sql, xd::sqlPassThrough, result, NULL);
+            m_db->execute(sql, xd::sqlPassThrough, result2, NULL);
         }
     }
 
