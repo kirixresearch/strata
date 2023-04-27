@@ -18,9 +18,6 @@
 #include <kl/crypt.h>
 
 
-const int ENCFILE_BLOCK_SIZE = 1024;     // must be at least 16 bytes greater than data per block
-const int ENCFILE_DATA_PER_BLOCK = 1000;
-
 
 #define ENC_KEY L"Vj%82lk0@1zVnqG%aM3dF!7a"
 
