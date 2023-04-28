@@ -313,8 +313,8 @@ void CanvasPDF::drawImage(const wxImage& image,
         return;
 
     // initialize the graphics state
-    saveState();
-    initializeGraphicsState();
+    (void)saveState();
+    (void)initializeGraphicsState();
 
     // get the drawing origin
     int draw_origin_x, draw_origin_y;
@@ -350,7 +350,7 @@ void CanvasPDF::drawImage(const wxImage& image,
 
 
     // restore the graphics state
-    restoreState();
+    (void)restoreState();
 }
 
 void CanvasPDF::drawCheckBox(int x, int y, int w, int h, bool checked)
@@ -361,8 +361,8 @@ void CanvasPDF::drawCheckBox(int x, int y, int w, int h, bool checked)
 void CanvasPDF::drawCircle(int x, int y, int r)
 {
     // initialize the graphics state
-    saveState();
-    initializeGraphicsState();
+    (void)saveState();
+    (void)initializeGraphicsState();
 
     // get the drawing origin
     int draw_origin_x, draw_origin_y;
@@ -384,14 +384,14 @@ void CanvasPDF::drawCircle(int x, int y, int r)
     HPDF_Page_FillStroke(m_page);
 
     // restore the graphics state
-    restoreState();
+    (void)restoreState();
 }
 
 void CanvasPDF::drawEllipse(int x, int y, int w, int h)
 {
     // initialize the graphics state
-    saveState();
-    initializeGraphicsState();
+    (void)saveState();
+    (void)initializeGraphicsState();
 
     // get the drawing origin
     int draw_origin_x, draw_origin_y;
@@ -419,14 +419,14 @@ void CanvasPDF::drawEllipse(int x, int y, int w, int h)
     HPDF_Page_FillStroke(m_page);
 
     // restore the graphics state
-    restoreState();
+    (void)restoreState();
 }
 
 void CanvasPDF::drawLine(int x1, int  y1, int x2, int y2)
 {
     // initialize the graphics state
-    saveState();
-    initializeGraphicsState();
+    (void)saveState();
+    (void)initializeGraphicsState();
 
     // get the drawing origin
     int draw_origin_x, draw_origin_y;
@@ -452,7 +452,7 @@ void CanvasPDF::drawLine(int x1, int  y1, int x2, int y2)
     HPDF_Page_Stroke(m_page);
 
     // restore the graphics state
-    restoreState();
+    (void)restoreState();
 }
 
 void CanvasPDF::drawPoint(int x, int y)
@@ -467,8 +467,8 @@ void CanvasPDF::drawPolygon(int n, wxPoint points[], int x, int y)
         return;
 
     // initialize the graphics state
-    saveState();
-    initializeGraphicsState();
+    (void)saveState();
+    (void)initializeGraphicsState();
 
     // get the drawing origin
     int draw_origin_x, draw_origin_y;
@@ -503,7 +503,7 @@ void CanvasPDF::drawPolygon(int n, wxPoint points[], int x, int y)
     HPDF_Page_ClosePathFillStroke(m_page);
 
     // restore the graphics state
-    restoreState();
+    (void)restoreState();
 }
 
 void CanvasPDF::drawGradientFill(const wxRect& rect,
@@ -517,8 +517,8 @@ void CanvasPDF::drawGradientFill(const wxRect& rect,
 void CanvasPDF::drawRectangle(int x, int y, int w, int h)
 {
     // initialize the graphics state
-    saveState();
-    initializeGraphicsState();
+    (void)saveState();
+    (void)initializeGraphicsState();
 
     // get the drawing origin
     int draw_origin_x, draw_origin_y;
@@ -540,14 +540,14 @@ void CanvasPDF::drawRectangle(int x, int y, int w, int h)
     HPDF_Page_FillStroke(m_page);
 
     // restore the graphics state
-    restoreState();
+    (void)restoreState();
 }
 
 void CanvasPDF::drawText(const wxString& text, int x, int y)
 {
     // initialize the graphics state
-    saveState();
-    initializeTextState();
+    (void)saveState();
+    (void)initializeTextState();
 
     // get the drawing origin
     int draw_origin_x, draw_origin_y;
@@ -586,7 +586,7 @@ void CanvasPDF::drawText(const wxString& text, int x, int y)
     HPDF_Page_EndText(m_page);
 
     // restore the graphics state
-    restoreState();
+    (void)restoreState();
 }
 
 bool CanvasPDF::getTextExtent(const wxString& text,
@@ -596,8 +596,8 @@ bool CanvasPDF::getTextExtent(const wxString& text,
                               int* external) const
 {
     // initialize the graphics state
-    saveState();
-    initializeTextState();
+    (void)saveState();
+    (void)initializeTextState();
 
     // for the x-extent, get the string width
     *x = pdftom_x(HPDF_Page_TextWidth(m_page, convertToString(text)));
@@ -625,7 +625,7 @@ bool CanvasPDF::getTextExtent(const wxString& text,
         *external = 0;
 
     // restore the graphics state
-    restoreState();
+    (void)restoreState();
     return true;
 }
 
@@ -642,8 +642,8 @@ bool CanvasPDF::getPartialTextExtents(const wxString& text,
     // the current, more-precise method should be fast enough
 
     // initialize the graphics state
-    saveState();
-    initializeTextState();
+    (void)saveState();
+    (void)initializeTextState();
 
     // clear out the widths array
     widths.clear();
@@ -659,7 +659,7 @@ bool CanvasPDF::getPartialTextExtents(const wxString& text,
     }
 
     // restore the graphics state
-    restoreState();
+    (void)restoreState();
     return true;
 }
 
@@ -669,8 +669,8 @@ int CanvasPDF::getCharHeight() const
     // the character height
 
     // initialize the graphics state
-    saveState();
-    initializeTextState();
+    (void)saveState();
+    (void)initializeTextState();
 
     // used throughout
     int height = 0;
@@ -691,7 +691,7 @@ int CanvasPDF::getCharHeight() const
     height = ((double)height*size*PDF_INTERFACE_DPI)/72000;
 
     // restore the graphics state
-    restoreState();
+    (void)restoreState();
 
     // return height
     return height;
@@ -700,8 +700,8 @@ int CanvasPDF::getCharHeight() const
 int CanvasPDF::getCharWidth() const
 {
     // initialize the graphics state
-    saveState();
-    initializeTextState();
+    (void)saveState();
+    (void)initializeTextState();
 
     // used throughout
     int width = 0;
@@ -722,7 +722,7 @@ int CanvasPDF::getCharWidth() const
     width = ((double)width*size*PDF_INTERFACE_DPI)/72000;
 
     // restore the graphics state
-    restoreState();
+    (void)restoreState();
 
     // return width
     return width;

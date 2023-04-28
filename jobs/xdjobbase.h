@@ -147,7 +147,6 @@ protected:
 
 private:
 
-    unsigned int m_usage;
     XdJobInfo* m_xd_jobinfo;
 };
 
