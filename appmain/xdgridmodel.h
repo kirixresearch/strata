@@ -203,7 +203,6 @@ private:
     std::vector<XdGridColumnInfo> m_columns;
     ColLookupHashMap m_column_lookup;
     kcl::Grid* m_grid;
-    xd::rowid_t m_cursor_rowid;
     int m_current_row;
     int m_current_mark_row;
     int m_row_count;

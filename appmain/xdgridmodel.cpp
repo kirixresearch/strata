@@ -410,8 +410,6 @@ void XdGridModel::setIterator(xd::IIterator* it)
 
     if (m_it)
     {
-        m_cursor_rowid = it->getRowId();
-
         m_forward_only = (it->getIteratorFlags() & xd::ifForwardOnly) ? true : false;
 
         if (m_grid)
