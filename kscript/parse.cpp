@@ -7106,6 +7106,8 @@ public:
 
     GlobalObject()
     {
+        m_parser = NULL;
+        m_global_scope = NULL;
     }
     
     void initGlobalObject(ExprParser* parser, ExprEnv* scope)
