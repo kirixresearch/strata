@@ -94,6 +94,8 @@ ExcelDatabase::ExcelDatabase()
     m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"`\"~# $!@%^&(){}-+.");   
 
     m_wb = new xlnt::workbook;
+
+    m_last_job = 0;
 }
 
 ExcelDatabase::~ExcelDatabase()

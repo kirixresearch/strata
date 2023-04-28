@@ -455,15 +455,17 @@ PgsqlDatabase::PgsqlDatabase()
     m_database = L"";
     m_username = L"";
     m_password = L"";
-    
+
+    m_last_job = 0;
+
     m_attr = static_cast<xd::IAttributes*>(new DatabaseAttributes);
 
     m_attr->setIntAttribute(xd::dbattrColumnMaxNameLength, 63);
     m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 63);
-    m_attr->setStringAttribute(xd::dbattrKeywords, sql92_keywords);    
-    m_attr->setStringAttribute(xd::dbattrColumnInvalidChars, 
+    m_attr->setStringAttribute(xd::dbattrKeywords, sql92_keywords);
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidChars,
                                L"\\./\x00\xFF");
-    m_attr->setStringAttribute(xd::dbattrTableInvalidChars, 
+    m_attr->setStringAttribute(xd::dbattrTableInvalidChars,
                                L"\\./:*?<>|\x00\xFF");
     m_attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars,
                                L"\\./\x00\xFF");
@@ -471,7 +473,7 @@ PgsqlDatabase::PgsqlDatabase()
                                L"\\./:*?<>|\x00\xFF");
     m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"\"");
     m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"\"");
-    m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"`\"~# $!@%^&(){}-+.");   
+    m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"`\"~# $!@%^&(){}-+.");
 }
 
 PgsqlDatabase::~PgsqlDatabase()
