@@ -189,8 +189,8 @@ public:
     ConnectionBar(wxWindow* parent, wxWindowID id, int conn_types);
     ~ConnectionBar();
 
-    int getDefaultConnectionType();
-    int getSelectedConnectionType();
+    int getDefaultConnectionType() const;
+    int getSelectedConnectionType() const;
 
     void selectConnectionType(int conn_type);
 

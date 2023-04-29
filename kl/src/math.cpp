@@ -95,12 +95,12 @@ statistics::~statistics()
 {
 }
 
-unsigned int statistics::count()
+unsigned int statistics::count() const
 {
     return m_count;
 }
 
-double statistics::mean()
+double statistics::mean() const
 {
     if (m_count < 1)
         return 0.0;
@@ -108,7 +108,7 @@ double statistics::mean()
     return m_new_m;
 }
 
-double statistics::variance()
+double statistics::variance() const
 {
     if (m_count < 2)
         return 0.0;
@@ -116,7 +116,7 @@ double statistics::variance()
     return m_new_s/(m_count - 1);
 }
 
-double statistics::stddev()
+double statistics::stddev() const
 {
     return sqrt(variance());
 }

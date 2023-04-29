@@ -70,7 +70,7 @@ ConnectionBar::~ConnectionBar()
 
 }
 
-int ConnectionBar::getDefaultConnectionType()
+int ConnectionBar::getDefaultConnectionType() const
 {
     if (m_default_item == NULL)
         return -1;
@@ -78,7 +78,7 @@ int ConnectionBar::getDefaultConnectionType()
     return m_default_item->id;
 }
 
-int ConnectionBar::getSelectedConnectionType()
+int ConnectionBar::getSelectedConnectionType() const
 {
     if (m_selected_item == NULL)
         return -1;

@@ -83,7 +83,7 @@ public:
     
     std::vector<wxString> getOutputFields();
     wxString getQueryString();
-    int getDatabaseDisposition() { return m_disposition; }
+    int getDatabaseDisposition() const { return m_disposition; }
     
 public:
 

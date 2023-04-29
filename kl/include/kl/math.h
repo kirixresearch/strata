@@ -83,10 +83,10 @@ public:
     statistics();
     virtual ~statistics();
 
-    unsigned int count();
-    double mean();
-    double variance();
-    double stddev();
+    unsigned int count() const;
+    double mean() const;
+    double variance() const;
+    double stddev() const;
 
     void push(double x);
     void init();

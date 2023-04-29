@@ -93,7 +93,7 @@ public:
     {
     }
 
-    int getSize()
+    int getSize() const
     {
         return m_arr.size();
     }

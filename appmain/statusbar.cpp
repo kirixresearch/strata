@@ -66,7 +66,7 @@ public:
         }
     }
     
-    bool isResizeGripperShown() { return m_show_resize_gripper; }
+    bool isResizeGripperShown() const { return m_show_resize_gripper; }
     void showResizeGripper(bool show = true)
     {
         m_show_resize_gripper = show;

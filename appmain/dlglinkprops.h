@@ -49,10 +49,10 @@ public:
 
     wxString getPath();
     wxString getName();
-    wxString getLocation()      { return m_location;    }
-    wxString getTags()          { return m_tags;        }
-    wxString getDescription()   { return m_description; }
-    bool     getRunTarget()     { return m_run_target;  }
+    wxString getLocation() const     { return m_location;    }
+    wxString getTags() const         { return m_tags;        }
+    wxString getDescription() const  { return m_description; }
+    bool     getRunTarget() const    { return m_run_target;  }
     
 private:
 
