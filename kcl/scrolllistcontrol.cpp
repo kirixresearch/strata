@@ -237,7 +237,7 @@ ScrollListElement::~ScrollListElement()
     }
 }
 
-wxPoint ScrollListElement::getPosition()
+wxPoint ScrollListElement::getPosition() const
 {
     if (m_relative_to == NULL)
         return m_position;

@@ -52,25 +52,25 @@ public:
     ScrollListElement();
     ~ScrollListElement();
     
-    wxControl* getControl() { return m_control; }
-    wxBitmap&  getBitmap()  { return m_bitmap;  }
-    wxString   getText()    { return m_text;    }
+    wxControl* getControl() const { return m_control; }
+    wxBitmap& getBitmap() { return m_bitmap;  }
+    wxString getText() const { return m_text;    }
     
-    wxPoint  getPosition();
-    wxSize&  getSize()      { return m_size; }
-    wxString getName()      { return m_name; }
+    wxPoint getPosition() const;
+    wxSize  getSize() const  { return m_size; }
+    wxString getName() const { return m_name; }
     
-    int  getHeight()        { return m_size.GetHeight(); }
-    int  getWidth()         { return m_size.GetWidth();  }
-    int  getPaddingLeft()   { return m_padding_left;     }
-    int  getPaddingTop()    { return m_padding_top;      }
-    int  getPaddingRight()  { return m_padding_right;    }
-    int  getPaddingBottom() { return m_padding_bottom;   }
-    int  getTextEllipses()  { return m_text_ellipses;    }
-    bool isTextBold()       { return m_text_bold;        }
-    bool isTextWrap()       { return m_text_wrap;        }
-    bool isVisible()        { return m_visible;          }
-    bool isStretchable()    { return m_stretch;          }
+    int  getHeight() const        { return m_size.GetHeight(); }
+    int  getWidth() const         { return m_size.GetWidth();  }
+    int  getPaddingLeft() const   { return m_padding_left;     }
+    int  getPaddingTop() const    { return m_padding_top;      }
+    int  getPaddingRight() const  { return m_padding_right;    }
+    int  getPaddingBottom() const { return m_padding_bottom;   }
+    int  getTextEllipses() const  { return m_text_ellipses;    }
+    bool isTextBold() const       { return m_text_bold;        }
+    bool isTextWrap() const       { return m_text_wrap;        }
+    bool isVisible() const        { return m_visible;          }
+    bool isStretchable() const    { return m_stretch;          }
     
     void setWidth(int width)                   { m_size.SetWidth(width);     }
     void setHeight(int height)                 { m_size.SetHeight(height);   }
