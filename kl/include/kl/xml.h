@@ -25,7 +25,7 @@ class xmlproperty
 {
 public:
 
-    bool isEmpty()
+    bool isEmpty() const
     {
         return name.empty();
     }

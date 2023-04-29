@@ -173,7 +173,7 @@ static void drawTextEllipses(wxDC& dc,
 }
 
 // this function was ripped directly from grid.cpp
-static void lightenMemDC(wxMemoryDC& dc, wxBitmap& bmp)
+static void lightenMemDC(wxMemoryDC& dc, const wxBitmap& bmp)
 {
     wxImage img = bmp.ConvertToImage();
     unsigned char* data = img.GetData();

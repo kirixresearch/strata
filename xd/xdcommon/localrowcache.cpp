@@ -279,7 +279,7 @@ void LocalRowCache::copyDataToBuffer(unsigned char* dest,
     memcpy(p, src, size);
 }
     
-void LocalRowCache::appendColumnData(unsigned char* data, unsigned int size)
+void LocalRowCache::appendColumnData(const unsigned char* data, unsigned int size)
 {
     int needed_space = m_append_cursize + size + 5;
     reserveAppendBuffer(needed_space);

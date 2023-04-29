@@ -43,7 +43,7 @@ namespace kscript
 // 0 date1 identical to date2 
 // > 0 date1 greater than date2 
 
-inline int dtCompare(ExprDateTime* d1, ExprDateTime* d2)
+inline int dtCompare(const ExprDateTime* d1, const ExprDateTime* d2)
 {
     if (d1->date < d2->date)
         return -1;

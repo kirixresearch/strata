@@ -29,7 +29,7 @@ const int DRAG_METADATA_COUNT = 3;
 
 // utility functions
 
-static bool isMouseInWindow(wxWindow* wnd)
+static bool isMouseInWindow(const wxWindow* wnd)
 {
     wxPoint pt = ::wxGetMousePosition();
     wxRect rect = wnd->GetClientRect();

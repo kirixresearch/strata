@@ -61,7 +61,7 @@ void debugBreak()
 const wchar_t* REGEX_LITERAL_PRECEEDING_CHARS = L"-+*/,=(";
 
 
-inline bool isRegexLiteral(wchar_t* ch, wchar_t* start_border)
+inline bool isRegexLiteral(const wchar_t* ch, const wchar_t* start_border)
 {
     do
     {
@@ -72,6 +72,7 @@ inline bool isRegexLiteral(wchar_t* ch, wchar_t* start_border)
     
     if (wcschr(REGEX_LITERAL_PRECEEDING_CHARS, *ch))
         return true;
+
     return false;
 }
 

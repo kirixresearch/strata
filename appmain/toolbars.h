@@ -50,7 +50,7 @@ struct ViewSwitcherList : public wxObject
         *checked = items[idx].checked;
     }
     
-    size_t getCount() { return items.size(); }
+    size_t getCount() const { return items.size(); }
     
     std::vector<ViewSwitcherListItem> items;
 };

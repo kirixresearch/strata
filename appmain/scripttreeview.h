@@ -42,7 +42,7 @@ public:
     TreeViewItem();
     ~TreeViewItem();
     
-    const wxTreeItemId getId();
+    wxTreeItemId getId() const;
     
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
     void setLabel(kscript::ExprEnv* env, kscript::Value* retval);

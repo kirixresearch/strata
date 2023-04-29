@@ -132,7 +132,7 @@ static wxImage textToImage(const std::wstring& str)
     return img;
 }
 
-static std::wstring imageToText(wxImage& image)
+static std::wstring imageToText(const wxImage& image)
 {
     if (!image.IsOk())
         return L"";

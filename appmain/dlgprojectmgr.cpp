@@ -37,7 +37,7 @@ static std::wstring getLocationFromString(const std::wstring& location_or_cstr)
     }
 }
 
-static bool isSameLocation(const std::wstring& location1, std::wstring& location2)
+static bool isSameLocation(const std::wstring& location1, const std::wstring& location2)
 {
     std::wstring loc1 = getLocationFromString(location1);
     std::wstring loc2 = getLocationFromString(location2);

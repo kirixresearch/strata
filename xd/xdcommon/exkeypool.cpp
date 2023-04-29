@@ -155,7 +155,7 @@ ExKeyPool::~ExKeyPool()
     delete[] m_data;
 }
 
-bool ExKeyPool::appendData(unsigned char* data)
+bool ExKeyPool::appendData(const unsigned char* data)
 {
     if (m_pos >= m_entries_per_buf || m_data == NULL)
         return false;
@@ -165,7 +165,7 @@ bool ExKeyPool::appendData(unsigned char* data)
     return true;
 }
 
-bool ExKeyPool::appendData2(unsigned char* data1, int data1_len, unsigned char* data2, int data2_len)
+bool ExKeyPool::appendData2(const unsigned char* data1, int data1_len, const unsigned char* data2, int data2_len)
 {
     if (m_pos >= m_entries_per_buf || m_data == NULL)
         return false;

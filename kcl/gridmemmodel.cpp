@@ -165,7 +165,7 @@ void GridMemModel::setColumnType(int col, int type)
 
 
 static void copyCellProps(kcl::CellProperties* dest,
-                          kcl::CellProperties* src)
+                          const kcl::CellProperties* src)
 {
     if (src->mask & kcl::CellProperties::cpmaskCtrlType)
     {

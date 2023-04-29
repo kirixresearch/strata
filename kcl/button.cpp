@@ -96,8 +96,8 @@ static bool isThemed()
 
 static bool DrawPlatformButton(wxWindow* win,
                                wxDC& dc,
-                               wxRect& _rect,
-                               wxPen& bk_pen,
+                               const wxRect& _rect,
+                               const wxPen& bk_pen,
                                bool enabled,
                                bool mouse_over,
                                bool pushed)

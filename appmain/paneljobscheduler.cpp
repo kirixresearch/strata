@@ -62,7 +62,7 @@ enum ScheduleChoiceIndexes
 
 // utility functions
 
-void populateJobSchedulerEntry(JobSchedulerPanelEntry* panel_entry, JobSchedulerEntry& e)
+void populateJobSchedulerEntry(const JobSchedulerPanelEntry* panel_entry, JobSchedulerEntry& e)
 {
     e.name   = panel_entry->name;
     e.active = panel_entry->active;
@@ -97,7 +97,7 @@ void populateJobSchedulerEntry(JobSchedulerPanelEntry* panel_entry, JobScheduler
     e.commands = panel_entry->commands;
 }
 
-void populateJobSchedulerPanelEntry(JobSchedulerEntry& e, JobSchedulerPanelEntry** entry)
+void populateJobSchedulerPanelEntry(const JobSchedulerEntry& e, JobSchedulerPanelEntry** entry)
 {
     JobSchedulerPanelEntry* panel_entry = *entry;
     panel_entry->name   = e.name;

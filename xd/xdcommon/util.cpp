@@ -141,7 +141,7 @@ void dequote(std::wstring& str, wchar_t ch1, wchar_t ch2)
     }
 }
 
-void dequoteIfField(xd::Structure& structure, std::wstring& str, wchar_t ch1, wchar_t ch2)
+void dequoteIfField(const xd::Structure& structure, std::wstring& str, wchar_t ch1, wchar_t ch2)
 {
     size_t len = str.length();
     if (len > 1)

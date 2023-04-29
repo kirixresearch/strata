@@ -35,7 +35,7 @@ public:
     ToolBarItem();
     ~ToolBarItem();
     
-    const int getId();
+    int getId() const;
     void setWxToolBar(wxToolBar* toolbar);
     void onEvent(wxEvent& event);
     

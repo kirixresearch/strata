@@ -46,7 +46,7 @@ kl::JsonNode JsonConfig::loadFromString(const std::wstring& json)
     return node;
 }
 
-bool JsonConfig::saveToString(kl::JsonNode& node, std::wstring& dest)
+bool JsonConfig::saveToString(const kl::JsonNode& node, std::wstring& dest)
 {
     std::wstring s = node.toString();
     if (s.length() > 0)
@@ -58,7 +58,7 @@ bool JsonConfig::saveToString(kl::JsonNode& node, std::wstring& dest)
     return false;
 }
 
-bool JsonConfig::saveToDb(kl::JsonNode& node,
+bool JsonConfig::saveToDb(const kl::JsonNode& node,
                           xd::IDatabasePtr db,
                           const std::wstring& path,
                           const std::wstring& mime_type)
@@ -73,7 +73,7 @@ bool JsonConfig::saveToDb(kl::JsonNode& node,
 }
 
 
-bool JsonConfig::saveToFile(kl::JsonNode& node, const std::wstring& path)
+bool JsonConfig::saveToFile(const kl::JsonNode& node, const std::wstring& path)
 {
     std::wstring text = node.toString();
     

@@ -29,9 +29,10 @@ public:
     MenuItem();
     ~MenuItem();
     
-    const int getId();
-    const wxString getWxLabel();
-    wxMenuItem* getWxMenuItem();
+    int getId() const;
+    wxString getWxLabel() const;
+    wxMenuItem* getWxMenuItem() const;
+
     void setId(int id);
     void setWxMenuItem(wxMenuItem* item);
     void setWxMenu(wxMenu* menu);

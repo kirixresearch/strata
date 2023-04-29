@@ -41,7 +41,7 @@ public:
     bool setData(const unsigned char* _data, size_t _len);
     const unsigned char* getData() const { return data; }
     size_t getDataLength() const { return len; }
-    bool isNull() { return is_null; }
+    bool isNull() const { return is_null; }
     void setType(unsigned char _type) { type = _type; }
     unsigned char getType() const { return type; }
 

@@ -38,7 +38,7 @@
 
 
 
-static wxString _getStringPath(CfwTreeCtrl* tree, wxTreeItemId& id)
+static wxString _getStringPath(const CfwTreeCtrl* tree, const wxTreeItemId& id)
 {
     wxString result;
 
@@ -59,7 +59,7 @@ static wxString _getStringPath(CfwTreeCtrl* tree, wxTreeItemId& id)
 
 
 static void _populateFolderStatus(CfwTreeCtrl* tree,
-                                  wxTreeItemId& id,
+                                  const wxTreeItemId& id,
                                   std::set<wxString>& expanded)
 {
     wxTreeItemIdValue cookie;
@@ -176,7 +176,7 @@ wxTreeItemId FsPanelTreeView::getHighlightItem()
 // doesn't work during drag and drop anymore.  To solve this, we implemented similar
 // functionality ourselves.   See doScroll() below.
 
-static wxTreeItemId getNextVisibleItem(CfwTreeCtrl* tree, wxTreeItemId item)
+static wxTreeItemId getNextVisibleItem(const CfwTreeCtrl* tree, wxTreeItemId item)
 {
     wxTreeItemIdValue cookie;
 
@@ -186,7 +186,7 @@ static wxTreeItemId getNextVisibleItem(CfwTreeCtrl* tree, wxTreeItemId item)
         return tree->GetNextSibling(item);
 }
 
-static wxTreeItemId getPrevVisibleItem(CfwTreeCtrl* tree, wxTreeItemId item)
+static wxTreeItemId getPrevVisibleItem(const CfwTreeCtrl* tree, wxTreeItemId item)
 {
     wxTreeItemId t;
     t = tree->GetPrevSibling(item);

@@ -73,7 +73,7 @@ static inline bool IsUxThemed()
 }
 
 static bool DrawUxThemeCloseButton(wxDC& dc,
-                            wxWindow* wnd,
+                            const wxWindow* wnd,
                             const wxRect& rect,
                             int button_state)
 {

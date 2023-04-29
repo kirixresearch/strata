@@ -132,7 +132,7 @@ private:
     void sizeAllItems();
     
     void _selectItem(ButtonBarItem* item, bool silent = false);
-    bool _isItemSelected(ButtonBarItem* item);
+    bool _isItemSelected(const ButtonBarItem* item);
     ButtonBarItem* getItemById(int id);
     ButtonBarItem* getItemByPosition(wxPoint& pt);
     

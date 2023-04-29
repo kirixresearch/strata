@@ -55,7 +55,7 @@ public:
     bool startWizard(int idx = 0);
 
     WizardPage* getPage(int idx);
-    int getPageIdx(WizardPage* page);
+    int getPageIdx(const WizardPage* page);
     int getPageCount();
 
     bool goPage(int idx);

@@ -36,17 +36,17 @@ MenuItem::~MenuItem()
     g_app->getAppController()->getScriptCommandRouter()->unregisterCommandReceiver(m_id);
 }
 
-const int MenuItem::getId()
+int MenuItem::getId() const 
 {
     return m_id;
 }
 
-const wxString MenuItem::getWxLabel()
+wxString MenuItem::getWxLabel() const
 {
     return m_label;
 }
 
-wxMenuItem* MenuItem::getWxMenuItem()
+wxMenuItem* MenuItem::getWxMenuItem() const
 {
     return m_ctrl;
 }

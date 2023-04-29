@@ -43,7 +43,7 @@ ToolBarItem::~ToolBarItem()
 
 }
 
-const int ToolBarItem::getId()
+int ToolBarItem::getId() const
 {
     return m_id;
 }

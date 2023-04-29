@@ -39,8 +39,8 @@ public:
     ExKeyPool(int size_bytes, int entry_size, int compare_size);
     ~ExKeyPool();
 
-    bool appendData(unsigned char* data);
-    bool appendData2(unsigned char* data1, int data1_len, unsigned char* data2, int data2_len);
+    bool appendData(const unsigned char* data);
+    bool appendData2(const unsigned char* data1, int data1_len, const unsigned char* data2, int data2_len);
     bool isFull();
     void reset();
     void sort();

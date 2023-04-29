@@ -64,7 +64,7 @@ struct ExcelDataAccessInfo
         delete key_layout;
     }
     
-    bool isCalculated()
+    bool isCalculated() const
     {
         return (expr_text.length() > 0) ? true : false;
     }

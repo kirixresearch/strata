@@ -741,7 +741,7 @@ void getOdbcDriverNames(std::vector<std::wstring>& drivers)
 }
 
 
-static int odbcStateToXdError(SQLTCHAR* _s)
+static int odbcStateToXdError(const SQLTCHAR* _s)
 {
 #ifdef _UNICODE
     #define IS_STATE(state) (0 == wcscmp((const wchar_t*)_s, L##state))

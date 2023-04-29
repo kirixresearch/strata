@@ -51,7 +51,7 @@
 // 0 date1 identical to date2 
 // > 0 date1 greater than date2 
 
-int dtCompare(kscript::ExprDateTime* d1, kscript::ExprDateTime* d2)
+int dtCompare(const kscript::ExprDateTime* d1, const kscript::ExprDateTime* d2)
 {
     if (d1->date < d2->date)
         return -1;

@@ -125,7 +125,7 @@ WizardPage* Wizard::getPage(int idx)
     return m_pages[idx];
 }
 
-int Wizard::getPageIdx(WizardPage* page)
+int Wizard::getPageIdx(const WizardPage* page)
 {
     int i, count = (int)m_pages.size();
     for (i = 0; i < count; ++i)

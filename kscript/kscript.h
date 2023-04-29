@@ -450,7 +450,7 @@ public:
     void setArray(ExprEnv* env);
     void setString(const std::string& str);
     void setString(const std::wstring& str) { setString(str.c_str(), (int)str.length()); }
-    void setString(Value* src_string) { setString(src_string->m_strptr, src_string->m_datalen); }
+    void setString(const Value* src_string) { setString(src_string->m_strptr, src_string->m_datalen); }
     void setString(const wchar_t* str, int len = -1);
     void appendString(const wchar_t* str, int len = -1);
     void setBinary(unsigned char* data, int len, int copy_len = -1);

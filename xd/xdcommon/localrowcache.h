@@ -85,7 +85,7 @@ public:
 
     // -- writing/appending functions --
     void createRow();
-    void appendColumnData(unsigned char* data, unsigned int size);
+    void appendColumnData(const unsigned char* data, unsigned int size);
     void appendNullColumn();
     void finishRow();
     void reserveAppendBuffer(unsigned int row_width);

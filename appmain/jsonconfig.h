@@ -22,14 +22,14 @@ public:
     static kl::JsonNode loadFromString(const std::wstring& json);
     static kl::JsonNode loadFromFile(const std::wstring& path); 
 
-    static bool saveToString(kl::JsonNode& node, std::wstring& dest);
+    static bool saveToString(const kl::JsonNode& node, std::wstring& dest);
     
-    static bool saveToDb(kl::JsonNode& node,
+    static bool saveToDb(const kl::JsonNode& node,
                          xd::IDatabasePtr db,
                          const std::wstring& path,
                          const std::wstring& mime_type = wxT("text/plain"));
 
-    static bool saveToFile(kl::JsonNode& node, const std::wstring& path);   
+    static bool saveToFile(const kl::JsonNode& node, const std::wstring& path);   
 };
 
 

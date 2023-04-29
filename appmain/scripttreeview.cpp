@@ -41,7 +41,7 @@ public:
             m_item->baseRef();
     }
     
-    TreeViewItem* getItem()
+    TreeViewItem* getItem() const
     {
         return m_item;
     }
@@ -74,7 +74,7 @@ TreeViewItem::~TreeViewItem()
 {
 }
 
-const wxTreeItemId TreeViewItem::getId()
+wxTreeItemId TreeViewItem::getId() const
 {
     return m_id;
 }
