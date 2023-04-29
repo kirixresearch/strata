@@ -89,7 +89,7 @@ bool SlStream::readBlock(long long block, void* buf, unsigned long* read_count)
     return true;
 }
 
-bool SlStream::writeBlock(long long block, void* buf, unsigned long size)
+bool SlStream::writeBlock(long long block, const void* buf, unsigned long size)
 {
     // first, find out the largest numbered block already in the table
     std::string sql = "SELECT max(block_id) as max_block_id from " + m_stream;

@@ -119,8 +119,6 @@ public:
     unsigned int getIteratorFlags();
 
     void skip(int delta);
-    void skipForward();
-    void skipBackward();
 
     void goFirst();
     void goLast();

@@ -50,7 +50,7 @@ public:
 private:
 
     bool readBlock(long long block, void* buf, unsigned long* read_count);
-    bool writeBlock(long long block, void* buf, unsigned long size);
+    bool writeBlock(long long block, const void* buf, unsigned long size);
 
 private:
 

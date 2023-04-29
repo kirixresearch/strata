@@ -245,8 +245,6 @@ public:
     TableSetRowDeleter(XdnativeDatabase* db, TableSet* set);
     virtual ~TableSetRowDeleter();
 
-    void addIndex(IIndex* index, const std::wstring& expr);
-
     void startDelete();
     bool deleteRow(const xd::rowid_t& rowid);
     void finishDelete();
@@ -304,7 +302,6 @@ public:
 
     bool startInsert(const std::wstring& col_list);
     bool insertRow();
-    bool insertRowFrom(xd::IIterator* iter);
     void finishInsert();
 
     bool flush();

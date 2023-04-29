@@ -117,7 +117,6 @@ public:
 
     void close();
 
-    std::wstring getDatabaseName();
     int getDatabaseType();
     xd::IAttributesPtr getAttributes();
     std::wstring getActiveUid();

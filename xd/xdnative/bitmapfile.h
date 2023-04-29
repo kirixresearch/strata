@@ -26,7 +26,6 @@ class BitmapFileScroller
 public:
 
     BitmapFileScroller();
-    BitmapFileScroller(const BitmapFileScroller& c);
     ~BitmapFileScroller();
 
     bool getState(unsigned long long offset);
