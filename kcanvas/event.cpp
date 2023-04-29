@@ -588,7 +588,7 @@ NotifyEvent::NotifyEvent()
 NotifyEvent::NotifyEvent(const NotifyEvent& c) : Event(c)
 {
     m_properties = c.m_properties;
-    m_allowed = m_allowed;
+    m_allowed = c.m_allowed;
 }
 
 NotifyEvent::~NotifyEvent()
