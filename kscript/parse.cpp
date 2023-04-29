@@ -1754,9 +1754,7 @@ int ExprFunctionCall::eval(ExprEnv* env, Value* retval)
     func_env->setParent(func_scope);
     func_env->m_parser_env = env->getParserContext();
     func_env->m_callee = func_info;
-    
-    Value* prototype = NULL;
-    
+
     // If the function is being called inside the new operator, this
     // will set |this| to the new object.  Otherwise, in the case of abc.func(),
     // |this| will be set to |abc| as in abc.func()
@@ -6220,8 +6218,7 @@ ExprElement* ExprParser::parseCase(ExprParserEnv* penv,
         return NULL;
     }
     
-    
-    wchar_t tempch = *colon;
+
     *colon = 0;
     ExprElement* e = parseElement(penv, expr);
     *colon = L':';

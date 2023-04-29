@@ -1538,7 +1538,6 @@ void JobSchedulerPanel::onOK(wxCommandEvent& evt)
 
     // if there are any scheduled jobs, show a job icon in the statusbar
     IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
-    bool show = false;
     
     /*
     // REMOVED ON 12/06/2007: Too many items being added to the statusbar;

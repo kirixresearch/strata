@@ -1050,7 +1050,6 @@ bool QueryTemplate::saveJson(const wxString& path)
     kl::JsonNode input = root["input"];
 
     std::vector<QueryBuilderSourceTable>::iterator tbl_it;
-    int tbl_counter = 0;
     for (tbl_it = m_source_tables.begin();
          tbl_it != m_source_tables.end(); ++tbl_it)
     {
@@ -1111,7 +1110,7 @@ bool QueryTemplate::saveJson(const wxString& path)
     kl::JsonNode fields = output["fields"];
 
     std::vector<QueryBuilderParam>::iterator param_iter;
-    int param_counter = 0;
+
     for (param_iter = m_params.begin();
          param_iter != m_params.end();
          ++param_iter)

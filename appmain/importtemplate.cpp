@@ -733,8 +733,6 @@ bool ImportTemplate::save(const std::wstring& path)
     root["objects"].setArray();
     kl::JsonNode objects = root["objects"];
 
-
-    int table_counter = 0;
     std::vector<ImportTableSelection>::iterator table_it;
     for (table_it = m_ii.tables.begin();
     table_it != m_ii.tables.end();

@@ -5002,12 +5002,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
 
                                 if (celldata->m_scale > 0)
                                 {
-                                    if (fabs(celldata->m_dblvalue) > 1000)
-                                    {
-                                        int i = 5;
-                                    }
-                                    
-                                    text = dbl2fstr(celldata->m_dblvalue,
+                                	text = dbl2fstr(celldata->m_dblvalue,
                                                     celldata->m_scale);
                                 }
                                  else
@@ -5801,8 +5796,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
 
         wxRect row_rect;
         getRowRect(m_row_count, row_rect);
-        
-        int xoff = 4;
+
         int yoff = row_rect.GetY();
         yoff += (row_rect.GetHeight()-text_h)/2;
         
@@ -7947,8 +7941,6 @@ void Grid::onMouse(wxMouseEvent& event)
             ScreenToClient(&mousex, &mousey);
 
             int visrows = getVisibleRowCount();
-            int factor = m_cliheight*m_cliwidth;
-            
 
             // direction indicates:
             //      -2 = after a scroll operation to the left
@@ -8457,9 +8449,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
         // event was handled
         return;
     }
-    
-    int old_col = m_cursor_col;
-    int old_row = m_cursor_row;
+
     int new_col, new_row;
     
     int orig_key_code = event.GetKeyCode();

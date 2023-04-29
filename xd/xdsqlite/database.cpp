@@ -557,8 +557,6 @@ xd::IFileInfoEnumPtr SlDatabase::getFolderInfo(const std::wstring& path)
     
     char** result;
     int rows = 0;
-    int cat_id = 0;
-
     
     std::wstring sql = L"SELECT tbl_name, sql FROM sqlite_master";
     
@@ -787,7 +785,6 @@ xd::Structure SlDatabase::describeTable(const std::wstring& _path)
     
     char** result;
     int rows = 0;
-    int cat_id = 0;
 
     rc = sqlite3_get_table(m_sqlite, kl::toUtf8(buf), &result, &rows, NULL, NULL);
     if (rc != SQLITE_OK || rows < 1)

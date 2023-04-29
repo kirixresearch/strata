@@ -598,8 +598,7 @@ void HttpRequest::setProxy(kscript::ExprEnv* env, kscript::Value* retval)
 
     std::string username;
     std::string password;
-    int port = 8080;
-    
+
     if (env->getParamCount() < 1)
         return;
 

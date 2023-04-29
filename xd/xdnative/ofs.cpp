@@ -863,7 +863,6 @@ bool OfsFile::getFileType(XdnativeDatabase* db,
     {
         unsigned char buf[1048];
         int readb = 0;
-        int r = 0;
 
         readb = xf_read(f, buf, 1, 1024);
         memset(buf+readb, 0, 8);

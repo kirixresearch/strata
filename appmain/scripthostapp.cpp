@@ -2896,9 +2896,6 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
         xd::FormatDefinition fd;
         fd.format = xd::formatFixedLengthText;
 
-
-        int start_offset = 0;
-        int row_width = 0;
         std::wstring line_delimiters = L"";
         std::vector<HostDataDefinitionField> fields;
         

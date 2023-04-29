@@ -604,8 +604,7 @@ void ButtonBar::drawItem(ButtonBarItem* item, int x, int y)
      else
     {
         // draw each line of the label for the multiline-label item
-        int lw = 0, lh = 0;
-        
+
         wxStringTokenizer t(item->label, wxT("\n"));
         while (t.HasMoreTokens())
         {

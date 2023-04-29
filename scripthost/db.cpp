@@ -833,8 +833,7 @@ void DbResult::hasNext(kscript::ExprEnv* env, kscript::Value* retval)
 kscript::Value* DbResult::getMember(const std::wstring& name)
 {
     std::vector<DbResultColumn>::iterator it, it_end;
-    int i = 0;
-    int colidx = -1;
+    int colidx;
     
     if (name.length() > 0 && iswdigit(name[0]))
     {

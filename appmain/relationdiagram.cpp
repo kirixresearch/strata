@@ -1148,7 +1148,6 @@ void RelationBox::populate()
 
     size_t col_count = m_structure.getColumnCount();
     int i;
-    int item_idx = 0;
 
     for (i = 0; i < (int)col_count; ++i)
     {
@@ -2651,7 +2650,6 @@ void RelationDiagram::redrawBoxes()
 void RelationDiagram::repaint(wxDC* dest_dc, bool render, wxRect* rect)
 {
     int cli_width, cli_height;
-    bool tempdc = false;
 
     GetClientSize(&cli_width, &cli_height);
 
@@ -2852,7 +2850,6 @@ void RelationDiagram::onPaint(wxPaintEvent& evt)
 void RelationDiagram::onSize(wxSizeEvent& evt)
 {
     int cli_width, cli_height;
-    bool tempdc = false;
 
     GetClientSize(&cli_width, &cli_height);
     if (cli_width < 10)

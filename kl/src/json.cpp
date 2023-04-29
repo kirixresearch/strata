@@ -1221,7 +1221,6 @@ bool JsonNodeValidator::checkType(JsonNode& data, JsonNode& schema)
         std::vector<JsonNode>::iterator it, it_end;
         it_end = children.end();
 
-        bool match = false;
         for (it = children.begin(); it != it_end; ++it)
         {
             if (isPrimitiveType(data, it->getString()))

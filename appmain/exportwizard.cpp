@@ -837,7 +837,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             // of the directories that we created
             deleteDirs(dirs_created);
 
-            int result = appMessageBox(_("One or more of the tables no longer exists.  Please remove these tables from the export to continue."),
+            appMessageBox(_("One or more of the tables no longer exists.  Please remove these tables from the export to continue."),
                                             _("Export Wizard"),
                                             wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;

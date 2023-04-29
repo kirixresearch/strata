@@ -2373,9 +2373,6 @@ bool QueryDoc::execute()
     for (order = 1; order <= 50; ++order)
     {
         bool found = false;
-        
-        int param_idx = 0;
-        int sort_order = 0;
         int p = 0;
 
         for (it = m_info.m_params.begin();

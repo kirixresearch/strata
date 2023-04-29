@@ -1303,8 +1303,6 @@ INodeValuePtr XdnativeDatabase::openNodeFile(const std::wstring& path)
 bool XdnativeDatabase::renameOfsFile(const std::wstring& _path,
                              const std::wstring& new_name)
 {
-    bool allow = true;
-    
     std::wstring path = _path;
     if (path.find(L'/') == -1)
     {
@@ -1642,7 +1640,6 @@ bool XdnativeDatabase::copyFile(const std::wstring& src_path,
         unsigned char* buf = new unsigned char[16384];
 
         unsigned long read_bytes, write_bytes;
-        bool result = true;
 
         while (1)
         {
@@ -2446,8 +2443,6 @@ bool XdnativeDatabase::detectMountPoint(const std::wstring& path,
 
     std::vector<std::wstring> parts;
     std::vector<std::wstring>::iterator it, it2;
-    bool found = true;
-    
 
     kl::parseDelimitedList(path, parts, L'/', false);
     

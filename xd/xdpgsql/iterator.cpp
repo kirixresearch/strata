@@ -597,7 +597,6 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res, const xd::FormatDefinition
     int col_width = 20;
     int col_scale = 0;
     int fmod;
-    bool col_nullable = true;
 
     int i;
     int col_count = PQnfields(m_res);
@@ -650,7 +649,6 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res, const xd::FormatDefinition
         field->scale = col_scale;
         field->ordinal = i;
 
-
         if (m_view_definition.columns.size() > 0)
         {
             const xd::ColumnInfo& view_col = m_view_definition.columns.getColumnInfo(col_name);
@@ -663,7 +661,6 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res, const xd::FormatDefinition
             }
 
         }
-
 
         m_fields.push_back(field);
     }

@@ -5899,11 +5899,9 @@ void TableDoc::deleteSelectedRows()
         // show warning
         wxString message = wxString::Format(_("Unable to delete records on external files."));
 
-        int res = wxMessageBox(message,
-                               APPLICATION_NAME,
-                               wxOK |
-                               wxICON_EXCLAMATION |
-                               wxCENTER);
+        wxMessageBox(message,
+                     APPLICATION_NAME,
+                     wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
     }
 

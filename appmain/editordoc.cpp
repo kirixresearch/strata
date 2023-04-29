@@ -1993,10 +1993,6 @@ void EditorDoc::onSaveAsExternal(wxCommandEvent& evt)
 
 void EditorDoc::onPrint(wxCommandEvent& evt)
 {
-    // get the paper size and orientation
-    double width = m_page_width;
-    double height = m_page_height;
-    
     wxPaperSize paper_size = wxPAPER_LETTER;
     int orientation = wxPORTRAIT;
     //wxPaperSize paper_size = PageSetupPanel::getPaperSize(&width, &height);

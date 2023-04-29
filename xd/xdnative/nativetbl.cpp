@@ -1061,7 +1061,6 @@ unsigned long long NativeTable::getStructureModifyTime()
     KL_AUTO_LOCK(m_object_mutex);
 
     unsigned char sig[8];
-    unsigned long long i = 0;
 
     if (!xf_seek(m_file, 28, xfSeekSet))
         return 0;
@@ -1148,7 +1147,6 @@ void NativeTable::recalcPhysRowCount()
     // calculate the actual physical row count from the file size
     xf_seek(m_file, 0, xfSeekEnd);
     xd::rowpos_t file_size = xf_get_file_pos(m_file);
-    xd::rowpos_t row_width = m_row_width;
     file_size -= m_data_offset;
     xd::rowpos_t real_phys_row_count = (file_size/m_row_width);
 

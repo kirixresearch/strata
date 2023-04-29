@@ -1326,7 +1326,6 @@ void Date::getUTCMilliseconds(ExprEnv* env, Value* retval)
 void Date::parse(ExprEnv* env, void* param, Value* retval)
 {
     int pyy, pmm, pdd, ph, pm, ps;
-    const wchar_t* input = NULL;
 
     if (env->m_param_count < 1 ||
         env->m_eval_params[0]->getType() != Value::typeString)

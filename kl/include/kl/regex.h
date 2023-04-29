@@ -2033,7 +2033,6 @@ public:
     {
         const charT* start;
         const charT* end;
-        const charT* next = NULL;
         int offset, next_offset = 0;
         match_results<charT> matchres;
         std::basic_string<charT> replace_str;

@@ -897,7 +897,6 @@ void func_stddev(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
     if (env->m_eval_params[0]->isNumber())
     {
-        double total = 0.0;
         for (size_t i = 0; i < env->m_param_count; i++)
         {
             stats.push(env->m_eval_params[i]->getDouble());
@@ -913,7 +912,6 @@ void func_variance(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
     if (env->m_eval_params[0]->isNumber())
     {
-        double total = 0.0;
         for (size_t i = 0; i < env->m_param_count; i++)
         {
             stats.push(env->m_eval_params[i]->getDouble());

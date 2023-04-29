@@ -626,7 +626,6 @@ wchar_t* zl_strchr(wchar_t* str,
 {
     int paren_level = 0;
     wchar_t quote_char = 0;
-    wchar_t* start = str;
 
     while (*str)
     {

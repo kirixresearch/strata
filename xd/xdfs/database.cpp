@@ -875,8 +875,7 @@ bool FsDatabase::detectMountPoint(const std::wstring& path,
 
     std::vector<std::wstring> parts;
     std::vector<std::wstring>::iterator it, it2;
-    bool found = true;
-    
+
     kl::parseDelimitedList(path, parts, L'/', false);
     
     std::wstring fpath = L"/";

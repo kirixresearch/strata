@@ -604,8 +604,6 @@ bool MysqlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
     }
     else
     {
-        bool success = true;
-
         std::wstring intbl = getTablenameFromOfsPath(info->input);
         std::wstring outtbl = getTablenameFromOfsPath(info->output);
         std::wstring sql = L"create table %outtbl% as select * from %intbl%";
@@ -1034,7 +1032,6 @@ xd::Structure MysqlDatabase::describeTable(const std::wstring& path)
      else
     {
         const char* err = mysql_error(db);
-        int i = 5;
     }
 
     mysql_close(db);

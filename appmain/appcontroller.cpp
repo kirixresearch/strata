@@ -7296,7 +7296,6 @@ void AppController::toggleAllPanels()
         docsites = m_frame->getDocumentSites(sitetypeDockable);
 
         std::vector<IDocumentSitePtr> all_sites;
-        bool show = true;
 
         size_t i, site_count = docsites->size();
         for (i = 0; i < site_count; ++i)

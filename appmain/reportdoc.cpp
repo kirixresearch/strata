@@ -2282,7 +2282,6 @@ void ReportDoc::onColumnListDblClicked(const std::vector<wxString>& list)
     std::vector<wxString>::const_iterator it, it_end;
     it_end = list.end();
 
-    int idx = 0;
     for (it = list.begin(); it != it_end; ++it)
     {
         wxString value = wxT("=") + *it;
@@ -3263,8 +3262,7 @@ void ReportDoc::onCanvasDropEvent(kcanvas::IEventPtr evt)
         
         int row_end = row;
         int col_end = col;
-        
-        int idx = 0;
+
         for (it = cells.begin(); it != it_end; ++it)
         {
             wxString fieldname = (*it)->m_strvalue;

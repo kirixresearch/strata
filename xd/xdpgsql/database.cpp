@@ -2215,7 +2215,6 @@ bool PgsqlDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
         return false;
 
     bool detail_rows = false;
-    size_t grouped_column_count = 0;
 
     std::wstring sql = L"SELECT ";
 

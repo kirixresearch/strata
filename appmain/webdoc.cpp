@@ -1703,7 +1703,6 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
             // a lazy table header (headers in the first row using TR)
             
             std::vector<wxString> first_row_values;
-            bool first_row_data_captured = false;
             wxDOMNode row;
             
             // get the first row

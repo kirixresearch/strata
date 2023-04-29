@@ -1138,7 +1138,6 @@ void String::substring(ExprEnv* env, void* param, Value* retval)
     int src_len = vthis->getDataLen();
 
     // if there aren't any input parameters, return the string
-    int num_params = env->m_param_count;
     if (env->m_param_count < 1)
     {
         retval->setString(src);
@@ -1374,7 +1373,6 @@ void String::substr(ExprEnv* env, void* param, Value* retval)
     int src_len = vthis->getDataLen();
 
     // if there aren't any input parameters, return the string
-    int num_params = env->m_param_count;
     if (env->m_param_count < 1)
     {
         retval->setString(src);
