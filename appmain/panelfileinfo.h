@@ -32,8 +32,8 @@ public:
     
     ProjectFileInfo()
     {
-        wxString name = wxEmptyString;
-        int type = typeOther;
+        name = wxEmptyString;
+        type = typeOther;
         size = -2;
         records = -2;
     }
