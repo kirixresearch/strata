@@ -143,7 +143,7 @@ static ExpressionLookupInfo expr_lookup_arr[] =
 
 // utility functions
 
-static const int format2comboIdx(int xd_type, int format_idx)
+static int format2comboIdx(int xd_type, int format_idx)
 {
     switch (xd_type)
     {
@@ -170,7 +170,7 @@ static const int format2comboIdx(int xd_type, int format_idx)
     return -1;
 }
 
-static const int combo2formatIdx(int xd_type, int combo_idx)
+static int combo2formatIdx(int xd_type, int combo_idx)
 {
     switch (xd_type)
     {
@@ -197,7 +197,7 @@ static const int combo2formatIdx(int xd_type, int combo_idx)
     return -1;
 }
 
-static const std::wstring expr2regex(const std::wstring& expr)
+static std::wstring expr2regex(const std::wstring& expr)
 {
     // even though it is a little slower to convert to wxString and back,
     // there are far more string translation functions to help us

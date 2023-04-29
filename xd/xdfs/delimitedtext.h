@@ -67,7 +67,7 @@ public:
         return data[col_idx];
     }
     
-    const size_t getValueCount() const { return data.size(); }
+    size_t getValueCount() const { return data.size(); }
     
     void clear() { data.clear(); }
     

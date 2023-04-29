@@ -418,7 +418,7 @@ RadioButton::~RadioButton()
 {
 }
 
-const int RadioButton::getId()
+int RadioButton::getId() const
 {
     return m_id;
 }

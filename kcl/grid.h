@@ -793,21 +793,21 @@ public:
     void setGreenBarColor(const wxColor& gbc);
     void setGreenBarInterval(int new_value);
 
-    int getColumnSize(int col);
-    int getColumnProportionalSize(int col);
-    wxString getColumnCaption(int col);
-    int getColumnAlignment(int col);
-    bool getColumnShaded(int col);
-    void getColumnColors(int col, wxColor& fg, wxColor& bg);
-    int getColumnTextWrapping(int col);
+    int getColumnSize(int col) const;
+    int getColumnProportionalSize(int col) const;
+    wxString getColumnCaption(int col) const;
+    int getColumnAlignment(int col) const;
+    bool getColumnShaded(int col) const;
+    void getColumnColors(int col, wxColor& fg, wxColor& bg) const;
+    int getColumnTextWrapping(int col) const;
     int getColumnDefaultAlignment(int col);
     
-    wxColor getDefaultBackgroundColor();
-    wxColor getDefaultForegroundColor();
-    wxColor getDefaultLineColor();
-    wxColor getDefaultInvalidAreaColor();
-    wxColor getGreenBarColor();
-    int getGreenBarInterval();
+    wxColor getDefaultBackgroundColor() const;
+    wxColor getDefaultForegroundColor() const;
+    wxColor getDefaultLineColor() const;
+    wxColor getDefaultInvalidAreaColor() const;
+    wxColor getGreenBarColor() const;
+    int getGreenBarInterval() const;
 
     int getColumnViewIdx(int model_col);
     int getColumnViewIdxByName(const wxString& col_name);

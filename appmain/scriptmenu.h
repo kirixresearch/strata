@@ -128,8 +128,8 @@ public:
     zMenu();
     ~zMenu();
 
-    const int getId();
-    const wxString getTitle();
+    int getId() const;
+    wxString getTitle() const;
     
     void setWxMenu(wxMenu* menu);
     wxMenu* getWxMenu();

@@ -3120,7 +3120,7 @@ void Grid::setGreenBarInterval(int new_value)
     m_greenbar_interval = new_value;
 }
 
-int Grid::getColumnSize(int col)
+int Grid::getColumnSize(int col) const
 {
     if (col < 0 || col >= (int)m_viewcols.size())
         return -1;
@@ -3128,7 +3128,7 @@ int Grid::getColumnSize(int col)
     return m_viewcols[col]->m_dip_pixwidth;
 }
 
-int Grid::getColumnProportionalSize(int col)
+int Grid::getColumnProportionalSize(int col) const
 {
     if (col < 0 || col >= (int)m_viewcols.size())
         return -1;
@@ -3136,7 +3136,7 @@ int Grid::getColumnProportionalSize(int col)
     return m_viewcols[col]->m_prop_size;
 }
 
-int Grid::getColumnAlignment(int col)
+int Grid::getColumnAlignment(int col) const
 {
     if (col < 0 || col >= (int)m_viewcols.size())
         return -1;
@@ -3144,7 +3144,7 @@ int Grid::getColumnAlignment(int col)
     return m_viewcols[col]->m_alignment;
 }
 
-int Grid::getColumnTextWrapping(int col)
+int Grid::getColumnTextWrapping(int col) const
 {
     if (col < 0 || col >= (int)m_viewcols.size())
         return false;
@@ -3152,7 +3152,7 @@ int Grid::getColumnTextWrapping(int col)
     return m_viewcols[col]->m_text_wrap;
 }
 
-wxString Grid::getColumnCaption(int col)
+wxString Grid::getColumnCaption(int col) const
 {
     if (col < 0 || col >= (int)m_viewcols.size())
         return wxEmptyString;
@@ -3160,14 +3160,14 @@ wxString Grid::getColumnCaption(int col)
     return m_viewcols[col]->m_caption;
 }
 
-bool Grid::getColumnShaded(int col)
+bool Grid::getColumnShaded(int col) const
 {
     if (col < 0 || col >= (int)m_viewcols.size())
         return false;
     return m_viewcols[col]->m_shaded;
 }
 
-void Grid::getColumnColors(int col, wxColor& fg, wxColor& bg)
+void Grid::getColumnColors(int col, wxColor& fg, wxColor& bg) const
 {
     bg = wxNullColour;
     fg = wxNullColour;
@@ -3210,32 +3210,32 @@ int Grid::getColumnDefaultAlignment(int col)
     return alignLeft;
 }
 
-wxColor Grid::getDefaultBackgroundColor()
+wxColor Grid::getDefaultBackgroundColor() const
 {
     return m_def_bgcolor;
 }
 
-wxColor Grid::getDefaultForegroundColor()
+wxColor Grid::getDefaultForegroundColor() const
 {
     return m_def_fgcolor;
 }
 
-wxColor Grid::getDefaultLineColor()
+wxColor Grid::getDefaultLineColor() const
 {
     return m_def_gridline_color;
 }
 
-wxColor Grid::getGreenBarColor()
+wxColor Grid::getGreenBarColor() const
 {
     return m_def_greenbar_color;
 }
 
-int Grid::getGreenBarInterval()
+int Grid::getGreenBarInterval() const
 {
     return m_greenbar_interval;
 }
 
-wxColor Grid::getDefaultInvalidAreaColor()
+wxColor Grid::getDefaultInvalidAreaColor() const
 {
     return m_def_invalid_area_color;
 }

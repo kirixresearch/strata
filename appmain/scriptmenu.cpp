@@ -237,12 +237,12 @@ zMenu::~zMenu()
 
 }
 
-const int zMenu::getId()
+int zMenu::getId() const
 {
     return m_id;
 }
 
-const wxString zMenu::getTitle()
+wxString zMenu::getTitle() const
 {
     return m_title;
 }

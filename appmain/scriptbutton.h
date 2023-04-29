@@ -87,7 +87,7 @@ public:
     ~RadioButton();
     void realize();
     
-    const int getId();
+    int getId() const;
     wxRadioButton* getWxRadioButton();
     //void setOwner(RadioButtonGroup* owner);
 
