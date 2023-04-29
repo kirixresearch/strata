@@ -12,7 +12,6 @@
 #include <xd/xd.h>
 #include <oci.h>
 #include "database.h"
-#include "../xdcommon/connectionstr.h"
 #include "../xdcommon/errorinfo.h"
 #include <kl/string.h>
 

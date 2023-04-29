@@ -9,7 +9,6 @@
  */
 
 
-#include <algorithm>
 #include <ctime>
 #include <kl/xcm.h>
 #include <kl/file.h>

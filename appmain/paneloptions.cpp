@@ -12,13 +12,11 @@
 #include "appmain.h"
 #include "toolbars.h"
 #include "paneloptions.h"
-#include "tabledoc.h"
 #include "webdoc.h"
 #include "appcontroller.h"
 #include "projectmgr.h"
 #include "dlgpagesetup.h"
 #include "../kcanvas/kcanvas.h"
-#include "../kcanvas/property.h"
 #include "../kcanvas/graphicsobj.h"
 
 

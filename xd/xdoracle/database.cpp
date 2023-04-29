@@ -21,7 +21,6 @@
 #include <xd/xd.h>
 #include "database.h"
 #include "iterator.h"
-#include "set.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/dbfuncs.h"

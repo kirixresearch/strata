@@ -11,7 +11,6 @@
 
 #include "appmain.h"
 #include "paneljobmgr.h"
-#include "appcontroller.h"
 #include <kl/thread.h>
 #include <set>
 

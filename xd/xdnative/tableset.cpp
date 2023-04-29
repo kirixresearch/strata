@@ -17,7 +17,6 @@
 #include "nativetbl.h"
 #include "bufiterator.h"
 #include "util.h"
-#include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/exindex.h"
 #include "../xdcommon/keylayout.h"

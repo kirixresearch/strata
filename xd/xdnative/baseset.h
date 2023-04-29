@@ -13,7 +13,6 @@
 #define H_XDNATIVE_BASESET_H
 
 
-#include "../xdcommon/xd_private.h"
 #include "../xdcommonsql/xdcommonsql.h"
 #include "xdnative_private.h"
 #include "database.h"

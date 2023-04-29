@@ -11,11 +11,9 @@
 
 #include <wx/wx.h>
 #include <wx/statline.h>
-#include <wx/colordlg.h>
 #include <kl/xcm.h>
 #include "button.h"
 #include "borderpanel.h"
-#include "popupcontainer.h"
 #include "util.h"
 
 

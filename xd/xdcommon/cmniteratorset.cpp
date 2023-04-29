@@ -12,13 +12,10 @@
 #include <xd/xd.h>
 #include "util.h"
 #include "exindex.h"
-#include "keylayout.h"
 #include "idxutil.h"
 #include "cmniteratorset.h"
 #include "cmndynamicset.h"
-#include "jobinfo.h"
 #include <kl/klib.h>
-#include <ctime>
 
 
 

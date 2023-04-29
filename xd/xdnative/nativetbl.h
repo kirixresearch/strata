@@ -12,7 +12,7 @@
 #ifndef H_XDNATIVE_NATIVETBL_H
 #define H_XDNATIVE_NATIVETBL_H
 
-
+#include <kl/file.h>
 #include "xdnative_private.h"
 #include "database.h"
 

@@ -12,7 +12,6 @@
 #include "jobspch.h"
 #include "view.h"
 #include "util.h"
-#include <kl/hex.h>
 
 
 namespace jobs

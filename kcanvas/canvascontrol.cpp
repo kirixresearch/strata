@@ -14,7 +14,6 @@
 #include "canvasdc.h"
 #include "canvascontrol.h"
 #include "dnd.h"
-#include "util.h"
 
 #include "componentimage.h"
 #include "componenttextbox.h"

@@ -32,7 +32,6 @@
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/jobinfo.h"
-#include "../xdcommon/util.h"
 
 
 const wchar_t* sql92_keywords =

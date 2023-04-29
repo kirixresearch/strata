@@ -12,19 +12,15 @@
 #include <cmath>
 #include "xdfs.h"
 #include "database.h"
-#include "rawtext.h"
 #include "fixedlengthtextset.h"
 #include "fixedlengthtextiterator.h"
-#include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/exindex.h"
 #include "../xdcommon/idxutil.h"
-#include "../xdcommon/jobinfo.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/extfileinfo.h"
 #include <kl/string.h>
 #include <kl/portable.h>
 #include <kl/math.h>
-#include <kl/md5.h>
 #include <kl/url.h>
 
 

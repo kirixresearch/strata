@@ -11,7 +11,6 @@
 
 #include "appmain.h"
 #include "textview.h"
-#include "appcontroller.h"
 
 const int TEXTVIEW_BUF_SIZE = 400000;  // buffer size used in TextViewModel
 

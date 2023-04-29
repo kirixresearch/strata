@@ -13,11 +13,9 @@
 #include "app.h"
 #include "appcontroller.h"
 #include "dlgdatabasefile.h"
-#include "toolbars.h"
 #include "textdoc.h"
 #include "transformationdoc.h"
 #include "tabledoc.h"
-#include "jsonconfig.h"
 #include "textview.h"
 #include <wx/filesys.h>
 #include <kl/url.h>

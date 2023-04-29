@@ -16,8 +16,6 @@
 #include <queue>
 #include "appmain.h"
 #include "../kscript/kscript.h"
-#include "../kscript/jsobject.h"
-#include "../kscript/jsarray.h"
 #include <kl/thread.h>
 
 // class forwards

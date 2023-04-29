@@ -13,7 +13,6 @@
 #include "canvas.h"
 #include "canvaspdf.h"
 #include "property.h"
-#include <kl/utf8.h>
 
 
 namespace kcanvas

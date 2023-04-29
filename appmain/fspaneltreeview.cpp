@@ -14,7 +14,6 @@
 #include <wx/imaglist.h>
 #include <kl/xcm.h>
 #include <set>
-#include "framework.h"
 #include "fspanel.h"
 #include "fspaneltreeview.h"
 #include "fsitems_private.h"

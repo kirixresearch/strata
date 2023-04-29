@@ -18,13 +18,9 @@
 #include <kl/xcm.h>
 #include <kl/string.h>
 #include <kl/portable.h>
-#include <kl/md5.h>
 
 #include "mysql.h"
 #include <xd/xd.h>
-#include "../xdcommon/dbfuncs.h"
-#include "../xdcommon/util.h"
-#include "../xdcommon/extfileinfo.h"
 #include "database.h"
 #include "inserter.h"
 

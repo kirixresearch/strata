@@ -10,11 +10,9 @@
 
 
 #include "kscript.h"
-#include "kscript.h"
 #include "util.h"
 #include <cwctype>
 #include <clocale>
-#include <limits>
 #include <set>
 
 

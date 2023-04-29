@@ -11,7 +11,6 @@
 
 #include <kl/xcm.h>
 #include "dbmgr.h"
-#include "../xdcommon/connectionstr.h"
 
 
 // these are the publicly creatable classes

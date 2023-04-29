@@ -10,7 +10,6 @@
 
 #include "jobspch.h"
 #include "kl/portable.h"
-#include "group.h"
 #include "summarize.h"
 #include <set>
 

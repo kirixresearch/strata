@@ -13,7 +13,6 @@
 #include "scripthost.h"
 #include "scriptprocess.h"
 #include "scriptgui.h"
-#include <wx/settings.h>
 #include <kl/thread.h>
 
 

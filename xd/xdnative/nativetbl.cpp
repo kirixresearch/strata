@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <ctime>
 #include <kl/xcm.h>
-#include <kl/klib.h>
 #include <xd/xd.h>
 #include "nativetbl.h"
 #include "bitmapfile.h"

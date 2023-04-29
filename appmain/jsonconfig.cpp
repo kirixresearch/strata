@@ -11,7 +11,6 @@
 
 #include "appmain.h"
 #include "jsonconfig.h"
-#include <kl/utf8.h>
 
 
 kl::JsonNode JsonConfig::loadFromDb(xd::IDatabasePtr db, const std::wstring& path)

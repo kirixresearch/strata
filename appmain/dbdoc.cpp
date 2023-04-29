@@ -17,26 +17,17 @@
 #include "editordoc.h"
 #include "querydoc.h"
 #include "reportdoc.h"
-#include "importwizard.h"
 #include "exportwizard.h"
-#include "paneldatabaseinfo.h"
 #include "panelfileinfo.h"
-#include "panelrelationship.h"
 #include "jsonconfig.h"
-#include "toolbars.h"
 #include "dlgdatabasefile.h"
 #include "projectmgr.h"
 #include "importtemplate.h"
 #include "dbdoc.h"
 #include "structuredoc.h"
 #include "connectionwizard.h"
-#include "dlglinkprops.h"
-#include "dlgconnection.h"
-#include "bookmarkfs.h"
 
 #include <wx/generic/dirctrlg.h>
-#include <wx/sstream.h>
-#include <kl/md5.h>
 
 #ifdef WIN32
 #include <windows.h>

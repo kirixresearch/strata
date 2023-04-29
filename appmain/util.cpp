@@ -18,7 +18,6 @@
 #include <kl/url.h>
 #include <kl/utf8.h>
 #include <kl/regex.h>
-#include <kl/thread.h>
 #include <kl/math.h>
 
 #include "curlutil.h"

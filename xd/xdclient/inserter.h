@@ -13,10 +13,6 @@
 #define H_XDCLIENT_INSERTER_H
 
 
-#include <kl/xcm.h>
-#include "../xdcommon/cmnbaseset.h"
-
-
 
 class ClientInsertData
 {

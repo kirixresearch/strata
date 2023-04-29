@@ -12,7 +12,6 @@
 #include <kl/file.h>
 #include <kl/string.h>
 #include <kl/utf8.h>
-#include <kl/system.h>
 
 
 std::wstring xf_get_file_contents(const std::wstring& path, bool* success)

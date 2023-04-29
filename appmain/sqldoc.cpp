@@ -13,7 +13,6 @@
 #include "sqldoc.h"
 #include "querydoc.h"
 #include "tabledoc.h"
-#include "appcontroller.h"
 #include "toolbars.h"
 #include <wx/stc/stc.h>
 

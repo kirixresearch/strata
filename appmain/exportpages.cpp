@@ -10,7 +10,6 @@
 
 
 #include "appmain.h"
-#include "appcontroller.h"
 #include "connectionwizard.h"
 #include "exportpages.h"
 #include "exportwizard.h"

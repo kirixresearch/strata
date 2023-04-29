@@ -17,7 +17,6 @@
 #include <kl/string.h>
 #include <kl/file.h>
 #include "database.h"
-#include "../xdcommon/connectionstr.h"
 
 
 

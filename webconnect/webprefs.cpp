@@ -10,7 +10,6 @@
 
 
 #include <wx/wx.h>
-#include "webframe.h"
 #include "webcontrol.h"
 #include "nsinclude.h"
 

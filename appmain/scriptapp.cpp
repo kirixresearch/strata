@@ -12,7 +12,6 @@
 #include "appmain.h"
 #include "scriptapp.h"
 #include "scriptgui.h"
-#include "scriptmenu.h"
 #include "scriptgraphics.h"
 #include "toolbars.h"
 #include <kl/thread.h>

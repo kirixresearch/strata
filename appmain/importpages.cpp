@@ -14,7 +14,6 @@
 #include "importpages.h"
 #include "importtemplate.h"
 #include "dlgdatabasefile.h"
-#include "textview.h"
 #include "xdgridmodel.h"
 #include "structurevalidator.h"
 

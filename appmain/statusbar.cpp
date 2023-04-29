@@ -12,7 +12,6 @@
 #include "appmain.h"
 #include "statusbar.h"
 #include "framework.h"
-#include "util.h"
 
 
 const int RESIZE_GRIPPER_WIDTH = 12;

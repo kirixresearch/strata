@@ -11,14 +11,9 @@
 
 #include <wx/wx.h>
 #include <wx/calctrl.h>
-#include <wx/notebook.h>
 #include <kl/klib.h>
 #include <kl/xcm.h>
 #include "../paladin/paladin.h"
-#include "../paladin/crypt.h"
-#include "../paladin/crc.h"
-#include "../paladin/util.h"
-#include "app.h"
 #include "generatepage.h"
 #include "gencode.h"
 

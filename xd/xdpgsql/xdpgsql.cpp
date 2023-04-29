@@ -13,7 +13,6 @@
 #include "libpq-fe.h"
 #include <xd/xd.h>
 #include "database.h"
-#include "../xdcommon/connectionstr.h"
 #include "../xdcommon/errorinfo.h"
 #include <kl/string.h>
 #include <kl/utf8.h>

@@ -12,7 +12,6 @@
 #include <kl/klib.h>
 #include <xd/xd.h>
 #include "database.h"
-#include "../xdcommon/connectionstr.h"
 #include "../xdcommon/errorinfo.h"
 
 

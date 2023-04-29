@@ -12,7 +12,6 @@
 #include "appmain.h"
 #include "panelreplacerows.h"
 #include "exprbuilder.h"
-#include "appcontroller.h"
 #include <algorithm>
 
 

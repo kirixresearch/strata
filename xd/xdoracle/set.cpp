@@ -16,7 +16,6 @@
 #include "database.h"
 #include "set.h"
 #include "iterator.h"
-#include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/extfileinfo.h"
 
 

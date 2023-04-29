@@ -11,7 +11,6 @@
 
 #include "kcanvas_int.h"
 #include "canvashistory.h"
-#include "component.h"
 #include "util.h"
 
 

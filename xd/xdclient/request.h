@@ -15,8 +15,6 @@
 
 #include <string>
 #include <list>
-#include <map>
-#include <vector>
 
 
 typedef void CURL;

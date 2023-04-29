@@ -10,15 +10,12 @@
 
 #include "appmain.h"
 #include "limits.h"
-#include "appmain.h"
 #include "appprint.h"
 #include "appcontroller.h"
 #include "dlgdatabasefile.h"
 #include "dlgpagesetup.h"
 #include "dlgreportprops.h"
 #include "dbdoc.h"
-#include "panelcolprops.h"
-#include "panelcolordoc.h"
 #include "querytemplate.h"
 #include "reportdoc.h"
 
@@ -31,7 +28,6 @@
 
 
 #include <wx/tooltip.h>
-#include <wx/renderer.h>
 #include <wx/paper.h>
 #include <wx/print.h>
 

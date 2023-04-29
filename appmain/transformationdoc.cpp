@@ -10,7 +10,6 @@
 
 
 #include "appmain.h"
-#include "toolbars.h"
 #include "textdoc.h"
 #include "tabledoc.h"
 #include "transformationdoc.h"

@@ -16,8 +16,6 @@
 #include "../kscript/kscript.h"
 #include "scripthost.h"
 #include "scriptapp.h"
-#include <queue>
-#include <set>
 
 
 // forward declarations

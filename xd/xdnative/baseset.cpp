@@ -10,9 +10,6 @@
 
 
 #include <xd/xd.h>
-#include "../xdcommon/xdcommon.h"
-#include "../xdcommon/exindex.h"
-#include "../xdcommon/idxutil.h"
 #include "xdnative_private.h"
 #include "database.h"
 #include "baseset.h"

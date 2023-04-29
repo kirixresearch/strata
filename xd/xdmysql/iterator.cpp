@@ -22,7 +22,6 @@
 #include "mysql.h"
 #include <xd/xd.h>
 #include "../xdcommon/xdcommon.h"
-#include "../xdcommonsql/xdcommonsql.h"
 #include "database.h"
 #include "iterator.h"
 

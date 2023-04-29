@@ -14,7 +14,6 @@
 
 
 #include <wx/process.h>
-#include <wx/txtstrm.h>
 
 
 class SystemColors : public kscript::ValueObject

@@ -14,16 +14,13 @@
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/jobinfo.h"
 #include "../xdcommon/dbfuncs.h"
-#include "../xdcommon/util.h"
 #include "database.h"
 #include "iterator.h"
 #include "inserter.h"
-#include "stream.h"
 #include <set>
 #include <kl/portable.h>
 #include <kl/string.h>
 #include <kl/utf8.h>
-#include <kl/xml.h>
 #include <kl/md5.h>
 
 #define XLNT_STATIC

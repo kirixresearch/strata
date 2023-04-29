@@ -14,7 +14,6 @@
 #include <kl/portable.h>
 #include <kl/string.h>
 #include <kl/math.h>
-#include "xdcommon.h"
 #include "cmnbaseiterator.h"
 #include "keylayout.h"
 #include "util.h"

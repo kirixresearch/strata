@@ -10,7 +10,6 @@
 
 
 #include "appmain.h"
-#include "appcontroller.h"
 #include "scriptapp.h"
 #include "scriptgui.h"
 #include "scriptcombo.h"

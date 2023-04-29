@@ -11,8 +11,6 @@
 
 #include "appmain.h"
 #include "dlglinkprops.h"
-#include "dbcombo.h"
-
 
 enum
 {

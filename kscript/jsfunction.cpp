@@ -17,7 +17,6 @@
 #include "jsfunction.h"
 #include "util.h"
 #include <cmath>
-#include <limits>
 
 
 namespace kscript

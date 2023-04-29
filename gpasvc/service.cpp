@@ -15,7 +15,6 @@
 #include <windows.h>
 #include <tchar.h>
 #include <cstdio>
-#include <vector>
 #include <kl/string.h>
 #include "gpasvc.h"
 

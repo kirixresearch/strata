@@ -10,7 +10,6 @@
 
 
 #include "appmain.h"
-#include <wx/url.h>
 #include "inetauth.h"
 #include "../paladin/paladin.h"
 #include "../paladin/crc.h"

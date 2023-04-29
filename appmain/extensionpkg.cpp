@@ -12,7 +12,6 @@
 #include "appmain.h"
 #include "extensionpkg.h"
 #include <wx/wfstream.h>
-#include <wx/txtstrm.h>
 #include <wx/mstream.h>
 #include <wx/zipstrm.h>
 #include <kl/crypt.h>

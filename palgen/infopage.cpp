@@ -11,8 +11,6 @@
 
 #include <wx/wx.h>
 #include <wx/calctrl.h>
-#include <wx/notebook.h>
-#include "app.h"
 #include "infopage.h"
 
 

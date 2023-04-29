@@ -10,7 +10,6 @@
 
 
 #include "xdclient.h"
-#include "../xdcommon/connectionstr.h"
 #include "../xdcommon/errorinfo.h"
 
 

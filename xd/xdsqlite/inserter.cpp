@@ -15,8 +15,6 @@
 #include <xd/xd.h>
 #include "database.h"
 #include "inserter.h"
-#include "iterator.h"
-#include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/util.h"
 
 

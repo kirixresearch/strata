@@ -14,13 +14,10 @@
 #include <xd/xd.h>
 #include "database.h"
 #include "inserter.h"
-#include <kl/file.h>
 #include <kl/portable.h>
 #include <kl/string.h>
 #include <kl/utf8.h>
-#include <kl/math.h>
 #include <kl/xml.h>
-#include "../xdcommon/util.h"
 
 
 #define XLNT_STATIC

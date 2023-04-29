@@ -12,7 +12,6 @@
 #ifndef H_XDFS_XDFS_H
 #define H_XDFS_XDFS_H
 
-#include <map>
 #include <kl/string.h>
 #include <kl/file.h>
 #include <xd/xd.h>

@@ -11,7 +11,6 @@
 
 #include "rowselectiongrid.h"
 #include "griddnd.h"
-#include "util.h"
 #include <algorithm>
 
 

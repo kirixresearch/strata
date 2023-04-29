@@ -13,7 +13,6 @@
 
 #include <wx/url.h>
 #include <wx/wfstream.h>
-#include <wx/txtstrm.h>
 #include <kl/utf8.h>
 #include <kl/thread.h>
 
@@ -61,9 +60,6 @@
 #include "scriptprocess.h"
 
 #include "appcontroller.h"
-#include "panelconsole.h"
-#include "dlgdatabasefile.h"
-#include "jobscript.h"
 #include "extensionmgr.h"
 #include "extensionpkg.h"
 

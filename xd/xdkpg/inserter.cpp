@@ -17,7 +17,6 @@
 #include <kl/file.h>
 #include <kl/portable.h>
 #include <kl/string.h>
-#include <kl/utf8.h>
 #include <kl/math.h>
 #include <kl/xml.h>
 #include "pkgfile.h"

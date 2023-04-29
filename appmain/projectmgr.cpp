@@ -11,8 +11,6 @@
 
 #include "appmain.h"
 #include "dlgprojectmgr.h"
-#include "appcontroller.h"
-#include "paneloptions.h"
 #include <wx/dir.h>
 #include <kl/crypt.h>
 

@@ -9,11 +9,9 @@
  */
 
 
-#include <algorithm>
 #include <ctime>
 #include <kl/xcm.h>
 #include <kl/file.h>
-#include <kl/math.h>
 #include <kl/string.h>
 #include <xd/xd.h>
 #include "fixedlength.h"

@@ -13,7 +13,6 @@
 #define H_XDCOMMON_LOCALROWCACHE2_H
 
 #include <vector>
-#include <map>
 #include <kl/file.h>
 
 namespace kl { class membuf; }

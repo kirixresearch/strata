@@ -24,9 +24,7 @@
 #include "crypt.h"
 #include "hash.h"
 #include <kl/utf8.h>
-#include <kl/thread.h>
 #include <kl/file.h>
-#include <kl/memory.h>
 #include <kl/string.h>
 
 

@@ -16,7 +16,6 @@
 #include "scripthost.h"
 #include "scriptapp.h"
 #include "dlgprojectmgr.h"
-#include "dlgdatabasefile.h"
 #include "extensionmgr.h"
 #include "extensionpkg.h"
 #include "moduleremoveduprec.h"
@@ -59,9 +58,7 @@
 #include <wx/mimetype.h>
 #include <wx/fs_inet.h>
 #include <wx/wfstream.h>
-#include <wx/txtstrm.h>
 #include <wx/choicdlg.h>
-#include <wx/stopwatch.h>
 #include <wx/paper.h>
 #include <wx/print.h>
 #include <wx/stdpaths.h>

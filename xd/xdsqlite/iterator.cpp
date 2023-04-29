@@ -19,7 +19,6 @@
 #include <kl/utf8.h>
 #include <xd/xd.h>
 #include "database.h"
-#include "inserter.h"
 #include "iterator.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommonsql/xdcommonsql.h"

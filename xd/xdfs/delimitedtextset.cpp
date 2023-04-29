@@ -16,7 +16,6 @@
 #include "delimitedtextset.h"
 #include "delimitedtextiterator.h"
 #include "../xdcommon/jobinfo.h"
-#include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/exindex.h"
 #include "../xdcommon/idxutil.h"
 #include "../xdcommon/extfileinfo.h"

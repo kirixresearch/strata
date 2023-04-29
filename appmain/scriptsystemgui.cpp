@@ -10,12 +10,10 @@
 
 
 #include "appmain.h"
-#include "scripthost.h"
 #include "scriptgui.h"
 #include "scriptfont.h"
 #include "scriptsystemgui.h"
 #include <wx/settings.h>
-#include <kl/thread.h>
 
 
 // (CLASS) SystemColors

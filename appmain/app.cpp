@@ -14,13 +14,10 @@
 #include "apphook.h"
 #include "appcontroller.h"
 #include "dbdoc.h"
-#include "bookmarkfs.h"
 #include "dlgprojectmgr.h"
 #include "jobscheduler.h"
-#include "jsonconfig.h"
 #include "../paladin/paladin.h"
 #include "../webconnect/webcontrol.h"
-#include "connectionmgr.h"
 #include "extensionmgr.h"
 #include "panelconsole.h"
 #include "toolbars.h"
@@ -30,9 +27,7 @@
 #include <wx/stdpaths.h>
 #include <wx/fontenum.h>
 #include <wx/paper.h>
-#include <wx/tooltip.h>
 #include <wx/dir.h>
-#include <map>
 
 #ifdef __APPLE__
 #include <mach-o/dyld.h>

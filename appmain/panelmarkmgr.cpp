@@ -14,7 +14,6 @@
 #include "tabledoc.h"
 #include "exprbuilder.h"
 #include "appcontroller.h"
-#include "panelcolordoc.h"
 
 
 enum

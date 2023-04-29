@@ -14,7 +14,6 @@
 
 
 #include <vector>
-#include <list>
 #include <queue>
 #include <kl/file.h>
 
@@ -74,7 +73,7 @@ public:
 
 };
 
-typedef    std::vector<BlockEntry*> BlockList;
+typedef std::vector<BlockEntry*> BlockList;
 typedef std::vector<BlockEntry*>::iterator BlockListIterator;
 typedef std::vector<BlockEntry*>::reverse_iterator BlockListRevIterator;
 

@@ -22,7 +22,6 @@
 #include <xd/util.h>
 
 #include "database.h"
-#include "../xdcommon/connectionstr.h"
 #include "../xdcommon/errorinfo.h"
 #include <kl/xcm.h>
 #include <kl/string.h>

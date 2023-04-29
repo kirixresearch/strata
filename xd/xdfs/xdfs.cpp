@@ -11,7 +11,6 @@
 
 #include "xdfs.h"
 #include "database.h"
-#include "../xdcommon/connectionstr.h"
 #include "../xdcommon/formatdefinition.h"
 
 

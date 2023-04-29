@@ -13,8 +13,6 @@
 #include "database.h"
 #include "xbaseset.h"
 #include "xbaseiterator.h"
-#include "../xdcommon/dbfuncs.h"
-#include "../xdcommon/formatdefinition.h"
 #include "../xdcommon/exindex.h"
 #include "../xdcommon/idxutil.h"
 #include "../xdcommon/util.h"

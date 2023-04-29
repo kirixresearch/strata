@@ -10,14 +10,12 @@
 
 
 #include <xd/xd.h>
-#include "../xdcommon/xd_private.h"
 #include "xdcommonsql.h"
 #include "../xdcommon/jobinfo.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/errorinfo.h"
 #include <kl/portable.h>
 #include <kl/string.h>
-#include <map>
 #include <ctime>
 
 

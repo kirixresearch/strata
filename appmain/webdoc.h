@@ -13,8 +13,6 @@
 #define H_APP_WEBDOC_H
 
 
-#include "panelfind.h"
-
 class wxWebControl;
 class wxWebEvent;
 class wxWebPostData;

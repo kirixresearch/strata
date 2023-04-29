@@ -21,6 +21,7 @@
 #include "dbdoc.h"
 #include "bookmarkfs.h"
 #include "linkbar.h"
+#include "panelfind.h"
 #include "dlgcustomprompt.h"
 #include "../webconnect/webcontrol.h"
 #include <wx/webview.h>

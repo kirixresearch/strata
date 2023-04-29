@@ -12,7 +12,6 @@
 #include "appmain.h"
 #include "appcontroller.h"
 #include "panelcolordoc.h"
-#include "tabledoc.h"
 
 
 ColorDocPanel::ColorDocPanel(const wxString& default_color_button_text)

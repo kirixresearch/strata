@@ -13,7 +13,6 @@
 #include <kl/klib.h>
 #include <xd/xd.h>
 #include "xdnative_private.h"
-#include "util.h"
 #include "nativetbl.h"
 #include "tablesetmodify.h"
 #include "tableset.h"

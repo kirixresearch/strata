@@ -13,7 +13,6 @@
 #include <kl/utf8.h>
 #include <kl/memory.h>
 #include "localrowcache2.h"
-#include "util.h"
 #include "../xdcommon/sqlite3.h"
 
 

@@ -13,14 +13,10 @@
 #include "database.h"
 #include "iterator.h"
 #include "pkgfile.h"
-#include "../xdcommon/xdcommon.h"
-#include "../xdcommonsql/xdcommonsql.h"
-#include "../xdcommon/localrowcache.h"
 #include "../xdcommon/util.h"
 #include <kl/portable.h>
 #include <kl/string.h>
 #include <kl/utf8.h>
-#include <kl/md5.h>
 #include <kl/math.h>
 
 

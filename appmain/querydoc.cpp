@@ -19,7 +19,6 @@
 #include "relationdiagram.h"
 #include "dlgdatabasefile.h"
 #include "structurevalidator.h"
-#include <algorithm>
 #include <set>
 
 

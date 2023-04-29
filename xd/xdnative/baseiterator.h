@@ -13,9 +13,7 @@
 #define H_XDNATIVE_BASEITERATOR_H
 
 
-#include <set>
 #include <map>
-#include <functional>
 
 #include "xdnative_private.h"
 #include "../xdcommon/xd_private.h"

@@ -12,7 +12,6 @@
 #include "appmain.h"
 #include "appprefs.h"
 #include "../kcanvas/kcanvas.h"
-#include "../kcanvas/property.h"
 #include "../kcanvas/graphicsobj.h"
 #include <wx/fontenum.h>
 

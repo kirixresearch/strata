@@ -13,8 +13,6 @@
 #define H_APP_PANELINDEX_H
 
 
-#include "tabledoc.h"
-
 
 struct IndexColumnInfo
 {

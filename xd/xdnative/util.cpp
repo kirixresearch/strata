@@ -9,7 +9,6 @@
  */
 
 
-#include <kl/file.h>
 #include <kl/string.h>
 #include <kl/portable.h>
 #include <kl/math.h>
@@ -17,7 +16,6 @@
 #include <xd/xd.h>
 #include "util.h"
 #include "../xdcommon/util.h"
-#include "../../kscript/kscript.h"
 
 
 std::wstring combineOfsPath(const std::wstring& base_folder,

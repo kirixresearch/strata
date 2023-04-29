@@ -10,12 +10,9 @@
 
 
 #include <xd/xd.h>
-#include "../xdcommon/xd_private.h"
 #include "../xdcommon/errorinfo.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/jobinfo.h"
-#include "../xdcommon/util.h"
-#include "../xdcommon/keylayout.h"
 #include "xdcommonsql.h"
 #include <kl/klib.h>
 #include <kl/regex.h>

@@ -15,8 +15,6 @@
 #include <kl/klib.h>
 #include "fspanel.h"
 #include "fsitems_private.h"
-#include "fspaneltreeview.h"
-#include "fspanellistview.h"
 #include "util.h"
 #include <algorithm>
 

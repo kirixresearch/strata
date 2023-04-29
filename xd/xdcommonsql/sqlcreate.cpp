@@ -15,7 +15,6 @@
 #include "../xdcommon/errorinfo.h"
 #include <kl/string.h>
 #include <kl/portable.h>
-#include <map>
 
 
 xd::ColumnInfo parseColumnDescription(const std::wstring& _col_desc, ThreadErrorInfo& error)

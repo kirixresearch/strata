@@ -13,7 +13,6 @@
 #include "appcontroller.h"
 #include "panelrelationship.h"
 #include "relationdiagram.h"
-#include "relationdnd.h"
 #include "tabledoc.h"
 #include <set>
 

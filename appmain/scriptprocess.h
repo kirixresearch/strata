@@ -17,7 +17,7 @@
 #include <wx/txtstrm.h>
 
 
-// foward declaration for helper class
+// forward declaration for helper class
 class ProcessInternal;
 
 class Process : public ScriptHostBase
