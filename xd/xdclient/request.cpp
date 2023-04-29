@@ -361,8 +361,7 @@ size_t HttpRequest::http_header_writer(void* ptr, size_t size, size_t nmemb, voi
 size_t HttpRequest::http_response_writer(void* ptr, size_t size, size_t nmemb, void *stream)
 {
     HttpRequest* pThis = (HttpRequest*)stream;
-    size_t total_size = 0;
-    
+
     HttpResponsePiece piece;
     piece.len = size*nmemb;
     piece.curpos = 0;

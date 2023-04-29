@@ -377,8 +377,6 @@ void MultiFileInfoPanel::populate()
     int query_count = 0;
     int script_count = 0;
     int other_count = 0;
-    double total_records = 0.0;
-    double total_bytes = 0.0;
 
     int row = 0;
 

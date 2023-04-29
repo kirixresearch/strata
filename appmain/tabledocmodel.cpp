@@ -58,6 +58,11 @@ class ModelRegistry : public xcm::signal_sink
 
 public:
 
+    ModelRegistry()
+    {
+        m_deleted_flag = false;
+    }
+
     ITableDocModelPtr lookupModel(const std::wstring& set_id)
     {
         KL_AUTO_LOCK(m_obj_mutex);

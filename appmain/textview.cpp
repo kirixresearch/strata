@@ -414,7 +414,6 @@ wchar_t TextViewModel::getDelimitedChar(long long row, long long col)
 
 
     // discover row length
-    long long row_off = off;
     m_cur_row_length = getCurrentRowLength();
 
     // return the desired character from the line

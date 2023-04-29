@@ -272,6 +272,12 @@ void CfwDockArt::DrawCaption(wxDC& dc,
 
 // CfwTabArt class implementation
 
+CfwTabArt::CfwTabArt() : wxAuiDefaultTabArt()
+{
+    m_standardPadding = PADDING;   // see EnsureBitmaps() below
+    m_standardBottomLineY = BOTTOMLINE_Y;
+}
+
 void CfwTabArt::EnsureBitmaps(const wxWindow* wnd)
 {
     if (m_disabledCloseBmpLookup.IsOk())

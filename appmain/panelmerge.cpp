@@ -440,10 +440,6 @@ void MergePanel::onOK(wxCommandEvent& evt)
 
     std::vector<std::wstring> table_paths;
 
-    int col_idx = 0;
-    int input_col_count = 0;
-    int output_col_count = 0;
-
     int row = 0, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {

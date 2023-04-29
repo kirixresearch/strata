@@ -40,6 +40,8 @@ class CfwTabArt : public wxAuiDefaultTabArt
 {
 public:
 
+    CfwTabArt();
+
     void DrawBackground(
                  wxDC& dc,
                  wxWindow* wnd,

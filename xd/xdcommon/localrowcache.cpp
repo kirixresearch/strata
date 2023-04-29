@@ -511,9 +511,7 @@ bool LocalRowCache::getRow(LocalRow& row)
     
     int row_buffer_size = buf2int(row.m_buf);
     int row_ordinal = buf2int(row.m_buf + 4);
-    
-    bool col_null = false;
-    
+
     unsigned char* p = row.m_buf + 8;
     
     int col = 0;

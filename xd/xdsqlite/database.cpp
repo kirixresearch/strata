@@ -515,7 +515,6 @@ xd::IFileInfoPtr SlDatabase::getFileInfo(const std::wstring& path)
     
     char** result;
     int rows = 0;
-    int cat_id = 0;
 
     std::wstring query = L"SELECT tbl_name, sql FROM sqlite_master WHERE name='";
     query += sqliteGetTablenameFromPath(path, false);

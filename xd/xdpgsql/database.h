@@ -38,12 +38,20 @@ class PgsqlJobInfo;
 
 class PgsqlConnection
 {
-    kl::mutex mutex;
-    PGconn* conn;
+public:
+
+    PgsqlConnection()
+    {
+        conn = nullptr;
+    }
 
     void lock() { mutex.lock(); }
     void unlock() { mutex.unlock(); }
     void close() { PQfinish(conn); conn = NULL; }
+
+public:
+    kl::mutex mutex;
+    PGconn* conn;
 };
 
 

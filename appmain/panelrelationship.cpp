@@ -452,8 +452,6 @@ static xd::IRelationPtr lookupSetRelation(xd::IDatabasePtr& db, const std::wstri
 
 void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
 {
-    bool external = false;
-
     // remove relationship syncing for the duration
     // of the relationship setup operation
     if (g_app->getAppController()->getRelationshipSync() != tabledocRelationshipSyncNone)
