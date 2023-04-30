@@ -969,7 +969,7 @@ order by x.ordering
         m_database->closeConnection(conn);
     }
     */
-     else if (m_mode = modeSequenceTable)
+     else if (m_mode == modeSequenceTable)
     {
         PQclear(m_res);
 
