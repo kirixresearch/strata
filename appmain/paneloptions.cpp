@@ -76,35 +76,91 @@ void makeSizerLabelsSameSize(wxBoxSizer* sizer1,
                  *st5 = NULL,
                  *st6 = NULL,
                  *st7 = NULL;
-    
-    if (sizer1) { item = sizer1->GetItem(item0);
-                  if (item) { wnd = item->GetWindow(); }
-                  if (item && wnd && wnd->IsKindOf(CLASSINFO(wxStaticText))) { st1 = (wxStaticText*)wnd; }
-                }
-    if (sizer2) { item = sizer2->GetItem(item0);
-                  if (item) { wnd = item->GetWindow(); }
-                  if (item && wnd && wnd->IsKindOf(CLASSINFO(wxStaticText))) { st2 = (wxStaticText*)wnd; }
-                }
-    if (sizer3) { item = sizer3->GetItem(item0);
-                  if (item) { wnd = item->GetWindow(); }
-                  if (item && wnd && wnd->IsKindOf(CLASSINFO(wxStaticText))) { st3 = (wxStaticText*)wnd; }
-                }
-    if (sizer4) { item = sizer4->GetItem(item0);
-                  if (item) { wnd = item->GetWindow(); }
-                  if (item && wnd && wnd->IsKindOf(CLASSINFO(wxStaticText))) { st4 = (wxStaticText*)wnd; }
-                }
-    if (sizer5) { item = sizer5->GetItem(item0);
-                  if (item) { wnd = item->GetWindow(); }
-                  if (item && wnd && wnd->IsKindOf(CLASSINFO(wxStaticText))) { st5 = (wxStaticText*)wnd; }
-                }
-    if (sizer6) { item = sizer6->GetItem(item0);
-                  if (item) { wnd = item->GetWindow(); }
-                  if (item && wnd && wnd->IsKindOf(CLASSINFO(wxStaticText))) { st6 = (wxStaticText*)wnd; }
-                }
-    if (sizer7) { item = sizer7->GetItem(item0);
-                  if (item) { wnd = item->GetWindow(); }
-                  if (item && wnd && wnd->IsKindOf(CLASSINFO(wxStaticText))) { st7 = (wxStaticText*)wnd; }
-                }
+
+    if (sizer1)
+    {
+        item = sizer1->GetItem(item0);
+        if (item)
+        {
+            wnd = item->GetWindow();
+            if (wnd && wnd->IsKindOf(CLASSINFO(wxStaticText)))
+            {
+                st1 = static_cast<wxStaticText*>(wnd);
+            }
+        }
+    }
+    if (sizer2)
+    {
+        item = sizer2->GetItem(item0);
+        if (item)
+        {
+            wnd = item->GetWindow();
+            if (wnd && wnd->IsKindOf(CLASSINFO(wxStaticText)))
+            {
+                st2 = static_cast<wxStaticText*>(wnd);
+            }
+        }
+    }
+    if (sizer3)
+    {
+        item = sizer3->GetItem(item0);
+        if (item)
+        {
+            wnd = item->GetWindow();
+            if (wnd && wnd->IsKindOf(CLASSINFO(wxStaticText)))
+            {
+                st3 = static_cast<wxStaticText*>(wnd);
+            }
+        }
+    }
+    if (sizer4)
+    {
+        item = sizer4->GetItem(item0);
+        if (item)
+        {
+            wnd = item->GetWindow();
+            if (wnd && wnd->IsKindOf(CLASSINFO(wxStaticText)))
+            {
+                st4 = static_cast<wxStaticText*>(wnd);
+            }
+        }
+    }
+    if (sizer5)
+    {
+        item = sizer5->GetItem(item0);
+        if (item)
+        {
+            wnd = item->GetWindow();
+            if (wnd && wnd->IsKindOf(CLASSINFO(wxStaticText)))
+            {
+                st5 = static_cast<wxStaticText*>(wnd);
+            }
+        }
+    }
+    if (sizer6)
+    {
+        item = sizer6->GetItem(item0);
+        if (item)
+        {
+            wnd = item->GetWindow();
+            if (wnd && wnd->IsKindOf(CLASSINFO(wxStaticText)))
+            {
+                st6 = static_cast<wxStaticText*>(wnd);
+            }
+        }
+    }
+    if (sizer7)
+    {
+        item = sizer7->GetItem(item0);
+        if (item)
+        {
+            wnd = item->GetWindow();
+            if (wnd && wnd->IsKindOf(CLASSINFO(wxStaticText)))
+            {
+                st7 = static_cast<wxStaticText*>(wnd);
+            }
+        }
+    }
     
     wxSize s = getMaxTextSize(st1, st2, st3, st4, st5, st6, st7);
     if (sizer1 && st1)
