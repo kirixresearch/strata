@@ -112,6 +112,7 @@ PropertyValue& PropertyValue::operator=(const PropertyValue& c)
     {
         delete m_string;
         delete m_color;
+         // TODO: following to be wrong because of m_string and m_color
         memcpy(this, &c, sizeof(PropertyValue));
     }
     
