@@ -27,7 +27,11 @@ ExtFileEntry::ExtFileEntry(kl::xmlnode& node)
 
 ExtFileEntry& ExtFileEntry::operator=(const ExtFileEntry& c)
 {
-    m_node = c.m_node;
+    if (&c != this)
+    {
+        m_node = c.m_node;
+    }
+
     return *this;
 }
 

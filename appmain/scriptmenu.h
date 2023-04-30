@@ -85,9 +85,13 @@ public:
     
     MenuItemInfo& operator=(const MenuItemInfo& c)
     {
-        type = c.type;
-        item = c.item;
-        submenu = c.submenu;
+        if (&c != this)
+        {
+            type = c.type;
+            item = c.item;
+            submenu = c.submenu;
+        }
+
         return *this;
     }
 

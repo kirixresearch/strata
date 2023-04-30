@@ -66,11 +66,15 @@ public:
     
     PendingEvent& operator=(const PendingEvent& c)
     {
-        app = c.app;
-        jsevent = c.jsevent;
-        sender = c.sender;
-        args = c.args;
-        flags = c.flags;
+        if (&c != this)
+        {
+            app = c.app;
+            jsevent = c.jsevent;
+            sender = c.sender;
+            args = c.args;
+            flags = c.flags;
+        }
+
         return *this;
     } 
 

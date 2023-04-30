@@ -73,7 +73,11 @@ wxDOMNode::wxDOMNode(const wxDOMNode& c)
 
 wxDOMNode& wxDOMNode::operator=(const wxDOMNode& c)
 {
-    assign(c);
+    if (&c != this)
+    {
+        assign(c);
+    }
+
     return *this;
 }
 
