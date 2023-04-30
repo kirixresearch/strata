@@ -422,7 +422,7 @@ private:
            }
 
             result += *fmt;
-            fmt++;
+            ++fmt;
         }
 
         return result;
@@ -1966,7 +1966,7 @@ public:
             if (matchInternal(start, end, &next, matchres))
                 return true;
 
-            start++;
+            ++start;
         }
 
         return false;
@@ -2544,7 +2544,7 @@ private:
         p += 2;
 
         // ignore close paren
-        end--;
+        --end;
 
         // if there is no open parenthesis at the beginning,
         // we need to fail as this is required syntax
@@ -2714,7 +2714,7 @@ private:
             case L'+':
                 *next = start+1;
                 if (**next == L'?')
-                    (*next)++;
+                    ++(*next);
                 return true;
             default:
                 break;
@@ -2745,7 +2745,7 @@ private:
                     if (*next && *(*next+1) == L'?')
                     {
                         // { } with lazy '?'
-                        (*next)++;
+                        ++(*next);
                     }
                     break;
             }
@@ -2756,7 +2756,7 @@ private:
                 return false;
             }
 
-            (*next)++;
+            ++(*next);
             return true;
         }
 
@@ -2850,7 +2850,7 @@ private:
             if (top_level && *str == ch)
                 return str;
 
-            str++;
+            ++str;
         }
 
         return NULL;

@@ -116,12 +116,16 @@ xmlnode::xmlnode()
 xmlnode::~xmlnode()
 {
     std::vector<xmlnode*>::iterator it;
-    for (it = m_nodes.begin(); it != m_nodes.end(); it++)
+    for (it = m_nodes.begin(); it != m_nodes.end(); ++it)
+    {
         delete *it;
+    }
 
     std::vector<xmlproperty*>::iterator p_it;
-    for (p_it = m_properties.begin(); p_it != m_properties.end(); p_it++)
-        delete *p_it;
+    for (p_it = m_properties.begin(); p_it != m_properties.end(); ++p_it)
+    {
+        delete* p_it;
+    }
 }
 
 bool xmlnode::parse(const wchar_t* xml_text, int parse_flags)
@@ -431,12 +435,16 @@ xmlnode& xmlnode::clone(bool deep)
 void xmlnode::clear()
 {
     std::vector<xmlnode*>::iterator it;
-    for (it = m_nodes.begin(); it != m_nodes.end(); it++)
-        delete *it;
+    for (it = m_nodes.begin(); it != m_nodes.end(); ++it)
+    {
+        delete* it;
+    }
 
     std::vector<xmlproperty*>::iterator p_it;
-    for (p_it = m_properties.begin(); p_it != m_properties.end(); p_it++)
+    for (p_it = m_properties.begin(); p_it != m_properties.end(); ++p_it)
+    {
         delete *p_it;
+    }
 
     m_nodes.clear();
     m_properties.clear();
@@ -545,7 +553,7 @@ xmlnode& xmlnode::getChild(size_t idx)
 void xmlnode::deleteAllChildren()
 {
     std::vector<xmlnode*>::iterator it;
-    for (it = m_nodes.begin(); it != m_nodes.end(); it++)
+    for (it = m_nodes.begin(); it != m_nodes.end(); ++it)
     {
         delete *it;
     }
@@ -568,7 +576,7 @@ bool xmlnode::removeChild(size_t idx)
 bool xmlnode::removeChild(const kl::xmlnode& node)
 {
     std::vector<xmlnode*>::iterator it;
-    for (it = m_nodes.begin(); it != m_nodes.end(); it++)
+    for (it = m_nodes.begin(); it != m_nodes.end(); ++it)
     {
         if ((*it) == &node)
         {
@@ -583,7 +591,7 @@ int xmlnode::getChildIdx(const std::wstring& tag_name)
 {
     int i = 0;
     std::vector<xmlnode*>::iterator it;
-    for (it = m_nodes.begin(); it != m_nodes.end(); it++)
+    for (it = m_nodes.begin(); it != m_nodes.end(); ++it)
     {
         if ((*it)->m_tag_name == tag_name)
             return i;
@@ -600,7 +608,8 @@ int xmlnode::lookupChild(const std::wstring& tag_name,
     int i = 0;
     int prop_idx;
     std::vector<xmlnode*>::iterator it;
-    for (it = m_nodes.begin(); it != m_nodes.end(); it++)
+
+    for (it = m_nodes.begin(); it != m_nodes.end(); ++it)
     {
         if ((*it)->m_tag_name != tag_name)
         {
@@ -663,7 +672,7 @@ xmlproperty& xmlnode::getProperty(size_t idx)
 xmlproperty& xmlnode::getProperty(const std::wstring& name)
 {
     std::vector<xmlproperty*>::iterator it;
-    for (it = m_properties.begin(); it != m_properties.end(); it++)
+    for (it = m_properties.begin(); it != m_properties.end(); ++it)
     {
         if ((*it)->name == name)
             return *(*it);
@@ -677,7 +686,7 @@ int xmlnode::getPropertyIdx(const std::wstring& name) const
     int idx = 0;
 
     std::vector<xmlproperty*>::const_iterator it;
-    for (it = m_properties.begin(); it != m_properties.end(); it++)
+    for (it = m_properties.begin(); it != m_properties.end(); ++it)
     {
         if ((*it)->name == name)
             return idx;
@@ -1362,7 +1371,7 @@ void xmlnode::internalPrint(std::wstring& output,
 
     std::vector<xmlproperty*>::const_iterator prop_it;
     for (prop_it = m_properties.begin();
-         prop_it != m_properties.end(); prop_it++)
+         prop_it != m_properties.end(); ++prop_it)
     {
         output += L" ";
         output += (*prop_it)->name;

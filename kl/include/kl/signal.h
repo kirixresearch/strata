@@ -70,7 +70,7 @@ protected:
     void disconnectAllSignals()
     {
         std::vector<connection_base*>::iterator it;
-        for (it = to_delete.begin(); it != to_delete.end(); it++)
+        for (it = to_delete.begin(); it != to_delete.end(); ++it)
         {
             (*it)->deactivate();
             (*it)->unref();

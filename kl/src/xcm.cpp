@@ -227,7 +227,7 @@ XCM_MODULE get_module_handle(const std::string& lib_name)
     std::vector<libhandle*>::iterator it;
 
 
-    for (it = g_libs.begin(); it != g_libs.end(); it++)
+    for (it = g_libs.begin(); it != g_libs.end(); ++it)
     {
         #ifdef WIN32
         if (!stricmp((*it)->lib_name.c_str(), lib_name.c_str()))
@@ -267,7 +267,7 @@ XCM_MODULE get_module_handle(const std::string& lib_name)
     std::wstring full_path;
     XCM_MODULE modh = NULL;
 
-    for (path_it = path_vec.begin(); path_it != path_vec.end(); path_it++)
+    for (path_it = path_vec.begin(); path_it != path_vec.end(); ++path_it)
     {
         full_path = *path_it;
         full_path += wlib_name;
