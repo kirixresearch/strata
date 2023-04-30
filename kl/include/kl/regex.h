@@ -2870,7 +2870,8 @@ private:
         while (*p && p < end)
         {
             if (p > start && p+1 < end && *p == '[' && *(p+1) == L':')
-                in_seq++;
+                in_seq = true;
+
             if (in_seq && *p == L']')
             {
                 in_seq = false;
