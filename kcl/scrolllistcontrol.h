@@ -71,7 +71,8 @@ public:
     bool isTextWrap() const       { return m_text_wrap;        }
     bool isVisible() const        { return m_visible;          }
     bool isStretchable() const    { return m_stretch;          }
-    
+
+    void setSize(const wxSize& size)           { m_size = size; }
     void setWidth(int width)                   { m_size.SetWidth(width);     }
     void setHeight(int height)                 { m_size.SetHeight(height);   }
     void setName(const wxString& name)         { m_name = name;              }

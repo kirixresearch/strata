@@ -526,19 +526,23 @@ void ScrollListControl::calcItemHeight(kcl::ScrollListItem* item)
              else
             cdc.SetFont(m_font);
 
+        wxSize finished_size;
+
         if (element->isTextWrap())
         {
             drawTextWrap(cdc,
                          element->getText(),
-                         x, y, w, &(element->getSize()));
+                         x, y, w, &finished_size);
         }
          else
         {
             drawTextEllipses(cdc,
                              element->getText(),
-                             x, y, w, &(element->getSize()),
+                             x, y, w, &finished_size,
                              element->getTextEllipses());
         }
+
+        element->setSize(finished_size);
 
         if (element->isStretchable())
             element->setWidth(w);
@@ -711,6 +715,8 @@ void ScrollListControl::drawItem(kcl::ScrollListItem* item, int item_y)
             m_hidden_memdc.SetFont(m_font);
         }
 
+        wxSize finished_size;
+
         // NOTE: even if the element is hidden, we still
         //       need to draw the text on a hidden memory dc
         //       so that we can calculate the size of the element
@@ -718,15 +724,17 @@ void ScrollListControl::drawItem(kcl::ScrollListItem* item, int item_y)
         {
             drawTextWrap(element->isVisible() ? m_memdc : m_hidden_memdc,
                          element->getText(),
-                         text_x, text_y, text_w, &(element->getSize()));
+                         text_x, text_y, text_w, &finished_size);
         }
          else
         {
             drawTextEllipses(element->isVisible() ? m_memdc : m_hidden_memdc,
                              element->getText(),
-                             text_x, text_y, text_w, &(element->getSize()),
+                             text_x, text_y, text_w, &finished_size,
                              element->getTextEllipses());
         }
+
+        element->setSize(finished_size);
         
         // size the text
         if (element->isStretchable())
