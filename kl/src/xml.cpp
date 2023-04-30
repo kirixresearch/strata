@@ -23,7 +23,7 @@ const wchar_t* KL_XML_HEADER = L"<?xml version=\"1.0\"?>";
 
 
 // faster iswspace
-#define iswspace(ch) ((ch == L' ') || (ch == L'\n') || (ch == L'\r') || (ch == L'\t'))
+#define iswspace(ch) (((ch) == L' ') || ((ch) == L'\n') || ((ch) == L'\r') || ((ch) == L'\t'))
 
 
 namespace kl
