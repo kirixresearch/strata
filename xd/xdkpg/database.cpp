@@ -510,7 +510,7 @@ xd::IFileInfoEnumPtr KpgDatabase::getFolderInfo(const std::wstring& path)
     return retval;
 }
 
-std::wstring KpgDatabase::getPrimaryKey(const std::wstring path)
+std::wstring KpgDatabase::getPrimaryKey(const std::wstring& path)
 {
     return L"";
 }

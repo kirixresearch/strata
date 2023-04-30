@@ -736,7 +736,7 @@ xd::IFileInfoEnumPtr MysqlDatabase::getFolderInfo(const std::wstring& path)
     return retval;
 }
 
-std::wstring MysqlDatabase::getPrimaryKey(const std::wstring _path)
+std::wstring MysqlDatabase::getPrimaryKey(const std::wstring& _path)
 {
     std::wstring path = kl::afterFirst(_path, L'/');
     std::wstring result;

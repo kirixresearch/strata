@@ -1973,7 +1973,7 @@ xd::IFileInfoEnumPtr OdbcDatabase::getFolderInfo(const std::wstring& path)
     return retval;
 }
 
-std::wstring OdbcDatabase::getPrimaryKey(const std::wstring _path)
+std::wstring OdbcDatabase::getPrimaryKey(const std::wstring& _path)
 {
     HDBC conn = createConnection();
     if (!conn)

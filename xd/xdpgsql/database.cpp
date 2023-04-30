@@ -1396,7 +1396,7 @@ xd::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
     return retval;
 }
 
-std::wstring PgsqlDatabase::getPrimaryKey(const std::wstring path)
+std::wstring PgsqlDatabase::getPrimaryKey(const std::wstring& path)
 {
     std::wstring tbl = pgsqlGetTablenameFromPath(path);
     std::wstring pk;

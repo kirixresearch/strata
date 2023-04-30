@@ -472,7 +472,7 @@ xd::IFileInfoEnumPtr ExcelDatabase::getFolderInfo(const std::wstring& path)
     return retval;
 }
 
-std::wstring ExcelDatabase::getPrimaryKey(const std::wstring path)
+std::wstring ExcelDatabase::getPrimaryKey(const std::wstring& path)
 {
     return L"";
 }
