@@ -322,6 +322,8 @@ bool xmlnode::save(const std::wstring& filename, int flags, int file_mode)
     }
      else if (file_mode == filemodeExclusiveWait)
     {
+        file = 0;
+
         for (int i = 0; i < 70; ++i)
         {
             file = xf_open(filename, xfCreate, xfReadWrite, xfShareNone);
