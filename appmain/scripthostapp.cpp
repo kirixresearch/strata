@@ -2506,7 +2506,7 @@ void HostServices::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 }
 
 void HostServices::getServiceInternal(
-                                  const std::wstring service_name,
+                                  const std::wstring& service_name,
                                   kscript::Value* retval)
 {
     retval->setNull();

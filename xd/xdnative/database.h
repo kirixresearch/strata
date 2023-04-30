@@ -219,7 +219,7 @@ private:
     
     bool checkCircularMount(const std::wstring& path,
                            xd::IDatabasePtr remote_db, 
-                           const std::wstring remote_path);
+                           const std::wstring& remote_path);
     bool checkCircularMountInternal( // (helper)
                            std::set<std::wstring, kl::cmp_nocase>& bad_paths,
                            xd::IDatabasePtr remote_db, 

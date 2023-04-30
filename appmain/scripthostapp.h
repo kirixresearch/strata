@@ -306,7 +306,7 @@ public:
 
 private:
 
-    void getServiceInternal(const std::wstring service_name, kscript::Value* retval);
+    void getServiceInternal(const std::wstring& service_name, kscript::Value* retval);
         
 private:
 

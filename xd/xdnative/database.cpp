@@ -2565,7 +2565,7 @@ bool XdnativeDatabase::checkCircularMountInternal(std::set<std::wstring, kl::cmp
 
 bool XdnativeDatabase::checkCircularMount(const std::wstring& path,
                                   xd::IDatabasePtr remote_db, 
-                                  const std::wstring remote_path)
+                                  const std::wstring& remote_path)
 {
     std::set<std::wstring, kl::cmp_nocase> bad_paths;
     bad_paths.insert(path);

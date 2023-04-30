@@ -3638,7 +3638,7 @@ static wxMenu* createViewsMenu(ITableDocViewEnumPtr views,
 }
 
 static wxMenu* createIndexesMenu(const xd::IndexInfoEnum& indexes,
-                                 const wxString sort_order_expr,
+                                 const wxString& sort_order_expr,
                                  int base_id)
 {
     wxMenu* menu = new wxMenu;
