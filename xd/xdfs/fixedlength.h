@@ -23,8 +23,6 @@ class FixedLengthTable
     friend class FixedLengthRow;
 
 public:
-
-public:
     
     FixedLengthTable();
     virtual ~FixedLengthTable();
