@@ -116,15 +116,15 @@ public:
     
     // accessor functions
     
-    int getId()                 { return m_id;            }
-    int getWidth()              { return m_width;         }
-    int getProportion()         { return m_proportion;    }
-    int getPaddingLeft()        { return m_padding_left;  }
-    int getPaddingRight()       { return m_padding_right; }
-    wxString getToolTip()       { return m_tooltip;       }
-    bool getToggleMode()        { return m_toggle_mode;   }
-    bool isSeparator()          { return m_separator;     }
-    bool isDirty()              { return m_dirty;         }
+    int getId() const           { return m_id;            }
+    int getWidth() const        { return m_width;         }
+    int getProportion() const   { return m_proportion;    }
+    int getPaddingLeft() const  { return m_padding_left;  }
+    int getPaddingRight() const { return m_padding_right; }
+    wxString getToolTip() const { return m_tooltip;       }
+    bool getToggleMode() const  { return m_toggle_mode;   }
+    bool isSeparator() const    { return m_separator;     }
+    bool isDirty() const        { return m_dirty;         }
     
     void setDirty(bool dirty)   { m_dirty = dirty;        }
     void setId(int id)          { m_id = id;              }
