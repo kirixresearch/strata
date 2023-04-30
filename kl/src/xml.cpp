@@ -1430,7 +1430,7 @@ int xmlnode::getLengthEstimate(int indent) const
 
     std::vector<xmlproperty*>::const_iterator prop_it;
     for (prop_it = m_properties.begin();
-         prop_it != m_properties.end(); prop_it++)
+         prop_it != m_properties.end(); ++prop_it)
     {
         len += 5 + (*prop_it)->name.length() + (*prop_it)->value.length();
     }
