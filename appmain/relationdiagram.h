@@ -337,15 +337,6 @@ private:
     wxMemoryDC m_memdc;
 
     RelationLine* m_selected_line;
-    RelationBox* m_action_box;
-    int m_action;
-    int m_action_line;
-    int m_action_x;
-    int m_action_y;
-    int m_action_offx;
-    int m_action_offy;
-    int m_rband_startx;
-    int m_rband_starty;
 
     bool m_changed;
     bool m_first_time;

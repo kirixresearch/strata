@@ -63,7 +63,6 @@ private:
     wxTextCtrl* m_app_tag;
     wxCalendarCtrl* m_exp_date;
 
-    wxButton* m_generate_button;
     wxButton* m_cancel;
 
     DECLARE_EVENT_TABLE()

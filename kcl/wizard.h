@@ -109,8 +109,6 @@ private:
     wxButton* m_cancel_button;
     wxButton* m_finish_button;
 
-    int m_start_page_idx;
-
     DECLARE_EVENT_TABLE()
 };
 

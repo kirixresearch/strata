@@ -622,7 +622,6 @@ private:
     wxTextCtrl* m_startup_location_textctrl;
     wxButton* m_use_current_page_button;
     wxButton* m_use_blank_page_button;
-    wxButton* m_reset_panels_button;
     
     wxChoice* m_openproject;
     wxChoice* m_toolbar_style;
@@ -1773,10 +1772,6 @@ private:
     wxBoxSizer* m_proxy_ftp_sizer;
     wxBoxSizer* m_proxy_ssl_sizer;
     wxBoxSizer* m_proxy_socks_sizer;
-    
-    wxTextCtrl* m_homepage_textctrl;
-    wxButton* m_use_current_page_button;
-    wxButton* m_use_blank_page_button;
 
     wxRadioButton* m_proxy_direct_radio;
     wxRadioButton* m_proxy_autodetect_radio;

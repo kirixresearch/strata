@@ -466,7 +466,6 @@ private:
     bool m_eof;
     
     const wchar_t** m_seek_arr;
-    const wchar_t** m_seek_data;
     size_t m_seek_arr_size;
 };
 

@@ -438,7 +438,6 @@ public:
 private:
 
     wxString m_caption;
-    int m_id;
     IDocumentPtr m_document;
     wxWindow* m_child;
     bool m_in_oncancel;
