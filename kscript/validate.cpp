@@ -72,7 +72,7 @@ bool _getValueTypesCompatible(int type1, int type2)
                 return true;
             }
             break;
-    };
+    }
 
 
     switch (type2)
@@ -87,7 +87,7 @@ bool _getValueTypesCompatible(int type1, int type2)
                 return true;
             }
             break;
-    };
+    }
 
 
     return false;

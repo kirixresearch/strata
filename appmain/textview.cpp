@@ -2331,7 +2331,7 @@ void TextView::onMouseRightDown(wxMouseEvent& evt)
                 case xd::encodingUCS2:      menuPopup.Check(ID_PopupMenu_EncodingUCS2, true); break;
                 case xd::encodingCOMP:      menuPopup.Check(ID_PopupMenu_EncodingCOMP, true); break;
                 case xd::encodingCOMP3:     menuPopup.Check(ID_PopupMenu_EncodingCOMP3, true); break;
-            };
+            }
             
             wxPoint pt_mouse = ::wxGetMousePosition();
             pt_mouse = ScreenToClient(pt_mouse);
@@ -2354,7 +2354,7 @@ void TextView::onMouseRightDown(wxMouseEvent& evt)
                     case ID_PopupMenu_EncodingEBCDIC:  new_encoding = xd::encodingEBCDIC; break;
                     case ID_PopupMenu_EncodingCOMP:    new_encoding = xd::encodingCOMP; break;
                     case ID_PopupMenu_EncodingCOMP3:   new_encoding = xd::encodingCOMP3; break;
-                };
+                }
                 
                 if (new_encoding != -1)
                 {

@@ -322,7 +322,7 @@ inline nsrefcnt ns_if_addref(T ptr)
     return 0;
 }
 #define NS_IF_ADDREF(ptr) ns_if_addref((ptr))
-#define NS_ADDREF(ptr) (ptr)->AddRef();
+#define NS_ADDREF(ptr) (ptr)->AddRef()
 
 
 

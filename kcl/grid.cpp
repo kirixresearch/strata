@@ -9264,7 +9264,7 @@ void Grid::onEndEditCleanup(wxCommandEvent& event)
         }
         break;
 
-    };
+    }
 
 
     // store this value for later
@@ -9292,7 +9292,7 @@ void Grid::onEndEditCleanup(wxCommandEvent& event)
             case typeBoolean:
                 success = m_model->setCellBoolean(row, modelcol, tempb);
                 break;
-        };
+        }
 
         // the following code is only meant to handle the case where
         // the user typed some text into a combobox which was not equal

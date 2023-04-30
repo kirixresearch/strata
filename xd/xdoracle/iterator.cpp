@@ -898,7 +898,7 @@ bool OracleIterator::modifyStructure(const xd::StructureModify& mod_params, xd::
 
                 if (it->params.mask & xd::ColumnInfo::maskWidth)
                 {
-                    (*it2)->width = it->params.width;;
+                    (*it2)->width = it->params.width;
                 }
 
                 if (it->params.mask & xd::ColumnInfo::maskScale)

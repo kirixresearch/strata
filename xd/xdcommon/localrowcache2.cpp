@@ -183,7 +183,7 @@ const unsigned char* LocalRow2::serialize(size_t* len)
             {
                 col_flags |= 0x02;
                 m_buf->append(&col_flags, 1);
-                length_code[0] = (unsigned char)((col_length & 0x0000ff00) >> 8);;
+                length_code[0] = (unsigned char)((col_length & 0x0000ff00) >> 8);
                 length_code[1] = (unsigned char)(col_length & 0x000000ff);
                 m_buf->append(length_code, 2);
             }

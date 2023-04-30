@@ -29,7 +29,7 @@ static const unsigned char utf8_sequence_lengths[256] =
     3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,6,6,1,1
 };
 
-#define UTF8_SEQLEN(ch) utf8_sequence_lengths[(ch)];
+#define UTF8_SEQLEN(ch) utf8_sequence_lengths[(ch)]
 
 
 

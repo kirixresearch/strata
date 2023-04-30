@@ -86,7 +86,7 @@ static std::wstring escape_string(std::wstring& str)
             case L'\r':
                 result.append(L"\\r");
                 break;
-        };
+        }
     }
 
     return result;
