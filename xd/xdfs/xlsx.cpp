@@ -147,10 +147,9 @@ public:
         sqlite3_reset(stmt);
         sqlite3_finalize(stmt);
 
-        int row_column_count = 0;
         if (row.values.size() > 0)
         {
-            row_column_count = row.values.rbegin()->first + 1;
+            int row_column_count = row.values.rbegin()->first + 1;
             col_count = std::max(col_count, row_column_count);
         }
 

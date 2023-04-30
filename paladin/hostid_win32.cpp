@@ -30,8 +30,7 @@ static unsigned char generic_key[] = { 0x42, 0x49, 0x98, 0xba, 0x22, 0x34, 0x32,
 
 sitecode_t getHostId()
 {
-    sitecode_t s = 0;
-
+    sitecode_t s;
 
     // get volume serial number for main volume
     TCHAR volname[255];

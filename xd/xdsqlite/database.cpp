@@ -777,14 +777,13 @@ xd::IRowInserterPtr SlDatabase::bulkInsert(const std::wstring& path)
 xd::Structure SlDatabase::describeTable(const std::wstring& _path)
 {
     std::wstring path = sqliteGetTablenameFromPath(_path, false);
-
-    int rc = 0;
-    
+ 
     wchar_t buf[512];
     swprintf(buf, 512, L"SELECT sql FROM sqlite_master WHERE name='%ls'", path.c_str());
     
     char** result;
     int rows = 0;
+    int rc;
 
     rc = sqlite3_get_table(m_sqlite, kl::toUtf8(buf), &result, &rows, NULL, NULL);
     if (rc != SQLITE_OK || rows < 1)

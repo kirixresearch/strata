@@ -1337,7 +1337,7 @@ void TreeView::getSelectedItems(kscript::ExprEnv* env, kscript::Value* retval)
 
     wxArrayTreeItemIds a;
     size_t count = m_ctrl->GetSelections(a);
-    size_t i = 0;
+    size_t i;
 
     for (i = 0; i < count; ++i)
     {

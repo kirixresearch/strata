@@ -39,7 +39,7 @@ void vectorToDelimitedString(const std::vector<std::wstring>& vec, std::wstring&
 std::wstring getMountRoot(xd::IDatabasePtr db, const std::wstring _path)
 {
     std::wstring path = _path;
-    size_t old_len = 0;
+    size_t old_len;
 
     while (1)
     {

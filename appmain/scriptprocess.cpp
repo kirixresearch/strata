@@ -118,7 +118,7 @@ void Process::startAndWait(kscript::ExprEnv* env, void*, kscript::Value* retval)
     kscript::Value* old_this = NULL;
     kscript::Value new_this;
     
-    Process* pThis = NULL;
+    Process* pThis;
     kscript::Value* val_this = env->getThis();
     if (val_this->isObject() && val_this->getObject()->isKindOf(Process::staticGetClassId()))
     {

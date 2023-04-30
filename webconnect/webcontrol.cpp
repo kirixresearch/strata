@@ -1197,7 +1197,7 @@ public:
         
         // let all other content listeners know about this
         ContentListenerPtrArray& arr = g_gecko_engine.GetContentListeners();
-        int i = 0, count = arr.GetCount();
+        int i, count = arr.GetCount();
         for (i = 0; i < count; ++i)
         {
             arr.Item(i)->OnStartURIOpen(uri, abort);

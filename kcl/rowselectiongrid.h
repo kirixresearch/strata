@@ -33,9 +33,9 @@ public:
         refreshAfterDataDropped = 1 << 0,
         refreshAfterPreGhostRowInsert = 2 << 0,
         refreshAfterPreInvalidAreaInsert = 3 << 0,
-        refreshAll = refreshAfterDataDropped  |
-                     refreshAfterPreGhostRowInsert |
-                     refreshAfterPreInvalidAreaInsert,
+        refreshAll = (refreshAfterDataDropped  |
+                      refreshAfterPreGhostRowInsert |
+                      refreshAfterPreInvalidAreaInsert),
         refreshNone = 0
     };
 

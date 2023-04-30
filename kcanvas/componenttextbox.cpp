@@ -707,12 +707,12 @@ void drawText(ICanvasPtr canvas,
         canvas->getTextExtent(tp->m_string.Mid(part3), &width3, &height);
     
         // adjust for the kerning between the first and second part
-        int kerning12 = 0;
+        int kerning12;
         canvas->getTextExtent(tp->m_string.Left(part3), &width, &height);
         kerning12 = width1 + width2 - width;
         
         // adjust for the kerning between the first and second part
-        int kerning23 = 0;
+        int kerning23;
         canvas->getTextExtent(tp->m_string.Mid(part2), &width, &height);
         kerning23 = width2 + width3 - width;
         

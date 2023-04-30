@@ -91,7 +91,7 @@ void requote(std::wstring& str, wchar_t ch1, wchar_t ch2,
 {
     const wchar_t* expr = str.c_str();
     wchar_t* start = (wchar_t*)expr;
-    wchar_t* ch = NULL;
+    wchar_t* ch;
     int nesting_level = 0;
 
     while (1)

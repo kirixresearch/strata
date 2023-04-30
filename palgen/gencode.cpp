@@ -117,11 +117,9 @@ wxString calcActivationCode(const wxString& input_app_tag,
                             int exp_day)
 {
     unsigned char actcode[8];
-
-    paladin::sitecode_t site_code = 0;
+    paladin::sitecode_t site_code;
 
     memset(actcode, 0, 8);
-
 
     // get site code that user entered
 

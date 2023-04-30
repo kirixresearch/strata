@@ -881,7 +881,7 @@ bool FsDatabase::detectMountPoint(const std::wstring& path,
     std::wstring fpath = L"/";
     
     // delete any empty parts
-    int i = 0;
+    int i;
     for (i = 0; i < (int)parts.size(); ++i)
     {
         if (parts[i].empty())

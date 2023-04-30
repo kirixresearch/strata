@@ -808,7 +808,7 @@ static xd::datetime_t parseDateTime2(const std::wstring& wstr)
     std::string str = kl::tostring(wstr);
     strcpy(buf, str.c_str());
     
-    size_t i = 0;
+    size_t i;
     char* start = buf;
     size_t partcnt = 0;
     bool last = false;

@@ -1077,7 +1077,7 @@ bool NativeTable::setStructureModified()
     KL_AUTO_LOCK(m_object_mutex);
 
     unsigned char sig[8];
-    unsigned long long i = 0;
+    unsigned long long i;
 
     i = time(NULL);
     i <<= 32;

@@ -54,10 +54,9 @@ static bool processCmdLine(int argc, wxChar* argv[])
     wxString sitecode;
     wxString val_sitecode;
     wxString expdate;
-    bool gen_auth = true;
+    bool gen_auth;
 
     long l_expdate = 0;
-
 
 
     if (parser.Found(wxT("x"), &val_sitecode))
