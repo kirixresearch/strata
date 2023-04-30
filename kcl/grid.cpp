@@ -8961,11 +8961,15 @@ void Grid::onComboSelectionChanged(wxCommandEvent& event)
         sel = ctrl->GetSelection();
         str = ctrl->GetValue();
     }
-     else if (m_control->IsKindOf(CLASSINFO(GridComboCtrl)))
+    else if (m_control->IsKindOf(CLASSINFO(GridComboCtrl)))
     {
         GridComboCtrl* ctrl = static_cast<GridComboCtrl*>(m_control);
         sel = ctrl->GetSelection();
         str = ctrl->GetValue();
+    }
+    else
+    {
+        return;
     }
 
     m_edit_combosel = sel;
