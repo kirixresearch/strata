@@ -1,8 +1,8 @@
-# Kirix Strata
+## Kirix Strata
 
 Kirix Strata is an ad hoc data analysis and reporting tool built for people who work with, manipulate and analyze structured data.
 
-# Build Instructions On Windows
+## Build Instructions On Windows
 
 Microsoft Visual Studio is required to build this product on Windows platforms. Open the Native Tools Command Prompt, for example "VS2015 x86 Native Tools Command Prompt" and perform the following steps:
 
@@ -15,6 +15,6 @@ Microsoft Visual Studio is required to build this product on Windows platforms. 
    -or-
    Build it with msbuild.
 
-# Special Thanks
+## Special Thanks
 
 A special thanks to all who have contributed to making Kirix Strata what it is. A big thanks to the makers of Deleaker (https://deleaker.com), a neat tool that helps us find leaks.
