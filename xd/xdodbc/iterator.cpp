@@ -1591,13 +1591,150 @@ xd::IxSetPtr OdbcIterator::getChildSet(xd::IRelationPtr relation)
 
 xd::IIteratorPtr OdbcIterator::getChildIterator(xd::IRelationPtr relation)
 {
-    return xcm::null;
+    return getFilteredChildIterator(relation);
 }
 
 
 xd::IIteratorPtr OdbcIterator::getFilteredChildIterator(xd::IRelationPtr relation)
 {
-    return xcm::null;
+    if (eof())
+        return xcm::null;
+
+    std::wstring right_table = relation->getRightTable();
+    if (right_table.empty())
+        return xcm::null;
+    right_table = kl::afterLast(right_table, '/');
+
+    OdbcIteratorRelInfo* info = NULL;
+    std::vector<OdbcIteratorRelInfo>::iterator it;
+    for (it = m_relations.begin(); it != m_relations.end(); ++it)
+    {
+        if (it->relation_id == relation->getRelationId())
+        {
+            info = &(*it);
+            break;
+        }
+    }
+
+    if (!info)
+    {
+        OdbcIteratorRelInfo relinfo;
+        relinfo.relation_id = relation->getRelationId();
+
+        std::vector<std::wstring> left_parts, right_parts;
+        size_t i, cnt;
+
+        kl::parseDelimitedList(relation->getLeftExpression(), left_parts, L',', true);
+        kl::parseDelimitedList(relation->getRightExpression(), right_parts, L',', true);
+
+        // the number of parts in the left expression must match the count in the right expression
+        if (left_parts.size() != right_parts.size())
+            return xcm::null;
+
+        cnt = right_parts.size();
+        for (i = 0; i < cnt; ++i)
+        {
+            OdbcIteratorRelField f;
+            f.right_field = right_parts[i];
+            f.left_handle = getHandle(left_parts[i]);
+            if (!f.left_handle)
+                return xcm::null;
+            f.left_type = ((OdbcDataAccessInfo*)(f.left_handle))->type;
+
+            relinfo.fields.push_back(f);
+        }
+
+        m_relations.push_back(relinfo);
+        info = &(*m_relations.rbegin());
+    }
+
+
+    xd::IAttributesPtr attr = m_database->getAttributes();
+    std::wstring quote_openchar = attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+    std::wstring quote_closechar = attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
+
+
+    std::wstring expr;
+
+    // build expression
+    std::vector<OdbcIteratorRelField>::iterator fit;
+    for (fit = info->fields.begin(); fit != info->fields.end(); ++fit)
+    {
+        if (expr.length() > 0)
+            expr += L" AND ";
+        expr += quote_openchar + fit->right_field + quote_closechar + L"=";
+
+
+
+        switch (fit->left_type)
+        {
+            case xd::typeCharacter:
+            case xd::typeWideCharacter:
+                expr += L"'";
+                expr += getWideString(fit->left_handle);
+                expr += L"'";
+                break;
+            case xd::typeInteger:
+                expr += kl::itowstring(getInteger(fit->left_handle));
+                break;
+            case xd::typeNumeric:
+            case xd::typeDouble:
+                expr += kl::dbltostr(getDouble(fit->left_handle));
+                break;
+            case xd::typeDate:
+            {
+                xd::datetime_t dt = getDateTime(fit->left_handle);
+                if (dt == 0)
+                {
+                    expr += L"NULL";
+                }
+                else
+                {
+                    xd::DateTime d(dt);
+                    expr += kl::stdswprintf(L"{d '%04d-%02d-%02d'}", d.getYear(), d.getMonth(), d.getDay());
+                }
+                break;
+            }
+            case xd::typeDateTime:
+            {
+                xd::datetime_t dt = getDateTime(fit->left_handle);
+                if (dt == 0)
+                {
+                    expr += L"NULL";
+                }
+                else
+                {
+                    xd::DateTime d(dt);
+                    expr += kl::stdswprintf(L"{ts '%04d-%02d-%02d %02d:%02d:%02d.%03d'}", d.getYear(), d.getMonth(), d.getDay(), d.getHour(), d.getMinute(), d.getSecond(), d.getMillisecond());
+                }
+                break;
+            }
+        }
+
+    }
+
+
+
+    std::wstring query = L"SELECT * FROM ";
+    query += quote_openchar;
+    query += right_table;
+    query += quote_closechar;
+
+
+    if (expr.length() > 0)
+    {
+        query += L" WHERE ";
+        query += expr;
+    }
+
+
+    // create an iterator based on our select statement
+    OdbcIterator* iter = new OdbcIterator(m_database);
+
+    if (!iter->init(query))
+        return xcm::null;
+
+    return static_cast<xd::IIterator*>(iter);
 }
 
 
