@@ -17,6 +17,7 @@
 
 #include <kl/portable.h>
 #include <kl/string.h>
+#include <kl/md5.h>
 #include "database.h"
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
@@ -1958,6 +1959,10 @@ xd::IFileInfoEnumPtr OdbcDatabase::getFolderInfo(const std::wstring& path)
         f->name = wtablename;
         f->type = xd::filetypeTable;
         f->format = xd::formatDefault;
+
+        std::wstring hash_src = m_server + L";" + m_database + L";" + m_path + L";" + kl::itowstring(m_port) + L";" + wtablename;
+        kl::makeLower(hash_src);
+        f->object_id = kl::md5str(hash_src);
 
         retval->append(f);
     }
