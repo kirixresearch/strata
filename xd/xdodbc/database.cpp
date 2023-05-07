@@ -1084,28 +1084,41 @@ bool OdbcDatabase::open(int type,
         {
             m_db_type = xd::dbtypeSqlServer;
 
-            swprintf(db_label_buf, 1024, L"Microsoft SQL Server (%ls)", server.c_str());
-            swprintf(conn_buf, 4096,
-                     L"Driver={SQL Server};Server=%ls;Database=%ls;Uid=%ls;Pwd=%ls;ExtendedAnsiSQL=1",
-                     server.c_str(),
-                     database.c_str(),
-                     username.c_str(),
-                     password.c_str());
-                     
-            if ((username.length() == 0) || (0 == wcscasecmp(username.c_str(), L"[trusted]")))
-            {
-                // if no username is specified, use a trusted connection (windows authentication)
-                swprintf(conn_buf, 4096,
-                         L"Driver={SQL Server};Server=%ls;Database=%ls;Trusted_Connection=Yes;ExtendedAnsiSQL=1",
-                         server.c_str(),
-                         database.c_str());
-            }
-            
-            m_conn_str = conn_buf;
+            const wchar_t* drivers[3] = { L"ODBC Driver 18 for SQL Server", L"ODBC Driver 17 for SQL Server", L"SQL Server" };
 
-            // attempt a connection
-            conn = createConnection(&retval);
-            
+            for (size_t i = 0; i < 3; ++i)
+            {
+                swprintf(db_label_buf, 1024, L"Microsoft SQL Server (%ls)", server.c_str());
+
+                if ((username.length() == 0) || (0 == wcscasecmp(username.c_str(), L"[trusted]")))
+                {
+                    // if no username is specified, use a trusted connection (windows authentication)
+                    swprintf(conn_buf, 4096,
+                        L"Driver={%ls};Server=%ls;Database=%ls;Trusted_Connection=Yes;ExtendedAnsiSQL=1",
+                        drivers[i],
+                        server.c_str(),
+                        database.c_str());
+                }
+                else
+                {
+                    swprintf(conn_buf, 4096,
+                        L"Driver={%ls};Server=%ls;Database=%ls;Uid=%ls;Pwd=%ls;ExtendedAnsiSQL=1",
+                        drivers[i],
+                        server.c_str(),
+                        database.c_str(),
+                        username.c_str(),
+                        password.c_str());
+                }
+
+                m_conn_str = conn_buf;
+
+                // attempt a connection
+                conn = createConnection(&retval);
+
+                if (conn)
+                    break;
+            }
+
             break;
         }
 
@@ -2127,109 +2140,10 @@ bool OdbcDatabase::createStream(const std::wstring& ofs_path, const std::wstring
 
 xd::IIteratorPtr OdbcDatabase::query(const xd::QueryParams& qp)
 {
-    std::wstring query;
-    query.reserve(1024);
-
-    std::wstring tablename = getTablenameFromOfsPath(qp.from);
-
-    if (m_db_type == xd::dbtypeAccess)
-    {
-        xd::Structure s = describeTable(qp.from);
-        if (s.isNull())
-            return xcm::null;
-
-        int i, cnt = s.getColumnCount();
-
-        query = L"SELECT ";
-        for (i = 0; i < cnt; ++i)
-        {
-            const xd::ColumnInfo& colinfo  = s.getColumnInfoByIdx(i);
-
-            if (colinfo.calculated)
-                continue;
-                
-            if (i != 0)
-            {
-                query += L",";
-            }
-            
-            if (colinfo.type == xd::typeNumeric || colinfo.type == xd::typeDouble)
-            {
-                query += L"IIF(ISNUMERIC([";
-                query += colinfo.name;
-                query += L"]),VAL(STR([";
-                query += colinfo.name;
-                query += L"])),null) AS ";
-                query += L"[";
-                query += colinfo.name;
-                query += L"] ";
-            }
-             else
-            {
-                query += L"[";
-                query += colinfo.name;
-                query += L"]";
-            }
-        }
-
-        query += L" FROM ";
-        query += L"[";
-        query += tablename;
-        query += L"]";
-    }
-     else if (m_db_type == xd::dbtypeExcel)
-    {
-        query = L"SELECT * FROM ";
-        query += L"\"";
-        query += tablename;
-        query += L"$\"";
-    }
-     else if (m_db_type == xd::dbtypeOracle)
-    {
-        xd::Structure s = describeTable(qp.from);
-
-        size_t i, cnt = s.getColumnCount();
-
-        query = L"SELECT ";
-        for (i = 0; i < cnt; ++i)
-        {
-            if (i != 0)
-                query += L",";
-
-            query += s.getColumnName(i);
-        }
-
-        query += L" FROM ";
-        query += tablename;
-    }
-     else
-    {
-        xd::IAttributesPtr attr = this->getAttributes();
-        std::wstring quote_openchar = attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
-        std::wstring quote_closechar = attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);    
-    
-        query = L"SELECT * FROM ";
-        query += quote_openchar;
-        query += tablename;
-        query += quote_closechar;
-    }
-
-    if (qp.where.length() > 0)
-    {
-        query += L" WHERE ";
-        query += qp.where;
-    }
-
-    if (qp.order.length() > 0)
-    {
-        query += L" ORDER BY ";
-        query += qp.order;
-    }
-    
     // create an iterator based on our select statement
     OdbcIterator* iter = new OdbcIterator(this);
 
-    if (!iter->init(query))
+    if (!iter->init(qp))
         return xcm::null;
 
     return static_cast<xd::IIterator*>(iter);
