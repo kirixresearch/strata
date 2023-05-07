@@ -936,8 +936,7 @@ bool XdGridModel::deleteAllRows()
 int XdGridModel::getRowCount()
 {
     // next line is for 2.2 only (it fixes
-    // the one-record mark problem)
-    m_current_mark_row = -1;
+    // the one-record ma    m_current_mark_row = -1;
 
     if (m_it.isNull())
     {

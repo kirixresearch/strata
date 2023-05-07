@@ -39,6 +39,7 @@ OdbcIterator::OdbcIterator(OdbcDatabase* database)
     m_stmt = 0;
 
     m_row_pos = 0;
+    m_row_count = -1;  // -1 means unknown
     m_eof = false;
     
     m_bidirectional = false;
@@ -104,17 +105,13 @@ bool OdbcIterator::init(const std::wstring& query)
         m_bidirectional = true;
     }
     
-    IOdbcDatabasePtr odb = m_database;
-    if (odb.isNull())
-        return false;
-        
-    SQLRETURN retval = odb->connect(m_conn);
+    SQLRETURN retval = m_database->connect(m_conn);
     
 
     if (retval == SQL_NO_DATA || retval == SQL_ERROR || retval == SQL_INVALID_HANDLE)
     {
         // failed
-        odb->errorSqlConn(m_conn);
+        m_database->errorSqlConn(m_conn);
         return false;
     }
 
@@ -157,7 +154,7 @@ bool OdbcIterator::init(const std::wstring& query)
         testSqlStmt(m_stmt);
         #endif
 
-        odb->errorSqlStmt(m_stmt);
+        m_database->errorSqlStmt(m_stmt);
         
         // failed
         return false;
@@ -503,7 +500,64 @@ bool OdbcIterator::init(const xd::QueryParams& qp)
         query += qp.order;
     }
 
-    return init(query);
+    bool res = init(query);
+    if (!res)
+        return false;
+
+    if (m_database->m_db_type == xd::dbtypeSqlServer && (qp.executeFlags & xd::sqlBrowse) && qp.where.length() == 0)
+    {
+        // calculate row count
+        HDBC conn = NULL;
+        SQLAllocConnect(m_env, &conn);
+
+        SQLRETURN retval = m_database->connect(conn);
+
+        if (retval == SQL_SUCCESS || retval == SQL_SUCCESS_WITH_INFO)
+        {
+            if (retval == SQL_SUCCESS_WITH_INFO)
+            {
+                m_database->errorSqlConn(conn);
+        }
+            HSTMT stmt;
+            SQLAllocStmt(conn, &stmt);
+
+            xd::IAttributesPtr attr = m_database->getAttributes();
+            std::wstring quote_openchar = attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+            std::wstring quote_closechar = attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
+            std::wstring query = L"select count(*) from " + quote_openchar + tablename + quote_closechar;
+            retval = SQLExecDirect(stmt, sqlt(query), SQL_NTS);
+
+            if (retval == SQL_SUCCESS)
+            {
+                unsigned long row_count = 0;
+                SQLFetch(stmt);
+                if (SQL_SUCCESS == SQLGetData(stmt, 1, SQL_C_ULONG, &row_count, 0, NULL))
+                {
+                    m_row_count = row_count;
+                }
+                else
+                {
+                    int i = 5;
+                }
+            }
+            else
+            {
+                int i = 5;
+            }
+
+            SQLFreeHandle(SQL_HANDLE_STMT, stmt);
+        }
+        else
+        {
+            int i = 5;
+        }
+
+        SQLDisconnect(conn);
+        
+    }
+
+
+    return true;
 }
 
 
@@ -523,7 +577,7 @@ std::wstring OdbcIterator::getTable()
 
 xd::rowpos_t OdbcIterator::getRowCount()
 {
-    return 0;
+    return m_row_count >= 0 ? m_row_count : 0;
 }
 
 xd::IDatabasePtr OdbcIterator::getDatabase()
@@ -545,22 +599,30 @@ void OdbcIterator::setIteratorFlags(unsigned int mask, unsigned int value)
     
 unsigned int OdbcIterator::getIteratorFlags()
 {
+    unsigned int flags = 0;
+
+    if (m_row_count >= 0)
+    {
+        flags |= xd::ifFastRowCount;
+    }
+
+
     // if iterator is bidirectional, then return 0, meaning
     // backwards and forwards scrolling is ok
     if (m_bidirectional)
     {
-        return 0;
+        return flags;
     }
     
     // if we have a unidirectional iterator, but the back-scroll
     // cache is on, then we still can scroll back
     if (m_cache_active)
     {
-        return 0;
+        return flags;
     }
     
     // otherwise, indicate that this iterator is forward-only
-    return xd::ifForwardOnly;
+    return flags | xd::ifForwardOnly;
 }
 
 void OdbcIterator::clearFieldData()

@@ -223,6 +223,7 @@ private:
  
     bool m_eof;
     xd::rowpos_t m_row_pos;
+    long m_row_count;
 
 
     std::wstring m_path;
