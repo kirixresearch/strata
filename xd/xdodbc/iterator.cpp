@@ -390,6 +390,127 @@ bool OdbcIterator::init(const std::wstring& query)
 }
 
 
+bool OdbcIterator::init(const xd::QueryParams& qp)
+{
+    std::wstring query;
+    query.reserve(1024);
+
+    std::wstring tablename = getTablenameFromOfsPath(qp.from);
+
+    if (m_database->m_db_type == xd::dbtypeAccess)
+    {
+        xd::Structure s = m_database->describeTable(qp.from);
+        if (s.isNull())
+            return xcm::null;
+
+        int i, cnt = s.getColumnCount();
+
+        query = L"SELECT ";
+        for (i = 0; i < cnt; ++i)
+        {
+            const xd::ColumnInfo& colinfo = s.getColumnInfoByIdx(i);
+
+            if (colinfo.calculated)
+                continue;
+
+            if (i != 0)
+            {
+                query += L",";
+            }
+
+            if (colinfo.type == xd::typeNumeric || colinfo.type == xd::typeDouble)
+            {
+                query += L"IIF(ISNUMERIC([";
+                query += colinfo.name;
+                query += L"]),VAL(STR([";
+                query += colinfo.name;
+                query += L"])),null) AS ";
+                query += L"[";
+                query += colinfo.name;
+                query += L"] ";
+            }
+            else
+            {
+                query += L"[";
+                query += colinfo.name;
+                query += L"]";
+            }
+        }
+
+        query += L" FROM ";
+        query += L"[";
+        query += tablename;
+        query += L"]";
+    }
+    else if (m_database->m_db_type == xd::dbtypeExcel)
+    {
+        query = L"SELECT * FROM ";
+        query += L"\"";
+        query += tablename;
+        query += L"$\"";
+    }
+    else if (m_database->m_db_type == xd::dbtypeOracle)
+    {
+        xd::Structure s = m_database->describeTable(qp.from);
+
+        size_t i, cnt = s.getColumnCount();
+
+        query = L"SELECT ";
+        for (i = 0; i < cnt; ++i)
+        {
+            if (i != 0)
+                query += L",";
+
+            query += s.getColumnName(i);
+        }
+
+        query += L" FROM ";
+        query += tablename;
+    }
+    else if (m_database->m_db_type == xd::dbtypeSqlServer)
+    {
+        xd::IAttributesPtr attr = m_database->getAttributes();
+        std::wstring quote_openchar = attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+        std::wstring quote_closechar = attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
+
+        query = L"SELECT * FROM ";
+        query += quote_openchar;
+        query += tablename;
+        query += quote_closechar;
+        query += L" WITH (NOLOCK)";
+    }
+    else
+    {
+        xd::IAttributesPtr attr = m_database->getAttributes();
+        std::wstring quote_openchar = attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+        std::wstring quote_closechar = attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
+
+        query = L"SELECT * FROM ";
+        query += quote_openchar;
+        query += tablename;
+        query += quote_closechar;
+    }
+
+    if (qp.where.length() > 0)
+    {
+        query += L" WHERE ";
+        query += qp.where;
+    }
+
+    if (qp.order.length() > 0)
+    {
+        query += L" ORDER BY ";
+        query += qp.order;
+    }
+
+    return init(query);
+}
+
+
+
+
+
+
 void OdbcIterator::setTable(const std::wstring& tbl)
 {
     m_path = tbl;

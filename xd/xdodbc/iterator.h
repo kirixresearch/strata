@@ -140,6 +140,7 @@ public:
     ~OdbcIterator();
     
     bool init(const std::wstring& query);
+    bool init(const xd::QueryParams& qp);
 
     // xd::IIterator
 
