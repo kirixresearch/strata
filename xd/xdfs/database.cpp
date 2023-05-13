@@ -133,7 +133,7 @@ FsDatabase::~FsDatabase()
     for (jit = m_jobs.begin(); jit != m_jobs.end(); ++jit)
         (*jit)->unref();
 
-    for (auto file : m_files_to_delete)
+    for (auto const& file : m_files_to_delete)
     {
         xf_remove(file);
     }
@@ -990,7 +990,7 @@ std::wstring FsDatabase::getObjectIdFromPath(const std::wstring& path)
 
 bool FsDatabase::checkCircularMount(const std::wstring& path,
                                     xd::IDatabasePtr remote_db, 
-                                    const std::wstring remote_path)
+                                    const std::wstring& remote_path)
 {
     // TODO: implement
     return false;

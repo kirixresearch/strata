@@ -93,13 +93,13 @@ private:
 private:
 
     // commands
-    bool processClear(const std::vector<wxString> tokens);
-    bool processOpen(const std::vector<wxString> tokens);
-    bool processClose(const std::vector<wxString> tokens);
-    bool processUse(const std::vector<wxString> tokens);
-    bool processPwd(const std::vector<wxString> tokens);
-    bool processEval(const std::vector<wxString> tokens);
-    bool processExit(const std::vector<wxString> tokens);
+    bool processClear(const std::vector<wxString>& tokens);
+    bool processOpen(const std::vector<wxString>& tokens);
+    bool processClose(const std::vector<wxString>& tokens);
+    bool processUse(const std::vector<wxString>& tokens);
+    bool processPwd(const std::vector<wxString>& tokens);
+    bool processEval(const std::vector<wxString>& tokens);
+    bool processExit(const std::vector<wxString>& tokens);
 
 private:
 

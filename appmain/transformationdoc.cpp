@@ -1228,7 +1228,7 @@ void TransformationDoc::populateSourceFieldDropDown()
     m_source_fields.clear();
 
     xd::Structure s = createStructureFromGrid();
-    for (auto col : s.columns)
+    for (auto& col : s.columns)
     {
         TransformField field;
         field.input_name = col.name;

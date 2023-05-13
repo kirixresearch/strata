@@ -866,7 +866,7 @@ wxString getPhysPathFromDatabasePath(const wxString& database_path)
     return res;
 }
 
-std::wstring getMountRoot(xd::IDatabasePtr db, const std::wstring _path)
+std::wstring getMountRoot(xd::IDatabasePtr db, const std::wstring& _path)
 {
     std::wstring path = _path;
     size_t old_len;

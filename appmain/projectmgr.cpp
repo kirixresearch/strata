@@ -293,7 +293,7 @@ void ProjectMgr::upgrade()
 
     // first, find out if we need to upgrade the structure; we will
     // check for the existence of a "ConnectionString" parameter
-    for (auto key : project_keys)
+    for (auto& key : project_keys)
     {
         config->setPath(L"/RecentDatabases/" + key);
 

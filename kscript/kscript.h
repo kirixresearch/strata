@@ -292,8 +292,7 @@ public:
 
     ExprParser* getParser() { return m_parser; }
     void setParser(ExprParser* e) { m_parser = e; }
-    
-    static void compiletimeBind(ExprParser* expr);
+
     static void staticConstructor(ExprEnv* env, void* param, Value* retval);
     static bool customConstructor(int class_id, ExprEnv* env, void* param, Value* retval);
     static const std::wstring& staticGetClassName() { static std::wstring c; return c; }

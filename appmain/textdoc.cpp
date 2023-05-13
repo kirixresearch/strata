@@ -890,7 +890,7 @@ bool TextDoc::save(bool do_refresh)
     {
         xd::FormatDefinition def = m_def;
         def.columns.clear();
-        for (auto col : m_def.columns)
+        for (auto& col : m_def.columns)
         {
             if (!col.calculated)
                 def.columns.push_back(col);

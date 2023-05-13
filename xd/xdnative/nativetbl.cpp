@@ -63,10 +63,6 @@
 
 
 
-
-const int native_read_ahead_size = 500;             // still used by row inserter
-
-
 char convertType_xd2native(int xd_type)
 {
     switch (xd_type)

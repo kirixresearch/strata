@@ -571,10 +571,6 @@ void DelimitedTextFile::translateString(std::wstring& retval) const
 }
 
 
-
-
-const int DELIMITED_TEXT_INSERTBUF_LENGTH = 500000;
-
 bool DelimitedTextFile::startInsert()
 {
     m_insert_buf.reserve(500000);

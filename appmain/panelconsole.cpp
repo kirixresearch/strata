@@ -780,7 +780,7 @@ void ConsolePanel::onQueryJobFinished(jobs::IJobPtr job)
     }
 }
 
-bool ConsolePanel::processClear(const std::vector<wxString> tokens)
+bool ConsolePanel::processClear(const std::vector<wxString>& tokens)
 {
     // syntax: CLEAR
     // description: clears the console
@@ -790,7 +790,7 @@ bool ConsolePanel::processClear(const std::vector<wxString> tokens)
     return true;
 }
 
-bool ConsolePanel::processOpen(const std::vector<wxString> tokens)
+bool ConsolePanel::processOpen(const std::vector<wxString>& tokens)
 {
     // syntax: OPEN <file>
     // description: opens a file in the current project
@@ -820,7 +820,7 @@ bool ConsolePanel::processOpen(const std::vector<wxString> tokens)
     return true;
 }
 
-bool ConsolePanel::processClose(const std::vector<wxString> tokens)
+bool ConsolePanel::processClose(const std::vector<wxString>& tokens)
 {
     // syntax: CLOSE
     // description: closes the active document; particularly
@@ -835,7 +835,7 @@ bool ConsolePanel::processClose(const std::vector<wxString> tokens)
     return true;
 }
 
-bool ConsolePanel::processUse(const std::vector<wxString> tokens)
+bool ConsolePanel::processUse(const std::vector<wxString>& tokens)
 {
     // syntax: USE <directory>
     // description: changes the active database to use when processing 
@@ -880,7 +880,7 @@ bool ConsolePanel::processUse(const std::vector<wxString> tokens)
     return true;
 }
 
-bool ConsolePanel::processPwd(const std::vector<wxString> tokens)
+bool ConsolePanel::processPwd(const std::vector<wxString>& tokens)
 {
     // syntax: PWD
     // description: echos the currently selected database to 
@@ -900,7 +900,7 @@ bool ConsolePanel::processPwd(const std::vector<wxString> tokens)
     return true;
 }
 
-bool ConsolePanel::processEval(const std::vector<wxString> tokens)
+bool ConsolePanel::processEval(const std::vector<wxString>& tokens)
 {
     // syntax: EVAL <code>
     // description: evaluates the input javascript code and returns
@@ -959,7 +959,7 @@ bool ConsolePanel::processEval(const std::vector<wxString> tokens)
     return true;
 }
 
-bool ConsolePanel::processExit(const std::vector<wxString> tokens)
+bool ConsolePanel::processExit(const std::vector<wxString>& tokens)
 {
     // syntax: EXIT
     // description: exits the application

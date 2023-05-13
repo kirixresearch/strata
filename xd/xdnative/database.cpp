@@ -2517,7 +2517,7 @@ bool XdnativeDatabase::detectMountPoint(const std::wstring& path,
 /*
 bool XdnativeDatabase::checkCircularMount(const std::wstring& path,
                                   xd::IDatabasePtr remote_db, 
-                                  const std::wstring remote_path)
+                                  const std::wstring& remote_path)
 {
     if (static_cast<xd::IDatabase*>(this) != remote_db.p)
         return false;
@@ -2530,7 +2530,7 @@ bool XdnativeDatabase::checkCircularMount(const std::wstring& path,
 
 bool XdnativeDatabase::checkCircularMountInternal(std::set<std::wstring, kl::cmp_nocase>& bad_paths,
                                           xd::IDatabasePtr remote_db, 
-                                          const std::wstring remote_path)
+                                          const std::wstring& remote_path)
 {
     // if remote is a different db, it's not circular
     if (static_cast<xd::IDatabase*>(this) != remote_db.p)

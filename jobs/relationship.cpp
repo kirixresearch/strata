@@ -112,7 +112,7 @@ int RelationshipJob::runJob()
 
         // make sure we have a unique index name
         std::set<std::wstring, kl::cmp_nocase> index_names;
-        for (auto index_info : right_set_indexes)
+        for (auto& index_info : right_set_indexes)
         {
             index_names.insert(index_info.name);
         }

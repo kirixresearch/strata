@@ -150,7 +150,7 @@ private:
     void onStatusBarItemLeftDblClick(IStatusBarItemPtr item);
 
     // function for reading a file
-    bool readFile(const wxString _path, 
+    bool readFile(const wxString& _path, 
                   wxString& value,
                   wxString& mime_type,
                   bool& external);

@@ -223,7 +223,7 @@ private:
     bool checkCircularMountInternal( // (helper)
                            std::set<std::wstring, kl::cmp_nocase>& bad_paths,
                            xd::IDatabasePtr remote_db, 
-                           const std::wstring remote_path);
+                           const std::wstring& remote_path);
 
     long long getFileSize(const std::wstring& path);
     xd::rowpos_t getRowCount(const std::wstring& path);

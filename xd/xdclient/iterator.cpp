@@ -18,7 +18,6 @@
 
 const std::string empty_string = "";
 const std::wstring empty_wstring = L"";
-const int cache_size = 50;
 
 
 ClientIterator::ClientIterator(ClientDatabase* database)

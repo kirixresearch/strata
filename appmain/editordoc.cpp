@@ -1514,7 +1514,7 @@ bool EditorDoc::loadFile(const wxString& _path)
     return true;
 }
 
-bool EditorDoc::readFile(const wxString _path, 
+bool EditorDoc::readFile(const wxString& _path, 
                          wxString& value, 
                          wxString& mime_type, 
                          bool& external)

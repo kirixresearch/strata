@@ -155,7 +155,7 @@ private:
     
     bool checkCircularMount(const std::wstring& path,
                             xd::IDatabasePtr remote_db, 
-                            const std::wstring remote_path);
+                            const std::wstring& remote_path);
 
     std::wstring getObjectIdFromPath(const std::wstring& path);
 

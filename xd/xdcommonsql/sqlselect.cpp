@@ -2321,7 +2321,7 @@ public:
 
     ~TemporaryTableGarbageCollector()
     {
-        for (auto table : tables)
+        for (auto const& table : tables)
         {
             db->deleteFile(table);
         }
