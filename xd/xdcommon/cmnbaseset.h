@@ -41,10 +41,6 @@ protected:
 
 private:
 
-    bool saveCalcFields();
-    
-private:
-
     kl::mutex m_object_mutex;
     std::vector<xd::ColumnInfo> m_calc_fields;
     std::wstring m_obj_path;

@@ -65,8 +65,6 @@ public:
     int getErrorCode();
     void setError(int error_code, const std::wstring& error_string);
 
-    double getFreeSpace();
-    double getUsedSpace();
     bool cleanup();
 
     xd::IJobPtr createJob();

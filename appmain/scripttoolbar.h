@@ -36,7 +36,6 @@ public:
     ~ToolBarItem();
     
     int getId() const;
-    void setWxToolBar(wxToolBar* toolbar);
     void onEvent(wxEvent& event);
     
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);

@@ -186,7 +186,6 @@ protected:
 
     //void addField(const wxString& field);
 
-    void insertText(const wxString& text);
     void updateGridOverlay();
     void onGridModelChange(kcl::GridEvent& evt);
 

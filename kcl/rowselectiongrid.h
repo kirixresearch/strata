@@ -30,13 +30,11 @@ public:
 
     enum RowSelectionGridOption
     {
-        refreshAfterDataDropped = 1 << 0,
-        refreshAfterPreGhostRowInsert = 2 << 0,
-        refreshAfterPreInvalidAreaInsert = 3 << 0,
-        refreshAll = (refreshAfterDataDropped  |
-                      refreshAfterPreGhostRowInsert |
-                      refreshAfterPreInvalidAreaInsert),
-        refreshNone = 0
+        refreshNone = 0x00,
+        refreshAfterDataDropped = 0x01,
+        refreshAfterPreGhostRowInsert = 0x02,
+        refreshAfterPreInvalidAreaInsert = 0x04,
+        refreshAll = 0xff
     };
 
 public:

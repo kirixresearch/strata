@@ -125,8 +125,6 @@ public:
 protected:
 
     void updatePos();
-    bool movePrev();
-    bool moveNext();
 
 protected:
 

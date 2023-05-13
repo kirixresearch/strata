@@ -32,16 +32,12 @@ public:
     bool reopen(bool exclusive = false);
     void close();
 
-    bool getGuid(unsigned char* guid /* 16 bytes */);
-    bool setGuid(const unsigned char* guid /* 16 bytes */);
-
     std::wstring getFilename();
 
     int getRowWidth();
     xd::rowpos_t getRowCount();
     xd::Structure getStructure();
-
-    xd::rowpos_t findNextRowPos(xd::rowpos_t offset, int delta);
+    
     bool getRow(xd::rowpos_t row, unsigned char* buf);
     int getRows(unsigned char* buf,
                 xd::rowpos_t* rowpos_arr,

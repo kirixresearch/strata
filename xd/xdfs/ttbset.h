@@ -199,8 +199,6 @@ public:
 
 private:
 
-    bool doRowDelete(xd::rowid_t rowid);
-
     TtbSet* m_set;
     RowIdArray* m_rowid_array;
 };
