@@ -173,7 +173,6 @@ void LocalRow::reserveBuffer(unsigned int new_size)
 LocalRowCache::LocalRowCache()
 {
     m_f = 0;
-    m_row_count = 0;
     m_curpos = 0;
     m_row_count = 0;
     

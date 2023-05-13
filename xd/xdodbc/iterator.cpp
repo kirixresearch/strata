@@ -128,23 +128,23 @@ bool OdbcIterator::init(const std::wstring& query)
     
     if (m_bidirectional)
     {
-        retval = SQLSetStmtAttr(m_stmt,
-                                SQL_ATTR_CURSOR_TYPE,
-                                (SQLPOINTER)SQL_CURSOR_STATIC,
-                                0);
+        SQLSetStmtAttr(m_stmt,
+                    SQL_ATTR_CURSOR_TYPE,
+                    (SQLPOINTER)SQL_CURSOR_STATIC,
+                    0);
     }
      else
     {
-        retval = SQLSetStmtAttr(m_stmt,
-                                SQL_ATTR_CURSOR_TYPE,
-                                (SQLPOINTER)SQL_CURSOR_FORWARD_ONLY,
-                                0);
+        SQLSetStmtAttr(m_stmt,
+                    SQL_ATTR_CURSOR_TYPE,
+                    (SQLPOINTER)SQL_CURSOR_FORWARD_ONLY,
+                    0);
     }
     
-    retval = SQLSetStmtAttr(m_stmt,
-                            SQL_ATTR_CONCURRENCY,
-                            (SQLPOINTER)SQL_CONCUR_READ_ONLY,
-                            0);
+    SQLSetStmtAttr(m_stmt,
+                SQL_ATTR_CONCURRENCY,
+                (SQLPOINTER)SQL_CONCUR_READ_ONLY,
+                0);
 
     retval = SQLExecDirect(m_stmt, sqlt(query), SQL_NTS);
 
@@ -512,12 +512,8 @@ bool OdbcIterator::init(const xd::QueryParams& qp)
 
         SQLRETURN retval = m_database->connect(conn);
 
-        if (retval == SQL_SUCCESS || retval == SQL_SUCCESS_WITH_INFO)
+        if (SQL_SUCCEEDED(retval))
         {
-            if (retval == SQL_SUCCESS_WITH_INFO)
-            {
-                m_database->errorSqlConn(conn);
-        }
             HSTMT stmt;
             SQLAllocStmt(conn, &stmt);
 
@@ -527,33 +523,21 @@ bool OdbcIterator::init(const xd::QueryParams& qp)
             std::wstring query = L"select count(*) from " + quote_openchar + tablename + quote_closechar;
             retval = SQLExecDirect(stmt, sqlt(query), SQL_NTS);
 
-            if (retval == SQL_SUCCESS)
+            if (SQL_SUCCEEDED(retval))
             {
-                unsigned long row_count = 0;
                 SQLFetch(stmt);
-                if (SQL_SUCCESS == SQLGetData(stmt, 1, SQL_C_ULONG, &row_count, 0, NULL))
+
+                unsigned long row_count = 0;
+                if (SQL_SUCCEEDED(SQLGetData(stmt, 1, SQL_C_ULONG, &row_count, 0, NULL)))
                 {
                     m_row_count = row_count;
                 }
-                else
-                {
-                    int i = 5;
-                }
-            }
-            else
-            {
-                int i = 5;
             }
 
             SQLFreeHandle(SQL_HANDLE_STMT, stmt);
         }
-        else
-        {
-            int i = 5;
-        }
 
         SQLDisconnect(conn);
-        
     }
 
 

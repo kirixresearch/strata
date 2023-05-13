@@ -101,49 +101,49 @@ void HttpRequest::init()
     if (m_curl == NULL)
         return;
 
-    CURLcode curl_result;
+    //CURLcode curl_result;
 
     // from the curl documentation:  "When using multiple threads you 
     // should set the CURLOPT_NOSIGNAL option to TRUE for all handles. 
     // Everything will or might work fine except that timeouts are not 
     // honored during the DNS lookup ... On some platforms, libcurl simply 
     // will not function properly multi-threaded unless this option is set."
-    curl_easy_setopt(m_curl, CURLOPT_NOSIGNAL, TRUE);
+    (void)curl_easy_setopt(m_curl, CURLOPT_NOSIGNAL, TRUE);
         
     // see http://curl.haxx.se/lxr/source/docs/examples/https.c
     // these are necessary unless we want to include a certificate bundle
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0);
+    (void)curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+    (void)curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0);
     
     // follow redirects
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_FOLLOWLOCATION, TRUE);
+    (void)curl_easy_setopt(m_curl, CURLOPT_FOLLOWLOCATION, TRUE);
     
     // when redirecting, set the referer
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_AUTOREFERER, TRUE);
+    (void)curl_easy_setopt(m_curl, CURLOPT_AUTOREFERER, TRUE);
     
     // set the maximimum number of redirects to infinity
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_MAXREDIRS, -1);
+    (void)curl_easy_setopt(m_curl, CURLOPT_MAXREDIRS, -1);
     
     // set the default proxy type
-    //curl_result = curl_easy_setopt(m_curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+    //(void)curl_easy_setopt(m_curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
     
     // set the default authentication methods
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+    (void)curl_easy_setopt(m_curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+    (void)curl_easy_setopt(m_curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
     
     // allow cookies
     if (m_cookie_file_path.length() > 0)
     {
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, m_cookie_file_path.c_str());
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_COOKIEJAR, m_cookie_file_path.c_str());
+        (void)curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, m_cookie_file_path.c_str());
+        (void)curl_easy_setopt(m_curl, CURLOPT_COOKIEJAR, m_cookie_file_path.c_str());
     }
      else
     {
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, "");
+        (void)curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, "");
     }
 
     // include headers in body output
-    //curl_result = curl_easy_setopt(m_curl, CURLOPT_HEADER, TRUE);
+    //(void)curl_easy_setopt(m_curl, CURLOPT_HEADER, TRUE);
     
     curl_version_info_data* a = curl_version_info(CURLVERSION_NOW);
 }

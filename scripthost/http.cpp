@@ -154,11 +154,8 @@ size_t HttpRequest::http_response_writer(void* ptr, size_t size, size_t nmemb, v
 
 HttpRequest::HttpRequest()
 {
-    CURLcode curl_result;
-    
     m_curl = (CURL*)0;
-    curl_result = CURLE_OK;
-    
+
     m_curl = curl_easy_init();
     
     // initialize header and form field pointers
@@ -176,30 +173,30 @@ HttpRequest::HttpRequest()
     
     // see http://curl.haxx.se/lxr/source/docs/examples/https.c
     // these are necessary unless we want to include a certificate bundle
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 0);
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0);
+    (void)curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 0);
+    (void)curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0);
     
     // follow redirects
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_FOLLOWLOCATION, 1);
+    (void)curl_easy_setopt(m_curl, CURLOPT_FOLLOWLOCATION, 1);
     
     // when redirecting, set the referer
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_AUTOREFERER, 1);
+    (void)curl_easy_setopt(m_curl, CURLOPT_AUTOREFERER, 1);
     
     // set the maximimum number of redirects to infinity
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_MAXREDIRS, -1);
+    (void)curl_easy_setopt(m_curl, CURLOPT_MAXREDIRS, -1);
     
     // set the default proxy type
-    //curl_result = curl_easy_setopt(m_curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+    //(void)curl_easy_setopt(m_curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
     
     // set the default authentication methods
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+    (void)curl_easy_setopt(m_curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+    (void)curl_easy_setopt(m_curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
     
     // allow cookies
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, "");
+    (void)curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, "");
     
     // include headers in body output
-    //curl_result = curl_easy_setopt(m_curl, CURLOPT_HEADER, 1);
+    //(void)curl_easy_setopt(m_curl, CURLOPT_HEADER, 1);
     
     curl_version_info_data* a = curl_version_info(CURLVERSION_NOW);
 }
