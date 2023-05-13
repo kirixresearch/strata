@@ -283,22 +283,25 @@ public:
         
         
         CURLcode curl_result;
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_FOLLOWLOCATION, TRUE);
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_AUTOREFERER, TRUE);
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_MAXREDIRS, -1);
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, "");
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_URL, m_fetch_url.c_str());
+
+        (void)curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+        (void)curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0);
+        (void)curl_easy_setopt(m_curl, CURLOPT_FOLLOWLOCATION, TRUE);
+        (void)curl_easy_setopt(m_curl, CURLOPT_AUTOREFERER, TRUE);
+        (void)curl_easy_setopt(m_curl, CURLOPT_MAXREDIRS, -1);
+        (void)curl_easy_setopt(m_curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+        (void)curl_easy_setopt(m_curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+        (void)curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, "");
+        (void)curl_easy_setopt(m_curl, CURLOPT_URL, m_fetch_url.c_str());
         
         // set curl proxy info
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_PROXY, m_proxy.c_str());
-        curl_result = curl_easy_setopt(m_curl, CURLOPT_PROXYPORT, m_proxy_port);
+        (void)curl_easy_setopt(m_curl, CURLOPT_PROXY, m_proxy.c_str());
+        (void)curl_easy_setopt(m_curl, CURLOPT_PROXYPORT, m_proxy_port);
 
         if (m_basic_auth.length() > 0)
-            curl_result = curl_easy_setopt(m_curl, CURLOPT_USERPWD, m_basic_auth.c_str());
+        {
+            (void)curl_easy_setopt(m_curl, CURLOPT_USERPWD, m_basic_auth.c_str());
+        }
 
         // set the result functions
         curl_result = curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, (void*)this);

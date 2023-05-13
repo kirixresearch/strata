@@ -171,10 +171,10 @@ bool MarkMgrPanel::initDoc(IFramePtr frame,
     m_grid->setHeaderSize(0);
     m_grid->setRowHeight(30);
     
-    int description_col_width = m_cli_width;
-    description_col_width -= CHECKBOX_COL_WIDTH;
-    description_col_width -= COLOR_COL_WIDTH;
-    description_col_width -= EDITBUTTON_COL_WIDTH;
+    //int description_col_width = m_cli_width;
+    //description_col_width -= CHECKBOX_COL_WIDTH;
+    //description_col_width -= COLOR_COL_WIDTH;
+    //description_col_width -= EDITBUTTON_COL_WIDTH;
     
     m_grid->setColumnSize(colActive, CHECKBOX_COL_WIDTH);
     m_grid->setColumnSize(colColor, COLOR_COL_WIDTH);

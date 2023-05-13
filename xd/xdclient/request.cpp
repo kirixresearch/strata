@@ -179,7 +179,7 @@ void HttpRequest::send()
     if (m_curl == NULL)
         init();
 
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_1_0);
+    (void)curl_easy_setopt(m_curl, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_1_0);
 
     curl_result = curl_easy_setopt(m_curl, CURLOPT_URL, m_location.c_str());
     if (curl_result != CURLE_OK)
@@ -240,7 +240,8 @@ void HttpRequest::send()
             curl_result = curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, (const char*)m_post_string.c_str());
             if (curl_result != CURLE_OK)
                 return;
-            curl_result = curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, (long)m_post_string.length());
+
+            (void)curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, (long)m_post_string.length());
         }
     }
 

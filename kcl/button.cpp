@@ -198,7 +198,6 @@ void getXpMenuColors(wxColor& dark, wxColor& light)
     unsigned int lc;
 
     dc = GetSysColor(COLOR_HIGHLIGHT);
-    lc = 0;
 
     if (dc == 0x00C56A31)
     {

@@ -292,7 +292,6 @@ bool XbaseFile::create(const std::wstring& filename, const std::vector<XbaseFiel
     size_t offset;
     size_t i;
 
-    i = 0;
     offset = 1;
     field_count = fields.size();
     entry_ptr = flds;

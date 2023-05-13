@@ -227,7 +227,6 @@ void FileTransfer::setAsync(kscript::ExprEnv* env, kscript::Value* retval)
 
 void FileTransfer::doAction()
 {
-    CURLcode res;
     FileTransferInfo info;
     info.request = this;
     info.filename = m_filename;
@@ -237,24 +236,24 @@ void FileTransfer::doAction()
     m_curl = curl_easy_init();
     
     // set the curl proxy info
-    res = curl_easy_setopt(m_curl, CURLOPT_PROXY, m_proxy.c_str());
-    res = curl_easy_setopt(m_curl, CURLOPT_PROXYPORT, m_proxy_port);
+    (void)curl_easy_setopt(m_curl, CURLOPT_PROXY, m_proxy.c_str());
+    (void)curl_easy_setopt(m_curl, CURLOPT_PROXYPORT, m_proxy_port);
     
-    res = curl_easy_setopt(m_curl, CURLOPT_URL, m_url.c_str());
+    (void)curl_easy_setopt(m_curl, CURLOPT_URL, m_url.c_str());
     if (m_upload)
     {
-        curl_easy_setopt(m_curl, CURLOPT_UPLOAD, 1);
-        curl_easy_setopt(m_curl, CURLOPT_READFUNCTION, transfer_reader_func);
-        curl_easy_setopt(m_curl, CURLOPT_READDATA, &info);
+        (void)curl_easy_setopt(m_curl, CURLOPT_UPLOAD, 1);
+        (void)curl_easy_setopt(m_curl, CURLOPT_READFUNCTION, transfer_reader_func);
+        (void)curl_easy_setopt(m_curl, CURLOPT_READDATA, &info);
     }
      else
     {
-        curl_easy_setopt(m_curl, CURLOPT_UPLOAD, 0);
-        curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, transfer_writer_func);
-        curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, &info);
+        (void)curl_easy_setopt(m_curl, CURLOPT_UPLOAD, 0);
+        (void)curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, transfer_writer_func);
+        (void)curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, &info);
     }
     
-    res = curl_easy_perform(m_curl);
+    CURLcode res = curl_easy_perform(m_curl);
     if (res != CURLE_OK)
         return;
     
