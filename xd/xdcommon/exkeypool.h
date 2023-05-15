@@ -20,6 +20,8 @@
 class IKeyList
 {
 public:
+    virtual ~IKeyList() { }
+
     virtual void goFirst() = 0;
     virtual void goNext() = 0;
     virtual bool isEof() = 0;
@@ -32,8 +34,6 @@ public:
 
 class ExKeyPool : public IKeyList
 {
-
-
 public:
 
     ExKeyPool(int size_bytes, int entry_size, int compare_size);
