@@ -9,7 +9,7 @@
  */
 
 
-#include <math.h>
+#include <cmath>
 #include "kl/json.h"
 #include "kl/string.h"
 #include "kl/math.h"

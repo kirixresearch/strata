@@ -20,7 +20,7 @@
 
 
 #ifdef _MSC_VER
-#include <float.h>
+#include <cfloat>
 #define isnan _isnan
 #define finite _finite
 #endif

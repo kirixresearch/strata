@@ -14,7 +14,7 @@
 #include <xd/xd.h>
 #include "database.h"
 #include "stream.h"
-#include <stdlib.h>
+#include <cstdlib>
 
 
 SlStream::SlStream(SlDatabase* database)

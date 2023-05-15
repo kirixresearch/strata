@@ -13,7 +13,7 @@
 #include "jsarray.h"
 #include "util.h"
 #include <algorithm>
-#include <wctype.h>
+#include <cwctype>
 
 
 // remove VC9 warnings - eventually commenting this

@@ -9,7 +9,7 @@
  */
 
 #include "appmain.h"
-#include "limits.h"
+#include <climits>
 #include "appprint.h"
 #include "appcontroller.h"
 #include "dlgdatabasefile.h"
