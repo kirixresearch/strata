@@ -97,6 +97,11 @@ public:
 
     ns_smartptr<T>& operator=(const ns_smartptr<T>& c)
     {
+        if (&c == this)
+        {
+            return *this;
+        }
+
         if (p)
         {
             p->Release();

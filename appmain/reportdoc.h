@@ -413,10 +413,6 @@ private:
     // tracked; for undo/redo
     bool m_tracking;
 
-    // flag to prevent certain cloned events from being handled
-    // too many times and from triggering cloned events recursively
-    bool m_event_lock;
-
     DECLARE_EVENT_TABLE()
 };
 

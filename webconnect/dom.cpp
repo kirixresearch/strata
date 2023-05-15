@@ -5214,6 +5214,11 @@ wxDOMHTMLCollection::wxDOMHTMLCollection(const wxDOMHTMLCollection& c)
 
 wxDOMHTMLCollection& wxDOMHTMLCollection::operator=(const wxDOMHTMLCollection& c)
 {
+    if (&c == this)
+    {
+        return *this;
+    }
+
     m_data->ptr = c.m_data->ptr;
     return *this;
 }
@@ -5326,6 +5331,11 @@ wxDOMNodeList::wxDOMNodeList(const wxDOMNodeList& c)
 
 wxDOMNodeList& wxDOMNodeList::operator=(const wxDOMNodeList& c)
 {
+    if (&c == this)
+    {
+        return *this;
+    }
+
     m_data->ptr = c.m_data->ptr;
     return *this;
 }
@@ -5414,6 +5424,11 @@ wxDOMNamedAttrMap::wxDOMNamedAttrMap(const wxDOMNamedAttrMap& c)
 
 wxDOMNamedAttrMap& wxDOMNamedAttrMap::operator=(const wxDOMNamedAttrMap& c)
 {
+    if (&c == this)
+    {
+        return *this;
+    }
+
     m_data->ptr = c.m_data->ptr;
     return *this;
 }
@@ -5629,6 +5644,11 @@ wxDOMEvent::wxDOMEvent(const wxDOMEvent& c)
 
 wxDOMEvent& wxDOMEvent::operator=(const wxDOMEvent& c)
 {
+    if (&c == this)
+    {
+        return *this;
+    }
+
     assign(c);
     return *this;
 }
