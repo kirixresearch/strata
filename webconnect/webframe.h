@@ -65,7 +65,7 @@ private:
     wxWebControl* m_ctrl;
     bool m_should_prevent_app_exit;
     
-    DECLARE_EVENT_TABLE();
+    DECLARE_EVENT_TABLE()
 };
 
 
@@ -115,7 +115,7 @@ private:
     
     wxWebControl* m_ctrl;
     
-    DECLARE_EVENT_TABLE();
+    DECLARE_EVENT_TABLE()
 };
 
 

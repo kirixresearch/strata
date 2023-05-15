@@ -1409,7 +1409,7 @@ private:
     
     int m_button_selected;
 
-    DECLARE_EVENT_TABLE();
+    DECLARE_EVENT_TABLE()
 };
 
 BEGIN_EVENT_TABLE(DatasheetOptionsPage, wxPanel)
@@ -1786,7 +1786,7 @@ private:
     wxTextCtrl* m_proxy_socks_textctrl;
     wxTextCtrl* m_proxy_socksport_textctrl;
     
-    DECLARE_EVENT_TABLE();
+    DECLARE_EVENT_TABLE()
 };
 
 BEGIN_EVENT_TABLE(InternetOptionsPage, wxPanel)
@@ -1992,7 +1992,7 @@ private:
     wxRadioButton* m_keep_cookies_until_close;
     wxButton* m_clear_private_data;
     
-    DECLARE_EVENT_TABLE();
+    DECLARE_EVENT_TABLE()
 };
 
 BEGIN_EVENT_TABLE(PrivacyOptionsPage, wxPanel)
@@ -2168,7 +2168,7 @@ private:
     FontComboControl* m_fontface_combo;
     FontSizeComboControl* m_fontsize_combo;
     
-    DECLARE_EVENT_TABLE();
+    DECLARE_EVENT_TABLE()
 };
 
 BEGIN_EVENT_TABLE(ReportOptionsPage, wxPanel)
@@ -2406,7 +2406,7 @@ private:
     wxSpinCtrl* m_spaces_size;
     wxSpinCtrl* m_tab_size;
     
-    DECLARE_EVENT_TABLE();
+    DECLARE_EVENT_TABLE()
 };
 
 BEGIN_EVENT_TABLE(ScriptOptionsPage, wxPanel)

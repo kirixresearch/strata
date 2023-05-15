@@ -494,7 +494,7 @@ struct FormatDefinition
         fixed_start_offset = 0;
         fixed_row_width = 0;
         fixed_line_delimited = false;
-    };
+    }
     
     std::wstring object_id;               // unique object id
     int object_type;                      // one of the filetype* enum values (see above)
