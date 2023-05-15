@@ -35,7 +35,7 @@ public:
     ListViewItem();
     ~ListViewItem();
     
-    const long getId();
+    long getId();
     
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
     void getIndex(kscript::ExprEnv* env, kscript::Value* retval);
