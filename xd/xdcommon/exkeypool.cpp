@@ -38,7 +38,11 @@ static int qs_partition(unsigned char* arr[],
     unsigned char* temp;
     while (1)
     {
-        while (memcmp(arr[++i], v, len) < 0);
+        while (memcmp(arr[++i], v, len) < 0)
+        {
+            // intentionally empty
+        }
+
         while (memcmp(v, arr[--j], len) < 0)
         {
             if (j == left)
