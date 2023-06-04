@@ -141,7 +141,7 @@ public:
         m_path = kl::tostring(path);
     }
 
-    sqlite3* getDatabase()
+    sqlite3* getConnection()
     {
         m_mutex.lock();
         if (!m_queue.empty())
@@ -161,7 +161,7 @@ public:
         }
     }
 
-    void freeDatabase(sqlite3* db)
+    void freeConnection(sqlite3* db)
     {
         m_mutex.lock();
         if (m_queue.size() >= MAX_POOL_SIZE)
@@ -353,12 +353,12 @@ bool SlDatabase::cleanup()
 
 sqlite3* SlDatabase::getPoolConnection()
 {
-    return m_connection_pool->getDatabase();
+    return m_connection_pool->getConnection();
 }
 
 void SlDatabase::freePoolConnection(sqlite3* db)
 {
-    m_connection_pool->freeDatabase(db);
+    m_connection_pool->freeConnection(db);
 }
 
 
