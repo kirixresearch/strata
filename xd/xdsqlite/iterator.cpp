@@ -66,7 +66,7 @@ SlIterator::SlIterator(SlDatabase* database)
     m_database = database;
     m_database->ref();
 
-    m_sqlite = m_database->getPoolDatabase();
+    m_sqlite = m_database->getPoolConnection();
 }
 
 SlIterator::~SlIterator()
@@ -76,7 +76,7 @@ SlIterator::~SlIterator()
         sqlite3_finalize(m_stmt);
     }
 
-    m_database->freePoolDatabase(m_sqlite);
+    m_database->freePoolConnection(m_sqlite);
     m_database->unref();
 }
 
@@ -185,7 +185,7 @@ public:
 
     unsigned int entry()
     {
-        sqlite3* sqlite = m_database->getPoolDatabase();
+        sqlite3* sqlite = m_database->getPoolConnection();
 
         m_mutex.lock();
         m_sqlite = sqlite;
@@ -238,7 +238,7 @@ public:
         m_sqlite = NULL;
         m_mutex.unlock();
 
-        m_database->freePoolDatabase(sqlite);
+        m_database->freePoolConnection(sqlite);
 
         m_mutex.lock();
         m_done = true;

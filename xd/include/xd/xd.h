@@ -110,6 +110,7 @@ enum
     dbtypeSqlite = 11,
     dbtypeClient = 12,
     dbtypeKpg = 13,
+    dbtypeDuckDb = 14,
 
     dbtypeFilesystem = 80
 };

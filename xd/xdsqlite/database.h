@@ -43,8 +43,8 @@ public:
                       const std::wstring& username,
                       const std::wstring& password);
 
-    sqlite3* getPoolDatabase();
-    void freePoolDatabase(sqlite3* db);
+    sqlite3* getPoolConnection();
+    void freePoolConnection(sqlite3* db);
 
     // xd::IDatabase interface
 

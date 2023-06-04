@@ -351,12 +351,12 @@ bool SlDatabase::cleanup()
     return true;
 }
 
-sqlite3* SlDatabase::getPoolDatabase()
+sqlite3* SlDatabase::getPoolConnection()
 {
     return m_connection_pool->getDatabase();
 }
 
-void SlDatabase::freePoolDatabase(sqlite3* db)
+void SlDatabase::freePoolConnection(sqlite3* db)
 {
     m_connection_pool->freeDatabase(db);
 }
