@@ -40,6 +40,8 @@ namespace scripthost
 // Property(DbDatabaseType.Package) : A .kpg package file.
 // Property(DbDatabaseType.Oracle) : An Oracle database.
 // Property(DbDatabaseType.SqlServer) : A Microsoft SqlServer database.
+// Property(DbDatabaseType.Sqlite) : A Sqlite database.
+// Property(DbDatabaseType.DuckDb) : A DuckDb database.
 // Property(DbDatabaseType.MySQL) : A MySQL database.
 // Property(DbDatabaseType.Odbc) : An ODBC connection.
 // Property(DbDatabaseType.Access) : A Microsoft Access database.
@@ -67,6 +69,8 @@ int DbDatabaseType::toXdDatabaseType(int binding_database_type)
         case DbDatabaseType::Access:       return xd::dbtypeAccess;    
         case DbDatabaseType::Excel:        return xd::dbtypeExcel;     
         case DbDatabaseType::Filesystem:   return xd::dbtypeFilesystem;
+        case DbDatabaseType::Sqlite:       return xd::dbtypeSqlite;
+        case DbDatabaseType::DuckDb:       return xd::dbtypeDuckDb;
         default:                           return xd::dbtypeUndefined; 
     }
 }
@@ -86,6 +90,7 @@ int DbDatabaseType::fromString(const std::wstring& str)
     else if (str == L"delimited_text")    return DbDatabaseType::Filesystem;
     else if (str == L"fixed_length_text") return DbDatabaseType::Filesystem;
     else if (str == L"sqlite")            return DbDatabaseType::Sqlite;
+    else if (str == L"duckdb")            return DbDatabaseType::DuckDb;
     else return DbDatabaseType::Invalid;
 }
 

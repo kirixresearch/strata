@@ -46,6 +46,7 @@ public:
         KSCRIPT_CONSTANT_INTEGER("Db2",          Db2)
         KSCRIPT_CONSTANT_INTEGER("Postgres",     Postgres)
         KSCRIPT_CONSTANT_INTEGER("Sqlite",       Sqlite)
+        KSCRIPT_CONSTANT_INTEGER("DuckDb",       DuckDb)
         KSCRIPT_CONSTANT_INTEGER("Filesystem",   Filesystem)
 
     END_KSCRIPT_CLASS()
@@ -67,6 +68,7 @@ public:
         Db2 = 125,
         Postgres = 126,
         Sqlite = 127,
+        DuckDb = 128,
         Filesystem = 180
     };
     
