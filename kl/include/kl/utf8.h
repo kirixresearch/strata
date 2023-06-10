@@ -94,6 +94,8 @@ size_t utf8_strlen(const char* s);
 
 
 std::wstring fromUtf8(const char* src, size_t src_size = (size_t)-1);
+std::wstring fromUtf8(const std::string& src);
+
 
 
 class toUtf8

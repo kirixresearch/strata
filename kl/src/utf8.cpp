@@ -340,6 +340,16 @@ std::wstring fromUtf8(const char* src, size_t src_size)
     return r;
 }
 
+std::wstring fromUtf8(const std::string& src)
+{
+    size_t src_size = src.length();
+    wchar_t* buf = new wchar_t[src_size + 1];
+    utf8_utf8tow(buf, src_size + 1, src.c_str(), src_size);
+    std::wstring r = buf;
+    delete[] buf;
+    return r;
+}
+
 
 
 
