@@ -16,7 +16,7 @@
 #include "../xdcommon/sqlite3.h"
 #include "../xdcommon/errorinfo.h"
 
-std::wstring sqliteGetTablenameFromPath(const std::wstring& path, bool quote = false);
+std::wstring xdGetTablenameFromPath(const std::wstring& path, bool quote = false);
 
 class JobInfo;
 class SlConnectionPool;

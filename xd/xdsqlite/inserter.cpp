@@ -104,7 +104,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
 
     std::wstring sql;
     sql = L"INSERT INTO ";
-    sql += sqliteGetTablenameFromPath(m_table);
+    sql += xdGetTablenameFromPath(m_table);
     sql += L" (";
 
     for (i = 0; i < col_count; ++i)

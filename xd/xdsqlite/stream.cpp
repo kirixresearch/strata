@@ -35,7 +35,7 @@ SlStream::~SlStream()
 bool SlStream::init(const std::wstring& stream_object_name, const std::wstring& mime_type, int block_size)
 {
     m_mime_type = mime_type;
-    m_stream = kl::toUtf8(sqliteGetTablenameFromPath(stream_object_name, true));
+    m_stream = kl::toUtf8(xdGetTablenameFromPath(stream_object_name, true));
     m_block_size = block_size;
     return true;
 }

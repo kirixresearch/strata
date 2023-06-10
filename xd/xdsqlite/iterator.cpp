@@ -308,7 +308,7 @@ bool SlIterator::init(const xd::QueryParams& qp)
     if (columns.length() == 0)
         columns = L"*";
 
-    std::wstring quoted_object_name = sqliteGetTablenameFromPath(qp.from, true);
+    std::wstring quoted_object_name = xdGetTablenameFromPath(qp.from, true);
 
     std::wstring sql = L"SELECT %columns% FROM %table%";
     kl::replaceStr(sql, L"%columns%", columns);
@@ -494,7 +494,7 @@ void SlIterator::loadRow()
     if (columns.length() == 0)
         columns = L"*";
 
-    std::wstring quoted_object_name = sqliteGetTablenameFromPath(m_qp.from, true);
+    std::wstring quoted_object_name = xdGetTablenameFromPath(m_qp.from, true);
 
     std::wstring sql = L"SELECT %columns% FROM %table%";
     kl::replaceStr(sql, L"%columns%", columns);

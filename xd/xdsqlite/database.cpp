@@ -79,7 +79,7 @@ const wchar_t* sql92_keywords =
 #define XDSQLITE_PATH_SEPARATOR_LEN 3
 #define XDSQLITE_PATH_SEPARATOR_LIKE L"\\_\\_\\_"
 
-std::wstring sqliteGetTablenameFromPath(const std::wstring& path, bool quote /* = false */)
+std::wstring xdGetTablenameFromPath(const std::wstring& path, bool quote /* = false */)
 {
     const wchar_t* p = path.c_str();
     if (*p == L'/')
@@ -378,7 +378,7 @@ xd::IJobPtr SlDatabase::createJob()
 
 bool SlDatabase::createFolder(const std::wstring& path)
 {
-    std::wstring objname = sqliteGetTablenameFromPath(path, true);
+    std::wstring objname = xdGetTablenameFromPath(path, true);
     
     std::wstring sql = L"CREATE TABLE ";
     sql += objname;
@@ -392,7 +392,7 @@ bool SlDatabase::createStream(const std::wstring& path,
                               const std::wstring& mime_type)
 {
     std::string sql;
-    std::string objname = kl::toUtf8(sqliteGetTablenameFromPath(path, true));
+    std::string objname = kl::toUtf8(xdGetTablenameFromPath(path, true));
     std::string info;
     sqlite3_stmt* stmt;
 
@@ -444,8 +444,8 @@ bool SlDatabase::renameFile(const std::wstring& path,
 bool SlDatabase::moveFile(const std::wstring& path,
                           const std::wstring& dest_path)
 {
-    std::wstring src_objname = sqliteGetTablenameFromPath(path, true);
-    std::wstring dest_objname = sqliteGetTablenameFromPath(dest_path, true);
+    std::wstring src_objname = xdGetTablenameFromPath(path, true);
+    std::wstring dest_objname = xdGetTablenameFromPath(dest_path, true);
 
     std::wstring command;
     command.reserve(1024);
@@ -476,7 +476,7 @@ bool SlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 
 bool SlDatabase::deleteFile(const std::wstring& path)
 {
-    std::wstring objname = sqliteGetTablenameFromPath(path, true);
+    std::wstring objname = xdGetTablenameFromPath(path, true);
 
     std::wstring command;
     command.reserve(1024);
@@ -495,7 +495,7 @@ bool SlDatabase::deleteFile(const std::wstring& path)
 bool SlDatabase::getFileExist(const std::wstring& path)
 {
     std::wstring query = L"SELECT *  from '";
-    query += sqliteGetTablenameFromPath(path, false);
+    query += xdGetTablenameFromPath(path, false);
     query += L"' LIMIT 0";
 
     sqlite3_stmt* stmt;
@@ -517,7 +517,7 @@ xd::IFileInfoPtr SlDatabase::getFileInfo(const std::wstring& path)
     int rows = 0;
 
     std::wstring query = L"SELECT tbl_name, sql FROM sqlite_master WHERE name='";
-    query += sqliteGetTablenameFromPath(path, false);
+    query += xdGetTablenameFromPath(path, false);
     query += L"'";
     
     rc = sqlite3_get_table(m_sqlite, kl::toUtf8(query), &result, &rows, NULL, NULL);
@@ -567,7 +567,7 @@ xd::IFileInfoEnumPtr SlDatabase::getFolderInfo(const std::wstring& path)
      else
     {
         sql += L" WHERE name like '";
-        sql += sqliteGetTablenameFromPath(path + XDSQLITE_PATH_SEPARATOR_LIKE, false);
+        sql += xdGetTablenameFromPath(path + XDSQLITE_PATH_SEPARATOR_LIKE, false);
         sql += L"%' ESCAPE '\\'";
     }
 
@@ -610,7 +610,7 @@ bool SlDatabase::createTable(const std::wstring& path, const xd::FormatDefinitio
 
     std::wstring sql;
     sql = L"CREATE TABLE ";
-    sql += sqliteGetTablenameFromPath(path, true);
+    sql += xdGetTablenameFromPath(path, true);
     sql += L" (";
     
     std::vector<xd::ColumnInfo>::const_iterator it;
@@ -675,8 +675,8 @@ bool SlDatabase::createTable(const std::wstring& path, const xd::FormatDefinitio
 
 xd::IStreamPtr SlDatabase::openStream(const std::wstring& path)
 {
-    std::wstring object_name = sqliteGetTablenameFromPath(path, false);
-    std::wstring escaped_object_name = sqliteGetTablenameFromPath(path, true);
+    std::wstring object_name = xdGetTablenameFromPath(path, false);
+    std::wstring escaped_object_name = xdGetTablenameFromPath(path, true);
     std::wstring sql = L"SELECT xdt_stream from " + escaped_object_name;
     sql += L" ORDER BY block_id LIMIT 1";
 
@@ -776,7 +776,7 @@ xd::IRowInserterPtr SlDatabase::bulkInsert(const std::wstring& path)
 
 xd::Structure SlDatabase::describeTable(const std::wstring& _path)
 {
-    std::wstring path = sqliteGetTablenameFromPath(_path, false);
+    std::wstring path = xdGetTablenameFromPath(_path, false);
  
     wchar_t buf[512];
     swprintf(buf, 512, L"SELECT sql FROM sqlite_master WHERE name='%ls'", path.c_str());
