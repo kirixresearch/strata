@@ -382,7 +382,7 @@ bool SlDatabase::createFolder(const std::wstring& path)
     
     std::wstring sql = L"CREATE TABLE ";
     sql += objname;
-    sql += L" (xdsqlite_folder text)";
+    sql += L" (xdt_folder text)";
     
     xcm::IObjectPtr resobj;
     return execute(sql, 0, resobj, NULL);
@@ -402,7 +402,7 @@ bool SlDatabase::createStream(const std::wstring& path,
     sqlite3_exec(m_sqlite, sql.c_str(), NULL, NULL, NULL);
 
     sql = "CREATE TABLE " + objname;
-    sql += " (xdsqlite_stream text, block_id integer primary key autoincrement, data blob)";
+    sql += " (xdt_stream text, block_id integer primary key autoincrement, data blob)";
 
     if (SQLITE_OK != sqlite3_exec(m_sqlite, sql.c_str(), NULL, NULL, NULL))
     {
@@ -410,7 +410,7 @@ bool SlDatabase::createStream(const std::wstring& path,
     }
 
     // insert header row
-    sql = "INSERT INTO " + objname + " (xdsqlite_stream, block_id, data) VALUES (?, 0, ZEROBLOB(0))";
+    sql = "INSERT INTO " + objname + " (xdt_stream, block_id, data) VALUES (?, 0, ZEROBLOB(0))";
     if (sqlite3_prepare_v2(m_sqlite, sql.c_str(), -1, &stmt, NULL))
     {
         return false;
@@ -420,7 +420,7 @@ bool SlDatabase::createStream(const std::wstring& path,
     sqlite3_step(stmt);
 
     // insert first block with zero-length blob
-    sql = "INSERT INTO " + objname + " (xdsqlite_stream, block_id, data) VALUES ('', 1, ZEROBLOB(0))";
+    sql = "INSERT INTO " + objname + " (xdt_stream, block_id, data) VALUES ('', 1, ZEROBLOB(0))";
     if (sqlite3_prepare_v2(m_sqlite, sql.c_str(), -1, &stmt, NULL))
     {
         return false;
@@ -537,9 +537,9 @@ xd::IFileInfoPtr SlDatabase::getFileInfo(const std::wstring& path)
     kl::makeLower(str);
     f->object_id = kl::md5str(str);
     
-    if (type.find(L"xdsqlite_folder") != -1)
+    if (type.find(L"xdt_folder") != -1)
         f->type = xd::filetypeFolder;
-    else if (type.find(L"xdsqlite_stream") != -1)
+    else if (type.find(L"xdt_stream") != -1)
     {
         f->type = xd::filetypeStream;
         f->mime_type = L"text/plain";
@@ -591,9 +591,9 @@ xd::IFileInfoEnumPtr SlDatabase::getFolderInfo(const std::wstring& path)
         f->type = xd::filetypeTable;
         
         std::wstring sql = kl::fromUtf8(s_sql);
-        if (sql.find(L"xdsqlite_folder") != -1)
+        if (sql.find(L"xdt_folder") != -1)
             f->type = xd::filetypeFolder;
-        else if (sql.find(L"xdsqlite_stream") != -1)
+        else if (sql.find(L"xdt_stream") != -1)
             f->type = xd::filetypeStream;
 
         retval->append(f);
@@ -677,7 +677,7 @@ xd::IStreamPtr SlDatabase::openStream(const std::wstring& path)
 {
     std::wstring object_name = sqliteGetTablenameFromPath(path, false);
     std::wstring escaped_object_name = sqliteGetTablenameFromPath(path, true);
-    std::wstring sql = L"SELECT xdsqlite_stream from " + escaped_object_name;
+    std::wstring sql = L"SELECT xdt_stream from " + escaped_object_name;
     sql += L" ORDER BY block_id LIMIT 1";
 
     sqlite3_stmt* stmt = NULL;
