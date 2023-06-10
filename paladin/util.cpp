@@ -105,7 +105,7 @@ void rot13(wchar_t* s)
 
 void reverse_string(char* str)
 {
-    int inlen = strlen(str);
+    int inlen = (int)strlen(str);
     char* temps = new char[inlen + 1];
     char* c = str + inlen - 1;
     int i = 0;
