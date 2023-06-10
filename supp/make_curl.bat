@@ -16,7 +16,7 @@ xcopy openssl\inc32\*.* deps\include /e
 xcopy openssl\out32\*.lib deps\lib
 cd curl\winbuild
 
-if "%PLATFORM%"=="X64" goto x64
+if "%PLATFORM%"=="x64" goto x64
 
 :x86
 nmake /f makefile.vc mode=static VC=14 DEBUG=no ENABLE_IDN=no ENABLE_WINSSL=yes

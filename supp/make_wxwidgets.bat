@@ -12,7 +12,7 @@ unzip zip\wxwidgets.zip
 cd wxWidgets\build\msw
 
 
-if "%PLATFORM%"=="X64" goto x64
+if "%PLATFORM%"=="x64" goto x64
 :x86
 SET MSBUILD_PLATFORM=Win32
 goto done
