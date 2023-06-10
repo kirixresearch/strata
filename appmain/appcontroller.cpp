@@ -1935,6 +1935,7 @@ static bool isValidOpenExtension(const wxString& ext)
         ext.CmpNoCase(wxT("dbf"))  == 0 ||
         ext.CmpNoCase(wxT("sdb"))  == 0 ||
         ext.CmpNoCase(wxT("sqlite")) == 0 ||
+        ext.CmpNoCase(wxT("duckdb")) == 0 ||
         ext.CmpNoCase(wxT("mdb"))  == 0 ||
         ext.CmpNoCase(wxT("accdb")) == 0 ||
         ext.CmpNoCase(wxT("xls"))  == 0 ||
@@ -2090,6 +2091,8 @@ void AppController::onOpenFile(wxCommandEvent& evt)
     filter += wxT(" (*.kpg)|*.kpg|");
     filter += _("Sqlite databases");
     filter += wxT(" (*.sdb, *.sqlite)|*.sdb;*.sqlite|");
+    filter += _("DuckDb databases");
+    filter += wxT(" (*.duckdb)|*.duckdb|");
     filter += _("HTML Files");
     filter += wxT(" (*.html, *.htm)|*.html;*.htm|");
     filter += _("Script Files");

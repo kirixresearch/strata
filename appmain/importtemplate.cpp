@@ -60,6 +60,7 @@ static wxString serverTypeToString(int type)
     case dbtypeDelimitedText:   return wxT("delimited_text");
     case dbtypeFixedLengthText: return wxT("fixed_length_text");
     case dbtypeSqlite:          return wxT("sqlite");
+    case dbtypeDuckDb:          return wxT("duckdb");
     }
 
     return wxT("");
@@ -67,7 +68,7 @@ static wxString serverTypeToString(int type)
 
 static int stringToServerType(const wxString& str)
 {
-    if (str == wxT("mssql"))             return dbtypeSqlServer;
+    if (str == wxT("mssql"))                  return dbtypeSqlServer;
     else if (str == wxT("mysql"))             return dbtypeMySql;
     else if (str == wxT("oracle"))            return dbtypeOracle;
     else if (str == wxT("postgres"))          return dbtypePostgres;
@@ -80,6 +81,7 @@ static int stringToServerType(const wxString& str)
     else if (str == wxT("delimited_text"))    return dbtypeDelimitedText;
     else if (str == wxT("fixed_length_text")) return dbtypeFixedLengthText;
     else if (str == wxT("sqlite"))            return dbtypeSqlite;
+    else if (str == wxT("duckdb"))            return dbtypeDuckDb;
     else return dbtypeUndefined;
 }
 

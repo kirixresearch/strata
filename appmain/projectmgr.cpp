@@ -75,6 +75,23 @@ static bool is_file_sqlite(const std::wstring& path)
     return (0 == memcmp(buf, "SQLite format 3\0", 16) ? true : false);
 }
 
+static bool is_file_duckdb(const std::wstring& path)
+{
+    char buf[16];
+    memset(buf, 0, 16);
+
+    xf_file_t f = xf_open(path, xfOpen, xfRead, xfShareReadWrite);
+    if (!f)
+    {
+        return false;
+    }
+
+    xf_off_t readbytes = xf_read(f, buf, 1, 16);
+    xf_close(f);
+    return (0 == memcmp(buf+8, "DUCK", 4) ? true : false);
+}
+
+
 std::wstring getDefaultConnectionStringForLocation(const std::wstring& location)
 {
     if (xf_get_directory_exist(location))
@@ -97,6 +114,10 @@ std::wstring getDefaultConnectionStringForLocation(const std::wstring& location)
         if (is_file_sqlite(location))
         {
             return L"Xdprovider=xdsqlite;Database=" + location;
+        }
+        else if (is_file_duckdb(location))
+        {
+            return L"Xdprovider=xdduckdb;Database=" + location;
         }
         else
         {
