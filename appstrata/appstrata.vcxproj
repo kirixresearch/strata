@@ -153,7 +153,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>./config;../appmain;../kl/include;../supp/wxWidgets/include;../supp/wxWidgets/lib/vc_lib/mswud;../supp/wxWidgets/contrib/include;../supp/wxWidgets/src/zlib;../supp/wxpdfdoc/include;../supp/curl/include;../xd/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./config;../appmain;../kl/include;../supp/wxWidgets/include;../supp/wxWidgets/lib/vc_x64_lib/mswud;../supp/wxWidgets/contrib/include;../supp/wxWidgets/src/zlib;../supp/wxpdfdoc/include;../supp/curl/include;../xd/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN32__;WINVER=0x0500;STRICT;UNICODE;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -176,7 +176,7 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase31ud.lib;wxbase31ud_net.lib;wxbase31ud_xml.lib;wxmsw31ud_core.lib;wxmsw31ud_adv.lib;wxmsw31ud_aui.lib;wxmsw31ud_html.lib;wxmsw31ud_stc.lib;wxmsw31ud_webview.lib;wxexpatd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxscintillad.lib;wxregexud.lib;../supp/libharu/src/Debug/libhpdfsd.lib;../supp/curl/builds/libcurl-debug-static-ipv6-sspi-spnego-winssl/lib/libcurl_a_debug.lib;../kl/lib/klud.lib;../kcl/lib/kclud.lib;../jobs/lib/jobsud.lib;../scripthost/lib/scripthostud.lib;../paladin/lib/paladinud.lib;../kscript/lib/kscriptud.lib;../kcanvas/lib/kcanvasud.lib;../webconnect/lib/webconnectud.lib;../supp/libzip/lib/Debug/zipstatic.lib;../supp/zlib/zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase32ud.lib;wxbase32ud_net.lib;wxbase32ud_xml.lib;wxmsw32ud_core.lib;wxmsw32ud_adv.lib;wxmsw32ud_aui.lib;wxmsw32ud_html.lib;wxmsw32ud_stc.lib;wxmsw32ud_webview.lib;wxexpatd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxscintillad.lib;wxregexud.lib;../supp/libharu/src/Debug/libhpdfsd.lib;../supp/curl/builds/libcurl-debug-static-ipv6-sspi-spnego-winssl/lib/libcurl_a_debug.lib;../kl/lib/klud.lib;../kcl/lib/kclud.lib;../jobs/lib/jobsud.lib;../scripthost/lib/scripthostud.lib;../paladin/lib/paladinud.lib;../kscript/lib/kscriptud.lib;../kcanvas/lib/kcanvasud.lib;../webconnect/lib/webconnectud.lib;../supp/libzip/lib/Debug/zipstatic.lib;../supp/zlib/zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_x64_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -266,7 +266,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>./config;../appmain;../kl/include;../supp/wxWidgets/include;../supp/wxWidgets/lib/vc_lib/mswu;../supp/wxWidgets/contrib/include;../supp/wxWidgets/src/zlib;../supp/wxpdfdoc/include;../supp/curl/include;../xd/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./config;../appmain;../kl/include;../supp/wxWidgets/include;../supp/wxWidgets/lib/vc_x64_lib/mswu;../supp/wxWidgets/contrib/include;../supp/wxWidgets/src/zlib;../supp/wxpdfdoc/include;../supp/curl/include;../xd/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>appstrata_BUILD_TIER=3;WIN32;NDEBUG;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN32__;WINVER=0x0500;STRICT;UNICODE;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -289,7 +289,7 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase31u.lib;wxbase31u_net.lib;wxbase31u_xml.lib;wxmsw31u_core.lib;wxmsw31u_adv.lib;wxmsw31u_aui.lib;wxmsw31u_html.lib;wxmsw31u_stc.lib;wxmsw31u_webview.lib;wxscintilla.lib;wxexpat.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;../supp/libharu/src/Release/libhpdfs.lib;../supp/curl/builds/libcurl-release-static-ipv6-sspi-spnego-winssl/lib/libcurl_a.lib;../kl/lib/klu.lib;../kcl/lib/kclu.lib;../jobs/lib/jobsu.lib;../scripthost/lib/scripthostu.lib;../paladin/lib/paladinu.lib;../kscript/lib/kscriptu.lib;../kcanvas/lib/kcanvasu.lib;../webconnect/lib/webconnectu.lib;../supp/libzip/lib/Release/zipstatic.lib;../supp/zlib/zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase32u.lib;wxbase32u_net.lib;wxbase32u_xml.lib;wxmsw32u_core.lib;wxmsw32u_adv.lib;wxmsw32u_aui.lib;wxmsw32u_html.lib;wxmsw32u_stc.lib;wxmsw32u_webview.lib;wxscintilla.lib;wxexpat.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;../supp/libharu/src/Release/libhpdfs.lib;../supp/curl/builds/libcurl-release-static-ipv6-sspi-spnego-winssl/lib/libcurl_a.lib;../kl/lib/klu.lib;../kcl/lib/kclu.lib;../jobs/lib/jobsu.lib;../scripthost/lib/scripthostu.lib;../paladin/lib/paladinu.lib;../kscript/lib/kscriptu.lib;../kcanvas/lib/kcanvasu.lib;../webconnect/lib/webconnectu.lib;../supp/libzip/lib/Release/zipstatic.lib;../supp/zlib/zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_x64_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
