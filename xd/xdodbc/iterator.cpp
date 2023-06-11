@@ -254,7 +254,7 @@ bool OdbcIterator::init(const std::wstring& query)
         field->name = col_name;
         field->odbc_type = col_type;
         field->type = col_xd_type;
-        field->width = col_width;
+        field->width = (int)col_width;
         field->scale = col_scale;
         field->ordinal = i;
 
@@ -400,7 +400,7 @@ bool OdbcIterator::init(const xd::QueryParams& qp)
         if (s.isNull())
             return xcm::null;
 
-        int i, cnt = s.getColumnCount();
+        size_t i, cnt = s.getColumnCount();
 
         query = L"SELECT ";
         for (i = 0; i < cnt; ++i)
@@ -672,9 +672,9 @@ void OdbcIterator::saveRowToCache()
         {
             case xd::typeCharacter:
                 if ((*it)->indicator == SQL_NTS)
-                    width = strlen((*it)->str_val);
+                    width = (int)strlen((*it)->str_val);
                      else
-                    width = (*it)->indicator;
+                    width = (int)((*it)->indicator);
                     
                 if (width >= (*it)->width)
                     width = (*it)->width;
@@ -685,9 +685,9 @@ void OdbcIterator::saveRowToCache()
 
             case xd::typeWideCharacter:
                 if ((*it)->indicator == SQL_NTS)
-                    width = wcslen((*it)->wstr_val) * sizeof(wchar_t);
+                    width = (int)wcslen((*it)->wstr_val) * sizeof(wchar_t);
                      else
-                    width = (*it)->indicator;
+                    width = (int)((*it)->indicator);
                 
                 if (width >= (*it)->width * (int)sizeof(wchar_t))
                     width = (*it)->width * (int)sizeof(wchar_t);
@@ -1136,7 +1136,7 @@ bool OdbcIterator::modifyStructure(const xd::StructureModify& mod_params, xd::IJ
             dai->type = it->params.type;
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
                 
@@ -1368,9 +1368,9 @@ const std::string& OdbcIterator::getString(xd::objhandle_t data_handle)
     if (dai->indicator == SQL_NULL_DATA)
         return empty_string;
     if (dai->indicator == SQL_NTS)
-        width = strlen(dai->str_val);
+        width = (int)strlen(dai->str_val);
          else
-        width = dai->indicator;
+        width = (int)(dai->indicator);
 
     if (width > dai->width)
         width = dai->width;
@@ -1423,9 +1423,9 @@ const std::wstring& OdbcIterator::getWideString(xd::objhandle_t data_handle)
     if (dai->indicator == SQL_NULL_DATA)
         return empty_wstring;
     if (dai->indicator == SQL_NTS)
-        width = wcslen(dai->wstr_val);
+        width = (int)wcslen(dai->wstr_val);
          else
-        width = (dai->indicator/sizeof(wchar_t));
+        width = (int)(dai->indicator/sizeof(wchar_t));
 
     if (dai->type == xd::typeCharacter)
     {
@@ -1929,14 +1929,14 @@ bool OdbcIterator::updateCacheRow(xd::rowid_t rowid,
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)info->str_val.c_str(),
-                                    info->str_val.length());
+                                    (int)info->str_val.length());
                 break;
 
             case xd::typeWideCharacter:
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)info->wstr_val.c_str(),
-                                    info->wstr_val.length()*sizeof(wchar_t));
+                                    (int)info->wstr_val.length()*sizeof(wchar_t));
                 break;
 
 

@@ -91,11 +91,11 @@ bool OdbcRowInserter::putString(xd::objhandle_t column_handle,
         return putWideString(column_handle, kl::towstring(value));
     }
 
-    int copy_len = value.length();
-    if (copy_len > f->m_width)
+    size_t copy_len = value.length();
+    if ((int)copy_len > f->m_width)
         copy_len = f->m_width;
 
-    f->m_indicator = copy_len;
+    f->m_indicator = (SQLLEN)copy_len;
     memcpy(f->m_str_val, value.c_str(), copy_len * sizeof(char));
     f->m_str_val[copy_len] = 0;
 
@@ -116,11 +116,11 @@ bool OdbcRowInserter::putWideString(xd::objhandle_t column_handle,
         return putString(column_handle, kl::tostring(value));
     }
 
-    int copy_len = value.length();
-    if (copy_len > f->m_width)
+    size_t copy_len = value.length();
+    if ((int)copy_len > f->m_width)
         copy_len = f->m_width;
 
-    f->m_indicator = copy_len * sizeof(wchar_t);
+    f->m_indicator = (SQLLEN)(copy_len * sizeof(wchar_t));
     memcpy(f->m_wstr_val, value.c_str(), copy_len * sizeof(wchar_t));
     f->m_wstr_val[copy_len] = 0;
 
@@ -317,7 +317,7 @@ bool OdbcRowInserter::startInsert(const std::wstring& col_list)
         field->m_sql_type = xd2sqlType(xd_type);
         field->m_width = col_info.width;
         field->m_scale = col_info.scale;
-        field->m_idx = i+1;
+        field->m_idx = (int)(i+1);
 
         // initialize the storage elements for this column
         field->m_str_val = new char[field->m_width + 1];

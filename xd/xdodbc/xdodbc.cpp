@@ -298,7 +298,7 @@ public:
         // start a connection
         SQLAllocEnv(&m_env);
         SQLAllocConnect(m_env, &m_conn);
-        SQLSetConnectOption(m_conn, SQL_ODBC_CURSORS, SQL_CUR_USE_ODBC);
+        //SQLSetConnectOption(m_conn, SQL_ODBC_CURSORS, SQL_CUR_USE_ODBC);
 
         xd::DatabaseEntryEnum db_list;
         SQLRETURN r;
