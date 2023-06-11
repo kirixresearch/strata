@@ -35,7 +35,7 @@ public:
         
     ~EventSink()
     {
-        if (obj && (long)obj != 1)
+        if (obj && (long long)obj != 1)
         {
             obj->unregisterEventListener(this);
         }
