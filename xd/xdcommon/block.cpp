@@ -351,7 +351,7 @@ bool BlockFile::getPoolFull()
 
 int BlockFile::getPoolFree()
 {
-    return m_free_bufs.size();
+    return (int)m_free_bufs.size();
 }
 
 void BlockFile::flushDirty()
