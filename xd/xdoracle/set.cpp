@@ -466,10 +466,10 @@ bool OracleRowInserter::putString(xd::objhandle_t column_handle,
 {
     OracleInsertData* f = (OracleInsertData*)column_handle;
 
-    int len = value.length();
+    size_t len = value.length();
     unsigned char* pos = m_buf+(m_cur_buf_row*m_row_width)+f->m_buf_offset;
 
-    if (len <= f->m_xd_width)
+    if ((int)len <= f->m_xd_width)
     {
         memcpy(pos, value.c_str(), len+1);
     }
@@ -492,10 +492,10 @@ bool OracleRowInserter::putWideString(xd::objhandle_t column_handle,
         return putString(column_handle, kl::tostring(value));
     }
 
-    int len = value.length();
+    size_t len = value.length();
     unsigned char* pos = m_buf+(m_cur_buf_row*m_row_width)+f->m_buf_offset;
 
-    if (len <= f->m_xd_width)
+    if ((int)len <= f->m_xd_width)
     {
         memcpy(pos, value.c_str(), (len+1)*sizeof(wchar_t));
     }
@@ -769,7 +769,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
                                       &(*it2)->m_bind,
                                       m_err,
                                       (text*)var_name.c_str(),
-                                      var_name.length(),
+                                      (sb4)var_name.length(),
                                       (dvoid*)(m_buf+(*it2)->m_buf_offset),
                                       (*it2)->m_oracle_width,
                                       (ub2)(*it2)->m_oracle_type,
