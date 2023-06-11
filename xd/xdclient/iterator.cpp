@@ -597,7 +597,7 @@ bool ClientIterator::modifyStructure(const xd::StructureModify& mod_params, xd::
             dai->type = it->params.type;
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
             dai->calculated = true;
@@ -623,7 +623,7 @@ bool ClientIterator::modifyStructure(const xd::StructureModify& mod_params, xd::
             dai->type = it->params.type;
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
             dai->calculated = true;
@@ -972,7 +972,7 @@ bool ClientIterator::refreshDataAccessInfo()
         dai->type = info.type;
         dai->width = info.width;
         dai->scale = info.scale;
-        dai->ordinal = m_fields.size();
+        dai->ordinal = (int)m_fields.size();
         dai->calculated = info.calculated;
         dai->expr_text = info.expression;
 

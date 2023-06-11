@@ -62,7 +62,7 @@ bool ClientStream::read(void* pv,
     char* tmpbuf = new char[content.length()];
     kl::base64_decodestate state;
     kl::base64_init_decodestate(&state);
-    int len = kl::base64_decode_block(content.c_str(), content.length(), tmpbuf, &state);
+    int len = kl::base64_decode_block(content.c_str(), (int)content.length(), tmpbuf, &state);
     tmpbuf[len] = 0;
 
     memcpy(pv, tmpbuf, len);
