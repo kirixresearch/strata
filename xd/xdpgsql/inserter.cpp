@@ -355,11 +355,15 @@ bool PgsqlRowInserter::flush()
     if (!m_buf_rows)
         return true;
 
-    int required_utf8data_len = m_wdata.length()*6;
+    size_t required_utf8data_len = m_wdata.length()*6;
     if (required_utf8data_len > m_utf8data_len)
     {
-        m_utf8data = (char*)realloc(m_utf8data, required_utf8data_len);
-        m_utf8data_len = required_utf8data_len;
+        char* larger_buf = (char*)realloc(m_utf8data, required_utf8data_len);
+        if (!larger_buf)
+            return false;
+
+        m_utf8data = larger_buf;
+        m_utf8data_len = (int)required_utf8data_len;
     }
 
     size_t output_buf_size = 0;

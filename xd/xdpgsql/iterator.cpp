@@ -677,7 +677,7 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res, const xd::FormatDefinition
             dai->type = it->type;
             dai->width = it->width;
             dai->scale = it->scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->expression;
             dai->expr = parse(it->expression);
                 
@@ -1211,7 +1211,7 @@ bool PgsqlIterator::refreshStructure()
             dai->type = col.type;
             dai->width = col.width;
             dai->scale = col.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = col.expression;
             dai->expr = NULL;
             
@@ -1311,7 +1311,7 @@ bool PgsqlIterator::modifyStructure(const xd::StructureModify& mod_params, xd::I
             dai->type = it->params.type;
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
                 
