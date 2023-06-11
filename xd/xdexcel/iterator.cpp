@@ -185,7 +185,7 @@ bool ExcelIterator::refreshStructure()
     m_structure.clear();
 
     xlnt::column_t coln = m_ws->highest_column();
-    size_t i;
+    xlnt::column_t::index_t i;
 
     for (i = 1; i <= coln.index; ++i)
     {

@@ -384,9 +384,8 @@ xd::IFileInfoPtr ExcelDatabase::getFileInfo(const std::wstring& path)
     }
     
     xd::IFileInfoEnumPtr files = getFolderInfo(folder);
-    int i, count;
-    
-    count = files->size();
+
+    size_t i, count = files->size();
     for (i = 0; i < count; ++i)
     {
         xd::IFileInfoPtr finfo = files->getItem(i);
