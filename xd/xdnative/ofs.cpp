@@ -216,7 +216,7 @@ unsigned int OfsValue::getChildCount()
 {
     KL_AUTO_LOCK(m_iv->m_object_mutex);
 
-    return m_iv->m_children.size();
+    return (unsigned int)m_iv->m_children.size();
 }
 
 const std::wstring empty_value = L"";
@@ -274,7 +274,7 @@ INodeValuePtr OfsValue::createChild(const std::wstring& name)
     new_child->m_value = L"";
 
     m_iv->m_children.push_back(new_child);
-    m_iv->m_lookup_map[name] = m_iv->m_children.size() - 1;
+    m_iv->m_lookup_map[name] = (int)m_iv->m_children.size() - 1;
 
     OfsValue* v = new OfsValue(m_file, new_child);
     return static_cast<INodeValue*>(v);
@@ -402,7 +402,7 @@ void OfsValue::unref()
 int OfsValue::get_ref_count()
 {
     m_refcount_mutex.lock();
-    int result = m_refcount_holder.xcm_ref_count;
+    int result = (int)(m_refcount_holder.xcm_ref_count);
     m_refcount_mutex.unlock();
     return result;
 }
@@ -476,7 +476,7 @@ static InternalOfsValue* xmlToOfsValue(OfsFile* file, kl::xmlnode& node)
     if (entries_idx != -1)
     {
         kl::xmlnode& entries_node = node.getChild(entries_idx);
-        int entry_count = entries_node.getChildCount();
+        int entry_count = (int)entries_node.getChildCount();
 
         for (int i = 0; i < entry_count; ++i)
         {
