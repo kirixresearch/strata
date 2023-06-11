@@ -314,7 +314,7 @@ void func_substr(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     }
 
     const wchar_t* str = env->m_eval_params[0]->getString();
-    int str_len = wcslen(str);
+    int str_len = (int)wcslen(str);
     int p1 = env->m_eval_params[1]->getInteger();
 
     // handle negative offset, i.e. substr('hello', -2, 2) should return 'lo'
@@ -377,7 +377,7 @@ void func_substr(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 void func_len(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
     const wchar_t* str = env->m_eval_params[0]->getString();
-    int result = wcslen(str);
+    int result = (int)wcslen(str);
     retval->setInteger(result);
 }
 
@@ -427,7 +427,7 @@ void func_ltrim(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 int internal_rtrim(wchar_t* result, const wchar_t* str, const wchar_t* trim_chars)
 {
-    int len = wcslen(str);
+    int len = (int)wcslen(str);
     if (len == 0)
     {
         *result = 0;
@@ -457,7 +457,7 @@ int internal_rtrim(wchar_t* result, const wchar_t* str, const wchar_t* trim_char
         return 0;
     }
 
-    int result_length = last_char-str+1;
+    int result_length = ((int)(last_char-str)) + 1;
     memcpy(result, str, result_length * sizeof(wchar_t));
     result[result_length] = 0;
     
@@ -570,7 +570,7 @@ void func_lpad(kscript::ExprEnv* env, void* param, kscript::Value* retval)
         wchar_t* p2 = env->m_eval_params[2]->getString();
         if (p2)
         {
-            int p2_len = wcslen(p2);
+            int p2_len = (int)wcslen(p2);
             if (p2_len > 0)
             {
                 fill_str = p2;
@@ -582,7 +582,7 @@ void func_lpad(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     retval->setStringLen(fill_len);
     wchar_t* result = retval->getString();
 
-    int copy_len = wcslen(str);
+    int copy_len = (int)wcslen(str);
     if (copy_len > fill_len)
         copy_len = fill_len;
     for (int i = 0; i < fill_len; ++i)
@@ -622,7 +622,7 @@ void func_rpad(kscript::ExprEnv* env, void* param, kscript::Value* retval)
         wchar_t* p2 = env->m_eval_params[2]->getString();
         if (p2)
         {
-            int p2_len = wcslen(p2);
+            int p2_len = (int)wcslen(p2);
             if (p2_len > 0)
             {
                 fill_str = p2;
@@ -631,7 +631,7 @@ void func_rpad(kscript::ExprEnv* env, void* param, kscript::Value* retval)
         }
     }
 
-    int copy_len = wcslen(str);
+    int copy_len = (int)wcslen(str);
 
     retval->setStringLen(fill_len);
 
@@ -1085,7 +1085,7 @@ void func_strpart(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     if (end == NULL)
         end = str;
 
-    retval->setString(start, end-start);
+    retval->setString(start, (int)(end-start));
 }
 
 
@@ -1334,7 +1334,7 @@ void func_tochar_number(kscript::ExprEnv* env, void* param, kscript::Value* retv
 
 
     // find decimal point in the input number
-    dbltowstr(strnum, kl::dblround(env->getParam(0)->getDouble(), right_format_digits));
+    dbltowstr(strnum, kl::dblround(env->getParam(0)->getDouble(), (int)right_format_digits));
     dec = NULL;
     p = strnum;
     left = true;
@@ -2354,7 +2354,7 @@ void func_asckey(kscript::ExprEnv* env, void* param, kscript::Value* retval)
             
             unsigned int cpylen = (unsigned int)len;
             if (s.length() < cpylen)
-                cpylen = s.length();
+                cpylen = (unsigned int)s.length();
             memcpy(result, s.c_str(), cpylen);
         }
         break;
@@ -2456,7 +2456,7 @@ void func_clean(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     // clean interior
     if (clean_type == CleanType_All)
     {
-        retval->setStringLen(end-start+10);
+        retval->setStringLen((unsigned int)(end-start+10));
         wchar_t* result = retval->getString();
         wchar_t* p;
         wchar_t* out = result;
@@ -2478,12 +2478,12 @@ void func_clean(kscript::ExprEnv* env, void* param, kscript::Value* retval)
         }
 
         *out = L'\0';
-        retval->setStringLen(out-result);
+        retval->setStringLen((unsigned int)(out-result));
         return;
     }
 
 
-    retval->setString(start, end-start+1);
+    retval->setString(start, (int)(end-start+1));
 }
 
 void func_filterdigits(kscript::ExprEnv* env, void* param, kscript::Value* retval)
@@ -2591,7 +2591,7 @@ void func_left(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     wchar_t* resp = retval->getString();
     wcsncpy(resp, p0, p1);
     *(resp+p1) = 0;
-    retval->setStringLen(wcslen(resp));
+    retval->setStringLen((unsigned int)wcslen(resp));
 }
 
 
@@ -2637,7 +2637,7 @@ void func_lfind(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     const wchar_t* p1 = env->m_eval_params[1]->getString();
     const wchar_t* p;
     int occurance = 1;
-    int p1_len = wcslen(p1);
+    int p1_len = (int)wcslen(p1);
 
     if (env->m_param_count == 3)
     {
@@ -2664,7 +2664,7 @@ void func_lfind(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
         if (--occurance == 0)
         {
-            retval->setInteger((p-p0)+1);
+            retval->setInteger((int)((p-p0)+1));
             return;
         }
 
@@ -2678,7 +2678,7 @@ void func_rfind(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     const wchar_t* p1 = env->m_eval_params[1]->getString();
     const wchar_t* p;
     int occurance = 1;
-    int p1_len = wcslen(p1);
+    int p1_len = (int)wcslen(p1);
 
     if (env->m_param_count == 3)
     {
@@ -2717,7 +2717,7 @@ void func_rfind(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
         if (--occurance == 0)
         {
-            retval->setInteger((p-p0)+1);
+            retval->setInteger((int)((p-p0)+1));
             return;
         }
 
@@ -2781,7 +2781,7 @@ void func_translate(kscript::ExprEnv* env, void* param, kscript::Value* retval)
         cmpc = wcschr(p1, *inp);
         if (cmpc)
         {
-            int off = cmpc-p1;
+            int off = (int)(cmpc-p1);
             if (off < p2_len)
             {
                 *outp = *(p2+off);
@@ -2802,7 +2802,7 @@ void func_translate(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     // reset the string length to the actual output length
     // the string length will change in situations like this:
     // translate("ABC", "B", "")
-    retval->setStringLen(outp-outstr);
+    retval->setStringLen((unsigned int)(outp-outstr));
 }
 
 
@@ -2980,7 +2980,7 @@ void func_soundex(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     }
 
     *outp = 0;
-    retval->setStringLen(outp - start);
+    retval->setStringLen((unsigned int)(outp - start));
 }
 
 
@@ -3043,7 +3043,7 @@ void func_crc64(kscript::ExprEnv* env, void* param, kscript::Value* retval)
         case kscript::Value::typeString:
         {
             wchar_t* s = p0->getString();
-            crc64((unsigned char*)s, wcslen(s)*sizeof(wchar_t), &result);
+            crc64((unsigned char*)s, (int)(wcslen(s) * sizeof(wchar_t)), &result);
         }
         break;
 
@@ -3241,7 +3241,7 @@ void func_regexp(kscript::ExprEnv* env, void* param, kscript::Value* retval)
         {
             std::wstring result;
             result = match.format(rewrite);
-            retval->setString(result.c_str(), result.length());
+            retval->setString(result.c_str(), (int)result.length());
             return;
         }
          else
@@ -3252,7 +3252,7 @@ void func_regexp(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
                 if (m.isValid())
                 {
-                    retval->setString(m.first, m.length());
+                    retval->setString(m.first, (int)m.length());
                     return;
                 }
             }
@@ -3271,7 +3271,7 @@ void func_regexp_replace(kscript::ExprEnv* env, void* param, kscript::Value* ret
 
     g_regex_map.replace(expr, str, replace);
 
-    retval->setString(str.c_str(),str.length());
+    retval->setString(str.c_str(), (int)str.length());
 }
 
 

@@ -2141,7 +2141,7 @@ void ExIndex::finishBulkInsert(IIndexProgress* progress)
     }
      else
     {
-        int pool_file_count = m_pool_files.size();
+        int pool_file_count = (int)m_pool_files.size();
         ExKeyPoolFileReader* pools = new ExKeyPoolFileReader[pool_file_count];
         
         ExKeyPoolCombiner pool_aggregate(m_keylen+m_vallen, m_keylen);

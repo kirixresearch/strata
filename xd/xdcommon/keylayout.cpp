@@ -56,8 +56,8 @@ bool KeyLayout::setKeyExpr(xd::IIteratorPtr iter,
         
         kl::trim(expr);
 
-        int last_space_pos = expr.find_last_of(L' ');
-        if (last_space_pos != -1)
+        size_t last_space_pos = expr.find_last_of(L' ');
+        if (last_space_pos != expr.npos)
         {
             dir = kl::afterLast(expr, L' ');
             kl::makeUpper(dir);
@@ -116,7 +116,7 @@ const unsigned char* KeyLayout::getKey()
                 case xd::typeCharacter:
                 {
                     const std::string& s = m_iter->getString(part_it->handle);
-                    int copy_len = s.length();
+                    int copy_len = (int)s.length();
                     if (copy_len > part_it->width)
                     {
                         m_trunc = true;
@@ -130,7 +130,7 @@ const unsigned char* KeyLayout::getKey()
                 case xd::typeWideCharacter:
                 {
                     const std::wstring& s = m_iter->getWideString(part_it->handle);
-                    int copy_len = s.length();
+                    int copy_len = (int)s.length();
                     if (copy_len*2 > part_it->width)
                     {
                         m_trunc = true;
@@ -358,7 +358,7 @@ const unsigned char* KeyLayout::getKeyFromValues(const wchar_t* values[], size_t
                     copy_len = (part_it->width/2);
                 }
                 memset(ptr, 0, part_it->width);
-                kl::wstring2ucsbe(ptr, s, copy_len);
+                kl::wstring2ucsbe(ptr, s, (int)copy_len);
             }
             break;
 

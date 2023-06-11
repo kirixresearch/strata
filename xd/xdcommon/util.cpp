@@ -213,7 +213,7 @@ bool parseDateTime(const std::wstring& input,
     }
 
     // extract information
-    int part_count = parts.size();
+    int part_count = (int)parts.size();
     if (part_count < 3)
     {
         // if we only have one part, and we have 8 digits,
@@ -496,7 +496,7 @@ std::wstring makePathName(const std::wstring& base_dir,
     }
     
     
-    int pos = 0;
+    size_t pos = 0;
     while (1)
     {
         #ifdef WIN32
@@ -505,7 +505,7 @@ std::wstring makePathName(const std::wstring& base_dir,
         pos = final.find(L'\\', pos);
         #endif
         
-        if (pos == -1)
+        if (pos == final.npos)
             break;
             
         final[pos] = sl;
@@ -534,8 +534,8 @@ std::wstring getTablenameFromOfsPath(const std::wstring& _path)
     }
     
 
-    int len = path.length();
-    for (int i = 0; i < len; ++i)
+    size_t i, len = path.length();
+    for (i = 0; i < len; ++i)
     {
         if (path[i] == L'/')
         {
@@ -570,7 +570,7 @@ std::wstring getTablenameFromFilesystemPath(const std::wstring& _path)
     // now that we have the last chunk of the filesystem path, remove
     // the file extension, if it exists
     
-    length = path.length();
+    length = (int)path.length();
     for (i = 0; i < length; ++i)
     {
         if (path[i] == L'.')
@@ -683,7 +683,7 @@ wchar_t* zl_stristr(wchar_t* str,
                     bool single_word,
                     bool forward)
 {
-    int str_len = wcslen(search_str);
+    int str_len = (int)wcslen(search_str);
     int paren_level = 0;
     int bracket_level = 0;
     wchar_t quote_char = 0;
@@ -818,12 +818,12 @@ bool getIndexExpressionMatch(const std::wstring& expr1, const std::wstring& expr
     kl::parseDelimitedList(expr1, elements1, L',');
     kl::parseDelimitedList(expr2, elements2, L',');
 
-    int e1s = elements1.size();
+    size_t e1s = elements1.size();
     
     if (e1s != elements2.size())
         return false;
 
-    int i;
+    size_t i;
     for (i = 0; i < e1s; ++i)
     {
         kl::trim(elements1[i]);
@@ -862,8 +862,7 @@ xd::IndexInfo xdLookupIndex(const xd::IndexInfoEnum& idx_enum,
 
         if (exact_column_order)
         {
-            int col_count = idx_cols.size();
-            int j;
+            size_t j, col_count = idx_cols.size();
             bool match = true;
 
             for (j = 0; j < col_count; ++j)
@@ -882,8 +881,7 @@ xd::IndexInfo xdLookupIndex(const xd::IndexInfoEnum& idx_enum,
         }
          else
         {
-            int col_count = idx_cols.size();
-            int j, k;
+            size_t j, k, col_count = idx_cols.size();
             bool match = true;
 
             for (j = 0; j < col_count; ++j)
@@ -894,8 +892,7 @@ xd::IndexInfo xdLookupIndex(const xd::IndexInfoEnum& idx_enum,
 
                 for (k = 0; k < col_count; ++k)
                 {
-                    if (0 == wcscasecmp(idx_cols[j].c_str(),
-                                        expr_cols[k].c_str()))
+                    if (0 == wcscasecmp(idx_cols[j].c_str(), expr_cols[k].c_str()))
                     {
                         found = true;
                         break;
@@ -906,14 +903,12 @@ xd::IndexInfo xdLookupIndex(const xd::IndexInfoEnum& idx_enum,
                 {
                     match = false;
                 }
-
             }
 
             if (match)
             {
                 return idx_enum[i];
             }
-
         }
     }
 
@@ -1738,8 +1733,8 @@ inline int min3(int a, int b, int c)
 
 int levenshtein(const wchar_t* s, const wchar_t* t)
 {
-    int m = wcslen(s);
-    int n = wcslen(t);
+    int m = (int)wcslen(s);
+    int n = (int)wcslen(t);
     int i, j;
 
     int* d = new int[(m+1)*(n+1)];
