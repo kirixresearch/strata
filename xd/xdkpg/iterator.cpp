@@ -452,8 +452,11 @@ const std::string& KpgIterator::getString(xd::objhandle_t data_handle)
         const unsigned char* col_data = m_row+dai->offset;
         const unsigned char* p = (const unsigned char*)memchr(col_data, 0, real_width);
         if (p)
-            real_width = p-col_data;
-        dai->str_result.assign((const char*)col_data, real_width);
+        {
+            real_width = (int)(p-col_data);
+        }
+
+        dai->str_result.assign((const char*)col_data, (size_t)real_width);
     }
 
     return dai->str_result;

@@ -97,7 +97,7 @@ xd::Structure xdkpgXmlToStructure(kl::xmlnode& node)
 {
     xd::Structure s;
 
-    int i, child_count = node.getChildCount();
+    size_t i, child_count = node.getChildCount();
 
     for (i = 0; i < child_count; ++i)
     {
@@ -444,9 +444,7 @@ xd::IFileInfoPtr KpgDatabase::getFileInfo(const std::wstring& path)
     }
     
     xd::IFileInfoEnumPtr files = getFolderInfo(folder);
-    int i, count;
-    
-    count = files->size();
+    size_t i, count = files->size();
     for (i = 0; i < count; ++i)
     {
         xd::IFileInfoPtr finfo = files->getItem(i);
