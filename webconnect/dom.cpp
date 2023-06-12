@@ -22,9 +22,21 @@ public:
     
     bool ProcessEvent(wxEvent& evt)
     {
+        #ifdef _MSC_VER
+                // this library will never work on 64-bit, so just ignore these warnings
+        #pragma warning(push)
+        #pragma warning(disable:4312)
+        #endif
+
         wxDOMNodeData* data = (wxDOMNodeData*)(((wxCommandEvent&)evt).GetExtraLong());
         delete data;
         return true;
+
+        #ifdef _MSC_VER
+        #pragma warning(pop)
+        #endif
+
+
     }
 };
 
@@ -58,9 +70,20 @@ wxDOMNode::~wxDOMNode()
     {
         if (m_data)
         {
+            #ifdef _MSC_VER
+            // this library will never work on 64-bit, so just ignore these warnings
+            #pragma warning(push)
+            #pragma warning(disable:4302)
+            #pragma warning(disable:4311)
+            #endif
+
             wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 10000);
             evt.SetExtraLong((long)m_data);
             ::wxPostEvent(&g_dom_node_data_deleter, evt);
+
+            #ifdef _MSC_VER
+            #pragma warning(pop)
+            #endif
         }
     }
 }
