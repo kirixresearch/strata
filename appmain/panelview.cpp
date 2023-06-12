@@ -463,7 +463,7 @@ void ViewPanel::populateVisibleFieldsList()
     int i, count = info->cols.size();
     for (i = 0; i < count; ++i)
     {
-        wxString col_name = makeProper(info->cols[i].name);
+        wxString col_name = info->cols[i].name;
         insertViewColumn(i, col_name, &(info->cols[i]));
     }
     

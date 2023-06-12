@@ -386,7 +386,7 @@ void ColPropsPanel::populate()
     }
 
 
-    setName(makeProper(m_orig_name));
+    setName(m_orig_name);
     if (m_orig_type == xd::typeDateTime)
     {
         setType(xd::typeDateTime);

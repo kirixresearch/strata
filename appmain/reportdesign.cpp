@@ -4069,7 +4069,7 @@ wxString CompReportDesign::getGroupFields(const wxString& group_name, bool all)
         if (!first)
             group_fields += wxT(", ");
             
-        group_fields += makeProper(it->m_group_field);
+        group_fields += it->m_group_field;
         first = false;
 
         if (it->m_name == group_name)
