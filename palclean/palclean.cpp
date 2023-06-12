@@ -149,7 +149,7 @@ void removeForAppTag(LPCTSTR company_name, LPCTSTR tag)
     paladin::paladin_int64_t ik;
     
     // first fingerprint string will be the crc32 of the eval tag
-    unsigned long eval_tag_crc = paladin::crc32((unsigned char*)tag, strlen(tag));
+    unsigned long eval_tag_crc = paladin::crc32((unsigned char*)tag, (int)strlen(tag));
     sprintf(fingerprint1, "%08X", eval_tag_crc);
 
     // second fingerprint string will be an int64 suitably randomized
