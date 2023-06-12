@@ -445,7 +445,7 @@ bool FixedLengthRow::putString(int column_ordinal, const std::string& value)
     {
         memset(m_rowptr + dai->source_offset, 0, dai->width);
 
-        int write_len = value.length();
+        int write_len = (int)value.length();
         if (write_len > dai->width)
             write_len = dai->width;
 
@@ -485,7 +485,7 @@ bool FixedLengthRow::putWideString(int column_ordinal, const std::wstring& value
 
         std::string ascvalue = kl::tostring(value);
 
-        int write_len = ascvalue.length();
+        int write_len = (int)ascvalue.length();
         if (write_len > dai->width)
             write_len = dai->width;
 

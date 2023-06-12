@@ -363,7 +363,7 @@ size_t BufferedTextFile::getBytes(unsigned char* p, size_t len)
             return 0;
 
         unsigned long bytes_read = 0;
-        m_stream->read(p, len, &bytes_read);
+        m_stream->read(p, (unsigned long)len, &bytes_read);
         return bytes_read;
     }
      else

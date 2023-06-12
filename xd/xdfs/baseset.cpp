@@ -400,7 +400,7 @@ bool XdfsBaseSet::deleteCalcField(const std::wstring& _name)
         size_t i, cnt = calculated_fields.getChildCount();
         for (i = 0; i < cnt; ++i)
         {
-            kl::JsonNode field = calculated_fields[i];
+            kl::JsonNode field = calculated_fields[(int)i];
             if (kl::iequals(field["name"], _name))
             {
                 calculated_fields.deleteChild(i);
@@ -484,7 +484,7 @@ bool XdfsBaseSet::modifyCalcField(const std::wstring& name, const xd::ColumnInfo
         size_t i, cnt = calculated_fields.getChildCount();
         for (i = 0; i < cnt; ++i)
         {
-            kl::JsonNode field = calculated_fields[i];
+            kl::JsonNode field = calculated_fields[(int)i];
             if (kl::iequals(field["name"], name))
             {
                 new_name  = colinfo.name;
@@ -560,7 +560,7 @@ void XdfsBaseSet::appendCalcFields(std::vector<xd::ColumnInfo>& columns)
 
         for (i = 0; i < cnt; ++i)
         {
-            kl::JsonNode field = calculated_fields[i];
+            kl::JsonNode field = calculated_fields[(int)i];
 
             xd::ColumnInfo col;
             col.name = field["name"];

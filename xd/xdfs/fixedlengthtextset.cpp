@@ -184,7 +184,7 @@ inline xd::Structure createDefaultStructure(const xd::Structure& source)
 {
     xd::Structure s;
 
-    int i, col_count = source.getColumnCount();
+    size_t i, col_count = source.getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
         const xd::ColumnInfo&  sourcecol = source.getColumnInfoByIdx(i);
@@ -195,7 +195,7 @@ inline xd::Structure createDefaultStructure(const xd::Structure& source)
         col.width = sourcecol.width;
         col.scale = sourcecol.scale;
         col.expression = sourcecol.name;
-        col.column_ordinal = i;
+        col.column_ordinal = (int)i;
 
         s.createColumn(col);
     }
@@ -529,7 +529,7 @@ bool FixedLengthTextRowInserter::insertRow()
     for (it = m_insert_data.begin(); it != m_insert_data.end(); ++it)
     {
         // (field width - actual data width)
-        diff = (*it)->m_width - (*it)->m_str_val.length();
+        diff = (*it)->m_width - ((int)(*it)->m_str_val.length());
         
         // add the string
         const char* p = (const char*)(*it)->m_str_val.c_str();
@@ -623,7 +623,7 @@ bool FixedLengthTextRowInserter::flush()
         xf_seek(m_file, 0, xfSeekEnd);
     }
 
-    xf_write(m_file, m_buf, m_buf_ptr-m_buf, 1);
+    xf_write(m_file, m_buf, (int)(m_buf_ptr - m_buf), 1);
     m_buf_ptr = m_buf;
     
     return true;

@@ -100,8 +100,8 @@ void checkXbaseField(XbaseField* f)
         }
     }
     
-    f->width = field_width;
-    f->scale = field_scale;
+    f->width = (int)field_width;
+    f->scale = (int)field_scale;
     
     // make sure there are no spaces in the field name
     std::string::iterator it;
@@ -208,8 +208,8 @@ bool XbaseFile::open(xd::IStream* stream)
         field.type = buf[11];
         field.width = buf[16];
         field.scale = buf[17];
-        field.offset = row_offset;
-        field.ordinal = col_ordinal++;
+        field.offset = (int)row_offset;
+        field.ordinal = (int)(col_ordinal++);
 
         kl::makeUpper(field.name);
 
@@ -232,7 +232,7 @@ bool XbaseFile::open(const std::wstring& path)
 {
     if (path.substr(0, 12) == L"streamptr://")
     {
-        unsigned long l = (unsigned long)kl::hexToUint64(path.substr(12));
+        uintptr_t l = (uintptr_t)kl::hexToUint64(path.substr(12));
         xd::IStream* ptr = (xd::IStream*)l;
         return open(ptr);
     }
@@ -355,7 +355,7 @@ bool XbaseFile::create(const std::wstring& filename, const std::vector<XbaseFiel
     header[6] = (unsigned char)((row_count & 0x00ff0000) >> 16);
     header[7] = (unsigned char)((row_count & 0xff000000) >> 24);
 
-    int header_len = field_arr_len+32;
+    int header_len = (int)field_arr_len+32;
     header[8] = (header_len & 0x000000ff);      // header length
     header[9] = (header_len & 0x0000ff00) >> 8;
 
@@ -384,7 +384,7 @@ bool XbaseFile::create(const std::wstring& filename, const std::vector<XbaseFiel
 
     // write out field array info
     written = 0;
-    m_stream->write(flds, field_arr_len, &written);
+    m_stream->write(flds, (unsigned long)field_arr_len, &written);
 
     if (written != field_arr_len)
     {
@@ -977,7 +977,7 @@ bool XbaseFile::writeRow()
     
     // write out the row data to the file
     unsigned long written = 0;
-    m_stream->write(m_buf, m_row_width, &written);
+    m_stream->write(m_buf, (unsigned long)m_row_width, &written);
     
     // clear out the buffer for the next set of rows
     memset(m_buf, ' ', m_buf_maxrows*m_row_width);
@@ -1054,7 +1054,7 @@ bool XbaseFile::flush()
     }
 
     // write out the row data to the file
-    m_stream->write(m_buf, m_buf_rows*m_row_width, &written);
+    m_stream->write(m_buf, (unsigned long)(m_buf_rows*m_row_width), &written);
     
     // write out the file terminator to the file
     unsigned char end_char[1];
@@ -1070,7 +1070,7 @@ bool XbaseFile::flush()
                              (buf[1]*256) +
                              (buf[2]*65536) +
                              (buf[3] * 16777216);
-    row_count += m_buf_rows;
+    row_count += (int)m_buf_rows;
     buf[0] = (row_count & 0x000000ff);
     buf[1] = (row_count & 0x0000ff00) >> 8;
     buf[2] = (row_count & 0x00ff0000) >> 16;
@@ -1129,7 +1129,7 @@ void XbaseFile::goRow(size_t row)
 
     unsigned long read_bytes = 0;
     m_stream->seek(pos);
-    m_stream->read(m_buf, m_row_width * m_buf_maxrows, &read_bytes);
+    m_stream->read(m_buf, (unsigned long)(m_row_width * m_buf_maxrows), &read_bytes);
 
     m_buf_firstrow = row;
     m_currow_ptr = m_buf;

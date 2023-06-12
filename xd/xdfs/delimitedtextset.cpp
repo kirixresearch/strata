@@ -88,8 +88,8 @@ bool DelimitedTextSet::init(const std::wstring& url, const xd::FormatDefinition&
         
         // look for an extension -- if no extension, assume csv
         std::wstring ext;
-        int ext_pos = url.find_last_of(L'.');
-        if (ext_pos >= 0)
+        size_t ext_pos = url.find_last_of(L'.');
+        if (ext_pos != url.npos)
             ext = url.substr(ext_pos+1);
              else
             ext = L"csv";
@@ -956,7 +956,7 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
     // scan through the file to gather column information
     while (!m_file.eof())
     {
-        row_cell_count = m_file.getRowCellCount();
+        row_cell_count = (int)m_file.getRowCellCount();
 
         // the current row has more cells than any of the preceeding rows
         while (col_count < row_cell_count)
@@ -995,7 +995,7 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
         for (j = 0; j < row_cell_count; ++j)
         {
             const std::wstring& str = m_file.getString(j);
-            width = str.length();
+            width = (int)str.length();
 
             // note: extra blank lines in a delimited file can cause the field
             // type of the first row to be changed to character (e.g. if the 

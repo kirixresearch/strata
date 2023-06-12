@@ -141,7 +141,7 @@ public:
             return false;
 
         sqlite3_bind_int(stmt, 1, rownum);
-        sqlite3_bind_blob(stmt, 2, (const void*)(const wchar_t*)rowstr.c_str(), (rowstr.length()+1) * sizeof(wchar_t), SQLITE_STATIC);
+        sqlite3_bind_blob(stmt, 2, (const void*)(const wchar_t*)rowstr.c_str(), (int)((rowstr.length()+1) * sizeof(wchar_t)), SQLITE_STATIC);
 
         sqlite3_step(stmt);
         sqlite3_reset(stmt);
@@ -255,7 +255,7 @@ bool XlsxFile::open(const std::wstring& path)
 {
     if (path.substr(0, 12) == L"streamptr://")
     {
-        unsigned long l = (unsigned long)kl::hexToUint64(path.substr(12));
+        uintptr_t l = (uintptr_t)kl::hexToUint64(path.substr(12));
         xd::IStream* ptr = (xd::IStream*)l;
         return open(ptr);
     }
