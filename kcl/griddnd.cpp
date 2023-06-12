@@ -268,11 +268,11 @@ void GridDataObject::setDragInfo(Grid* grid, bool full_rows)
     int rowdata_count = row_info.size();
     
     int entry_count = celldata_count + rowdata_count + DRAG_METADATA_COUNT;
-    int data_size = entry_count * sizeof(long);
-    unsigned long* data = new unsigned long[data_size];
-    data[IDX_CELLDATA_COUNT] = celldata_count;
-    data[IDX_ROWINFO_COUNT] = rowdata_count;
-    data[IDX_SOURCEGRID_ID] = m_sourcegrid_id;
+    int data_size = entry_count * sizeof(uintptr_t);
+    uintptr_t* data = new uintptr_t[data_size];
+    data[IDX_CELLDATA_COUNT] = (uintptr_t)celldata_count;
+    data[IDX_ROWINFO_COUNT] = (uintptr_t)rowdata_count;
+    data[IDX_SOURCEGRID_ID] = (uintptr_t)m_sourcegrid_id;
 
     // our data index starts right after the number of drag metadata entries
     int data_idx = DRAG_METADATA_COUNT;
@@ -282,7 +282,7 @@ void GridDataObject::setDragInfo(Grid* grid, bool full_rows)
     for (it = dragged_cells.begin(); it != dragged_cells.end(); ++it)
     {
         CellData* cell = (*it);
-        data[data_idx++] = (unsigned long)(cell);
+        data[data_idx++] = (uintptr_t)(cell);
     }
     
     // set the row data information
@@ -290,7 +290,7 @@ void GridDataObject::setDragInfo(Grid* grid, bool full_rows)
     for (it2 = row_info.begin(); it2 != row_info.end(); ++it2)
     {
         GridDraggedRowInfo* ri = (*it2);
-        data[data_idx++] = (unsigned long)(ri);
+        data[data_idx++] = (uintptr_t)(ri);
     }
     
     // restore the grid's row offset and cursor position
@@ -308,7 +308,7 @@ GridDraggedCells GridDataObject::getDraggedCells()
     GridDraggedCells cells;
     GridDraggedCells::iterator it;
     
-    unsigned long* data = (unsigned long*)GetData();
+    uintptr_t* data = (uintptr_t*)GetData();
 
     int i, data_idx;
     int celldata_count = data[IDX_CELLDATA_COUNT];
@@ -333,7 +333,9 @@ GridDraggedCells GridDataObject::getDraggedCells()
         
         // if the cell wasn't found, add it to our cells vector
         if (!found)
+        {
             cells.push_back(cell);
+        }
     }
 
     // now, let's sort the cell list by row and then by column
@@ -343,11 +345,11 @@ GridDraggedCells GridDataObject::getDraggedCells()
 
 GridDraggedRowInfo* GridDataObject::getDraggedRowInfo(int row)
 {
-    unsigned long* data = (unsigned long*)GetData();
+    uintptr_t* data = (uintptr_t*)GetData();
 
     int i, data_idx;
-    int celldata_count = data[IDX_CELLDATA_COUNT];
-    int rowinfo_count = data[IDX_ROWINFO_COUNT];
+    int celldata_count = (int)data[IDX_CELLDATA_COUNT];
+    int rowinfo_count = (int)data[IDX_ROWINFO_COUNT];
     
     for (i = 0; i < rowinfo_count; ++i)
     {
@@ -421,7 +423,7 @@ GridDraggedRows GridDataObject::getDraggedRows()
 
 wxWindowID GridDataObject::getSourceGridId()
 {
-    unsigned long* data = (unsigned long*)GetData();
+    uintptr_t* data = (uintptr_t*)GetData();
     wxWindowID sourcegrid_id = (wxWindowID)(data[IDX_SOURCEGRID_ID]);
     return sourcegrid_id;
 }
