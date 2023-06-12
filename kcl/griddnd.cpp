@@ -169,9 +169,7 @@ GridDataObject::GridDataObject(Grid* grid,
         if (grid->isEditing())
             grid->endEdit(true);
 
-        wxWindowID id = grid->GetId();
-        m_sourcegrid_id = new wxWindowID;
-        *m_sourcegrid_id = id;
+        m_sourcegrid_id = grid->GetId();
         
         setDragInfo(grid);
     }
@@ -274,7 +272,7 @@ void GridDataObject::setDragInfo(Grid* grid, bool full_rows)
     unsigned long* data = new unsigned long[data_size];
     data[IDX_CELLDATA_COUNT] = celldata_count;
     data[IDX_ROWINFO_COUNT] = rowdata_count;
-    data[IDX_SOURCEGRID_ID] = (unsigned long)m_sourcegrid_id;
+    data[IDX_SOURCEGRID_ID] = m_sourcegrid_id;
 
     // our data index starts right after the number of drag metadata entries
     int data_idx = DRAG_METADATA_COUNT;
@@ -424,8 +422,8 @@ GridDraggedRows GridDataObject::getDraggedRows()
 wxWindowID GridDataObject::getSourceGridId()
 {
     unsigned long* data = (unsigned long*)GetData();
-    wxWindowID* sourcegrid_id = (wxWindowID*)(data[IDX_SOURCEGRID_ID]);
-    return *sourcegrid_id;
+    wxWindowID sourcegrid_id = (wxWindowID)(data[IDX_SOURCEGRID_ID]);
+    return sourcegrid_id;
 }
 
 

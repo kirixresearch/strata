@@ -95,7 +95,7 @@ private:
     void setDragInfo(kcl::Grid* grid, bool full_rows = true);
     GridDraggedRowInfo* getDraggedRowInfo(int row);
 
-    wxWindowID* m_sourcegrid_id; // pointer to insert into our "clipboard" data
+    wxWindowID m_sourcegrid_id;
 };
 
 
