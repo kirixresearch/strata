@@ -630,7 +630,7 @@ bool MysqlIterator::modifyStructure(const xd::StructureModify& mod_params, xd::I
             dai->type = it->params.type;
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
             m_fields.push_back(dai);
@@ -655,7 +655,7 @@ bool MysqlIterator::modifyStructure(const xd::StructureModify& mod_params, xd::I
             dai->type = it->params.type;
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
             m_fields.insert(m_fields.begin()+insert_idx, dai);
@@ -1109,14 +1109,14 @@ bool MysqlIterator::updateCacheRow(xd::rowid_t rowid,
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)info->str_val.c_str(),
-                                    info->str_val.length()+1);
+                                    (unsigned int)info->str_val.length()+1);
                 break;
 
             case xd::typeWideCharacter:
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)kl::tostring(info->wstr_val).c_str(),
-                                    info->wstr_val.length()+1);
+                                    (unsigned int)info->wstr_val.length()+1);
                 break;
 
             case xd::typeNumeric:
@@ -1128,7 +1128,7 @@ bool MysqlIterator::updateCacheRow(xd::rowid_t rowid,
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)buf,
-                                    strlen(buf)+1);
+                                    (unsigned int)strlen(buf)+1);
             }
             break;
 
@@ -1140,7 +1140,7 @@ bool MysqlIterator::updateCacheRow(xd::rowid_t rowid,
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)buf,
-                                    strlen(buf)+1);
+                                    (unsigned int)strlen(buf)+1);
             }
             break;
 
@@ -1156,7 +1156,7 @@ bool MysqlIterator::updateCacheRow(xd::rowid_t rowid,
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)buf,
-                                    strlen(buf)+1);
+                                    (unsigned int)strlen(buf)+1);
                 break;
             }
             break;
@@ -1174,7 +1174,7 @@ bool MysqlIterator::updateCacheRow(xd::rowid_t rowid,
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)buf,
-                                    strlen(buf)+1);
+                                    (unsigned int)strlen(buf)+1);
                 break;
             }
             break;
@@ -1189,7 +1189,7 @@ bool MysqlIterator::updateCacheRow(xd::rowid_t rowid,
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)buf,
-                                    strlen(buf)+1);
+                                    (unsigned int)strlen(buf)+1);
             }
             break;
         }

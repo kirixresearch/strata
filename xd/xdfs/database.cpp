@@ -418,11 +418,11 @@ static bool determineSetFormatInfo(xd::IStream* stream, xd::FormatDefinition* in
     }
     
     int max = find_max((int)comma_line_count,
-                        (int)tab_line_count,
-                        (int)semicolon_line_count,
-                        (int)colon_line_count,
-                        (int)pipe_line_count,
-                        (int)tilde_line_count);
+                       (int)tab_line_count,
+                       (int)semicolon_line_count,
+                       (int)colon_line_count,
+                       (int)pipe_line_count,
+                       (int)tilde_line_count);
     
     // at least half of the lines were "sensed" as delimited
     if (max > 0 && lines.size() > 1 && max >= (int)(lines.size()/2))
