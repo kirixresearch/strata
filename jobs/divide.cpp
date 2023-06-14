@@ -115,7 +115,7 @@ int DivideJob::runJob()
     size_t rows_left = max_row_count;
 
 
-    m_job_info->setMaxCount(max_row_count);
+    m_job_info->setMaxCount((double)max_row_count);
 
 
     xd::IJobPtr xd_job;
@@ -149,7 +149,7 @@ int DivideJob::runJob()
         xd::CopyParams info;
         info.iter_input = iter;
         info.output = output_path;
-        info.limit = (rows_left >= output_row_count) ? output_row_count : rows_left;
+        info.limit = (rows_left >= output_row_count) ? (int)output_row_count : (int)rows_left;
         m_db->copyData(&info, xd_job);
 
         if (isCancelling())

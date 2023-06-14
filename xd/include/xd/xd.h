@@ -451,7 +451,7 @@ struct Structure
                 ((Structure*)this)->m_map[it->name] = i++;
         }
         std::map<std::wstring, int, xdcmpnocase>::const_iterator it = m_map.find(name);
-        return (it == m_map.end() ? -1 : it->second);
+        return (it == m_map.end() ? (size_t)-1 : it->second);
       }
 
     void createColumn(const xd::ColumnInfo& col) { columns.push_back(col); m_map.clear(); }

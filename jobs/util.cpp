@@ -78,8 +78,7 @@ xd::IndexInfo lookupIndex(const xd::IndexInfoEnum& idx_enum, const std::wstring&
 
         if (exact_column_order)
         {
-            int col_count = idx_cols.size();
-            int j;
+            int j, col_count = (int)idx_cols.size();
             bool match = true;
 
             for (j = 0; j < col_count; ++j)
@@ -98,7 +97,7 @@ xd::IndexInfo lookupIndex(const xd::IndexInfoEnum& idx_enum, const std::wstring&
         }
          else
         {
-            int col_count = idx_cols.size();
+            int col_count = (int)idx_cols.size();
             int j, k;
             bool match = true;
 

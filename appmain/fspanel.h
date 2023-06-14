@@ -372,16 +372,16 @@ public:
     void setFsItems(IFsItemEnumPtr items)
     {
         size_t item_count = items->size();
-        size_t i, data_size = (FSDATAOBJECT_METADATA_COUNT + item_count) * sizeof(long);
+        size_t i, data_size = (FSDATAOBJECT_METADATA_COUNT + item_count) * sizeof(uintptr_t);
 
-        unsigned long* data = new unsigned long[data_size];
+        uintptr_t* data = new uintptr_t[data_size];
         data[IDX_FSITEM_COUNT] = item_count;
         data[IDX_SOURCE_ID] = m_source_id;
 
         for (i = 0; i < item_count; ++i)
         {
             IFsItemPtr item = items->getItem(i);
-            data[i + FSDATAOBJECT_METADATA_COUNT] = (unsigned long)item.p;
+            data[i + FSDATAOBJECT_METADATA_COUNT] = (uintptr_t)item.p;
         }
 
         SetData(data_size, data);
@@ -391,7 +391,7 @@ public:
 
     wxWindowID getSourceId()
     {
-        unsigned long* data = (unsigned long*)GetData();
+        uintptr_t* data = (uintptr_t*)GetData();
         wxWindowID source_id = (wxWindowID)(data[IDX_SOURCE_ID]);
         return source_id;
     }
@@ -400,9 +400,9 @@ public:
     {
         xcm::IVectorImpl<IFsItemPtr>* v = new xcm::IVectorImpl<IFsItemPtr>;
 
-        unsigned long* data = (unsigned long*)GetData();
+        uintptr_t* data = (uintptr_t*)GetData();
 
-        size_t i, item_count = *data;
+        size_t i, item_count = (size_t)data[IDX_FSITEM_COUNT];
 
         for (i = 0; i < item_count; ++i)
         {

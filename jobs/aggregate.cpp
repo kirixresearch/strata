@@ -94,7 +94,7 @@ int AggregateJob::runJob()
     size_t i, cnt = jobs_node.getChildCount();
     for (i = 0; i < cnt; ++i)
     {
-        kl::JsonNode job_node = jobs_node[i];
+        kl::JsonNode job_node = jobs_node[(int)i];
 
         kl::JsonNode metadata = job_node["metadata"];
         if (!metadata.isOk())

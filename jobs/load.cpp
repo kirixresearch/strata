@@ -120,7 +120,7 @@ int LoadJob::runJob()
     size_t i, cnt = objects_node.getChildCount();
     for (i = 0; i < cnt; ++i)
     {
-        nodes.push_back(objects_node[i]);
+        nodes.push_back(objects_node[(int)i]);
     }
 
 
