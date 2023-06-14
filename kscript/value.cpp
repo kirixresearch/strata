@@ -672,7 +672,7 @@ void Value::clear()
         }
          else if (m_type == typeFunction)
         {
-            if (m_scope && (unsigned long)m_scope > 1)
+            if (m_scope && (uintptr_t)m_scope > 1)
             {
                 m_scope->unref();
                 m_scope = NULL;
@@ -700,7 +700,7 @@ void Value::releaseObject()
 
 void Value::releaseScope()
 {
-    if (isFunction() && m_scope && (unsigned long)m_scope > 1)
+    if (isFunction() && m_scope && (uintptr_t)m_scope > 1)
     {
         m_scope->unref();
         m_scope = NULL;
@@ -1093,7 +1093,7 @@ void Value::toString(Value* retval)
             if (m_scale == 0xff)
             {
                 std::wstring dstr = dbltostr(getDouble());
-                retval->setString(dstr.c_str(), dstr.length());
+                retval->setString(dstr.c_str(), (int)dstr.length());
             }
              else
             {
@@ -1365,9 +1365,10 @@ int Value::getInteger()
 
 void Value::setString(const std::string& str)
 {
-    size_t i,len = str.length();
+    size_t i, len = str.length();
     
-    setStringLen(len);
+    setStringLen((unsigned int)len);
+
     const char* src = str.c_str();
     wchar_t* dest = getString();
     
@@ -1375,6 +1376,7 @@ void Value::setString(const std::string& str)
     {
         *(dest+i) = (unsigned char)*(src+i);
     }
+
     *(dest+len) = 0;
 }
 
@@ -1391,7 +1393,7 @@ void Value::setString(const wchar_t* str, int len)
         if (*str == 0)
             m_datalen = 0;
              else
-            m_datalen = wcslen(str);
+            m_datalen = (unsigned int)wcslen(str);
         allocMem((m_datalen+1)*sizeof(wchar_t));
         memcpy(m_strptr, str, (m_datalen+1)*sizeof(wchar_t));
     }
@@ -1407,8 +1409,7 @@ void Value::setString(const wchar_t* str, int len)
 void Value::appendString(const wchar_t* str, int len)
 {
     if (len == -1)
-        len = wcslen(str);
-
+        len = (int)wcslen(str);
 
     if (!isString())
     {
@@ -1470,7 +1471,7 @@ void Value::setFunction(Function* func, ExprEnv* scope)
     m_type = Value::typeFunction;
     m_funcptrval = func;
     m_scope = scope;
-    if ((unsigned long)m_scope > 1)
+    if ((uintptr_t)m_scope > 1)
         m_scope->ref();
         
     m_obj = func;
