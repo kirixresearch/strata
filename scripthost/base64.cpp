@@ -69,7 +69,7 @@ void Base64::encode(kscript::ExprEnv* env, void* param, kscript::Value* retval)
             kl::base64_encodestate state;
             
             kl::base64_init_encodestate(&state);
-            int l1 = kl::base64_encode_block((char*)m->getBuffer(), m->getBufferSize(), buf, &state);
+            int l1 = kl::base64_encode_block((char*)m->getBuffer(), (int)m->getBufferSize(), buf, &state);
             int l2 = kl::base64_encode_blockend(buf+l1, &state);
             buf[l1+l2] = 0;
             retval->setString(std::string(buf));
@@ -94,7 +94,7 @@ void Base64::encode(kscript::ExprEnv* env, void* param, kscript::Value* retval)
         
         kl::base64_encodestate state;
         kl::base64_init_encodestate(&state);
-        int l1 = kl::base64_encode_block(utf8_buf, utf8_len, base64_buf, &state);
+        int l1 = kl::base64_encode_block(utf8_buf, (int)utf8_len, base64_buf, &state);
         int l2 = kl::base64_encode_blockend(base64_buf+l1, &state);
         int base64_len = l1+l2;
         
@@ -132,7 +132,7 @@ void Base64::decode(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     
     kl::base64_decodestate state;
     kl::base64_init_decodestate(&state);
-    int len = kl::base64_decode_block(str.c_str(), str.length(), buf, &state);
+    int len = kl::base64_decode_block(str.c_str(), (int)str.length(), buf, &state);
 
     buf[len] = 0;
     
@@ -169,7 +169,7 @@ void Base64::decodeToBuffer(kscript::ExprEnv* env, void* param, kscript::Value* 
     
     kl::base64_decodestate state;
     kl::base64_init_decodestate(&state);
-    int len = kl::base64_decode_block(str.c_str(), str.length(), buf, &state);
+    int len = kl::base64_decode_block(str.c_str(), (int)str.length(), buf, &state);
 
     buf[len] = 0;
     

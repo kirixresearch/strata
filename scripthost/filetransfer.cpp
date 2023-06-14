@@ -131,7 +131,7 @@ static int transfer_null_writer_func(void* buffer, size_t size, size_t nmemb, vo
     char* buf = (char*)buffer;
     #endif
     
-    return nmemb;
+    return (int)nmemb;
 }
 
 static int transfer_writer_func(void* buffer, size_t size, size_t nmemb, void* _info)
@@ -151,13 +151,11 @@ static int transfer_writer_func(void* buffer, size_t size, size_t nmemb, void* _
             return -1;
     }
     
-    
     info->request->m_state_mutex.lock();
     info->request->m_total_bytes += (size*nmemb);
     info->request->m_state_mutex.unlock();
 
-
-    return xf_write(info->file, buffer, size, nmemb);
+    return xf_write(info->file, buffer, (unsigned int)size, (unsigned int)nmemb);
 }
 
 
@@ -182,7 +180,7 @@ size_t transfer_reader_func(void* buffer, size_t size, size_t nmemb, void* _info
     info->request->m_total_bytes += (size*nmemb);
     info->request->m_state_mutex.unlock();
 
-    return xf_read(info->file, buffer, size, nmemb);
+    return xf_read(info->file, buffer, (unsigned int)size, (unsigned int)nmemb);
 }
 
 static int curl_debug_func(CURL* curl, curl_infotype type, char* msg, size_t size, void*)

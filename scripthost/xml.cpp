@@ -444,9 +444,10 @@ void XmlNode::getChildCount(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
     
-    // -- get the child count --
+    // return the child count
     int result;
-    result = m_node->getChildCount();
+    result = (int)m_node->getChildCount();
+
     retval->setInteger(result);
 }
 

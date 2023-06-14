@@ -1194,7 +1194,7 @@ void File::putContents(kscript::ExprEnv* env, void* param, kscript::Value* retva
     }
 
 
-    xf_write(f, buf, 1, buf_len);
+    xf_write(f, buf, 1, (unsigned int)buf_len);
     xf_close(f);
     
     retval->setBoolean(true);
@@ -1246,7 +1246,7 @@ void File::getContents(kscript::ExprEnv* env, void* param, kscript::Value* retva
     size_t buf_len = buf.getDataSize();
     if (buf_len >= 2 && ptr[0] == 0xff && ptr[1] == 0xfe)
     {
-        kl::ucsle2wstring(result_text, ptr+2, (buf_len-2)/2);
+        kl::ucsle2wstring(result_text, ptr+2, (int)((buf_len-2)/2));
     }
      else if (buf_len >= 3 && ptr[0] == 0xef && ptr[1] == 0xbb && ptr[2] == 0xbf)
     {
@@ -1332,7 +1332,7 @@ void TextReader::readLine(kscript::ExprEnv* env, kscript::Value* retval)
         retval->setNull();
         return;
     }
-    len = wcslen(m_buf);
+    len = (int)wcslen(m_buf);
     if (len > 0 && m_buf[len-1] == L'\n')
     {
         len--;
