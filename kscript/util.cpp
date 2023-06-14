@@ -14,6 +14,7 @@
 #include <cwctype>
 #include <clocale>
 #include <set>
+#include <cassert>
 
 
 #ifdef WIN32
@@ -189,14 +190,16 @@ wchar_t* ExprParser::zl_stristr(
                     bool case_sense,
                     bool forward)
 {
-    int search_str_len = search_wstr.length();
+    size_t search_str_len = search_wstr.length();
     
     if (!end)
         end = str + wcslen(str);
-        
+    
+    assert(end >= str);
+
     // if the search string is longer than
     // the input string, return NULL
-    if (search_str_len > (end-str))
+    if (end < str || search_str_len > (size_t)(end-str))
         return NULL;
         
     const wchar_t* search_str = search_wstr.c_str();
@@ -664,7 +667,7 @@ bool ExprParser::removeComments(wchar_t* expr)
 std::wstring xtrim(const std::wstring& var)
 {
     std::wstring result;
-    int len = var.length();
+    int len = (int)var.length();
 
     result.reserve(len);
 
@@ -769,7 +772,7 @@ void str2date(ExprDateTime* dt,
         d = wcspbrk(p, separators);
         if (d)
         {
-            int len = d-p;
+            int len = (int)(d-p);
             if (len > 63)
                 len = 63;
             wcsncpy(piece, p, len);
@@ -1346,7 +1349,7 @@ bool parseHexOctConstant(const wchar_t* ch, int base, Value* retval, const wchar
             return false;
         }
         
-        posval = (l - chars);
+        posval = (int)(l - chars);
         total *= base;
         total += double(posval);
         ++p;

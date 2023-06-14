@@ -7565,10 +7565,10 @@ Value* ExprParser::addIntegerValue(const std::wstring& var_name,
 }
 
 Value* ExprParser::addStringValue(const std::wstring& var_name,
-                                const std::wstring& value)
+                                  const std::wstring& value)
 {
     Value* v = new Value;
-    v->setString(value.c_str(), value.length());
+    v->setString(value.c_str(), (int)value.length());
 
     ExprVarBinding b;
     b.m_name = var_name;
@@ -8072,9 +8072,9 @@ void ExprParser::calcErrorInfo()
     }
 
     if (m_error_loc)
-        m_error_offset = m_error_loc - expr;
+        m_error_offset = (int)(m_error_loc - expr);
          else
-        m_error_offset = wcslen(expr);
+        m_error_offset = (int)wcslen(expr);
 }
 
 
