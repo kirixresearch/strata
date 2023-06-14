@@ -115,7 +115,7 @@ void Array::constructor(ExprEnv* env, Value* retval)
     {
         for (size_t i = 0; i < env->m_param_count; ++i)
         {
-            env->m_eval_params[i]->eval(env, getMemberI(i));
+            env->m_eval_params[i]->eval(env, getMemberI((int)i));
         }
     }
 }
@@ -148,7 +148,7 @@ void Array::staticConstructor(ExprEnv* env, void* param, Value* retval)
     {
         for (size_t i = 0; i < env->m_param_count; ++i)
         {
-            env->m_eval_params[i]->eval(env, retval->getMemberI(i));
+            env->m_eval_params[i]->eval(env, retval->getMemberI((int)i));
         }
     }
 }
@@ -466,7 +466,7 @@ void Array::slice(ExprEnv* env, void*, Value* retval)
     
     int i, start, end;
     start = 0;
-    end = vthis->m_members.size();
+    end = (int)vthis->m_members.size();
     
     if (env->getParamCount() < 1)
         return;
@@ -478,11 +478,11 @@ void Array::slice(ExprEnv* env, void*, Value* retval)
         end = env->getParam(1)->getInteger();
         
     if (start < 0)
-        start += vthis->m_members.size();
+        start += (int)vthis->m_members.size();
     if (start < 0)
         start = 0;
     if (end < 0)
-        end += vthis->m_members.size();
+        end += (int)vthis->m_members.size();
     if (end < 0)
         end = 0;
         
@@ -502,7 +502,7 @@ void Array::slice(ExprEnv* env, void*, Value* retval)
         {
             Value* val = vthis->getMember(name);
             
-            swprintf(buf, 32, L"%d", new_idx);
+            swprintf(buf, 32, L"%zu", new_idx);
             buf[31] = 0;
             arr->setMember(buf, val);
         }
@@ -884,7 +884,7 @@ void Array::makeStringRetvalInternal(ValueObject* vthis,
     
     for (i = 0; i < member_count; ++i)
     {
-        swprintf(buf, 64, L"%d", i);
+        swprintf(buf, 64, L"%zu", i);
         buf[63] = 0;
         name = buf;
         
@@ -923,7 +923,7 @@ void Array::makeStringRetvalInternal(ValueObject* vthis,
             res += delim;
     }
 
-    retval->setString(res.c_str(), res.length());
+    retval->setString(res.c_str(), (int)res.length());
 }
 
 

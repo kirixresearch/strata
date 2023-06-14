@@ -293,7 +293,9 @@ void Function::apply(ExprEnv* env, Value* retval)
             fparam_count = len;
             fparams = new Value*[fparam_count];
             for (i = 0; i < len; ++i)
-                fparams[i] = arr->getMemberI(i);
+            {
+                fparams[i] = arr->getMemberI((int)i);
+            }
          }
     }
 

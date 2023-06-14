@@ -497,7 +497,7 @@ void Json::encode(ExprEnv* env,
             Value* new_value = obj->getRawMemberByIdx(idx);
 
             // append the value
-            info.key.setInteger(idx);
+            info.key.setInteger((int)idx);
             encode(env, new_value, replacer, spacer, info);
         }
 

@@ -1086,7 +1086,7 @@ protected:
     
     std::map<std::wstring, int> m_dictionary_m;
     std::vector<std::wstring> m_dictionary_v;
-    size_t m_symbol_counter;
+    int m_symbol_counter;
     
     Value m_exception_obj;
     int m_error_code;
