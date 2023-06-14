@@ -8205,12 +8205,12 @@ void ExprParser::setMaximumDepth(int max_depth)
     m_max_depth = max_depth;
 }
 
-void ExprParser::setExtraLong(long val)
+void ExprParser::setExtraLong(uintptr_t val)
 {
     m_extra_long = val;
 }
 
-long ExprParser::getExtraLong()
+uintptr_t ExprParser::getExtraLong()
 {
     return m_extra_long;
 }

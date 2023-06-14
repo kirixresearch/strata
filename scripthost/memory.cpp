@@ -175,7 +175,7 @@ void MemoryBuffer::setSize(kscript::ExprEnv* env, kscript::Value* retval)
 
 void MemoryBuffer::getSize(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    retval->setInteger(m_size);
+    retval->setInteger((int)m_size);
 }
 
 
@@ -252,7 +252,7 @@ void MemoryBuffer::copy(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1)
     {
         offset = 0;
-        length = m_size;
+        length = (int)m_size;
     }
      else
     {

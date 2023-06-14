@@ -812,8 +812,8 @@ public:
                       ExprParseHookFunc func,
                       void* param);
                       
-    void setExtraLong(long val);
-    long getExtraLong();
+    void setExtraLong(uintptr_t val);
+    uintptr_t getExtraLong();
     
     ExprOperator& addOperator(const std::wstring& oper_name,
                      bool case_sense,
@@ -1082,7 +1082,7 @@ protected:
     int m_language;
     bool m_bindings_defined;
     bool m_cancelled;
-    long m_extra_long;
+    uintptr_t m_extra_long;
     
     std::map<std::wstring, int> m_dictionary_m;
     std::vector<std::wstring> m_dictionary_v;
