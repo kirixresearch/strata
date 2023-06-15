@@ -456,7 +456,7 @@ ScriptHost::ScriptHost()
     m_gui_sync_pos = 0;
     
     m_expr = new kscript::ExprParser(kscript::optionLanguageECMAScript);
-    m_expr->setExtraLong((long)this);
+    m_expr->setExtraLong((uintptr_t)this);
     
     m_retval = new kscript::Value;
 

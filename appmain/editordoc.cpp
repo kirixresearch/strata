@@ -1946,7 +1946,7 @@ void EditorDoc::onFrameEvent(FrameworkEvent& evt)
         wxString text = m_text->GetSelectedText();
         if (text.Length() > 0 && text.Find(wxT('\n')) == wxNOT_FOUND)
         {
-            wxString* val = (wxString*)(evt.l_param);
+            wxString* val = (wxString*)(evt.o_param);
             *val = text;
         }
     }

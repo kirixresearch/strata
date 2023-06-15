@@ -3473,7 +3473,7 @@ void WebDoc::onFavIconAvailable(wxWebEvent& evt)
     // fire a 'document bitmap updated' event
     
     FrameworkEvent* cfw_evt = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_DOC_BITMAP_UPDATED);
-    cfw_evt->o_param = &bitmap;
+    cfw_evt->o_param = (void*)&bitmap;
     g_app->getMainFrame()->sendEvent(cfw_evt);
     
     // if we clicked on a bookmar in the linkbar, update its bitmap

@@ -2444,7 +2444,7 @@ void AppController::doViewSwitcher(bool drop_down_menu)
     // get the list of available views from the active document
     ViewSwitcherList* list = new ViewSwitcherList;
     e1 = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_QUERY_AVAILABLE_VIEW);
-    e1->o_param = (wxObject*)list;
+    e1->o_param = (void*)list;
     main_frame->sendEvent(e1);
 
     int id;
@@ -6684,7 +6684,7 @@ void AppController::showFindPanel()
         wxString val;
 
         FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE);
-        e->l_param = (unsigned long)(&val);
+        e->o_param = (void*)&val;
         g_app->getMainFrame()->sendEvent(e);
 
         if (val.IsEmpty())
@@ -6730,7 +6730,7 @@ void AppController::showFindInFilesPanel()
         wxString val;
 
         FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE);
-        e->l_param = (unsigned long)(&val);
+        e->o_param = (void*)&val;
         g_app->getMainFrame()->sendEvent(e);
 
         if (val.IsEmpty())
@@ -6778,7 +6778,7 @@ void AppController::showReplacePanel()
         wxString val;
 
         FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE);
-        e->l_param = (unsigned long)(&val);
+        e->o_param = (void*)&val;
         g_app->getMainFrame()->sendEvent(e);
 
         if (val.IsEmpty())
