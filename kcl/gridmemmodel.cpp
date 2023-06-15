@@ -262,7 +262,7 @@ bool GridMemModel::setCellProperties(int row,
 }
 
 
-long GridMemModel::getRowData(int row)
+intptr_t GridMemModel::getRowData(int row)
 {
     goRow(row);
 
@@ -274,7 +274,7 @@ long GridMemModel::getRowData(int row)
     return m_rows_it->rowdata;
 }
 
-void GridMemModel::setRowData(int row, long data)
+void GridMemModel::setRowData(int row, intptr_t data)
 {
     goRow(row);
 

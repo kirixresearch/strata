@@ -312,8 +312,8 @@ public:
     virtual void getCellProperties(int row, int col, CellProperties* cell_props) = 0;
     virtual bool setCellProperties(int row, int col, CellProperties* cell_props) = 0;
 
-    virtual long getRowData(int row) = 0;
-    virtual void setRowData(int row, long data) = 0;
+    virtual intptr_t getRowData(int row) = 0;
+    virtual void setRowData(int row, intptr_t data) = 0;
 
     virtual void getCellBitmap(int row, int col, wxBitmap* bitmap, int* alignment) = 0;
     virtual wxString getCellString(int row, int col) = 0;
@@ -403,8 +403,8 @@ public:
     void getCellProperties(int row, int col, CellProperties* cell_props);
     bool setCellProperties(int row, int col, CellProperties* cell_props);
 
-    long getRowData(int row);
-    void setRowData(int row, long data);
+    intptr_t getRowData(int row);
+    void setRowData(int row, intptr_t data);
 
     void getCellBitmap(int row, int col, wxBitmap* bitmap, int* alignment);
     wxString getCellString(int row, int col);
@@ -730,8 +730,8 @@ public:
     bool setCellData(int model_row, int model_col, CellData* data);
     CellData* getCellData(int model_row, int model_col);
 
-    void setRowData(int row, long data);
-    long getRowData(int row);
+    void setRowData(int row, intptr_t data);
+    intptr_t getRowData(int row);
 
     void getCellBitmap(int row, int model_col, wxBitmap* bitmap, int* alignment);
     wxString getCellString(int row, int model_col);

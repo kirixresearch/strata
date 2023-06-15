@@ -45,7 +45,7 @@ class MemRow
 
 public:
     std::vector<MemCell> cols;
-    long rowdata;
+    intptr_t rowdata;
 };
 
 
@@ -98,8 +98,8 @@ public:
     bool setCellProperties(int row, int col, kcl::CellProperties* cell_props);
     void getCellProperties(int row, int col, kcl::CellProperties* cell_props);
 
-    long getRowData(int row);
-    void setRowData(int row, long data);
+    intptr_t getRowData(int row);
+    void setRowData(int row, intptr_t data);
 
     void getCellBitmap(int row, int col, wxBitmap* bitmap, int* alignment);
     wxString getCellString(int row, int col);

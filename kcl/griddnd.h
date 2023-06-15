@@ -37,14 +37,14 @@ typedef std::vector<CellData*> GridDraggedCells;
 struct GridDraggedRowInfo
 {
     int idx;
-    long data;
+    intptr_t data;
 };
 
 struct GridDraggedRow
 {
     GridDraggedCells cells;
     int idx;
-    long data;
+    intptr_t data;
 };
     
 typedef std::vector<GridDraggedRow> GridDraggedRows;

@@ -390,7 +390,9 @@ GridDraggedRows GridDataObject::getDraggedRows()
                 GridDraggedRowInfo* ri = getDraggedRowInfo(last_row);
                 row.idx = last_row;
                 if (ri != NULL)
-                    row.data = (long)(ri->data);
+                {
+                    row.data = ri->data;
+                }
                 rows.push_back(row);
             }
             
@@ -414,7 +416,9 @@ GridDraggedRows GridDataObject::getDraggedRows()
         GridDraggedRowInfo* ri = getDraggedRowInfo(last_row);
         row.idx = last_row;
         if (ri != NULL)
-            row.data = (long)(ri->data);
+        {
+            row.data = ri->data;
+        }
         rows.push_back(row);
     }
 
