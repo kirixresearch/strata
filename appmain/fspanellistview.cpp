@@ -155,7 +155,7 @@ void FsPanelListView::insertItem(IFsItemPtr item)
     data->m_fsitem = item;
     data->m_deferred = false;
 
-    SetItemData(id, (long)data);
+    SetItemPtrData(id, (wxUIntPtr)data);
 }
 
 
@@ -166,13 +166,11 @@ void FsPanelListView::deleteAllItems()
 
     for (i = 0; i < count; ++i)
     {
-        FsItemData* data;
-        data = (FsItemData*)GetItemData(i);
+        FsItemData* data = (FsItemData*)GetItemData(i);
 
         // we need to make sure we delete any FsItemData that
         // was associated with the list item
-        if (data)
-            delete data;
+        delete data;
     }
 
     DeleteAllItems();

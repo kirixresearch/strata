@@ -329,7 +329,7 @@ void ColPropsPanel::onFrameEvent(FrameworkEvent& evt)
         if (m_tabledoc_site.isOk())
         {
             ITableDocPtr t = m_tabledoc_site->getDocument();
-            if (t.isOk() && evt.l_param == (unsigned long)t.p)
+            if (t.isOk() && evt.o_param == (void*)t.p)
             {
                 // if the table doc we are working on is closing,
                 // we need to cancel our edit

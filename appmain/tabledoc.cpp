@@ -690,7 +690,8 @@ bool TableDoc::onSiteClosing(bool force)
 
 
     // let the column props (dynamic) field panel know that we are closing
-    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_ON_SITE_CLOSING, (long)(ITableDoc*)this);
+    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_ON_SITE_CLOSING);
+    e->o_param = (void*)(ITableDoc*)this;
     m_frame->sendEvent(e);
 
 
