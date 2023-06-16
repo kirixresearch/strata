@@ -534,16 +534,8 @@ public:
         // find the toolbar item we clicked
         wxAuiToolBarItem* item = m_toolbar->FindTool(m_tool_id);
 
-        // either create or update the user-data with the selected color
-        if (item->GetUserData())
-        {
-            wxColor* c = (wxColor*)(item->GetUserData());
-            *c = color;
-        }
-         else
-        {
-            item->SetUserData((long)(new wxColor(color)));
-        }
+        // update the extra data with the current color
+        item->SetUserData((long)color.GetRGB());
 
         m_container->Show(false);
         m_container->Destroy();

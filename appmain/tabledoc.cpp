@@ -1060,8 +1060,8 @@ void TableDoc::onFormatChanged(wxCommandEvent& evt)
                 if (m_grid->isEditing())
                     m_grid->endEdit(true);
                 
-                wxColor* color = (wxColor*)evt.GetExtraLong();
-                setColumnProps(NULL, color);
+                wxColor color(evt.GetExtraLong());
+                setColumnProps(NULL, &color);
             }
             break;
             
@@ -1070,8 +1070,8 @@ void TableDoc::onFormatChanged(wxCommandEvent& evt)
                 if (m_grid->isEditing())
                     m_grid->endEdit(true);
                 
-                wxColor* color = (wxColor*)evt.GetExtraLong();
-                setColumnProps(color, NULL);
+                wxColor color(evt.GetExtraLong());
+                setColumnProps(&color, NULL);
             }
             break;
     }
