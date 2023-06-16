@@ -1970,7 +1970,7 @@ void QueryDoc::onFrameEvent(FrameworkEvent& evt)
             // to be changed to the table view
             if (isRunning())
             {
-                bool* is_allowed = (bool*)evt.l_param2;
+                bool* is_allowed = (bool*)evt.o_param;
                 *is_allowed = false;
                 
                 appMessageBox(_("A query is already running.  Please wait until the query has finished running or cancel the job."));

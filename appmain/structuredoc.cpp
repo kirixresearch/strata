@@ -1620,7 +1620,7 @@ void StructureDoc::onFrameEvent(FrameworkEvent& evt)
                     if (result == wxCANCEL)
                     {
                         // don't allow the view switcher to change
-                        *(bool*)evt.l_param2 = false;
+                        *(bool*)evt.o_param = false;
                         return;
                     }
                      else if (result == wxYES)
@@ -1628,7 +1628,7 @@ void StructureDoc::onFrameEvent(FrameworkEvent& evt)
                         if (!doSave())
                         {
                             // don't allow the view switcher to change
-                            *(bool*)evt.l_param2 = false;
+                            *(bool*)evt.o_param = false;
                             return;
                         }
                     }

@@ -2408,7 +2408,7 @@ void AppController::onViewChanged(wxCommandEvent& evt)
     {
         e1 = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGING);
         e1->l_param = (unsigned long)command;
-        e1->l_param2 = (unsigned long)(&is_allowed);
+        e1->o_param = (void*)(&is_allowed);
         main_frame->sendEvent(e1);
     }
 
@@ -2516,7 +2516,7 @@ void AppController::doViewSwitcher(bool drop_down_menu)
     {
         e2 = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGING);
         e2->l_param = (unsigned long)command;
-        e2->l_param2 = (unsigned long)(&is_allowed);
+        e2->o_param = (void*)(&is_allowed);
         main_frame->sendEvent(e2);
     }
 
