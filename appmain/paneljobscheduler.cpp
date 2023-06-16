@@ -402,7 +402,7 @@ bool JobSchedulerPanel::initDoc(IFramePtr frame,
         JobSchedulerPanelEntry* panel_entry = new JobSchedulerPanelEntry;
         populateJobSchedulerPanelEntry(*it, &panel_entry);
 
-        m_joblist_grid->setRowData(row, (long)panel_entry);
+        m_joblist_grid->setRowData(row, (intptr_t)panel_entry);
         updateJobList(row, false);
 
         row++;
@@ -920,7 +920,7 @@ void JobSchedulerPanel::insertScheduledJob(int row)
     JobSchedulerPanelEntry* entry = new JobSchedulerPanelEntry;
     entry->name = wxString::Format(_("Job #%d"), row_count+1);
 
-    m_joblist_grid->setRowData(row, (long)entry);
+    m_joblist_grid->setRowData(row, (intptr_t)entry);
     updateJobList(row, false);
     
     // set the job parameter area to the same default values

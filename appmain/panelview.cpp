@@ -377,7 +377,7 @@ void ViewPanel::insertViewColumn(int row,
         c->separator = col_info->separator;
         
         // set the visible fields row data
-        m_visible_fields->setRowData(row, (long)c);
+        m_visible_fields->setRowData(row, (intptr_t)c);
         return;
     }
      else
@@ -401,7 +401,7 @@ void ViewPanel::insertViewColumn(int row,
         }
         
         // set the visible fields row data
-        m_visible_fields->setRowData(row, (long)c);
+        m_visible_fields->setRowData(row, (intptr_t)c);
     }
 }
 
@@ -441,7 +441,7 @@ void ViewPanel::populateViewsList()
         
         // store the name and the row data
         m_views_list->setCellString(i, 0, view->getDescription());
-        m_views_list->setRowData(i, (long)info);
+        m_views_list->setRowData(i, (intptr_t)info);
     }
 }
 
@@ -691,7 +691,7 @@ void ViewPanel::onAddView(wxCommandEvent& evt)
     // add a new row to the views list
     m_views_list->insertRow(-1);
     m_views_list->setCellString(row, 0, info->name);
-    m_views_list->setRowData(row, (long)info);
+    m_views_list->setRowData(row, (intptr_t)info);
     m_views_list->clearSelection();
     m_views_list->setRowSelected(row, true);
     m_views_list->moveCursor(row, 0);

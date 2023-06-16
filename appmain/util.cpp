@@ -2573,7 +2573,7 @@ void JobGaugeUpdateTimer::onJobAdded(jobs::IJobInfoPtr job_info)
     // catch the job running before the job state is set to
     // finished
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 10000);
-    evt.SetExtraLong((long)job_info.p);
+    evt.SetClientData((void*)job_info.p);
 
     // when a job sets its state, it may not be in the main thread, so it is
     // important that we do this here since there are GUI operations involved
@@ -2592,7 +2592,7 @@ void JobGaugeUpdateTimer::onJobStateChanged(jobs::IJobInfoPtr job_info)
 {
     // post an event that a particular job status has changed
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 10001);
-    evt.SetExtraLong((long)job_info.p);
+    evt.SetClientData((void*)job_info.p);
 
     // when a job sets its state, it may not be in the main thread, so it is
     // important that we do this here since there are GUI operations involved
@@ -2622,7 +2622,7 @@ void JobGaugeUpdateTimer::onJobStateChangedInMainThread(wxCommandEvent& evt)
 {
     wxASSERT_MSG(::wxIsMainThread(), wxT("Being called outside of main/gui thread!"));
 
-    jobs::IJobInfoPtr job_info = (jobs::IJobInfo*)evt.GetExtraLong();
+    jobs::IJobInfoPtr job_info = (jobs::IJobInfo*)evt.GetClientData();
     if (job_info->getState() == jobs::jobStateFailed)
     {
         // if any of the jobs in the queue fail,

@@ -474,7 +474,7 @@ void IndexPanel::populateIndexesList()
         
         // store the name and the row data
         m_indexes_list->setCellString(i, 0, info->name);
-        m_indexes_list->setRowData(i, (long)info);
+        m_indexes_list->setRowData(i, (intptr_t)info);
     }
 }
 
@@ -690,7 +690,7 @@ void IndexPanel::onAddIndex(wxCommandEvent& evt)
     int row = m_indexes_list->getRowCount();
     m_indexes_list->insertRow(-1);
     m_indexes_list->setCellString(row, 0, info->name);
-    m_indexes_list->setRowData(row, (long)info);
+    m_indexes_list->setRowData(row, (intptr_t)info);
     m_indexes_list->clearSelection();
     m_indexes_list->setRowSelected(row, true);
     m_indexes_list->moveCursor(row, 0);

@@ -1982,7 +1982,7 @@ void QueryDoc::onFrameEvent(FrameworkEvent& evt)
         // don't allow the view to be changed
         if (!doErrorCheck())
         {
-            bool* is_allowed = (bool*)evt.l_param2;
+            bool* is_allowed = (bool*)evt.o_param;
             *is_allowed = false;
             return;
         }
