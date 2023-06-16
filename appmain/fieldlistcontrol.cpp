@@ -151,7 +151,7 @@ FieldListControl::FieldListControl(wxWindow* parent,
 
 FieldListControl::~FieldListControl()
 {
-    std::vector<FieldListItem*>::iterator fitö
+    std::vector<FieldListItem*>::iterator fit;
     for (fit = m_to_delete.begin(); fit != m_to_delete.end(); ++fit)
     {
         delete (*fit);
@@ -250,7 +250,9 @@ void FieldListControl::setItemEnabled(const wxString& item_name, bool enabled)
         {
             FieldListItem* f = (FieldListItem*)m_grid->getRowData(row);
             if (!f)
+            {
                 return;
+            }
             
             f->enabled = enabled;
 
