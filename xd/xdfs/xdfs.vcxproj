@@ -116,7 +116,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonud.lib;../xdcommonsql/lib/xdcommonsqlud.lib;../../kl/lib/klud.lib;../../kscript/lib/kscriptud.lib;../../supp/libzip/lib/Debug/zipstatic.lib;../../supp/zlib/zlibd.lib;../../supp/expat/Debug/expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonud.lib;../xdcommonsql/lib/xdcommonsqlud.lib;../../kl/lib/klud.lib;../../kscript/lib/kscriptud.lib;../../supp/libzip/lib/Debug/zipstatic.lib;../../supp/zlib/Debug/zlib.lib;../../supp/expat/Debug/expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\DebugUnicode/xdfs.pdb</ProgramDatabaseFile>
@@ -160,7 +160,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonud.lib;../xdcommonsql/lib/xdcommonsqlud.lib;../../kl/lib/klud.lib;../../kscript/lib/kscriptud.lib;../../supp/libzip/lib/Debug/zipstatic.lib;../../supp/zlib/zlibd.lib;../../supp/expat/Debug/expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonud.lib;../xdcommonsql/lib/xdcommonsqlud.lib;../../kl/lib/klud.lib;../../kscript/lib/kscriptud.lib;../../supp/libzip/lib/Debug/zipstatic.lib;../../supp/zlib/Debug/zlib.lib;../../supp/expat/Debug/expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\DebugUnicode/xdfs.pdb</ProgramDatabaseFile>
@@ -204,7 +204,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonu.lib;../xdcommonsql/lib/xdcommonsqlu.lib;../../kl/lib/klu.lib;../../kscript/lib/kscriptu.lib;../../supp/libzip/lib/Release/zipstatic.lib;../../supp/zlib/zlib.lib;../../supp/expat/Release/expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonu.lib;../xdcommonsql/lib/xdcommonsqlu.lib;../../kl/lib/klu.lib;../../kscript/lib/kscriptu.lib;../../supp/libzip/lib/Release/zipstatic.lib;../../supp/zlib/Release/zlib.lib;../../supp/expat/Release/expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\ReleaseUnicode/xdfs.pdb</ProgramDatabaseFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -248,7 +248,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonu.lib;../xdcommonsql/lib/xdcommonsqlu.lib;../../kl/lib/klu.lib;../../kscript/lib/kscriptu.lib;../../supp/libzip/lib/Release/zipstatic.lib;../../supp/zlib/zlib.lib;../../supp/expat/Release/expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonu.lib;../xdcommonsql/lib/xdcommonsqlu.lib;../../kl/lib/klu.lib;../../kscript/lib/kscriptu.lib;../../supp/libzip/lib/Release/zipstatic.lib;../../supp/zlib/Release/zlib.lib;../../supp/expat/Release/expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\ReleaseUnicode/xdfs.pdb</ProgramDatabaseFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
