@@ -2540,8 +2540,8 @@ void JobGaugeUpdateTimer::Notify()
     // create the job statusbar text
     if (job_count == 1)
         job_text = jobs->getItem(0)->getTitle();
-         else if (job_count > 1)
-        job_text = wxString::Format(_("%d jobs running"), job_count);
+    else
+        job_text = wxString::Format(_("%zu jobs running"), job_count);
     
     // update the gauge and update job statusbar text where appropriate
     if (is_indeterminate)

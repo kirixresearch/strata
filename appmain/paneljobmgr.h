@@ -42,6 +42,7 @@ private:
 
     JobListCtrlTimer* m_timer;
     jobs::IJobQueuePtr m_job_queue;
+    std::map<wxButton*, kcl::ScrollListItem*> m_cancel_button_map;
 
     DECLARE_EVENT_TABLE()
 };

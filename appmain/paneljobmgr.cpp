@@ -221,8 +221,8 @@ void JobListCtrl::addJobItem(jobs::IJobInfoPtr job_info)
                                            create_pt,
                                            wxDefaultSize,
                                            wxBU_EXACTFIT);
-    cancel_button->SetExtraStyle((long)item);
-    
+    m_cancel_button_map[cancel_button] = item;
+
     kcl::ScrollListElement* cancel;
     cancel = item->addElement(cancel_button);
     cancel->setPadding(0, 0, FromDIP(15), FromDIP(15));
@@ -476,7 +476,7 @@ void JobListCtrl::onCancelButtonClicked(wxCommandEvent& evt)
     checkIfInMainThread();
 
     wxButton* button = (wxButton*)(evt.GetEventObject());
-    kcl::ScrollListItem* item = (kcl::ScrollListItem*)(button->GetExtraStyle());
+    kcl::ScrollListItem* item = m_cancel_button_map[button];
 
     if (!item)
     {
