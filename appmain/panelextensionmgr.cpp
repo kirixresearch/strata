@@ -237,8 +237,7 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
     kcl::ScrollListElement* version;
     version = item->addElement(version_text);
     version->setPadding(0,0,15,8);
-    version->setRelativePosition(name,
-                                 kcl::ScrollListElement::positionOnRight);
+    version->setRelativePosition(name, kcl::ScrollListElement::positionOnRight);
     version->setTextWrap(false);
     version->setName(wxT("version"));
 
@@ -277,7 +276,7 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
                                               create_pt,
                                               wxDefaultSize,
                                               wxBU_EXACTFIT);
-    uninstall_button->SetExtraStyle((long)item);
+    m_control_map[uninstall_button] = item;
     
     kcl::ScrollListElement* uninstall2;
     uninstall2 = item->addElement(uninstall_button);
@@ -295,7 +294,7 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
                                               create_pt,
                                               wxDefaultSize,
                                               wxBU_EXACTFIT);
-    cancel_uninstall_button->SetExtraStyle((long)item);
+    m_control_map[cancel_uninstall_button] = item;
     
     kcl::ScrollListElement* cancel_uninstall;
     cancel_uninstall = item->addElement(cancel_uninstall_button);
@@ -313,7 +312,7 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
                                              create_pt,
                                              wxDefaultSize,
                                              wxBU_EXACTFIT);
-    startnow_button->SetExtraStyle((long)item);
+    m_control_map[startnow_button] = item;
     
     kcl::ScrollListElement* startnow;
     startnow = item->addElement(startnow_button);
@@ -328,8 +327,8 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
                                                        ID_RunAtStartupCheckBox,
                                                        _("Run at startup"));
     runatstartup_checkbox->SetValue(info.run_at_startup);
-    runatstartup_checkbox->SetExtraStyle((long)item);
-    
+    m_control_map[runatstartup_checkbox] = item;
+
     kcl::ScrollListElement* startup;
     startup = item->addElement(runatstartup_checkbox);
     startup->setRelativePosition(location,
@@ -542,8 +541,7 @@ void ExtensionManagerPanel::onAddExtensionsButtonClicked(wxCommandEvent& evt)
 
 void ExtensionManagerPanel::onCancelUninstallButtonClicked(wxCommandEvent& evt)
 {
-    wxButton* button = (wxButton*)(evt.GetEventObject());
-    kcl::ScrollListItem* item = (kcl::ScrollListItem*)(button->GetExtraStyle());
+    kcl::ScrollListItem* item = m_control_map[evt.GetEventObject()];
 
     // probably never happens.  If it does, something is not right, we have
     // a 'don't uninstall' button, but we can't find the extension item
@@ -563,8 +561,7 @@ void ExtensionManagerPanel::onCancelUninstallButtonClicked(wxCommandEvent& evt)
 
 void ExtensionManagerPanel::onUninstallButtonClicked(wxCommandEvent& evt)
 {
-    wxButton* button = (wxButton*)(evt.GetEventObject());
-    kcl::ScrollListItem* item = (kcl::ScrollListItem*)(button->GetExtraStyle());
+    kcl::ScrollListItem* item = m_control_map[evt.GetEventObject()];
 
     // probably never happens.  If it does, something is not right, we
     // have an 'uninstall' button, but we can't find the extension item
@@ -592,34 +589,41 @@ void ExtensionManagerPanel::onUninstallButtonClicked(wxCommandEvent& evt)
 
 void ExtensionManagerPanel::onStartNowButtonClicked(wxCommandEvent& evt)
 {
-    wxButton* button = (wxButton*)(evt.GetEventObject());
-    kcl::ScrollListItem* item = (kcl::ScrollListItem*)(button->GetExtraStyle());
+    kcl::ScrollListItem* item = m_control_map[evt.GetEventObject()];
 
     // probably never happens.  If it does, something is not right, we
     // have a 'start now' button, but we can't find the extension item
     if (!item)
+    {
         return;
+    }
 
     wxString guid = item->getExtraString();
     ExtensionInfo& info = g_app->getExtensionMgr()->getExtension(guid);
     if (info.isOk())
+    {
         g_app->getExtensionMgr()->startExtension(guid);
+    }
 }
 
 void ExtensionManagerPanel::onRunAtStartupChecked(wxCommandEvent& evt)
 {
     wxCheckBox* checkbox = (wxCheckBox*)(evt.GetEventObject());
-    kcl::ScrollListItem* item = (kcl::ScrollListItem*)(checkbox->GetExtraStyle());
+    kcl::ScrollListItem* item = m_control_map[evt.GetEventObject()];
 
     // probably never happens.  If it does, something is not right, we have
     // a 'run at startup' checkbox, but we can't find the extension item
     if (!item)
+    {
         return;
+    }
 
     wxString guid = item->getExtraString();
     ExtensionInfo& info = g_app->getExtensionMgr()->getExtension(guid);
     if (info.isOk())
+    {
         g_app->getExtensionMgr()->enableExtension(guid, checkbox->IsChecked());
+    }
 }
 
 

@@ -29,7 +29,7 @@ public:
 
 public:
 
-    // -- IDocument --
+    // IDocument
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
@@ -48,14 +48,14 @@ private:
     void checkOverlayText();
     void populate();
     
-    // -- events --
+    // events
     void onAddExtensionsButtonClicked(wxCommandEvent& evt);
     void onStartNowButtonClicked(wxCommandEvent& evt);
     void onCancelUninstallButtonClicked(wxCommandEvent& evt);
     void onUninstallButtonClicked(wxCommandEvent& evt);
     void onRunAtStartupChecked(wxCommandEvent& evt);
     
-    // -- signal handlers --
+    // signal handlers
     void onSelectedItemChanged(kcl::ScrollListItem* old_item,
                                kcl::ScrollListItem* new_item);
     void onExtensionInstalled(ExtensionInfo& info);
@@ -67,6 +67,8 @@ private:
     
     kcl::ScrollListControl* m_extension_list;
     wxButton* m_addextensions_button;
+
+    std::map<wxObject*, kcl::ScrollListItem*> m_control_map;
     
     DECLARE_EVENT_TABLE()
 };
