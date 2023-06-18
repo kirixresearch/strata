@@ -2205,7 +2205,7 @@ class EndBusyCursor : public wxEvtHandler
 public:
     bool ProcessEvent(wxEvent& evt)
     {
-        AppBusyCursor* bc = (AppBusyCursor*)((wxCommandEvent&)evt).GetExtraLong();
+        AppBusyCursor* bc = (AppBusyCursor*)((wxCommandEvent&)evt).GetClientData();
         delete bc;
         wxPendingDelete.Append(this);
         return true;
@@ -2226,7 +2226,7 @@ zBusyCursor::~zBusyCursor()
     {
         EndBusyCursor* e = new EndBusyCursor;
         wxCommandEvent evt;
-        evt.SetExtraLong((long)m_bc);
+        evt.SetClientData((void*)m_bc);
         ::wxPostEvent(e, evt);
     }
 }

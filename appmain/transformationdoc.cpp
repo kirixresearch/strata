@@ -745,7 +745,7 @@ void TransformationDoc::insertRow(int row, bool calculated)
     f->original = false;
     
     m_grid->insertRow(row);
-    m_grid->setRowData(row, (long)f);
+    m_grid->setRowData(row, (intptr_t)f);
     m_grid->setCellBitmap(row, colRowNumber, calculated ? GETBMP(gf_lightning_16) : GETBMP(gf_blank_16));
     m_grid->setCellComboSel(row, colFieldType, xd2choice(f->output_type));
     m_grid->setCellString(row, colFieldName, f->output_name);
@@ -815,7 +815,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
     f->original = true;
     
     m_grid->insertRow(row);
-    m_grid->setRowData(row, (long)f);
+    m_grid->setRowData(row, (intptr_t)f);
     m_grid->setCellString(row, colFieldName, f->output_name);
     m_grid->setCellComboSel(row, colFieldType, xd2choice(f->output_type));
     m_grid->setCellInteger(row, colFieldWidth, f->output_width);

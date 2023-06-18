@@ -156,10 +156,16 @@ bool ExtensionManagerPanel::initDoc(IFramePtr frame,
     checkOverlayText();
     
     // select the first item
-    size_t first_item_idx = m_extension_list->getItemCount()-1;
-    kcl::ScrollListItem* first_item = m_extension_list->getItem(first_item_idx);
-    if (first_item != NULL)
-        selectItem(first_item, true);
+    size_t extension_list_count = m_extension_list->getItemCount();
+    if (extension_list_count > 0)
+    {
+        size_t first_item_idx = extension_list_count - 1;
+        kcl::ScrollListItem* first_item = m_extension_list->getItem(first_item_idx);
+        if (first_item != NULL)
+        {
+            selectItem(first_item, true);
+        }
+    }
     
     m_extension_list->refresh();
     return true;
