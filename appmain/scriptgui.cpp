@@ -1214,7 +1214,8 @@ void FormControl::getMousePosition(kscript::ExprEnv* env, kscript::Value* retval
 
 void FormControl::getNativeHandle(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    retval->setInteger((long)(void*)m_wnd->GetHandle());
+    WXWidget w = m_wnd->GetHandle();
+    retval->setInteger16((long long)w);
 }
 
 
@@ -2156,14 +2157,13 @@ void Form::center(kscript::ExprEnv* env, kscript::Value* retval)
 
 void Form::getInnerNativeHandle(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    
     if (!m_form_panel)
     {
         retval->setInteger(0);
         return;
     }
     
-    retval->setInteger((long)(void*)m_form_panel->GetHandle());
+    retval->setInteger16((long long)(WXWidget)m_form_panel->GetHandle());
 }
 
 

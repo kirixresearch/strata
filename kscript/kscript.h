@@ -456,6 +456,7 @@ public:
     void setBoolean(bool b);
     void setDouble(double num);
     void setInteger(int num);
+    void setInteger16(long long num);
     void setRef(Value* v);
     void setFunction(Function* func_info, ExprEnv* scope = NULL);
     void setFunction(ExprBindFunc func_ptr, void* binding_param = NULL);
@@ -493,6 +494,7 @@ public:
     bool getBoolean();
     double getDouble();
     int getInteger();
+    long long getInteger16();
     Value* getRef() { if (isRef()) return m_refptr; else return NULL; }
     ValueObject* getObject() { if (!m_obj) checkObjectExists(); return m_obj; }
     Function* getFunction() { return m_funcptrval; }

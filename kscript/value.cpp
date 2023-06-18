@@ -1263,14 +1263,7 @@ void Value::setInteger(int num)
 {
     clear();
     m_type = typeInteger;
-    /*
-    if (m_type != typeInteger)
-    {
-        reset();
-        m_type = typeInteger;
-    }
-    */
-    
+
     switch (m_method)
     {
         case methodNormal:
@@ -1279,6 +1272,12 @@ void Value::setInteger(int num)
         case methodGetVal:
             return;
     }
+}
+
+void Value::setInteger16(long long num)
+{
+    // TODO: implement
+    setInteger((int)num);
 }
 
 double Value::getDouble()
@@ -1361,6 +1360,12 @@ int Value::getInteger()
     }
 
     return 0;
+}
+
+long long Value::getInteger16()
+{
+    // TODO: needs implementation
+    return (long long)getInteger();
 }
 
 void Value::setString(const std::string& str)
