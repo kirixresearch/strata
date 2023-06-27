@@ -163,7 +163,10 @@ bool writeRegKey(int scope, LPCTSTR path, LPCTSTR val)
     if (result != ERROR_SUCCESS)
         return false;
 
-    result = RegSetValueEx(hkey, NULL, 0, REG_SZ, (const BYTE*)val, (_tcslen(val)+1)*sizeof(TCHAR));
+    DWORD set_size = (DWORD)(_tcslen(val)+1);
+    set_size *= (DWORD)(sizeof(TCHAR));
+
+    result = RegSetValueEx(hkey, NULL, 0, REG_SZ, (const BYTE*)val, set_size);
 
     RegCloseKey(hkey);
 
@@ -411,7 +414,7 @@ void AuthImpl::generateFingerprints()
     paladin_int64_t ik;
     
     // first fingerprint string will be the crc32 of the eval tag
-    m_eval_tag_crc = crc32((unsigned char*)m_eval_tag, strlen(m_eval_tag));
+    m_eval_tag_crc = crc32((unsigned char*)m_eval_tag, (int)strlen(m_eval_tag));
     sprintf(m_fingerprint1, "%08X", (unsigned int)(m_eval_tag_crc & 0xffffffff));
 
     // second fingerprint string will be an int64 suitably randomized
@@ -501,7 +504,9 @@ bool AuthImpl::loadAuthInfo()
             continue;
 
         const char* pos = strchr(hexchars, c);
-        unsigned char v = (pos-hexchars);
+        if (!pos)
+            return false;
+        unsigned char v = (unsigned char)(pos-hexchars);
 
         if (hi)
         {
@@ -712,7 +717,7 @@ int AuthImpl::checkAuth()
 
     unsigned char master_key[8];
     unsigned char enc_key[8];
-    unsigned long app_tag_crc = crc32((unsigned char*)m_app_tag, strlen(m_app_tag));
+    unsigned long app_tag_crc = crc32((unsigned char*)m_app_tag, (int)strlen(m_app_tag));
 
     master_key[0] = (unsigned char)((app_tag_crc) & 0xff);
     master_key[1] = (unsigned char)((app_tag_crc >> 8) & 0xff);
@@ -1048,7 +1053,7 @@ bool AuthImpl::installLicense(int temp_license_days)
 
     char buf[255];
     strcpy(buf, m_app_tag);
-    unsigned long app_tag_crc = crc32((unsigned char*)buf, strlen(buf));
+    unsigned long app_tag_crc = crc32((unsigned char*)buf, (int)strlen(buf));
 
     master_key[0] = (unsigned char)((app_tag_crc) & 0xff);
     master_key[1] = (unsigned char)((app_tag_crc >> 8) & 0xff);
@@ -1367,7 +1372,7 @@ void AuthImpl::saveSiteCodeSeed(int seed)
     if (GetEnvironmentVariable(_T("HOMEPATH"), path, 511))
     {
         TCHAR tag_crc[255];
-        _sntprintf(tag_crc, 255, _T("%08X.INF"), crc32((unsigned char*)m_app_tag, strlen(m_app_tag)));
+        _sntprintf(tag_crc, 255, _T("%08X.INF"), crc32((unsigned char*)m_app_tag, (int)strlen(m_app_tag)));
         appendPathPart(path, tag_crc);
 
         writeFileMarker(kl::towstring(path), true, true, seed);
@@ -1428,7 +1433,7 @@ int AuthImpl::loadSiteCodeSeed()
     if (GetEnvironmentVariable(_T("HOMEPATH"), filename, 511))
     {
         TCHAR crc[256];
-        _sntprintf(crc, 255, _T("%08X.INF"), crc32((unsigned char*)m_app_tag, strlen(m_app_tag)));
+        _sntprintf(crc, 255, _T("%08X.INF"), crc32((unsigned char*)m_app_tag, (int)strlen(m_app_tag)));
         crc[255] = 0;
         appendPathPart(filename, crc);
     }

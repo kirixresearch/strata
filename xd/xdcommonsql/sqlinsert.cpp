@@ -222,7 +222,7 @@ bool sqlInsert(xd::IDatabasePtr db,
     {
         std::wstring& s = valuesvec[idx];
         kl::trim(s);
-        int len = s.length();
+        int len = (int)s.length();
 
         if (insert_it->type == xd::typeCharacter ||
             insert_it->type == xd::typeWideCharacter)

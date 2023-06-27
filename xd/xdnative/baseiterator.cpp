@@ -696,7 +696,7 @@ bool BaseIterator::initStructure()
 
             if (temp)
             {
-                as_pos = temp - it->c_str();
+                as_pos = (int)(temp - it->c_str());
             }
 
             std::wstring colname;
@@ -1015,7 +1015,7 @@ public:
             const wchar_t* pstr = expr.c_str();
             const wchar_t* pperiod = zl_strchr((wchar_t*)pstr, '.', L"[", L"]");
 
-            int period_pos = pperiod ? (pperiod-pstr) : -1;
+            int period_pos = pperiod ? ((int)(pperiod-pstr)) : (int)-1;
 
             // if no period was found, or it's in the wrong
             // place, the parse was bad
@@ -1554,7 +1554,7 @@ static void _bindFieldString(kscript::ExprEnv*,
     }
 
     *wc = L'\0';
-    retval->setStringLen(wc - strbuf);
+    retval->setStringLen((unsigned int)(wc - strbuf));
 }
 
 static void _bindFieldWideString(kscript::ExprEnv*,
@@ -1605,7 +1605,7 @@ static void _bindFieldWideString(kscript::ExprEnv*,
     wc[dai->width] = 0;
 #endif
 
-    retval->setStringLen(wcslen(retval->getString()));
+    retval->setStringLen((unsigned int)wcslen(retval->getString()));
 }
 
 static void _bindFieldDynString(kscript::ExprEnv*,
@@ -1629,7 +1629,7 @@ static void _bindFieldDynString(kscript::ExprEnv*,
 
     // crop it to calcfield's size
     wchar_t* result_str = retval->getString();
-    int len = wcslen(result_str);
+    int len = (int)wcslen(result_str);
     if (len > dai->width)
     {
         result_str[dai->width] = 0;
@@ -1754,7 +1754,7 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
 
     if (hook_info.element_type == kscript::ExprParseHookInfo::typeFunction)
     {  
-        int len = hook_info.expr_text.length();
+        int len = (int)hook_info.expr_text.length();
         if (len == 0)
             return false;
 
@@ -1826,7 +1826,7 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
             size_t pos = hook_info.expr_text.find('.');
             if (pos != std::wstring::npos)
             {
-                int scale = hook_info.expr_text.length() - (pos+1);
+                int scale = (int)(hook_info.expr_text.length() - pos + 1);
                 bind_param->max_scale = std::max(bind_param->max_scale, scale);
                 if (bind_param->max_scale > 10)
                     bind_param->max_scale = std::min(bind_param->max_scale, 4);
@@ -2265,7 +2265,7 @@ const std::string& BaseIterator::getString(xd::objhandle_t column_handle)
             // look for a zero terminator
             const char* zero = (const char*)memchr(ptr, 0, width);
             if (zero)
-                width = zero-ptr;
+                width = (int)(zero-ptr);
             
             dai->str_result.assign(ptr, width);
 
@@ -2297,7 +2297,7 @@ const std::string& BaseIterator::getString(xd::objhandle_t column_handle)
 
     // crop it to calcfield's size
     wchar_t* result_str = dai->result->getString();
-    int len = wcslen(result_str);
+    int len = (int)wcslen(result_str);
     if (dai->is_column && len > dai->width)
     {
         len = dai->width;
@@ -2352,7 +2352,7 @@ const std::wstring& BaseIterator::getWideString(xd::objhandle_t column_handle)
             // look for a zero terminator
             const char* zero = (const char*)memchr(ptr, 0, width);
             if (zero)
-                width = zero-ptr;
+                width = (int)(zero-ptr);
 
             kl::towstring(dai->wstr_result, ptr, width);
             return dai->wstr_result;
@@ -2375,7 +2375,7 @@ const std::wstring& BaseIterator::getWideString(xd::objhandle_t column_handle)
 
     // crop it to calcfield's size
     wchar_t* result_str = dai->result->getString();
-    int len = wcslen(result_str);
+    int len = (int)wcslen(result_str);
     if (dai->is_column && len > dai->width)
     {
         len = dai->width;
@@ -2631,7 +2631,7 @@ bool BaseIterator::putString(xd::objhandle_t column_handle,
     {
         memset(m_rowptr + dai->offset, 0, dai->width);
 
-        int write_len = value.length();
+        int write_len = (int)value.length();
         if (write_len > dai->width)
             write_len = dai->width;
 
@@ -2677,7 +2677,7 @@ bool BaseIterator::putWideString(xd::objhandle_t column_handle,
 
         std::string ascvalue = kl::tostring(value);
 
-        int write_len = ascvalue.length();
+        int write_len = (int)ascvalue.length();
         if (write_len > dai->width)
             write_len = dai->width;
 

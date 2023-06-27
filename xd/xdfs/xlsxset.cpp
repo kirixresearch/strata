@@ -108,7 +108,7 @@ xd::Structure XlsxSet::getStructure()
         col.type = xd::typeWideCharacter;
         col.width = 255;
         col.scale = 0;
-        col.column_ordinal = i;
+        col.column_ordinal = (int)i;
 
         s.createColumn(col);
     }

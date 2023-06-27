@@ -456,6 +456,7 @@ public:
     void setBoolean(bool b);
     void setDouble(double num);
     void setInteger(int num);
+    void setInteger16(long long num);
     void setRef(Value* v);
     void setFunction(Function* func_info, ExprEnv* scope = NULL);
     void setFunction(ExprBindFunc func_ptr, void* binding_param = NULL);
@@ -493,6 +494,7 @@ public:
     bool getBoolean();
     double getDouble();
     int getInteger();
+    long long getInteger16();
     Value* getRef() { if (isRef()) return m_refptr; else return NULL; }
     ValueObject* getObject() { if (!m_obj) checkObjectExists(); return m_obj; }
     Function* getFunction() { return m_funcptrval; }
@@ -812,8 +814,8 @@ public:
                       ExprParseHookFunc func,
                       void* param);
                       
-    void setExtraLong(long val);
-    long getExtraLong();
+    void setExtraLong(uintptr_t val);
+    uintptr_t getExtraLong();
     
     ExprOperator& addOperator(const std::wstring& oper_name,
                      bool case_sense,
@@ -1082,11 +1084,11 @@ protected:
     int m_language;
     bool m_bindings_defined;
     bool m_cancelled;
-    long m_extra_long;
+    uintptr_t m_extra_long;
     
     std::map<std::wstring, int> m_dictionary_m;
     std::vector<std::wstring> m_dictionary_v;
-    size_t m_symbol_counter;
+    int m_symbol_counter;
     
     Value m_exception_obj;
     int m_error_code;

@@ -534,16 +534,8 @@ public:
         // find the toolbar item we clicked
         wxAuiToolBarItem* item = m_toolbar->FindTool(m_tool_id);
 
-        // either create or update the user-data with the selected color
-        if (item->GetUserData())
-        {
-            wxColor* c = (wxColor*)(item->GetUserData());
-            *c = color;
-        }
-         else
-        {
-            item->SetUserData((long)(new wxColor(color)));
-        }
+        // update the extra data with the current color
+        item->SetUserData((long)color.GetRGB());
 
         m_container->Show(false);
         m_container->Destroy();
@@ -2416,7 +2408,7 @@ void AppController::onViewChanged(wxCommandEvent& evt)
     {
         e1 = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGING);
         e1->l_param = (unsigned long)command;
-        e1->l_param2 = (unsigned long)(&is_allowed);
+        e1->o_param = (void*)(&is_allowed);
         main_frame->sendEvent(e1);
     }
 
@@ -2444,7 +2436,7 @@ void AppController::doViewSwitcher(bool drop_down_menu)
     // get the list of available views from the active document
     ViewSwitcherList* list = new ViewSwitcherList;
     e1 = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_QUERY_AVAILABLE_VIEW);
-    e1->o_param = (wxObject*)list;
+    e1->o_param = (void*)list;
     main_frame->sendEvent(e1);
 
     int id;
@@ -2524,7 +2516,7 @@ void AppController::doViewSwitcher(bool drop_down_menu)
     {
         e2 = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGING);
         e2->l_param = (unsigned long)command;
-        e2->l_param2 = (unsigned long)(&is_allowed);
+        e2->o_param = (void*)(&is_allowed);
         main_frame->sendEvent(e2);
     }
 
@@ -6684,7 +6676,7 @@ void AppController::showFindPanel()
         wxString val;
 
         FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE);
-        e->l_param = (unsigned long)(&val);
+        e->o_param = (void*)&val;
         g_app->getMainFrame()->sendEvent(e);
 
         if (val.IsEmpty())
@@ -6730,7 +6722,7 @@ void AppController::showFindInFilesPanel()
         wxString val;
 
         FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE);
-        e->l_param = (unsigned long)(&val);
+        e->o_param = (void*)&val;
         g_app->getMainFrame()->sendEvent(e);
 
         if (val.IsEmpty())
@@ -6778,7 +6770,7 @@ void AppController::showReplacePanel()
         wxString val;
 
         FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE);
-        e->l_param = (unsigned long)(&val);
+        e->o_param = (void*)&val;
         g_app->getMainFrame()->sendEvent(e);
 
         if (val.IsEmpty())

@@ -315,7 +315,7 @@ bool DelimitedTextIterator::refreshStructure()
 
                 if (as_ptr)
                 {
-                    int as_pos = as_ptr ? (as_ptr - it->c_str()) : -1;
+                    int as_pos = as_ptr ? (int)(as_ptr - it->c_str()) : (int)-1;
                     colname = it->substr(as_pos+2);
                     expr = it->substr(0, as_pos);
                     
@@ -499,7 +499,7 @@ bool DelimitedTextIterator::modifyStructure(const xd::StructureModify& mod_param
             dai->type = it->params.type;
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->calculated = true;
             dai->expr = parse(it->params.expression);
@@ -525,7 +525,7 @@ bool DelimitedTextIterator::modifyStructure(const xd::StructureModify& mod_param
             dai->type = it->params.type;
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
             dai->calculated = true;

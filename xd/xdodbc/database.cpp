@@ -1566,7 +1566,7 @@ bool OdbcDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 
             xd::FormatDefinition fd = info->output_format;
             fd.columns.clear();
-            int i, col_count = structure.getColumnCount();
+            size_t i, col_count = structure.getColumnCount();
             for (i = 0; i < col_count; ++i)
                 fd.createColumn(structure.getColumnInfoByIdx(i));
 
@@ -1669,8 +1669,7 @@ bool OdbcDatabase::getFileExist(const std::wstring& _path)
     if (!files)
         return false;
 
-    int count = files->size();
-    int i;
+    size_t i, count = files->size();
 
     for (i = 0 ; i < count; ++i)
     {
@@ -1704,9 +1703,8 @@ xd::IFileInfoPtr OdbcDatabase::getFileInfo(const std::wstring& path)
     }
     
     xd::IFileInfoEnumPtr files = getFolderInfo(folder);
-    int i, count;
-    
-    count = files->size();
+    size_t i, count = files->size();
+
     for (i = 0; i < count; ++i)
     {
         xd::IFileInfoPtr finfo = files->getItem(i);
@@ -2511,7 +2509,7 @@ void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, xd::Struct
     // scale by performing a query to look at the data itself
 
     std::wstring query;
-    int i, col_count = s.getColumnCount();
+    size_t i, col_count = s.getColumnCount();
     std::vector<TempInfo> cols;
     std::vector<TempInfo>::iterator it;
 
@@ -2583,15 +2581,16 @@ void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, xd::Struct
     }
 
     // bind the columns to their return values
-    i = 1;
+    SQLUSMALLINT coln = 1;
     for (it = cols.begin(); it != cols.end(); ++it)
     {
         retval = SQLBindCol(stmt,
-                            i++,
+                            coln++,
                             SQL_C_CHAR,
                             it->buf,
                             255,
                             &it->indicator);
+
         if (retval != SQL_SUCCESS)
         {
             // failed (make no changes to the structure)
@@ -2608,11 +2607,12 @@ void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, xd::Struct
         {
             if (it->indicator == SQL_NULL_DATA)
                 continue;
-            char *p = strchr(it->buf, '.');
+
+            const char *p = strchr(it->buf, '.');
             if (p)
             {
-                int offset = p - it->buf;
-                int len = strlen(it->buf);
+                int offset = (int)(p - it->buf);
+                int len = (int)strlen(it->buf);
                 int decimal_places = len-(offset+1);
                 if (decimal_places > it->max_dec)
                     it->max_dec = decimal_places;
@@ -2694,13 +2694,13 @@ void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, xd::Struct
     }
 
     // bind the columns to their return values
-    i = 1;
+    coln = 1;
     for (it = cols.begin(); it != cols.end(); ++it)
     {
         SQLLEN scale = 0;
 
         if (SQL_SUCCESS != SQLColAttribute(stmt,
-                                           i++,
+                                           coln++,
                                            SQL_DESC_SCALE,
                                            0,
                                            0,
@@ -2714,7 +2714,7 @@ void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, xd::Struct
         }
 
         if (scale > it->max_dec)
-            it->max_dec = scale;
+            it->max_dec = (int)scale;
     }
 
     SQLCloseCursor(stmt);

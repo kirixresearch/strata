@@ -832,7 +832,7 @@ bool OracleDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 
             xd::FormatDefinition fd = info->output_format;
             fd.columns.clear();
-            int i, col_count = structure.getColumnCount();
+            size_t i, col_count = structure.getColumnCount();
             for (i = 0; i < col_count; ++i)
                 fd.createColumn(structure.getColumnInfoByIdx(i));
 

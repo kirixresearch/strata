@@ -273,12 +273,11 @@ bool KpgRowInserter::startInsert(const std::wstring& col_list)
 
 
     // create a little-endian UCS-2 version of the info block xml
-    int buf_len = (info_block_str.length()+1)*2;
+    int buf_len = (int)((info_block_str.length()+1)*2);
     unsigned char* info_block = new unsigned char[buf_len];
     kl::wstring2ucsle(info_block, info_block_str, buf_len/2);
     m_writer->writeBlock(info_block, buf_len, true);
     delete[] info_block;
-
 
     return true;
 }

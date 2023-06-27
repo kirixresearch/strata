@@ -151,8 +151,11 @@ FieldListControl::FieldListControl(wxWindow* parent,
 
 FieldListControl::~FieldListControl()
 {
-    for (std::vector<FieldListItem*>::iterator fit = m_to_delete.begin(); fit != m_to_delete.end(); ++fit)
+    std::vector<FieldListItem*>::iterator fit;
+    for (fit = m_to_delete.begin(); fit != m_to_delete.end(); ++fit)
+    {
         delete (*fit);
+    }
 }
 
 void FieldListControl::refresh()
@@ -247,7 +250,9 @@ void FieldListControl::setItemEnabled(const wxString& item_name, bool enabled)
         {
             FieldListItem* f = (FieldListItem*)m_grid->getRowData(row);
             if (!f)
+            {
                 return;
+            }
             
             f->enabled = enabled;
 
@@ -397,7 +402,7 @@ void FieldListControl::populate()
         f->scale = it->scale;
         f->enabled = it->enabled;
         m_to_delete.push_back(f);
-        m_grid->setRowData(idx, (long)f);
+        m_grid->setRowData(idx, (intptr_t)f);
         
         idx++;
     }
@@ -431,7 +436,7 @@ void FieldListControl::populate()
         f->scale = it->scale;
         f->enabled = it->enabled;
         m_to_delete.push_back(f);
-        m_grid->setRowData(idx, (long)f);
+        m_grid->setRowData(idx, (intptr_t)f);
         
         idx++;
     }

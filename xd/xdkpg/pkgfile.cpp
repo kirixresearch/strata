@@ -102,7 +102,7 @@ std::wstring PkgStreamEnum::getStreamName(int idx)
 
 int PkgStreamEnum::getStreamCount()
 {
-    return m_entries.size();
+    return (int)m_entries.size();
 }
 
 
@@ -578,9 +578,12 @@ bool PkgFile::createDirEntry(const PkgDirEntry& entry)
     int2buf(dir_entry+16, (unsigned int)hi);
 
     // write out little-endian UCS-2 stream name
-    int i, len;
-    len = entry.stream_name.length();
-    if (len > 127) len = 127;
+    int i, len = (int)entry.stream_name.length();
+    if (len > 127)
+    {
+        len = 127;
+    }
+
     unsigned char* ptr = dir_entry+32;
     for (i = 0; i < len; ++i)
     {
@@ -937,9 +940,12 @@ bool PkgFile::renameStream(const std::wstring& stream_name, const std::wstring& 
             // update the name
             unsigned char* ptr = buf+32;
             memset(ptr, 0, 256);
-            int i, len;
-            len = new_name.length();
-            if (len > 127) len = 127;
+            int i, len = (int)new_name.length();
+            if (len > 127)
+            {
+                len = 127;
+            }
+
             for (i = 0; i < len; ++i)
             {
                 wchar_t ch = new_name[i];

@@ -533,7 +533,7 @@ void HttpRequest::binaryRead(kscript::ExprEnv* env, kscript::Value* retval)
         // if the request for the specified number of bytes could not entirely
         // be fulfilled, truncate the result
         
-        m->setSizeInternal(requested_size - bytes_remaining);
+        m->setSizeInternal((int)(requested_size - bytes_remaining));
     }
     
     retval->setObject(m);

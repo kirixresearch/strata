@@ -479,9 +479,9 @@ void FormatToolbar::setEmbedded(bool embedded)
     
     wxAuiToolBarItem* item;
     item = FindTool(ID_Format_TextColor);
-    item->SetUserData((long)&m_text_color);
+    item->SetUserData((long)m_text_color.GetRGB());
     item = FindTool(ID_Format_FillColor);
-    item->SetUserData((long)&m_fill_color);
+    item->SetUserData((long)m_fill_color.GetRGB());
     
     SetGripperVisible(false);
     SetOverflowVisible(false);
@@ -503,8 +503,8 @@ void FormatToolbar::OnCustomRender(wxDC& dc,
         item.GetId() == ID_Format_TextColor)
     {
         // get the fill/line/text color from the item's user data
-        wxColor* user_data_color = (wxColor*)(item.GetUserData());
-        wxColor c = *user_data_color;
+        wxColor user_data_color(item.GetUserData());
+        wxColor c = user_data_color;
         
         // if the item is disabled, lighten the color
         if (item.GetState() & wxAUI_BUTTON_STATE_DISABLED)

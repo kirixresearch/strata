@@ -61,74 +61,6 @@ wxString doubleQuote(const wxString& src, wxChar quote)
     return ret;
 }
 
-wxString makeProper(const wxString& input)
-{
-    if (input.Length() == 0)
-        return input;
-    
-    wxString output = input;
-    const wxChar* ch = output.c_str();
-    int idx = 0;
-
-    while (*ch && !wxIsalpha(*ch))
-    {
-        ch++;
-        idx++;
-    }
-
-    if (!*ch)
-    {
-        return output;
-    }
-    
-    // make sure that all characters are 7-bit
-    // before trying to uppercase the first letter,
-    // which can destroy some character data in
-    // certain unicode cases
-    
-    ch = output.c_str();
-    while (*ch)
-    {
-        ch++;
-        if (*ch > 127)
-            return output;
-    }
-
-    output.MakeLower();
-    output.SetChar(idx, wxToupper(output.GetChar(idx)));
-
-    return output;
-}
-
-wxString makeProperIfNecessary(const wxString& input)
-{
-    if (input.Length() == 0)
-        return input;
-        
-    const wxChar* ch = input.c_str();
-    
-    while (*ch)
-    {
-        if (*ch > 127)
-        {
-            // unicode strings should not be made 'proper'
-            return input;
-        }
-            
-        if (wxIsalpha(*ch) && *ch != towupper(*ch))
-        {
-            // input is mixed-case, return original
-            return input;
-        }
-        
-        ++ch;
-    }
-    
-    // if the string is all upper case, lower-case it
-    // and capitalize the first letter
-    return makeProper(input);
-}
-
 wxString filenameToUrl(const wxString& _filename)
 {
     return kl::filenameToUrl(towstr(_filename));
@@ -2608,8 +2540,8 @@ void JobGaugeUpdateTimer::Notify()
     // create the job statusbar text
     if (job_count == 1)
         job_text = jobs->getItem(0)->getTitle();
-         else if (job_count > 1)
-        job_text = wxString::Format(_("%d jobs running"), job_count);
+    else
+        job_text = wxString::Format(_("%zu jobs running"), job_count);
     
     // update the gauge and update job statusbar text where appropriate
     if (is_indeterminate)
@@ -2641,7 +2573,7 @@ void JobGaugeUpdateTimer::onJobAdded(jobs::IJobInfoPtr job_info)
     // catch the job running before the job state is set to
     // finished
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 10000);
-    evt.SetExtraLong((long)job_info.p);
+    evt.SetClientData((void*)job_info.p);
 
     // when a job sets its state, it may not be in the main thread, so it is
     // important that we do this here since there are GUI operations involved
@@ -2660,7 +2592,7 @@ void JobGaugeUpdateTimer::onJobStateChanged(jobs::IJobInfoPtr job_info)
 {
     // post an event that a particular job status has changed
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 10001);
-    evt.SetExtraLong((long)job_info.p);
+    evt.SetClientData((void*)job_info.p);
 
     // when a job sets its state, it may not be in the main thread, so it is
     // important that we do this here since there are GUI operations involved
@@ -2690,7 +2622,7 @@ void JobGaugeUpdateTimer::onJobStateChangedInMainThread(wxCommandEvent& evt)
 {
     wxASSERT_MSG(::wxIsMainThread(), wxT("Being called outside of main/gui thread!"));
 
-    jobs::IJobInfoPtr job_info = (jobs::IJobInfo*)evt.GetExtraLong();
+    jobs::IJobInfoPtr job_info = (jobs::IJobInfo*)evt.GetClientData();
     if (job_info->getState() == jobs::jobStateFailed)
     {
         // if any of the jobs in the queue fail,

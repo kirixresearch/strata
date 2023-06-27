@@ -302,14 +302,14 @@ xd::Structure ClientDatabase::jsonToStructure(kl::JsonNode& node)
 
     for (i = 0; i < cnt; ++i)
     {
-        kl::JsonNode column = columns[i];
+        kl::JsonNode column = columns[(int)i];
 
         xd::ColumnInfo col;
         col.name = column["name"];
         col.type = xd::stringToDbtype(column["type"]);
         col.width = column["width"].getInteger();
         col.scale = column["scale"].getInteger();
-        col.column_ordinal = i;
+        col.column_ordinal = (int)i;
         col.expression = column["expression"];
         col.calculated = (col.expression.length() > 0) ? true : false;
 
@@ -537,7 +537,7 @@ xd::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
 
     for (i = 0; i < count; ++i)
     {
-        kl::JsonNode item = items[i];
+        kl::JsonNode item = items[(int)i];
     
         xdcommon::FileInfo* f = new xdcommon::FileInfo;
         f->name = item["name"];

@@ -37,14 +37,14 @@ typedef std::vector<CellData*> GridDraggedCells;
 struct GridDraggedRowInfo
 {
     int idx;
-    long data;
+    intptr_t data;
 };
 
 struct GridDraggedRow
 {
     GridDraggedCells cells;
     int idx;
-    long data;
+    intptr_t data;
 };
     
 typedef std::vector<GridDraggedRow> GridDraggedRows;
@@ -95,7 +95,7 @@ private:
     void setDragInfo(kcl::Grid* grid, bool full_rows = true);
     GridDraggedRowInfo* getDraggedRowInfo(int row);
 
-    wxWindowID* m_sourcegrid_id; // pointer to insert into our "clipboard" data
+    wxWindowID m_sourcegrid_id;
 };
 
 

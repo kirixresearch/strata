@@ -34,7 +34,7 @@ void ComponentDataObject::SetComponent(IComponentPtr comp)
         comp.p->ref();
     }
 
-    SetData(sizeof(IComponent*), (void*)&(comp.p));
+    SetData(sizeof(IComponent*), (const void*)&(comp.p));
 }
 
 IComponentPtr ComponentDataObject::GetComponent()
@@ -56,7 +56,7 @@ IComponentPtr ComponentDataObject::GetComponent()
 
         m_comp.clear();
 
-        unsigned long* data = (unsigned long*)GetData();
+        uintptr_t* data = (uintptr_t*)GetData();
         IComponent* comp = (IComponent*)data[0];
         if (comp)
         {

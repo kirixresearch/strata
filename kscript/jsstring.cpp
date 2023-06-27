@@ -878,7 +878,7 @@ void String::replace(ExprEnv* env, void* param, Value* retval)
         replaceStr(str, v.getString(), replace_str, false);
     }
 
-    retval->setString(str.c_str(), str.length());
+    retval->setString(str.c_str(), (int)str.length());
 }
 
 // (METHOD) String.search
@@ -919,7 +919,7 @@ void String::search(ExprEnv* env, void* param, Value* retval)
                 return;
             } 
             
-            retval->setInteger(results.getSubMatch(0).first - results.src_begin);
+            retval->setInteger((int)(results.getSubMatch(0).first - results.src_begin));
             return;
         }
     }
@@ -943,7 +943,7 @@ void String::search(ExprEnv* env, void* param, Value* retval)
         return;
     }
             
-    retval->setInteger(results.getSubMatch(0).first - results.src_begin);
+    retval->setInteger((int)(results.getSubMatch(0).first - results.src_begin));
 }
 
 // (METHOD) String.slice
@@ -1091,7 +1091,7 @@ void String::split(ExprEnv* env, void* param, Value* retval)
         Value* element = retval->getMemberI(counter++);
         if (next)
         {
-            element->setString(start, next-start);
+            element->setString(start, (int)(next-start));
         }
          else
         {
@@ -1233,7 +1233,7 @@ void String::trim(ExprEnv* env, void* param, Value* retval)
     while (len > 0 && isWhiteSpaceOrLS(*(p+len-1)))
         len--;
         
-    retval->setString(p, len);
+    retval->setString(p, (int)len);
 }
 
 
@@ -1663,7 +1663,7 @@ void String::frequency(ExprEnv* env, void* param, Value* retval)
     wchar_t* str = env->m_val_this->getString();
     wchar_t* search = env->getParam(0)->getString();
     size_t search_len = wcslen(search);
-    size_t count = 0;
+    int count = 0;
     
     if (search_len > 0)
     {

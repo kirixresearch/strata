@@ -853,10 +853,10 @@ bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* jo
             std::wstring part2;
 
             // try to find an equals sign
-            int eq_pos = outcol_it->find(L'=');
+            size_t eq_pos = outcol_it->find(L'=');
             
             // if it's just a field name, make a FIRST(<field_name>) out of it
-            if (eq_pos == -1)
+            if (eq_pos == outcol_it->npos)
             {
                 if (structure.getColumnExist(*outcol_it))
                 {

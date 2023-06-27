@@ -682,12 +682,23 @@ bool PgsqlDatabase::getMountPoint(const std::wstring& path,
 
 std::wstring makeStreamReference(xd::IStream* stream)
 {
-    wchar_t buf[80];
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4302)
+#pragma warning(disable:4311)
+#endif
+
+    wchar_t buf[81];
     if (sizeof(void*) == 8)
         swprintf(buf, 80, L"streamptr://%llX", (long long)(void*)stream);
          else
         swprintf(buf, 80, L"streamptr://%X", (unsigned long)(void*)stream);
+    buf[80] = 0;
     return buf;
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 }
 
 
@@ -762,23 +773,17 @@ bool PgsqlDatabase::renameFile(const std::wstring& path,
     if (!getFileExist(path))
         return false;
 
-    
-
     std::wstring folder;
-    int slash_pos = path.find_last_of(L'/');
+    size_t slash_pos = path.find_last_of(L'/');
     if (slash_pos == path.npos)
         folder = L"";
          else
         folder = path.substr(0, slash_pos);
 
-
-
-
     PGconn* conn = createConnection();
     PGresult* res;
     if (!conn)
         return false;
-
 
     PQexec(conn, "BEGIN");
 
@@ -1670,7 +1675,7 @@ bool PgsqlDatabase::saveDefinition(const std::wstring& path, const xd::FormatDef
 
     // rewrite fields
 
-    int pos;
+    size_t pos;
     std::wstring embedded_expr;
 
     for (it = fd.columns.begin(); it != fd.columns.end(); ++it)

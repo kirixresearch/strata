@@ -96,7 +96,7 @@ int CopyJob::runJob()
 
     if (params_node.childExists("input_iterator"))
     {
-        info.iter_input = (xd::IIterator*)(unsigned long)(kl::hexToUint64(params_node["input_iterator"].getString()));
+        info.iter_input = (xd::IIterator*)(uintptr_t)(kl::hexToUint64(params_node["input_iterator"].getString()));
         info.input = L"";
     }
 

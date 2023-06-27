@@ -1543,7 +1543,7 @@ void KeyBuilderPanel::parseExpr()
             }
         }
 
-        m_grid->setCellString(row, key_colidx, makeProper(piece));
+        m_grid->setCellString(row, key_colidx, piece);
 
         if (m_with_orders)
         {

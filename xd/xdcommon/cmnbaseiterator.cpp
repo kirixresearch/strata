@@ -319,7 +319,7 @@ public:
             const wchar_t* pstr = expr.c_str();
             const wchar_t* pperiod = zl_strchr((wchar_t*)pstr, '.', L"[", L"]");
 
-            int period_pos = pperiod ? (pperiod-pstr) : -1;
+            int period_pos = pperiod ? ((int)(pperiod-pstr)) : -1;
 
             // if no period was found, or it's in the wrong
             // place, the parse was bad

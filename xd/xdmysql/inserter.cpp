@@ -97,7 +97,7 @@ bool MysqlRowInserter::putRawPtr(xd::objhandle_t column_handle,
 static void doubleQuoteCopy(std::wstring& output, const std::string& input)
 {
     int i;
-    int input_length = input.length();
+    int input_length = (int)input.length();
 
     while (input_length > 0 && isspace((unsigned char)input[input_length-1]))
     {
@@ -380,7 +380,7 @@ bool MysqlRowInserter::insertRow()
 
         // execute the insert statement
         m_asc_insert_stmt = kl::tostring(stmt);
-        int error = mysql_real_query(m_mysql, m_asc_insert_stmt.c_str(), m_asc_insert_stmt.length());
+        int error = mysql_real_query(m_mysql, m_asc_insert_stmt.c_str(), (unsigned long)m_asc_insert_stmt.length());
         if (error != 0)
         {
             const char* err = mysql_error(m_mysql);
@@ -417,7 +417,7 @@ bool MysqlRowInserter::flush()
 
     int error = mysql_real_query(m_mysql,
                                  m_asc_insert_stmt.c_str(),
-                                 m_asc_insert_stmt.length());
+                                 (unsigned long)m_asc_insert_stmt.length());
     if (error != 0)
     {
         const char* err = mysql_error(m_mysql);

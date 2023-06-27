@@ -22,7 +22,7 @@ public:
     
     bool ProcessEvent(wxEvent& evt)
     {
-        wxDOMNodeData* data = (wxDOMNodeData*)(((wxCommandEvent&)evt).GetExtraLong());
+        wxDOMNodeData* data = (wxDOMNodeData*)(((wxCommandEvent&)evt).GetClientData());
         delete data;
         return true;
     }
@@ -59,7 +59,7 @@ wxDOMNode::~wxDOMNode()
         if (m_data)
         {
             wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 10000);
-            evt.SetExtraLong((long)m_data);
+            evt.SetClientData((void*)m_data);
             ::wxPostEvent(&g_dom_node_data_deleter, evt);
         }
     }

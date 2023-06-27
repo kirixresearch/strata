@@ -75,7 +75,7 @@ void Event::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
 void Event::connect(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    int param_count = env->getParamCount();
+    size_t param_count = env->getParamCount();
 
     if (param_count == 1)
     {
@@ -188,7 +188,7 @@ void Event::isConnected(kscript::ExprEnv* env, kscript::Value* retval)
 
 void Event::getSinkCount(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    retval->setInteger(getSinkCountInternal());
+    retval->setInteger((int)getSinkCountInternal());
 }
 
 

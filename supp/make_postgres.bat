@@ -20,7 +20,7 @@ popd
 
 pushd postgres\src\interfaces\libpq
 
-if "%PLATFORM%"=="X64" goto x64
+if "%PLATFORM%"=="x64" goto x64
 
 
 :x86

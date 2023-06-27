@@ -431,7 +431,7 @@ void ReportPropsDialog::populateFieldNameDropDown()
     
     for (it = m_source_columns.begin(); it != it_end; ++it)
     {
-        fieldnames.Add(makeProper(*it));
+        fieldnames.Add(*it);
     }
 
     // populate the field name dropdown in the grid

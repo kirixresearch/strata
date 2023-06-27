@@ -75,8 +75,8 @@ static int doUpdate(xd::IDatabasePtr db,
     {
         kl::trim(*p_it);
 
-        int eq_pos = p_it->find(L'=');
-        if (eq_pos < 1)
+        size_t eq_pos = p_it->find(L'=');
+        if (eq_pos == p_it->npos || eq_pos < 1)
         {
             // parse error
             error.setError(xd::errorSyntax, L"Invalid syntax; missing '=' in replace parameters");

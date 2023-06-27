@@ -610,7 +610,7 @@ bool FixedLengthTextIterator::refreshStructure()
 
                 if (as_ptr)
                 {
-                    int as_pos = as_ptr ? (as_ptr - it->c_str()) : -1;
+                    int as_pos = as_ptr ? (int)(as_ptr - it->c_str()) : (int)-1;
                     colname = it->substr(as_pos+2);
                     expr = it->substr(0, as_pos);
                     
@@ -797,7 +797,7 @@ bool FixedLengthTextIterator::modifyStructure(const xd::StructureModify& mod_par
             dai->type = it->params.type;
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
             dai->calculated = true;
@@ -823,7 +823,7 @@ bool FixedLengthTextIterator::modifyStructure(const xd::StructureModify& mod_par
             dai->type = it->params.type;
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
             dai->calculated = true;
@@ -1015,7 +1015,7 @@ const std::string& FixedLengthTextIterator::getString(xd::objhandle_t data_handl
 
         // crop it to calcfield's size
         wchar_t* result_str = dai->expr_result.getString();
-        int len = wcslen(result_str);
+        int len = (int)wcslen(result_str);
         if (dai->isColumn() && len > dai->width)
         {
             len = dai->width;
@@ -1100,7 +1100,7 @@ const std::wstring& FixedLengthTextIterator::getWideString(xd::objhandle_t data_
 
         // crop it to calcfield's size
         wchar_t* result_str = dai->expr_result.getString();
-        int len = wcslen(result_str);
+        int len = (int)wcslen(result_str);
         if (dai->isColumn() && len > dai->width)
         {
             len = dai->width;

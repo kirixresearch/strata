@@ -118,7 +118,7 @@ void XbaseIterator::skip(int delta)
 
     if ((unsigned int)m_current_row > m_file.getRowCount())
     {
-        m_current_row = m_file.getRowCount();
+        m_current_row = (int)m_file.getRowCount();
         m_eof = true;
         return;
     }
@@ -138,7 +138,7 @@ void XbaseIterator::goLast()
 {
     m_bof = false;
     m_eof = false;
-    m_current_row = m_file.getRowCount();
+    m_current_row = (int)m_file.getRowCount();
     goRow(m_current_row);
 }
 
@@ -348,7 +348,7 @@ bool XbaseIterator::modifyStructure(const xd::StructureModify& mod_params, xd::I
             dai->type = it->params.type;
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
             m_fields.push_back(dai);
@@ -373,7 +373,7 @@ bool XbaseIterator::modifyStructure(const xd::StructureModify& mod_params, xd::I
             dai->type = it->params.type;
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
             m_fields.insert(m_fields.begin()+insert_idx, dai);

@@ -25,8 +25,8 @@ std::wstring urlToConnectionStr(const std::wstring& url)
 {
     // manually parse url
     
-    int url_sign = url.find(L"://");
-    if (url_sign == -1)
+    size_t url_sign = url.find(L"://");
+    if (url_sign == url.npos)
         return L"";
         
     std::wstring protocol;
@@ -41,13 +41,13 @@ std::wstring urlToConnectionStr(const std::wstring& url)
     rest = url.substr(url_sign+3);
     
     // look for user name and/or password
-    int at = rest.find(L"@");
-    if (at != -1)
+    size_t at = rest.find(L"@");
+    if (at != rest.npos)
     {
         uid = rest.substr(0, at);
         
-        int colon = uid.find(L":");
-        if (colon != -1)
+        size_t colon = uid.find(L":");
+        if (colon != uid.npos)
         {
             password = uid.substr(colon+1);
             uid = uid.substr(0, colon);
@@ -58,9 +58,9 @@ std::wstring urlToConnectionStr(const std::wstring& url)
     
     
     // find the remainder
-    int last_slash = rest.find_last_of(L'/');
+    size_t last_slash = rest.find_last_of(L'/');
     
-    if (last_slash == -1)
+    if (last_slash == rest.npos)
     {
         host = rest;
     }
@@ -73,8 +73,8 @@ std::wstring urlToConnectionStr(const std::wstring& url)
     
     // find port number from host
     
-    int colon = host.find(L':');
-    if (colon != -1)
+    size_t colon = host.find(L':');
+    if (colon != host.npos)
     {
         port = kl::afterFirst(host, L':');
         

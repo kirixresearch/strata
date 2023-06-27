@@ -26,13 +26,14 @@ public:
     RelationLineDataObject()
             : wxCustomDataObject(wxDataFormat(RELATIONLINE_DATA_OBJECT_FORMAT))
     {
-        unsigned long i = 0;
-        SetData(wxDataFormat(RELATIONLINE_DATA_OBJECT_FORMAT), 
-                sizeof(long),
-                (void*)&i);
+        size_t size = sizeof(uintptr_t)*2 + 1;
+        unsigned char arr[sizeof(uintptr_t) * 2 + 1];
+        memset(arr, 0, size);
+
+        SetData(wxDataFormat(RELATIONLINE_DATA_OBJECT_FORMAT), size, (void*)arr);
     }
 
-    ~RelationLineDataObject()
+    virtual ~RelationLineDataObject()
     {
     }
 
@@ -57,14 +58,15 @@ private:
                  const wxString& fields)
     {
         int strdata_len = (sizeof(wxChar) * (fields.Length()+1));
-        int len = (sizeof(long)*2) + strdata_len;
+        int len = (sizeof(uintptr_t)*2) + strdata_len;
+
         unsigned char* data = new unsigned char[len];
-        unsigned long* l = (unsigned long*)data;
+        uintptr_t* l = (uintptr_t*)data;
 
-        l[0] = (unsigned long)box;
-        l[1] = (unsigned long)line;
+        l[0] = (uintptr_t)box;
+        l[1] = (uintptr_t)line;
 
-        memcpy(data+(sizeof(long)*2), (const wxChar*)fields.c_str(), strdata_len);
+        memcpy(data+(sizeof(uintptr_t)*2), (const wxChar*)fields.c_str(), strdata_len);
         SetData(wxDataFormat(RELATIONLINE_DATA_OBJECT_FORMAT), len, data);
 
         delete[] data;
@@ -72,14 +74,14 @@ private:
 
     RelationBox* getBox()
     {
-        unsigned long* data = (unsigned long*)GetData();
+        uintptr_t* data = (uintptr_t*)GetData();
         return (RelationBox*)data[0];
     }
 
     long getLine()
     {
-        unsigned long* data = (unsigned long*)GetData();
-        return data[1];
+        uintptr_t* data = (uintptr_t*)GetData();
+        return (long)data[1];
     }
 };
 

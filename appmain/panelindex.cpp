@@ -474,7 +474,7 @@ void IndexPanel::populateIndexesList()
         
         // store the name and the row data
         m_indexes_list->setCellString(i, 0, info->name);
-        m_indexes_list->setRowData(i, (long)info);
+        m_indexes_list->setRowData(i, (intptr_t)info);
     }
 }
 
@@ -496,7 +496,7 @@ void IndexPanel::populateIndexFieldsList()
     int i, count = info->cols.size();
     for (i = 0; i < count; ++i)
     {
-        wxString col_name = makeProper(info->cols[i].name);
+        wxString col_name = info->cols[i].name;
         insertIndexColumn(i, col_name, &(info->cols[i]));
     }
     
@@ -690,7 +690,7 @@ void IndexPanel::onAddIndex(wxCommandEvent& evt)
     int row = m_indexes_list->getRowCount();
     m_indexes_list->insertRow(-1);
     m_indexes_list->setCellString(row, 0, info->name);
-    m_indexes_list->setRowData(row, (long)info);
+    m_indexes_list->setRowData(row, (intptr_t)info);
     m_indexes_list->clearSelection();
     m_indexes_list->setRowSelected(row, true);
     m_indexes_list->moveCursor(row, 0);
@@ -791,7 +791,7 @@ void IndexPanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
         kcl::GridDraggedCells::iterator it;
         for (it = cells.begin(); it != cells.end(); ++it)
         {
-            insertIndexColumn(drop_row, makeProper((*it)->m_strvalue));
+            insertIndexColumn(drop_row, (*it)->m_strvalue);
             drop_row++;
         }
     }
@@ -807,7 +807,7 @@ void IndexPanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
 void IndexPanel::onAvailableFieldsDblClicked(int row, const wxString& text)
 {
     // double-clicked on a field item
-    insertIndexColumn(-1, makeProper(text));
+    insertIndexColumn(-1, text);
     checkOverlayText();
     m_index_fields->refresh(kcl::Grid::refreshAll);
 }

@@ -49,7 +49,7 @@ bool SlStream::readBlock(long long block, void* buf, unsigned long* read_count)
     sql += block_str;
 
     sqlite3_stmt* stmt = NULL;
-    sqlite3_prepare_v2(m_database->m_sqlite, sql.c_str(), sql.length(), &stmt, NULL);
+    sqlite3_prepare_v2(m_database->m_sqlite, sql.c_str(), (int)sql.length(), &stmt, NULL);
     if (!stmt)
     {
         return false;

@@ -700,7 +700,7 @@ JsonNode JsonNode::appendElement()
 bool JsonNode::deleteChild(size_t idx)
 {
     wchar_t buf[30];
-    swprintf(buf, 30, L"%d", idx);
+    swprintf(buf, 30, L"%u", (unsigned int)idx);
 
     std::map<std::wstring,JsonNode>::iterator mit = m_value->m_child_nodes.find(buf);
     if (mit == m_value->m_child_nodes.end())

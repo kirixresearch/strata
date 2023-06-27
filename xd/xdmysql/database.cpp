@@ -589,7 +589,7 @@ bool MysqlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 
             xd::FormatDefinition fd = info->output_format;
             fd.columns.clear();
-            int i, col_count = structure.getColumnCount();
+            size_t i, col_count = structure.getColumnCount();
             for (i = 0; i < col_count; ++i)
                 fd.createColumn(structure.getColumnInfoByIdx(i));
 
@@ -680,9 +680,7 @@ xd::IFileInfoPtr MysqlDatabase::getFileInfo(const std::wstring& path)
     }
     
     xd::IFileInfoEnumPtr files = getFolderInfo(folder);
-    int i, count;
-    
-    count = files->size();
+    size_t i, count = files->size();
     for (i = 0; i < count; ++i)
     {
         xd::IFileInfoPtr finfo = files->getItem(i);
@@ -1123,7 +1121,7 @@ bool MysqlDatabase::execute(const std::wstring& command,
         std::vector<std::wstring>::iterator it;
         
         // remove empty commands
-        int i, count = commands.size();
+        int i, count = (int)commands.size();
         for (i = 0; i < count; ++i)
         {
             kl::trim(commands[i]);

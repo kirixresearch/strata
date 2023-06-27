@@ -320,7 +320,7 @@ void LocalRowCache::appendColumnData(const unsigned char* data, unsigned int siz
     memcpy(p, data, size);
     p += size;
     
-    m_append_cursize = (p - m_append_data);
+    m_append_cursize = (unsigned int)(p - m_append_data);
 }
 
 void LocalRowCache::finishRow()

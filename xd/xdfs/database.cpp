@@ -417,12 +417,12 @@ static bool determineSetFormatInfo(xd::IStream* stream, xd::FormatDefinition* in
         tilde_count = 0;
     }
     
-    int max = find_max(comma_line_count,
-                       tab_line_count,
-                       semicolon_line_count,
-                       colon_line_count,
-                       pipe_line_count,
-                       tilde_line_count);
+    int max = find_max((int)comma_line_count,
+                       (int)tab_line_count,
+                       (int)semicolon_line_count,
+                       (int)colon_line_count,
+                       (int)pipe_line_count,
+                       (int)tilde_line_count);
     
     // at least half of the lines were "sensed" as delimited
     if (max > 0 && lines.size() > 1 && max >= (int)(lines.size()/2))
@@ -476,7 +476,7 @@ bool FsDatabase::getFileFormat(const std::wstring& path,
 
     if (stream == NULL && path.substr(0, 12) == L"streamptr://")
     {
-        unsigned long l = (unsigned long)kl::hexToUint64(path.substr(12));
+        uintptr_t l = (uintptr_t)kl::hexToUint64(path.substr(12));
         stream = (xd::IStream*)l;
         ext = xf_get_extension_from_mimetype(stream->getMimeType());
     }
@@ -2312,8 +2312,8 @@ bool FsDatabase::createTable(const std::wstring& path, const xd::FormatDefinitio
         // look for an extension to yield some guidance as to which
         // file format to use by default -- if no extension, assume csv
         std::wstring ext;
-        int ext_pos = phys_path.find_last_of(L'.');
-        if (ext_pos >= 0)
+        size_t ext_pos = phys_path.find_last_of(L'.');
+        if (ext_pos != phys_path.npos)
             ext = phys_path.substr(ext_pos+1);
         kl::makeLower(ext);
 
@@ -2460,8 +2460,8 @@ bool FsDatabase::createTable(const std::wstring& path, const xd::FormatDefinitio
         // look for an extension to yield some guidance as to which
         // file format to use by default -- if no extension, assume csv
         std::wstring ext;
-        int ext_pos = phys_path.find_last_of(L'.');
-        if (ext_pos >= 0)
+        size_t ext_pos = phys_path.find_last_of(L'.');
+        if (ext_pos != phys_path.npos)
             ext = phys_path.substr(ext_pos+1);
              else
             ext = L"csv";
@@ -3158,7 +3158,7 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
             const wchar_t* pstr = hook_info.expr_text.c_str();
             const wchar_t* pperiod = zl_strchr((wchar_t*)pstr, '.', L"[", L"]");
-            int period_pos = pperiod ? (pperiod-pstr) : -1;
+            int period_pos = pperiod ? (int)(pperiod-pstr) : (int)-1;
 
             if (period_pos == -1)
             {
@@ -3194,7 +3194,7 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
         std::wstring str = hook_info.expr_text;
         kl::trim(str);
 
-        int len = str.length();
+        int len = (int)str.length();
         if (len == 0)
             return true;
 

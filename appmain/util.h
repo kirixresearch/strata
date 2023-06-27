@@ -137,9 +137,6 @@ inline wxColor string2color(const std::wstring& str)
 
 
 wxString doubleQuote(const wxString& src, wxChar quote = L'\'');
-wxString makeProper(const wxString& input);
-wxString makeProperIfNecessary(const wxString& input);
-
 
 // shortcut so we don't have to use towx everywhere
 // this should be able to go away in future versions of wx

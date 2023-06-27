@@ -661,7 +661,9 @@ bool TtbSet::modifyStructure(const xd::StructureModify& mod_params, xd::IJob* jo
 
                 int pos = it_sa->params.column_ordinal;
                 if (pos < 0)
-                    pos = modfields.size();
+                {
+                    pos = (int)modfields.size();
+                }
                     
                 if (mf.dest_type == xd::typeNumeric &&
                     mf.dest_width > ttb_max_numeric_width)

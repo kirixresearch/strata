@@ -79,7 +79,7 @@ void Hash::crc32(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
         char* utf8_str = new char[(len+1)*4];
         kl::utf8_wtoutf8(utf8_str, (len+1)*4, str.c_str(), len);
-        unsigned int crcval = kl::crc32((unsigned char*)utf8_str, strlen(utf8_str));
+        unsigned int crcval = kl::crc32((unsigned char*)utf8_str, (int)strlen(utf8_str));
         delete[] utf8_str;
 
         retval->setInteger((int)crcval);

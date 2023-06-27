@@ -308,7 +308,7 @@ int ListViewItem::getIndexInternal()
     if (!m_owner->isControlValid())
         return -1;
 
-    return m_owner->m_ctrl->FindItem(-1, (long)this);
+    return m_owner->m_ctrl->FindItem(-1, (wxUIntPtr)this);
 }
 
 
@@ -610,7 +610,7 @@ void ListView::addItem(kscript::ExprEnv* env, kscript::Value* retval)
         
         // associate the ListViewItem class with the id so we can
         // retrieve the ListViewItem class when an event is fired
-        m_ctrl->SetItemData(item->m_id, (long)item);
+        m_ctrl->SetItemPtrData(item->m_id, (wxUIntPtr)item);
         
         // hang on to a reference
         item->baseRef();
@@ -689,7 +689,7 @@ void ListView::insertItem(kscript::ExprEnv* env, kscript::Value* retval)
         
         // associate the ListViewItem class with the id so we can
         // retrieve the ListViewItem class when an event is fired
-        m_ctrl->SetItemData(item->m_id, (long)item);
+        m_ctrl->SetItemPtrData(item->m_id, (wxUIntPtr)item);
         
         // hang on to a reference
         item->baseRef();
@@ -1503,13 +1503,7 @@ struct SortHelperInfo
     bool ascending;
 };
 
-#if wxCHECK_VERSION(2,9,3)
 static int wxCALLBACK sortHelper(wxIntPtr _item1, wxIntPtr _item2, wxIntPtr _sortData)
-#elif wxCHECK_VERSION(2,9,0)
-static int wxCALLBACK sortHelper(long _item1, long _item2, wxIntPtr _sortData)
-#else
-static int wxCALLBACK sortHelper(long _item1, long _item2, long _sortData)
-#endif
 {
     ListViewItem* item1 = (ListViewItem*)_item1;
     ListViewItem* item2 = (ListViewItem*)_item2;
@@ -1555,7 +1549,7 @@ void ListView::sortItems(kscript::ExprEnv* env, kscript::Value* retval)
     info.col_idx = col_idx;
     info.ascending = ascending;
     
-    m_ctrl->SortItems(sortHelper, (long)&info);
+    m_ctrl->SortItems(sortHelper, (wxIntPtr)&info);
 }
 
 

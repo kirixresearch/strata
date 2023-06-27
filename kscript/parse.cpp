@@ -2139,7 +2139,7 @@ int ExprArguments::eval(ExprEnv* env, Value* retval)
 
 
     Value* vlength = env->m_arguments->getMember(L"length");
-    vlength->setInteger(env->m_param_count);
+    vlength->setInteger((int)env->m_param_count);
     vlength->setAttributes(Value::attrDontEnum);
     
     Value* vfunc = env->m_arguments->getMember(L"callee");
@@ -2783,7 +2783,7 @@ int ExprParser::getSymbolId(const std::wstring& symbol)
     it = m_dictionary_m.find(symbol);
     if (it == m_dictionary_m.end())
     {
-        if (m_symbol_counter >= m_dictionary_v.size())
+        if (m_symbol_counter >= (int)m_dictionary_v.size())
             m_dictionary_v.resize(m_symbol_counter + 20);
     
         m_dictionary_m[symbol] = m_symbol_counter;
@@ -3293,7 +3293,7 @@ ExprElement* ExprParser::parseStringLiteral(ExprParserEnv* penv,
     }
 
     Value* v = new Value;
-    v->allocString(prealloc_size+5);
+    v->allocString((int)prealloc_size+5);
     
     wchar_t* start = v->getString();
     wchar_t* src = expr+1;
@@ -3365,11 +3365,11 @@ ExprElement* ExprParser::parseStringLiteral(ExprParserEnv* penv,
                         res = wcschr(hexchars, ::towupper(*(src+1)));
                         if (res)
                         {
-                            d1 = res - hexchars;
+                            d1 = (wchar_t)(res - hexchars);
                             res = wcschr(hexchars, ::towupper(*(src+2)));
                             if (res)
                             {
-                                d2 = res - hexchars;
+                                d2 = (wchar_t)(res - hexchars);
                                 ch = (d1*16)+d2;
                             }
                         }
@@ -3402,7 +3402,7 @@ ExprElement* ExprParser::parseStringLiteral(ExprParserEnv* penv,
                             res = wcschr(hexchars, ::towupper(*(s+i)));
                             if (!res)
                                 break;
-                            ch += (res-hexchars)*mul;
+                            ch += (wchar_t)((res-hexchars)*mul);
                             mul /= 16;
                         }
 
@@ -3461,7 +3461,7 @@ ExprElement* ExprParser::parseStringLiteral(ExprParserEnv* penv,
    
     if (endloc)
         *endloc = src;
-    v->setDataLen(dest-start);
+    v->setDataLen((int)(dest-start));
     return static_cast<ExprElement*>(v);
 }
 
@@ -3819,7 +3819,7 @@ ExprElement* ExprParser::parseElement(ExprParserEnv* penv,
 
             retval_type = getReturnValType(binding->m_formats,
                                            elements,
-                                           params.size());
+                                           (int)params.size());
 
             delete[] elements;
         }
@@ -6515,7 +6515,7 @@ ExprElement* ExprParser::parseFunction(ExprParserEnv* penv,
 
     // set the length parameter of the function
     Value* len = funcdef->getMember(L"length");
-    len->setInteger(funcdef->m_param_ids.size());
+    len->setInteger((int)funcdef->m_param_ids.size());
     len->setAttributes(Value::attrReadOnly);
 
 
@@ -6868,8 +6868,8 @@ ExprElement* ExprParser::parseClass(ExprParserEnv* penv,
     std::wstring class_name;
     std::wstring baseclass_name;
 
-    int pos = dec.find(L"extends");
-    if (pos == -1)
+    size_t pos = dec.find(L"extends");
+    if (pos == dec.npos)
     {
         class_name = xtrim(expr);
     }
@@ -7565,10 +7565,10 @@ Value* ExprParser::addIntegerValue(const std::wstring& var_name,
 }
 
 Value* ExprParser::addStringValue(const std::wstring& var_name,
-                                const std::wstring& value)
+                                  const std::wstring& value)
 {
     Value* v = new Value;
-    v->setString(value.c_str(), value.length());
+    v->setString(value.c_str(), (int)value.length());
 
     ExprVarBinding b;
     b.m_name = var_name;
@@ -8072,9 +8072,9 @@ void ExprParser::calcErrorInfo()
     }
 
     if (m_error_loc)
-        m_error_offset = m_error_loc - expr;
+        m_error_offset = (int)(m_error_loc - expr);
          else
-        m_error_offset = wcslen(expr);
+        m_error_offset = (int)wcslen(expr);
 }
 
 
@@ -8205,12 +8205,12 @@ void ExprParser::setMaximumDepth(int max_depth)
     m_max_depth = max_depth;
 }
 
-void ExprParser::setExtraLong(long val)
+void ExprParser::setExtraLong(uintptr_t val)
 {
     m_extra_long = val;
 }
 
-long ExprParser::getExtraLong()
+uintptr_t ExprParser::getExtraLong()
 {
     return m_extra_long;
 }

@@ -101,12 +101,12 @@ bool NodeFileStream::open(const std::wstring& filename)
         delete[] m_utf8data;
 
     // set the buffer
-    unsigned int bufsize = jsonstr.length()*6;
+    unsigned int bufsize = (unsigned int)jsonstr.length()*6;
     m_utf8data = new char[bufsize];  // 6 times string length
     kl::utf8_wtoutf8(m_utf8data, bufsize, jsonstr.c_str(), jsonstr.length());
 
     // reset the read offset
-    m_stream_length = strlen(m_utf8data);
+    m_stream_length = (unsigned long)strlen(m_utf8data);
     m_stream_offset = 0;
 
     ofsfile->unref();

@@ -690,12 +690,12 @@ bool XdGridModel::setCellProperties(int row,
     return false;
 }
 
-long XdGridModel::getRowData(int row)
+intptr_t XdGridModel::getRowData(int row)
 {
     return 0;
 }
 
-void XdGridModel::setRowData(int row, long data)
+void XdGridModel::setRowData(int row, intptr_t data)
 {
 }
 

@@ -386,7 +386,7 @@ bool LocalRowCache2::getRow(long long rowid, LocalRow2& row)
     sql += rowid_str;
 
     sqlite3_stmt* stmt = NULL;
-    sqlite3_prepare_v2(db, sql.c_str(), sql.length(), &stmt, NULL);
+    sqlite3_prepare_v2(db, sql.c_str(), (int)sql.length(), &stmt, NULL);
     if (!stmt)
     {
         return false;
@@ -437,7 +437,7 @@ bool LocalRowCache2::putRow(long long rowid, LocalRow2& row)
     size_t size = 0;
     const void* data = row.serialize(&size);
 
-    sqlite3_bind_blob(stmt, 1, data, size, SQLITE_STATIC);
+    sqlite3_bind_blob(stmt, 1, data, (int)size, SQLITE_STATIC);
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
 

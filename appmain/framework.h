@@ -92,14 +92,16 @@ struct FrameworkEvent
                 s_param(_s_param),
                 l_param(_l_param),
                 l_param2(0),
-                o_param(NULL) { }
+                o_param(nullptr),
+                o_param2(nullptr) { }
 
     wxString name;
     wxString s_param;
     wxString s_param2;
     unsigned long l_param;
     unsigned long l_param2;
-    wxObject* o_param;
+    void* o_param;
+    void* o_param2;
 };
 
 

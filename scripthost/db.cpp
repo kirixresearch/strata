@@ -367,7 +367,7 @@ void DbResult::init(xd::IIteratorPtr iter)
         BaseClass::getMember(c.name);
         
         m_cols.push_back(c);
-        m_cols_map[c.name] = i;
+        m_cols_map[c.name] = (int)i;
     }
 }
 
@@ -522,7 +522,7 @@ void DbResult::getString(kscript::ExprEnv* env, kscript::Value* retval)
 
 void DbResult::getColumnCount(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    retval->setInteger(m_cols.size());
+    retval->setInteger((int)m_cols.size());
 }
 
 // (METHOD) DbResult.getColumnName
@@ -1103,7 +1103,7 @@ static bool parseBulkInsertDateTime(const std::wstring& input,
 
     // extract information
 
-    int part_count = parts.size();
+    size_t part_count = parts.size();
 
     if (part_count < 3)
         return false;
@@ -1883,7 +1883,7 @@ void DbConnection::getObjects(kscript::ExprEnv* env, kscript::Value* retval)
         oi->getMember(L"schema")->setString(L"");
         oi->getMember(L"mount")->setBoolean(fi->isMount());
 
-        retval->getMemberI(i)->setObject(oi);
+        retval->getMemberI((int)i)->setObject(oi);
     }
 }
 

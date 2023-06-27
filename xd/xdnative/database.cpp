@@ -178,7 +178,7 @@ void XdnativeDatabase::emptyTrash()
 
     for (i = 0; i < child_count; ++i)
     {
-        INodeValuePtr item = root->getChildByIdx(i);
+        INodeValuePtr item = root->getChildByIdx((unsigned int)i);
         if (item.isNull())
             continue;
 
@@ -749,15 +749,15 @@ xd::tableord_t XdnativeDatabase::allocOrdinal()
     {
         buf[0] = 0xff;
         buf[1] = 0xfe;
-        kl::wstring2ucsle(buf+2, xml, xml.length());
-        xf_write(f, buf, 1, 2 + (xml.length()*2));
+        kl::wstring2ucsle(buf+2, xml, (int)xml.length());
+        xf_write(f, buf, 1, (unsigned int)(2 + (xml.length()*2)));
     }
      else
     {
         memset(buf, ' ', buf_size);
         std::string sxml = kl::tostring(xml);
         strcpy((char*)buf, sxml.c_str()); 
-        xf_write(f, buf, 1, sxml.length());
+        xf_write(f, buf, 1, (unsigned int)sxml.length());
     }
 
     xf_close(f);
@@ -772,7 +772,7 @@ bool XdnativeDatabase::setOrdinalTable(xd::tableord_t ordinal,
     std::wstring filename;
     std::wstring data_path = makePathName(m_base_dir, L"data");
 
-    int path_len = data_path.length();
+    int path_len = (int)data_path.length();
 
     if (path_len == 0 || data_path[path_len-1] != PATH_SEPARATOR_CHAR)
     {
@@ -884,12 +884,11 @@ void XdnativeDatabase::recursiveReferenceUpdate(const std::wstring& folder_path)
     xd::IFileInfoEnumPtr files = getFolderInfo(folder_path);
     xd::IFileInfoPtr info;
 
-    int file_count = files->size();
-    int i;
+    size_t i, file_count = files->size();
 
     for (i = 0; i < file_count; ++i)
     {
-        info = files->getItem(i);
+        info = files->getItem((int)i);
         int file_type = info->getType();
 
         std::wstring path = combineOfsPath(folder_path, info->getName());
@@ -1702,8 +1701,8 @@ bool XdnativeDatabase::renameFile(const std::wstring& path,
     // create a fully-qualified path for the newly renamed object
     std::wstring new_path;
 
-    int slash_pos = path.find_last_of(L'/');
-    if (slash_pos != -1)
+    size_t slash_pos = path.find_last_of(L'/');
+    if (slash_pos != path.npos)
     {
         new_path = path.substr(0, slash_pos);
         new_path += L"/";
@@ -2343,8 +2342,8 @@ xd::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
     f->is_mount = false;
     f->path = path;
     
-    int slash_pos = path.find_last_of(L'/');
-    if (slash_pos == -1)
+    size_t slash_pos = path.find_last_of(L'/');
+    if (slash_pos == path.npos)
         f->name = path;
          else
         f->name = path.substr(slash_pos+1);
@@ -2632,9 +2631,9 @@ xd::IFileInfoEnumPtr XdnativeDatabase::getFolderInfo(const std::wstring& _mask)
         {
             std::wstring file_name;
 
-            int dot_pos = info.m_name.find_last_of(L'.');
+            size_t dot_pos = info.m_name.find_last_of(L'.');
 
-            if (dot_pos <= 0)
+            if (dot_pos == info.m_name.npos || dot_pos == 0)
                 file_name = info.m_name;
                  else
                 file_name = info.m_name.substr(0, dot_pos);
@@ -2768,8 +2767,7 @@ void XdnativeDatabase::getFolderUsedOrdinals(const std::wstring& folder_path,
     xd::IFileInfoEnumPtr files = getFolderInfo(folder_path);
     xd::IFileInfoPtr info;
 
-    int file_count = files->size();
-    int i;
+    int i, file_count = (int)files->size();
 
     for (i = 0; i < file_count; ++i)
     {
@@ -3226,8 +3224,8 @@ ITablePtr XdnativeDatabase::openTableByOrdinal(xd::tableord_t table_ordinal)
         return xcm::null;
 
     // find file extension
-    int ext_pos = table_filename.find_last_of(L'.');
-    if (ext_pos == -1)
+    size_t ext_pos = table_filename.find_last_of(L'.');
+    if (ext_pos == table_filename.npos)
         return xcm::null;
     
     std::wstring ext = table_filename.substr(ext_pos+1);
@@ -3363,7 +3361,7 @@ IXdsqlTablePtr XdnativeDatabase::openTable(const std::wstring& path, const xd::F
     if (path.substr(0, 12) == L"/.temp/.ptr/")
     {
         std::wstring ptr_string = kl::afterLast(path, L'/');
-        unsigned long l = (unsigned long)kl::hexToUint64(ptr_string.c_str());
+        uintptr_t l = (uintptr_t)kl::hexToUint64(ptr_string.c_str());
         IXdsqlTable* sptr = (IXdsqlTable*)l;
         return sptr;
     }
@@ -3698,7 +3696,7 @@ xd::IRelationEnumPtr XdnativeDatabase::getRelationEnum(const std::wstring& path)
 
     for (i = 0; i < count; ++i)
     {
-        INodeValuePtr rel_node = file->getChildByIdx(i);
+        INodeValuePtr rel_node = file->getChildByIdx((unsigned int)i);
 
         tag_node = rel_node->getChild(L"tag", false);
         if (!tag_node)
@@ -4114,7 +4112,7 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
             const wchar_t* pstr = hook_info.expr_text.c_str();
             const wchar_t* pperiod = zl_strchr((wchar_t*)pstr, '.', L"[", L"]");
-            int period_pos = pperiod ? (pperiod-pstr) : -1;
+            int period_pos = pperiod ? (int)(pperiod-pstr) : (int)-1;
 
             if (period_pos == -1)
             {
@@ -4150,7 +4148,7 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
         std::wstring str = hook_info.expr_text;
         kl::trim(str);
 
-        int len = str.length();
+        int len = (int)str.length();
         if (len == 0)
             return true;
 

@@ -114,7 +114,7 @@ void Environment::getTempPath(kscript::ExprEnv* env, void* param, kscript::Value
 {
     std::wstring temps = xf_get_temp_path();
     if (temps.length() > 0 && temps[temps.length()-1] == xf_path_separator_wchar)
-        retval->setString(temps.c_str(), temps.length()-1);
+        retval->setString(temps.c_str(), (int)temps.length() - 1);
          else
         retval->setString(temps);
 }

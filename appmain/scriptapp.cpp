@@ -849,7 +849,7 @@ void Application::processEvents(kscript::ExprEnv* env)
         if ((evt.flags & eventFlagNoGuiBlock) == 0)
         {
             wxCommandEvent e1(wxEVT_COMMAND_MENU_SELECTED, ID_EventStart);
-            e1.SetExtraLong((long)evt.jsevent);
+            e1.SetClientData((void*)evt.jsevent);
             ::wxPostEvent(&m_evt_sink, e1);
         }
         
@@ -864,7 +864,7 @@ void Application::processEvents(kscript::ExprEnv* env)
         if ((evt.flags & eventFlagNoGuiBlock) == 0)
         {
             wxCommandEvent e2(wxEVT_COMMAND_MENU_SELECTED, ID_EventEnd);
-            e2.SetExtraLong((long)evt.jsevent);
+            e2.SetClientData((void*)evt.jsevent);
             ::wxPostEvent(&m_evt_sink, e2);
         }
     }

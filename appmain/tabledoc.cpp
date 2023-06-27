@@ -690,7 +690,8 @@ bool TableDoc::onSiteClosing(bool force)
 
 
     // let the column props (dynamic) field panel know that we are closing
-    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_ON_SITE_CLOSING, (long)(ITableDoc*)this);
+    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_ON_SITE_CLOSING);
+    e->o_param = (void*)(ITableDoc*)this;
     m_frame->sendEvent(e);
 
 
@@ -784,16 +785,16 @@ void TableDoc::onFrameEvent(FrameworkEvent& evt)
             m_grid->refresh(kcl::Grid::refreshAll);
     }
     else if (evt.name == FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD &&
-        evt.l_param != (unsigned long)this)
+             evt.o_param != (void*)this)
     {
-        TableDoc* td1 = (TableDoc*)evt.l_param;
+        TableDoc* td1 = (TableDoc*)evt.o_param;
         TableDoc* td2 = (TableDoc*)this;
 
         if (isSamePath(td1->m_path, td2->m_path))
         {
-            if (evt.l_param2 != (unsigned long)m_active_view.p)
+            if (evt.o_param2 != (void*)m_active_view.p)
             {
-                ITableDocObjectPtr v1 = ((ITableDocView*)(evt.l_param2));
+                ITableDocObjectPtr v1 = ((ITableDocView*)(evt.o_param2));
                 ITableDocObjectPtr v2 = m_active_view;
 
                 if (v1.isOk() && v2.isOk())
@@ -1060,8 +1061,8 @@ void TableDoc::onFormatChanged(wxCommandEvent& evt)
                 if (m_grid->isEditing())
                     m_grid->endEdit(true);
                 
-                wxColor* color = (wxColor*)evt.GetExtraLong();
-                setColumnProps(NULL, color);
+                wxColor color(evt.GetExtraLong());
+                setColumnProps(NULL, &color);
             }
             break;
             
@@ -1070,8 +1071,8 @@ void TableDoc::onFormatChanged(wxCommandEvent& evt)
                 if (m_grid->isEditing())
                     m_grid->endEdit(true);
                 
-                wxColor* color = (wxColor*)evt.GetExtraLong();
-                setColumnProps(color, NULL);
+                wxColor color(evt.GetExtraLong());
+                setColumnProps(&color, NULL);
             }
             break;
     }
@@ -2994,9 +2995,9 @@ void TableDoc::insertColumnSeparator(int insert_pos)
     m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_VIEW_MODIFIED, 0));
 
     // update other windows that are showing the same view
-    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD,
-                                           (unsigned long)this);
-    e->l_param2 = (unsigned long)m_active_view.p;
+    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD);
+    e->o_param = (void*)this;
+    e->o_param2 = (void*)m_active_view.p;
     m_frame->postEvent(e);
 }
 
@@ -3050,9 +3051,9 @@ void TableDoc::insertColumnInternal(int insert_pos,
     m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_VIEW_MODIFIED, 0));
 
     // update other windows that are showing the same view
-    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD,
-                                          (unsigned long)this);
-    e->l_param2 = (unsigned long)m_active_view.p;
+    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD);
+    e->o_param = (void*)this;
+    e->o_param2 = (void*)m_active_view.p;
     m_frame->postEvent(e);
 }
 
@@ -3186,9 +3187,9 @@ void TableDoc::hideColumn(int idx)
     m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_VIEW_MODIFIED, 0));
 
     // update other windows that are showing the same view
-    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD,
-                                           (unsigned long)this);
-    e->l_param2 = (unsigned long)m_active_view.p;
+    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD);
+    e->o_param = (void*)this;
+    e->o_param2 = (void*)m_active_view.p;
     m_frame->postEvent(e);
 }
 
@@ -3455,9 +3456,9 @@ void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
     m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_VIEW_MODIFIED, 0));
 
     // update other windows that are showing the same view
-    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD,
-                                   (unsigned long)this);
-    e->l_param2 = (unsigned long)m_active_view.p;
+    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD);
+    e->o_param = (void*)this;
+    e->o_param2 = (void*)m_active_view.p;
     m_frame->postEvent(e);
     
     updateStatusBar();
@@ -4601,9 +4602,9 @@ void TableDoc::onGridColumnResize(kcl::GridEvent& evt)
 
     if (evt.GetUserEvent())
     {
-        FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD,
-                                       (unsigned long)this);
-        e->l_param2 = (unsigned long)m_active_view.p;
+        FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD);
+        e->o_param = (void*)this;
+        e->o_param2 = (void*)m_active_view.p;
         m_frame->postEvent(e);
         g_app->processIdle();
     }
@@ -4693,8 +4694,9 @@ void TableDoc::onGridColumnMove(kcl::GridEvent& evt)
     e->s_param = wxT("colmove");
     m_frame->postEvent(e);
 
-    e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD, (unsigned long)this);
-    e->l_param2 = (unsigned long)m_active_view.p;
+    e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD);
+    e->o_param = (void*)this;
+    e->o_param2 = (void*)m_active_view.p;
     m_frame->postEvent(e);
 }
 

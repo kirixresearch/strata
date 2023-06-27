@@ -110,7 +110,7 @@ int ViewJob::runJob()
         }
     }
 
-    cnt = columns_node.getChildCount();
+    cnt = (int)columns_node.getChildCount();
     for (i = 0; i < cnt; ++i)
     {
         kl::JsonNode column_node = columns_node[i];
@@ -122,8 +122,8 @@ int ViewJob::runJob()
         colinfo.scale = column_node["scale"].getInteger();
         colinfo.expression = column_node["expression"];
 
-        int colidx = fd.columns.getColumnIdx(colinfo.name);
-        if (colidx != -1)
+        size_t colidx = fd.columns.getColumnIdx(colinfo.name);
+        if (colidx != (size_t)-1)
         {
             // column already exists from base definition; overwrite it
             fd.columns.columns[colidx] = colinfo;

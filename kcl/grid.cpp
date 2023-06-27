@@ -428,12 +428,12 @@ bool TestModel::setCellProperties(int row,
     return false;
 }
 
-long TestModel::getRowData(int row)
+intptr_t TestModel::getRowData(int row)
 {
     return 0;
 }
 
-void TestModel::setRowData(int row, long data)
+void TestModel::setRowData(int row, intptr_t data)
 {
 }
 
@@ -2644,12 +2644,12 @@ bool Grid::getColumnRect(int col, wxRect& rect)
 
 
 
-void Grid::setRowData(int row, long data)
+void Grid::setRowData(int row, intptr_t data)
 {
     m_model->setRowData(row, data);
 }
 
-long Grid::getRowData(int row)
+intptr_t Grid::getRowData(int row)
 {
     return m_model->getRowData(row);
 }

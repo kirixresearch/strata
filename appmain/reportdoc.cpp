@@ -1037,23 +1037,20 @@ void ReportDoc::onFormatChanged(wxCommandEvent& evt)
     
     if (evt.GetId() == ID_Format_TextColor)
     {
-        wxColor* color = (wxColor*)evt.GetExtraLong();
-        if (color)
-            setSelectedCellProperty(kcanvas::PROP_TEXT_COLOR, kcanvas::tokccolor(*color));            
+        wxColor color(evt.GetExtraLong());
+        setSelectedCellProperty(kcanvas::PROP_TEXT_COLOR, kcanvas::tokccolor(color)); 
     }
     
     if (evt.GetId() == ID_Format_FillColor)
     {
-        wxColor* color = (wxColor*)evt.GetExtraLong();
-        if (color)
-            setSelectedCellProperty(kcanvas::PROP_COLOR_BG, kcanvas::tokccolor(*color));
+        wxColor color(evt.GetExtraLong());
+        setSelectedCellProperty(kcanvas::PROP_COLOR_BG, kcanvas::tokccolor(color));
     }
     
     if (evt.GetId() == ID_Format_LineColor)
     {
-        wxColor* color = (wxColor*)evt.GetExtraLong();
-        if (color)
-            setSelectedCellProperty(kcanvas::PROP_COLOR_FG, kcanvas::tokccolor(*color));
+        wxColor color(evt.GetExtraLong());
+        setSelectedCellProperty(kcanvas::PROP_COLOR_FG, kcanvas::tokccolor(color));
     }
 
     if (evt.GetId() == ID_Format_Border)

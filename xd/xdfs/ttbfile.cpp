@@ -1247,7 +1247,7 @@ bool TtbRow::putString(int column_ordinal,
     {
         memset(m_rowptr + dai->offset, 0, dai->width);
 
-        int write_len = value.length();
+        int write_len = (int)value.length();
         if (write_len > dai->width)
             write_len = dai->width;
 
@@ -1288,7 +1288,7 @@ bool TtbRow::putWideString(int column_ordinal,
 
         std::string ascvalue = kl::tostring(value);
 
-        int write_len = ascvalue.length();
+        int write_len = (int)ascvalue.length();
         if (write_len > dai->width)
             write_len = dai->width;
 

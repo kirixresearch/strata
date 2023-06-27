@@ -3658,7 +3658,18 @@ ssl_locking_callback(int mode, int mutex_num, const char *file, int line)
 static unsigned long
 ssl_id_callback(void)
 {
+	#ifdef _MSC_VER
+		// wait for upgrade for something else
+	#pragma warning(push)
+	#pragma warning(disable:4302)
+	#pragma warning(disable:4311)
+	#endif
+
 	return ((unsigned long) pthread_self());
+
+	#ifdef _MSC_VER
+	#pragma warning(pop)
+	#endif
 }
 
 static bool_t

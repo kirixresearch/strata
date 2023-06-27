@@ -85,8 +85,10 @@ bool KpgStream::read(void* buf,
         }
     }
 
-    if (read_size > m_membuf.getDataSize())
-        read_size = m_membuf.getDataSize();
+    if ((size_t)read_size > m_membuf.getDataSize())
+    {
+        read_size = (unsigned long)m_membuf.getDataSize();
+    }
 
     if (read_size == 0)
         return false;
@@ -133,7 +135,7 @@ bool KpgStream::write(const void* buf,
         m_writer->startWrite();
 
         // create a little-endian UCS-2 version of the info block xml
-        int buf_len = (info_block_str.length()+1)*2;
+        int buf_len = (int)((info_block_str.length()+1)*2);
         unsigned char* info_block = new unsigned char[buf_len];
         kl::wstring2ucsle(info_block, info_block_str, buf_len/2);
         m_writer->writeBlock(info_block, buf_len, true);

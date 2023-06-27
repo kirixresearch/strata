@@ -95,7 +95,7 @@ public:
 
     int getSize() const
     {
-        return m_arr.size();
+        return (int)m_arr.size();
     }
 
     void add(BlockEntry* e)

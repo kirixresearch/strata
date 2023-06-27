@@ -504,7 +504,7 @@ void Number::toExponential(ExprEnv* env, void* param, Value* retval)
     std::wstring result(buf);
 
     // get the mantissa
-    int pos_e = result.find_first_of(L"e");
+    size_t pos_e = result.find_first_of(L"e");
 
     // get the exponent and trim the leading zeros
     // of the exponent value

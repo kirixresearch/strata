@@ -127,7 +127,7 @@ bool sqlAlter(xd::IDatabasePtr db,
             if (stmt.getKeywordExists(L"FIRST"))
                 colinfo.column_ordinal = 0;
                  else
-                colinfo.column_ordinal = structure.getColumnCount();
+                colinfo.column_ordinal = (int)structure.getColumnCount();
 
 
             if (stmt.getKeywordExists(L"BEFORE"))

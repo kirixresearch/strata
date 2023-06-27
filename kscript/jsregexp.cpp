@@ -223,7 +223,7 @@ void RegExp::exec(ExprEnv* env, Value* retval)
         if (results[si].name.length() > 0)
             retval->getMember(results[si].name)->setString(results[si].str().c_str());
              else
-            retval->getMemberI(si)->setString(results[si].str().c_str());
+            retval->getMemberI((int)si)->setString(results[si].str().c_str());
     }
 }
 

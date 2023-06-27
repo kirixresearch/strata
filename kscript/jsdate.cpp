@@ -711,7 +711,7 @@ void Date::staticConstructor(kscript::ExprEnv* env,
                              kscript::Value* retval)
 {
     Date* d = new Date;
-    int orig_param_count = env->m_param_count;
+    size_t orig_param_count = env->m_param_count;
     env->m_param_count = 0;
     d->constructor(env, retval);
     env->m_param_count = orig_param_count;

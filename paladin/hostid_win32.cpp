@@ -142,7 +142,7 @@ sitecode_t getHostId()
 
     //  convert key to ascii
     char ascval[255];
-    int len = _tcslen(val);
+    int len = (int)_tcslen(val);
     int i;
     for (i = 0; i < len; ++i)
     {

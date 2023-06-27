@@ -816,7 +816,7 @@ void StructureDoc::insertRow(int row, bool dynamic)
     f->pos = -1;
     
     m_grid->insertRow(row);
-    m_grid->setRowData(row, (long)f);
+    m_grid->setRowData(row, (intptr_t)f);
     m_grid->setCellBitmap(row, colRowNumber, dynamic ? GETBMP(gf_lightning_16)
                                                      : GETBMP(gf_blank_16));
     m_grid->setCellComboSel(row, colFieldType, xd2choice(f->type));
@@ -1474,7 +1474,7 @@ void StructureDoc::populateGridFromStructure()
         f->pos = i;
 
         m_grid->insertRow(i);
-        m_grid->setRowData(i, (long)f);
+        m_grid->setRowData(i, (intptr_t)f);
         m_grid->setCellBitmap(i,   colRowNumber,    col.calculated ? GETBMP(gf_lightning_16) : GETBMP(gf_blank_16));
         m_grid->setCellString(i,   colFieldName,    col.name);
         m_grid->setCellComboSel(i, colFieldType,    xd2choice(col.type));
@@ -1620,7 +1620,7 @@ void StructureDoc::onFrameEvent(FrameworkEvent& evt)
                     if (result == wxCANCEL)
                     {
                         // don't allow the view switcher to change
-                        *(bool*)evt.l_param2 = false;
+                        *(bool*)evt.o_param = false;
                         return;
                     }
                      else if (result == wxYES)
@@ -1628,7 +1628,7 @@ void StructureDoc::onFrameEvent(FrameworkEvent& evt)
                         if (!doSave())
                         {
                             // don't allow the view switcher to change
-                            *(bool*)evt.l_param2 = false;
+                            *(bool*)evt.o_param = false;
                             return;
                         }
                     }

@@ -99,7 +99,7 @@ bool SlIterator::init(const std::wstring& _query)
 
     int rc =  sqlite3_prepare_v2(m_sqlite,
                               ascsql.c_str(),
-                              ascsql.length(),
+                              (int)ascsql.length(),
                               &m_stmt,
                               NULL);
 
@@ -804,8 +804,8 @@ xd::datetime_t SlIterator::getDateTime(xd::objhandle_t data_handle)
         strncpy(buf, coltext, 24);
         buf[24] = 0;
     }
-    int len = strlen(buf);
 
+    size_t len = strlen(buf);
 
     if (len >= 10)
     {

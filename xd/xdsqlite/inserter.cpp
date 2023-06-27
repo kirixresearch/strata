@@ -142,7 +142,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
 
     if (SQLITE_OK != sqlite3_prepare(m_database->m_sqlite, 
                                      ascsql.c_str(),  // stmt
-                                     ascsql.length(),
+                                     (int)ascsql.length(),
                                      &m_stmt,
                                      0))
     {
@@ -157,7 +157,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
         data.colinfo = structure.getColumnInfo(cols[i]);
         data.type = data.colinfo.type;
         data.length = data.colinfo.width;
-        data.idx = i+1;
+        data.idx = (int)(i+1);
         data.name = cols[i];
         
         data.buf_len = (data.length * 5) + 1;
@@ -241,7 +241,7 @@ bool SlRowInserter::putString(xd::objhandle_t column_handle,
     if (SQLITE_OK != sqlite3_bind_text(m_stmt,
                                        r->idx,
                                        r->str_data,
-                                       value.length(),
+                                       (int)value.length(),
                                        SQLITE_STATIC
                                        ))
     {
@@ -264,7 +264,7 @@ bool SlRowInserter::putWideString(xd::objhandle_t column_handle,
     if (SQLITE_OK != sqlite3_bind_text(m_stmt,
                                        r->idx,
                                        r->str_data,
-                                       output_buf_size,
+                                       (int)output_buf_size,
                                        SQLITE_STATIC
                                        ))
     {

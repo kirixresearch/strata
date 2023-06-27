@@ -568,7 +568,7 @@ void OracleIterator::readRowFromCache(xd::rowpos_t row)
         {
             case xd::typeWideCharacter:
                 memcpy((*it)->wstr_val, data, data_size);
-                (*it)->str_len = (data_size/sizeof(wchar_t));
+                (*it)->str_len = (ub2)(data_size/sizeof(wchar_t));
                 break;
             
             case xd::typeCharacter:
@@ -831,7 +831,7 @@ bool OracleIterator::refreshStructure()
             dai->oracle_type = xd2oracleType(dai->xd_type);
             dai->width = col.width;
             dai->scale = col.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = col.expression;
             dai->expr = NULL;
                 
@@ -931,7 +931,7 @@ bool OracleIterator::modifyStructure(const xd::StructureModify& mod_params, xd::
             dai->oracle_type = xd2oracleType(dai->xd_type);
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
             m_fields.push_back(dai);
@@ -957,7 +957,7 @@ bool OracleIterator::modifyStructure(const xd::StructureModify& mod_params, xd::
             dai->oracle_type = xd2oracleType(dai->xd_type);
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
             m_fields.insert(m_fields.begin()+insert_idx, dai);
@@ -1302,14 +1302,14 @@ bool OracleIterator::updateCacheRow(xd::rowid_t rowid,
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)info->str_val.c_str(),
-                                    info->str_val.length());
+                                    (unsigned int)info->str_val.length());
                 break;
 
             case xd::typeWideCharacter:
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)info->wstr_val.c_str(),
-                                    info->wstr_val.length()*sizeof(wchar_t));
+                                    (unsigned int)(info->wstr_val.length()*sizeof(wchar_t)));
                 break;
 
 

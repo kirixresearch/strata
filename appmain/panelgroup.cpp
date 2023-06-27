@@ -410,7 +410,7 @@ void GroupPanel::insertOutputField(int row,
     // save the input expression in the row data -- the input expression
     // cell string will be set in the setGridInputOutputText() function
     wxString* rowdata = new wxString(input);
-    m_grid->setRowData(row, (long)rowdata);
+    m_grid->setRowData(row, (intptr_t)rowdata);
     
     setGridInputOutputText(m_grid, row, function, refresh);
     checkOverlayText();

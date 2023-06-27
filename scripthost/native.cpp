@@ -177,7 +177,7 @@ void NativeModule::getFunction(kscript::ExprEnv* env, kscript::Value* retval)
         // where 4 is the number of stack bytes for the
         // parameters
         int stack_bytes = 0;
-        int i, param_count = params.size();
+        int i, param_count = (int)params.size();
         for (i = 0; i < param_count; ++i)
         {
             switch (params[i])
@@ -224,7 +224,7 @@ void NativeModule::getFunction(kscript::ExprEnv* env, kscript::Value* retval)
     call->m_module->baseRef();
     call->m_proc = proc;
     call->m_retval_type = retval_type;
-    call->m_param_count = params.size();
+    call->m_param_count = (int)params.size();
     call->m_params = new NativeCallParam[params.size()+1];
     for (p = 0; p < params.size(); ++p)
         call->m_params[p].type = params[p];

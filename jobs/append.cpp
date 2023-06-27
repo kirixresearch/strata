@@ -88,7 +88,7 @@ int AppendJob::runJob()
 
     for (size_t i = 0; i < input_arr.getChildCount(); ++i)
     {
-        std::wstring path = input_arr[i].getString();
+        std::wstring path = input_arr[(int)i].getString();
 
         xd::IFileInfoPtr finfo = m_db->getFileInfo(path);
         if (finfo.isNull())
@@ -173,7 +173,7 @@ int AppendJob::runJob()
             }
             
 
-            input_col_count = input_structure.getColumnCount();
+            input_col_count = (int)input_structure.getColumnCount();
             if (output_structure.getColumnCount() == 0)
             {
                 output_structure = input_structure;

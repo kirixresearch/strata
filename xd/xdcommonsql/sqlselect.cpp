@@ -111,7 +111,7 @@ static void dequoteField(std::wstring& str)
     
     int period_pos = -1;
     if (period)
-        period_pos = period - pstr;
+        period_pos = (int)(period - pstr);
     
     std::wstring alias = str.substr(0, period_pos);
     std::wstring field = str.substr(period_pos+1);
@@ -124,8 +124,8 @@ static void dequoteField(std::wstring& str)
 
 static void quoteField(std::wstring& str)
 {
-    int period_pos = str.find('.');
-    if (period_pos == -1)
+    size_t period_pos = str.find('.');
+    if (period_pos == str.npos)
     {
         str = L"[" + str + L"]";
         return;
@@ -172,13 +172,12 @@ static bool isFunction(const std::wstring& str, const std::wstring& func)
 
     kl::trimLeft(s);
 
-    int len = func.length();
+    size_t len = func.length();
 
     if (wcsncasecmp(str.c_str(), func.c_str(), len) != 0)
         return false;
 
-    return (iswspace(*(str.c_str()+len)) ||
-            *(str.c_str()+len) == L'(') ? true : false;
+    return (iswspace(*(str.c_str()+len)) || *(str.c_str()+len) == L'(') ? true : false;
 }
 
 static bool isGroupFunction(const std::wstring& str)
@@ -258,7 +257,7 @@ static xd::ColumnInfo getColumnInfoMulti(std::vector<SourceTable>& s,
     
     int period_pos = -1;
     if (period)
-        period_pos = period - str;
+        period_pos = (int)(period - str);
 
     if (period_pos != -1)
     {
@@ -348,7 +347,7 @@ static void parseTableAndAlias(const std::wstring& input,
                                false);
     int as_pos = -1;
     if (temp)
-        as_pos = (temp - input_cstr);
+        as_pos = (int)(temp - input_cstr);
 
     if (as_pos != -1)
     {        
@@ -363,7 +362,7 @@ static void parseTableAndAlias(const std::wstring& input,
         const wchar_t* space = zl_strchr((wchar_t*)input_cstr, ' ', L"[", L"]");
         if (space)
         {
-            int space_pos = space-input_cstr;
+            int space_pos = (int)(space-input_cstr);
             table = input.substr(0, space_pos);
             alias = input.substr(space_pos);
         }
@@ -397,8 +396,8 @@ static std::wstring exprReplaceToken(const std::wstring& str,
 
     const wchar_t* str_cstr = str.c_str();
     const wchar_t* s = str_cstr;
-    int search_len = search.length();
-    int str_len = str.length();
+    int search_len = (int)search.length();
+    int str_len = (int)str.length();
     wchar_t quote_char = 0;
     
     result.reserve(str_len);
@@ -1334,7 +1333,7 @@ static kscript::ExprParser* createJoinExprParser(std::vector<JoinField>& all_fie
 wchar_t* zl_find_field(wchar_t* str,
                        const wchar_t* search_str)
 {
-    int str_len = wcslen(search_str);
+    int str_len = (int)wcslen(search_str);
     wchar_t quote_char = 0;
     wchar_t* ptr = NULL;
     wchar_t* ch;
@@ -1782,8 +1781,8 @@ static bool doJoin(xd::IDatabasePtr db,
                 right_sort += L",";
 
             // get corresponding left field name (and strip it)
-            int period_pos = it->find_last_of(L'.');
-            if (period_pos != -1)
+            size_t period_pos = it->find_last_of(L'.');
+            if (period_pos != it->npos)
             {
                 right_sort += it->substr(period_pos+1);
             }
@@ -1889,8 +1888,8 @@ static bool doJoin(xd::IDatabasePtr db,
 
             // get corresponding left field name (and strip it)
             std::wstring left;
-            int period_pos = left_parts[idx].find(L'.');
-            if (period_pos != -1)
+            size_t period_pos = left_parts[idx].find(L'.');
+            if (period_pos != left_parts[idx].npos)
             {
                 left += left_parts[idx].substr(period_pos+1);
             }
@@ -2179,7 +2178,7 @@ static bool doJoin(xd::IDatabasePtr db,
     }
 
 
-    int join_count = joins.size();
+    int join_count = (int)joins.size();
     xd::rowpos_t cur_row = 0;
     xd::IIterator* l = left_iter.p;
 
@@ -2367,7 +2366,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
     xcm::IObjectPtr filter_set_ref_holder;
     
     // strip off trailing semicolon
-    int command_len = wcslen(command);
+    int command_len = (int)wcslen(command);
     if (*(command+command_len-1) == L';')
         *(command+command_len-1) = 0;
 
@@ -2744,7 +2743,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
         if (temp)
         {
-            as_pos = temp - fstr_it->c_str();
+            as_pos = (int)(temp - fstr_it->c_str());
         }
 
 
@@ -2858,7 +2857,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
             str = it->c_str();
             space = zl_strchr((wchar_t*)str, ' ', L"[", L"]");
             if (space)
-                dir_pos = space-str;
+                dir_pos = (int)(space-str);
             
             if (dir_pos != -1)
             {

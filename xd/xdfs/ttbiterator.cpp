@@ -609,7 +609,7 @@ bool TtbIterator::refreshStructure()
 
                 if (as_ptr)
                 {
-                    int as_pos = as_ptr ? (as_ptr - it->c_str()) : -1;
+                    int as_pos = as_ptr ? (int)(as_ptr - it->c_str()) : (int)-1;
                     colname = it->substr(as_pos+2);
                     expr = it->substr(0, as_pos);
                     
@@ -795,7 +795,7 @@ bool TtbIterator::modifyStructure(const xd::StructureModify& mod_params, xd::IJo
             dai->type = it->params.type;
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
             m_fields.push_back(dai);
@@ -820,7 +820,7 @@ bool TtbIterator::modifyStructure(const xd::StructureModify& mod_params, xd::IJo
             dai->type = it->params.type;
             dai->width = it->params.width;
             dai->scale = it->params.scale;
-            dai->ordinal = m_fields.size();
+            dai->ordinal = (int)m_fields.size();
             dai->expr_text = it->params.expression;
             dai->expr = parse(it->params.expression);
             m_fields.insert(m_fields.begin()+insert_idx, dai);
@@ -999,7 +999,7 @@ const std::string& TtbIterator::getString(xd::objhandle_t data_handle)
 
         // crop it to calcfield's size
         wchar_t* result_str = dai->expr_result.getString();
-        int len = wcslen(result_str);
+        int len = (int)wcslen(result_str);
         if (dai->isColumn() && len > dai->width)
         {
             len = dai->width;
@@ -1036,7 +1036,9 @@ const std::string& TtbIterator::getString(xd::objhandle_t data_handle)
         // look for a zero terminator
         const char* zero = (const char*)memchr(ptr, 0, width);
         if (zero)
-            width = zero-ptr;
+        {
+            width = (int)(zero - ptr);
+        }
             
         dai->str_result.assign(ptr, width);
 
@@ -1079,7 +1081,7 @@ const std::wstring& TtbIterator::getWideString(xd::objhandle_t data_handle)
 
         // crop it to calcfield's size
         wchar_t* result_str = dai->expr_result.getString();
-        int len = wcslen(result_str);
+        int len = (int)wcslen(result_str);
         if (dai->isColumn() && len > dai->width)
         {
             len = dai->width;
@@ -1110,7 +1112,9 @@ const std::wstring& TtbIterator::getWideString(xd::objhandle_t data_handle)
         // look for a zero terminator
         const char* zero = (const char*)memchr(ptr, 0, width);
         if (zero)
-            width = zero-ptr;
+        {
+            width = (int)(zero - ptr);
+        }
 
         kl::towstring(dai->wstr_result, ptr, width);
         return dai->wstr_result;
