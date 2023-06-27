@@ -505,6 +505,7 @@ xd::IFileInfoPtr DuckdbDatabase::getFileInfo(const std::wstring& path)
 
     if (!result.next())
     {
+        this->freePoolConnection(conn);
         return xcm::null;
     }
 
@@ -527,6 +528,8 @@ xd::IFileInfoPtr DuckdbDatabase::getFileInfo(const std::wstring& path)
         f->type = xd::filetypeStream;
         f->mime_type = L"text/plain";
     }
+
+    this->freePoolConnection(conn);
 
     return static_cast<xd::IFileInfo*>(f);
 }
@@ -577,6 +580,8 @@ xd::IFileInfoEnumPtr DuckdbDatabase::getFolderInfo(const std::wstring& path)
 
         retval->append(f);
     }
+
+    this->freePoolConnection(conn);
 
     return retval;
 }
@@ -641,7 +646,7 @@ bool DuckdbDatabase::createTable(const std::wstring& path, const xd::FormatDefin
     }
     sql += L");";
 
-    std::string ascsql = kl::tostring(sql);
+    std::string ascsql = (const char*)kl::toUtf8(sql);
 
     if (SQLITE_OK != sqlite3_exec(m_sqlite, ascsql.c_str(), NULL, NULL, NULL))
         return false;

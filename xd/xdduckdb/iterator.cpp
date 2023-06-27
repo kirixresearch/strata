@@ -105,32 +105,50 @@ bool DuckdbIterator::init(const std::wstring& _query)
 
     skip(1);
 
-   // initColumns(m_stmt);
+    initColumns();
 
     return true;
 }
 
-void DuckdbIterator::initColumns(duckdb_connection conn)
+void DuckdbIterator::initColumns()
 {
-/*
     m_columns.clear();
-    int i, col_count = sqlite3_column_count(stmt);
+    size_t i, col_count = m_result.GetColumnCount();
 
     for (i = 0; i < col_count; ++i)
     {
         SlDataAccessInfo dai;
 
-        dai.name = kl::towstring((char*)sqlite3_column_name(stmt, i));
-        dai.sqlite_type = sqlite3_column_type(stmt, i);
-        dai.col_ordinal = i;
+        duckdb::LogicalType& logical_type = m_result.GetColumnType(i);
+        duckdb::PhysicalType physical_type = logical_type.InternalType();
+
+        dai.name = kl::fromUtf8(m_result.GetColumnName(i));
+        dai.sqlite_type = 0;
+        dai.col_ordinal = (int)i;
         dai.calculated = false;
 
-        switch (dai.sqlite_type)
+        switch (physical_type)
         {
-            case SQLITE_INTEGER: dai.xd_type = xd::typeInteger; break;
-            case SQLITE_FLOAT:   dai.xd_type = xd::typeDouble; break;
-            case SQLITE_BLOB:    dai.xd_type = xd::typeBinary; break;
-            case SQLITE_TEXT:    dai.xd_type = xd::typeCharacter; break;
+            default:
+            case duckdb::PhysicalType::VARCHAR:
+                dai.xd_type = xd::typeCharacter;
+                break;
+
+            case duckdb::PhysicalType::FLOAT:
+            case duckdb::PhysicalType::DOUBLE:
+                dai.xd_type = xd::typeDouble;
+                break;
+
+            case duckdb::PhysicalType::INT8:
+            case duckdb::PhysicalType::INT16:
+            case duckdb::PhysicalType::INT32:
+            case duckdb::PhysicalType::INT64:
+                dai.xd_type = xd::typeInteger;
+                break;
+
+            case duckdb::PhysicalType::BOOL:
+                dai.xd_type = xd::typeBoolean;
+                break;
         }
 
         dai.width = 30;
@@ -150,7 +168,7 @@ void DuckdbIterator::initColumns(duckdb_connection conn)
 
         m_columns.push_back(dai);
     }
-*/
+
 }
 
 bool DuckdbIterator::init(const xd::QueryParams& qp)

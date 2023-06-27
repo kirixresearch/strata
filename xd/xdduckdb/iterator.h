@@ -111,7 +111,7 @@ public:
 
 private:
 
-    void initColumns(duckdb_connection conn);
+    void initColumns();
 
 private:
 
