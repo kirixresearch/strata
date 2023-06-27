@@ -399,7 +399,7 @@ bool DuckdbDatabase::createStream(const std::wstring& path,
         return false;
     }
 
-    sqlite3_bind_text(stmt, 1, info.c_str(), info.size(), NULL);
+    sqlite3_bind_text(stmt, 1, info.c_str(), (int)info.size(), NULL);
     sqlite3_step(stmt);
 
     // insert first block with zero-length blob
