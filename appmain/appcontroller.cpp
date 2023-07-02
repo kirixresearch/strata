@@ -18,7 +18,6 @@
 #include "dlgprojectmgr.h"
 #include "extensionmgr.h"
 #include "extensionpkg.h"
-#include "moduleremoveduprec.h"
 #include "importtemplate.h"
 #include "exporttemplate.h"
 #include "reportdoc.h"
@@ -103,7 +102,6 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
     EVT_MENU(ID_Project_OpenFile, AppController::onOpenFile)
     EVT_MENU(ID_Project_OpenLocation, AppController::onOpenLocation)
     EVT_MENU(ID_Project_OpenLocationComplete, AppController::onOpenLocationComplete)
-    EVT_MENU(ID_Project_RemoveDupRecs, AppController::onRemoveDupRecs)
     EVT_MENU(ID_App_OpenProject, AppController::onOpenProject)
     EVT_MENU(ID_Project_CloseProject, AppController::onCloseProject)
     EVT_MENU(ID_File_Close, AppController::onCloseChild)
@@ -3002,24 +3000,6 @@ void AppController::onSplitTable(wxCommandEvent& evt)
     // if items are left selected, this causes problems when dragging
     // and dropping items that are already selected into the panel
     g_app->getDbDoc()->getFsPanel()->unselectAll();
-}
-
-void AppController::onRemoveDupRecs(wxCommandEvent& evt)
-{
-    IDocumentSitePtr site;
-    site = m_frame->lookupSite(wxT("RemoveDuplicateRecordsWizard"));
-    if (site.isNull())
-    {
-        RemoveDupRecWizard* wizard = new RemoveDupRecWizard;
-        site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless, -1, -1, fromDIP(540), fromDIP(440));
-        site->setMinSize(fromDIP(540), fromDIP(440));
-        site->setName(wxT("RemoveDuplicateRecordsWizard"));
-    }
-     else
-    {
-        if (!site->getVisible())
-            site->setVisible(true);
-    }
 }
 
 void AppController::onCascade(wxCommandEvent& evt)

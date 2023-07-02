@@ -239,7 +239,6 @@ private:
     void onShowConsolePanel(wxCommandEvent& evt);
     void onMergeTable(wxCommandEvent& evt);
     void onSplitTable(wxCommandEvent& evt);
-    void onRemoveDupRecs(wxCommandEvent& evt);
     void onEditOptions(wxCommandEvent& evt);
     void onHelp(wxCommandEvent& evt);
     void onReference(wxCommandEvent& evt);

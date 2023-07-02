@@ -438,7 +438,6 @@
     <ClCompile Include="..\appmain\jobscript.cpp" />
     <ClCompile Include="..\appmain\jsonconfig.cpp" />
     <ClCompile Include="..\appmain\linkbar.cpp" />
-    <ClCompile Include="..\appmain\moduleremoveduprec.cpp" />
     <ClCompile Include="..\appmain\panelcolordoc.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -786,7 +785,6 @@
     <ClInclude Include="..\appmain\jobscript.h" />
     <ClInclude Include="..\appmain\jsonconfig.h" />
     <ClInclude Include="..\appmain\linkbar.h" />
-    <ClInclude Include="..\appmain\moduleremoveduprec.h" />
     <ClInclude Include="..\appmain\panelcolordoc.h" />
     <ClInclude Include="..\appmain\panelcolprops.h" />
     <ClInclude Include="..\appmain\panelcolumnlist.h" />
