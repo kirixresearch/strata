@@ -305,6 +305,35 @@ wxBitmap BitmapMgr::lookupBitmap(const wxString& bitmap_name, int status, int si
         bool res;
         bool is_svg = false;
 
+        // first try to load a precisely rastered version of the bitmap
+        res = m_bundle->getEntry(name + wxString::Format("_%d.png", size), buf);
+        if (res)
+        {
+            wxMemoryInputStream stream(buf.GetData(), buf.GetDataLen());
+
+            wxImage img;
+            if (!img.LoadFile(stream, wxBITMAP_TYPE_PNG))
+            {
+                wxFAIL_MSG("Image failed to load");
+                return wxBitmap();
+            }
+
+            if (img.GetHeight() != size)
+            {
+                img.Rescale(size, size);
+            }
+
+            entry.bitmap = wxBitmap(img);
+
+            if (status == typeDisabled)
+            {
+                entry.bitmap = MakeDisabledBitmap(entry.bitmap);
+            }
+
+            return entry.bitmap;
+        }
+
+        // next try to load an svg version of the image and scale it to the desired size
         res = m_bundle->getEntry(name + ".svg", buf);
         if (res)
         {
@@ -320,27 +349,21 @@ wxBitmap BitmapMgr::lookupBitmap(const wxString& bitmap_name, int status, int si
 
             return entry.bitmap;
         }
-        else
-        {
-            // file is not an svg
 
-            // load the bitmap from the catalog -- first try the exact size wanted;
-            // if the precise size is not available, load the largest available and
-            // scale it up or down
-            res = m_bundle->getEntry(name + wxString::Format("_%d.png", size), buf);
-            if (!res)
+
+        // file is not available as an svg. load the bitmap from the catalog and the precise size
+        // desired is not available. Load the largest available and scale it up or down;
+        // if no sizes are availabe, the image is not found in the catalog
+        {
+            for (int i = 0; i < sizes_count; ++i)
             {
-                // try different sizes and scale
-                for (int i = 0; i < sizes_count; ++i)
+                res = m_bundle->getEntry(name + wxString::Format("_%d.png", sizes[i]), buf);
+                if (res)
                 {
-                    res = m_bundle->getEntry(name + wxString::Format("_%d.png", sizes[i]), buf);
-                    if (res)
-                    {
-                        break;
-                    }
+                    break;
                 }
             }
- 
+
             if (!res)
             {
                 wxFAIL_MSG("Image not found in imgres.zip");
