@@ -5052,7 +5052,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                         {
                             // text is a url
                             is_url = true;
-                            if (m_cursor_type == cursorRowHighlight && model_row == m_cursor_row)
+                            if ((m_cursor_type == cursorRowHighlight && model_row == m_cursor_row) || isRowSelected(model_row))
                             {
                                 fgcolor = m_hc_cellfg_color;
                             }
