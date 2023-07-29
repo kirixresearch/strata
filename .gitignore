@@ -7,6 +7,8 @@
 **/lib/
 **/.vs/
 **/*.vcxproj.user
+**/build_config.h
+**/*_local.sln
 supp/curl/
 supp/duckdb/
 supp/expat/
