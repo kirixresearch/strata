@@ -212,6 +212,11 @@ static void copyCellProps(kcl::CellProperties* dest,
         dest->text_wrap = src->text_wrap;
         dest->mask |= kcl::CellProperties::cpmaskTextWrap;
     }
+    if (src->mask & kcl::CellProperties::cpmaskHyperlink)
+    {
+        dest->hyperlink = src->hyperlink;
+        dest->mask |= kcl::CellProperties::cpmaskHyperlink;
+    }
 }
 
 bool GridMemModel::setColumnProperties(int col,
