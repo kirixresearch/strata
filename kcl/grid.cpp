@@ -7388,7 +7388,6 @@ void Grid::onMouse(wxMouseEvent& event)
                 render();
                 repaint();
             }
-
         }
         else if (m_mouse_action == actionPressButton)
         {
@@ -7476,6 +7475,42 @@ void Grid::onMouse(wxMouseEvent& event)
                     }
                 }
             }
+
+            // this is for grids that don't have the selection feature disabled
+            int model_row, view_col, cell_xoff = 0;
+            if (hitTest(event.m_x, event.m_y, &model_row, &view_col, &cell_xoff))
+            {
+                int model_col = getColumnModelIdx(view_col);
+
+                kcl::CellProperties props;
+                getCellProperties(model_row, model_col, &props);
+
+                // if the hyperlink option is active and we find something
+                // that looks like a hyperlink, then trigger a left-click
+                // event on a link if the link is clicked on
+                if ((m_options & optActivateHyperlinks) || props.hyperlink)
+                {
+                    wxString cell_str = getCellString(model_row, model_col);
+
+                    int url_pos = cell_str.Find(wxT("://"));
+                    if (props.hyperlink || (url_pos >= 4 && url_pos <= 10))
+                    {
+                        wxClientDC dc(this);
+                        wxSize text_extent = dc.GetTextExtent(cell_str);
+
+                        if (cell_xoff < text_extent.GetWidth())
+                        {
+                            GridEvent evt;
+                            evt.SetColumn(model_col);
+                            evt.SetRow(model_row);
+                            evt.SetString(cell_str);
+                            evt.SetUserEvent(true);
+                            fireEvent(wxEVT_KCLGRID_LINK_LEFTCLICK, evt);
+                        }
+                    }
+                }
+            }
+
         }
 
         m_mouse_action = actionNone;
