@@ -871,7 +871,7 @@ private:
             Destroy();
             return;
         }
-         else if (m_last_key == WXK_ESCAPE)
+        else if (m_last_key == WXK_ESCAPE)
         {
             SetSelection(m_start_idx);
             
@@ -1086,7 +1086,7 @@ private:
             Destroy();
             return;
         }
-         else if (m_last_key == WXK_ESCAPE)
+        else if (m_last_key == WXK_ESCAPE)
         {
             SetSelection(m_start_idx);
             
@@ -1327,7 +1327,7 @@ bool Selection::setColumnSelected(int col, bool selected)
         sel->m_start_row = 0;
         sel->m_end_row = -1;
     }
-     else
+    else
     {
         // if selection does not exist, we are done
         if (idx == -1)
@@ -1358,7 +1358,7 @@ bool Selection::setRowSelected(int row, bool selected)
         sel->m_start_row = row;
         sel->m_end_row = row;
     }
-     else
+    else
     {
         // if selection does not exist, we are done
         if (idx == -1)
@@ -1996,7 +1996,7 @@ void Grid::initFont()
         m_dip_header_height = m_dip_row_height - 1;
         m_header_height = fromDIP(m_dip_header_height);
     }
-     else
+    else
     {
         // bitmap could not be created, so set some default dumb values
         // so that there is no division by zero
@@ -2196,7 +2196,7 @@ void Grid::hideColumn(int col)
     {
         m_cursor_modelcol = m_viewcols[m_cursor_col]->m_modelcol;
     }
-     else
+    else
     {
         m_cursor_modelcol = 0;
     }
@@ -2418,6 +2418,11 @@ static void copyCellProps(kcl::CellProperties* dest, kcl::CellProperties* src)
     {
         dest->text_wrap = src->text_wrap;
         dest->mask |= kcl::CellProperties::cpmaskTextWrap;
+    }
+    if (src->mask & kcl::CellProperties::cpmaskHyperlink)
+    {
+        dest->hyperlink = src->hyperlink;
+        dest->mask |= kcl::CellProperties::cpmaskHyperlink;
     }
 }
 
@@ -2719,7 +2724,7 @@ void Grid::setCellBitmap(int row,
         {
             alignment = cell_props.bitmap_alignment;
         }
-         else
+        else
         {
             alignment = kcl::Grid::alignLeft;
         }
@@ -2872,7 +2877,7 @@ void Grid::autoColumnResize(int resize_col)
         for (int i = 0; i < col_count; ++i)
             columns.push_back(i);
     }
-     else
+    else
     {
         if (resize_col >= 0 && resize_col < (int)m_viewcols.size())
             columns.push_back(resize_col);
@@ -3056,7 +3061,7 @@ void Grid::setColumnCaption(int col, const wxString& caption)
         }
         */
     }
-     else
+    else
     {
         m_viewcols[col]->m_caption = caption;
     }
@@ -3433,7 +3438,7 @@ void Grid::copySelection()
                          else
                         result += *p;
                 }
-                 else
+                else
                 {
                     result += *p;
                 }
@@ -3700,7 +3705,7 @@ void Grid::drawChiselRectangle(int x1, int y1, int width, int height, bool selec
 */
 
 
-bool Grid::hitTest(int x, int y, int* model_row, int* view_col)
+bool Grid::hitTest(int x, int y, int* model_row, int* view_col, int* cell_xoff)
 {
     bool result = true;
 
@@ -3735,12 +3740,21 @@ bool Grid::hitTest(int x, int y, int* model_row, int* view_col)
         }
     }
     
+    if (cell_xoff)
+    {
+       *cell_xoff = 0;
+    }
+
     std::vector<ColumnRange>::iterator it;
     for (it = m_colranges.begin(); it != m_colranges.end(); ++it)
     {
         if (x > (it->xoff) && x < (it->xoff + it->width))
         {
             col = it->viewcol_idx;
+            if (cell_xoff)
+            {
+                *cell_xoff = x - it->xoff;
+            }
             break;
         }
     }
@@ -3804,7 +3818,7 @@ void Grid::getCellRect(int row, int col, wxRect* rect)
             r++;
         }
     }
-     else
+    else
     {
         y = -5000;
     }
@@ -3883,7 +3897,7 @@ void Grid::drawBoundingBox(int row1,
                 // so draw a light bounding rectangle
                 m_memdc.SetPen(kcl::stepColor(m_hc_barbg_color,160));
             }
-             else
+            else
             {
                 m_memdc.SetPen(kcl::stepColor(m_hc_barbg_color,60));
             }
@@ -3922,7 +3936,7 @@ void Grid::drawBoundingBox(int row1,
         if (!isEditing())
             m_memdc.DrawRectangle(bb_xoff, bb_yoff, bb_width+1, bb_height);
     }
-     else
+    else
     {
         m_memdc.SetPen(*wxBLACK_PEN);
         m_memdc.SetBrush(*wxBLACK_BRUSH);
@@ -4104,7 +4118,7 @@ void Grid::calcColumnWidths()
         {
             xoff += m_viewcols[col]->m_pixwidth;
         }
-         else
+        else
         {
             m_total_pwidth += m_viewcols[col]->m_prop_size;
         }
@@ -4146,7 +4160,7 @@ void Grid::calcColumnWidths()
             }
         }
     }
-     else
+    else
     {
         m_total_width = xoff-m_frozen_width;
     }
@@ -4296,7 +4310,7 @@ void Grid::drawRowDropHighlight(int row, int style)
 */
 
     }
-     else if (style == 1)
+    else if (style == 1)
     {
         SelectionRect* s;
         s = m_selection.addSelection();
@@ -4332,7 +4346,7 @@ inline wxString filterControlChars(const wxString& str)
                 {
                     result += *p;
                 }
-                 else
+                else
                 {
                     result += wxT(' ');
                 }
@@ -4372,7 +4386,7 @@ static void drawTextWrap(wxDC& dc,
             piece = wxT("");
             non_space_found = false;
         }
-         else
+        else
         {
             if (!is_space)
                 non_space_found = true;
@@ -4817,7 +4831,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                     {
                         celldata = &(rowdata->m_coldata[m_viewcols[col]->m_modelcol]);
                     }
-                     else
+                    else
                     {
                         celldata = &m_empty_cell;
                     }
@@ -4830,19 +4844,19 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                             {
                                 bgcolor = m_def_greenbar_color;
                             }
-                             else
+                            else
                             {
                                 bgcolor = m_def_bgcolor;
                             }
                         }
-                         else
+                        else
                         {
                             bgcolor = m_def_bgcolor;
                         }
                         
                         fgcolor = celldata->fgcolor;
                     }
-                     else
+                    else
                     {
                         bgcolor = celldata->bgcolor;
                         fgcolor = celldata->fgcolor;
@@ -4884,12 +4898,12 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                                 {
                                     bgcolor = m_def_greenbar_color;
                                 }
-                                 else
+                                else
                                 {
                                     bgcolor = m_def_bgcolor;
                                 }
                             }
-                             else
+                            else
                             {
                                 bgcolor = m_def_bgcolor;
                             }
@@ -4927,12 +4941,12 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                             {
                                 fgcolor = m_select_fgcolor;
                             }
-                             else
+                            else
                             {
                                 darkenColor(fgcolor);
                             }
                         }
-                         else
+                        else
                         {
                             darkenColor(bgcolor);
                             darkenColor(fgcolor);
@@ -4958,7 +4972,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                                 fgcolor = m_hc_cellfg_color;
                                 bgcolor = m_hc_cellbg_color;
                             }
-                             else
+                            else
                             {
                                 fgcolor = m_hc_barfg_color;
                                 bgcolor = m_hc_barbg_color;
@@ -4978,12 +4992,12 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                         {
                             text = wxT("  /  /  ");
                         }
-                         else
+                        else
                         {
                             text = wxT("<null>");
                         }
                     }
-                     else
+                    else
                     {
                         switch (celldata->m_type)
                         {
@@ -5005,7 +5019,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                                 	text = dbl2fstr(celldata->m_dblvalue,
                                                     celldata->m_scale);
                                 }
-                                 else
+                                else
                                 {
                                     text = wxString::Format(wxT("%.*f"),
                                                             celldata->m_scale,
@@ -5031,10 +5045,10 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                     // identify urls; if the hyperlink option is active,
                     // them draw them with a special font
                     bool is_url = false;
-                    if (m_options & optActivateHyperlinks)
+                    if ((m_options & optActivateHyperlinks) || celldata->hyperlink)
                     {
                         int url_pos = text.Find(wxT("://"));
-                        if (url_pos >= 4 && url_pos <= 10)
+                        if (celldata->hyperlink || (url_pos >= 4 && url_pos <= 10))
                         {
                             // text is a url
                             is_url = true;
@@ -5120,7 +5134,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                                                   col_width-(m_frozen_width-xoff),
                                                   m_row_height);
                     }
-                     else
+                    else
                     {
                         m_memdc.SetClippingRegion(xoff,
                                                   yoff,
@@ -5174,7 +5188,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                                                      wxRect(x1, y1, width, height),
                                                      wxCONTROL_PRESSED);
                                 }
-                                 else
+                                else
                                 {
                                     wxRendererNative::Get().DrawPushButton(
                                                      this, m_memdc,
@@ -5245,7 +5259,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                                 {
                                     drawTextWrap(m_memdc, text, textx, yoff, col_width, m_row_height);
                                 }
-                                 else
+                                else
                                 {
                                     m_memdc.DrawText(text, textx, texty);
                                 }
@@ -5373,7 +5387,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                     m_memdc.SetPen(greenbarpen);
                     m_memdc.DrawRectangle(0, invalid_row_yoffset, m_cliwidth, m_row_height);
                 }
-                 else
+                else
                 {
                     m_memdc.SetBrush(bgbrush);
                     m_memdc.SetPen(bgpen);
@@ -5386,7 +5400,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
 
             m_memdc.DestroyClippingRegion();
         }
-         else
+        else
         {
             // draw the invalid area as a "true" invalid area
             
@@ -5436,7 +5450,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                     m_memdc.SetPen(greenbarpen);
                     m_memdc.DrawRectangle(offset, yoffset, m_cliwidth-offset+1, m_row_height);
                 }
-                 else
+                else
                 {
                     m_memdc.SetBrush(bgbrush);
                     m_memdc.SetPen(bgpen);
@@ -5449,7 +5463,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
             
             m_memdc.DestroyClippingRegion();
         }
-         else
+        else
         {
             // draw the invalid area as a "true" invalid area
             
@@ -5478,7 +5492,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                 m_memdc.SetPen(m_hc_cellbg_color);
                 m_memdc.SetBrush(m_hc_cellbg_color);
             }
-             else
+            else
             {
                 m_memdc.SetPen(m_hc_barbg_color);
                 m_memdc.SetBrush(m_hc_barbg_color);
@@ -5595,7 +5609,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                 {
                     drawRowGripperRectangle(-1, yoff-1, m_rowlabel_width+1, m_row_height+2, selected);
                 }
-                 else
+                else
                 {
                     drawRowGripperRectangle(-1, yoff, m_rowlabel_width+1, m_row_height+1, selected);
                 }
@@ -5691,7 +5705,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                                     true,
                                     true);
                 }
-                 else
+                else
                 {
                     // draw row outline cursor
                     wxRect cursor_cell_rect;
@@ -5749,7 +5763,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
 
                 drawBoundingBox(r->m_start_row, r->m_start_col, end_row, end_col);
             }
-             else
+            else
             {
                 if (m_cursor_col >= 0 && m_cursor_col < (int)m_viewcols.size())
                 {
@@ -5766,7 +5780,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                                               m_total_width-m_frozen_width+1,
                                               m_row_height);
                     }
-                     else
+                    else
                     {
                         bool thin = false;
                         
@@ -5891,7 +5905,7 @@ void Grid::onSize(wxSizeEvent& event)
             render();
             repaint();
         }
-         else
+        else
         {
             if (m_total_pwidth > 0)
             {
@@ -5920,7 +5934,7 @@ void Grid::scrollHorz(int pixels)
 
         m_xoff += pixels;
     }
-     else
+    else
     {
         int max_offset = m_total_width - (m_cliwidth - m_frozen_width);
         if (new_xoffset > max_offset)
@@ -5937,7 +5951,7 @@ void Grid::scrollHorz(int pixels)
     {
         render(NULL);
     }
-     else
+    else
     {
         if (pixels < 0)
         {
@@ -5954,7 +5968,7 @@ void Grid::scrollHorz(int pixels)
             wxRect rect(m_frozen_width, 0, pixels, m_cliheight);
             render(&rect);
         }
-         else
+        else
         {
             m_memdc.Blit(m_frozen_width, 0, m_cliwidth-m_frozen_width-pixels, m_cliheight,
                     &m_memdc, m_frozen_width+pixels, 0);
@@ -5982,7 +5996,7 @@ void Grid::scrollVert(int rows)
             m_row_offset = m_row_count-1;
         }
     }
-     else
+    else
     {
 
         int visrows = getVisibleRowCount();
@@ -6113,7 +6127,7 @@ void Grid::onScroll(wxScrollWinEvent& event)
                 if (newpos < 0)
                     newpos = 0;
             }
-             else
+            else
             {
                 newpos = event.GetPosition();
             }
@@ -6188,7 +6202,7 @@ void Grid::onScroll(wxScrollWinEvent& event)
             {
                 newpos = event.GetPosition();
             }
-             else
+            else
             {
                 #ifdef __WXGTK__
                 /*
@@ -6301,7 +6315,7 @@ void Grid::moveCursor(int row, int col, bool repaint_flag)
             if (row > m_row_count)
                 return;
         }
-         else
+        else
         {
             return;
         }
@@ -6362,7 +6376,7 @@ void Grid::moveCursor(int row, int col, bool repaint_flag)
         {
             render();
         }
-         else
+        else
         {
 
             wxRect oldcell_rect;
@@ -6485,7 +6499,7 @@ bool Grid::scrollHorzToColumn(int col)
         m_xoff = xoff+1;
         offset_adjusted = true;        
     }
-     else
+    else
     {
         int width = m_viewcols[col]->m_pixwidth;
         if ((xoff-m_xoff) + width + m_frozen_width > m_cliwidth)
@@ -6784,7 +6798,7 @@ void Grid::onMouse(wxMouseEvent& event)
                 repaint();
                 return;
             }
-             else
+            else
             {
                 // user clicked on one of the column labels
 
@@ -6841,7 +6855,7 @@ void Grid::onMouse(wxMouseEvent& event)
                             render(NULL, false);
                             repaint();
                         }
-                         else
+                        else
                         {
                             // render off-screen buffer without cursor
                             render(NULL, false);
@@ -6853,7 +6867,7 @@ void Grid::onMouse(wxMouseEvent& event)
                 }
             }
         }
-         else
+        else
         {
             int col;
             int row = 0;
@@ -6909,7 +6923,7 @@ void Grid::onMouse(wxMouseEvent& event)
                             m_action_selrect->m_start_col = 0;
                             m_action_selrect->m_end_col = -1;
                         }
-                         else
+                        else
                         {
                             m_action_selrect = m_selection.getSelection(m_selection.getSelectionCount()-1);
                         }
@@ -6932,8 +6946,6 @@ void Grid::onMouse(wxMouseEvent& event)
                             return;
                         }
                     }
-
-
 
 
                     // at this point the user might be making a row selection,
@@ -6962,7 +6974,7 @@ void Grid::onMouse(wxMouseEvent& event)
 
                 return;
             }
-             else
+            else
             {
                 // user clicked on cell
                 if (col == -1)
@@ -6977,8 +6989,7 @@ void Grid::onMouse(wxMouseEvent& event)
 
                 if (m_options & optSelectionList)
                 {
-                    if (event.ShiftDown() &&
-                        m_selection.getSelectionCount() > 0)
+                    if (event.ShiftDown() && m_selection.getSelectionCount() > 0)
                     {
                         SelectionRect* last_sel = m_selection.getSelection(m_selection.getSelectionCount()-1);
                         
@@ -6989,7 +7000,7 @@ void Grid::onMouse(wxMouseEvent& event)
                             {
                                 last_sel->m_start_row = row;
                             }
-                             else
+                            else
                             {
                                 last_sel->m_end_row = row;
                             }
@@ -7044,7 +7055,7 @@ void Grid::onMouse(wxMouseEvent& event)
                         repaint();
                     }
                 }
-                 else   // not a selection list
+                else   // not a selection list
                 {
                     // at this point the user might be making a cell
                     // selection, so set the mode to actionSelect
@@ -7206,7 +7217,7 @@ void Grid::onMouse(wxMouseEvent& event)
                     {
                         last_sel->m_start_col = col;
                     }
-                     else
+                    else
                     {
                         last_sel->m_end_col = col;
                     }
@@ -7251,7 +7262,7 @@ void Grid::onMouse(wxMouseEvent& event)
             evt.SetUserEvent(true);
             fireEvent(wxEVT_KCLGRID_SELECTION_CHANGE, evt);
         }
-         else if (m_mouse_action == actionMoveCol)
+        else if (m_mouse_action == actionMoveCol)
         {
             // deselect the move column bitmap, allowing it
             // to be destroyed
@@ -7265,10 +7276,10 @@ void Grid::onMouse(wxMouseEvent& event)
             Refresh(false);
             updateScrollbars(wxHORIZONTAL);
         }
-         else if (m_mouse_action == actionResizeCol)
+        else if (m_mouse_action == actionResizeCol)
         {
         }
-         else if (m_mouse_action == actionResizeRow)
+        else if (m_mouse_action == actionResizeRow)
         {
             if (m_options & optRowResize)
             {
@@ -7295,7 +7306,7 @@ void Grid::onMouse(wxMouseEvent& event)
                 }
             }
         }
-         else if (m_mouse_action == actionSelect)
+        else if (m_mouse_action == actionSelect)
         {
             // this is where normal clicks end up when
             // the main mouse button is released
@@ -7316,31 +7327,40 @@ void Grid::onMouse(wxMouseEvent& event)
                 int model_col = getColumnModelIdx(col);
                 if (model_col != -1)
                 {
+                    int r,c, cell_xoff = 0;
+                    hitTest(event.m_x, event.m_y, &r, &c, &cell_xoff);
+
                     wxString cell_str = getCellString(row, model_col);
+
+                    kcl::CellProperties props;
+                    getCellProperties(row, model_col, &props);
                     
                     // if the hyperlink option is active and we find something
                     // that looks like a hyperlink, then trigger a left-click
                     // event on a link if the link is clicked on
-                    if (m_options & optActivateHyperlinks)
+                    if ((m_options & optActivateHyperlinks) || props.hyperlink)
                     {
                         int url_pos = cell_str.Find(wxT("://"));
-                        if (url_pos >= 4 && url_pos <= 10)
+                        if (props.hyperlink || (url_pos >= 4 && url_pos <= 10))
                         {
-                            GridEvent evt;
-                            evt.SetColumn(model_col);
-                            evt.SetRow(row);
-                            evt.SetString(cell_str);
-                            evt.SetUserEvent(true);
-                            fireEvent(wxEVT_KCLGRID_LINK_LEFTCLICK, evt);
+                            wxClientDC dc(this);
+                            wxSize text_extent = dc.GetTextExtent(cell_str);
+
+                            if (cell_xoff < text_extent.GetWidth())
+                            {
+                                GridEvent evt;
+                                evt.SetColumn(model_col);
+                                evt.SetRow(row);
+                                evt.SetString(cell_str);
+                                evt.SetUserEvent(true);
+                                fireEvent(wxEVT_KCLGRID_LINK_LEFTCLICK, evt);
+                            }
                         }
                     }
                 }
             }
-            
-            
-            
         }
-         else if (m_mouse_action == actionSelectRows)
+        else if (m_mouse_action == actionSelectRows)
         {
             m_mouse_action = actionNone;
 
@@ -7363,7 +7383,7 @@ void Grid::onMouse(wxMouseEvent& event)
             }
 
         }
-         else if (m_mouse_action == actionPressButton)
+        else if (m_mouse_action == actionPressButton)
         {
             m_mouse_action = actionNone;
             wxRect cellrect;
@@ -7373,7 +7393,7 @@ void Grid::onMouse(wxMouseEvent& event)
 
             fireEvent(wxEVT_KCLGRID_BUTTON_CLICK, m_action_row, m_action_viewcol);
         }
-         else if (m_mouse_action == actionPressColor)
+        else if (m_mouse_action == actionPressColor)
         {
             m_mouse_action = actionNone;
             wxRect cellrect;
@@ -7395,12 +7415,12 @@ void Grid::onMouse(wxMouseEvent& event)
             {
                 fgcolor_clicked = true;
             }
-             else if (bgcolor_rect.Contains(action_pt) &&
+            else if (bgcolor_rect.Contains(action_pt) &&
                       bgcolor_rect.Contains(mouseup_pt))
             {
                 fgcolor_clicked = false;
             }
-             else
+            else
             {
                 return;
             }
@@ -7418,7 +7438,7 @@ void Grid::onMouse(wxMouseEvent& event)
             evt.SetUserEvent(true);
             fireEvent(wxEVT_KCLGRID_COLOR_CLICK, evt);
         }
-         else
+        else
         {
             // see if the user clicked on the column header row
             if (event.m_y < m_header_height)
@@ -7456,9 +7476,8 @@ void Grid::onMouse(wxMouseEvent& event)
 
     if (event.GetEventType() == wxEVT_MIDDLE_UP)
     {
-        // if we're middle-clicking on a link, fire the 
-        // middle-click link event
-        int row, col;
+        // if we're middle-clicking on a link, fire the middle-click link event
+        int row, col, cell_xoff = 0;
         hitTest(event.m_x, event.m_y, &row, &col);
 
         int model_col = getColumnModelIdx(col);
@@ -7466,20 +7485,29 @@ void Grid::onMouse(wxMouseEvent& event)
         {
             wxString cell_str = getCellString(row, model_col);
 
+            kcl::CellProperties props;
+            getCellProperties(row, model_col, &props);
+
             // if the hyperlink option is active and we find something
             // that looks like a hyperlink, then trigger a left-click
             // event on a link if the link is clicked on
-            if (m_options & optActivateHyperlinks)
+            if (props.hyperlink || (m_options & optActivateHyperlinks))
             {
                 int url_pos = cell_str.Find(wxT("://"));
-                if (url_pos >= 4 && url_pos <= 10)
+                if (props.hyperlink || (url_pos >= 4 && url_pos <= 10))
                 {
-                    GridEvent evt;
-                    evt.SetColumn(model_col);
-                    evt.SetRow(row);
-                    evt.SetString(cell_str);
-                    evt.SetUserEvent(true);
-                    fireEvent(wxEVT_KCLGRID_LINK_MIDDLECLICK, evt);
+                    wxClientDC dc(this);
+                    wxSize text_extent = dc.GetTextExtent(cell_str);
+
+                    if (cell_xoff < text_extent.x)
+                    {
+                        GridEvent evt;
+                        evt.SetColumn(model_col);
+                        evt.SetRow(row);
+                        evt.SetString(cell_str);
+                        evt.SetUserEvent(true);
+                        fireEvent(wxEVT_KCLGRID_LINK_MIDDLECLICK, evt);
+                    }
                 }
             }
         }
@@ -7524,7 +7552,7 @@ void Grid::onMouse(wxMouseEvent& event)
             fireEvent(wxEVT_KCLGRID_COLUMN_RIGHT_CLICK, -1, col);
             return;
         }
-         else
+        else
         {
             if (row == -1)
                 return;
@@ -7653,13 +7681,13 @@ void Grid::onMouse(wxMouseEvent& event)
                 do_ghost_row_insert = true;
                 row = getRowCount();
             }
-             else if (!m_model->getGroupBreaksActive() &&
+            else if (!m_model->getGroupBreaksActive() &&
                       (m_options & optInvalidAreaClickable) &&
                       row == -1)
             {
                 do_invalid_area_insert = true;
             }
-             else
+            else
             {
                 return;
             }
@@ -7750,7 +7778,7 @@ void Grid::onMouse(wxMouseEvent& event)
             {
                 scroll_vert = 1;
             }
-             else if (event.m_y < 0)
+            else if (event.m_y < 0)
             {
                 scroll_vert = -1;
             }
@@ -7761,7 +7789,7 @@ void Grid::onMouse(wxMouseEvent& event)
                 {
                     scroll_horz = 30;
                 }
-                 else if (event.m_x < 0)
+                else if (event.m_x < 0)
                 {
                     scroll_horz = -30;
                 }
@@ -7778,7 +7806,7 @@ void Grid::onMouse(wxMouseEvent& event)
                 m_scroll_timer.Stop();
             }
         }
-         else
+        else
         {
             m_scroll_timer_voffset = scroll_vert;
             m_scroll_timer_hoffset = scroll_horz;
@@ -7869,7 +7897,7 @@ void Grid::onMouse(wxMouseEvent& event)
                 fireEvent(wxEVT_KCLGRID_COLUMN_RESIZE, evt);
             }
         }
-         else if (m_mouse_action == actionResizeRow)
+        else if (m_mouse_action == actionResizeRow)
         {
             if (m_options & optRowResize)
             {
@@ -7884,7 +7912,7 @@ void Grid::onMouse(wxMouseEvent& event)
                 }
             }
         }
-         else if (m_mouse_action == actionSelectCol)
+        else if (m_mouse_action == actionSelectCol)
         {
             int xoff = event.m_x - m_action_xpos;
 
@@ -7892,7 +7920,7 @@ void Grid::onMouse(wxMouseEvent& event)
             {
                 // don't do anything if the user doesn't move the mouse very much
             }
-             else
+            else
             {
                 if (!(m_options & optColumnMove))
                     return;
@@ -7929,7 +7957,7 @@ void Grid::onMouse(wxMouseEvent& event)
                 }
             }
         }
-         else if (m_mouse_action == actionMoveCol)
+        else if (m_mouse_action == actionMoveCol)
         {
             int xoff = event.m_x - (m_action_xpos - m_action_colxoff);
             int width = m_action_col->m_pixwidth;
@@ -8065,7 +8093,7 @@ void Grid::onMouse(wxMouseEvent& event)
                 m_action_viewcol = dest_vc_num;
             }
         }
-         else if (m_mouse_action == actionSelect)
+        else if (m_mouse_action == actionSelect)
         {
             int row, col;
             int mouse_x = event.m_x;
@@ -8130,7 +8158,7 @@ void Grid::onMouse(wxMouseEvent& event)
                     new_end_col = std::max(m_action_selrect->m_start_col,
                                            m_action_selrect->m_end_col);
                 }
-                 else
+                else
                 {
                     if (row <= m_cursor_row)
                         m_action_selrect->m_start_row = row;
@@ -8186,7 +8214,7 @@ void Grid::onMouse(wxMouseEvent& event)
                 }
             }
         }
-         else if (m_mouse_action == actionSelectRows)
+        else if (m_mouse_action == actionSelectRows)
         {
             // determine row and column
             int row;
@@ -8269,22 +8297,31 @@ void Grid::onMouse(wxMouseEvent& event)
 
 
         {
-            int row, col;
+            int row, col, cell_xoff = 0;
             
-            if (hitTest(event.m_x, event.m_y, &row, &col))
+            if (hitTest(event.m_x, event.m_y, &row, &col, &cell_xoff))
             {
                 int model_col = getColumnModelIdx(col);
                 if (model_col != -1)
                 {
+                    kcl::CellProperties cellprops;
+                    getCellProperties(row, model_col, &cellprops);
+
                     // if the user is hovering over a hyperlink, show an
                     // appropriate cursor
-                    if (m_options & optActivateHyperlinks)
+                    if (cellprops.hyperlink || (m_options & optActivateHyperlinks))
                     {
-                        wxString text = getCellString(row, model_col);
-                        int url_pos = text.Find(wxT("://"));
-                        if (url_pos >= 4 && url_pos <= 10)
+                        wxString cell_str = getCellString(row, model_col);
+                        int url_pos = cell_str.Find(wxT("://"));
+                        if (cellprops.hyperlink || (url_pos >= 4 && url_pos <= 10))
                         {
-                            cursor = wxCursor(wxCURSOR_HAND);
+                            wxClientDC dc(this);
+                            wxSize text_extent = dc.GetTextExtent(cell_str);
+
+                            if (cell_xoff < text_extent.x)
+                            {
+                                cursor = wxCursor(wxCURSOR_HAND);
+                            }
                         }
                     }
                 }
@@ -8335,7 +8372,7 @@ void Grid::onMouse(wxMouseEvent& event)
                     {
                         removeToolTip();
                     }
-                     else
+                    else
                     {
                         // set the default tootip delay and the tooltip; 
                         // note: other parts of the application use different 
@@ -8347,7 +8384,7 @@ void Grid::onMouse(wxMouseEvent& event)
                 }
             }
         }
-         else
+        else
         {
             if (tooltip_row != m_last_tooltip_row ||
                 tooltip_col != m_last_tooltip_col)
@@ -8371,7 +8408,7 @@ void Grid::onMouse(wxMouseEvent& event)
         {
             scrollVert(-3);
         }
-         else
+        else
         {
             scrollVert(3);
         }
@@ -8465,7 +8502,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
         {
             key_code = WXK_UP;
         }
-         else
+        else
         {
             key_code = WXK_DOWN;
         }
@@ -8477,7 +8514,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
         {
             key_code = WXK_LEFT;
         }
-         else
+        else
         {
             key_code = WXK_RIGHT;
         }
@@ -8502,7 +8539,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
                     // to the cursor
                     scrollHorzToCursor();
                 }
-                 else
+                else
                 {
                     // if the shift key is down, add to the selection
                     int sel_count = getSelectionCount();
@@ -8515,15 +8552,19 @@ void Grid::onKeyDown(wxKeyEvent& event)
                         s.m_end_col = m_cursor_col;
                         addSelection(&s);
                     }
-                     else if (sel_count == 1)
+                    else if (sel_count == 1)
                     {
                         new_col = std::max(0, m_cursor_col - 1);
                         
                         SelectionRect* s = m_selection.getSelection(0);
                         if (s->m_end_col > m_cursor_col)
+                        {
                             s->m_end_col = std::max(0, s->m_end_col - 1);
-                         else
+                        }
+                        else
+                        {
                             s->m_start_col = std::max(0, s->m_start_col - 1);
+                        }
                     }
                 }
                 
@@ -8550,7 +8591,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
                     // to the cursor
                     scrollHorzToCursor();
                 }
-                 else
+                else
                 {
                     // if the shift key is down, add to the selection
                     int sel_count = getSelectionCount();
@@ -8563,13 +8604,17 @@ void Grid::onKeyDown(wxKeyEvent& event)
                         s.m_end_col = new_col;
                         addSelection(&s);
                     }
-                     else if (sel_count == 1)
+                    else if (sel_count == 1)
                     {
                         SelectionRect* s = m_selection.getSelection(0);
                         if (s->m_start_col < m_cursor_col)
+                        {
                             s->m_start_col = std::min((int)(m_viewcols.size()-1), s->m_start_col + 1);
-                         else
+                        }
+                        else
+                        {
                             s->m_end_col = std::min((int)(m_viewcols.size()-1), s->m_end_col + 1);
+                        }
                     }
                 }
                 
@@ -8598,7 +8643,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
                     if (scrollVertToCursor())
                         updateData();
                 }
-                 else
+                else
                 {
                     // if the shift key is down, add to the selection
                     int sel_count = getSelectionCount();
@@ -8611,13 +8656,17 @@ void Grid::onKeyDown(wxKeyEvent& event)
                         s.m_end_col = m_cursor_col;
                         addSelection(&s);
                     }
-                     else if (sel_count == 1)
+                    else if (sel_count == 1)
                     {
                         SelectionRect* s = m_selection.getSelection(0);
                         if (s->m_end_row > m_cursor_row)
+                        {
                             s->m_end_row = std::max(0, s->m_end_row - 1);
-                         else
+                        }
+                        else
+                        {
                             s->m_start_row = std::max(0, s->m_start_row - 1);
+                        }
                     }
                 }
                 
@@ -8646,7 +8695,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
                     if (scrollVertToCursor())
                         updateData();
                 }
-                 else
+                else
                 {
                     // if the shift key is down, add to the selection
                     int sel_count = getSelectionCount();
@@ -8659,13 +8708,17 @@ void Grid::onKeyDown(wxKeyEvent& event)
                         s.m_end_col = m_cursor_col;
                         addSelection(&s);
                     }
-                     else if (sel_count == 1)
+                    else if (sel_count == 1)
                     {
                         SelectionRect* s = m_selection.getSelection(0);
                         if (s->m_start_row < m_cursor_row)
+                        {
                             s->m_start_row = std::min(m_row_count-1, s->m_start_row + 1);
-                         else
+                        }
+                        else
+                        {
                             s->m_end_row = std::min(m_row_count-1, s->m_end_row + 1);
+                        }
                     }
                 }
                 
@@ -8706,7 +8759,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
                                m_cursor_col,
                                false);
                 }
-                 else
+                else
                 {
                     moveCursor(m_row_offset,
                                m_cursor_col,
@@ -8761,7 +8814,7 @@ void Grid::onKeyDown(wxKeyEvent& event)
                                m_cursor_col,
                                false);
                 }
-                 else
+                else
                 {
                     moveCursor(m_row_offset,
                                m_cursor_col,
@@ -9025,7 +9078,7 @@ void Grid::onEditDestroy(const wxString& value,
         {
             ::wxPostEvent(this, event);
         }
-         else
+        else
         {
             onEndEditCleanup(event);
         }
@@ -9062,7 +9115,7 @@ void Grid::onEndEditCleanup(wxCommandEvent& event)
             m_last_edit_allowed = false;
             m_caption_edit_col = NULL;
         }
-         else
+        else
         {
             kcl::GridEvent evt;
             evt.SetString(wxT(""));
@@ -9408,7 +9461,7 @@ void Grid::onEndEditCleanup(wxCommandEvent& event)
                     updateScrollbars(wxVERTICAL);
                     render();
                 }
-                 else
+                else
                 {
                     if (repaint_all)
                     {
@@ -9450,11 +9503,11 @@ void Grid::beginEdit()
     {
         copy = wxString::Format(wxT("%.*f"), cell_data->m_scale, cell_data->m_dblvalue);
     }
-     else if (cell_data->m_type == typeInteger)
+    else if (cell_data->m_type == typeInteger)
     {
         copy = wxString::Format(wxT("%d"), cell_data->m_intvalue);
     }
-     else
+    else
     {
         copy = (const wxChar*)cell_data->m_strvalue;
     }
@@ -9519,9 +9572,13 @@ void Grid::beginCaptionEdit(int viewcol_idx)
     wxCoord text_height;
     
     if (m_caption_font.IsOk())
+    {
         m_memdc.GetTextExtent(caption_text, &text_width, &text_height, NULL, NULL, &m_caption_font);
-     else
+    }
+    else
+    {
         m_memdc.GetTextExtent(caption_text, &text_width, &text_height);
+    }
 
     long style = wxTE_CENTER;
     if (text_width > w-12)
@@ -9691,7 +9748,7 @@ void Grid::beginEdit(const wxString& default_text)
             {
                 style |= wxSIMPLE_BORDER;
             }
-             else
+            else
             {
                 style |= wxNO_BORDER;
 
@@ -9783,7 +9840,7 @@ void Grid::beginEdit(const wxString& default_text)
                 m_control->SetPosition(pt);
                 m_control->SetFocus();
             }
-             else if (celldata->ctrltype == ctrltypeComboBox)
+            else if (celldata->ctrltype == ctrltypeComboBox)
             {
                 GridComboCtrl* combo;
                 combo = new GridComboCtrl(
@@ -9802,7 +9859,7 @@ void Grid::beginEdit(const wxString& default_text)
                     combo->setStartIndex(sel);
                     combo->SetSelection(sel);
                 }
-                 else
+                else
                 {
                     combo->SetValue(default_text);
                     combo->SetInsertionPointEnd();
@@ -9875,7 +9932,7 @@ void Grid::beginEditWithPositioning(int x, int y)
 
             mouse_x -= ((textctrl_width-edit_x)/2);
         }
-         else if (textctrl_style & wxTE_RIGHT)
+        else if (textctrl_style & wxTE_RIGHT)
         {
             int textctrl_width, textctrl_height;
             text->GetClientSize(&textctrl_width, &textctrl_height);
@@ -9920,13 +9977,13 @@ void Grid::endEdit(bool accept)
         ctrl->destroyNow(accept);
         return;
     }
-     else if (m_control->IsKindOf(CLASSINFO(GridChoiceCtrl)))
+    else if (m_control->IsKindOf(CLASSINFO(GridChoiceCtrl)))
     {
         GridChoiceCtrl* ctrl = static_cast<GridChoiceCtrl*>(m_control);
         ctrl->destroyNow(accept);
         return;
     }
-     else if (m_control->IsKindOf(CLASSINFO(GridComboCtrl)))
+    else if (m_control->IsKindOf(CLASSINFO(GridComboCtrl)))
     {
         GridComboCtrl* ctrl = static_cast<GridComboCtrl*>(m_control);
         ctrl->destroyNow(accept);
@@ -9972,7 +10029,7 @@ void Grid::repaint(wxDC* dc, wxRect* rect)
             dc->SetPen(*wxWHITE_PEN);
             dc->DrawRectangle(x,y,w,h);
         }
-         else
+        else
         {
             wxClientDC cdc(this);
             cdc.SetBrush(*wxWHITE_BRUSH);
@@ -9986,7 +10043,7 @@ void Grid::repaint(wxDC* dc, wxRect* rect)
     {
         dc->Blit(x, y, w, h, &m_memdc, x, y);
     }
-     else
+    else
     {
         wxClientDC cdc(this);
         cdc.Blit(x, y, w, h, &m_memdc, x, y);

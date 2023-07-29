@@ -569,6 +569,14 @@ AppController::AppController()
     m_format_toolbar = NULL;
     m_borderpanel_helper = NULL;
     m_colorpanel_helper = NULL;
+
+    /*
+    for (int i = 0; i < 4000; ++i)
+    {
+        const char* m = (const char*)malloc(2000000);
+        wxLogDebug("malloc %d: %p", i, m);
+    }
+    */
 }
 
 AppController::~AppController()

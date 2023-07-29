@@ -232,7 +232,8 @@ struct CellProperties
         cpmaskEditable = 0x020,
         cpmaskTextWrap = 0x040,
         cpmaskBitmapAlignment = 0x080,
-        cpmaskVisible = 0x100
+        cpmaskVisible = 0x100,
+        cpmaskHyperlink = 0x200
     };
 
     CellProperties()
@@ -242,6 +243,7 @@ struct CellProperties
         alignment = 0;
         text_wrap = 0;
         bitmap_alignment = 0;
+        hyperlink = false;
         editable = false;
         visible = false;
     }
@@ -254,6 +256,7 @@ struct CellProperties
     int alignment;
     int text_wrap;
     int bitmap_alignment;
+    bool hyperlink;
     bool editable;
     bool visible;
 };
@@ -679,7 +682,7 @@ public:
     void endEdit(bool accept);
     bool isEditing();
 
-    bool hitTest(int x, int y, int* model_row, int* view_col);
+    bool hitTest(int x, int y, int* model_row, int* view_col, int* cell_xoff = NULL);
 
     int getRowOffset();
     void setRowOffset(int new_value);
