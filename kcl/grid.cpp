@@ -5052,7 +5052,14 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                         {
                             // text is a url
                             is_url = true;
-                            fgcolor = wxColour(0,0,255);
+                            if (m_cursor_type == cursorRowHighlight && model_row == m_cursor_row)
+                            {
+                                fgcolor = m_hc_cellfg_color;
+                            }
+                            else
+                            {
+                                fgcolor = wxColour(0, 0, 255);
+                            }
                             m_memdc.SetFont(m_underlined_font);
                         }
                     }
