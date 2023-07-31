@@ -1095,6 +1095,8 @@ void bindExprParser(kscript::ExprParser* parser)
     parser->addFunction(L"to_char", false, func_tochar, false, L"s(ds);s(ns);s(bs)");  // internal
     
     // list functions
+    parser->addFunction(L"least", false, func_min, false, L"f(f)f;s(s)s;d(d)d");
+    parser->addFunction(L"greatest", false, func_max, false, L"f(f)f;s(s)s;d(d)d");
     parser->addFunction(L"min", false, func_min, false, L"f(f)f;s(s)s;d(d)d");
     parser->addFunction(L"max", false, func_max, false, L"f(f)f;s(s)s;d(d)d");
     parser->addFunction(L"sum", false, func_sum, false, L"f(n)n");
