@@ -7388,6 +7388,8 @@ void Grid::onMouse(wxMouseEvent& event)
                 render();
                 repaint();
             }
+
+            goto rest;
         }
         else if (m_mouse_action == actionPressButton)
         {
@@ -7446,6 +7448,8 @@ void Grid::onMouse(wxMouseEvent& event)
         }
         else
         {
+            rest:
+
             // see if the user clicked on the column header row
             if (event.m_y < m_header_height)
             {
