@@ -5947,7 +5947,7 @@ void TableDoc::deleteSelectedRows()
     AppBusyCursor bc;
 
     // show warning
-    wxString message = wxString::Format(_("Performing this operation will permanently delete data.  Are you sure\nyou want to delete %d record(s)?"),
+    wxString message = wxString::Format(_("Performing this operation will permanently delete data.  Are you sure\nyou want to delete %zu record(s)?"),
                                         deletecmds.size());
 
     int res = wxMessageBox(message,
