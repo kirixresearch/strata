@@ -894,7 +894,7 @@ public:
         m_fontface_combo->SetStringSelection(m_pi->grid_font_facename);
         
         m_fontsize_combo = new FontSizeComboControl(this, ID_FontSizeCombo);
-        m_fontsize_combo->SetStringSelection(wxString::Format(wxT("%d"), m_pi->grid_font_ptsize));
+        m_fontsize_combo->SetStringSelection(wxString::Format(wxT("%ld"), m_pi->grid_font_ptsize));
         
         // make sure we don't lose our tab traversal ability
         m_fontface_combo->GetEventHandler()->Connect(wxEVT_KEY_DOWN, wxKeyEventHandler(OptionsPanel::onComboTabPressed));
@@ -1358,13 +1358,13 @@ public:
         m_vert_line_check->SetValue(m_pi->grid_vertlines_visible);
         m_horz_line_check->SetValue(m_pi->grid_horzlines_visible);
         m_greenbar_check->SetValue(m_pi->grid_greenbar_visible);
-        m_greenbar_spin_ctrl->SetValue(wxString::Format(wxT("%d"), m_pi->grid_greenbar_interval));
+        m_greenbar_spin_ctrl->SetValue(wxString::Format(wxT("%ld"), m_pi->grid_greenbar_interval));
         m_greenbar_spin_ctrl->Enable(m_pi->grid_greenbar_visible);
         m_text_wrap_check->SetValue(m_pi->grid_text_wrap);
         m_boolean_checkbox_check->SetValue(m_pi->grid_boolean_checkbox);
         
         m_fontface_combo->SetStringSelection(m_pi->grid_font_facename);
-        m_fontsize_combo->SetStringSelection(wxString::Format(wxT("%d"), m_pi->grid_font_ptsize));
+        m_fontsize_combo->SetStringSelection(wxString::Format(wxT("%ld"), m_pi->grid_font_ptsize));
         
         // restore the default settings to the grid
         m_preview_grid->setDefaultBackgroundColor(m_pi->grid_background_color);
@@ -1523,7 +1523,7 @@ public:
                                 _("Port:"),
                                 &m_proxy_httpport_textctrl,
                                 ID_HttpProxyPortTextCtrl,
-                                wxString::Format(wxT("%d"), m_pi->internet_proxy_http_port),
+                                wxString::Format(wxT("%ld"), m_pi->internet_proxy_http_port),
                                 10);
         m_proxy_http_sizer->AddSpacer(10);
         m_proxy_http_sizer->Add(httpport_sizer);
@@ -1542,7 +1542,7 @@ public:
                                 _("Port:"),
                                 &m_proxy_ftpport_textctrl,
                                 ID_FtpProxyPortTextCtrl,
-                                wxString::Format(wxT("%d"), m_pi->internet_proxy_ftp_port),
+                                wxString::Format(wxT("%ld"), m_pi->internet_proxy_ftp_port),
                                 10);
         m_proxy_ftp_sizer->AddSpacer(10);
         m_proxy_ftp_sizer->Add(ftpport_sizer);
@@ -1561,7 +1561,7 @@ public:
                                 _("Port:"),
                                 &m_proxy_sslport_textctrl,
                                 ID_SslProxyPortTextCtrl,
-                                wxString::Format(wxT("%d"), m_pi->internet_proxy_ssl_port),
+                                wxString::Format(wxT("%ld"), m_pi->internet_proxy_ssl_port),
                                 10);
         m_proxy_ssl_sizer->AddSpacer(10);
         m_proxy_ssl_sizer->Add(sslport_sizer);
@@ -1580,7 +1580,7 @@ public:
                                 _("Port:"),
                                 &m_proxy_socksport_textctrl,
                                 ID_SocksProxyPortTextCtrl,
-                                wxString::Format(wxT("%d"), m_pi->internet_proxy_socks_port),
+                                wxString::Format(wxT("%ld"), m_pi->internet_proxy_socks_port),
                                 10);
         m_proxy_socks_sizer->AddSpacer(10);
         m_proxy_socks_sizer->Add(socksport_sizer);
@@ -1751,10 +1751,10 @@ public:
         m_proxy_ftp_textctrl->SetValue(m_pi->internet_proxy_ftp);
         m_proxy_ssl_textctrl->SetValue(m_pi->internet_proxy_ssl);
         m_proxy_socks_textctrl->SetValue(m_pi->internet_proxy_socks);
-        m_proxy_httpport_textctrl->SetValue(wxString::Format(wxT("%d"), m_pi->internet_proxy_http_port));
-        m_proxy_ftpport_textctrl->SetValue(wxString::Format(wxT("%d"), m_pi->internet_proxy_ftp_port));
-        m_proxy_sslport_textctrl->SetValue(wxString::Format(wxT("%d"), m_pi->internet_proxy_ssl_port));
-        m_proxy_socksport_textctrl->SetValue(wxString::Format(wxT("%d"), m_pi->internet_proxy_socks_port));
+        m_proxy_httpport_textctrl->SetValue(wxString::Format(wxT("%ld"), m_pi->internet_proxy_http_port));
+        m_proxy_ftpport_textctrl->SetValue(wxString::Format(wxT("%ld"), m_pi->internet_proxy_ftp_port));
+        m_proxy_sslport_textctrl->SetValue(wxString::Format(wxT("%ld"), m_pi->internet_proxy_ssl_port));
+        m_proxy_socksport_textctrl->SetValue(wxString::Format(wxT("%ld"), m_pi->internet_proxy_socks_port));
         m_proxy_direct_radio->SetValue(m_pi->internet_proxy_type == prefProxyDirect ? true : false);
         m_proxy_manual_radio->SetValue(m_pi->internet_proxy_type == prefProxyManual ? true : false);
         m_proxy_autodetect_radio->SetValue(m_pi->internet_proxy_type == prefProxyAutoDetect ? true : false);
@@ -2094,7 +2094,7 @@ public:
                                     toPage(m_pi->report_margin_bottom));
         
         m_fontface_combo->SetStringSelection(m_pi->report_font_facename);
-        m_fontsize_combo->SetStringSelection(wxString::Format(wxT("%d"), m_pi->report_font_ptsize));
+        m_fontsize_combo->SetStringSelection(wxString::Format(wxT("%ld"), m_pi->report_font_ptsize));
     }
     
     void serializeValues()
@@ -2154,7 +2154,7 @@ public:
                                     toPage(m_pi->report_margin_bottom));
         
         m_fontface_combo->SetValue(m_pi->report_font_facename);
-        m_fontsize_combo->SetValue(wxString::Format(wxT("%d"), m_pi->report_font_ptsize));
+        m_fontsize_combo->SetValue(wxString::Format(wxT("%ld"), m_pi->report_font_ptsize));
     }
     
 private:
