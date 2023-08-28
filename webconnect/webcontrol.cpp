@@ -2768,8 +2768,12 @@ wxImage wxWebControl::GetFavIcon() const
 wxDOMDocument wxWebControl::GetDOMDocument()
 {
     wxDOMDocument doc;
-    
-    
+
+    if (!IsOk())
+    {
+        return doc;
+    }
+
     ns_smartptr<nsIDOMWindow> dom_window;
     m_ptrs->m_web_browser->GetContentDOMWindow(&dom_window.p);
     if (!dom_window)
@@ -2859,6 +2863,11 @@ void wxWebControl::OpenURI(const wxString& uri,
 
 wxString wxWebControl::GetCurrentURI() const
 {
+    if (!IsOk())
+    {
+        return wxEmptyString;
+    }
+
     ns_smartptr<nsIURI> uri;
     
     m_ptrs->m_web_navigation->GetCurrentURI(&uri.p);
@@ -3011,6 +3020,11 @@ void wxWebControl::InitPrintSettings()
 
 void wxWebControl::Print(bool silent)
 {
+    if (!IsOk())
+    {
+        return;
+    }
+
     // get the nsIWebBrowserPrint interface
     ns_smartptr<nsIWebBrowserPrint> web_browser_print = nsRequestInterface(m_ptrs->m_web_browser);
     if (!web_browser_print)
@@ -3047,6 +3061,11 @@ void wxWebControl::SetPageSettings(int orientation,
                                    double left_margin, double right_margin, 
                                    double top_margin, double bottom_margin)
 {
+    if (!IsOk())
+    {
+        return;
+    }
+
     // get the nsIWebBrowserPrint interface
     ns_smartptr<nsIWebBrowserPrint> web_browser_print = nsRequestInterface(m_ptrs->m_web_browser);
     if (!web_browser_print)
@@ -3092,6 +3111,11 @@ void wxWebControl::GetPageSettings(int* orientation,
                                    double* left_margin, double* right_margin, 
                                    double* top_margin, double* bottom_margin)
 {
+    if (!IsOk())
+    {
+        return;
+    }
+
     // get the nsIWebBrowserPrint interface
     ns_smartptr<nsIWebBrowserPrint> web_browser_print = nsRequestInterface(m_ptrs->m_web_browser);
     if (!web_browser_print)
@@ -3142,6 +3166,11 @@ void wxWebControl::GetPageSettings(int* orientation,
 
 void wxWebControl::ViewSource()
 {
+    if (!IsOk())
+    {
+        return;
+    }
+
     ViewSource(this);
 }
 
@@ -3203,6 +3232,11 @@ void wxWebControl::ViewSource(const wxString& uri)
 
 bool wxWebControl::SaveCurrent(const wxString& destination_path)
 {
+    if (!IsOk())
+    {
+        return false;
+    }
+
     // this code is supposed to download the page from the cache,
     // but it's not working right now.  nsIWebBrowserPersist::SaveURI
     // isn't finished saving the document by the time that OpenURI is called
@@ -3250,7 +3284,9 @@ bool wxWebControl::SaveCurrent(const wxString& destination_path)
 void wxWebControl::GetTextZoom(float* zoom)
 {
     if (!IsOk())
+    {
         return;
+    }
 
     ns_smartptr<nsIDOMWindow> dom_window;
     m_ptrs->m_web_browser->GetContentDOMWindow(&dom_window.p);
@@ -3269,7 +3305,9 @@ void wxWebControl::GetTextZoom(float* zoom)
 void wxWebControl::SetTextZoom(float zoom)
 {
     if (!IsOk())
+    {
         return;
+    }
 
     ns_smartptr<nsIDOMWindow> dom_window;
     m_ptrs->m_web_browser->GetContentDOMWindow(&dom_window.p);
@@ -3288,7 +3326,9 @@ void wxWebControl::SetTextZoom(float zoom)
 bool wxWebControl::CanCutSelection()
 {
     if (!IsOk())
+    {
         return false;
+    }
     
     bool retval;
     m_ptrs->m_clipboard_commands->CanCutSelection(&retval);
@@ -3307,7 +3347,9 @@ bool wxWebControl::CanCutSelection()
 bool wxWebControl::CanCopySelection()
 {
     if (!IsOk())
+    {
         return false;
+    }
 
     bool retval;
     m_ptrs->m_clipboard_commands->CanCopySelection(&retval);
@@ -3326,7 +3368,9 @@ bool wxWebControl::CanCopySelection()
 bool wxWebControl::CanCopyLinkLocation()
 {
     if (!IsOk())
+    {
         return false;
+    }
 
     bool retval;
     m_ptrs->m_clipboard_commands->CanCopyLinkLocation(&retval);
@@ -3345,7 +3389,9 @@ bool wxWebControl::CanCopyLinkLocation()
 bool wxWebControl::CanCopyImageLocation()
 {
     if (!IsOk())
+    {
         return false;
+    }
 
     bool retval;
     m_ptrs->m_clipboard_commands->CanCopyImageLocation(&retval);
@@ -3364,7 +3410,9 @@ bool wxWebControl::CanCopyImageLocation()
 bool wxWebControl::CanCopyImageContents()
 {
     if (!IsOk())
+    {
         return false;
+    }
 
     bool retval;
     m_ptrs->m_clipboard_commands->CanCopyImageContents(&retval);
@@ -3383,7 +3431,9 @@ bool wxWebControl::CanCopyImageContents()
 bool wxWebControl::CanPaste()
 {
     if (!IsOk())
+    {
         return false;
+    }
 
     bool retval;
     m_ptrs->m_clipboard_commands->CanPaste(&retval);
@@ -3402,7 +3452,9 @@ bool wxWebControl::CanPaste()
 void wxWebControl::CutSelection()
 {
     if (!IsOk())
+    {
         return;
+    }
     
     m_ptrs->m_clipboard_commands->CutSelection();
 }
