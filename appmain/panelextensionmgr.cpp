@@ -231,9 +231,9 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
     name->setName(wxT("name"));
 
     // create version text element
-    wxString version_text = wxString::Format(wxT("%d.%d.%d"), info.major_version,
-                                                              info.minor_version,
-                                                              info.subminor_version);
+    wxString version_text = wxString::Format("%ld.%ld.%ld", info.major_version,
+                                                            info.minor_version,
+                                                            info.subminor_version);
     kcl::ScrollListElement* version;
     version = item->addElement(version_text);
     version->setPadding(0,0,15,8);
@@ -360,7 +360,7 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
 void ExtensionManagerPanel::updateItem(kcl::ScrollListItem* item,
                                        ExtensionInfo& info)
 {
-    wxString version_text = wxString::Format(wxT("%d.%d.%d"), info.major_version,
+    wxString version_text = wxString::Format(wxT("%ld.%ld.%ld"), info.major_version,
                                                               info.minor_version,
                                                               info.subminor_version);
     if (info.bitmap.IsOk())
