@@ -361,8 +361,8 @@ void ExtensionManagerPanel::updateItem(kcl::ScrollListItem* item,
                                        ExtensionInfo& info)
 {
     wxString version_text = wxString::Format(wxT("%ld.%ld.%ld"), info.major_version,
-                                                              info.minor_version,
-                                                              info.subminor_version);
+                                                                 info.minor_version,
+                                                                 info.subminor_version);
     if (info.bitmap.IsOk())
         item->getElement(wxT("bitmap"))->setBitmap(info.bitmap);
     item->getElement(wxT("name"))->setText(info.name);

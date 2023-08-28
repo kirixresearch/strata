@@ -790,7 +790,7 @@ public:
         m_vert_line_check = new wxCheckBox(this, ID_VertLineCheckBox, _("Show vertical grid lines"));
         m_greenbar_check = new wxCheckBox(this, ID_GreenBarCheckBox, _("Show shaded rows every..."));
 
-        wxString val = wxString::Format(wxT("%d"), m_pi->grid_greenbar_interval);
+        wxString val = wxString::Format(wxT("%ld"), m_pi->grid_greenbar_interval);
         m_greenbar_spin_ctrl = new wxSpinCtrl(this, ID_GreenBarSpinCtrl, val, wxDefaultPosition, wxSize(65,-1));
 
         m_text_wrap_check = new wxCheckBox(this, ID_TextWrapCheckBox, _("Wrap text in character fields"));
