@@ -517,9 +517,10 @@ bool SplitPanel::validate()
     }
     
     // maximum row count value
-    if (split_type == 0 && row_count_val > m_finfo->getRowCount())
+    int file_row_count = (int)m_finfo->getRowCount();
+    if (split_type == 0 && row_count_val > file_row_count)
     {
-        m_rowcount_textctrl->SetValue(wxString::Format(wxT("%d"), m_finfo->getRowCount()));
+        m_rowcount_textctrl->SetValue(wxString::Format(wxT("%d"), file_row_count));
         m_rowcount_textctrl->SetInsertionPointEnd();
         return true;
     }
@@ -543,7 +544,7 @@ bool SplitPanel::validate()
     // maximum split table value
     if (split_type == 1 && table_count_val > m_finfo->getRowCount())
     {
-        m_tablecount_textctrl->SetValue(wxString::Format(wxT("%d"), m_finfo->getRowCount()));
+        m_tablecount_textctrl->SetValue(wxString::Format(wxT("%d"), file_row_count));
         m_tablecount_textctrl->SetInsertionPointEnd();
         return true;
     }
