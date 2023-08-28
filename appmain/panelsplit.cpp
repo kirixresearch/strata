@@ -614,7 +614,7 @@ void SplitPanel::populate()
                 {
                     // row count may be uninitialized
                     split_row_count = table_row_count;
-                    m_rowcount_textctrl->ChangeValue(wxString::Format(wxT("%d"), split_row_count));
+                    m_rowcount_textctrl->ChangeValue(wxString::Format(wxT("%d"), (int)split_row_count));
                 }
                 
                 if (split_row_count == 0)

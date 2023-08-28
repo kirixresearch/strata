@@ -1566,7 +1566,7 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
                 info.empty = false;
 
 
-            info.name = wxString::Format(wxT("FIELD%d"), td_count);
+            info.name = wxString::Format(wxT("FIELD%d"), (int)td_count);
             
             
             if (info.type == xd::typeDate && !parseDelimitedStringDate(val))
@@ -1845,7 +1845,7 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
         
         if (fields[i].name.IsEmpty())
         {
-            fields[i].name = wxString::Format(wxT("FIELD%d"), i+1);
+            fields[i].name = wxString::Format(wxT("FIELD%d"), (int)(i+1));
         } 
     }
     

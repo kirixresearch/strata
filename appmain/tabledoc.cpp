@@ -3146,7 +3146,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
     while (1)
     {
         if (i > 0)
-            temp = wxString::Format(wxT("%s%d"), column_name.c_str(), i+1);
+            temp = wxString::Format(wxT("%s%d"), column_name.c_str(), (int)(i+1));
              else
             temp = column_name.c_str();
 

@@ -1025,9 +1025,11 @@ void CompReportDesign::render(const wxRect& rect)
     {
         // if the section isn't active, move on
         if (!(it->m_active))
+        {
             continue;
+        }
         
-        // -- draw header --
+        // draw header
 
         wxRect header(it->m_top);
         canvas->drawGradientFill(header, start_color, end_color, wxSOUTH);
@@ -1045,7 +1047,9 @@ void CompReportDesign::render(const wxRect& rect)
         }
         
         if (it->m_type == PROP_REPORT_GROUP_FOOTER)
+        {
             label += wxString::Format(wxT(" %d"), it->m_group_idx + 1);
+        }
 
 
         // create a default label font

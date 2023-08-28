@@ -1059,14 +1059,14 @@ void TransformationDoc::updateRowWidthAndScale(int row)
 
 void TransformationDoc::updateStatusBar()
 {
-    // -- if the grid hasn't been created yet, bail out --
+    // if the grid hasn't been created yet, bail out
     if (!m_grid)
         return;
 
-    // -- field count --
+    // field count
     int row, row_count = m_grid->getRowCount();
     
-    // -- row width --
+    // row width
     int total_width = 0;
     for (row = 0; row < row_count; ++row)
     {
@@ -1079,10 +1079,15 @@ void TransformationDoc::updateStatusBar()
     IStatusBarItemPtr item;
     item = m_frame->getStatusBar()->getItem(wxT("transformationdoc_field_count"));
     if (item.isOk())
+    {
         item->setValue(field_count_str);
+    }
+
     item = m_frame->getStatusBar()->getItem(wxT("transformationdoc_row_width"));
     if (item.isOk())
+    {
         item->setValue(row_width_str);
+    }
 
     // refresh the statusbar
     g_app->getMainFrame()->getStatusBar()->refresh();
