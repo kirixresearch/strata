@@ -215,6 +215,7 @@ RelationBox::RelationBox(RelationDiagram* parent,
     
     m_caption_font = *wxNORMAL_FONT;
     m_caption_font.SetPointSize(8);
+    m_caption_font.SetWeight(wxFONTWEIGHT_BOLD);
     
     m_base_color = kcl::getBaseColor();
     wxColor border_color = kcl::getBorderColor();
@@ -470,7 +471,7 @@ void RelationBox::onPaint(wxPaintEvent& evt)
 
 
     // draw the caption background
-
+    /*
     wxRect r(1, 1, cli_width, m_box_caption_height+m_box_border_size);
     r.height /= 2;
     r.height++;
@@ -492,6 +493,11 @@ void RelationBox::onPaint(wxPaintEvent& evt)
     dc.SetPen(m_border_pen);
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     dc.DrawRectangle(0,0, cli_width, m_box_caption_height+m_box_border_size+1);
+    */
+
+    wxRect r(0, 0, cli_width, m_box_caption_height + m_box_border_size);
+    dc.SetBrush(kcl::getBaseBrush());
+    dc.DrawRectangle(r);
 
     // create the close button rect for future use
     if (IsUxThemed())
