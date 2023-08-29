@@ -3677,22 +3677,6 @@ bool wxWebControl::AddCookie(const wxString& host,
     res = cookie_manager->Add(ns_host, ns_path, ns_name, ns_value, is_secure, is_http_only, is_session, expiry.GetValue());
 
     return true;
-
-
-/*
-    ns_smartptr<nsICookieService> cookie_service;
-    cookie_service = nsGetService("@mozilla.org/cookieService;1");
-    if (cookie_service.empty())
-        return false;
-
-    ns_smartptr<nsIURI> uri = nsNewURI("https://" + host + path);
-
-    wxString set_string = name + "=" + value;
-    set_string += ";domain=localhost;expires=Thu, 1 Oct 2015 15:24:55 GMT; secure; HttpOnly";
-
-    nsresult nsres = cookie_service->SetCookieStringFromHttp(uri, uri, NULL, set_string.ToAscii(), NULL, NULL);
-    return true;
-*/
 }
 
 bool wxWebControl::ImportCookies(const wxString& cookie_file)
@@ -3725,117 +3709,8 @@ bool wxWebControl::RemoveAllCookies()
 }
 
 
-
-
-
-
 bool wxWebControl::Execute(const wxString& js_code)
 {
     // TODO: implement
     return false;
 }
-
-/*
-namespace JS
-{
-
-template <typename T>
-class Handle
-{
-public:
-    T ptr;
-};
-
-class Value
-{
-    unsigned char val[256];
-};
-
-class CompileOptions
-{
-public:
-    CompileOptions() { memset(val, 0, sizeof(val)); }
-    unsigned char val[256];
-};
-
-};
-
-#define NS_ISCRIPTCONTEXT_IID { 0x513c2c1a, 0xf4f1, 0x44da, { 0x8e, 0x38, 0xf4, 0x0c, 0x30, 0x9a, 0x5d, 0xef } }
-class nsIScriptContext : public nsISupports
-{
-public:
-    NS_DECLARE_STATIC_IID_ACCESSOR(NS_ISCRIPTCONTEXT_IID)
-
-    virtual nsresult EvaluateString(const nsAString& script,
-                                    JS::Handle<JSObject*> scope_object,
-                                    JS::CompileOptions& compile_options,
-                                    bool coerce_to_string,
-                                    JS::Value* retval,
-                                    void** off_thread_token = nullptr) = 0;
-};
-NS_DEFINE_STATIC_IID_ACCESSOR(nsIScriptContext, NS_ISCRIPTCONTEXT_IID)
-
-
-#define NS_ISCRIPTGLOBALOBJECT_IID { 0x30c64680, 0x909a, 0x4435, { 0x90, 0x3b, 0x29, 0x3e, 0xb5, 0x5d, 0xc7, 0xa0 } }
-class nsIGlobalObject : public nsISupports
-{
-public:
-    virtual JSObject* GetGlobalJSObject() = 0;
-};
-class nsIScriptGlobalObject : public nsIGlobalObject
-{
-public:
-  NS_DECLARE_STATIC_IID_ACCESSOR(NS_ISCRIPTGLOBALOBJECT_IID)
-
-  virtual nsresult EnsureScriptEnvironment() = 0;
-  virtual nsIScriptContext* GetScriptContext() = 0;
-};
-NS_DEFINE_STATIC_IID_ACCESSOR(nsIScriptGlobalObject, NS_ISCRIPTGLOBALOBJECT_IID)
-
-
-
-
-bool wxWebControl::Execute(const wxString& js_code)
-{
-    ns_smartptr<nsIScriptSecurityManager> security_manager;
-    security_manager = nsGetService("@mozilla.org/scriptsecuritymanager;1");
-    if (security_manager.empty())
-        return false;
-    
-    ns_smartptr<nsIPrincipal> principal;
-    security_manager->GetSystemPrincipal(&principal.p);
-    if (principal.empty())
-        return false;
-    
-    ns_smartptr<nsIScriptGlobalObject> sgo = nsRequestInterface(m_ptrs->m_web_browser);
-    if (sgo.empty())
-        return false;
-    ns_smartptr<nsIScriptContext> ctx = sgo->GetScriptContext();
-    if (ctx.empty())
-        return false;
-
-    nsresult rv;
-    nsEmbedString str;
-    wx2ns(js_code, str);
-
-
-    JS::Handle<JSObject*> handle_global;
-    handle_global.ptr = sgo->GetGlobalJSObject();
-
-    JS::CompileOptions options;
-
-    //JS::CompileOptions options(cx);
-    //options.setFileAndLine(spec, 0)
-    //       .setVersion(JSVERSION_DEFAULT);
-
-    rv = ctx->EvaluateString(
-        str,
-        handle_global,
-        options,
-        true,
-        nullptr);
-        
-    return true;
-}
-*/
-
