@@ -58,6 +58,8 @@ const int DIAGRAM_SCROLL_HEIGHT = 1200;
 const int DRAGDROP_X_OFFSET = 16;
 const int DRAGDROP_Y_OFFSET = 16;
 
+const int RESIZE_CURSOR_TOLERANCE = 4;
+
 
 // -- utility functions --
 
@@ -681,8 +683,8 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             return;
         }
 
-        if (abs(evt.m_y - cli_height) <= 4 &&
-            abs(evt.m_x - cli_width) <= 4)
+        if (abs(evt.m_y - cli_height) <= FromDIP(RESIZE_CURSOR_TOLERANCE) &&
+            abs(evt.m_x - cli_width) <= FromDIP(RESIZE_CURSOR_TOLERANCE))
         {
             m_action = RelationBox::ActionSEResize;
             SetCursor(wxCURSOR_SIZENWSE);
@@ -690,8 +692,8 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             CaptureMouse();
             return;
         }
-         else if (abs(evt.m_y - cli_height) <= 4 &&
-                  evt.m_x <= 4)
+         else if (abs(evt.m_y - cli_height) <= FromDIP(RESIZE_CURSOR_TOLERANCE) &&
+                  evt.m_x <= FromDIP(RESIZE_CURSOR_TOLERANCE))
         {
             m_action = RelationBox::ActionSWResize;
             SetCursor(wxCURSOR_SIZENESW);
@@ -699,8 +701,8 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             CaptureMouse();
             return;
         }
-         else if (evt.m_y <= 4 &&
-                  evt.m_x <= 4)
+         else if (evt.m_y <= FromDIP(RESIZE_CURSOR_TOLERANCE) &&
+                  evt.m_x <= FromDIP(RESIZE_CURSOR_TOLERANCE))
         {
             m_action = RelationBox::ActionNWResize;
             SetCursor(wxCURSOR_SIZENWSE);
@@ -708,8 +710,8 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             CaptureMouse();
             return;
         }
-         else if (evt.m_y <= 4 &&
-                  abs(evt.m_x - cli_width) <= 4)
+         else if (evt.m_y <= FromDIP(RESIZE_CURSOR_TOLERANCE) &&
+                  abs(evt.m_x - cli_width) <= FromDIP(RESIZE_CURSOR_TOLERANCE))
         {
             m_action = RelationBox::ActionNEResize;
             SetCursor(wxCURSOR_SIZENESW);
@@ -717,8 +719,8 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             CaptureMouse();
             return;
         }
-         else if (abs(evt.m_y - cli_height) <= 4 &&
-                  abs(evt.m_x - cli_width) <= 4)
+         else if (abs(evt.m_y - cli_height) <= FromDIP(RESIZE_CURSOR_TOLERANCE) &&
+                  abs(evt.m_x - cli_width) <= FromDIP(RESIZE_CURSOR_TOLERANCE))
         {
             m_action = RelationBox::ActionSEResize;
             SetCursor(wxCURSOR_SIZENWSE);
@@ -726,7 +728,7 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             CaptureMouse();
             return;
         }
-         else if (abs(evt.m_y - cli_height) <= 4)
+         else if (abs(evt.m_y - cli_height) <= FromDIP(RESIZE_CURSOR_TOLERANCE))
         {
             m_action = RelationBox::ActionSResize;
             SetCursor(wxCURSOR_SIZENS);
@@ -734,7 +736,7 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             CaptureMouse();
             return;
         }
-         else if (abs(evt.m_x - cli_width) <= 4)
+         else if (abs(evt.m_x - cli_width) <= FromDIP(RESIZE_CURSOR_TOLERANCE))
         {
             m_action = RelationBox::ActionEResize;
             SetCursor(wxCURSOR_SIZEWE);
@@ -742,7 +744,7 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             CaptureMouse();
             return;
         }
-         else if (evt.m_x <= 4)
+         else if (evt.m_x <= FromDIP(RESIZE_CURSOR_TOLERANCE))
         {
             m_action = RelationBox::ActionWResize;
             SetCursor(wxCURSOR_SIZEWE);
@@ -750,7 +752,7 @@ void RelationBox::onMouse(wxMouseEvent& evt)
             CaptureMouse();
             return;
         }
-         else if (evt.m_y <= 4)
+         else if (evt.m_y <= FromDIP(RESIZE_CURSOR_TOLERANCE))
         {
             m_action = RelationBox::ActionNResize;
             SetCursor(wxCURSOR_SIZENS);
@@ -1053,53 +1055,53 @@ void RelationBox::onMouse(wxMouseEvent& evt)
 
         if (m_action == RelationBox::ActionNone && !cursor.Ok())
         {
-            if (abs(evt.m_y - cli_height) <= 4 &&
-                abs(evt.m_x - cli_width) <= 4)
+            if (abs(evt.m_y - cli_height) <= FromDIP(RESIZE_CURSOR_TOLERANCE) &&
+                abs(evt.m_x - cli_width) <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZENWSE;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
                 m_cursor_timer.Start(100, true);
             }
-             else if (abs(evt.m_y - cli_height) <= 4 &&
-                      evt.m_x <= 4)
+             else if (abs(evt.m_y - cli_height) <= FromDIP(RESIZE_CURSOR_TOLERANCE) &&
+                      evt.m_x <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZENESW;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
                 m_cursor_timer.Start(100, true);
             }
-             else if (evt.m_y <= 4 &&
-                      abs(evt.m_x - cli_width) <= 4)
+             else if (evt.m_y <= FromDIP(RESIZE_CURSOR_TOLERANCE) &&
+                      abs(evt.m_x - cli_width) <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZENESW;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
                 m_cursor_timer.Start(100, true);
             }
-             else if (evt.m_y <= 4 &&
-                      evt.m_x <= 4)
+             else if (evt.m_y <= FromDIP(RESIZE_CURSOR_TOLERANCE) &&
+                      evt.m_x <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZENWSE;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
                 m_cursor_timer.Start(100, true);
             }
-             else if (abs(evt.m_y - cli_height) <= 4)
+             else if (abs(evt.m_y - cli_height) <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZENS;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
                 m_cursor_timer.Start(100, true);
             }
-             else if (abs(evt.m_x - cli_width) <= 4)
+             else if (abs(evt.m_x - cli_width) <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZEWE;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
                 m_cursor_timer.Start(100, true);
             }
-             else if (evt.m_x <= 4)
+             else if (evt.m_x <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZEWE;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
                 m_cursor_timer.Start(100, true);
             }
-             else if (evt.m_y <= 4)
+             else if (evt.m_y <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZENS;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
@@ -1127,8 +1129,8 @@ void RelationBox::onCursorTimer(wxTimerEvent& evt)
     wxPoint pt = ::wxGetMousePosition();
     pt = ScreenToClient(pt);
 
-    if (abs(pt.x - cli_height) <= 4 &&
-        abs(pt.y - cli_width) <= 4)
+    if (abs(pt.x - cli_height) <= FromDIP(RESIZE_CURSOR_TOLERANCE) &&
+        abs(pt.y - cli_width) <= FromDIP(RESIZE_CURSOR_TOLERANCE))
     {
         return;
     }
