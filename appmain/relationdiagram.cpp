@@ -1055,67 +1055,77 @@ void RelationBox::onMouse(wxMouseEvent& evt)
 
         if (m_action == RelationBox::ActionNone && !cursor.Ok())
         {
+            if (m_cursor_timer.IsRunning())
+            {
+                m_cursor_timer.Stop();
+            }
+
             if (abs(evt.m_y - cli_height) <= FromDIP(RESIZE_CURSOR_TOLERANCE) &&
                 abs(evt.m_x - cli_width) <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZENWSE;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
-                m_cursor_timer.Start(100, true);
+                m_cursor_timer.Start(100);
             }
              else if (abs(evt.m_y - cli_height) <= FromDIP(RESIZE_CURSOR_TOLERANCE) &&
                       evt.m_x <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZENESW;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
-                m_cursor_timer.Start(100, true);
+                m_cursor_timer.Start(100);
             }
              else if (evt.m_y <= FromDIP(RESIZE_CURSOR_TOLERANCE) &&
                       abs(evt.m_x - cli_width) <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZENESW;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
-                m_cursor_timer.Start(100, true);
+                m_cursor_timer.Start(100);
             }
              else if (evt.m_y <= FromDIP(RESIZE_CURSOR_TOLERANCE) &&
                       evt.m_x <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZENWSE;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
-                m_cursor_timer.Start(100, true);
+                m_cursor_timer.Start(100);
             }
              else if (abs(evt.m_y - cli_height) <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZENS;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
-                m_cursor_timer.Start(100, true);
+                m_cursor_timer.Start(100);
             }
              else if (abs(evt.m_x - cli_width) <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZEWE;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
-                m_cursor_timer.Start(100, true);
+                m_cursor_timer.Start(100);
             }
              else if (evt.m_x <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZEWE;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
-                m_cursor_timer.Start(100, true);
+                m_cursor_timer.Start(100);
             }
              else if (evt.m_y <= FromDIP(RESIZE_CURSOR_TOLERANCE))
             {
                 cursor = wxCURSOR_SIZENS;
                 m_cursor_timer.SetOwner(this, ID_CursorTimer);
-                m_cursor_timer.Start(100, true);
+                m_cursor_timer.Start(100);
             }
 
+            SetCursor(cursor);
         }
 
-        SetCursor(cursor);
     }
 }
 
 void RelationBox::onCursorTimer(wxTimerEvent& evt)
 {
+    if (m_action != RelationBox::ActionNone)
+    {
+        return;
+    }
+/*
     if (m_action == RelationBox::ActionSEResize ||
         m_action == RelationBox::ActionSResize ||
         m_action == RelationBox::ActionEResize)
@@ -1137,6 +1147,31 @@ void RelationBox::onCursorTimer(wxTimerEvent& evt)
      else
     {
         SetCursor(wxNullCursor);
+    }
+    */
+
+    wxRect rect = GetClientRect();
+
+    wxPoint topLeft = ClientToScreen(rect.GetTopLeft());
+    wxPoint bottomRight = ClientToScreen(rect.GetBottomRight());
+    wxRect screen_rect = wxRect(topLeft, bottomRight);
+
+    wxPoint pt = ::wxGetMousePosition();
+    screen_rect.Inflate(FromDIP(RESIZE_CURSOR_TOLERANCE));
+
+    if (!screen_rect.Contains(pt))
+    {
+        SetCursor(wxNullCursor);
+        m_cursor_timer.Stop();
+    }
+
+    screen_rect.Deflate(FromDIP(RESIZE_CURSOR_TOLERANCE));
+    screen_rect.Deflate(FromDIP(RESIZE_CURSOR_TOLERANCE));
+
+    if (screen_rect.Contains(pt))
+    {
+        SetCursor(wxNullCursor);
+        m_cursor_timer.Stop();
     }
 }
 
