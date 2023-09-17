@@ -1645,7 +1645,12 @@ void Value::copyFrom(kscript::Value* src_val)
     }
      else
     {
-        memcpy((kscript::Value*)this, src_val, sizeof(Value));
+#ifdef __APPLE__
+        memcpy((void*)this, (void*)src_val, sizeof(Value));
+#else
+        memcpy(this, src_val, sizeof(Value));
+#endif
+
         m_value_return = NULL;
         if (m_obj)
         {
@@ -1709,7 +1714,11 @@ int Value::eval(ExprEnv* env, Value* retval)
             default:
             {
                 retval->reset();
+#ifdef __APPLE__
+                memcpy((void*)retval, (void*)this, sizeof(Value));
+#else
                 memcpy(retval, this, sizeof(Value));
+#endif
                 retval->m_value_return = NULL;
                 retval->m_attr = 0;
                 break;
