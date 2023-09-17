@@ -21,6 +21,7 @@ OBJECTS = block.o \
 	cmnbaseiterator.o \
 	cmnbaseset.o \
 	cmndynamicset.o \
+	cmniteratorset.o \
 	connectionstr.o \
 	dbattr.o \
 	dbfuncs.o \
@@ -37,6 +38,7 @@ OBJECTS = block.o \
 	jobinfo.o \
 	keylayout.o \
 	localrowcache.o \
+	localrowcache2.o \
 	rowidarray.o \
 	util.o \
 	xdcommon.o \
