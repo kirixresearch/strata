@@ -17,6 +17,7 @@
 #else
 #include <pthread.h>
 #include <unistd.h>
+#include <errno.h>
 #endif
 
 #ifdef __linux__
