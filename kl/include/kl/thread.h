@@ -34,7 +34,8 @@ enum thread_creation_return_codes
     tcrOK = 0,
     tcrEAGAIN = 1,
     tcrEINVAL = 2,
-    tcrEPERM = 3
+    tcrEPERM = 3,
+    tcrUNKNOWN = 99
 };
 
 

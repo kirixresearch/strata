@@ -199,7 +199,20 @@ bool thread_ismain()
 int thread_create(thread_t* thread, const thread_t* attr,
                   unsigned (KLTHREAD_CALLING_CONVENTION *start_routine) (void*), void* arg)
 {
-    pthread_create((pthread_t*)thread, NULL, (void*(*)(void*))start_routine, arg);
+    int res = pthread_create((pthread_t*)thread, NULL, (void*(*)(void*))start_routine, arg);
+    switch (res)
+    {
+        case 0:
+            return tcrOK;
+        case EAGAIN:
+            return tcrEAGAIN;
+        case EINVAL:
+            return tcrEINVAL;
+        case EPERM:
+            return tcrEPERM;
+        default:
+            return tcrUNKNOWN;
+    }
 }
 
 void thread_sleep(unsigned int milliseconds)
