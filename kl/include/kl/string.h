@@ -27,7 +27,6 @@
 #include <cstring>
 #include <string>
 #include <algorithm>
-#include <functional>
 #include <vector>
 
 
@@ -478,13 +477,10 @@ private:
 
 
 
-
-struct cmp_nocase : std::binary_function<const std::wstring&,
-                                         const std::wstring&,
-                                         bool>
+struct cmp_nocase
 {
-    bool operator()(const std::wstring& lhs, 
-                    const std::wstring& rhs) const
+    bool operator()(const std::wstring& lhs,
+        const std::wstring& rhs) const
     {
 #ifdef _MSC_VER
         return (wcsicmp(lhs.c_str(), rhs.c_str()) < 0);
@@ -493,6 +489,7 @@ struct cmp_nocase : std::binary_function<const std::wstring&,
 #endif
     }
 };
+
 
 
 };
