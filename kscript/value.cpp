@@ -1645,7 +1645,7 @@ void Value::copyFrom(kscript::Value* src_val)
     }
      else
     {
-        memcpy(this, src_val, sizeof(Value));
+        memcpy((kscript::Value*)this, src_val, sizeof(Value));
         m_value_return = NULL;
         if (m_obj)
         {
