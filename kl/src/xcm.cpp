@@ -19,6 +19,9 @@
 #include <dlfcn.h>
 #endif
 
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
 
 #include <string>
 
@@ -201,10 +204,10 @@ std::wstring get_program_path()
     char buf[512];
     char* slash;
 
-    unsigned int len = 512;
-    if (_NSGetExecutablePath(buf, &len) == -1)
-        return wxT("");
-    buf[len] = 0;
+    unsigned int pathlen = 512;
+    if (_NSGetExecutablePath(buf, &pathlen) == -1)
+        return L"";
+    buf[pathlen] = 0;
     slash = strrchr(buf, '/');
     if (slash)
         *slash = 0;
