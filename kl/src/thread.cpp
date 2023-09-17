@@ -23,16 +23,18 @@
 #include <sys/syscall.h>
 #endif
 
+#ifdef __APPLE__
+#include <mach/mach.h>
+#endif
 
 namespace kl
 {
 
+thread_t g_mainthread_id = thread_getcurrentid();
 
 #ifdef WIN32
-unsigned int g_mainthread_id = ::GetCurrentThreadId();
 #define STDCALL __stdcall
 #else
-unsigned int g_mainthread_id = 0;   // TODO: implement
 #define STDCALL 
 #endif
 
@@ -182,17 +184,14 @@ void thread_sleep(unsigned int milliseconds)
     ::Sleep(milliseconds);
 }
 
-unsigned int thread_getcurrentid()
+thread_t thread_getcurrentid()
 {
-    return ::GetCurrentThreadId();
+    return (thread_t)::GetCurrentThreadId();
 }
 
 bool thread_ismain()
 {
-    if (g_mainthread_id == thread_getcurrentid())
-        return true;
-
-    return false;
+    return (g_mainthread_id == thread_getcurrentid()) ? true : false;
 }
 
 #else
@@ -208,15 +207,33 @@ void thread_sleep(unsigned int milliseconds)
     ::usleep(milliseconds*1000);
 }
 
-unsigned int thread_getcurrentid()
+#ifdef __APPLE__
+
+thread_t thread_getcurrentid()
 {
-    return syscall(SYS_gettid); 
+    return (thread_t)mach_thread_self();
 }
 
 bool thread_ismain()
 {
-    return (syscall(SYS_gettid)  == syscall(SYS_getpid)) ? true : false;
+    return (g_mainthread_id == thread_getcurrentid()) ? true : false;
 }
+
+#else
+
+thread_t thread_getcurrentid()
+{
+    return (thread_t)syscall(SYS_gettid); 
+}
+
+bool thread_ismain()
+{
+    return (syscall(SYS_gettid) == syscall(SYS_getpid)) ? true : false;
+}
+
+#endif
+
+
 
 #endif
 

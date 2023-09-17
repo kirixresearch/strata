@@ -26,7 +26,7 @@
 namespace kl
 {
 
-typedef unsigned long thread_t;
+typedef unsigned long long thread_t;
 
 
 enum thread_creation_return_codes
@@ -106,7 +106,7 @@ int thread_create(thread_t* thread,
 
 void thread_sleep(unsigned int milliseconds);
 
-unsigned int thread_getcurrentid();
+thread_t thread_getcurrentid();
 
 bool thread_ismain();
 
