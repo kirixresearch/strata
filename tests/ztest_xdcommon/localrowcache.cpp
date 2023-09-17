@@ -6,7 +6,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace ztestxdcommon
 {
-	TEST_CLASS(ztestxdcommon)
+	TEST_CLASS(localrowcache)
 	{
 	public:
 		

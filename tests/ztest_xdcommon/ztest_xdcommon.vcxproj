@@ -158,18 +158,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="connectionstring.cpp" />
+    <ClCompile Include="localrowcache.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ztest_xdcommon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\kl\kl.vcxproj">
+      <Project>{4e813238-a938-463e-b51a-350069326eb2}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\xd\xdcommonsql\xdcommonsql.vcxproj">
       <Project>{f59c6a53-d53d-47c8-89a9-10679de0d6c1}</Project>
     </ProjectReference>
