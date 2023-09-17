@@ -31,8 +31,9 @@
 
 
 #ifdef __APPLE__
+#include <cmath>
 #define isnan std::isnan
-#define finite isinfinite
+#define finite ::isfinite
 #endif
 
 
