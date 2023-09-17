@@ -147,7 +147,7 @@ bool parseJsonValue(wchar_t* expr, wchar_t** endloc, JsonNode& node)
 {
     // endloc is required
     if (!endloc)
-        return NULL;
+        return false;
         
     skipWhiteSpaceOrLS(expr);
 
