@@ -140,8 +140,8 @@ public:
         if (!value->isObject())
             value->setArray(NULL);
             
-        char buf[20];
-        sprintf(buf, "%d", i);
+        char buf[24];
+        snprintf(buf, sizeof(buf) - 1, "%d", i);
         return getChild(kl::towstring(buf));
     }
     
