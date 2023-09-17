@@ -19,6 +19,10 @@
 #include "paladin.h"
 #include "crypt.h"
 
+#ifdef _MSC_VER
+#define strdup _strdup
+#endif
+
 
 namespace paladin
 {
@@ -126,7 +130,7 @@ paladin_int64_t getCodeFromString(const char* _code)
 {
     static const char* hexchars = "0123456789ABCDEF";
 
-    char* act_code = _strdup(_code);
+    char* act_code = strdup(_code);
     reverse_string(act_code);
 
     paladin::actcode_t retval = 0;
