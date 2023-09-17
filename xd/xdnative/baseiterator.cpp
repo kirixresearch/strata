@@ -32,6 +32,7 @@
 
 #ifdef __APPLE__
 #define isnan std::isnan
+#define finite isinfinite
 #endif
 
 
