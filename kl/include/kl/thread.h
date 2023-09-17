@@ -108,8 +108,6 @@ void thread_sleep(unsigned int milliseconds);
 
 unsigned int thread_getcurrentid();
 
-unsigned int thread_getid(thread_t *thread);
-
 bool thread_ismain();
 
 
