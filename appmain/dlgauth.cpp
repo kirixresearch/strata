@@ -526,7 +526,7 @@ static void licenseNotAvailError(wxWindow* parent)
 wxString DlgAuth::getSiteCodeString()
 {
     char buf[255];
-    paladin::getStringFromCode(m_site_code, buf);
+    paladin::getStringFromCode(m_site_code, buf, sizeof(buf)-1);
     wxString str = buf;
     return str;
 }

@@ -421,13 +421,13 @@ void AuthImpl::generateFingerprints()
     // by an encryption key
     ik = m_eval_tag_crc;
     int64crypt(ik, generic_key, true);
-    getStringFromCode(ik, m_fingerprint2, false);
+    getStringFromCode(ik, m_fingerprint2, sizeof(m_fingerprint2) - 1, false);
     
     // second fingerprint string will be the same as the second
     // fingerprint, simply created with a different key
     ik = m_eval_tag_crc;
     int64crypt(ik, fingerprint_key, true);
-    getStringFromCode(ik, m_fingerprint3, false);
+    getStringFromCode(ik, m_fingerprint3, sizeof(m_fingerprint3) - 1, false);
 }
 
 bool AuthImpl::loadAuthInfo()

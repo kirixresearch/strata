@@ -23,7 +23,7 @@ void rot13(char* s);
 void rot13(wchar_t* s);
 void reverse_string(char* str);
 paladin_int64_t getCodeFromString(const char* _code);
-void getStringFromCode(const paladin_int64_t& actcode, char* output_string, bool format = true);
+void getStringFromCode(const paladin_int64_t& actcode, char* output_string, size_t buf_size, bool format = true);
 void int64crypt(paladin::paladin_int64_t& i, const unsigned char* key, bool encrypt);
 
 };

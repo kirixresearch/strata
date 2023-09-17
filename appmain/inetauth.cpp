@@ -231,7 +231,7 @@ int InetAuth::authorize(paladin::Authentication* auth,
     wxString product_tag = auth->getAppTag();
     paladin::sitecode_t code = auth->getSiteCode();
     char szcode[255];
-    paladin::getStringFromCode(code, szcode, false);
+    paladin::getStringFromCode(code, szcode, sizeof(szcode)-1, false);
     wxString site_code = wxString::From8BitData(szcode);
 
     // create a check variable.  A check variable isa CRC32 of the site code.
@@ -312,7 +312,7 @@ int InetAuth::deauthorize(paladin::Authentication* auth,
     wxString product_tag = auth->getAppTag();
     paladin::sitecode_t code = auth->getSiteCode();
     char szcode[255];
-    paladin::getStringFromCode(code, szcode, false);
+    paladin::getStringFromCode(code, szcode, sizeof(szcode)-1, false);
     wxString site_code = wxString::From8BitData(szcode);
 
     // create a check variable.  A check variable is

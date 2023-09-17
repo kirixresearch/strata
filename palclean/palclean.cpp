@@ -156,17 +156,15 @@ void removeForAppTag(LPCTSTR company_name, LPCTSTR tag)
     // by an encryption key
     ik = eval_tag_crc;
     paladin::int64crypt(ik, generic_key, true);
-    paladin::getStringFromCode(ik, fingerprint2, false);
+    paladin::getStringFromCode(ik, fingerprint2, sizeof(fingerprint2) - 1, false);
     
     // second fingerprint string will be the same as the second
     // fingerprint, simply created with a different key
     ik = eval_tag_crc;
     paladin::int64crypt(ik, fingerprint_key, true);
-    paladin::getStringFromCode(ik, fingerprint3, false);
-    
-    
-    
-    
+    paladin::getStringFromCode(ik, fingerprint3, sizeof(fingerprint3) - 1, false);
+
+
     
     TCHAR path[512];
     UUID guid;

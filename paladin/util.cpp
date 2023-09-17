@@ -162,9 +162,7 @@ paladin_int64_t getCodeFromString(const char* _code)
 }
 
 
-void getStringFromCode(const paladin_int64_t& actcode,
-    char* output_string,
-    bool format)
+void getStringFromCode(const paladin_int64_t& actcode, char* output_string, size_t buffer_size, bool format)
 {
     unsigned int i0 = (unsigned int)((actcode >> 56) & 0xff);
     unsigned int i1 = (unsigned int)((actcode >> 48) & 0xff);
@@ -177,12 +175,12 @@ void getStringFromCode(const paladin_int64_t& actcode,
 
     if (format)
     {
-        sprintf(output_string, "%02X%02X %02X%02X %02X%02X %02X%02X",
+        snprintf(output_string, buffer_size, "%02X%02X %02X%02X %02X%02X %02X%02X",
             i0, i1, i2, i3, i4, i5, i6, i7);
     }
     else
     {
-        sprintf(output_string, "%02X%02X%02X%02X%02X%02X%02X%02X",
+        snprintf(output_string, buffer_size, "%02X%02X%02X%02X%02X%02X%02X%02X",
             i0, i1, i2, i3, i4, i5, i6, i7);
     }
 }
