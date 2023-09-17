@@ -317,7 +317,7 @@ enum
 
 // utility classes
 
-struct xdcmpnocase : std::binary_function<const std::wstring&, const std::wstring&, bool>
+struct xdcmpnocase
 {
     bool operator()(const std::wstring& lhs,  const std::wstring& rhs) const {
 #ifdef _MSC_VER
