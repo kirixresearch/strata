@@ -415,7 +415,7 @@ void AuthImpl::generateFingerprints()
     
     // first fingerprint string will be the crc32 of the eval tag
     m_eval_tag_crc = crc32((unsigned char*)m_eval_tag, (int)strlen(m_eval_tag));
-    sprintf(m_fingerprint1, "%08X", (unsigned int)(m_eval_tag_crc & 0xffffffff));
+    sprintf(m_fingerprint1, sizeof(m_fingerprint1) - 1, "%08X", (unsigned int)(m_eval_tag_crc & 0xffffffff));
 
     // second fingerprint string will be an int64 suitably randomized
     // by an encryption key
@@ -633,7 +633,7 @@ bool AuthImpl::saveAuthInfo()
     if (f)
     {
         char temps[255];
-        sprintf(temps, "%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+        sprintf(temps, sizeof(temps)-1, "%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
         bytes[0], bytes[1], bytes[2], bytes[3],
         bytes[4], bytes[5], bytes[6], bytes[7],
         bytes[8], bytes[9], bytes[10], bytes[11],
@@ -1384,7 +1384,7 @@ void AuthImpl::saveSiteCodeSeed(int seed)
     path += "/.paladin";
 
     char seed_str[255];
-    sprintf(seed_str, "%d", seed);
+    sprintf(seed_str, sizeof(seed_str) - 1, "%d", seed);
 
     if (!xf_get_directory_exist(kl::towstring(path)))
     {
