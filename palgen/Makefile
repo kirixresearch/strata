@@ -16,8 +16,8 @@ EXENAME = palgen
 INCLUDES = -I../xcm/include -I../kl/include -I${WX_DIR}/include -I${WX_DIR}/contrib/include 
 DEFINES = -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -D_wxUSE_GUI=1
 CFLAGS = ${WX_CFLAGS} ${TOP_CFLAGS}
-LIBDIRS = -L../cfw -L../paladin -L../kl
-LIBS = -lcfw -lpaladin -lkl ${WX_LIBS}
+LIBDIRS = -L../paladin -L../kl
+LIBS = -lpaladin -lkl ${WX_LIBS}
 
 OBJECTS = app.o \
 	generatepage.o \

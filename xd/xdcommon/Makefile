@@ -13,6 +13,7 @@ include ../../top.mak
 
 
 CPP = g++
+CC = gcc
 INCLUDES = -I../../xcm/include -I../../kl/include -I../include 
 DEFINES = 
 CFLAGS = -fPIC $(TOP_CFLAGS)
@@ -43,10 +44,12 @@ OBJECTS = block.o \
 	util.o \
 	xdcommon.o \
 
+COBJECTS = sqlite3.o
+
 all: libxdcommon.a
 
-libxdcommon.a:	$(OBJECTS)
-	ar rc libxdcommon.a $(OBJECTS)
+libxdcommon.a:	$(OBJECTS) $(COBJECTS)
+	ar rc libxdcommon.a $(OBJECTS) $(COBJECTS)
 	ranlib libxdcommon.a
 
 clean:
@@ -55,5 +58,9 @@ clean:
 $(OBJECTS): %.o : %.cpp
 	@echo $<
 	@$(CPP) $(CFLAGS) $(INCLUDES) $(DEFINES) -c $<
+
+$(COBJECTS): %.o : %.c
+	@echo $<
+	@$(CC) $(INCLUDES) $(DEFINES) -c $<
 
 
