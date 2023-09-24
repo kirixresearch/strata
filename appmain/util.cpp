@@ -1808,8 +1808,8 @@ bool doOutputPathCheck(const wxString& output_path, wxWindow* parent)
 kcl::BannerControl* createModuleBanner(wxWindow* parent, const wxString& title)
 {
     // font for drawing the banner
-    wxFont font = wxFont(10, wxSWISS, wxNORMAL, wxFONTWEIGHT_BOLD, false);
-    
+    wxFont font = wxFont(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false);
+
     // colors for drawing the banneruu
     wxColour base_color = kcl::getBaseColor();
     wxColour border_color = kcl::getBorderColor();
