@@ -244,8 +244,8 @@ void ColorPanel::onButtonRender(kcl::Button* button,
         }
     }
     
-    wxFont text_font = wxFont(8, wxSWISS, wxNORMAL, wxNORMAL, false);
-    
+    wxFont text_font = wxFont(8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false);
+
     int id = button->GetId();
     if (id == ID_DefaultColorButton)
     {

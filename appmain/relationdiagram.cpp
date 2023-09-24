@@ -1546,7 +1546,7 @@ RelationDiagram::RelationDiagram(wxWindow* parent,
     
     EnableScrolling(x_scroll, y_scroll);
 
-    m_overlay_font = wxFont(16, wxSWISS, wxNORMAL, wxNORMAL, false);
+    m_overlay_font = wxFont(16, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false);
     m_overlay_text = _("To add tables, double-click here\nor drag in tables from the Project Panel");
 
     m_thick_black_pen = wxPen(*wxBLACK, 3, wxPENSTYLE_SOLID);
