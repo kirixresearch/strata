@@ -837,7 +837,7 @@ bool XbaseFile::putDateTime(size_t col_idx, const XbaseDate& value)
     if (m_fields[col_idx].type == 'D')
     {
         char buf[32];
-        sprintf(buf, "%04d%02d%02d", value.year, value.month, value.day);
+        snprintf(buf, sizeof(buf)-1, "%04d%02d%02d", value.year, value.month, value.day);
         memcpy(pos, buf, 8);
         return true;
     }
@@ -851,8 +851,8 @@ bool XbaseFile::putDouble(size_t col_idx, double value)
 
     if (m_fields[col_idx].type == 'N')
     {
-        char buf[255];
-        sprintf(buf, "%*.*f",
+        char buf[128];
+        snprintf(buf, sizeof(buf)-1, "%*.*f",
                   m_fields[col_idx].width,
                   m_fields[col_idx].scale,
                   kl::dblround(value, m_fields[col_idx].scale));

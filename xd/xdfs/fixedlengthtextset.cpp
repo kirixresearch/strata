@@ -363,8 +363,8 @@ bool FixedLengthTextRowInserter::putDouble(xd::objhandle_t column_handle, double
         return false;
     }
 
-    char buf[255];
-    sprintf(buf, "%.*f", f->m_scale, kl::dblround(value, f->m_scale));
+    char buf[128];
+    snprintf(buf, sizeof(buf)-1, "%.*f", f->m_scale, kl::dblround(value, f->m_scale));
 
     // convert a euro decimal character to a decimal point
     char* p = buf;
@@ -389,7 +389,7 @@ bool FixedLengthTextRowInserter::putInteger(xd::objhandle_t column_handle,
     }
 
     char buf[64];
-    sprintf(buf, "%d", value);
+    snprintf(buf, sizeof(buf)-1, "%d", value);
     f->m_str_val = buf;
     return true;
 }

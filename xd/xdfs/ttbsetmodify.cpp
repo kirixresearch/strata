@@ -329,7 +329,7 @@ inline void doCopy(xd::IRowInserter* dest,
 
                     if (!dt.isNull())
                     {
-                        sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d", y, m, d, hh, mm, ss);
+                        snprintf(buf, sizeof(buf)-1, "%04d-%02d-%02d %02d:%02d:%02d", y, m, d, hh, mm, ss);
                         dest->putString(ci.dest_handle, buf);
                     }
                 }
@@ -350,7 +350,7 @@ inline void doCopy(xd::IRowInserter* dest,
 
                     if (!dt.isNull())
                     {
-                        swprintf(buf, 64, L"%04d-%02d-%02d %02d:%02d:%02d", y, m, d, hh, mm, ss);
+                        swprintf(buf, 63, L"%04d-%02d-%02d %02d:%02d:%02d", y, m, d, hh, mm, ss);
                         dest->putWideString(ci.dest_handle, buf);
                     }
                 }
@@ -380,7 +380,7 @@ inline void doCopy(xd::IRowInserter* dest,
 
                     if (!dt.isNull())
                     {
-                        sprintf(buf, "%04d-%02d-%02d", y, m, d);
+                        snprintf(buf, sizeof(buf)-1, "%04d-%02d-%02d", y, m, d);
                         dest->putString(ci.dest_handle, buf);
                     }
                 }
