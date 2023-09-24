@@ -359,7 +359,7 @@ ScrollListControl::ScrollListControl(wxWindow* parent,
     m_font = *wxNORMAL_FONT;
     m_bold_font = *wxNORMAL_FONT;
     m_bold_font.SetWeight(wxFONTWEIGHT_BOLD);
-    m_overlay_font =  wxFont(9, wxSWISS, wxNORMAL, wxNORMAL, false);
+    m_overlay_font = wxFont(9, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false);
 
     // set initial properties for the control
     SetScrollRate(SCROLL_STEP, SCROLL_STEP);

@@ -1507,7 +1507,7 @@ void Grid::construct()
     m_bmp_alloc_width = 0;
     m_bmp_alloc_height = 0;
 
-    m_overlay_font = wxFont(9, wxSWISS, wxNORMAL, wxNORMAL, false);
+    m_overlay_font = wxFont(9, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false);
 
     m_base_color = kcl::getBaseColor();
     m_def_bgcolor.Set(255, 255, 255);

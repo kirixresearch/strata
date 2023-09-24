@@ -147,12 +147,12 @@ bool CanvasDC::setPen(const Properties& properties)
         if (c == COLOR_NULL)
         {
             pen.SetColour(*wxBLACK);
-            pen.SetStyle(wxTRANSPARENT);
+            pen.SetStyle(wxPENSTYLE_TRANSPARENT);
         }
          else
         {
             pen.SetColour(towxcolor(c));
-            pen.SetStyle(wxSOLID);
+            pen.SetStyle(wxPENSTYLE_SOLID);
         }
     }
 
@@ -194,12 +194,12 @@ bool CanvasDC::setBrush(const Properties& properties)
         if (c == COLOR_NULL)
         {
             brush.SetColour(*wxBLACK);
-            brush.SetStyle(wxTRANSPARENT);
+            brush.SetStyle(wxBRUSHSTYLE_TRANSPARENT);
         }
          else
         {
             brush.SetColour(towxcolor(c));
-            brush.SetStyle(wxSOLID);
+            brush.SetStyle(wxBRUSHSTYLE_SOLID);
         }
     }
 
