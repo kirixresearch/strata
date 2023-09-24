@@ -391,8 +391,8 @@ bool TransformationDoc::initDoc(IFramePtr frame,
 
     SetWindowStyle(GetWindowStyle() & ~wxTAB_TRAVERSAL);
 
-    wxFont overlay_font = wxFont(16, wxSWISS, wxNORMAL, wxNORMAL, false);
-    
+    wxFont overlay_font = wxFont(16, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false);
+
     // create transformation grid
     m_grid = new kcl::RowSelectionGrid(this,
                                        -1,
