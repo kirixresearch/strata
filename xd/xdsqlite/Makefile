@@ -11,26 +11,29 @@
 
 include ../../top.mak
 
-
+UNAME := $(shell uname)
+SONAME=$(if $(filter $(UNAME),Linux),-soname,-install_name)
 INCLUDES = -I../include -I../../xcm/include -I../../kl/include
 DEFINES =  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES
 CFLAGS = -fPIC $(TOP_CFLAGS) $(GLIB_CFLAGS)
-LIBDIRS = -L../../kscript
-LIBS = ../xdcommon/libxdcommon.a -lkscript $(GLIB_LIBS) -lpthread
-LINKFLAGS = -shared -fPIC -Wl,-soname,libxdsqlite.so.1
+LIBDIRS = -L../../kscript -L../../kl
+LIBS = ../xdcommon/libxdcommon.a -lkscript -lkl $(GLIB_LIBS) -lpthread
+LINKFLAGS = -shared -fPIC -Wl,$(SONAME),libxdsqlite.so.1
 
 OBJECTS = \
 	database.o \
+	inserter.o \
 	iterator.o \
-	set.o \
+	stream.o \
+	util.o \
 	xdsqlite.o
 
-VPATH=../../bin
+VPATH=$(OUTPUT_DIR)
 
 all: xdsqlite.so
 
 xdsqlite.so:	$(OBJECTS)
-		$(CPP) $(LINKFLAGS) $^ -o ../../bin/xdsqlite.so $(LIBDIRS) $(LIBS)
+		$(CPP) $(LINKFLAGS) $^ -o $(OUTPUT_DIR)/xdsqlite.so $(LIBDIRS) $(LIBS)
 
 clean:
 	rm -f *.o xdsqlite.so ../../bin/xdsqlite.so
