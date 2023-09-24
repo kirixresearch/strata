@@ -360,13 +360,13 @@ bool SlRowInserter::putDateTime(xd::objhandle_t column_handle,
 
     if (r->type == xd::typeDate)
     {
-        sprintf(r->str_data,
+        snprintf(r->str_data, r->buf_len - 1,
                 "%04d-%02d-%02d",
                 y, m, d);
     }
      else
     {
-        sprintf(r->str_data,
+        snprintf(r->str_data, r->buf_len - 1,
                 "%04d-%02d-%02d %02d:%02d:%02d",
                 y, m, d, hh, mm, ss);
     }
