@@ -349,6 +349,6 @@ void Wizard::onSize(wxSizeEvent& evt)
     Layout();
 }
 
-}; // namespace kcl
+} // namespace kcl
 
 

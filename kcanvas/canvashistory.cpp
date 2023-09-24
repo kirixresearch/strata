@@ -351,5 +351,5 @@ void CanvasHistory::loadSnapshot(int idx)
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

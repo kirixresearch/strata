@@ -56,5 +56,5 @@ void CompGraph::render(const wxRect& rect)
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

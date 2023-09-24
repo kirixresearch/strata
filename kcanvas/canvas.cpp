@@ -2347,5 +2347,5 @@ void Canvas::resetAction()
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

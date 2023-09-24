@@ -63,5 +63,5 @@ void CompEllipse::render(const wxRect& rect)
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

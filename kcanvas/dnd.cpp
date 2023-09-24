@@ -165,5 +165,5 @@ void CanvasDropTarget::OnLeave()
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

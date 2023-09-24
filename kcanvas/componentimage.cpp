@@ -333,5 +333,5 @@ void CompImage::clearCache()
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

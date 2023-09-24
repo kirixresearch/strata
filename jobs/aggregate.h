@@ -155,7 +155,7 @@ private:
 };
 
 
-}; // namespace jobs
+} // namespace jobs
 
 
 #endif

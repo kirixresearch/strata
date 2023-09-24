@@ -36,7 +36,7 @@ public:
 };
 
 
-}; // namespace jobs
+} // namespace jobs
 
 
 #endif

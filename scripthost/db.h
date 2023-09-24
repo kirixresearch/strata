@@ -473,7 +473,7 @@ private:
 
 
 
-}; // namespace scripthost
+} // namespace scripthost
 
 
 #endif

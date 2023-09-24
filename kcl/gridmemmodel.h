@@ -131,7 +131,7 @@ public:
 
 
 
-}; // namespace kcl
+} // namespace kcl
 
 
 #endif

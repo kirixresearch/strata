@@ -724,4 +724,4 @@ kscript::Value* ScriptHost::getRetval()
 
 
 
-}; // namespace scripthost
+} // namespace scripthost

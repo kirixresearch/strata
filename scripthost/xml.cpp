@@ -673,4 +673,4 @@ void XmlNode::hasAttributes(kscript::ExprEnv* env, kscript::Value* retval)
 
 
 
-}; // namespace scripthost
+} // namespace scripthost

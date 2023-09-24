@@ -252,5 +252,5 @@ void ValidControl::onSize(wxSizeEvent& event)
 }
 
 
-}; // namespace kcl
+} // namespace kcl
 

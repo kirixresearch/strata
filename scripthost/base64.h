@@ -39,6 +39,6 @@ public:
 
 
 
-}; // namespace scripthost
+} // namespace scripthost
 
 #endif

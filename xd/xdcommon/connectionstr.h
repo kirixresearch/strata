@@ -21,7 +21,7 @@ std::wstring decryptConnectionStringPassword(const std::wstring& connection_str)
 std::wstring encryptConnectionStringPassword(const std::wstring& connection_str);
 
 
-}; // namespace xdcommon
+} // namespace xdcommon
 
 
 #endif

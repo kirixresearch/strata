@@ -681,7 +681,7 @@ private:
 
 
 
-}; // namespace xd
+} // namespace xd
 
 
 #endif

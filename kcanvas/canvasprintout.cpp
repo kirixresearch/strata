@@ -226,5 +226,5 @@ bool CanvasPrintout::OnPrintPage(int page_num)
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

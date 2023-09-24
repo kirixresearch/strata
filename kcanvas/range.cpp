@@ -998,5 +998,5 @@ bool CellProperties::isFlagged()
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

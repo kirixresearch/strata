@@ -1017,7 +1017,7 @@ public:
 
 
 
-}; // namespace xcm
+} // namespace xcm
 
 
 #endif

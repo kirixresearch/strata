@@ -2062,4 +2062,4 @@ void Log::fatal(kscript::ExprEnv* env, kscript::Value* retval)
 
 
 
-}; // namespace scripthost
+} // namespace scripthost

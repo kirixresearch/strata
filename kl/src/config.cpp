@@ -452,5 +452,5 @@ bool config::deleteGroup(const std::wstring& path)
 
 
 
-}; // namespace kl
+} // namespace kl
 

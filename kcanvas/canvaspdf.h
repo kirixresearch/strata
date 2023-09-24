@@ -250,7 +250,7 @@ private:
 #endif
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 
 
 #endif

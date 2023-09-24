@@ -861,7 +861,7 @@ void FilePanel::onIdle(wxIdleEvent& evt)
 }
 
 
-}; // namespace kcl
+} // namespace kcl
 
 
 

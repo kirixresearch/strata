@@ -2142,4 +2142,4 @@ void DbError::getMessage(kscript::ExprEnv* env, kscript::Value* retval)
 
 
 
-}; // namespace scripthost
+} // namespace scripthost

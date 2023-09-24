@@ -479,4 +479,4 @@ void NativeCall::toFunction(kscript::ExprEnv* env, kscript::Value* retval)
 
 
 
-}; // namespace scripthost
+} // namespace scripthost

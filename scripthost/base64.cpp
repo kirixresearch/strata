@@ -181,4 +181,4 @@ void Base64::decodeToBuffer(kscript::ExprEnv* env, void* param, kscript::Value* 
 
 
 
-}; // namespace scripthost
+} // namespace scripthost

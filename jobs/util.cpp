@@ -152,5 +152,5 @@ kl::JsonNode createJsonNodeSchema(const std::wstring& schema_definition)
 }
 
 
-}; // namespace jobs
+} // namespace jobs
 

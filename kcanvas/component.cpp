@@ -558,5 +558,5 @@ void Component::onRender(IEventPtr evt)
     render(rect);
 }
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

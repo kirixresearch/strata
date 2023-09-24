@@ -844,6 +844,6 @@ void ButtonBar::onSize(wxSizeEvent& evt)
 }
 
 
-}; // namespace kcl
+} // namespace kcl
 
 

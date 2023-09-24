@@ -118,4 +118,4 @@ void SymmetricCrypt::decryptString(kscript::ExprEnv* env, void* param, kscript::
 
 
 
-}; // namespace scripthost
+} // namespace scripthost

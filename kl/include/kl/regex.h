@@ -3389,7 +3389,7 @@ typedef match_results<wchar_t> wmatch;
 typedef sub_match<char> submatch;
 typedef sub_match<wchar_t> wsubmatch;
 
-}; // namespace klregex
+} // namespace klregex
 
 
 #endif

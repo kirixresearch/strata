@@ -1744,4 +1744,4 @@ void HttpRequest::freeResponsePieces()
 
 
 
-}; // namespace scripthost
+} // namespace scripthost

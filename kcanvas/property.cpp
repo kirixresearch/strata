@@ -1010,5 +1010,5 @@ void Properties::allowSignal()
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

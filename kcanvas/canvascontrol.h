@@ -166,7 +166,7 @@ private:
 };
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 
 
 #endif

@@ -60,7 +60,7 @@ public:
 };
 
 
-}; // namespace xdcommon
+} // namespace xdcommon
 
 
 

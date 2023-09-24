@@ -390,4 +390,4 @@ bool MemoryBuffer::setSizeInternal(int size)
 
 
 
-}; // namespace scripthost
+} // namespace scripthost

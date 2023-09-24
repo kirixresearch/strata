@@ -712,5 +712,5 @@ void CanvasDC::updateClippingRectangle()
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

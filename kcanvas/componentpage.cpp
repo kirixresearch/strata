@@ -106,5 +106,5 @@ void CompPage::getMargins(int* left_margin,
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

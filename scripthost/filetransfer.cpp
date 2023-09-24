@@ -522,4 +522,4 @@ void FileTransfer::fireFinishedEvent()
 
 
 
-}; // namespace scripthost
+} // namespace scripthost

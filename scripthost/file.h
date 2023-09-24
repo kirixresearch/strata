@@ -433,7 +433,7 @@ private:
 
 
 
-}; // namespace scripthost
+} // namespace scripthost
 
 
 

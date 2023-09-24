@@ -1006,6 +1006,6 @@ void ScrollListControl::onEraseBackground(wxEraseEvent& evt)
 
 
 
-}; // namespace kcl
+} // namespace kcl
 
 

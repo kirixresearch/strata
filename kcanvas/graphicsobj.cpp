@@ -544,5 +544,5 @@ int Font::getSize() const
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

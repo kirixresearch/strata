@@ -7919,5 +7919,5 @@ void CompTableHeader::onResizeColumnToContent(IEventPtr evt)
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

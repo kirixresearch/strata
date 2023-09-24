@@ -236,4 +236,4 @@ void System::execute(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 
 
-}; // namespace scripthost
+} // namespace scripthost

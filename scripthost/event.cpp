@@ -308,4 +308,4 @@ size_t Event::getSinkCountInternal() const
 
 
 
-}; // namespace scripthost
+} // namespace scripthost

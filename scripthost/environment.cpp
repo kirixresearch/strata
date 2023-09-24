@@ -208,4 +208,4 @@ void Environment::getDirectorySeparator(kscript::ExprEnv* env, void* param, kscr
 
 
 
-}; // namespace scripthost
+} // namespace scripthost

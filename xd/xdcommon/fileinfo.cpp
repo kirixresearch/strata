@@ -101,4 +101,4 @@ const std::wstring& FileInfo::getUrl()
 
 
 
-}; // namespace xdcommon
+} // namespace xdcommon

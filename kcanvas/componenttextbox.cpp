@@ -2321,5 +2321,5 @@ caseInsensitiveReplace(str_part, wxT("<data>"), m_stats.data_source);
 
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

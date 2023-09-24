@@ -41,7 +41,7 @@ public:
 };
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 
 
 #endif

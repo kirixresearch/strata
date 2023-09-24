@@ -634,4 +634,4 @@ bool decryptBuffer(const unsigned char* input_buf,
 
 
 
-}; // namespace kl
+} // namespace kl

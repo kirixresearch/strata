@@ -20,7 +20,7 @@ namespace xdcommon
 bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* job);
 
 
-}; // namespace xdcommon
+} // namespace xdcommon
 
 #endif
 

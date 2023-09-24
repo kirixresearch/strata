@@ -839,5 +839,5 @@ void removeColumnFromProperties(std::vector<CellProperties>& properties, int idx
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

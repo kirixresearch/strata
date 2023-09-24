@@ -1369,5 +1369,5 @@ void CanvasControl::renderSelector(wxRect* rect1, wxRect* rect2)
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

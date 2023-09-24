@@ -1699,5 +1699,5 @@ int CanvasPDF::pdftom_y(double y) const
 
 #endif
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

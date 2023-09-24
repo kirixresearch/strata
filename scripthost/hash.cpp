@@ -160,4 +160,4 @@ void Hash::md5sum(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 
 
-}; // namespace scripthost
+} // namespace scripthost

@@ -91,7 +91,7 @@ private:
 };
 
 
-}; // namespace kcl
+} // namespace kcl
 
 
 #endif

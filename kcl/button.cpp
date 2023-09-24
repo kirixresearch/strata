@@ -1406,6 +1406,6 @@ void Button::setXOffset(int x_offset)
 }
 
 
-}; // namespace kcl
+} // namespace kcl
 
 

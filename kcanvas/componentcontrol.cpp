@@ -365,5 +365,5 @@ void CompControl::clearCache()
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 

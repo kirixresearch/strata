@@ -699,5 +699,5 @@ IComponentPtr DragDropEvent::getData()
 }
 
 
-}; // namespace kcanvas
+} // namespace kcanvas
 
