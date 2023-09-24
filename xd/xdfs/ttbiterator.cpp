@@ -25,6 +25,12 @@
 #define finite _finite
 #endif
 
+#ifdef __APPLE__
+#include <cmath>
+#define isnan std::isnan
+#define finite ::isfinite
+#endif
+
 const std::string empty_string = "";
 const std::wstring empty_wstring = L"";
 
