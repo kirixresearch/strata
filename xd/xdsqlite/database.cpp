@@ -392,7 +392,7 @@ bool SlDatabase::createStream(const std::wstring& path,
                               const std::wstring& mime_type)
 {
     std::string sql;
-    std::string objname = kl::toUtf8(xdGetTablenameFromPath(path, true));
+    std::string objname = (const char*)kl::toUtf8(xdGetTablenameFromPath(path, true));
     std::string info;
     sqlite3_stmt* stmt;
 
