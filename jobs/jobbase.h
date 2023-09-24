@@ -201,7 +201,7 @@ protected:
 };
 
 
-}; // namespace jobs
+} // namespace jobs
 
 
 #endif
