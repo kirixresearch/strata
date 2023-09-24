@@ -975,10 +975,11 @@ public:
 };
 
 
-}; // namespace xd
+} // namespace xd
 
 
 
 #include <xd/util.h>
 
 #endif
+
