@@ -115,7 +115,7 @@ protected:
 };
 
 
-};
+} // namespace jobs
 
 
 #endif
