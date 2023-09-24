@@ -11,13 +11,14 @@
 
 include ../../top.mak
 
-
+UNAME := $(shell uname)
+SONAME=$(if $(filter $(UNAME),Linux),-soname,-install_name)
 INCLUDES = -I../include -I../../xcm/include -I../../kl/include
 DEFINES =  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES
 CFLAGS = -fPIC $(TOP_CFLAGS) $(GLIB_CFLAGS)
 LIBDIRS = -L../../kscript -L../../kl
 LIBS = ../xdcommonsql/libxdcommonsql.a ../xdcommon/libxdcommon.a -lkscript -lkl -lpthread -lz
-LINKFLAGS = -shared -fPIC -Wl,-soname,libxdkpg.so.1
+LINKFLAGS = -shared -fPIC -Wl,$(SONAME),libxdkpg.so.1
 
 OBJECTS = \
 	database.o \
