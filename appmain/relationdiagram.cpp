@@ -1549,10 +1549,10 @@ RelationDiagram::RelationDiagram(wxWindow* parent,
     m_overlay_font = wxFont(16, wxSWISS, wxNORMAL, wxNORMAL, false);
     m_overlay_text = _("To add tables, double-click here\nor drag in tables from the Project Panel");
 
-    m_thick_black_pen = wxPen(*wxBLACK, 3, wxSOLID);
-    m_thin_black_pen = wxPen(*wxBLACK, 1, wxSOLID);
-    m_thick_red_pen = wxPen(wxColour(192,0,0), 3, wxSOLID);
-    m_thin_red_pen = wxPen(wxColour(192,0,0), 1, wxSOLID);
+    m_thick_black_pen = wxPen(*wxBLACK, 3, wxPENSTYLE_SOLID);
+    m_thin_black_pen = wxPen(*wxBLACK, 1, wxPENSTYLE_SOLID);
+    m_thick_red_pen = wxPen(wxColour(192,0,0), 3, wxPENSTYLE_SOLID);
+    m_thin_red_pen = wxPen(wxColour(192,0,0), 1, wxPENSTYLE_SOLID);
 
     m_changed = false;
 

@@ -7232,12 +7232,12 @@ void CompTable::renderSelectionRect(const wxRect& update_rect)
         isSelectionContinuous())
     {
         // draw the selection line
-        Pen pen(COLOR_BLACK, m_selection_line_width, wxSOLID);
+        Pen pen(COLOR_BLACK, m_selection_line_width, wxPENSTYLE_SOLID);
         pen.setCap(wxCAP_BUTT);
         pen.setJoin(wxJOIN_MITER);
         canvas->setPen(pen);
         
-        Brush brush(COLOR_BLACK, wxTRANSPARENT);
+        Brush brush(COLOR_BLACK, wxBRUSHSTYLE_TRANSPARENT);
         canvas->setBrush(brush);
 
         canvas->drawRectangle(sel_rect.x,
@@ -7296,12 +7296,12 @@ void CompTable::renderHighlight(const wxRect& update_rect)
     getCellHighlightPos(highlight_rect);
 
     // draw the highlight rectangle
-    Pen pen(COLOR_BLUE, m_selection_line_width, wxSOLID);
+    Pen pen(COLOR_BLUE, m_selection_line_width, wxPENSTYLE_SOLID);
     pen.setCap(wxCAP_BUTT);
     pen.setJoin(wxJOIN_MITER);
     canvas->setPen(pen);
     
-    Brush brush(COLOR_BLACK, wxTRANSPARENT);
+    Brush brush(COLOR_BLACK, wxBRUSHSTYLE_TRANSPARENT);
     canvas->setBrush(brush);
 
     canvas->drawRectangle(highlight_rect.x,

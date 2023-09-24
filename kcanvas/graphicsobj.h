@@ -73,7 +73,7 @@ public:
     Pen();
     Pen(const Color& color,
         int width = 1,
-        int style = wxSOLID);
+        int style = wxPENSTYLE_SOLID);
     virtual ~Pen();
     
     Pen(const Pen& c);    
@@ -113,7 +113,7 @@ public:
 
     Brush();
     Brush(const Color& color,
-          int style = wxSOLID);
+          int style = wxBRUSHSTYLE_SOLID);
     virtual ~Brush();
 
     Brush(const Brush& c);

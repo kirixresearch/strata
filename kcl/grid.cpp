@@ -3107,7 +3107,7 @@ void Grid::setDefaultLineColor(const wxColor& lc)
     m_def_gridline_color = lc;
 
     m_gridline_pen.SetColour(m_def_gridline_color);
-    m_gridline_pen.SetStyle(wxSOLID);
+    m_gridline_pen.SetStyle(wxPENSTYLE_SOLID);
 }
 
 void Grid::setDefaultInvalidAreaColor(const wxColor& iac)
@@ -3655,7 +3655,7 @@ void Grid::drawRowGripperRectangle(int x1, int y1, int width, int height, bool s
     
     if (selected)
     {
-        wxBrush bgbrush(m_select_bgcolor, wxSOLID);
+        wxBrush bgbrush(m_select_bgcolor, wxBRUSHSTYLE_SOLID);
         m_memdc.SetBrush(bgbrush);
     }
 */
@@ -4007,19 +4007,19 @@ void Grid::initGui()
 
     m_grey_brush = *wxTheBrushList->FindOrCreateBrush(
                         m_base_color,
-                        wxSOLID);
+                        wxBRUSHSTYLE_SOLID);
 
     m_grey_pen = *wxThePenList->FindOrCreatePen(
                         m_base_color,
                         1,
-                        wxSOLID);
+                        wxPENSTYLE_SOLID);
 
     m_darkgrey_pen = kcl::getBorderPen();
                         
     m_gridline_pen = *wxThePenList->FindOrCreatePen(
                         m_def_gridline_color,
                         1,
-                        wxSOLID);
+                        wxPENSTYLE_SOLID);
 
     unsigned char stipple_data[2];
     stipple_data[0] = 0xaa;
@@ -5130,7 +5130,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                         fgcolor.Set(0,0,0);
                     }
 
-                    wxBrush bgbrush(bgcolor, wxSOLID);
+                    wxBrush bgbrush(bgcolor, wxBRUSHSTYLE_SOLID);
                     m_memdc.SetBrush(bgbrush);
                     m_memdc.SetTextForeground(fgcolor);
 
@@ -5216,11 +5216,11 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                             getColorRectangles(xoff, yoff, m_row_height,
                                                &fgcolor_rect, &bgcolor_rect);
 
-                            wxBrush colorfgbrush(celldata->fgcolor, wxSOLID);
-                            wxBrush colorbgbrush(celldata->bgcolor, wxSOLID);
+                            wxBrush colorfgbrush(celldata->fgcolor, wxBRUSHSTYLE_SOLID);
+                            wxBrush colorbgbrush(celldata->bgcolor, wxBRUSHSTYLE_SOLID);
                             
                             if (celldata->bgcolor == wxNullColour)
-                                colorbgbrush = wxBrush(*wxWHITE, wxSOLID);
+                                colorbgbrush = wxBrush(*wxWHITE, wxBRUSHSTYLE_SOLID);
                             
                             if (celldata->visible)
                             {
@@ -5375,11 +5375,11 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
             // draw the invalid area in a manner that makes the user believe
             // that the invalid area is actually part of the valid area
 
-            wxBrush greenbarbrush(m_def_greenbar_color, wxSOLID);
-            wxPen greenbarpen(m_def_greenbar_color, 1, wxSOLID);
+            wxBrush greenbarbrush(m_def_greenbar_color, wxBRUSHSTYLE_SOLID);
+            wxPen greenbarpen(m_def_greenbar_color, 1, wxPENSTYLE_SOLID);
             
-            wxBrush bgbrush(m_def_bgcolor, wxSOLID);
-            wxPen bgpen(m_def_bgcolor, 1, wxSOLID);
+            wxBrush bgbrush(m_def_bgcolor, wxBRUSHSTYLE_SOLID);
+            wxPen bgpen(m_def_bgcolor, 1, wxPENSTYLE_SOLID);
             
             int greenrow = (m_row_count+1) % m_greenbar_interval;
             
@@ -5411,8 +5411,8 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
         {
             // draw the invalid area as a "true" invalid area
             
-            wxBrush colorinvalidareabrush(m_def_invalid_area_color, wxSOLID);
-            wxPen colorinvalidareapen(m_def_invalid_area_color, 1, wxSOLID);
+            wxBrush colorinvalidareabrush(m_def_invalid_area_color, wxBRUSHSTYLE_SOLID);
+            wxPen colorinvalidareapen(m_def_invalid_area_color, 1, wxPENSTYLE_SOLID);
 
             // paint out-of-bounds area
             m_memdc.SetBrush(colorinvalidareabrush);
@@ -5438,11 +5438,11 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
             // draw the invalid area in a manner that makes the user believe
             // that the invalid area is actually part of the valid area
             
-            wxBrush greenbarbrush(m_def_greenbar_color, wxSOLID);
-            wxPen greenbarpen(m_def_greenbar_color, 1, wxSOLID);
+            wxBrush greenbarbrush(m_def_greenbar_color, wxBRUSHSTYLE_SOLID);
+            wxPen greenbarpen(m_def_greenbar_color, 1, wxPENSTYLE_SOLID);
             
-            wxBrush bgbrush(m_def_bgcolor, wxSOLID);
-            wxPen bgpen(m_def_bgcolor, 1, wxSOLID);
+            wxBrush bgbrush(m_def_bgcolor, wxBRUSHSTYLE_SOLID);
+            wxPen bgpen(m_def_bgcolor, 1, wxPENSTYLE_SOLID);
             
             int greenrow = (m_row_offset+1) % m_greenbar_interval;
             
@@ -5474,8 +5474,8 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
         {
             // draw the invalid area as a "true" invalid area
             
-            wxBrush colorinvalidareabrush(m_def_invalid_area_color, wxSOLID);
-            wxPen colorinvalidareapen(m_def_invalid_area_color, 1, wxSOLID);
+            wxBrush colorinvalidareabrush(m_def_invalid_area_color, wxBRUSHSTYLE_SOLID);
+            wxPen colorinvalidareapen(m_def_invalid_area_color, 1, wxPENSTYLE_SOLID);
 
             // paint out-of-bounds area
             m_memdc.SetBrush(colorinvalidareabrush);
@@ -5558,7 +5558,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                 wxColor bg = m_def_invalid_area_color;
                 if (m_viewcols[col]->m_bgcolor.Ok())
                     bg = m_viewcols[col]->m_bgcolor;
-                m_memdc.SetBrush(wxBrush(bg, wxSOLID));
+                m_memdc.SetBrush(wxBrush(bg, wxBRUSHSTYLE_SOLID));
                 m_memdc.DrawRectangle(x, m_header_height, width, invalid_yoffset == -1 ? m_cliheight : invalid_yoffset);
             }
         }
@@ -5679,7 +5679,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
 
     // draw group separators
     {
-        wxBrush colorinvalidareabrush(m_def_invalid_area_color, wxSOLID);
+        wxBrush colorinvalidareabrush(m_def_invalid_area_color, wxBRUSHSTYLE_SOLID);
         
         m_memdc.SetBrush(colorinvalidareabrush);
         m_memdc.SetPen(*wxTRANSPARENT_PEN);

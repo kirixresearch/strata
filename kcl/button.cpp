@@ -403,12 +403,12 @@ Button::Button(wxWindow* parent,
     m_x_off = 3;
     m_tooltip = NULL;
     m_font = *wxNORMAL_FONT;
-    m_darkgrey_pen = *wxThePenList->FindOrCreatePen(wxColour(64,64,64), 1, wxSOLID);
-    m_grey_pen = *wxThePenList->FindOrCreatePen(wxColour(128,128,128), 1, wxSOLID);
+    m_darkgrey_pen = *wxThePenList->FindOrCreatePen(wxColour(64,64,64), 1, wxPENSTYLE_SOLID);
+    m_grey_pen = *wxThePenList->FindOrCreatePen(wxColour(128,128,128), 1, wxPENSTYLE_SOLID);
     m_downarrow_bitmap = wxBitmap(xpm_dropdown_arrow);
     wxColor bk_color = wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE);
-    m_bk_brush = *wxTheBrushList->FindOrCreateBrush(bk_color, wxSOLID);
-    m_bk_pen = *wxThePenList->FindOrCreatePen(bk_color, 1, wxSOLID);
+    m_bk_brush = *wxTheBrushList->FindOrCreateBrush(bk_color, wxBRUSHSTYLE_SOLID);
+    m_bk_pen = *wxThePenList->FindOrCreatePen(bk_color, 1, wxPENSTYLE_SOLID);
 
     if (isThemed())
     {
@@ -416,13 +416,13 @@ Button::Button(wxWindow* parent,
 
         getXpMenuColors(dark, light);
 
-        m_hover_pen = *wxThePenList->FindOrCreatePen(dark, 1, wxSOLID);
-        m_hover_brush = *wxTheBrushList->FindOrCreateBrush(light, wxSOLID);
+        m_hover_pen = *wxThePenList->FindOrCreatePen(dark, 1, wxPENSTYLE_SOLID);
+        m_hover_brush = *wxTheBrushList->FindOrCreateBrush(light, wxBRUSHSTYLE_SOLID);
     }
      else
     {
-        m_hover_pen = *wxThePenList->FindOrCreatePen(wxColor(10,36,106), 1, wxSOLID);
-        m_hover_brush = *wxTheBrushList->FindOrCreateBrush(wxColor(182,189,210), wxSOLID);
+        m_hover_pen = *wxThePenList->FindOrCreatePen(wxColor(10,36,106), 1, wxPENSTYLE_SOLID);
+        m_hover_brush = *wxTheBrushList->FindOrCreateBrush(wxColor(182,189,210), wxBRUSHSTYLE_SOLID);
     }
 
     m_sel_pen = m_hover_pen;
@@ -470,7 +470,7 @@ Button::Button(wxWindow* parent,
 
 bool Button::SetBackgroundColour(const wxColour& color)
 {
-    m_bk_brush = wxBrush(color, wxSOLID);
+    m_bk_brush = wxBrush(color, wxBRUSHSTYLE_SOLID);
     Refresh(true);
     return true;
 }
@@ -722,27 +722,27 @@ void Button::setColor(int color_idx, const wxColour& color)
     switch (color_idx)
     {
         case colorNormalFg:
-            m_bk_pen = *wxThePenList->FindOrCreatePen(color, 1, wxSOLID);
+            m_bk_pen = *wxThePenList->FindOrCreatePen(color, 1, wxPENSTYLE_SOLID);
             break;
 
         case colorNormalBg:
-            m_bk_brush = *wxTheBrushList->FindOrCreateBrush(color, wxSOLID);
+            m_bk_brush = *wxTheBrushList->FindOrCreateBrush(color, wxBRUSHSTYLE_SOLID);
             break;
 
         case colorHoverFg:
-            m_hover_pen = *wxThePenList->FindOrCreatePen(color, 1, wxSOLID);
+            m_hover_pen = *wxThePenList->FindOrCreatePen(color, 1, wxPENSTYLE_SOLID);
             break;
 
         case colorHoverBg:
-            m_hover_brush = *wxTheBrushList->FindOrCreateBrush(color, wxSOLID);
+            m_hover_brush = *wxTheBrushList->FindOrCreateBrush(color, wxBRUSHSTYLE_SOLID);
             break;
 
         case colorSelectedFg:
-            m_bk_pen = *wxThePenList->FindOrCreatePen(color, 1, wxSOLID);
+            m_bk_pen = *wxThePenList->FindOrCreatePen(color, 1, wxPENSTYLE_SOLID);
             break;
 
         case colorSelectedBg:
-            m_sel_brush = *wxTheBrushList->FindOrCreateBrush(color, wxSOLID);
+            m_sel_brush = *wxTheBrushList->FindOrCreateBrush(color, wxBRUSHSTYLE_SOLID);
             break;
     }
 

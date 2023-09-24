@@ -200,7 +200,7 @@ Pen::Pen()
 {
     m_color = COLOR_BLACK;
     m_width = 1;
-    m_style = wxSOLID;
+    m_style = wxPENSTYLE_SOLID;
     m_cap = wxCAP_BUTT;
     m_miter = wxJOIN_MITER;
 }
@@ -323,7 +323,7 @@ int Pen::getJoin() const
 Brush::Brush()
 {
     m_color = COLOR_BLACK;
-    m_style = wxSOLID;
+    m_style = wxBRUSHSTYLE_SOLID;
 }
 
 Brush::Brush(const Color& color, int style)
