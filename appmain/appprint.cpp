@@ -12,7 +12,7 @@
 #include "appmain.h"
 #include "appprint.h"
 
-#if defined(__WXGTK__) || defined(__APPLE__)
+#if defined(__WXGTK__) || defined(__WXOSX__)
 #include <wx/dcps.h>
 #endif
 

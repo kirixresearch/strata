@@ -67,6 +67,10 @@ private:
     std::map<wxString, AppPreference, std::less<wxString> > m_map;
     wxString m_vendor_name;
     wxString m_app_name;
+
+#if defined(__WXGTK__) || defined(__WXOSX__)
+    bool m_dirty;
+#endif
 };
 
 

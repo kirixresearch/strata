@@ -29,6 +29,9 @@ IAppPreferencesPtr createMemoryAppPreferencesObject()
 
 AppPreferences::AppPreferences()
 {
+#if defined(__WXGTK__) || defined(__WXOSX__)
+    m_dirty = false;
+#endif
 }
 
 AppPreferences::~AppPreferences()
