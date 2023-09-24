@@ -612,7 +612,7 @@ static void onUpdateDownloadFinished(jobs::IJobPtr job)
     {
         wxString path = u->getOutputFilename();
 
-        #ifdef __WXGTK__
+        #if defined(__WXGTK__) || defined(__WXOSX__)
 
             // linux version unpacks archive and shows folder
             wxString cmd;
