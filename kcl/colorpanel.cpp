@@ -262,7 +262,7 @@ void ColorPanel::onButtonRender(kcl::Button* button,
         
         // draw the color square button
         dc->SetPen(*wxGREY_PEN);
-        dc->SetBrush(wxBrush(m_default_color, wxSOLID));
+        dc->SetBrush(wxBrush(m_default_color, wxBRUSHSTYLE_SOLID));
         dc->DrawRectangle(xoff, yoff, COLOR_SQUARE_SIZE, COLOR_SQUARE_SIZE);
         
         // draw the button label
@@ -306,7 +306,7 @@ void ColorPanel::onButtonRender(kcl::Button* button,
 
         // draw the color square button
         dc->SetPen(*wxGREY_PEN);
-        dc->SetBrush(wxBrush(m_colors[button->GetId()-ID_FirstColor], wxSOLID));
+        dc->SetBrush(wxBrush(m_colors[button->GetId()-ID_FirstColor], wxBRUSHSTYLE_SOLID));
         dc->DrawRectangle(xoff, yoff, COLOR_SQUARE_SIZE, COLOR_SQUARE_SIZE);
     }
 }
