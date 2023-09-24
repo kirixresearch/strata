@@ -1962,7 +1962,7 @@ void limitFontSize(wxWindow* wnd, int size)
 void makeFontBold(wxWindow* window)
 {
     wxFont font = window->GetFont();
-    font.SetWeight(wxBOLD);
+    font.SetWeight(wxFONTWEIGT_BOLD);
     window->SetFont(font);
 }
 
