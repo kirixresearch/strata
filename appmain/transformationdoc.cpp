@@ -1095,7 +1095,7 @@ void TransformationDoc::updateStatusBar()
 
 wxString TransformationDoc::createDestinationExpression(int row)
 {
-    std::wstring field = m_grid->getCellString(row, colFieldName);
+    std::wstring field = m_grid->getCellString(row, colFieldName).ToStdWstring();
     int xd_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
     int format_comboidx = m_grid->getCellComboSel(row, colFieldFormula);
     std::wstring source_name = m_grid->getCellString(row, colSourceName);
