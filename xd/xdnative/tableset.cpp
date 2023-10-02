@@ -742,17 +742,30 @@ bool TableSet::prepareIndexEntry(IndexEntry& e)
     for (it = cols.begin(); it != cols.end(); ++it)
     {
         // get column name (remove possible 'ASC' or 'DESC'
-        // from the end of the index piece
+        // from the end of the index piece)
 
         std::wstring piece = *it;
         std::wstring colname;
 
         kl::trim(piece);
 
-        if (piece.find_last_of(L' ') != -1)
-            colname = kl::beforeLast(piece, L' ');
-             else
+        size_t ascdesc_idx = piece.find_last_of(L' ');
+        if (ascdesc_idx != piece.npos)
+        {
+            std::wstring ascdesc = piece.substr(ascdesc_idx + 1);
+            if (kl::iequals(ascdesc, L"DESC") || kl::iequals(ascdesc, L"ASC"))
+            {
+                colname = piece.substr(0, ascdesc_idx);
+            }
+            else
+            {
+                colname = piece;
+            }
+        }
+        else
+        {
             colname = piece;
+        }
 
         dequote(colname, '[', ']');
 
