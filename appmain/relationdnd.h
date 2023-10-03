@@ -26,8 +26,8 @@ public:
     RelationLineDataObject()
             : wxCustomDataObject(wxDataFormat(RELATIONLINE_DATA_OBJECT_FORMAT))
     {
-        size_t size = (sizeof(uintptr_t) * 2) + 1;
-        unsigned char arr[(sizeof(uintptr_t) * 2) + 1];
+        size_t size = (sizeof(uintptr_t) * 2) + sizeof(wxChar);
+        unsigned char arr[(sizeof(uintptr_t) * 2) + sizeof(wxChar)];
         memset(arr, 0, size);
 
         SetData(wxDataFormat(RELATIONLINE_DATA_OBJECT_FORMAT), size, (void*)arr);
