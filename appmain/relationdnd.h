@@ -26,8 +26,8 @@ public:
     RelationLineDataObject()
             : wxCustomDataObject(wxDataFormat(RELATIONLINE_DATA_OBJECT_FORMAT))
     {
-        size_t size = sizeof(uintptr_t)*2 + 1;
-        unsigned char arr[sizeof(uintptr_t) * 2 + 1];
+        size_t size = (sizeof(uintptr_t) * 2) + 1;
+        unsigned char arr[(sizeof(uintptr_t) * 2) + 1];
         memset(arr, 0, size);
 
         SetData(wxDataFormat(RELATIONLINE_DATA_OBJECT_FORMAT), size, (void*)arr);
@@ -39,9 +39,8 @@ public:
 
     wxString getFields()
     {
-        unsigned long* data = (unsigned long*)GetData();
-        data++;
-        data++;
+        unsigned char* data = (unsigned char*)GetData();
+        data += (sizeof(uintptr_t) * 2);
         wxString result = (wxChar*)data;
         return result;
     }
