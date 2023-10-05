@@ -5,7 +5,8 @@ set APPLICATION_NAME=Kirix Strata
 call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat"
 
 set WIX_PATH="c:\Program Files (x86)\WiX Toolset v3.11\bin"
-set SIGNCMD=c:\build\cert\signtool sign /d "%APPLICATION_NAME%" /f c:\build\cert\signcert.p12 /t http://timestamp.comodoca.com/authenticode
+REM set SIGNCMD=c:\build\cert\signtool sign /d "%APPLICATION_NAME%" /f c:\build\cert\signcert.p12 /t http://timestamp.comodoca.com/authenticode
+set SIGNCMD=signtool sign /n "fopen GmbH" /d "%APPLICATION_NAME%" /tr http://time.certum.pl /td sha256 /fd sha256
 set MSGFMT="c:\Program Files (x86)\Poedit\GettextTools\bin\msgfmt"
 set MSGCAT="c:\Program Files (x86)\Poedit\GettextTools\bin\msgcat"
 SET YEAR=%DATE:~10,4%
