@@ -20,9 +20,9 @@ if "%PLATFORM%"=="x64" goto x64
 :x86
 SET MSBUILD_PLATFORM=Win32
 %~dp0\util\cmakewin32\bin\cmake -G "%CMAKE_VISUAL_STUDIO_VERSION%" -DBUILD_SHARED_LIBS=OFF -DZLIB_LIBRARY:FILEPATH="%~dp0/zlib/Debug/zlib.lib" -DZLIB_INCLUDE_DIR:PATH="%~dp0/zlib" -DCMAKE_GENERATOR_PLATFORM=Win32 .
-msbuild libzip.sln /t:Rebuild /p:Configuration=Debug /p:Platform=%MSBUILD_PLATFORM%
+msbuild libzip.sln /t:ALL_BUILD:Rebuild /p:Configuration=Debug /p:Platform=%MSBUILD_PLATFORM%
 %~dp0\util\cmakewin32\bin\cmake -G "%CMAKE_VISUAL_STUDIO_VERSION%" -DBUILD_SHARED_LIBS=OFF -DZLIB_LIBRARY:FILEPATH="%~dp0/zlib/Release/zlib.lib" -DZLIB_INCLUDE_DIR:PATH="%~dp0/zlib" -DCMAKE_GENERATOR_PLATFORM=Win32 .
-msbuild libzip.sln /t:Rebuild /p:Configuration=Release /p:Platform=%MSBUILD_PLATFORM%
+msbuild libzip.sln /t:ALL_BUILD:Rebuild /p:Configuration=Release /p:Platform=%MSBUILD_PLATFORM%
 goto done
 :x64
 SET MSBUILD_PLATFORM=x64
