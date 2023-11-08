@@ -2182,6 +2182,7 @@ END_EVENT_TABLE()
 
 
 
+
 WebDoc::WebDoc(bool use_wxwebview)
 {
     m_webcontrol = NULL;
@@ -2265,7 +2266,7 @@ bool WebDoc::initDoc(IFramePtr frame,
 
 #ifdef __WXMSW__
 
-        // on windows, we want to be using at least IE version 9.0 or later.  By default
+        // on windows, we want to be using at least IE version 11.0 or later.  By default
         // wxWebView will use IE 7.  We need to set the following registry value to
         // make wxWebView use the newer embedded browser components
 
@@ -2284,7 +2285,7 @@ bool WebDoc::initDoc(IFramePtr frame,
             wxStandardPaths& stdpaths = wxStandardPaths::Get();
             wxString prog = stdpaths.GetExecutablePath();
             prog = prog.AfterLast(PATH_SEPARATOR_CHAR);
-            pRegKey->SetValue(prog, (long)9000);
+            pRegKey->SetValue(prog, (long)11000);
 
             delete pRegKey;
         }
