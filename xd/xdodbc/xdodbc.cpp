@@ -35,8 +35,6 @@ public:
 
     DatabaseMgr()
     {
-        m_env = 0;
-        m_conn = 0;
     }
 
     virtual ~DatabaseMgr()
@@ -295,77 +293,57 @@ public:
                                           const std::wstring& uid,
                                           const std::wstring& password)
     {
-        // start a connection
-        SQLAllocEnv(&m_env);
-        SQLAllocConnect(m_env, &m_conn);
-        //SQLSetConnectOption(m_conn, SQL_ODBC_CURSORS, SQL_CUR_USE_ODBC);
-
         xd::DatabaseEntryEnum db_list;
-        SQLRETURN r;
 
-        #ifdef _UNICODE
-            wchar_t name_buf[SQL_MAX_DSN_LENGTH+1];
-            wchar_t desc_buf[1024];
-        #else
-            char name_buf[SQL_MAX_DSN_LENGTH+1];
-            char desc_buf[1024];
-        #endif
-
-        short name_length;
-        short desc_length;
-
-        if (SQLDataSources(m_env,
-                           SQL_FETCH_FIRST,
-                           (SQLTCHAR*)name_buf,
-                           SQL_MAX_DSN_LENGTH+1,
-                           &name_length,
-                           (SQLTCHAR*)desc_buf,
-                           1024,
-                           &desc_length) != SQL_SUCCESS)
+        SQLHENV env = NULL;
+        SQLHDBC conn = NULL;
+        SQLRETURN ret;
+        
+        ret = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env);
+        if (!SQL_SUCCEEDED(ret))
         {
-            SQLDisconnect(m_conn);
-            SQLFreeConnect(m_conn);
-            SQLFreeEnv(m_env);
-            m_env = 0;
-            
-            // return empty list
+            return db_list;
+        }
+
+        ret = SQLSetEnvAttr(env, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
+        if (!SQL_SUCCEEDED(ret))
+        {
+            SQLFreeHandle(SQL_HANDLE_ENV, env);
+            return db_list;
+        }
+
+        ret = SQLAllocHandle(SQL_HANDLE_DBC, env, &conn);
+        if (!SQL_SUCCEEDED(ret))
+        {
+            SQLFreeHandle(SQL_HANDLE_ENV, env);
             return db_list;
         }
 
 
-        while (true)
+        #ifdef _UNICODE
+            wchar_t dsn_buf[SQL_MAX_DSN_LENGTH+1];
+            wchar_t desc_buf[1024];
+        #else
+            char dsn_buf[SQL_MAX_DSN_LENGTH+1];
+            char desc_buf[1024];
+        #endif
+
+        short dsn_length;
+        short desc_length;
+
+        SQLUSMALLINT direction = SQL_FETCH_FIRST;
+        while (SQL_SUCCEEDED(ret = SQLDataSources(env, direction, dsn_buf, SQL_MAX_DSN_LENGTH + 1, &dsn_length, desc_buf, 1024, &desc_length)))
         {
             xd::DatabaseEntry db_entry;
-            db_entry.name =  kl::towstring(name_buf);
+            db_entry.name = kl::towstring(dsn_buf);
             db_entry.description = kl::towstring(desc_buf);
-
             db_list.push_back(db_entry);
-            
-            r = SQLDataSources(m_env,
-                               SQL_FETCH_NEXT,
-                               (SQLTCHAR*)name_buf,
-                               SQL_MAX_DSN_LENGTH+1,
-                               &name_length,
-                               (SQLTCHAR*)desc_buf,
-                               1024,
-                               &desc_length);
 
-            if (r == SQL_NO_DATA || r == SQL_ERROR)
-            {
-                break;
-            }
+            direction = SQL_FETCH_NEXT;
         }
 
-        // close out the connection
-        if (m_conn)
-        {
-            SQLDisconnect(m_conn);
-            SQLFreeConnect(m_conn);
-            m_conn = 0;
-        }
-
-        SQLFreeEnv(m_env);
-        m_env = 0;
+        SQLFreeHandle(SQL_HANDLE_DBC, conn);
+        SQLFreeHandle(SQL_HANDLE_ENV, env);
 
         return db_list;
     }
@@ -382,9 +360,6 @@ public:
 
 
 private:
-
-    HENV m_env;
-    HDBC m_conn;
     
     ThreadErrorInfo m_error;
 };

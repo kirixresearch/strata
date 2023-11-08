@@ -808,6 +808,8 @@ void OdbcDatabase::errorSqlStmt(HSTMT stmt)
     SQLTCHAR state[32];
     SQLTCHAR message[2048];
 
+    message[0] = 0;
+
     SQLINTEGER native_error_ptr;
     SQLSMALLINT text_len_ptr;
 
@@ -829,6 +831,8 @@ void OdbcDatabase::errorSqlConn(HDBC hdbc)
     SQLTCHAR message[2048];
     SQLINTEGER native_error_ptr;
     SQLSMALLINT text_len_ptr;
+
+    message[0] = 0;
 
     if (hdbc)
     {
@@ -1085,6 +1089,7 @@ bool OdbcDatabase::open(int type,
             m_db_type = xd::dbtypeSqlServer;
 
             const wchar_t* drivers[3] = { L"ODBC Driver 18 for SQL Server", L"ODBC Driver 17 for SQL Server", L"SQL Server" };
+            const wchar_t* trust_server_cert = L";TrustServerCertificate=yes";
 
             for (size_t i = 0; i < 3; ++i)
             {
@@ -1094,20 +1099,22 @@ bool OdbcDatabase::open(int type,
                 {
                     // if no username is specified, use a trusted connection (windows authentication)
                     swprintf(conn_buf, 4096,
-                        L"Driver={%ls};Server=%ls;Database=%ls;Trusted_Connection=Yes;ExtendedAnsiSQL=1",
+                        L"Driver={%ls};Server=%ls;Database=%ls;Trusted_Connection=Yes;ExtendedAnsiSQL=1%ls",
                         drivers[i],
                         server.c_str(),
-                        database.c_str());
+                        database.c_str(),
+                        (i==0) ? trust_server_cert : L"");
                 }
                 else
                 {
                     swprintf(conn_buf, 4096,
-                        L"Driver={%ls};Server=%ls;Database=%ls;Uid=%ls;Pwd=%ls;ExtendedAnsiSQL=1",
+                        L"Driver={%ls};Server=%ls;Database=%ls;Uid=%ls;Pwd=%ls;ExtendedAnsiSQL=1%ls",
                         drivers[i],
                         server.c_str(),
                         database.c_str(),
                         username.c_str(),
-                        password.c_str());
+                        password.c_str(),
+                        (i == 0) ? trust_server_cert : L"");
                 }
 
                 m_conn_str = conn_buf;
