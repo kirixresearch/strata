@@ -3405,7 +3405,10 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
     if (group_operation || join_operation)
     {
         // set this iterator to clean up after destruction
-        iter->setIteratorFlags(xd::ifTemporary, xd::ifTemporary);
+        if (iter.isOk())
+        {
+            iter->setIteratorFlags(xd::ifTemporary, xd::ifTemporary);
+        }
     }
 
     if (create_iter_job->getCancelled())
