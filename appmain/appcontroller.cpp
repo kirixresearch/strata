@@ -1264,6 +1264,12 @@ bool AppController::init()
         m_frame->getAuiManager().GetPane("StatusBar").BestSize(status_best_size);
     }
 
+#if APP_NEW_TOOLBARS == 1
+    // if the link bar has no items in it (in the new schema without any controls)
+    // it will require a minimum height so that it will not get flattened
+    m_frame->getAuiManager().GetPane("BookmarksToolbar").MinSize(fromDIP(100), fromDIP(28));
+#endif
+
     // create the relationship diagram watcher (watches for files that are
     // renamed in order to update its own internal structures)
     m_rel_diagram_watcher = new RelDiagramWatcher;
@@ -1649,7 +1655,13 @@ void AppController::onNew(wxCommandEvent& evt)
     IFramePtr main_frame = g_app->getMainFrame();
     wxFrame* main_window = g_app->getMainWindow();
 
-    m_linkbar->SetToolSticky(evt.GetId(), true);
+#if APP_NEW_TOOLBARS==1
+    wxAuiToolBar* toolbar = m_project_toolbar;
+#else
+    wxAuiToolBar* toolbar = m_linkbar;
+#endif
+
+    toolbar->SetToolSticky(evt.GetId(), true);
 
     // create the popup menu
     wxMenu menuPopup;
@@ -1674,8 +1686,8 @@ void AppController::onNew(wxCommandEvent& evt)
     m5->SetBitmap(GETBMPSMALL(gf_script));
     menuPopup.Append(m5);
 
-    wxRect rect = m_linkbar->GetToolRect(evt.GetId());
-    wxPoint pt = m_linkbar->ClientToScreen(rect.GetBottomLeft());
+    wxRect rect = toolbar->GetToolRect(evt.GetId());
+    wxPoint pt = toolbar->ClientToScreen(rect.GetBottomLeft());
     pt = main_window->ScreenToClient(pt);
 
     CommandCapture* cc = new CommandCapture;
@@ -1689,7 +1701,7 @@ void AppController::onNew(wxCommandEvent& evt)
     ::wxPostEvent(this, e);
 
     // make sure the button is "un-stuck"
-    m_linkbar->SetToolSticky(evt.GetId(), false);
+    toolbar->SetToolSticky(evt.GetId(), false);
 }
 
 void AppController::onNewTab(wxCommandEvent& evt)

@@ -136,6 +136,81 @@ void StandardToolbar::setSmallIcons(bool small_icons)
     
     Clear();
 
+#if APP_NEW_TOOLBARS == 1
+
+    AddSizedTool(this, ID_Project_New, small_icons);
+    AddSizedTool(this, ID_Project_OpenFile, small_icons);
+    AddSizedTool(this, ID_File_Save, small_icons);
+
+    AddSeparator();
+
+    AddSizedTool(this, ID_Data_Sort, small_icons);
+    AddSizedTool(this, ID_Data_Filter, small_icons);
+    AddSizedTool(this, ID_Data_CreateDynamicField, small_icons);
+    AddSizedTool(this, ID_Data_GroupRecords, small_icons);
+    AddSeparator();
+    AddSizedTool(this, ID_Project_Relationship, small_icons);
+    AddSizedTool(this, ID_App_ToggleRelationshipSync, small_icons);
+
+    AddSeparator();
+
+    AddSizedTool(this, ID_File_Back, small_icons);
+    AddSpacer(spacer);
+    AddSizedTool(this, ID_File_Forward, small_icons);
+    AddSpacer(spacer);
+    AddSizedTool(this, ID_File_Reload, small_icons);
+    AddSpacer(spacer);
+    AddControl(m_url, _("Location"));
+    AddSpacer(spacer);
+    AddSizedTool(this, ID_File_Bookmark, small_icons);
+    AddSeparator();
+    AddSizedToggleTool(this, ID_Data_QuickFilter, small_icons);
+    AddSpacer(spacer);
+    AddControl(m_find, _("Find/Filter"));
+    AddSpacer(spacer);
+    AddSizedTool(this, ID_Edit_FindNext, small_icons);
+    AddSeparator();
+    AddSizedTool(this, ID_View_ViewSwitcher, small_icons);
+
+    SetToolProportion(ID_Frame_UrlCtrl, 2);
+    SetToolProportion(ID_Frame_FindCtrl, 1);
+
+    SetToolDropDown(ID_Project_New, true);
+    //SetToolDropDown(ID_File_Bookmark, true);
+    SetToolDropDown(ID_View_ViewSwitcher, true);
+
+    SetToolLabel(ID_Project_New, _("New"));
+    SetToolLabel(ID_Project_OpenFile, _("Open"));
+    SetToolLabel(ID_File_Save, _("Save"));
+    SetToolLabel(ID_Data_Sort, _("Sort"));
+    SetToolLabel(ID_Data_Filter, _("Filter"));
+    SetToolLabel(ID_Data_CreateDynamicField, _("Calculation"));
+    SetToolLabel(ID_Data_GroupRecords, _("Group"));
+    SetToolLabel(ID_Project_Relationship, _("Relationships"));
+    SetToolLabel(ID_App_ToggleRelationshipSync, _("Sync"));
+
+    SetToolLabel(ID_File_Back, _("Back"));
+    SetToolLabel(ID_File_Forward, _("Forward"));
+    SetToolLabel(ID_File_Reload, _("Refresh"));
+    SetToolLabel(ID_File_Stop, _("Stop"));
+    SetToolLabel(ID_Project_Home, _("Home"));
+    SetToolLabel(ID_File_Bookmark, _("Bookmark"));
+    SetToolLabel(ID_Data_QuickFilter, _("Filter"));
+    SetToolLabel(ID_Edit_FindNext, _("Find Next"));
+    SetToolLabel(ID_View_ViewSwitcher, _("View"));
+
+    SetToolShortHelp(ID_File_Back, _("Go Back"));
+    SetToolShortHelp(ID_File_Forward, _("Go Forward"));
+    SetToolShortHelp(ID_File_Reload, _("Refresh"));
+    SetToolShortHelp(ID_File_Stop, _("Stop"));
+    SetToolShortHelp(ID_Project_Home, _("Go Home"));
+    SetToolShortHelp(ID_File_Bookmark, _("Bookmark This Location"));
+    SetToolShortHelp(ID_Data_QuickFilter, _("Quick Filter"));
+    SetToolShortHelp(ID_Edit_FindNext, _("Find Next"));
+    SetToolShortHelp(ID_View_ViewSwitcher, _("Switch Document View"));
+
+#else
+
     AddSizedTool(this, ID_File_Back, small_icons);
     AddSpacer(spacer);
     AddSizedTool(this, ID_File_Forward, small_icons);
@@ -184,7 +259,8 @@ void StandardToolbar::setSmallIcons(bool small_icons)
     SetToolShortHelp(ID_Data_QuickFilter, _("Quick Filter"));
     SetToolShortHelp(ID_Edit_FindNext, _("Find Next"));
     SetToolShortHelp(ID_View_ViewSwitcher, _("Switch Document View"));
-    
+ #endif
+
     Realize();
 }
 

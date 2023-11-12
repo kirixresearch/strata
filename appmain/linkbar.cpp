@@ -1398,7 +1398,8 @@ void LinkBar::refresh()
 
     this->Clear();    // remove items from toolbar
     m_items.clear();  // clear our items vector
-    
+
+#if APP_NEW_TOOLBARS != 1
     // add command buttons
     AddTool(ID_Project_New, ID2BMPSMALL(ID_Project_New), wxNullBitmap, false);
     AddSpacer(3);
@@ -1420,9 +1421,9 @@ void LinkBar::refresh()
     AddSpacer(3);
     AddSeparator();
     AddSpacer(3);
-    
+
     SetToolDropDown(ID_App_ToggleRelationshipSync, true);
-    
+
     SetToolShortHelp(ID_Project_New, _("New"));
     SetToolShortHelp(ID_Project_OpenFile, _("Open"));
     SetToolShortHelp(ID_File_Save, _("Save"));
@@ -1431,6 +1432,7 @@ void LinkBar::refresh()
     SetToolShortHelp(ID_Data_GroupRecords, _("Group Data"));
     SetToolShortHelp(ID_Data_Filter, _("Filter Data"));
     SetToolShortHelp(ID_App_ToggleRelationshipSync, _("Filter Related Records"));
+ #endif
 
     
     xd::IDatabasePtr db = g_app->getDatabase();
