@@ -134,7 +134,7 @@ bool ImportWizard::initDoc(IFramePtr frame,
     filter += _("Microsoft FoxPro/Xbase Files");
     filter += wxT(" (*.dbf)|*.dbf|");
     filter += _("Microsoft Access Files");
-    filter += wxT(" (*.mdb, *.accdb)|*.mdb;*.accdb|");
+    filter += wxT(" (*.accdb, *.mdb)|*.accdb;*.mdb|");
     filter += _("Microsoft Excel Files");
     filter += wxT(" (*.xls, *.xlsx)|*.xls;*.xlsx|");
     filter += _("Package Files");

@@ -1913,8 +1913,8 @@ void AppController::onCreateBookmark(wxCommandEvent& evt)
     dlg.setMode(LinkPropsDialog::ModeCreate);
     dlg.setName(s);
     dlg.SetTitle(_("New Bookmark"));
-    dlg.SetSize(wxSize(fromDIP(370), fromDIP(200)));
-    dlg.SetMinSize(wxSize(fromDIP(370), fromDIP(175)));
+    dlg.SetSize(wxSize(fromDIP(370), fromDIP(230)));
+    dlg.SetMinSize(wxSize(fromDIP(370), fromDIP(200)));
     dlg.CenterOnScreen();
 
     if (dlg.ShowModal() != wxID_OK)
@@ -2094,7 +2094,7 @@ void AppController::onOpenFile(wxCommandEvent& evt)
     filter += _("Microsoft FoxPro/Xbase Files");
     filter += wxT(" (*.dbf)|*.dbf|");
     filter += _("Microsoft Access Files");
-    filter += wxT(" (*.mdb, *.accdb)|*.mdb;*.accdb|");
+    filter += wxT(" (*.accdb, *.mdb)|*.accdb;*.mdb|");
     filter += _("Microsoft Excel Files");
     filter += wxT(" (*.xls, *.xlsx)|*.xls;*.xlsx|");
     filter += _("Package Files");

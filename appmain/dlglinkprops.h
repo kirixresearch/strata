@@ -13,7 +13,6 @@
 #define H_APP_DLGLINKPROPS_H
 
 
-class DbComboCtrl;
 class LinkPropsDialog : public wxDialog
 {
 public:

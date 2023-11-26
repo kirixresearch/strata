@@ -49,11 +49,11 @@ LinkPropsDialog::LinkPropsDialog(wxWindow* parent,
                                      wxCLIP_CHILDREN |
                                      wxNO_FULL_REPAINT_ON_RESIZE)
 {
-    m_name_textctrl = NULL;
-    m_location_textctrl = NULL;
-    m_tags_textctrl = NULL;
-    m_description_textctrl = NULL;
-    m_runtarget_checkbox = NULL;
+    m_name_textctrl = nullptr;
+    m_location_textctrl = nullptr;
+    m_tags_textctrl = nullptr;
+    m_description_textctrl = nullptr;
+    m_runtarget_checkbox = nullptr;
     
     m_name = name;
     m_location = location;
@@ -90,7 +90,7 @@ int LinkPropsDialog::ShowModal()
                                                 _("Name:"),
                                                 wxDefaultPosition,
                                                 wxDefaultSize);
-    m_name_textctrl = NULL;
+    m_name_textctrl = nullptr;
     m_name_textctrl = new wxTextCtrl(this,
                                      ID_NameTextCtrl,
                                      m_name);
@@ -105,10 +105,10 @@ int LinkPropsDialog::ShowModal()
     // create the name sizer
     wxStaticText* label_location = new wxStaticText(this,
                                                     -1,
-                                                    _("Location:"),
+                                                    _("URL:"),
                                                     wxDefaultPosition,
                                                     wxDefaultSize);
-    m_location_textctrl = NULL;
+    m_location_textctrl = nullptr;
     m_location_textctrl = new wxTextCtrl(this,
                                          ID_LocationTextCtrl,
                                          m_location);
@@ -123,7 +123,7 @@ int LinkPropsDialog::ShowModal()
                                                 _("Tags:"),
                                                 wxDefaultPosition,
                                                 wxDefaultSize);
-    m_tags_textctrl = NULL;
+    m_tags_textctrl = nullptr;
     m_tags_textctrl = new wxTextCtrl(this,
                                      ID_TagsTextCtrl,
                                      m_tags,
@@ -142,7 +142,7 @@ int LinkPropsDialog::ShowModal()
                                                     _("Description:"),
                                                     wxDefaultPosition,
                                                     wxDefaultSize);
-    m_description_textctrl = NULL;
+    m_description_textctrl = nullptr;
     m_description_textctrl = new wxTextCtrl(this,
                                             ID_DescriptionTextCtrl,
                                             m_description,
@@ -157,7 +157,7 @@ int LinkPropsDialog::ShowModal()
     description_sizer->Add(m_description_textctrl, 1, wxEXPAND);
     
     
-    m_runtarget_checkbox = NULL;
+    m_runtarget_checkbox = nullptr;
     m_runtarget_checkbox = new wxCheckBox(this,
                                             ID_RunTargetCheckbox,
                                             _("Run Target"),
@@ -218,13 +218,13 @@ int LinkPropsDialog::ShowModal()
 
     // create main sizer
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
-    main_sizer->Add(message_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
-    main_sizer->Add(name_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
-    main_sizer->Add(separator, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
-    main_sizer->Add(location_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
-    main_sizer->Add(tags_sizer, 2, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
-    main_sizer->Add(description_sizer, 3, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
-    main_sizer->Add(flags_sizer, 0, wxLEFT | wxRIGHT | wxTOP, 8);
+    main_sizer->Add(message_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, FromDIP(8));
+    main_sizer->Add(name_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, FromDIP(8));
+    main_sizer->Add(separator, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, FromDIP(8));
+    main_sizer->Add(location_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, FromDIP(8));
+    main_sizer->Add(tags_sizer, 2, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, FromDIP(8));
+    main_sizer->Add(description_sizer, 3, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, FromDIP(8));
+    main_sizer->Add(flags_sizer, 0, wxLEFT | wxRIGHT | wxTOP, FromDIP(8));
     wxSizerItem* spacer = main_sizer->AddStretchSpacer();
     main_sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
     
@@ -281,7 +281,7 @@ wxString LinkPropsDialog::getName()
 
 void LinkPropsDialog::onNameChanged(wxCommandEvent& evt)
 {
-    if (m_name_textctrl == NULL)
+    if (m_name_textctrl == nullptr)
         return;
     
     m_name = evt.GetString();
@@ -289,7 +289,7 @@ void LinkPropsDialog::onNameChanged(wxCommandEvent& evt)
 
 void LinkPropsDialog::onLocationChanged(wxCommandEvent& evt)
 {
-    if (m_location_textctrl == NULL)
+    if (m_location_textctrl == nullptr)
         return;
     
     m_location = evt.GetString();
@@ -298,7 +298,7 @@ void LinkPropsDialog::onLocationChanged(wxCommandEvent& evt)
 
 void LinkPropsDialog::onTagsChanged(wxCommandEvent& evt)
 {
-    if (m_tags_textctrl == NULL)
+    if (m_tags_textctrl == nullptr)
         return;
     
     m_tags = evt.GetString();
@@ -307,7 +307,7 @@ void LinkPropsDialog::onTagsChanged(wxCommandEvent& evt)
 
 void LinkPropsDialog::onDescriptionChanged(wxCommandEvent& evt)
 {
-    if (m_description_textctrl == NULL)
+    if (m_description_textctrl == nullptr)
         return;
     
     m_description = evt.GetString();
@@ -316,7 +316,7 @@ void LinkPropsDialog::onDescriptionChanged(wxCommandEvent& evt)
 
 void LinkPropsDialog::onRunTargetChanged(wxCommandEvent& evt)
 {
-    if (m_runtarget_checkbox == NULL)
+    if (m_runtarget_checkbox == nullptr)
         return;
         
     m_run_target = m_runtarget_checkbox->GetValue();

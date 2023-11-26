@@ -54,20 +54,37 @@ public:
         std::wstring ext = kl::afterLast(location, L'.');
         kl::makeUpper(ext);
 
-        if (ext == L"MDB")
+        if (ext == L"MDB" || ext == L"ACCDB")
         {
-            std::wstring cmd = L"CREATE_DB=\"";
-            cmd += location;
-            cmd += L"\"\0";
+            std::wstring cmd;
+            
+            if (ext == L"ACCDB")
+            {
+                cmd = L"CREATE_DBV12=\"";
+                cmd += location;
+                cmd += L"\"\0";
+            }
+            else
+            {
+                cmd = L"CREATE_DB=\"";
+                cmd += location;
+                cmd += L"\"\0";
+            }
 
 
 #ifdef WIN32
             if (!::SQLConfigDataSource(NULL,
                                        ODBC_CONFIG_DSN,
-                                       _t("Microsoft Access Driver (*.mdb)"),
+                                       _t("Microsoft Access Driver (*.mdb, *.accdb)"),
                                        sqlt(cmd)))
             {
-                return false;
+                if (!::SQLConfigDataSource(NULL,
+                                           ODBC_CONFIG_DSN,
+                                           _t("Microsoft Access Driver (*.mdb)"),
+                                           sqlt(cmd)))
+                {
+                    return false;
+                }
             }
 #else
             // the unicode api on linux isn't quite right,
@@ -203,7 +220,12 @@ public:
             kl::makeUpper(ext);
 
             if (c.getValue(L"create_if_not_exists") == L"true" && !xf_get_file_exist(database))
-                return this->createDatabase(database);
+            {
+                if (!this->createDatabase(connection_str))
+                {
+                    return xcm::null;
+                }
+            }
 
             if (ext == L"MDB" || ext == L"ACCDB")
             {

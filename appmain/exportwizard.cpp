@@ -332,8 +332,8 @@ void ExportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
                 ei->path += L".kpg";
             
             // fix wrong file extension for Microsoft Access files
-            if (ei->type == dbtypeAccess && !kl::iequals(ext, L"mdb"))
-                ei->path += L".mdb";
+            if (ei->type == dbtypeAccess && !kl::iequals(ext, L"mdb") && !kl::iequals(ext, L"accdb"))
+                ei->path += L".accdb";
             
             // fix wrong file extension for Microsoft Excel files
             if (ei->type == dbtypeExcel && !kl::iequals(ext, L"xlsx"))
@@ -452,7 +452,7 @@ void ExportWizard::onFileTypeChanged(int file_type)
     // set the parameters for the path selection page's file/directory dialog
     if (file_type == dbtypeAccess)
     {
-        path += wxT("untitled.mdb");
+        path += wxT("untitled.accdb");
         
         m_path_selection_page->setMessage(_("Please enter the location of the Microsoft Access file to which you would like to export."));
         m_path_selection_page->setPathLabel(_("File:"));

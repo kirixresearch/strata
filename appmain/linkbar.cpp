@@ -1067,8 +1067,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             LinkPropsDialog dlg(this);
             dlg.setStartFolder(start_folder);
             dlg.SetTitle(_("\"New Bookmark\" Properties"));
-            dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
-            dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 175)));
+            dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 230)));
+            dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
             dlg.CenterOnScreen();
 
             if (dlg.ShowModal() == wxID_OK)
@@ -1101,8 +1101,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             dlg.setMessage(message);
             dlg.setName(_("New Folder"));
             dlg.SetTitle(_("New Folder"));
-            dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
-            dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 175)));
+            dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 230)));
+            dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
             dlg.CenterOnScreen();
             
             if (dlg.ShowModal() == wxID_OK)
@@ -1135,8 +1135,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 dlg.setMessage(message);
                 dlg.setName(item->getLabel());
                 dlg.SetTitle(title);
-                dlg.SetSize(320, 155);
-                dlg.SetMinSize(wxSize(320, 155));
+                dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 230)));
+                dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
                 dlg.CenterOnScreen();
                 
                 if (dlg.ShowModal() == wxID_OK)
@@ -1176,8 +1176,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 dlg.setDescription(b.description);
                 dlg.setRunTarget(b.run_target);
                 dlg.SetTitle(title);
-                dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
-                dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 175)));
+                dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 230)));
+                dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
                 dlg.CenterOnScreen();
                     
                 if (dlg.ShowModal() == wxID_OK)
@@ -1227,8 +1227,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             dlg.setMessage(message);
             dlg.setName(item->getLabel());
             dlg.SetTitle(title);
-            dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
-            dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 175)));
+            dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 230)));
+            dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
             dlg.CenterOnScreen();
                 
             if (dlg.ShowModal() == wxID_OK)
