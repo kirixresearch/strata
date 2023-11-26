@@ -3568,6 +3568,71 @@ void DbDoc::onDragDrop(IFsItemPtr target,
 
 void DbDoc::onCopyJobFinished(jobs::IJobPtr job)
 {
+    // first copy any tabledoc models
+
+    std::wstring params = job->getParameters();
+
+    kl::JsonNode params_node;
+    params_node.fromString(params);
+
+    if (params_node.childExists(L"jobs"))
+    {
+        kl::JsonNode jobs_node = params_node["jobs"];
+
+        // create job objects from each parameter json node
+
+        size_t i, cnt = jobs_node.getChildCount();
+
+        xd::IDatabasePtr db = g_app->getDatabase();
+        if (db.isNull())
+        {
+            cnt = 0;
+        }
+
+        for (i = 0; i < cnt; ++i)
+        {
+            kl::JsonNode job_node = jobs_node[(int)i];
+
+            kl::JsonNode metadata = job_node["metadata"];
+            if (!metadata.isOk())
+                continue;
+
+            kl::JsonNode type = metadata["type"];
+            if (type.isOk() && type.getString() == L"application/vnd.kx.copy-job")
+            {
+                kl::JsonNode copy_params = job_node["params"];
+                if (copy_params.isOk())
+                {
+                    kl::JsonNode input = copy_params["input"];
+                    kl::JsonNode output = copy_params["output"];
+
+                    if (input.isOk() && output.isOk())
+                    {
+                        std::wstring input_path = input.getString();
+                        std::wstring output_path = output.getString();
+
+                        std::wstring input_id, output_id;
+                        xd::IFileInfoPtr finfo;
+
+                        finfo = db->getFileInfo(input_path);
+                        if (finfo) input_id = finfo->getObjectId();
+
+                        finfo = db->getFileInfo(output_path);
+                        if (finfo) output_id = finfo->getObjectId();
+
+                        if (input_id.length() > 0 && output_id.length() > 0)
+                        {
+                            TableDocMgr::copyModel(input_id, output_id);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    //  now refresh the database tree
+
     std::wstring folder_to_refresh = job->getExtraValue(L"refresh-folder");
     if (folder_to_refresh.length() > 0)
     {
@@ -3578,7 +3643,6 @@ void DbDoc::onCopyJobFinished(jobs::IJobPtr job)
             return;
         }
     }
-
 
     m_fspanel->refresh();
 }
