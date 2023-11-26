@@ -748,7 +748,7 @@ void ConsolePanel::onQueryJobFinished(jobs::IJobPtr job)
     {
         std::wstring table_path = result_iter->getTable();
 
-        if (table_path.length() > 0)
+        if (table_path.length() > 0 || m_command_db_path.length() > 0)
         {
             ITableDocPtr doc = TableDocMgr::createTableDoc();
             doc->setTemporaryModel(true);
@@ -1014,39 +1014,39 @@ void ConsolePanel::runCommand(wxString& command)
     }
 
 
-/*
-    // TODO: old console logic allow a mount database to be specified
-    // and the query passed through directly to this; need a way
-    // of setting the current database so the command can run against
-    // this
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.execute-job");
 
-    // if a command database is specified, set the database so
-    // the command are passed directly through to that database
-    xd::IDatabasePtr db = g_app->getDatabase();
-    xd::IDatabasePtr mount_db;
-    if (db.isOk())
+
+    if (m_command_db_path.length() > 0)
     {
-        mount_db = db->getMountDatabase(towstr(m_command_db_path));
-        if (mount_db.isOk())
-        {
-            // note: we get the mount db each command since if the user 
-            // changes the mount information to another database in the 
-            // project panel, we want the command to use the new database; 
-            // if we cache the mount database when it's changed using 'use', 
-            // it's difficult to invalidate the cache when the db mount 
-            // information is changed in the project panel
 
+        // if a command database is specified, set the database so
+        // the command are passed directly through to that database
+        xd::IDatabasePtr db = g_app->getDatabase();
+        xd::IDatabasePtr mount_db;
+        if (db.isOk())
+        {
             mount_db = db->getMountDatabase(towstr(m_command_db_path));
+            if (mount_db.isOk())
+            {
+                // note: we get the mount db each command since if the user
+                // changes the mount information to another database in the
+                // project panel, we want the command to use the new database;
+                // if we cache the mount database when it's changed using 'use',
+                // it's difficult to invalidate the cache when the db mount
+                // information is changed in the project panel
+
+                mount_db = db->getMountDatabase(towstr(m_command_db_path));
+            }
         }
+
+        if (mount_db.isOk())
+            job->setDatabase(mount_db);
     }
 
-    if (mount_db.isOk())
-        job->setDatabase(mount_db);
-*/
 
 
 
-    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.execute-job");
 
     if (flags & xd::sqlAlwaysCopy)
         job->setExtraValue(L"xd.sqlAlwaysCopy", L"true");
@@ -1058,6 +1058,7 @@ void ConsolePanel::runCommand(wxString& command)
 
     job->getJobInfo()->setTitle(towstr(_("Query")));
     job->setParameters(params.toString());
+
     job->sigJobFinished().connect(this, &ConsolePanel::onQueryJobFinished);
     g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 
