@@ -1586,6 +1586,10 @@ ITableDocPtr TableDocMgr::getActiveTableDoc(int* site_id)
 void TableDocMgr::copyModel(const std::wstring& src_id, const std::wstring& dest_id)
 {
     ITableDocModelPtr src_model = TableDocMgr::loadModel(src_id);
+    if (src_model.isNull())
+    {
+        return;
+    }
 
     ITableDocObjectEnumPtr vec;
     vec = new xcm::IVectorImpl<ITableDocObjectPtr>;
