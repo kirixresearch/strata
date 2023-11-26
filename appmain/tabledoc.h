@@ -91,6 +91,8 @@ public:
 
     virtual ITableDocObjectPtr clone() = 0;
 
+    virtual std::wstring getHash() = 0;
+
     virtual bool getDirty() = 0;
     virtual void setDirty(bool dirty) = 0;
 

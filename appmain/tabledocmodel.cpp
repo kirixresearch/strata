@@ -14,6 +14,7 @@
 #include "tabledoc_private.h"
 #include "jsonconfig.h"
 #include <kl/string.h>
+#include <kl/md5.h>
 
 
 
@@ -215,6 +216,11 @@ public:
         m_id = id;
     }
 
+    std::wstring getHash()
+    {
+        return kl::md5str(m_id);
+    }
+
     bool getDirty()
     {
         return m_dirty;
@@ -234,8 +240,9 @@ protected:
 
 
 
-class TableDocMark :  public ITableDocMark,
-                      public TableDocObjectBase
+class TableDocMark : public TableDocObjectBase,
+                     public ITableDocMark
+                      
 {
 friend class XdGridModel;
 
@@ -256,6 +263,17 @@ public:
 
     virtual ~TableDocMark()
     {
+    }
+
+    std::wstring getHash()
+    {
+        std::wstring hashsrc = m_description + L";";
+        hashsrc += m_expression + L";";
+        hashsrc += m_fgcolor.GetAsString() + L";";
+        hashsrc += m_bgcolor.GetAsString() + L";";
+        hashsrc += m_mark_active ? L"true" : L"false";
+
+        return kl::md5str(hashsrc);
     }
 
     void setMarkActive(bool new_val)
@@ -400,6 +418,19 @@ public:
 
     virtual ~TableDocViewCol()
     {
+    }
+
+    std::wstring getHash()
+    {
+        std::wstring hashsrc = m_name + L";";
+        kl::makeLower(hashsrc);
+        hashsrc += kl::itowstring(m_size) + L";";
+        hashsrc += m_fgcolor.GetAsString() + L";";
+        hashsrc += m_bgcolor.GetAsString() + L";";
+        hashsrc += kl::itowstring(m_alignment) + L";";
+        hashsrc += kl::itowstring(m_text_wrap);
+
+        return kl::md5str(hashsrc);
     }
 
     void setName(const std::wstring& new_value)
@@ -553,6 +584,19 @@ public:
 
     virtual ~TableDocView()
     {
+    }
+
+    std::wstring getHash()
+    {
+        std::wstring hashsrc = m_description + L";";
+        hashsrc += kl::itowstring(m_row_size) + L";";
+        for (unsigned int i = 0; i < m_cols.size(); ++i)
+        {
+            ITableDocObjectPtr obj = m_cols[i];
+            hashsrc += obj->getHash() + L";";
+        }
+
+        return kl::md5str(hashsrc);
     }
 
     std::wstring getDescription()
@@ -753,6 +797,7 @@ private:
 
 TableDocModel::TableDocModel()
 {
+    m_convert_old_version = true;
 }
 
 TableDocModel::~TableDocModel()
@@ -784,7 +829,11 @@ bool TableDocModel::load()
         return false;
 
     loadJson();
-    loadAndConvertOldVersionToNewJson();
+
+    if (m_convert_old_version)
+    {
+        loadAndConvertOldVersionToNewJson();
+    }
 
     return true;
 }
@@ -988,7 +1037,13 @@ bool TableDocModel::saveJson()
 
     // we want to merge our changes with whatever already
     // exists in the json store; so first load what is there
-    load();
+    {
+        bool b = m_convert_old_version;
+        m_convert_old_version = false;
+        load();
+        m_convert_old_version = b;
+    }
+
 
     // first, remove all objects slated for deletion
     std::vector<ITableDocObjectPtr>::iterator it;
@@ -1252,20 +1307,25 @@ std::wstring TableDocModel::toJson()
 
 bool TableDocModel::loadAndConvertOldVersionToNewJson()
 {
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+    {
+        // done if no database
+        return true;
+    }
+
     std::wstring view_path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s/views", m_id.c_str());
     std::wstring mark_path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s/marks", m_id.c_str());
-
+    std::wstring upgrades_path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s/upgrades", m_id.c_str());
 
     // create a json object in the new format
     bool format_converted = false;
     kl::JsonNode node;
 
-    // load the views
-    node = JsonConfig::loadFromDb(g_app->getDatabase(), view_path);
+    // load the views -- merging them into the new format (if the object id doesn't already exist) 
+    node = JsonConfig::loadFromDb(db, view_path);
     if (node.isOk())
     {
-        m_views.clear();
-
         kl::JsonNode root_node = node["root"];
         if (!root_node.isOk())
             return false;
@@ -1274,13 +1334,10 @@ bool TableDocModel::loadAndConvertOldVersionToNewJson()
         if (!views_node.isOk())
             return false;
 
-        std::vector<kl::JsonNode> views_children = views_node.getChildren();
-        std::vector<kl::JsonNode>::iterator it_view, it_view_end;
-        it_view_end = views_children.end();
-
-        for (it_view = views_children.begin(); it_view != it_view_end; ++it_view)
+        std::vector<std::wstring> views_keys = views_node.getChildKeys();
+        for (auto view_key : views_keys)
         {
-            kl::JsonNode old_view_format_node = *it_view;
+            kl::JsonNode old_view_format_node = views_node.getChild(view_key);
             if (!old_view_format_node.isOk())
                 continue;
 
@@ -1340,23 +1397,26 @@ bool TableDocModel::loadAndConvertOldVersionToNewJson()
                 new_view_format_column_child["text_wrap"].setInteger(old_view_format_column_textwrap.getInteger());
             }
 
-            // load the json node from the new format
-            TableDocView* obj = new TableDocView;
+            // add the view if it doesn't exist already
+            TableDocView* viewobj = new TableDocView;
+            ITableDocObjectPtr obj = viewobj;
             new_view_format_node["object_id"] = obj->getObjectId();
             obj->readFromNode(new_view_format_node);
-            obj->setDirty(true);
-            m_views.push_back(static_cast<ITableDocObject*>(obj));
+            std::wstring hash = obj->getHash();
+            if (!db->getFileExist(upgrades_path + L"/" + hash))
+            {
+                writeStreamTextFile(db, upgrades_path + L"/" + hash, L"1");
+                obj->setDirty(true);
+                m_views.push_back(obj);
+                format_converted = true;
+            }
         }
-
-        format_converted = true;
     }
 
     // load the marks
     node = JsonConfig::loadFromDb(g_app->getDatabase(), mark_path);
     if (node.isOk())
     {
-        m_marks.clear();
-
         kl::JsonNode root_node = node["root"];
         if (!root_node.isOk())
             return false;
@@ -1405,25 +1465,24 @@ bool TableDocModel::loadAndConvertOldVersionToNewJson()
             new_mark_format_node["bgcolor"].setString(color2string(int2color(old_mark_format_mark_bgcolor_node.getInteger())));
 
             // load the json node from the new format
-            TableDocMark* obj = new TableDocMark;
+            TableDocMark* markobj = new TableDocMark;
+            ITableDocObjectPtr obj = markobj;
             new_mark_format_node["object_id"] = obj->getObjectId();
             obj->readFromNode(new_mark_format_node);
-            obj->setDirty(true);
-            m_marks.push_back(static_cast<ITableDocObject*>(obj));
+            std::wstring hash = obj->getHash();
+            if (!db->getFileExist(upgrades_path + L"/" + hash))
+            {
+                writeStreamTextFile(db, upgrades_path + L"/" + hash, L"1");
+                obj->setDirty(true);
+                m_marks.push_back(static_cast<ITableDocObject*>(obj));
+                format_converted = true;
+            }
         }
-
-        format_converted = true;
     }
 
     // old view or mark formats were converted
     if (format_converted)
-    {
-        // note: need to delete before saving since save() calls load() which creates
-        // an infinite loop if the old format isn't removed before saving
-        std::wstring path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s", m_id.c_str());
-        if (!g_app->getDatabase()->deleteFile(path))
-            return false;
-        
+    {   
         save();
     }
 
