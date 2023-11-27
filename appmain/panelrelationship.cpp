@@ -647,18 +647,23 @@ void RelationshipPanel::loadRelationships()
             // expression, make the lines red
 
             bool valid = true;
+            std::wstring right_table_path = rel->getRightTable();
 
-            std::wstring right_set_path = rel->getRightTable();
-
-            if (right_set_path.length() > 0)
+            if (right_table_path.length() > 0)
             {
-                xd::IndexInfoEnum right_set_indexes = db->getIndexEnum(right_set_path);
-                xd::IndexInfo idx = lookupIndex(right_set_indexes, rel->getRightExpression(), false);
+                std::wstring cstr, rpath;
+                bool relationship_on_mount = getMountPointHelper(db, right_table_path, cstr, rpath);
 
-                if (!idx.isOk())
+                if (!relationship_on_mount)
                 {
-                    valid = false;
-                    update_button = true;
+                    xd::IndexInfoEnum right_table_indexes = db->getIndexEnum(right_table_path);
+                    xd::IndexInfo idx = lookupIndex(right_table_indexes, rel->getRightExpression(), false);
+
+                    if (!idx.isOk())
+                    {
+                        valid = false;
+                        update_button = true;
+                    }
                 }
             }
 
