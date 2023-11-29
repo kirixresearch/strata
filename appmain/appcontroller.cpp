@@ -6930,7 +6930,7 @@ void AppController::showOptionsDialog()
 
         OptionsPanel* panel = new OptionsPanel;
         site = g_app->getMainFrame()->createSite(panel,
-                                                 sitetypeModeless,
+                                                 sitetypeModeless | siteHidden,
                                                  -1, -1,
                                                  -1, -1);
 
@@ -6939,6 +6939,9 @@ void AppController::showOptionsDialog()
         wxSize min_size = panel->GetSizer()->GetMinSize();
         site->getContainerWindow()->SetMinClientSize(min_size);
         site->getContainerWindow()->SetClientSize(min_size);
+        site->getContainerWindow()->CenterOnParent();
+
+        site->setVisible(true);
     }
      else
     {

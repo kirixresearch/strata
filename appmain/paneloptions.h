@@ -33,6 +33,7 @@ struct PrefInfo
     long internet_proxy_ssl_port;
     long internet_proxy_socks_port;
     long internet_proxy_type;
+    wxString default_web_browser;
 
     // internet preferences
     bool privacy_block_popups;

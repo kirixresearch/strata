@@ -263,9 +263,9 @@ public:
         startup_sizer = new wxStaticBoxSizer(startup_static_box,
                                              wxVERTICAL);
         startup_sizer->AddSpacer(10);
-        startup_sizer->Add(m_startup_projectmgr, 0, wxLEFT | wxRIGHT, 10);
+        startup_sizer->Add(m_startup_projectmgr, 0, wxLEFT | wxRIGHT, FromDIP(10));
         startup_sizer->AddSpacer(8);
-        startup_sizer->Add(openproject_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
+        startup_sizer->Add(openproject_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(10));
         startup_sizer->AddSpacer(10);
         
         
@@ -297,9 +297,9 @@ public:
         startup_location_sizer = new wxStaticBoxSizer(location_static_box,
                                                       wxVERTICAL);
         startup_location_sizer->AddSpacer(10);
-        startup_location_sizer->Add(loc_text_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
+        startup_location_sizer->Add(loc_text_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(10));
         startup_location_sizer->AddSpacer(8);
-        startup_location_sizer->Add(loc_button_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
+        startup_location_sizer->Add(loc_button_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(10));
         startup_location_sizer->AddSpacer(10);
         
         
@@ -340,9 +340,9 @@ public:
         wxStaticBox* laf_static_box = new wxStaticBox(this, -1, _("Toolbars and Panels"));
         wxStaticBoxSizer* laf_sizer = new wxStaticBoxSizer(laf_static_box, wxVERTICAL);
         laf_sizer->AddSpacer(10);
-        laf_sizer->Add(toolbar_laf_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
+        laf_sizer->Add(toolbar_laf_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(10));
         laf_sizer->AddSpacer(8);
-        laf_sizer->Add(reset_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
+        laf_sizer->Add(reset_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(10));
         laf_sizer->AddSpacer(10);
         
         m_check_for_updates = new wxCheckBox(this,
@@ -799,17 +799,17 @@ public:
         wxStaticBox* left_box = new wxStaticBox(this, -1, _("View and Formatting"));
         wxStaticBoxSizer* top_left_sizer = new wxStaticBoxSizer(left_box, wxVERTICAL);
         top_left_sizer->AddSpacer(10);
-        top_left_sizer->Add(m_horz_line_check, 0, wxLEFT | wxRIGHT, 10);
+        top_left_sizer->Add(m_horz_line_check, 0, wxLEFT | wxRIGHT, FromDIP(10));
         top_left_sizer->AddSpacer(8);
-        top_left_sizer->Add(m_vert_line_check, 0, wxLEFT | wxRIGHT, 10);
+        top_left_sizer->Add(m_vert_line_check, 0, wxLEFT | wxRIGHT, FromDIP(10));
         top_left_sizer->AddSpacer(8);
-        top_left_sizer->Add(m_greenbar_check, 0, wxLEFT | wxRIGHT, 10);
+        top_left_sizer->Add(m_greenbar_check, 0, wxLEFT | wxRIGHT, FromDIP(10));
         top_left_sizer->AddSpacer(8);
         top_left_sizer->Add(m_greenbar_spin_ctrl, 0, wxLEFT, 25);
         top_left_sizer->AddSpacer(8);
-        top_left_sizer->Add(m_text_wrap_check, 0, wxLEFT | wxRIGHT, 10);
+        top_left_sizer->Add(m_text_wrap_check, 0, wxLEFT | wxRIGHT, FromDIP(10));
         top_left_sizer->AddSpacer(8);
-        top_left_sizer->Add(m_boolean_checkbox_check, 0, wxLEFT | wxRIGHT, 10);
+        top_left_sizer->Add(m_boolean_checkbox_check, 0, wxLEFT | wxRIGHT, FromDIP(10));
         top_left_sizer->AddSpacer(10);
 
 
@@ -914,17 +914,17 @@ public:
         wxStaticBox* right_box = new wxStaticBox(this, -1, _("Colors and Font"));
         wxStaticBoxSizer* top_right_sizer = new wxStaticBoxSizer(right_box, wxVERTICAL);
         top_right_sizer->AddSpacer(7);  // 7 instead of 10 (matches the left sizer)
-        top_right_sizer->Add(gridline_color_sizer, 0, wxLEFT | wxRIGHT, 10);
+        top_right_sizer->Add(gridline_color_sizer, 0, wxLEFT | wxRIGHT, FromDIP(10));
         top_right_sizer->AddSpacer(2);
-        top_right_sizer->Add(foreground_color_sizer, 0, wxLEFT | wxRIGHT, 10);
+        top_right_sizer->Add(foreground_color_sizer, 0, wxLEFT | wxRIGHT, FromDIP(10));
         top_right_sizer->AddSpacer(2);
-        top_right_sizer->Add(background_color_sizer, 0, wxLEFT | wxRIGHT, 10);
+        top_right_sizer->Add(background_color_sizer, 0, wxLEFT | wxRIGHT, FromDIP(10));
         top_right_sizer->AddSpacer(2);
-        top_right_sizer->Add(greenbar_color_sizer, 0, wxLEFT | wxRIGHT, 10);
+        top_right_sizer->Add(greenbar_color_sizer, 0, wxLEFT | wxRIGHT, FromDIP(10));
         top_right_sizer->AddSpacer(2);
-        top_right_sizer->Add(invalid_area_color_sizer, 0, wxLEFT | wxRIGHT, 10);
+        top_right_sizer->Add(invalid_area_color_sizer, 0, wxLEFT | wxRIGHT, FromDIP(10));
         top_right_sizer->AddSpacer(5);
-        top_right_sizer->Add(font_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
+        top_right_sizer->Add(font_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(10));
         top_right_sizer->AddSpacer(10);
 
 
@@ -1517,15 +1517,15 @@ public:
                                 &m_proxy_http_textctrl,
                                 ID_HttpProxyTextCtrl,
                                 m_pi->internet_proxy_http,
-                                10);
+                                FromDIP(10));
         wxBoxSizer* httpport_sizer = createLabelTextControlSizer(
                                 this,
                                 _("Port:"),
                                 &m_proxy_httpport_textctrl,
                                 ID_HttpProxyPortTextCtrl,
                                 wxString::Format(wxT("%ld"), m_pi->internet_proxy_http_port),
-                                10);
-        m_proxy_http_sizer->AddSpacer(10);
+                                FromDIP(10));
+        m_proxy_http_sizer->AddSpacer(FromDIP(10));
         m_proxy_http_sizer->Add(httpport_sizer);
         
         // create ftp proxy settings sizer
@@ -1536,15 +1536,15 @@ public:
                                 &m_proxy_ftp_textctrl,
                                 ID_FtpProxyTextCtrl,
                                 m_pi->internet_proxy_ftp,
-                                10);
+                                FromDIP(10));
         wxBoxSizer* ftpport_sizer = createLabelTextControlSizer(
                                 this,
                                 _("Port:"),
                                 &m_proxy_ftpport_textctrl,
                                 ID_FtpProxyPortTextCtrl,
                                 wxString::Format(wxT("%ld"), m_pi->internet_proxy_ftp_port),
-                                10);
-        m_proxy_ftp_sizer->AddSpacer(10);
+                                FromDIP(10));
+        m_proxy_ftp_sizer->AddSpacer(FromDIP(10));
         m_proxy_ftp_sizer->Add(ftpport_sizer);
         
         // create ssl proxy settings sizer
@@ -1562,8 +1562,8 @@ public:
                                 &m_proxy_sslport_textctrl,
                                 ID_SslProxyPortTextCtrl,
                                 wxString::Format(wxT("%ld"), m_pi->internet_proxy_ssl_port),
-                                10);
-        m_proxy_ssl_sizer->AddSpacer(10);
+                                FromDIP(10));
+        m_proxy_ssl_sizer->AddSpacer(FromDIP(10));
         m_proxy_ssl_sizer->Add(sslport_sizer);
         
         // create socks proxy settings sizer
@@ -1574,15 +1574,15 @@ public:
                                 &m_proxy_socks_textctrl,
                                 ID_SocksProxyTextCtrl,
                                 m_pi->internet_proxy_socks,
-                                10);
+                                FromDIP(10));
         wxBoxSizer* socksport_sizer = createLabelTextControlSizer(
                                 this,
                                 _("Port:"),
                                 &m_proxy_socksport_textctrl,
                                 ID_SocksProxyPortTextCtrl,
                                 wxString::Format(wxT("%ld"), m_pi->internet_proxy_socks_port),
-                                10);
-        m_proxy_socks_sizer->AddSpacer(10);
+                                FromDIP(10));
+        m_proxy_socks_sizer->AddSpacer(FromDIP(10));
         m_proxy_socks_sizer->Add(socksport_sizer);
         
         // make the labels line up in the proxy settings sizer
@@ -1594,10 +1594,10 @@ public:
         // this must be done after the call to makeSizerLabelsSameSize()
         // because that function is expecting the first sizer item to be
         // a wxStaticText control
-        m_proxy_http_sizer->Prepend(40,1);
-        m_proxy_ftp_sizer->Prepend(40,1);
-        m_proxy_ssl_sizer->Prepend(40,1);
-        m_proxy_socks_sizer->Prepend(40,1);
+        m_proxy_http_sizer->Prepend(FromDIP(40), FromDIP(1));
+        m_proxy_ftp_sizer->Prepend(FromDIP(40), FromDIP(1));
+        m_proxy_ssl_sizer->Prepend(FromDIP(40), FromDIP(1));
+        m_proxy_socks_sizer->Prepend(FromDIP(40), FromDIP(1));
 
         // make sure the proxy type radio buttons are set properly
         m_proxy_direct_radio->SetValue(m_pi->internet_proxy_type == prefProxyDirect ? true : false);
@@ -1609,25 +1609,44 @@ public:
         wxStaticBox* ps_box = new wxStaticBox(this, -1, _("Proxy Settings (Advanced)"));
         wxStaticBoxSizer* proxy_sizer = new wxStaticBoxSizer(ps_box, wxVERTICAL);
         proxy_sizer->AddSpacer(10);
-        proxy_sizer->Add(m_proxy_direct_radio, 0, wxLEFT | wxRIGHT, 10);
+        proxy_sizer->Add(m_proxy_direct_radio, 0, wxLEFT | wxRIGHT, FromDIP(10));
         proxy_sizer->AddSpacer(8);
-        proxy_sizer->Add(m_proxy_autodetect_radio, 0, wxLEFT | wxRIGHT, 10);
+        proxy_sizer->Add(m_proxy_autodetect_radio, 0, wxLEFT | wxRIGHT, FromDIP(10));
         proxy_sizer->AddSpacer(8);
-        proxy_sizer->Add(m_proxy_manual_radio, 0, wxLEFT | wxRIGHT, 10);
+        proxy_sizer->Add(m_proxy_manual_radio, 0, wxLEFT | wxRIGHT, FromDIP(10));
         proxy_sizer->AddSpacer(8);
-        proxy_sizer->Add(m_proxy_http_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
+        proxy_sizer->Add(m_proxy_http_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(10));
         proxy_sizer->AddSpacer(8);
-        proxy_sizer->Add(m_proxy_ftp_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
+        proxy_sizer->Add(m_proxy_ftp_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(10));
         proxy_sizer->AddSpacer(8);
-        proxy_sizer->Add(m_proxy_ssl_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
+        proxy_sizer->Add(m_proxy_ssl_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(10));
         proxy_sizer->AddSpacer(8);
-        proxy_sizer->Add(m_proxy_socks_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
+        proxy_sizer->Add(m_proxy_socks_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(10));
         proxy_sizer->AddSpacer(10);
+
+
+        wxStaticText* browser_selection_label = new wxStaticText(this, wxID_ANY, _("Open Websites With:"));
+        m_browser_choice = new wxChoice(this, wxID_ANY);
+        m_browser_choice->Append(_("Application"));
+        m_browser_choice->Append(_("System Default"));
+        m_browser_choice->SetMinSize(wxSize(m_browser_choice->GetTextExtent("XXXXXXXXXXXXXXXXXXXXXX").x, -1));
+
+        wxStaticBox* browser_selection_box = new wxStaticBox(this, -1, _("Proxy Settings (Advanced)"));
+        wxStaticBoxSizer* browser_selection_sizer = new wxStaticBoxSizer(browser_selection_box, wxVERTICAL);
+
+        wxBoxSizer* choice_sizer = new wxBoxSizer(wxHORIZONTAL);
+        choice_sizer->Add(browser_selection_label, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, FromDIP(10));
+        choice_sizer->Add(m_browser_choice, 0, wxALIGN_CENTER_VERTICAL);
+
+        browser_selection_sizer->Add(choice_sizer, 1, wxEXPAND | wxALL, FromDIP(5));
+
 
         // create main sizer
         
         wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
         main_sizer->Add(proxy_sizer, 0, wxEXPAND);
+        main_sizer->AddSpacer(FromDIP(5));
+        main_sizer->Add(browser_selection_sizer, 0, wxEXPAND);
         SetSizer(main_sizer);
         Layout();
         
@@ -1786,6 +1805,10 @@ private:
     wxTextCtrl* m_proxy_socks_textctrl;
     wxTextCtrl* m_proxy_socksport_textctrl;
     
+    wxStaticBox* m_browser_selection_box;
+    wxStaticText* m_browser_selection_label;
+    wxChoice* m_browser_choice;
+
     DECLARE_EVENT_TABLE()
 };
 
@@ -1867,7 +1890,7 @@ public:
         popup_sizer = new wxStaticBoxSizer(popup_static_box,
                                              wxVERTICAL);
         popup_sizer->AddSpacer(10);
-        popup_sizer->Add(m_block_popups, 0, wxLEFT | wxRIGHT, 10);
+        popup_sizer->Add(m_block_popups, 0, wxLEFT | wxRIGHT, FromDIP(10));
         popup_sizer->AddSpacer(10);
         
         
@@ -1880,7 +1903,7 @@ public:
         cookies_sizer = new wxStaticBoxSizer(cookies_static_box,
                                              wxVERTICAL);
         cookies_sizer->AddSpacer(10);
-        cookies_sizer->Add(m_accept_cookies, 0, wxLEFT | wxRIGHT, 10);
+        cookies_sizer->Add(m_accept_cookies, 0, wxLEFT | wxRIGHT, FromDIP(10));
         cookies_sizer->AddSpacer(8);
         cookies_sizer->Add(m_keep_cookies_until_expired, 0, wxLEFT, 25);
         cookies_sizer->AddSpacer(8);
@@ -2262,11 +2285,11 @@ public:
         wxStaticBox* general_box = new wxStaticBox(this, -1, _("General"));
         wxStaticBoxSizer* general_sizer = new wxStaticBoxSizer(general_box, wxVERTICAL);
         general_sizer->AddSpacer(10);
-        general_sizer->Add(m_show_line_numbers, 0, wxLEFT | wxRIGHT, 10);
+        general_sizer->Add(m_show_line_numbers, 0, wxLEFT | wxRIGHT, FromDIP(10));
         general_sizer->AddSpacer(8);
-        general_sizer->Add(m_show_syntax_highlight, 0, wxLEFT | wxRIGHT, 10);
+        general_sizer->Add(m_show_syntax_highlight, 0, wxLEFT | wxRIGHT, FromDIP(10));
         general_sizer->AddSpacer(8);
-        general_sizer->Add(m_show_whitespace, 0, wxLEFT | wxRIGHT, 10);
+        general_sizer->Add(m_show_whitespace, 0, wxLEFT | wxRIGHT, FromDIP(10));
         general_sizer->AddSpacer(10);
         
         
@@ -2275,11 +2298,11 @@ public:
         wxStaticBox* tabs_box = new wxStaticBox(this, -1, _("Tabs"));
         wxStaticBoxSizer* tabs_sizer = new wxStaticBoxSizer(tabs_box, wxVERTICAL);
         tabs_sizer->AddSpacer(10);
-        tabs_sizer->Add(m_use_spaces, 0, wxLEFT | wxRIGHT, 10);
+        tabs_sizer->Add(m_use_spaces, 0, wxLEFT | wxRIGHT, FromDIP(10));
         tabs_sizer->AddSpacer(8);
         tabs_sizer->Add(m_spaces_size, 0, wxLEFT | wxRIGHT, 25);
         tabs_sizer->AddSpacer(15);
-        tabs_sizer->Add(m_use_tabs, 0, wxLEFT | wxRIGHT, 10);
+        tabs_sizer->Add(m_use_tabs, 0, wxLEFT | wxRIGHT, FromDIP(10));
         tabs_sizer->AddSpacer(8);
         tabs_sizer->Add(m_tab_size, 0, wxLEFT | wxRIGHT, 25);
         tabs_sizer->AddSpacer(10);
@@ -2613,6 +2636,7 @@ void OptionsPanel::loadPrefs(PrefInfo* info)
     info->internet_proxy_ssl_port = getAppPrefsLong(wxT("internet.proxy.ssl_port"));
     info->internet_proxy_socks = getAppPrefsString(wxT("internet.proxy.socks"));
     info->internet_proxy_socks_port = getAppPrefsLong(wxT("internet.proxy.socks_port"));
+    info->default_web_browser = getAppPrefsString(wxT("internet.default_web_browser"));
 
     // privacy preferences
     info->privacy_block_popups = getAppPrefsBoolean(wxT("privacy.popups.block"));
@@ -2686,6 +2710,7 @@ void OptionsPanel::savePrefs(PrefInfo* info)
     prefs->setLong(wxT("internet.proxy.ssl_port"), info->internet_proxy_ssl_port);
     prefs->setString(wxT("internet.proxy.socks"), info->internet_proxy_socks);
     prefs->setLong(wxT("internet.proxy.socks_port"), info->internet_proxy_socks_port);
+    prefs->setString(wxT("internet.default_web_browser"), info->default_web_browser);
 
     // privacy preferences
     m_privacy_page->serializeValues();
