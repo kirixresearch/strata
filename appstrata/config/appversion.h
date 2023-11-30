@@ -91,7 +91,7 @@
 #endif
 
 
-#define APP_NEW_TOOLBARS 1
+#define APP_NEW_TOOLBARS 0
 
 // version parts for the resource file (usually do not modify these)
 
