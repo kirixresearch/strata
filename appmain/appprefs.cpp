@@ -85,7 +85,7 @@ void initDefaultPreferences()
     prefs->setString(wxT("internet.proxy.ftp"),      wxEmptyString);
     prefs->setString(wxT("internet.proxy.ssl"),      wxEmptyString);
     prefs->setString(wxT("internet.proxy.socks"),    wxEmptyString);
-    
+    prefs->setString(wxT("internet.default_web_browser"), "app");
     
     // add default privacy preferences
     prefs->setBoolean(wxT("privacy.popups.block"),        true);

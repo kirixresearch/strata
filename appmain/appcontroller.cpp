@@ -4759,11 +4759,25 @@ bool AppController::openWeb(const wxString& _location,
     if (handled)
         return res;
 
-
     if (site_id)
         *site_id = 0;
 
     wxString location = _location;
+
+
+    if (open_mask & appOpenWebLinkPref)
+    {
+        // if the user prefers to have the links open in the system's default
+        // web browser, do so. Otherwise open inside the application
+        IAppPreferencesPtr prefs = g_app->getAppPreferences();
+        wxString pref = prefs->getString(wxT("internet.default_web_browser"), "app");
+        if (pref == "system")
+        {
+            wxLaunchDefaultBrowser(location);
+            return true;
+        }
+    }
+
 
     // finally, if we can't open the url as a file in the project, try
     // to open it as a browser document

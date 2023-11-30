@@ -3681,17 +3681,17 @@ void TableDoc::onGridLinkLeftClick(kcl::GridEvent& evt)
         // this allows links to be opened in a background tab and is a necessity for
         // anyone wanting to open a link from a table in the background on a laptop
         // without an external mouse    
-        g_app->getAppController()->openWeb(evt.GetString(), NULL, appOpenForceNewWindow, NULL);
+        g_app->getAppController()->openWeb(evt.GetString(), NULL, appOpenForceNewWindow | appOpenWebLinkPref, NULL);
     }
     else
     {
-        g_app->getAppController()->openWeb(evt.GetString());
+        g_app->getAppController()->openWeb(evt.GetString(), NULL, appOpenWebLinkPref);
     }
 }
 
 void TableDoc::onGridLinkMiddleClick(kcl::GridEvent& evt)
 {
-    g_app->getAppController()->openWeb(evt.GetString(), NULL, appOpenForceNewWindow, NULL);
+    g_app->getAppController()->openWeb(evt.GetString(), NULL, appOpenForceNewWindow | appOpenWebLinkPref, NULL);
 }
 
 void TableDoc::onGridCellRightClick(kcl::GridEvent& event)

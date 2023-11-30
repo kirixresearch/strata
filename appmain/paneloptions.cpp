@@ -1479,7 +1479,8 @@ private:
         ID_SslProxyTextCtrl,
         ID_SslProxyPortTextCtrl,
         ID_SocksProxyTextCtrl,
-        ID_SocksProxyPortTextCtrl
+        ID_SocksProxyPortTextCtrl,
+        ID_DefaultWebBrowserChoice
     };
 
 public:
@@ -1626,10 +1627,17 @@ public:
 
 
         wxStaticText* browser_selection_label = new wxStaticText(this, wxID_ANY, _("Open Websites With:"));
-        m_browser_choice = new wxChoice(this, wxID_ANY);
+        m_browser_choice = new wxChoice(this, ID_DefaultWebBrowserChoice);
         m_browser_choice->Append(_("Application"));
         m_browser_choice->Append(_("System Default"));
         m_browser_choice->SetMinSize(wxSize(m_browser_choice->GetTextExtent("XXXXXXXXXXXXXXXXXXXXXX").x, -1));
+
+        if (m_pi->default_web_browser == L"app")
+            m_browser_choice->SetSelection(0);
+        else if (m_pi->default_web_browser == L"system")
+            m_browser_choice->SetSelection(1);
+        else
+            m_browser_choice->SetSelection(0);
 
         wxStaticBox* browser_selection_box = new wxStaticBox(this, -1, _("Proxy Settings (Advanced)"));
         wxStaticBoxSizer* browser_selection_sizer = new wxStaticBoxSizer(browser_selection_box, wxVERTICAL);
@@ -1752,6 +1760,24 @@ public:
             m_pi->internet_proxy_socks_port = wxAtoi(evt.GetString());
     }
     
+    void onDefaultWebBrowserChoiceChanged(wxCommandEvent& event)
+    {
+        int sel = m_browser_choice->GetSelection();
+        if (sel == 0)
+        {
+            m_pi->default_web_browser = "app";
+        }
+        else if (sel == 1)
+        {
+            m_pi->default_web_browser = "system";
+        }
+        else
+        {
+            m_pi->default_web_browser = "app"; // default
+        }
+    }
+
+
     void restoreDefaultPrefs()
     {
         // get the default values from the default app preferences
@@ -1764,6 +1790,7 @@ public:
         m_pi->internet_proxy_ftp = getAppPrefsDefaultString(wxT("internet.proxy.ftp"));
         m_pi->internet_proxy_ssl = getAppPrefsDefaultString(wxT("internet.proxy.ssl"));
         m_pi->internet_proxy_socks = getAppPrefsDefaultString(wxT("internet.proxy.socks"));
+        m_pi->default_web_browser = getAppPrefsDefaultString(wxT("internet.default_web_browser"));
         
         // restore the default settings to controls
         m_proxy_http_textctrl->SetValue(m_pi->internet_proxy_http);
@@ -1824,6 +1851,7 @@ BEGIN_EVENT_TABLE(InternetOptionsPage, wxPanel)
     EVT_TEXT(ID_SslProxyPortTextCtrl, InternetOptionsPage::onSslProxyPortTextChanged)
     EVT_TEXT(ID_SocksProxyTextCtrl, InternetOptionsPage::onSocksProxyTextChanged)
     EVT_TEXT(ID_SocksProxyPortTextCtrl, InternetOptionsPage::onSocksProxyPortTextChanged)
+    EVT_CHOICE(ID_DefaultWebBrowserChoice, InternetOptionsPage::onDefaultWebBrowserChoiceChanged)
 END_EVENT_TABLE()
 
 

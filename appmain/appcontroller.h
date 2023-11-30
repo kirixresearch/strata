@@ -58,6 +58,8 @@ enum
     appOpenAsWeb = 1 << 5,
     appOpenInLayout = 1 << 6,
 
+    appOpenWebLinkPref = 1 << 7,  // open web links in system browser, if preference internet.default_web_browser is set to "system"
+
     appOpenDefault = appOpenActivateNewWindow
 };
 
