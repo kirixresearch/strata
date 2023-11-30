@@ -1626,7 +1626,7 @@ public:
         proxy_sizer->AddSpacer(10);
 
 
-        wxStaticText* browser_selection_label = new wxStaticText(this, wxID_ANY, _("Open Websites With:"));
+        wxStaticText* browser_selection_label = new wxStaticText(this, wxID_ANY, _("Open Web Links With:"));
         m_browser_choice = new wxChoice(this, ID_DefaultWebBrowserChoice);
         m_browser_choice->Append(_("Application"));
         m_browser_choice->Append(_("System Default"));
