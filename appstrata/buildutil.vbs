@@ -174,5 +174,5 @@ End Function
 ' ShowUsage function
 ' Displays the usage instructions for the script.
 Function ShowUsage
-    WScript.Echo "Usage: buildutil.vbs {config_dir} {write_config|increment|show_buildnum|show_guid|process_wix|set_version|open}"
+    WScript.Echo "Usage: buildutil.vbs {config_dir} {write_config|increment|show_buildnum|show_guid|set_version|open}"
 End Function
