@@ -17,7 +17,6 @@
 #include "textdoc.h"
 #include "extensionmgr.h"
 #include "feedparser.h"
-#include "dlgpagesetup.h"
 #include "dbdoc.h"
 #include "bookmarkfs.h"
 #include "linkbar.h"
@@ -175,7 +174,6 @@ BEGIN_EVENT_TABLE(WebDoc, wxWindow)
     EVT_MENU(ID_File_Stop, WebDoc::onStop)
     EVT_MENU(ID_File_SaveAsExternal, WebDoc::onSaveAsExternal)
     EVT_MENU(ID_File_Print, WebDoc::onPrint)
-    EVT_MENU(ID_File_PageSetup, WebDoc::onPageSetup)
     EVT_MENU(ID_View_ZoomIn, WebDoc::onZoomIn)
     EVT_MENU(ID_View_ZoomOut, WebDoc::onZoomOut)
     EVT_MENU(ID_View_ZoomToActual, WebDoc::onZoomToActual)
@@ -211,6 +209,7 @@ BEGIN_EVENT_TABLE(WebDoc, wxWindow)
     EVT_UPDATE_UI(ID_File_Save, WebDoc::onUpdateUI_DisableAlways)
     EVT_UPDATE_UI(ID_File_SaveAs, WebDoc::onUpdateUI_DisableAlways)
     EVT_UPDATE_UI(ID_File_Run, WebDoc::onUpdateUI_DisableAlways)
+    EVT_UPDATE_UI(ID_File_PageSetup, WebDoc::onUpdateUI_DisableAlways)
 
     // enable/disable some of the file items based on conditions
     EVT_UPDATE_UI(ID_File_Reload, WebDoc::onUpdateUI)
@@ -585,46 +584,6 @@ void WebDoc::onSaveAsExternal(wxCommandEvent& evt)
 void WebDoc::onPrint(wxCommandEvent& evt)
 {
      m_webview->Print();
-}
-
-void WebDoc::onPageSetup(wxCommandEvent& evt)
-{
-    // get the current page settings
-    double page_width = 0;
-    double page_height = 0;
-    double left_margin = 0;
-    double right_margin = 0;
-    double top_margin = 0;
-    double bottom_margin = 0;
-    int orientation = wxPORTRAIT;
-
-   // m_webcontrol->GetPageSettings(&orientation, &page_width, &page_height,
-   //                               &left_margin, &right_margin, &top_margin, &bottom_margin);
-
-    PageSetupDialog dlg(this);
-    dlg.setPageDimensions(page_width, page_height);
-    dlg.setOrientation(orientation);
-    dlg.setMargins(left_margin,
-                   right_margin,
-                   top_margin,
-                   bottom_margin);
-
-    // set the new page settings
-    if (dlg.ShowModal() == wxID_OK)
-    {
-        dlg.getPageDimensions(&page_width, &page_height);
-        orientation = dlg.getOrientation();
-        dlg.getMargins(&left_margin,
-                       &right_margin,
-                       &top_margin,
-                       &bottom_margin);
-
-   //     m_webcontrol->SetPageSettings(orientation,
-   //                                   page_width, page_height,
-   //                                   left_margin, right_margin, top_margin, bottom_margin);
-    }
-
-    setDocumentFocus();
 }
 
 void WebDoc::onCutSelection(wxCommandEvent& evt)

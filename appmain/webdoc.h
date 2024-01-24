@@ -222,7 +222,6 @@ private:
     // event handlers
     
     void onPrint(wxCommandEvent& evt);
-    void onPageSetup(wxCommandEvent& ev);
     void onSaveAsExternal(wxCommandEvent& evt);
     void onCutSelection(wxCommandEvent& evt);
     void onCopySelection(wxCommandEvent& evt);
