@@ -19,6 +19,8 @@
 #include "../kcanvas/kcanvas.h"
 #include "../kcanvas/graphicsobj.h"
 
+#include "../webconnect/webcontrol.h"
+#include "../webconnect/webframe.h"
 
 enum
 {

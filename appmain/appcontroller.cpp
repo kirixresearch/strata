@@ -69,6 +69,9 @@
 #include "linkbar.h"
 #include "dlglinkprops.h"
 
+#include "../webconnect/webcontrol.h"
+#include "../webconnect/webframe.h"
+
 #if PALADIN_ENABLED
 extern paladin::Authentication* g_auth;
 #endif

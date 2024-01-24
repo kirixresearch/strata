@@ -12,6 +12,7 @@
 #ifndef H_APP_SCRIPTWEBBROWSER_H
 #define H_APP_SCRIPTWEBBROWSER_H
 
+class wxWebControl;
 
 class WebBrowser : public FormControl
 {

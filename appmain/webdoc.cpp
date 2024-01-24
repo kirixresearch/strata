@@ -23,7 +23,6 @@
 #include "linkbar.h"
 #include "panelfind.h"
 #include "dlgcustomprompt.h"
-#include "../webconnect/webcontrol.h"
 #include <wx/webview.h>
 #include <wx/fs_inet.h>
 #include <wx/stdpaths.h>
@@ -32,6 +31,9 @@
 #include <kl/md5.h>
 #include <kl/thread.h>
 
+
+#include "../webconnect/webcontrol.h"
+#include "../webconnect/webframe.h"
 
 #ifdef __WXGTK__
 #include <dlfcn.h>
