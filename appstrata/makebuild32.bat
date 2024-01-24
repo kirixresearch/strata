@@ -119,11 +119,6 @@ REM -- zip up the graphics images --
 IF EXIST %VC_OUTPUT_PATH%\imgres.zip erase %VC_OUTPUT_PATH%\imgres.zip
 %SOURCE_PATH%\zip -0 -j %VC_OUTPUT_PATH%\imgres.zip %SOURCE_PATH%\appstrata\img\*.svg %SOURCE_PATH%\appstrata\img\*.png
 
-REM -- zip up the webres files --
-
-IF EXIST %VC_OUTPUT_PATH%\webres.jar erase %VC_OUTPUT_PATH%\webres.jar
-%SOURCE_PATH%\zip -j %VC_OUTPUT_PATH%\webres.jar %WEBRES_DIR%\*.*
-
 REM -- make .mo translation files from the .po files
 
 %MSGFMT% %SOURCE_PATH%\appmain\i18n\de\messages.po -o %SOURCE_PATH%\appmain\i18n\de\messages.mo
@@ -144,7 +139,9 @@ copy %VC_OUTPUT_PATH%\xdoracle.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdpgsql.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdsqlite.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\imgres.zip %BUILDSRC%\bin /Y
-copy %VC_OUTPUT_PATH%\webres.jar %BUILDSRC%\bin /Y
+
+xcopy %WEBRES_DIR%\*.* %BUILDSRC%\webres /s/e/r/v/k/f/c/h
+
 mkdir %BUILDSRC%\i18n\de >nul
 copy %SOURCE_PATH%\appmain\i18n\de\messages.mo %BUILDSRC%\i18n\de
 
