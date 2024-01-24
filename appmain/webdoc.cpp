@@ -30,6 +30,7 @@
 #include <kl/regex.h>
 #include <kl/md5.h>
 #include <kl/thread.h>
+#include <wx/mstream.h>
 
 
 const int wxID_WEB = 9001;
@@ -156,6 +157,11 @@ END_EVENT_TABLE()
 
 
 
+
+
+
+
+
 BEGIN_EVENT_TABLE(WebDoc, wxWindow)
     EVT_MENU(ID_Edit_Cut, WebDoc::onCutSelection)
     EVT_MENU(ID_Edit_Copy, WebDoc::onCopySelection)
@@ -181,6 +187,8 @@ BEGIN_EVENT_TABLE(WebDoc, wxWindow)
     EVT_WEBVIEW_LOADED(wxID_WEBVIEW, WebDoc::onWebViewDocumentLoaded)
     EVT_WEBVIEW_TITLE_CHANGED(wxID_WEBVIEW, WebDoc::onWebViewTitleChanged)
     EVT_WEBVIEW_NAVIGATING(wxID_WEBVIEW, WebDoc::onWebViewNavigating)
+    EVT_WEBVIEW_NAVIGATED(wxID_WEBVIEW, WebDoc::onWebViewNavigated)
+    EVT_WEBVIEW_ERROR(wxID_WEBVIEW, WebDoc::onWebViewError)
 
     // disable the data items
     EVT_UPDATE_UI_RANGE(ID_Data_First, ID_Data_Last, WebDoc::onUpdateUI_DisableAlways)
@@ -284,6 +292,8 @@ bool WebDoc::initDoc(IFramePtr frame,
     
     m_webview = wxWebView::New(this, wxID_WEBVIEW, wxWebViewDefaultURLStr, wxPoint(0,0), docsite_wnd->GetClientSize(), wxWebViewBackendDefault, wxBORDER_NONE);
     m_web = m_webview;
+
+    m_webview->RegisterHandler(wxSharedPtr<wxWebViewHandler>(new JarWebViewHandler()));
 
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->Add(m_web, 1, wxEXPAND);
@@ -981,5 +991,19 @@ void WebDoc::onWebViewDocumentLoaded(wxWebViewEvent& evt)
 
 void WebDoc::onWebViewNavigating(wxWebViewEvent& evt)
 {
+    if (!m_bitmap_updater.IsRunning())
+    {
+        m_bitmap_updater.start();
+    }
+}
 
+
+void WebDoc::onWebViewNavigated(wxWebViewEvent& evt)
+{
+    m_bitmap_updater.stop();
+}
+
+
+void WebDoc::onWebViewError(wxWebViewEvent& evt)
+{
 }

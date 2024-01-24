@@ -6977,7 +6977,7 @@ void AppController::showAbout()
     // not wxWebConnect, therefore display the simple dialog box
     // on 64-bit builds as well
 
-    if (!doc->isWebBrowserOk() || sizeof(void*) == 8)
+    if (!doc->isWebBrowserOk())
     {
         wxString bit = wxT("");
         if (sizeof(void*) == 8)
@@ -6985,7 +6985,7 @@ void AppController::showAbout()
 
         wxString appname = APPLICATION_NAME;
         wxString message;
-        message.Printf(wxT("%s %d.%d.%d.%d%s - %s\n\nThis software contains an unmodified binary version of the open-source XULRunner engine as provided by the Mozilla Foundation.  Please read the about:license screen for more information."),
+        message.Printf(wxT("%s %d.%d.%d.%d%s - %s"),
                  appname.c_str(),
                  APP_VERSION_MAJOR,
                  APP_VERSION_MINOR,

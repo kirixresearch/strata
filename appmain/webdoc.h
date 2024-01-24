@@ -245,6 +245,8 @@ private:
     void onWebViewDocumentLoaded(wxWebViewEvent& evt);
     void onWebViewTitleChanged(wxWebViewEvent& evt);
     void onWebViewNavigating(wxWebViewEvent& evt);
+    void onWebViewNavigated(wxWebViewEvent& evt);
+    void onWebViewError(wxWebViewEvent& evt);
 
     void onFrameEvent(FrameworkEvent& evt);
 
