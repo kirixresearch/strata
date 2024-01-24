@@ -181,7 +181,6 @@
         <ComponentRef Id="CoreRegistry"/>
         <ComponentRef Id="Samples"/>
         <ComponentRef Id="Translation_de"/>
-        <ComponentGroupRef Id="xr"/>
     </Feature>
 
 

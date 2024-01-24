@@ -180,11 +180,11 @@ erase %SETUP_PATH%\%WXS_NAME%.msi /f /q 2>nul
 erase %SETUP_PATH%\*.wixobj /f /q >nul
 %BUILDUTIL% process_wix %SETUP_PATH%\%WXS_NAME%.wxs %SETUP_PATH%\%WXS_NAME%_tmp.wxs
 
-%WIX_PATH%\heat dir %BUILDSRCXR% -var %BUILDSRCXR% -ke -gg -sreg -dr INSTALLDIR -cg xr -var env.buildsrcxr -out %SETUP_PATH%\xr.wxs
-%WIX_PATH%\candle %SETUP_PATH%\xr.wxs -arch x64 -o %SETUP_PATH%\xr.wixobj
+REM %WIX_PATH%\heat dir %BUILDSRCXR% -var %BUILDSRCXR% -ke -gg -sreg -dr INSTALLDIR -cg xr -var env.buildsrcxr -out %SETUP_PATH%\xr.wxs
+REM %WIX_PATH%\candle %SETUP_PATH%\xr.wxs -arch x64 -o %SETUP_PATH%\xr.wixobj
 %WIX_PATH%\candle %SETUP_PATH%\%WXS_NAME%_tmp.wxs -arch x64 -o %SETUP_PATH%\%WXS_NAME%.wixobj
 
-%WIX_PATH%\light -ext WixUIExtension %SETUP_PATH%\%WXS_NAME%.wixobj %SETUP_PATH%\xr.wixobj -out %SETUP_PATH%\%WXS_NAME%.msi
+%WIX_PATH%\light -ext WixUIExtension %SETUP_PATH%\%WXS_NAME%.wixobj -out %SETUP_PATH%\%WXS_NAME%.msi
 if not exist %SETUP_PATH%\%WXS_NAME%.msi (
     echo The MSI Build step failed -- .msi setup file missing
     goto end
