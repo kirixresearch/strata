@@ -293,8 +293,6 @@ bool WebDoc::initDoc(IFramePtr frame,
     m_webview = wxWebView::New(this, wxID_WEBVIEW, wxWebViewDefaultURLStr, wxPoint(0,0), docsite_wnd->GetClientSize(), wxWebViewBackendDefault, wxBORDER_NONE);
     m_web = m_webview;
 
-    m_webview->RegisterHandler(wxSharedPtr<wxWebViewHandler>(new JarWebViewHandler()));
-
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->Add(m_web, 1, wxEXPAND);
     SetSizer(main_sizer);
@@ -780,10 +778,10 @@ public:
 void WebDoc::showWebRes(int webres_id)
 {
     wxString path = g_app->getInstallPath();
+    path = xf_get_file_directory(path.ToStdWstring());
     path = filenameToUrl(path);
     if (path.IsEmpty() || path[path.Length()-1] != wxT('/'))
-        path += wxT('/');
-    path += wxT("webres.jar!/");
+        path += "/webres/about/";
     
     switch (webres_id)
     {
@@ -793,10 +791,7 @@ void WebDoc::showWebRes(int webres_id)
         case webresDownloading:    path += wxT("download.html");         break;
         case webresServerNotFound: path += wxT("server_not_found.html"); break;
     }
-    
-    path.Prepend(wxT("jar:"));
-    //openURI(path);
-    
+ 
     WebDocLoadDeferred* l = new WebDocLoadDeferred(this, path);
 }
 
@@ -805,52 +800,6 @@ wxImage WebDoc::getFavIcon()
     return m_favicon;
 }
 
-
-
-static wxString extensionFromMimeType(const wxString& _mime_type)
-{
-    wxString mime_type = _mime_type;
-    mime_type.MakeLower();
-    
-    if (mime_type == wxT("application/excel") ||
-        mime_type == wxT("application/vnd.ms-excel") ||
-        mime_type == wxT("application/vnd.msexcel") ||
-        mime_type == wxT("application/x-excel") ||
-        mime_type == wxT("application/x-msexcel"))
-    {
-        return wxT("xls");
-    }
-    
-    if (mime_type == wxT("application/vnd.interchange-csv"))
-    {
-        return wxT("icsv");
-    }
-    
-    if (mime_type == wxT("text/comma-separated-values") ||
-        mime_type == wxT("text/csv") ||
-        mime_type == wxT("application/csv"))
-    {
-        return wxT("csv");
-    }
-    
-    if (mime_type == wxT("text/tab-separated-values") ||
-        mime_type == wxT("text/tsv") ||
-        mime_type == wxT("application/tsv"))
-    {
-        return wxT("tsv");
-    }
-    
-    if (mime_type == wxT("application/dbase") ||
-        mime_type == wxT("application/x-dbase") ||
-        mime_type == wxT("application/dbf") ||
-        mime_type == wxT("application/x-dbf") ||
-        mime_type == wxT("zz-application/zz-winassoc-dbf"))
-    {
-        return wxT("dbf");
-    }
-    
-    return wxEmptyString;
-}
 
 void WebDoc::onUpdateUI_EnableAlways(wxUpdateUIEvent& evt)
 {
@@ -1006,4 +955,5 @@ void WebDoc::onWebViewNavigated(wxWebViewEvent& evt)
 
 void WebDoc::onWebViewError(wxWebViewEvent& evt)
 {
+    m_bitmap_updater.stop();
 }
