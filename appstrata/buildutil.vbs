@@ -132,7 +132,15 @@ Function ProcessWixFile(input_file, output_file)
         End If
 
         If InStr(line, "%VERSION%") <> 0 Then
-            line = Replace(line, "%VERSION%", GetVersionString())
+            line = Replace(line, "%VERSION%", GetQuadVersionString())
+        End If
+		
+		If InStr(line, "%VERSIONQUAD%") <> 0 Then
+            line = Replace(line, "%VERSIONQUAD%", GetQuadVersionString())
+        End If
+		
+		If InStr(line, "%VERSIONTRIPLE%") <> 0 Then
+            line = Replace(line, "%VERSIONTRIPLE%", GetTripleVersionString())
         End If
 
         outf.WriteLine(line)
@@ -170,8 +178,12 @@ Function PadDigits(n, totalDigits)
     PadDigits = Right(String(totalDigits,"0") & n, totalDigits) 
 End Function 
 
-Function GetVersionString
+Function GetQuadVersionString
     GetVersionString = VersionMajor & "." & VersionMinor & VersionSubminor & "." & PadDigits(VersionBuildSerial,4)
+End Function
+
+Function GetTripleVersionString
+    GetVersionString = VersionMajor & "." & VersionMinor & VersionSubminor
 End Function
 
 Function ShowUsage
