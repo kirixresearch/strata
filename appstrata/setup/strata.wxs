@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-<!--<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">-->
-    
+ 
     <Product Name="Kirix Strata"
         Id="*"
         UpgradeCode="53839292-94DC-4849-A4A9-7373BAC4EF1A" 
@@ -51,18 +50,10 @@
     
     <Directory Id="TARGETDIR" Name="SourceDir">
     
-        <!--<Merge Id="CRT" Language="0" SourceFile="$(env.buildsrc)\setup\Microsoft_VC140_CRT_x86.msm" DiskId="1" />-->
-    
         <Directory Id="ProgramFilesFolder" Name="PFiles">
             <Directory Id="INSTALLDIR" Name="Kirix Strata">
                 <Directory Id="PKG_BINDIR" Name="bin">
                 
-                    <!--
-                    <Component Id="Documentation Files"  Guid="8637E553-C046-60E0-9101-8D35A2870C86">
-                        <File Id="readme" Name="Readme.txt" DiskId="1" src="Readme.txt"/>
-                    </Component>
-                    -->
-
                     <Component Id="Core" Guid="B081FEDE-736F-541C-26EA-BA1015D31B38">
                         <File Id="kstrata" Name="kstrata.exe" DiskId="1" Source="$(env.buildsrc)\bin\kstrata.exe" KeyPath="yes">
                             <Shortcut Id="KirixStrataProgramMenuShortcut"
@@ -78,8 +69,6 @@
                         </File>
 
                         <File Id="imgres"   Name="imgres.zip"   DiskId="1" Source="$(env.buildsrc)\bin\imgres.zip"/>
-                        <File Id="webres"   Name="webres.jar"   DiskId="1" Source="$(env.buildsrc)\bin\webres.jar"/>
-
 
                         <File Id="xdfs"     Name="xdfs.dll"     DiskId="1" Source="$(env.buildsrc)\bin\xdfs.dll"/>
                         <File Id="xdexcel"  Name="xdexcel.dll"  DiskId="1" Source="$(env.buildsrc)\bin\xdexcel.dll"/>
@@ -138,11 +127,6 @@
                             <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
                         </RegistryKey>
 
-                        <!--
-                            <Registry Id="Registry9" Root="HKCR" Key="kirix.kpgfile" Name="BrowserFlags" Type="integer" Value="8" />
-                            <Registry Id="RegistryB" Root="HKCR" Key="kirix.kpgfile" Name="EditFlags" Type="integer" Value="65536" />
-                        -->
-
                     </Component>
                     
                 </Directory>
@@ -163,6 +147,17 @@
                     </Component>
                 </Directory>
                 
+                <Directory Id="PKG_WEBRES_DIR" Name="webres">
+                    <Directory Id="PKG_WEBRESABOUT_DIR" Name="about">
+                        <Component Id="AboutFiles" Guid="53938A7C-4566-45f5-A42C-3FAA8C652068">
+                            <File Id="webres_about_html"       Name="about.html"       DiskId="1" Source="$(env.buildsrc)\webres\about\about.html" KeyPath="yes"/>
+                            <File Id="webres_kstrata_logo_png" Name="kstrata_logo.png" DiskId="1" Source="$(env.buildsrc)\webres\about\kstrata_logo.png"/>
+                            <File Id="webres_license_html"     Name="license.html"     DiskId="1" Source="$(env.buildsrc)\webres\about\license.html"/>
+                            <File Id="webres_oss_html"         Name="oss_html"         DiskId="1" Source="$(env.buildsrc)\webres\about\oss_html"/>
+                        </Component>
+                    </Directory>
+                </Directory>
+
             </Directory>
         </Directory>
 
@@ -182,6 +177,7 @@
         <ComponentRef Id="CoreRegistry"/>
         <ComponentRef Id="Samples"/>
         <ComponentRef Id="Translation_de"/>
+        <ComponentRef Id="AboutFiles"/>
     </Feature>
 
 
