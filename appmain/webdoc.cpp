@@ -2188,7 +2188,7 @@ WebDoc::WebDoc(bool use_wxwebview)
     m_webcontrol = NULL;
     m_webview = NULL;
     m_web = NULL;
-    m_use_wxwebview = use_wxwebview;
+    m_use_wxwebview = true;// use_wxwebview;
     m_site_id = 0;
 }
 
