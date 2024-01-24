@@ -140,7 +140,7 @@ copy %VC_OUTPUT_PATH%\xdpgsql.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdsqlite.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\imgres.zip %BUILDSRC%\bin /Y
 
-xcopy %WEBRES_DIR%\*.* %BUILDSRC%\webres /s/e/r/v/k/f/c/h
+xcopy %WEBRES_DIR%\*.* %BUILDSRC%\webres /s/e/r/v/k/f/c/h/y
 
 mkdir %BUILDSRC%\i18n\de >nul
 copy %SOURCE_PATH%\appmain\i18n\de\messages.mo %BUILDSRC%\i18n\de
