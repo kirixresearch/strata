@@ -128,7 +128,7 @@ Function SetVersion(input_file, output_file)
         End If
 
         If InStr(line, "%VERSIONBUILD%") <> 0 Then
-            line = Replace(line, "%VERSIONBUILD%", GetTripleVersionString())
+            line = Replace(line, "%VERSIONBUILD%", GetBuildNumberString())
         End If
 
         outf.WriteLine(line)
@@ -177,7 +177,7 @@ End Function
 
 
 ' GetBuildNumberString function
-' Returns a string representation of the current version in three-number format.
+' Returns a string representation of the current build number.
 Function GetBuildNumberString
     GetBuildNumberString = PadDigits(VersionBuildSerial, 4)
 End Function
