@@ -154,7 +154,7 @@
                             <File Id="webres_about_html"       Name="about.html"       DiskId="1" Source="$(env.buildsrc)\webres\about\about.html" KeyPath="yes"/>
                             <File Id="webres_kstrata_logo_png" Name="kstrata_logo.png" DiskId="1" Source="$(env.buildsrc)\webres\about\kstrata_logo.png"/>
                             <File Id="webres_license_html"     Name="license.html"     DiskId="1" Source="$(env.buildsrc)\webres\about\license.html"/>
-                            <File Id="webres_oss_html"         Name="oss_html"         DiskId="1" Source="$(env.buildsrc)\webres\about\oss_html"/>
+                            <File Id="webres_oss_html"         Name="oss.html"         DiskId="1" Source="$(env.buildsrc)\webres\about\oss.html"/>
                         </Component>
                     </Directory>
                 </Directory>
