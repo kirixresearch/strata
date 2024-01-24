@@ -23,7 +23,7 @@ set WXS_NAME=strata
 set WEBRES_DIR=%SOURCE_PATH%\appstrata\webres
 set BUILD_PROJECT=appstrata
 set BUILD_SLN=%SOURCE_PATH%\appstrata\sln\build.sln
-set BUILDUTIL=cscript /nologo c:\build\common\buildutil.vbs c:\build\common
+set BUILDUTIL=cscript /nologo %SOURCE_PATH%\appstrata\buildutil.vbs c:\build\common
 
 REM -- these variables are used by the WIX source files --
 set BUILDSRC=c:\build\x86\buildsrc
