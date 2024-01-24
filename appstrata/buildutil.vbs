@@ -127,6 +127,10 @@ Function SetVersion(input_file, output_file)
             line = Replace(line, "%VERSIONTRIPLE%", GetTripleVersionString())
         End If
 
+        If InStr(line, "%VERSIONBUILD%") <> 0 Then
+            line = Replace(line, "%VERSIONBUILD%", GetTripleVersionString())
+        End If
+
         outf.WriteLine(line)
     Wend
 
@@ -162,14 +166,22 @@ End Function
 ' GetQuadVersionString function
 ' Returns a string representation of the current version in four-number format.
 Function GetQuadVersionString
-    GetVersionString = VersionMajor & "." & VersionMinor & "." & VersionSubminor & "." & PadDigits(VersionBuildSerial, 4)
+    GetQuadVersionString = VersionMajor & "." & VersionMinor & "." & VersionSubminor & "." & PadDigits(VersionBuildSerial, 4)
 End Function
 
 ' GetTripleVersionString function
 ' Returns a string representation of the current version in three-number format.
 Function GetTripleVersionString
-    GetVersionString = VersionMajor & "." & VersionMinor & "." & VersionSubminor
+    GetTripleVersionString = VersionMajor & "." & VersionMinor & "." & VersionSubminor
 End Function
+
+
+' GetBuildNumberString function
+' Returns a string representation of the current version in three-number format.
+Function GetBuildNumberString
+    GetBuildNumberString = PadDigits(VersionBuildSerial, 4)
+End Function
+
 
 ' ShowUsage function
 ' Displays the usage instructions for the script.
