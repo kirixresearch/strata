@@ -135,15 +135,6 @@ private:
 
 
 
-
-
-
-
-
-
-
-
-
 class WebDoc : public wxWindow,
                public IWebDoc,
                public IFindTarget,
@@ -247,21 +238,6 @@ private:
     void onZoomOut(wxCommandEvent& evt);
     void onZoomToActual(wxCommandEvent& evt);
     void onSize(wxSizeEvent& evt);
-    void onStatusChange(wxWebEvent& evt);
-    void onStateChange(wxWebEvent& evt);
-    void onLocationChange(wxWebEvent& evt);
-    void onTitleChange(wxWebEvent& evt);
-    void onShowContextMenu(wxWebEvent& evt);
-    void onLeftUp(wxWebEvent& evt);
-    void onMiddleUp(wxWebEvent& evt);
-    void onElementClick(wxWebEvent& evt);
-    void onCreateBrowserRequest(wxWebEvent& evt);
-    void onInitDownload(wxWebEvent& evt);
-    void onOpenURI(wxWebEvent& evt);
-    void onShouldHandleContent(wxWebEvent& evt);
-    void onFavIconAvailable(wxWebEvent& evt);
-    void onDOMContentLoaded(wxWebEvent& evt);
-    void onFsDataDropped(wxWebEvent& evt);
     void onUpdateUI_EnableAlways(wxUpdateUIEvent& evt);
     void onUpdateUI_DisableAlways(wxUpdateUIEvent& evt);
     void onUpdateUI(wxUpdateUIEvent& evt);
