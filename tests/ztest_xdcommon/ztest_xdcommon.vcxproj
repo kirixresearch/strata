@@ -115,7 +115,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>../../xd/xdcommon/lib/xdcommonud.lib;../../xd/xdcommonsql/lib/xdcommonsqlud.lib;../../kl/lib/klud.lib;../../kscript/lib/kscriptud.lib;../../supp/libzip/lib/Debug/zipstatic.lib;../../supp/zlib/zlib.lib;../../supp/expat/Debug/expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../../xd/xdcommon/lib/xdcommonud.lib;../../xd/xdcommonsql/lib/xdcommonsqlud.lib;../../kl/lib/klud.lib;../../kscript/lib/kscriptud.lib;../../supp/libzip/lib/Debug/zip.lib;../../supp/zlib/zlib.lib;../../supp/expat/Debug/expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -135,7 +135,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>../../xd/xdcommon/lib/xdcommonu.lib;../../xd/xdcommonsql/lib/xdcommonsqlu.lib;../../kl/lib/klu.lib;../../kscript/lib/kscriptu.lib;../../supp/libzip/lib/Release/zipstatic.lib;../../supp/zlib/zlib.lib;../../supp/expat/Release/expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../../xd/xdcommon/lib/xdcommonu.lib;../../xd/xdcommonsql/lib/xdcommonsqlu.lib;../../kl/lib/klu.lib;../../kscript/lib/kscriptu.lib;../../supp/libzip/lib/Release/zip.lib;../../supp/zlib/zlib.lib;../../supp/expat/Release/expat.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
