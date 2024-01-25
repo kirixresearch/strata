@@ -140,9 +140,9 @@ copy %VC_OUTPUT_PATH%\imgres.zip %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\webres.jar %BUILDSRC%\bin /Y
 
 xcopy %WEBRES_DIR%\*.* %BUILDSRC%\webres /s/e/r/v/k/f/c/h/y
-%BUILDUTIL% set_version %BUILDSRC%\webres\about.html %BUILDSRC%\webres\about.html
-%BUILDUTIL% set_version %BUILDSRC%\webres\license.html %BUILDSRC%\webres\license.html
-%BUILDUTIL% set_version %BUILDSRC%\webres\oss.html %BUILDSRC%\webres\oss.html
+%BUILDUTIL% set_version %WEBRES_DIR%\about\about.html %BUILDSRC%\webres\about\about.html
+%BUILDUTIL% set_version %WEBRES_DIR%\about\license.html %BUILDSRC%\webres\about\license.html
+%BUILDUTIL% set_version %WEBRES_DIR%\about\oss.html %BUILDSRC%\webres\about\oss.html
 
 mkdir %BUILDSRC%\i18n\de >nul
 copy %SOURCE_PATH%\appmain\i18n\de\messages.mo %BUILDSRC%\i18n\de
