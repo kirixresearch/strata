@@ -1,7 +1,10 @@
-
-// version info for main application executable
-#define APP_VERSION_MAJOR 5
-#define APP_VERSION_MINOR 1
-#define APP_VERSION_SUBMINOR 0
-#define APP_VERSION_BUILDSERIAL 2163
-
+/*!
+ *
+ * Copyright (c) 2007-2013, Kirix Research, LLC.  All rights reserved.
+ *
+ * Project:  XD Database Library
+ * Author:   Benjamin I. Williams
+ * Created:  2007-03-22
+ *
+ */
+ 
