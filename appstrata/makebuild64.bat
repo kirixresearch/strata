@@ -137,7 +137,6 @@ copy %VC_OUTPUT_PATH%\xdoracle.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdpgsql.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdsqlite.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\imgres.zip %BUILDSRC%\bin /Y
-copy %VC_OUTPUT_PATH%\webres.jar %BUILDSRC%\bin /Y
 
 xcopy %WEBRES_DIR%\*.* %BUILDSRC%\webres /s/e/r/v/k/f/c/h/y
 %BUILDUTIL% set_version %BUILDSRC%\webres\about.html %BUILDSRC%\webres\about.html
