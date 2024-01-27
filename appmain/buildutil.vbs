@@ -116,7 +116,7 @@ Function SetVersion(input_file, output_file)
         End If
 
         If InStr(line, "%VERSION%") <> 0 Then
-            line = Replace(line, "%VERSION%", GetQuadVersionString())
+            line = Replace(line, "%VERSION%", GetTripleVersionString())
         End If
 
         If InStr(line, "%VERSIONQUAD%") <> 0 Then
