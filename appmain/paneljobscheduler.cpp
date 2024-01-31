@@ -581,6 +581,7 @@ wxBoxSizer* JobSchedulerPanel::createVerticalSizer()
                                     wxT("08:00 AM"),
                                     wxDefaultPosition,
                                     FromDIP(wxSize(65, 21)));
+
     m_finishtime_textctrl->SetCursor(*wxSTANDARD_CURSOR);
     m_finishtime_textctrl->SetEditable(false);
 
@@ -588,6 +589,8 @@ wxBoxSizer* JobSchedulerPanel::createVerticalSizer()
                                     ID_FinishTime_SpinButton,
                                     wxDefaultPosition,
                                     FromDIP(wxSize(17, 21)));
+    m_finishtime_spinbutton->SetMin(-10000);
+    m_finishtime_spinbutton->SetMax(10000);
     m_finishtime_datectrl = new wxDatePickerCtrl(this, ID_FinishDate_DateCtrl);
 
     m_finishtime_sizer = new wxBoxSizer(wxHORIZONTAL);
@@ -614,6 +617,8 @@ wxBoxSizer* JobSchedulerPanel::createVerticalSizer()
                                     ID_StartTime_SpinButton,
                                     wxDefaultPosition,
                                     FromDIP(wxSize(17, 21)));
+    m_starttime_spinbutton->SetMin(-10000);
+    m_starttime_spinbutton->SetMax(10000);
     m_starttime_datectrl = new wxDatePickerCtrl(this, ID_StartDate_DateCtrl);
     
     // make sure the labels are lined up by adding this space
