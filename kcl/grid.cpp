@@ -7485,31 +7485,33 @@ void Grid::onMouse(wxMouseEvent& event)
             if (hitTest(event.m_x, event.m_y, &model_row, &view_col, &cell_xoff))
             {
                 int model_col = getColumnModelIdx(view_col);
-
-                kcl::CellProperties props;
-                getCellProperties(model_row, model_col, &props);
-
-                // if the hyperlink option is active and we find something
-                // that looks like a hyperlink, then trigger a left-click
-                // event on a link if the link is clicked on
-                if ((m_options & optActivateHyperlinks) || props.hyperlink)
+                if (model_col != -1)
                 {
-                    wxString cell_str = getCellString(model_row, model_col);
+                    kcl::CellProperties props;
+                    getCellProperties(model_row, model_col, &props);
 
-                    int url_pos = cell_str.Find(wxT("://"));
-                    if (props.hyperlink || (url_pos >= 4 && url_pos <= 10))
+                    // if the hyperlink option is active and we find something
+                    // that looks like a hyperlink, then trigger a left-click
+                    // event on a link if the link is clicked on
+                    if ((m_options & optActivateHyperlinks) || props.hyperlink)
                     {
-                        wxClientDC dc(this);
-                        wxSize text_extent = dc.GetTextExtent(cell_str);
+                        wxString cell_str = getCellString(model_row, model_col);
 
-                        if (cell_xoff < text_extent.GetWidth())
+                        int url_pos = cell_str.Find(wxT("://"));
+                        if (props.hyperlink || (url_pos >= 4 && url_pos <= 10))
                         {
-                            GridEvent evt;
-                            evt.SetColumn(model_col);
-                            evt.SetRow(model_row);
-                            evt.SetString(cell_str);
-                            evt.SetUserEvent(true);
-                            fireEvent(wxEVT_KCLGRID_LINK_LEFTCLICK, evt);
+                            wxClientDC dc(this);
+                            wxSize text_extent = dc.GetTextExtent(cell_str);
+
+                            if (cell_xoff < text_extent.GetWidth())
+                            {
+                                GridEvent evt;
+                                evt.SetColumn(model_col);
+                                evt.SetRow(model_row);
+                                evt.SetString(cell_str);
+                                evt.SetUserEvent(true);
+                                fireEvent(wxEVT_KCLGRID_LINK_LEFTCLICK, evt);
+                            }
                         }
                     }
                 }
