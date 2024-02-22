@@ -348,6 +348,8 @@ wxSize getMaxTextSize(wxStaticText* st0,
 void suppressConsoleLogging();
 wxString getProxyServer();
 
+void openExplorerWindow(const wxString& directoryPath);
+void openExplorerWindowAndSelectPath(const wxString& path);
 
 
 // -- utility classes ---------------------------------------------------------

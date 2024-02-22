@@ -545,7 +545,8 @@ enum
     ID_OpenProject,
     ID_RenameProject,
     ID_RemoveProject,
-    ID_DeleteProject
+    ID_DeleteProject,
+    ID_ShowProjectInExplorer
 };
 
 enum
@@ -563,6 +564,7 @@ BEGIN_EVENT_TABLE(DlgProjectMgr, wxDialog)
     EVT_MENU(ID_RemoveProject, DlgProjectMgr::onRemoveProject)
     EVT_MENU(ID_RenameProject, DlgProjectMgr::onRenameProject)
     EVT_MENU(ID_DeleteProject, DlgProjectMgr::onDeleteProject)
+    EVT_MENU(ID_ShowProjectInExplorer, DlgProjectMgr::onShowProjectInExplorer)
     EVT_BUTTON(ID_AddProject, DlgProjectMgr::onAddProject)
     EVT_BUTTON(wxID_OK, DlgProjectMgr::onOpenProject)
     EVT_BUTTON(wxID_CANCEL, DlgProjectMgr::onCancel)
@@ -808,7 +810,8 @@ void DlgProjectMgr::onGridCellRightClick(kcl::GridEvent& evt)
         menuPopup.AppendSeparator();
         menuPopup.Append(ID_RemoveProject, _("Remove from &List"));
         menuPopup.AppendSeparator();
-        menuPopup.Append(ID_DeleteProject, _("&Delete"));
+        //menuPopup.Append(ID_DeleteProject, _("&Delete"));
+        menuPopup.Append(ID_ShowProjectInExplorer, _("Show in Explorer"));
 
         wxPoint pt_mouse = ::wxGetMousePosition();
         pt_mouse = ScreenToClient(pt_mouse);
@@ -1073,3 +1076,18 @@ void DlgProjectMgr::onDeleteProject(wxCommandEvent& evt)
     m_grid->refresh(kcl::Grid::refreshAll);
 }
 
+
+
+void DlgProjectMgr::onShowProjectInExplorer(wxCommandEvent& evt)
+{
+    int row = m_grid->getCursorRow();
+    if (row < 0 || row >= m_grid->getRowCount())
+        return;
+    
+    std::vector<ProjectInfo>& connections = m_projmgr.getProjectEntries();
+    std::wstring location = connections[row].location;
+
+    std::wstring disk_location = getLocationFromString(location);
+
+    openExplorerWindowAndSelectPath(disk_location);
+}

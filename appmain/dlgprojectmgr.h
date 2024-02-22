@@ -33,6 +33,7 @@ private:
     void onRenameProject(wxCommandEvent& evt);
     void onRemoveProject(wxCommandEvent& evt);
     void onDeleteProject(wxCommandEvent& evt);
+    void onShowProjectInExplorer(wxCommandEvent& evt);
     void onCancel(wxCommandEvent& evt);
 
     void onGridCellRightClick(kcl::GridEvent& evt);

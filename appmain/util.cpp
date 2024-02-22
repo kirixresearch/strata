@@ -2133,6 +2133,41 @@ wxString getProxyServer()
 }
 
 
+void openExplorerWindow(const wxString& directoryPath)
+{
+#ifdef __WXMSW__
+    // on Windows, use the 'explorer' command
+    wxString command = "explorer \"" + directoryPath + "\"";
+    ::wxExecute(command);
+#elif defined(__WXMAC__) // macOS
+    // on macOS, use the 'open' command
+    wxString command = "open \"" + directoryPath + "\"";
+    ::wxExecute(command);
+#else // Linux
+    // on Linux, you might use 'xdg-open' for GNOME or KDE or specify another file manager
+    wxString command = "xdg-open \"" + directoryPath + "\"";
+    ::wxExecute(command);
+#endif
+}
+
+void openExplorerWindowAndSelectPath(const wxString& path)
+{
+    std::wstring pathW = path.wc_str();
+
+#ifdef __WXMSW__
+    std::wstring params = L"/select," + pathW;
+
+    // Use ShellExecute to open Explorer
+    ShellExecuteW(NULL, L"open", L"explorer.exe", params.c_str(), NULL, SW_SHOWNORMAL);
+#else
+    // On other platforms, just open the directory
+    openExplorerWindow(path);
+#endif
+
+}
+
+
+
 
 struct LocalePtrContainer
 {
