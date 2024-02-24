@@ -1978,8 +1978,33 @@ xd::IFileInfoEnumPtr OdbcDatabase::getFolderInfo(const std::wstring& path)
         f->type = xd::filetypeTable;
         f->format = xd::formatDefault;
 
-        std::wstring hash_src = m_server + L";" + m_database + L";" + m_path + L";" + kl::itowstring(m_port) + L";" + wtablename;
-        kl::makeLower(hash_src);
+        std::wstring hash_src;
+
+        // legacy support to help load old versions of marks/calcfields/etc -- with dsn, as well as sql server
+        if (m_using_dsn)
+        {
+            hash_src = L"xdodbc:dsn:";
+            hash_src = m_database.length() > 0 ? m_database : m_server;  // dsn should be stored in database, but if not, use server
+            hash_src += L":";
+            hash_src += wtablename;
+
+            kl::makeLower(hash_src);
+        }
+        else if (m_db_type == xd::dbtypeSqlServer)
+        {
+            hash_src = L"xdodbc:";
+            hash_src += m_server;
+            hash_src += L":";
+            hash_src += wtablename;
+
+            kl::makeLower(hash_src);
+        }
+        else
+        {
+            hash_src = m_server + L";" + m_database + L";" + m_path + L";" + kl::itowstring(m_port) + L";" + wtablename;
+            kl::makeLower(hash_src);
+        }
+
         f->object_id = kl::md5str(hash_src);
 
         retval->append(f);
