@@ -201,7 +201,8 @@ xd::ColumnInfo parseSqliteColumnDescription(const std::wstring& _col_desc)
     if (type == L"VARCHAR" ||
         type == L"CHAR" ||
         type == L"CHARACTER" ||
-        type == L"TEXT")
+        type == L"TEXT" ||
+        type == L"UUID")
     {
         colinfo.type = xd::typeCharacter;
         if (scale != 0)
@@ -221,7 +222,8 @@ xd::ColumnInfo parseSqliteColumnDescription(const std::wstring& _col_desc)
               type == L"DECIMAL" ||
               type == L"NUMERIC" ||
               type == L"NUMBER" ||
-              type == L"NUM")
+              type == L"NUM" ||
+              type == L"BIGINT")
     {
         colinfo.type = xd::typeNumeric;
     }

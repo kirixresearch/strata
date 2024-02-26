@@ -18,7 +18,7 @@
 #include "../xdcommon/localrowcache2.h"
 
 
-struct SlDataAccessInfo
+struct DuckdbDataAccessInfo
 {
     std::wstring name;
     int sqlite_type;
@@ -30,6 +30,7 @@ struct SlDataAccessInfo
     int datalen;
     bool calculated;
 
+    duckdb::Value value;
     std::string result_str;
     std::wstring result_wstr;
 };
@@ -119,7 +120,7 @@ private:
     xd::Structure m_structure;
     xd::Structure m_table_structure;
 
-    std::vector<SlDataAccessInfo> m_columns;
+    std::vector<DuckdbDataAccessInfo> m_columns;
 
     xd::tableord_t m_ordinal;
     std::wstring m_tablename;

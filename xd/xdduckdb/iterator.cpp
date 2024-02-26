@@ -102,10 +102,8 @@ bool DuckdbIterator::init(const std::wstring& _query)
 
 
     // prepare the sql query
-
-    skip(1);
-
     initColumns();
+    skip(1);
 
     return true;
 }
@@ -117,7 +115,7 @@ void DuckdbIterator::initColumns()
 
     for (i = 0; i < col_count; ++i)
     {
-        SlDataAccessInfo dai;
+        DuckdbDataAccessInfo dai;
 
         duckdb::LogicalType& logical_type = m_result.GetColumnType(i);
         duckdb::PhysicalType physical_type = logical_type.InternalType();
@@ -246,6 +244,28 @@ void DuckdbIterator::clearFieldData()
 
 void DuckdbIterator::skip(int delta)
 {
+    while (delta > 0)
+    {
+        if (m_result.next())
+        {
+            --delta;
+            m_position++;
+        }
+        else
+        {
+            m_eof = (delta > 0) ? true : false;
+            break;
+        }
+    }
+
+
+    size_t i, col_count = m_result.GetColumnCount();
+
+    for (i = 0; i < col_count; ++i)
+    {
+        m_columns[i].value = m_result.GetValue(i);
+    }
+    
 /*
     if (m_mode == DuckdbIterator::modeOffsetLimit || m_mode == DuckdbIterator::modeRowidRange)
     {
@@ -298,76 +318,19 @@ void DuckdbIterator::loadRow()
         return;
     }
 
-    const long long page_size = 500;
-    long long rown, page_start = ((m_position - 1) / page_size) * page_size;
 
-    std::wstring columns = m_qp.columns;
-    if (columns.length() == 0)
-        columns = L"*";
+    LocalRow2 row;
 
-    std::wstring quoted_object_name = xdGetTablenameFromPath(m_qp.from, true);
-
-    std::wstring sql = L"SELECT %columns% FROM %table%";
-    kl::replaceStr(sql, L"%columns%", columns);
-    kl::replaceStr(sql, L"%table%", quoted_object_name);
-
-    if (m_mode == DuckdbIterator::modeRowidRange)
+    for (i = 0; i < cnt; ++i)
     {
-        sql += kl::stdswprintf(L" WHERE rowid >= %lld AND rowid <= %lld", page_start+1, page_start+page_size);
+        text = sqlite3_column_text(stmt, i);
+        LocalRowValue v;
+        v.setData(text, strlen((const char*)text) + 1);
+        row.setColumnData(i, v);
     }
 
-    sql += L" ORDER BY rowid";
+    m_cache.putRow(rown, row);
 
-    if (m_mode == DuckdbIterator::modeOffsetLimit)
-    {
-        sql += kl::stdswprintf(L" LIMIT %lld OFFSET %lld", page_size, page_start);
-    }
-
-    std::string asql = (const char*)kl::toUtf8(sql);
-
-    sqlite3_stmt* stmt = NULL;
-    sqlite3_prepare_v2(m_sqlite, asql.c_str(), -1, &stmt, NULL);
-    if (stmt)
-    {
-        int i, cnt = sqlite3_column_count(stmt);
-
-        int res;
-        const unsigned char* text;
-
-        rown = page_start+1;
-        while (true)
-        {
-            res = sqlite3_step(stmt);
-
-            if (m_columns.size() == 0)
-            {
-                initColumns(stmt);
-            }
-
-            if (res == SQLITE_ROW)
-            {
-                LocalRow2 row;
-
-                for (i = 0; i < cnt; ++i)
-                {
-                    text = sqlite3_column_text(stmt, i);
-                    LocalRowValue v;
-                    v.setData(text, strlen((const char*)text) + 1);
-                    row.setColumnData(i, v);
-                }
-
-                m_cache.putRow(rown, row);
-
-                ++rown;
-            }
-            else if (res == SQLITE_DONE)
-            {
-                break;
-            }
-        }
-
-        sqlite3_finalize(stmt);
-    }
     */
 }
 
@@ -442,7 +405,7 @@ xd::Structure DuckdbIterator::getStructure()
     if (m_structure.isOk())
         return m_structure;
 
-    std::vector<SlDataAccessInfo>::iterator it;
+    std::vector<DuckdbDataAccessInfo>::iterator it;
     for (it = m_columns.begin(); it != m_columns.end(); ++it)
     {
         xd::ColumnInfo col;
@@ -471,7 +434,7 @@ bool DuckdbIterator::modifyStructure(const xd::StructureModify& mod_params, xd::
 
 xd::objhandle_t DuckdbIterator::getHandle(const std::wstring& expr)
 {
-    std::vector<SlDataAccessInfo>::iterator it;
+    std::vector<DuckdbDataAccessInfo>::iterator it;
     for (it = m_columns.begin();
          it != m_columns.end();
          ++it)
@@ -496,7 +459,7 @@ bool DuckdbIterator::releaseHandle(xd::objhandle_t data_handle)
 
 xd::ColumnInfo DuckdbIterator::getInfo(xd::objhandle_t data_handle)
 {
-    SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
+    DuckdbDataAccessInfo* dai = (DuckdbDataAccessInfo*)data_handle;
 
     xd::ColumnInfo colinfo;
     colinfo.name = dai->name;
@@ -511,7 +474,7 @@ xd::ColumnInfo DuckdbIterator::getInfo(xd::objhandle_t data_handle)
 
 int DuckdbIterator::getType(xd::objhandle_t data_handle)
 {
-    SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
+    DuckdbDataAccessInfo* dai = (DuckdbDataAccessInfo*)data_handle;
     if (dai == NULL)
         return xd::typeInvalid;
 
@@ -531,9 +494,7 @@ const unsigned char* DuckdbIterator::getRawPtr(xd::objhandle_t data_handle)
 
 const std::string& DuckdbIterator::getString(xd::objhandle_t data_handle)
 {
-    SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
-
-/*
+    DuckdbDataAccessInfo* dai = (DuckdbDataAccessInfo*)data_handle;
 
     if (m_eof || isNull(data_handle))
     {
@@ -541,61 +502,33 @@ const std::string& DuckdbIterator::getString(xd::objhandle_t data_handle)
     }
      else
     {
-        const unsigned char* ptr = sqlite3_column_text(m_stmt, dai->col_ordinal);
-
-        if (m_mode == DuckdbIterator::modeSqliteResult)
-        {
-            ptr = sqlite3_column_text(m_stmt, dai->col_ordinal);
-        }
-        else
-        {
-            LocalRowValue& val = m_cache_row.getColumnData(dai->col_ordinal);
-            ptr = val.getData();
-        }
-
-        
-        dai->result_str = kl::tostring(kl::fromUtf8((const char*)ptr));
+        dai->result_str = dai->value.ToString();
     }
 
-    */
     return dai->result_str;
 }
 
 const std::wstring& DuckdbIterator::getWideString(xd::objhandle_t data_handle)
 {
-    SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
+    DuckdbDataAccessInfo* dai = (DuckdbDataAccessInfo*)data_handle;
 
-    /*
     if (m_eof || isNull(data_handle))
     {
         return empty_wstring;
     }
-     else
+    else
     {
-        const unsigned char* ptr = sqlite3_column_text(m_stmt, dai->col_ordinal);
-
-        if (m_mode == DuckdbIterator::modeSqliteResult)
-        {
-            ptr = sqlite3_column_text(m_stmt, dai->col_ordinal);
-        }
-        else
-        {
-            LocalRowValue& val = m_cache_row.getColumnData(dai->col_ordinal);
-            ptr = val.getData();
-        }
-
-
-
-        dai->result_wstr = kl::fromUtf8((const char*)ptr);
+        dai->result_str = dai->value.ToString();
+        dai->result_wstr = kl::fromUtf8(dai->result_str);
     }
-    */
+
     return dai->result_wstr;
 
 }
 
 xd::datetime_t DuckdbIterator::getDateTime(xd::objhandle_t data_handle)
 {
-    SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
+    DuckdbDataAccessInfo* dai = (DuckdbDataAccessInfo*)data_handle;
 
     /*
     if (m_eof || isNull(data_handle))
@@ -669,7 +602,7 @@ xd::datetime_t DuckdbIterator::getDateTime(xd::objhandle_t data_handle)
 
 double DuckdbIterator::getDouble(xd::objhandle_t data_handle)
 {
-    SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
+    DuckdbDataAccessInfo* dai = (DuckdbDataAccessInfo*)data_handle;
     /*
     if (m_eof || isNull(data_handle))
         return 0.0;
@@ -686,7 +619,7 @@ double DuckdbIterator::getDouble(xd::objhandle_t data_handle)
 
 int DuckdbIterator::getInteger(xd::objhandle_t data_handle)
 {
-    SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
+    DuckdbDataAccessInfo* dai = (DuckdbDataAccessInfo*)data_handle;
     /*
     if (m_eof || isNull(data_handle))
         return 0;
@@ -703,7 +636,7 @@ int DuckdbIterator::getInteger(xd::objhandle_t data_handle)
 
 bool DuckdbIterator::getBoolean(xd::objhandle_t data_handle)
 {
-    SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
+    DuckdbDataAccessInfo* dai = (DuckdbDataAccessInfo*)data_handle;
     /*
     if (m_eof || isNull(data_handle))
         return 0;
@@ -720,19 +653,9 @@ bool DuckdbIterator::getBoolean(xd::objhandle_t data_handle)
 
 bool DuckdbIterator::isNull(xd::objhandle_t data_handle)
 {
-    SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
+    DuckdbDataAccessInfo* dai = (DuckdbDataAccessInfo*)data_handle;
     if (!dai)
         return true;
 
-        /*
-    if (m_mode == DuckdbIterator::modeOffsetLimit || m_mode == DuckdbIterator::modeRowidRange)
-    {
-        LocalRowValue& val = m_cache_row.getColumnData(dai->col_ordinal);
-        return val.isNull();
-    }
-
-    if (sqlite3_column_type(m_stmt, dai->col_ordinal) == SQLITE_NULL)
-        return true;
-        */
-    return false;
+    return dai->value.IsNull();
 }
