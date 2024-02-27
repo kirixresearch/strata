@@ -125,6 +125,55 @@ void DuckdbIterator::initColumns()
         dai.col_ordinal = (int)i;
         dai.calculated = false;
 
+        dai.width = 30;
+        dai.scale = 0;
+
+        switch (logical_type.id())
+        {
+            default:
+            case duckdb::LogicalTypeId::VARCHAR:
+                dai.xd_type = xd::typeCharacter;
+                break;
+
+            case duckdb::LogicalTypeId::DECIMAL:
+            {
+                uint8_t width = 15, scale = 0;
+                logical_type.GetDecimalProperties(width, scale);
+
+                dai.xd_type = xd::typeNumeric;
+                dai.scale = scale;
+                break;
+            }
+            
+            case duckdb::LogicalTypeId::FLOAT:
+            case duckdb::LogicalTypeId::DOUBLE:
+                dai.xd_type = xd::typeDouble;
+                break;
+
+            case duckdb::LogicalTypeId::TINYINT:
+            case duckdb::LogicalTypeId::SMALLINT:
+            case duckdb::LogicalTypeId::INTEGER:
+            case duckdb::LogicalTypeId::BIGINT:
+                dai.xd_type = xd::typeInteger;
+                break;
+
+            case duckdb::LogicalTypeId::BOOLEAN:
+                dai.xd_type = xd::typeBoolean;
+                break;
+
+            case duckdb::LogicalTypeId::DATE:
+                dai.xd_type = xd::typeDate;
+                break;
+
+            case duckdb::LogicalTypeId::TIMESTAMP:
+            case duckdb::LogicalTypeId::TIMESTAMP_SEC:
+            case duckdb::LogicalTypeId::TIMESTAMP_MS:
+            case duckdb::LogicalTypeId::TIMESTAMP_NS:
+                dai.xd_type = xd::typeDateTime;
+                break;
+        }
+
+        /*
         switch (physical_type)
         {
             default:
@@ -148,9 +197,9 @@ void DuckdbIterator::initColumns()
                 dai.xd_type = xd::typeBoolean;
                 break;
         }
+        */
 
-        dai.width = 30;
-        dai.scale = 0;
+
 
         if (m_table_structure.isOk())
         {
@@ -530,11 +579,29 @@ xd::datetime_t DuckdbIterator::getDateTime(xd::objhandle_t data_handle)
 {
     DuckdbDataAccessInfo* dai = (DuckdbDataAccessInfo*)data_handle;
 
-    /*
     if (m_eof || isNull(data_handle))
     {
         return 0;
     }
+
+    int32_t year = 0, month = 0, day = 0;
+    int32_t hour = 0, minute = 0, second = 0;
+    duckdb::Date::Convert(dai->value.GetValue<duckdb::date_t>(), year, month, day);
+
+    xd::datetime_t dt = dateToJulian(year, month, day);
+
+    xd::datetime_t tm = ((hour * 3600000) +
+         (minute * 60000) +
+         (second * 1000));
+
+    dt <<= 32;
+    dt |= tm;
+
+    return dt;
+
+
+    /*
+
 
     if (m_mode == DuckdbIterator::modeOffsetLimit || m_mode == DuckdbIterator::modeRowidRange)
     {
@@ -603,52 +670,31 @@ xd::datetime_t DuckdbIterator::getDateTime(xd::objhandle_t data_handle)
 double DuckdbIterator::getDouble(xd::objhandle_t data_handle)
 {
     DuckdbDataAccessInfo* dai = (DuckdbDataAccessInfo*)data_handle;
-    /*
+
     if (m_eof || isNull(data_handle))
         return 0.0;
 
-    if (m_mode == DuckdbIterator::modeOffsetLimit || m_mode == DuckdbIterator::modeRowidRange)
-    {
-        // TODO:
-        return 0.0;
-    }*/
-
-    //return sqlite3_column_double(m_stmt, dai->col_ordinal);
-    return 0.0;
+    return dai->value.GetValue<double>();
 }
 
 int DuckdbIterator::getInteger(xd::objhandle_t data_handle)
 {
     DuckdbDataAccessInfo* dai = (DuckdbDataAccessInfo*)data_handle;
-    /*
+
     if (m_eof || isNull(data_handle))
         return 0;
 
-    if (m_mode == DuckdbIterator::modeOffsetLimit || m_mode == DuckdbIterator::modeRowidRange)
-    {
-        // TODO:
-        return 0;
-    }
-    */
-    //return sqlite3_column_int(m_stmt, dai->col_ordinal);
-    return 0;
+    return dai->value.GetValue<int>();
 }
 
 bool DuckdbIterator::getBoolean(xd::objhandle_t data_handle)
 {
     DuckdbDataAccessInfo* dai = (DuckdbDataAccessInfo*)data_handle;
-    /*
-    if (m_eof || isNull(data_handle))
-        return 0;
 
-    if (m_mode == DuckdbIterator::modeOffsetLimit || m_mode == DuckdbIterator::modeRowidRange)
-    {
-        // TODO:
+    if (m_eof || isNull(data_handle))
         return false;
-    }
-        */
-    //return (sqlite3_column_int(m_stmt, dai->col_ordinal) == 0) ? false : true;
-    return 0;
+
+    return dai->value.GetValue<bool>();
 }
 
 bool DuckdbIterator::isNull(xd::objhandle_t data_handle)
