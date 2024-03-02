@@ -66,6 +66,8 @@ public:
     xd::IDatabasePtr& getDatabase() { return m_database; }
     void setDatabase(xd::IDatabasePtr database);
 
+    IBookmarkFsPtr getBookmarkFs();
+
     std::wstring getDbDriver();
 
     void setDatabaseLocation(const wxString& value);
@@ -139,6 +141,8 @@ private:
     xd::IDatabasePtr m_database;
     wxString m_db_location;
     std::wstring m_db_connstr;
+
+    IBookmarkFsPtr m_bookmark_fs;
     
     wxString m_install_path;
     bool m_is_service;

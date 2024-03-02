@@ -30,28 +30,31 @@ public:
     wxImage icon;
 };
 
-class BookmarkFs
+
+xcm_interface IBookmarkFs : public xcm::IObject
 {
+    XCM_INTERFACE_NAME("appmain.IBookmarkFs")
+
 public:
 
-    static IFsItemPtr getBookmarkFolderItem(const std::wstring& path);
+    virtual IFsItemPtr getBookmarkFolderItem(const std::wstring& path) = 0;
 
-    static bool createBookmark(const std::wstring& path,
-                               const std::wstring& location,
-                               const std::wstring& tags = L"",
-                               const std::wstring& description = L"",
-                               const wxImage& icon = wxImage());
-    static bool createFolder(const std::wstring& path);
-    static bool loadBookmark(const std::wstring& path, Bookmark& bookmark);
-    static bool saveBookmark(const std::wstring& path, Bookmark& bookmark);
-    static bool deleteItem(const std::wstring& path);
-    static bool moveItem(const std::wstring& old_path, const std::wstring& new_path);
+    virtual bool createBookmark(const std::wstring& path,
+                                const std::wstring& location,
+                                const std::wstring& tags = L"",
+                                const std::wstring& description = L"",
+                                const wxImage& icon = wxImage()) = 0;
+    virtual bool createFolder(const std::wstring& path) = 0;
+    virtual bool loadBookmark(const std::wstring& path, Bookmark& bookmark) = 0;
+    virtual bool saveBookmark(const std::wstring& path, Bookmark& bookmark) = 0;
+    virtual bool deleteItem(const std::wstring& path) = 0;
+    virtual bool moveItem(const std::wstring& old_path, const std::wstring& new_path) = 0;
 
-    static void setFileVisualLocation(const std::wstring& path, int insert_index);
+    virtual void setFileVisualLocation(const std::wstring& path, int insert_index) = 0;
 
-    static std::wstring getBookmarkItemPath(IFsItemPtr item);
+    virtual std::wstring getBookmarkItemPath(IFsItemPtr item) = 0;
 };
-
+XCM_DECLARE_SMARTPTR(IBookmarkFs)
 
 
 xcm_interface IFsBookmarkItem : public xcm::IObject
@@ -63,6 +66,35 @@ public:
     virtual const std::wstring& getPath() = 0;
 };
 XCM_DECLARE_SMARTPTR(IFsBookmarkItem)
+
+
+class BookmarkFs : public IBookmarkFs
+{
+    XCM_CLASS_NAME("appmain.BookmarkFs")
+        XCM_BEGIN_INTERFACE_MAP(BookmarkFs)
+        XCM_INTERFACE_ENTRY(IBookmarkFs)
+        XCM_END_INTERFACE_MAP()
+
+public:
+
+    IFsItemPtr getBookmarkFolderItem(const std::wstring& path);
+
+    bool createBookmark(const std::wstring& path,
+        const std::wstring& location,
+        const std::wstring& tags = L"",
+        const std::wstring& description = L"",
+        const wxImage& icon = wxImage());
+    bool createFolder(const std::wstring& path);
+    bool loadBookmark(const std::wstring& path, Bookmark& bookmark);
+    bool saveBookmark(const std::wstring& path, Bookmark& bookmark);
+    bool deleteItem(const std::wstring& path);
+    bool moveItem(const std::wstring& old_path, const std::wstring& new_path);
+
+    void setFileVisualLocation(const std::wstring& path, int insert_index);
+
+    std::wstring getBookmarkItemPath(IFsItemPtr item);
+};
+
 
 class BookmarkFolder : public FsItemBase, public IFsBookmarkItem
 {
@@ -124,6 +156,9 @@ private:
     std::wstring m_path;
 };
 
+
+
+IBookmarkFsPtr createBookmarkFs();
 
 
 #endif

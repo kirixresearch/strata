@@ -1923,7 +1923,7 @@ void AppController::onCreateBookmark(wxCommandEvent& evt)
     if (dlg.ShowModal() != wxID_OK)
         return;
 
-    BookmarkFs::createBookmark(towstr(dlg.getPath()), towstr(doc->getDocumentLocation()));
+    g_app->getBookmarkFs()->createBookmark(towstr(dlg.getPath()), towstr(doc->getDocumentLocation()));
     m_linkbar->refresh();
 }
 
@@ -5874,49 +5874,49 @@ void AppController::createDefaultLinks()
     wxString home_page = getAppPrefsDefaultString("general.location.home");
     if (home_page.Length() > 0)
     {
-        BookmarkFs::createBookmark(towstr(_("Home Page")), towstr(home_page));
+        g_app->getBookmarkFs()->createBookmark(towstr(_("Home Page")), towstr(home_page));
     }
 
     wxString online_help = getAppPrefsDefaultString("general.location.help");
     if (online_help.Length() > 0)
     {
-        BookmarkFs::createBookmark(towstr(_("Online Help")), towstr(online_help));
+        g_app->getBookmarkFs()->createBookmark(towstr(_("Online Help")), towstr(online_help));
     }
 
     wxString developer_resources = getAppPrefsDefaultString("general.location.resources");
     if (developer_resources.Length() > 0)
     {
-        BookmarkFs::createBookmark(towstr(_("Developer Resources")), towstr(developer_resources));
+        g_app->getBookmarkFs()->createBookmark(towstr(_("Developer Resources")), towstr(developer_resources));
     }
 
 /* removed in v5.0
     wxString support_forums = getAppPrefsDefaultString("general.location.support");
     if (support_forums.Length() > 0)
     {
-        BookmarkFs::createBookmark(towstr(_("Support Forums")), towstr(support_forums));
+        g_app->getBookmarkFs()->createBookmark(towstr(_("Support Forums")), towstr(support_forums));
     }
 */
 
     int idx = 0;
     if (home_page.Length() > 0)
     {
-        BookmarkFs::setFileVisualLocation(towstr(_("Home Page")), idx++);
+        g_app->getBookmarkFs()->setFileVisualLocation(towstr(_("Home Page")), idx++);
     }
 
     if (online_help.Length() > 0)
     {
-        BookmarkFs::setFileVisualLocation(towstr(_("Online Help")), idx++);
+        g_app->getBookmarkFs()->setFileVisualLocation(towstr(_("Online Help")), idx++);
     }
 
     if (developer_resources.Length() > 0)
     {
-        BookmarkFs::setFileVisualLocation(towstr(_("Developer Resources")), idx++);
+        g_app->getBookmarkFs()->setFileVisualLocation(towstr(_("Developer Resources")), idx++);
     }
 
 /* removed in v5.0
     if (support_forums.Length() > 0)
     {
-        BookmarkFs::setFileVisualLocation(towstr(_("Support Forums")), idx++);
+        g_app->getBookmarkFs()->setFileVisualLocation(towstr(_("Support Forums")), idx++);
     }
 */
 }

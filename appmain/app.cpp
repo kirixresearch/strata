@@ -530,6 +530,9 @@ bool MainApp::OnInit()
     m_job_scheduler = new JobScheduler;
     m_job_scheduler->setInterval(21);
 
+    // create bookmark fs object
+    m_bookmark_fs = createBookmarkFs();
+
     // initialize web client engine
     initWebClient();
 
@@ -1067,6 +1070,13 @@ void MainApp::setDatabase(xd::IDatabasePtr database)
         // load the jobs scheduled to run for this database
         m_job_scheduler->load();
     }
+
+    m_bookmark_fs = createBookmarkFs();
+}
+
+IBookmarkFsPtr MainApp::getBookmarkFs()
+{
+    return m_bookmark_fs;
 }
 
 

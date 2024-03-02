@@ -35,6 +35,7 @@
 #include <wx/tokenzr.h>
 #include <wx/datetime.h>
 #include <wx/dnd.h>
+#include <wx/dataobj.h>
 #include <wx/clipbrd.h>
 #include <wx/image.h>
 #include <wx/imaglist.h>
@@ -67,6 +68,7 @@
 #include "../jobs/jobs.h"
 
 // application includes
+
 #include "connectionmgr.h"
 #include "jobqueue.h"
 #include "framework.h"
@@ -79,7 +81,9 @@
 #include "commandmgr.h"
 #include "bitmapmgr.h"
 #include "dociface.h"
+#include "bookmarkfs.h"
 #include "app.h"
+
 
 #endif
 

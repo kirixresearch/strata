@@ -13,8 +13,6 @@
 #define H_APP_FSPANEL_H
 
 
-#include <wx/dataobj.h>
-#include <wx/dnd.h>
 #include <wx/treectrl.h>
 #include <wx/listctrl.h>
 

@@ -275,7 +275,7 @@ static std::vector<IFsItemPtr> enum2vec(IFsItemEnumPtr fs_enum)
 static void activateItem(const std::wstring& path, int open_mask)
 {
     Bookmark b;
-    if (!BookmarkFs::loadBookmark(path, b))
+    if (!g_app->getBookmarkFs()->loadBookmark(path, b))
         return;
 
     g_app->getAppController()->openAny(b.location, open_mask);
@@ -291,7 +291,7 @@ static void openItems(std::vector<IFsItemPtr>& vec)
         if ((*it)->isFolder())
             continue;
 
-        std::wstring path = BookmarkFs::getBookmarkItemPath(*it);
+        std::wstring path = g_app->getBookmarkFs()->getBookmarkItemPath(*it);
         if (path.empty())
             continue;
 
@@ -452,7 +452,7 @@ void LinkBar::onItemActivated(IFsItemPtr item)
         open_flags = appOpenForceNewWindow | appOpenActivateNewWindow;
     }
 
-    std::wstring bookmark_path = BookmarkFs::getBookmarkItemPath(item);
+    std::wstring bookmark_path = g_app->getBookmarkFs()->getBookmarkItemPath(item);
     m_last_clicked_path = bookmark_path;
     activateItem(bookmark_path, open_flags);
 
@@ -881,7 +881,7 @@ void LinkBar::onToolButtonClick(wxCommandEvent& evt)
             open_mask = appOpenForceNewWindow | appOpenActivateNewWindow;
         }
 
-        std::wstring bookmark_path = BookmarkFs::getBookmarkItemPath(item);
+        std::wstring bookmark_path = g_app->getBookmarkFs()->getBookmarkItemPath(item);
         m_last_clicked_path = bookmark_path;
 
         activateItem(bookmark_path, open_mask);
@@ -1080,10 +1080,10 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 b.tags = towstr(dlg.getTags());
                 b.run_target = dlg.getRunTarget();
                 
-                BookmarkFs::saveBookmark(towstr(dlg.getPath()), b);
+                g_app->getBookmarkFs()->saveBookmark(towstr(dlg.getPath()), b);
 
                 // position the bookmark in the linkbar
-                BookmarkFs::setFileVisualLocation(towstr(dlg.getPath()), idx);
+                g_app->getBookmarkFs()->setFileVisualLocation(towstr(dlg.getPath()), idx);
                 
                 // repopulate and refresh the linkbar
                 refresh();
@@ -1107,10 +1107,10 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             
             if (dlg.ShowModal() == wxID_OK)
             {
-                BookmarkFs::createFolder(towstr(dlg.getPath()));
+                g_app->getBookmarkFs()->createFolder(towstr(dlg.getPath()));
                 
                 // position the folder in the linkbar
-                BookmarkFs::setFileVisualLocation(towstr(dlg.getPath()), idx);
+                g_app->getBookmarkFs()->setFileVisualLocation(towstr(dlg.getPath()), idx);
                 
                 // repopulate and refresh the linkbar
                 refresh();
@@ -1120,7 +1120,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
         }
         case ID_LinkBar_Properties:
         {
-            wxString path = BookmarkFs::getBookmarkItemPath(item);
+            wxString path = g_app->getBookmarkFs()->getBookmarkItemPath(item);
 
             if (is_folder_clicked)
             {
@@ -1154,7 +1154,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                         return;
                     
                     // position the folder in the linkbar
-                    BookmarkFs::setFileVisualLocation(towstr(new_path), idx);
+                    g_app->getBookmarkFs()->setFileVisualLocation(towstr(new_path), idx);
                     
                     // repopulate and refresh the linkbar
                     refresh();
@@ -1163,7 +1163,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
              else
             {
                 Bookmark b;
-                if (!BookmarkFs::loadBookmark(towstr(path), b))
+                if (!g_app->getBookmarkFs()->loadBookmark(towstr(path), b))
                     return;
 
                 wxString title = wxString::Format(_("\"%s\" Properties"),
@@ -1190,16 +1190,16 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                     b.description = towstr(dlg.getDescription());
                     b.run_target = dlg.getRunTarget();
 
-                    if (BookmarkFs::saveBookmark(towstr(new_path), b))
+                    if (g_app->getBookmarkFs()->saveBookmark(towstr(new_path), b))
                     {
                         if (new_path != path)
                         {
                             // delete old bookmark
-                            BookmarkFs::deleteItem(towstr(path));
+                            g_app->getBookmarkFs()->deleteItem(towstr(path));
                         }
 
                         // position the bookmark in the linkbar
-                        BookmarkFs::setFileVisualLocation(towstr(new_path), idx);
+                        g_app->getBookmarkFs()->setFileVisualLocation(towstr(new_path), idx);
                         
                         // repopulate and refresh the linkbar
                         refresh();
@@ -1233,13 +1233,13 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 
             if (dlg.ShowModal() == wxID_OK)
             {
-                std::wstring old_path = BookmarkFs::getBookmarkItemPath(item);
+                std::wstring old_path = g_app->getBookmarkFs()->getBookmarkItemPath(item);
                 std::wstring new_path = towstr(dlg.getPath());
 
-                if (BookmarkFs::moveItem(old_path, new_path))
+                if (g_app->getBookmarkFs()->moveItem(old_path, new_path))
                 {
                     // position the folder in the linkbar
-                    BookmarkFs::setFileVisualLocation(new_path, idx);
+                    g_app->getBookmarkFs()->setFileVisualLocation(new_path, idx);
                     
                     // repopulate and refresh the linkbar
                     refresh();
@@ -1250,10 +1250,10 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
         }
         case ID_LinkBar_Delete:
         {
-            std::wstring bookmark_path = BookmarkFs::getBookmarkItemPath(item);
+            std::wstring bookmark_path = g_app->getBookmarkFs()->getBookmarkItemPath(item);
             if (bookmark_path.length() > 0)
             {
-                BookmarkFs::deleteItem(towstr(item->getLabel()));
+                g_app->getBookmarkFs()->deleteItem(towstr(item->getLabel()));
                 refresh();
             }
 
@@ -1442,7 +1442,7 @@ void LinkBar::refresh()
         return;
     }
 
-    IFsItemPtr root_item = BookmarkFs::getBookmarkFolderItem(L"/");
+    IFsItemPtr root_item = g_app->getBookmarkFs()->getBookmarkFolderItem(L"/");
     
     if (root_item.isNull())
     {
@@ -1481,7 +1481,7 @@ void LinkBar::refresh()
             wxString tooltip;
             
             Bookmark b;
-            bool bookmark_loaded = b.load(BookmarkFs::getBookmarkItemPath(item));
+            bool bookmark_loaded = b.load(g_app->getBookmarkFs()->getBookmarkItemPath(item));
 
             // truncate long labels
             if (label.Length() > 80)
@@ -1989,7 +1989,7 @@ void LinkBar::onFsDataFolderDrop(IFsItemPtr target, wxDataObject* data, wxDragRe
 
     size_t i, count = items->size();
 
-    std::wstring target_folder = BookmarkFs::getBookmarkItemPath(m_popup_fspanel->getRootItem());
+    std::wstring target_folder = g_app->getBookmarkFs()->getBookmarkItemPath(m_popup_fspanel->getRootItem());
 
     int x, y;
     ::wxGetMousePosition(&x, &y);
@@ -2006,11 +2006,11 @@ void LinkBar::onFsDataFolderDrop(IFsItemPtr target, wxDataObject* data, wxDragRe
             for (i = 0; i < count; ++i)
             {
                 IFsItemPtr item = items->getItem(i);
-                std::wstring src_path = BookmarkFs::getBookmarkItemPath(item);
+                std::wstring src_path = g_app->getBookmarkFs()->getBookmarkItemPath(item);
                 std::wstring dest_path = target_folder + L"/" + towstr(item->getLabel());
 
-                BookmarkFs::moveItem(src_path, dest_path);
-                BookmarkFs::setFileVisualLocation(dest_path, target_idx + i);
+                g_app->getBookmarkFs()->moveItem(src_path, dest_path);
+                g_app->getBookmarkFs()->setFileVisualLocation(dest_path, target_idx + i);
             }
         }
     }
@@ -2052,7 +2052,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
             return;
 
         // get the path of the drop folder in the linkbar
-        drop_folder_path = BookmarkFs::getBookmarkItemPath(drop_item);
+        drop_folder_path = g_app->getBookmarkFs()->getBookmarkItemPath(drop_item);
     }
     
     if (data->getSourceId() == ID_Toolbar_Link)
@@ -2081,22 +2081,22 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
             int link_drop_idx = m_drop_idx;
             tool2LinkIndex(link_drop_idx);
             
-            std::wstring path = BookmarkFs::getBookmarkItemPath(items->getItem(0));
-            BookmarkFs::setFileVisualLocation(path, link_drop_idx);
+            std::wstring path = g_app->getBookmarkFs()->getBookmarkItemPath(items->getItem(0));
+            g_app->getBookmarkFs()->setFileVisualLocation(path, link_drop_idx);
         }
          else if (drop_folder_path.length() > 0)
         {
             // dragging an item into a folder in the linkbar
             
             // get the full path of the source item
-            std::wstring src_path = BookmarkFs::getBookmarkItemPath(items->getItem(0));
+            std::wstring src_path = g_app->getBookmarkFs()->getBookmarkItemPath(items->getItem(0));
             
             // move the item to the destination folder
             std::wstring dest_path = drop_folder_path;
             dest_path += L"/";
             dest_path += kl::afterLast(src_path, '/');
 
-            BookmarkFs::moveItem(src_path, dest_path);
+            g_app->getBookmarkFs()->moveItem(src_path, dest_path);
 
             int link_drop_idx = 0;
             IFsItemEnumPtr children = drop_item->getChildren();
@@ -2104,7 +2104,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
                 link_drop_idx = children->size();
 
             // make sure it goes to the bottom of the folder
-            BookmarkFs::setFileVisualLocation(dest_path, link_drop_idx);
+            g_app->getBookmarkFs()->setFileVisualLocation(dest_path, link_drop_idx);
         }
     }
      else if (data->getSourceId() == ID_Frame_UrlCtrl)
@@ -2171,7 +2171,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
                 
 
         // create the bookmark at the specified location
-        BookmarkFs::createBookmark(dest_path, towstr(drag_obj->getPath()), L"", L"", favicon);
+        g_app->getBookmarkFs()->createBookmark(dest_path, towstr(drag_obj->getPath()), L"", L"", favicon);
 
         // if we're not dragging to a folder, set the
         // position of the item on the linkbar
@@ -2182,7 +2182,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
             tool2LinkIndex(link_drop_idx);
             
             // position the item in the linkbar
-            BookmarkFs::setFileVisualLocation(dest_path, link_drop_idx);
+            g_app->getBookmarkFs()->setFileVisualLocation(dest_path, link_drop_idx);
         }
     }
 

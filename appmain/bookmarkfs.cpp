@@ -227,18 +227,6 @@ std::wstring Bookmark::toJson()
 
 
 
-
-
-// BookmarkFs class implementation
-
-IFsItemPtr BookmarkFs::getBookmarkFolderItem(const std::wstring& path)
-{
-    BookmarkFolder* root = new BookmarkFolder;
-    root->setPath(path);
-
-    return static_cast<IFsItem*>(root);
-}
-
 static std::wstring getBookmarkFilePath(const std::wstring& bookmark, const std::wstring& extension = L".json")
 {
     std::wstring full_path = getBookmarksLocation();
@@ -261,16 +249,27 @@ static std::wstring appendPaths(const std::wstring& path1, const std::wstring& p
 
     std::wstring res = path1;
 
-    if (res.length() > 0 && res[res.length()-1] != '/')
+    if (res.length() > 0 && res[res.length() - 1] != '/')
         res += L'/';
 
     if (path2[0] == '/')
         res += path2.substr(1);
-         else
+    else
         res += path2;
 
     return res;
 }
+
+// BookmarkFs class implementation
+
+IFsItemPtr BookmarkFs::getBookmarkFolderItem(const std::wstring& path)
+{
+    BookmarkFolder* root = new BookmarkFolder;
+    root->setPath(path);
+
+    return static_cast<IFsItem*>(root);
+}
+
 
 bool BookmarkFs::createBookmark(const std::wstring& path,
                                 const std::wstring& location,
@@ -610,8 +609,9 @@ void BookmarkFolder::populate()
             std::wstring name = kl::beforeLast(info.m_name, '.');
             std::wstring bookmark_path = appendPaths(m_path, name);
 
+            
             Bookmark b;
-            if (BookmarkFs::loadBookmark(bookmark_path, b))
+            if (g_app->getBookmarkFs()->loadBookmark(bookmark_path, b))
             {
                 if (b.icon.IsOk())
                     bmp = wxBitmap(b.icon);
@@ -668,4 +668,15 @@ BookmarkItem::BookmarkItem()
 
 BookmarkItem::~BookmarkItem()
 {
+}
+
+
+
+
+
+
+
+IBookmarkFsPtr createBookmarkFs()
+{
+    return static_cast<IBookmarkFs*>(new BookmarkFs);
 }
