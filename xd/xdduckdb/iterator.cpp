@@ -239,6 +239,19 @@ bool DuckdbIterator::init(const xd::QueryParams& qp)
 
     setTable(xdSanitizePath(qp.from));
 
+
+    if (qp.where.length() == 0)
+    {
+        duckdb::Connection* conn = m_database->getPoolConnection();
+        std::wstring sql = L"SELECT count(*) FROM " + quoted_object_name;
+        auto result = conn->Query((const char*)kl::toUtf8(sql));
+        auto count = result->GetValue(0, 0).GetValue<int64_t>();
+        m_database->freePoolConnection(conn);
+
+        m_row_count = count;
+
+    }
+
     return init(sql);
 }
 
@@ -312,7 +325,10 @@ void DuckdbIterator::skip(int delta)
 
     for (i = 0; i < col_count; ++i)
     {
-        m_columns[i].value = m_result.GetValue(i);
+        if (!m_eof)
+        {
+            m_columns[i].value = m_result.GetValue(i);
+        }
     }
     
 /*

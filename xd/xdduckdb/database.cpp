@@ -32,6 +32,7 @@
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/jobinfo.h"
+#include "../xdcommon/dbfuncs.h"
 
 
 const wchar_t* sql92_keywords =
@@ -454,7 +455,178 @@ bool DuckdbDatabase::copyFile(const std::wstring& src_path,
 
 bool DuckdbDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
-    return false;
+    if (info->iter_input.isOk())
+    {
+        xd::IIteratorPtr iter = info->iter_input;
+        xd::Structure structure = iter->getStructure();
+        if (structure.isNull())
+            return false;
+
+        if (info->append)
+        {
+            if (!getFileExist(info->output))
+                return false;
+        }
+        else
+        {
+            deleteFile(info->output);
+
+            xd::FormatDefinition fd = info->output_format;
+            fd.columns.clear();
+            size_t i, colcount = structure.getColumnCount();
+            for (i = 0; i < colcount; ++i)
+                fd.createColumn(structure.getColumnInfoByIdx(i));
+
+            if (!createTable(info->output, fd))
+                return false;
+        }
+
+        xdcmnInsert(static_cast<xd::IDatabase*>(this), iter, info->output, info->copy_columns, info->where, info->limit, job);
+        return true;
+    }
+
+
+    xd::IFileInfoPtr finfo = this->getFileInfo(info->input);
+    if (finfo.isNull())
+        return false;
+
+    // handle stream copying
+    xd::IStreamPtr instream;
+
+    if (instream.isNull())
+    {
+        if (finfo->getType() == xd::filetypeStream)
+        {
+            instream = this->openStream(info->input);
+            if (instream.isNull())
+            {
+                return false;
+            }
+        }
+    }
+
+    if (instream.isOk())
+    {
+        if (!this->createStream(info->output, finfo->getMimeType()))
+        {
+            return false;
+        }
+
+        xd::IStreamPtr outstream = this->openStream(info->output);
+        if (outstream.isNull())
+        {
+            return false;
+        }
+
+        unsigned char* buf = new unsigned char[65536];
+
+        unsigned long read, written;
+        bool done = false;
+        bool error = false;
+        while (!done)
+        {
+            if (!instream->read(buf, 65536, &read))
+                break;
+            if (read != 65536)
+                done = true;
+            if (read > 0)
+            {
+                if (!outstream->write(buf, read, &written))
+                    error = true;
+                if (!error && written != read)
+                    error = true;
+                if (error)
+                {
+                    // write error / disk space
+                    delete[] buf;
+                    instream.clear();
+                    outstream.clear();
+                    this->deleteFile(info->output);
+                    return false;
+                }
+            }
+        }
+
+        delete[] buf;
+        return true;
+    }
+
+
+    /*
+    PGconn* conn = createConnection();
+    if (!conn)
+        return xcm::null;
+
+    if (job)
+    {
+        IPgsqlJobInfoPtr pjob = job;
+        if (pjob)
+            pjob->setConnection(conn);
+    }
+    */
+
+
+    std::wstring intbl = xdGetTablenameFromPath(info->input, true);
+    std::wstring outtbl = xdGetTablenameFromPath(info->output, true);
+    std::wstring sql;
+
+    if (info->append)
+    {
+        xd::Structure instruct = describeTable(info->input);
+        xd::Structure outstruct = describeTable(info->output);
+
+        std::vector<std::wstring> common_fields;
+        std::vector<std::wstring>::iterator it;
+
+        size_t i, cnt = instruct.getColumnCount();
+        for (i = 0; i < cnt; ++i)
+        {
+            const std::wstring& colname = instruct.getColumnName(i);
+            if (outstruct.getColumnExist(colname))
+                common_fields.push_back(colname);
+        }
+
+        std::wstring collist;
+        for (it = common_fields.begin(); it != common_fields.end(); ++it)
+        {
+            if (it != common_fields.begin())
+                collist += L",";
+            collist += *it;
+        }
+
+        sql = L"insert into %outtbl% (%collist%) SELECT %collist% from %intbl%";
+        kl::replaceStr(sql, L"%intbl%", xdGetTablenameFromPath(intbl, true));
+        kl::replaceStr(sql, L"%outtbl%", xdGetTablenameFromPath(outtbl, true));
+        kl::replaceStr(sql, L"%collist%", collist);
+
+        if (info->where.length() > 0)
+            sql += (L" where " + info->where);
+
+        if (info->order.length() > 0)
+            sql += (L" order by " + info->order);
+    }
+    else
+    {
+        sql = L"create table %outtbl% as select * from %intbl%";
+        kl::replaceStr(sql, L"%intbl%", intbl);
+        kl::replaceStr(sql, L"%outtbl%", outtbl);
+
+        if (info->where.length() > 0)
+            sql += (L" where " + info->where);
+
+        if (info->order.length() > 0)
+            sql += (L" order by " + info->order);
+    }
+
+
+
+
+    duckdb::Connection* conn = this->getPoolConnection();
+    auto qr = conn->Query((const char*)kl::toUtf8(sql));
+    DuckResult result(qr);
+    this->freePoolConnection(conn);
+
+    return true;
 }
 
 bool DuckdbDatabase::deleteFile(const std::wstring& path)
