@@ -151,15 +151,125 @@ static std::wstring imageToText(const wxImage& image)
 }
 
 
+
+
+
+
+xcm_interface IFsBookmarkItem : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("appmain.IFsBookmarkItem")
+
+public:
+
+    virtual const std::wstring & getPath() = 0;
+};
+XCM_DECLARE_SMARTPTR(IFsBookmarkItem)
+
+
+
+
+class BookmarkFs : public IBookmarkFs
+{
+    XCM_CLASS_NAME("appmain.BookmarkFs")
+        XCM_BEGIN_INTERFACE_MAP(BookmarkFs)
+        XCM_INTERFACE_ENTRY(IBookmarkFs)
+        XCM_END_INTERFACE_MAP()
+
+public:
+
+    IFsItemPtr getBookmarkFolderItem(const std::wstring& path);
+
+    bool createBookmark(const std::wstring& path,
+        const std::wstring& location,
+        const std::wstring& tags = L"",
+        const std::wstring& description = L"",
+        const wxImage& icon = wxImage());
+    bool createFolder(const std::wstring& path);
+    bool loadBookmark(const std::wstring& path, Bookmark& bookmark);
+    bool saveBookmark(const std::wstring& path, Bookmark& bookmark);
+    bool deleteItem(const std::wstring& path);
+    bool moveItem(const std::wstring& old_path, const std::wstring& new_path);
+
+    void setFileVisualLocation(const std::wstring& path, int insert_index);
+
+    std::wstring getBookmarkItemPath(IFsItemPtr item);
+};
+
+
+class BookmarkFolder : public FsItemBase, public IFsBookmarkItem
+{
+    XCM_CLASS_NAME("appmain.BookmarkFolder")
+        XCM_BEGIN_INTERFACE_MAP(BookmarkFolder)
+        XCM_INTERFACE_ENTRY(IFsBookmarkItem)
+        XCM_INTERFACE_CHAIN(FsItemBase)
+        XCM_END_INTERFACE_MAP()
+
+public:
+
+    BookmarkFolder();
+    ~BookmarkFolder();
+
+    IFsItemEnumPtr getChildren();
+
+    bool isDeferred() { return false; }
+    bool isFolder() { return true; }
+    void setPath(const std::wstring& path) { m_path = path; }
+    const std::wstring& getPath() { return m_path; }
+    bool hasChildren()
+    {
+        if (!m_populated)
+            populate();
+        return m_children.size() > 0 ? true : false;
+    }
+
+private:
+
+    void populate();
+
+private:
+
+    bool m_populated;
+    std::wstring m_path;
+    std::vector<IFsItemPtr> m_children;
+};
+
+
+class BookmarkItem : public FsItemBase, public IFsBookmarkItem
+{
+    XCM_CLASS_NAME("appmain.BookmarkItem")
+        XCM_BEGIN_INTERFACE_MAP(BookmarkItem)
+        XCM_INTERFACE_ENTRY(IFsBookmarkItem)
+        XCM_INTERFACE_CHAIN(FsItemBase)
+    XCM_END_INTERFACE_MAP()
+
+public:
+
+    BookmarkItem() { }
+    ~BookmarkItem() { }
+
+    bool isDeferred() { return false; }
+    void setPath(const std::wstring& path) { m_path = path; }
+    const std::wstring& getPath() { return m_path; }
+
+private:
+
+    std::wstring m_path;
+};
+
+
+
+
+
+
+
+
+
+
+
 // Bookmark class implementation
 
 
-Bookmark::Bookmark()
-{
-    run_target = false;
-}
-
-bool Bookmark::fromJson(const std::wstring& json)
+static bool jsonToBookmark(const std::wstring& json, Bookmark& bookmark)
 {
     kl::JsonNode node;
     if (!node.fromString(json))
@@ -174,16 +284,16 @@ bool Bookmark::fromJson(const std::wstring& json)
 
     kl::JsonNode attributes = node["attributes"];
 
-    location = attributes["location"].getString();
-    tags = attributes["tags"].getString();
-    description = attributes["description"].getString();
-    icon = textToImage(attributes["icon"].getString());
-    run_target = attributes["run_target"].getBoolean();
+    bookmark.location = attributes["location"].getString();
+    bookmark.tags = attributes["tags"].getString();
+    bookmark.description = attributes["description"].getString();
+    bookmark.icon = textToImage(attributes["icon"].getString());
+    bookmark.run_target = attributes["run_target"].getBoolean();
 
     return true;
 }
 
-std::wstring Bookmark::toJson()
+static std::wstring bookmarkToJson(Bookmark& bookmark)
 {
 /*
     // example format:    
@@ -211,11 +321,11 @@ std::wstring Bookmark::toJson()
     node["metadata"]["version"] = 1;
     node["metadata"]["description"] = L"";
 
-    node["attributes"]["location"] = location;
-    node["attributes"]["tags"] = tags;
-    node["attributes"]["description"] = description;
-    node["attributes"]["icon"] = imageToText(icon);
-    node["attributes"]["run_target"].setBoolean(run_target);
+    node["attributes"]["location"] = bookmark.location;
+    node["attributes"]["tags"] = bookmark.tags;
+    node["attributes"]["description"] = bookmark.description;
+    node["attributes"]["icon"] = imageToText(bookmark.icon);
+    node["attributes"]["run_target"].setBoolean(bookmark.run_target);
 
     return node.toString();
 }
@@ -259,6 +369,11 @@ static std::wstring appendPaths(const std::wstring& path1, const std::wstring& p
 
     return res;
 }
+
+
+
+
+
 
 // BookmarkFs class implementation
 
@@ -307,7 +422,7 @@ bool BookmarkFs::loadBookmark(const std::wstring& path, Bookmark& bookmark)
     if (!success)
         return false;
 
-    return bookmark.fromJson(json);
+    return jsonToBookmark(json, bookmark);
 }
 
 bool BookmarkFs::saveBookmark(const std::wstring& path, Bookmark& bookmark)
@@ -316,7 +431,7 @@ bool BookmarkFs::saveBookmark(const std::wstring& path, Bookmark& bookmark)
     if (full_path.empty())
         return false;
 
-    std::wstring json = bookmark.toJson();
+    std::wstring json = bookmarkToJson(bookmark);
 
     return xf_put_file_contents(full_path, json);
 }
@@ -654,21 +769,6 @@ IFsItemEnumPtr BookmarkFolder::getChildren()
 }
 
 
-
-
-
-
-
-
-
-
-BookmarkItem::BookmarkItem()
-{
-}
-
-BookmarkItem::~BookmarkItem()
-{
-}
 
 
 
