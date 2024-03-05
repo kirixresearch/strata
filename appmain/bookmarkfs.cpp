@@ -21,43 +21,6 @@
 #include <shlobj.h>
 #endif
 
-static std::wstring g_bookmarks_path;
-
-static std::wstring getBookmarksLocation()
-{
-    if (!g_bookmarks_path.empty())
-        return g_bookmarks_path;
-
-    std::wstring path = towstr(g_app->getAppDataPath());
-    path += PATH_SEPARATOR_CHAR;
-    path += L"Bookmarks";
-
-    if (!xf_get_directory_exist(path))
-    {
-        if (!xf_mkdir(path))
-            return L"";
-    }
-
-    g_bookmarks_path = path;
-    return path;
-}
-
-
-static std::wstring getBookmarkFilePath(const std::wstring& bookmark, const std::wstring& extension = L".json")
-{
-    std::wstring full_path = getBookmarksLocation();
-    if (full_path.empty())
-        return L"";
-    if (bookmark.length() == 0)
-        return full_path;
-    if (bookmark[0] != '/')
-        full_path += PATH_SEPARATOR_STR;
-    full_path += bookmark;
-    full_path += extension;
-    kl::replaceStr(full_path, L"/", PATH_SEPARATOR_STR);
-    return full_path;
-}
-
 
 static std::wstring appendPaths(const std::wstring& path1, const std::wstring& path2)
 {
@@ -77,8 +40,24 @@ static std::wstring appendPaths(const std::wstring& path1, const std::wstring& p
     return res;
 }
 
+inline unsigned char hex2byte(unsigned char b1, unsigned char b2)
+{
+    if (b1 >= '0' && b1 <= '9')
+        b1 -= '0';
+    else if (b1 >= 'A' && b1 <= 'F')
+        b1 = b1 - 55;
+    else
+        return 0;
 
+    if (b2 >= '0' && b2 <= '9')
+        b2 -= '0';
+    else if (b2 >= 'A' && b2 <= 'F')
+        b2 = b2 - 55;
+    else
+        return 0;
 
+    return (b1 * 16) + b2;
+}
 
 static void bin2hex(const unsigned char* data, size_t len, std::wstring& output)
 {
@@ -94,26 +73,6 @@ static void bin2hex(const unsigned char* data, size_t len, std::wstring& output)
         buf[15] = 0;
         output += buf;
     }
-}
-
-
-inline unsigned char hex2byte(unsigned char b1, unsigned char b2)
-{
-    if (b1 >= '0' && b1 <= '9')
-        b1 -= '0';
-    else if (b1 >= 'A' && b1 <= 'F')
-        b1 = b1 - 55;
-    else
-        return 0;
-    
-    if (b2 >= '0' && b2 <= '9')
-        b2 -= '0';
-    else if (b2 >= 'A' && b2 <= 'F')
-        b2 = b2 - 55;
-    else
-        return 0;
-    
-    return (b1*16)+b2;
 }
 
 static void hex2bin(const std::wstring& _input, wxMemoryBuffer& output)
@@ -149,7 +108,6 @@ static void hex2bin(const std::wstring& _input, wxMemoryBuffer& output)
         ++buf;
     }
 }
-
 
 static wxImage textToImage(const std::wstring& str)
 {
@@ -311,6 +269,12 @@ private:
 
     void reorderBookmarkEntries(const std::wstring& folder, std::vector<IFsItemPtr>& entries);
     std::vector<IFsItemPtr> getBookmarkFolderItems(const std::wstring& path);
+    std::wstring getBookmarksLocation();
+    std::wstring getBookmarkFilePath(const std::wstring& bookmark, const std::wstring& extension = L".json");
+
+private:
+
+    std::wstring m_bookmarks_path;
 };
 
 
@@ -778,6 +742,44 @@ std::vector<IFsItemPtr> BookmarkFs::getBookmarkFolderItems(const std::wstring& f
 
     return result_items;
 }
+
+
+
+std::wstring BookmarkFs::getBookmarksLocation()
+{
+    if (!m_bookmarks_path.empty())
+        return m_bookmarks_path;
+
+    std::wstring path = towstr(g_app->getAppDataPath());
+    path += PATH_SEPARATOR_CHAR;
+    path += L"Bookmarks";
+
+    if (!xf_get_directory_exist(path))
+    {
+        if (!xf_mkdir(path))
+            return L"";
+    }
+
+    m_bookmarks_path = path;
+    return path;
+}
+
+
+std::wstring BookmarkFs::getBookmarkFilePath(const std::wstring& bookmark, const std::wstring& extension)
+{
+    std::wstring full_path = getBookmarksLocation();
+    if (full_path.empty())
+        return L"";
+    if (bookmark.length() == 0)
+        return full_path;
+    if (bookmark[0] != '/')
+        full_path += PATH_SEPARATOR_STR;
+    full_path += bookmark;
+    full_path += extension;
+    kl::replaceStr(full_path, L"/", PATH_SEPARATOR_STR);
+    return full_path;
+}
+
 
 
 
