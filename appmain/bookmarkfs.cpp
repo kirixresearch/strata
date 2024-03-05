@@ -309,6 +309,7 @@ public:
 
 private:
 
+    void reorderBookmarkEntries(const std::wstring& folder, std::vector<IFsItemPtr>& entries);
     std::vector<IFsItemPtr> getBookmarkFolderItems(const std::wstring& path);
 };
 
@@ -658,7 +659,7 @@ void BookmarkFs::setFileVisualLocation(const std::wstring& _path, int insert_ind
 
 
 
-static void reorderBookmarkEntries(const std::wstring& folder, std::vector<IFsItemPtr>& entries)
+void BookmarkFs::reorderBookmarkEntries(const std::wstring& folder, std::vector<IFsItemPtr>& entries)
 {
     // STEP 1: read in existing order entries from json file
     std::wstring objorder_fname = getBookmarkFilePath(folder + L"/objorder.info", L"");
