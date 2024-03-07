@@ -11,11 +11,13 @@
 
 #include "appmain.h"
 #include "bookmarkfs.h"
+#include "dbdoc.h"
 #include <wx/stdpaths.h>
 #include <wx/sstream.h>
 #include <wx/buffer.h>
 #include <wx/mstream.h>
 #include <set>
+
 
 #ifdef WIN32
 #include <shlobj.h>
@@ -151,6 +153,21 @@ static bool jsonToBookmark(const std::wstring& json, Bookmark& bookmark)
     if (!node.fromString(json))
         return false;
 
+    if (node.childExists("root"))
+    {
+        // old 4.5.4 compatible format
+        kl::JsonNode root = node["root"];
+        if (!root.childExists("bookmark"))
+            return false;
+        
+        kl::JsonNode bookmark_node = root["bookmark"];
+        bookmark.location = bookmark_node["location"].getString();
+        bookmark.tags = bookmark_node["tags"].getString();
+        bookmark.description = bookmark_node["description"].getString();
+        bookmark.run_target = bookmark_node["run_target"].getBoolean();
+        return true;
+    }
+
     if (!node.childExists("metadata"))
         return false;
 
@@ -236,46 +253,6 @@ XCM_DECLARE_SMARTPTR(IBookmarkFsPrivate)
 
 
 
-
-class BookmarkFs : public IBookmarkFs,
-                   public IBookmarkFsPrivate
-{
-    XCM_CLASS_NAME("appmain.BookmarkFs")
-        XCM_BEGIN_INTERFACE_MAP(BookmarkFs)
-        XCM_INTERFACE_ENTRY(IBookmarkFs)
-        XCM_INTERFACE_ENTRY(IBookmarkFsPrivate)
-    XCM_END_INTERFACE_MAP()
-
-public:
-
-    IFsItemPtr getBookmarkFolderItem(const std::wstring& path);
-
-    bool createBookmark(const std::wstring& path,
-        const std::wstring& location,
-        const std::wstring& tags = L"",
-        const std::wstring& description = L"",
-        const wxImage& icon = wxImage());
-    bool createFolder(const std::wstring& path);
-    bool loadBookmark(const std::wstring& path, Bookmark& bookmark);
-    bool saveBookmark(const std::wstring& path, Bookmark& bookmark);
-    bool deleteItem(const std::wstring& path);
-    bool moveItem(const std::wstring& old_path, const std::wstring& new_path);
-
-    void setFileVisualLocation(const std::wstring& path, int insert_index);
-
-    std::wstring getBookmarkItemPath(IFsItemPtr item);
-
-private:
-
-    void reorderBookmarkEntries(const std::wstring& folder, std::vector<IFsItemPtr>& entries);
-    std::vector<IFsItemPtr> getBookmarkFolderItems(const std::wstring& path);
-    std::wstring getBookmarksLocation();
-    std::wstring getBookmarkFilePath(const std::wstring& bookmark, const std::wstring& extension = L".json");
-
-private:
-
-    std::wstring m_bookmarks_path;
-};
 
 
 class BookmarkFolder : public FsItemBase, public IFsBookmarkItem
@@ -373,9 +350,51 @@ private:
 
 
 
-// BookmarkFs class implementation
+// AppBookmarkFs class implementation
 
-IFsItemPtr BookmarkFs::getBookmarkFolderItem(const std::wstring& path)
+
+class AppBookmarkFs : public IBookmarkFs,
+                      public IBookmarkFsPrivate
+{
+    XCM_CLASS_NAME("appmain.AppBookmarkFs")
+        XCM_BEGIN_INTERFACE_MAP(AppBookmarkFs)
+        XCM_INTERFACE_ENTRY(IBookmarkFs)
+        XCM_INTERFACE_ENTRY(IBookmarkFsPrivate)
+    XCM_END_INTERFACE_MAP()
+
+public:
+
+    IFsItemPtr getBookmarkFolderItem(const std::wstring& path);
+
+    bool createBookmark(const std::wstring& path,
+        const std::wstring& location,
+        const std::wstring& tags = L"",
+        const std::wstring& description = L"",
+        const wxImage& icon = wxImage());
+    bool createFolder(const std::wstring& path);
+    bool loadBookmark(const std::wstring& path, Bookmark& bookmark);
+    bool saveBookmark(const std::wstring& path, Bookmark& bookmark);
+    bool deleteItem(const std::wstring& path);
+    bool moveItem(const std::wstring& old_path, const std::wstring& new_path);
+
+    void setFileVisualLocation(const std::wstring& path, int insert_index);
+
+    std::wstring getBookmarkItemPath(IFsItemPtr item);
+
+private:
+
+    void reorderBookmarkEntries(const std::wstring& folder, std::vector<IFsItemPtr>& entries);
+    std::vector<IFsItemPtr> getBookmarkFolderItems(const std::wstring& path);
+    std::wstring getBookmarksLocation();
+    std::wstring getBookmarkFilePath(const std::wstring& bookmark, const std::wstring& extension = L".json");
+
+private:
+
+    std::wstring m_bookmarks_path;
+};
+
+
+IFsItemPtr AppBookmarkFs::getBookmarkFolderItem(const std::wstring& path)
 {
     BookmarkFolder* root = new BookmarkFolder;
     root->setPath(path);
@@ -384,7 +403,7 @@ IFsItemPtr BookmarkFs::getBookmarkFolderItem(const std::wstring& path)
 }
 
 
-bool BookmarkFs::createBookmark(const std::wstring& path,
+bool AppBookmarkFs::createBookmark(const std::wstring& path,
                                 const std::wstring& location,
                                 const std::wstring& tags,
                                 const std::wstring& description,
@@ -399,7 +418,7 @@ bool BookmarkFs::createBookmark(const std::wstring& path,
     return saveBookmark(path, b);
 }
 
-bool BookmarkFs::createFolder(const std::wstring& path)
+bool AppBookmarkFs::createFolder(const std::wstring& path)
 {
     std::wstring full_path = getBookmarkFilePath(path, L"");
     if (full_path.empty())
@@ -408,7 +427,7 @@ bool BookmarkFs::createFolder(const std::wstring& path)
     return xf_mkdir(full_path);
 }
 
-bool BookmarkFs::loadBookmark(const std::wstring& path, Bookmark& bookmark)
+bool AppBookmarkFs::loadBookmark(const std::wstring& path, Bookmark& bookmark)
 {
     std::wstring full_path = getBookmarkFilePath(path);
     if (full_path.empty())
@@ -423,7 +442,7 @@ bool BookmarkFs::loadBookmark(const std::wstring& path, Bookmark& bookmark)
     return jsonToBookmark(json, bookmark);
 }
 
-bool BookmarkFs::saveBookmark(const std::wstring& path, Bookmark& bookmark)
+bool AppBookmarkFs::saveBookmark(const std::wstring& path, Bookmark& bookmark)
 {
     std::wstring full_path = getBookmarkFilePath(path);
     if (full_path.empty())
@@ -434,7 +453,7 @@ bool BookmarkFs::saveBookmark(const std::wstring& path, Bookmark& bookmark)
     return xf_put_file_contents(full_path, json);
 }
 
-bool BookmarkFs::deleteItem(const std::wstring& path)
+bool AppBookmarkFs::deleteItem(const std::wstring& path)
 {
     std::wstring full_path = getBookmarkFilePath(path, L"");
     if (full_path.empty())
@@ -447,7 +466,7 @@ bool BookmarkFs::deleteItem(const std::wstring& path)
     return xf_remove(full_path);
 }
 
-bool BookmarkFs::moveItem(const std::wstring& old_path, const std::wstring& new_path)
+bool AppBookmarkFs::moveItem(const std::wstring& old_path, const std::wstring& new_path)
 {
     std::wstring p1 = getBookmarkFilePath(old_path, L"");
     std::wstring p2;
@@ -470,7 +489,7 @@ bool BookmarkFs::moveItem(const std::wstring& old_path, const std::wstring& new_
 }
 
 
-std::wstring BookmarkFs::getBookmarkItemPath(IFsItemPtr item)
+std::wstring AppBookmarkFs::getBookmarkItemPath(IFsItemPtr item)
 {   
     IFsBookmarkItemPtr fsi = item;
     if (fsi.isNull())
@@ -478,7 +497,7 @@ std::wstring BookmarkFs::getBookmarkItemPath(IFsItemPtr item)
     return fsi->getPath();
 }
 
-void BookmarkFs::setFileVisualLocation(const std::wstring& _path, int insert_index)
+void AppBookmarkFs::setFileVisualLocation(const std::wstring& _path, int insert_index)
 {
     if (insert_index < 0)
         return;
@@ -623,7 +642,7 @@ void BookmarkFs::setFileVisualLocation(const std::wstring& _path, int insert_ind
 
 
 
-void BookmarkFs::reorderBookmarkEntries(const std::wstring& folder, std::vector<IFsItemPtr>& entries)
+void AppBookmarkFs::reorderBookmarkEntries(const std::wstring& folder, std::vector<IFsItemPtr>& entries)
 {
     // STEP 1: read in existing order entries from json file
     std::wstring objorder_fname = getBookmarkFilePath(folder + L"/objorder.info", L"");
@@ -678,7 +697,7 @@ void BookmarkFs::reorderBookmarkEntries(const std::wstring& folder, std::vector<
 
 
 
-std::vector<IFsItemPtr> BookmarkFs::getBookmarkFolderItems(const std::wstring& folder_path)
+std::vector<IFsItemPtr> AppBookmarkFs::getBookmarkFolderItems(const std::wstring& folder_path)
 {
     std::vector<IFsItemPtr> result_items;
 
@@ -745,7 +764,7 @@ std::vector<IFsItemPtr> BookmarkFs::getBookmarkFolderItems(const std::wstring& f
 
 
 
-std::wstring BookmarkFs::getBookmarksLocation()
+std::wstring AppBookmarkFs::getBookmarksLocation()
 {
     if (!m_bookmarks_path.empty())
         return m_bookmarks_path;
@@ -765,7 +784,7 @@ std::wstring BookmarkFs::getBookmarksLocation()
 }
 
 
-std::wstring BookmarkFs::getBookmarkFilePath(const std::wstring& bookmark, const std::wstring& extension)
+std::wstring AppBookmarkFs::getBookmarkFilePath(const std::wstring& bookmark, const std::wstring& extension)
 {
     std::wstring full_path = getBookmarksLocation();
     if (full_path.empty())
@@ -784,7 +803,495 @@ std::wstring BookmarkFs::getBookmarkFilePath(const std::wstring& bookmark, const
 
 
 
+
+
+
+
+// ProjectBookmarkFs class implementation
+
+class ProjectBookmarkFs : public IBookmarkFs,
+                          public IBookmarkFsPrivate
+{
+    XCM_CLASS_NAME("appmain.ProjectBookmarkFs")
+        XCM_BEGIN_INTERFACE_MAP(ProjectBookmarkFs)
+        XCM_INTERFACE_ENTRY(IBookmarkFs)
+        XCM_INTERFACE_ENTRY(IBookmarkFsPrivate)
+    XCM_END_INTERFACE_MAP()
+
+public:
+
+    IFsItemPtr getBookmarkFolderItem(const std::wstring& path);
+
+    bool createBookmark(const std::wstring& path,
+        const std::wstring& location,
+        const std::wstring& tags = L"",
+        const std::wstring& description = L"",
+        const wxImage& icon = wxImage());
+    bool createFolder(const std::wstring& path);
+    bool loadBookmark(const std::wstring& path, Bookmark& bookmark);
+    bool saveBookmark(const std::wstring& path, Bookmark& bookmark);
+    bool deleteItem(const std::wstring& path);
+    bool moveItem(const std::wstring& old_path, const std::wstring& new_path);
+
+    void setFileVisualLocation(const std::wstring& path, int insert_index);
+
+    std::wstring getBookmarkItemPath(IFsItemPtr item);
+
+private:
+
+    void reorderBookmarkEntries(const std::wstring& folder, std::vector<IFsItemPtr>& entries);
+    std::vector<IFsItemPtr> getBookmarkFolderItems(const std::wstring& path);
+    std::wstring getBookmarksLocation();
+    std::wstring getBookmarkFilePath(const std::wstring& bookmark, const std::wstring& extension = L".json");
+    std::wstring getProjectBookmarkFolder();
+
+private:
+
+    std::wstring m_bookmarks_path;
+};
+
+
+IFsItemPtr ProjectBookmarkFs::getBookmarkFolderItem(const std::wstring& path)
+{
+    BookmarkFolder* root = new BookmarkFolder;
+    root->setPath(path);
+
+    return static_cast<IFsItem*>(root);
+}
+
+
+bool ProjectBookmarkFs::createBookmark(const std::wstring& path,
+    const std::wstring& location,
+    const std::wstring& tags,
+    const std::wstring& description,
+    const wxImage& icon)
+{
+    Bookmark b;
+    b.location = location;
+    b.tags = tags;
+    b.description = description;
+    b.icon = icon;
+
+    return saveBookmark(path, b);
+}
+
+bool ProjectBookmarkFs::createFolder(const std::wstring& path)
+{
+    std::wstring full_path = getBookmarkFilePath(path, L"");
+    if (full_path.empty())
+        return false;
+
+    return xf_mkdir(full_path);
+}
+
+bool ProjectBookmarkFs::loadBookmark(const std::wstring& path, Bookmark& bookmark)
+{
+/*
+    std::wstring full_path = getBookmarkFilePath(path);
+    if (full_path.empty())
+        return false;
+
+    bool success = false;
+    std::wstring json = xf_get_file_contents(full_path, &success);
+
+    if (!success)
+        return false;
+
+    return jsonToBookmark(json, bookmark);
+    */
+
+    std::wstring contents;
+    if (!readStreamTextFile(g_app->getDatabase(), path, contents))
+        return false;
+
+    return jsonToBookmark(contents, bookmark);
+}
+
+bool ProjectBookmarkFs::saveBookmark(const std::wstring& path, Bookmark& bookmark)
+{
+    std::wstring full_path = getBookmarkFilePath(path);
+    if (full_path.empty())
+        return false;
+
+    std::wstring json = bookmarkToJson(bookmark);
+
+    return xf_put_file_contents(full_path, json);
+}
+
+bool ProjectBookmarkFs::deleteItem(const std::wstring& path)
+{
+    std::wstring full_path = getBookmarkFilePath(path, L"");
+    if (full_path.empty())
+        return false;
+
+    if (xf_get_directory_exist(full_path))
+        return xf_rmtree(full_path);
+
+    full_path += L".json";
+    return xf_remove(full_path);
+}
+
+bool ProjectBookmarkFs::moveItem(const std::wstring& old_path, const std::wstring& new_path)
+{
+    std::wstring p1 = getBookmarkFilePath(old_path, L"");
+    std::wstring p2;
+    if (p1.empty())
+        return false;
+
+    if (xf_get_directory_exist(p1))
+    {
+        p2 = getBookmarkFilePath(new_path, L"");
+        if (p2.empty())
+            return false;
+
+        return xf_move(p1, p2);
+    }
+
+    p1 = getBookmarkFilePath(old_path);
+    p2 = getBookmarkFilePath(new_path);
+
+    return xf_move(p1, p2);
+}
+
+
+std::wstring ProjectBookmarkFs::getBookmarkItemPath(IFsItemPtr item)
+{
+    IFsBookmarkItemPtr fsi = item;
+    if (fsi.isNull())
+        return L"";
+    return fsi->getPath();
+}
+
+void ProjectBookmarkFs::setFileVisualLocation(const std::wstring& _path, int insert_index)
+{
+    if (insert_index < 0)
+        return;
+
+    std::wstring path = _path;
+    std::wstring folder;
+    std::wstring item;
+    std::vector<std::wstring> order;
+    std::vector<std::wstring>::iterator it;
+
+    // find out which folder the bookmark is in
+    if (path.length() > 0 && path[path.length() - 1] == '/')
+        path = path.substr(0, path.length() - 1); // remove trailing slash
+
+    if (kl::stringFrequency(path, '/') > 0)
+    {
+        folder = kl::beforeLast(path, '/');
+        item = kl::afterLast(path, '/');
+    }
+    else
+    {
+        folder = L"/";
+        item = path;
+    }
+    kl::makeLower(item);
+
+
+
+    // STEP 1: read in existing order entries from json file
+    std::wstring objorder_fname = getBookmarkFilePath(folder + L"/objorder.info", L"");
+
+    std::wstring json;
+    json = xf_get_file_contents(objorder_fname);
+    if (json.length() > 0)
+    {
+        kl::JsonNode node;
+        if (node.fromString(json) && node.childExists("order"))
+        {
+            kl::JsonNode o = node["order"];
+            size_t i, cnt = o.getChildCount();
+            for (i = 0; i < cnt; ++i)
+            {
+                kl::JsonNode bm = o[i];
+                order.push_back(bm.getString());
+            }
+        }
+    }
+
+
+
+    // STEP 2: reconcile differences between folder contents on visual array
+    std::set<std::wstring> existing;
+
+    std::wstring fspath = getBookmarkFilePath(folder, L"");
+    xf_dirhandle_t handle = xf_opendir(fspath);
+    xf_direntry_t info;
+    std::wstring full_path;
+
+    while (xf_readdir(handle, &info))
+    {
+        if (info.m_name == L"." || info.m_name == L".." || info.m_name == L"objorder.info")
+            continue;
+
+        full_path = fspath;
+        full_path += PATH_SEPARATOR_CHAR;
+        full_path += info.m_name;
+
+        kl::makeLower(info.m_name);
+
+        if (info.m_name.find(L".json") != info.m_name.npos)
+            existing.insert(kl::beforeLast(info.m_name, '.'));
+        else if (xf_get_directory_exist(full_path))
+            existing.insert(info.m_name);
+    }
+
+    xf_closedir(handle);
+
+
+    // first delete any items from the order array that no longer exist
+    int i;
+    for (i = 0; i < (int)order.size(); ++i)
+    {
+        std::wstring item = order[i];
+        kl::makeLower(item);
+        if (existing.find(item) == existing.end())
+        {
+            order.erase(order.begin() + i);
+            i--;
+        }
+    }
+
+    // we will delete all items from |existing| that we already know about
+    std::set<std::wstring>::iterator sit;
+    for (it = order.begin(); it != order.end(); ++it)
+    {
+        sit = existing.find(*it);
+        if (sit != existing.end())
+            existing.erase(sit);
+    }
+
+    // now append any new items to the end
+    for (sit = existing.begin(); sit != existing.end(); ++sit)
+        order.push_back(*sit);
+
+
+
+    // STEP 3: insert path in desired location
+
+
+    // (first remove the item from where it was)
+    for (it = order.begin(); it != order.end(); ++it)
+    {
+        if (*it == item)
+        {
+            order.erase(it);
+            break;
+        }
+    }
+
+    // (now insert it)
+    if ((size_t)insert_index >= order.size())
+        order.push_back(item);
+    else
+        order.insert(order.begin() + insert_index, item);
+
+
+
+    // STEP 4: write out new json file
+
+    kl::JsonNode node;
+    kl::JsonNode o = node["order"];
+    o.setArray();
+    for (it = order.begin(); it != order.end(); ++it)
+    {
+        kl::JsonNode oi = o.appendElement();
+        oi.setString(*it);
+    }
+
+    xf_put_file_contents(objorder_fname, node.toString());
+}
+
+
+
+
+void ProjectBookmarkFs::reorderBookmarkEntries(const std::wstring& folder, std::vector<IFsItemPtr>& entries)
+{
+    // STEP 1: read in existing order entries from json file
+    std::wstring objorder_fname = getBookmarkFilePath(folder + L"/objorder.info", L"");
+
+    std::vector<std::wstring> order;
+    std::vector<std::wstring>::iterator it;
+    std::wstring json;
+    json = xf_get_file_contents(objorder_fname);
+    if (json.length() > 0)
+    {
+        kl::JsonNode node;
+        if (node.fromString(json) && node.childExists("order"))
+        {
+            kl::JsonNode o = node["order"];
+            size_t i, cnt = o.getChildCount();
+            for (i = 0; i < cnt; ++i)
+            {
+                kl::JsonNode bm = o[i];
+                order.push_back(bm.getString());
+            }
+        }
+    }
+
+
+    // STEP 2: index |entries|
+    std::map<std::wstring, IFsItemPtr, kl::cmp_nocase> idx;
+    std::map<std::wstring, IFsItemPtr, kl::cmp_nocase>::iterator mit;
+
+    std::vector<IFsItemPtr>::iterator eit;
+
+    for (eit = entries.begin(); eit != entries.end(); ++eit)
+        idx[towstr((*eit)->getLabel())] = *eit;
+
+
+    // STEP 3: create a new |entries| array in the order they appear in the |order|
+
+    entries.clear();
+
+    for (it = order.begin(); it != order.end(); ++it)
+    {
+        mit = idx.find(*it);
+        if (mit == idx.end())
+            continue;
+        entries.push_back(mit->second);
+        idx.erase(mit);
+    }
+
+    // add remaining items that weren't found in the order array
+    for (mit = idx.begin(); mit != idx.end(); ++mit)
+        entries.push_back(mit->second);
+}
+
+
+std::wstring ProjectBookmarkFs::getProjectBookmarkFolder()
+{
+    xd::IDatabasePtr database = g_app->getDatabase();
+    if (database.isNull())
+        return L"";
+
+    std::wstring res;
+
+    res = L"/.appdata/";
+    res += database->getActiveUid();
+    res += L"/bookmarks";
+
+    if (!database->getFileExist(res))
+    {
+        database->createFolder(res);
+    }
+
+    return res;
+}
+
+
+std::vector<IFsItemPtr> ProjectBookmarkFs::getBookmarkFolderItems(const std::wstring& folder_path)
+{
+    std::vector<IFsItemPtr> result_items;
+
+    std::wstring base_path = getProjectBookmarkFolder();
+    std::wstring path = appendPaths(base_path, folder_path);
+
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+    {
+        return result_items;
+    }
+
+    DbDoc* dbdoc = g_app->getDbDoc();
+    if (!dbdoc)
+    {
+        return result_items;
+    }
+
+
+    xd::IFileInfoEnumPtr files = db->getFolderInfo(path);
+    size_t file_count = files->size();
+    for (size_t i = 0; i < file_count; ++i)
+    {
+        xd::IFileInfoPtr file = files->getItem(i);
+
+        if (file->getName().substr(0,1) == L".")
+            continue;
+
+        if (file->getType() == xd::filetypeFolder)
+        {
+            BookmarkFolder* folder = new BookmarkFolder();
+            folder->setLabel(file->getName());
+            folder->setBitmap(GETBMPSMALL(gf_folder_closed));
+            folder->setPath(appendPaths(path, file->getName()));
+
+            result_items.push_back(folder);
+        }
+        else
+        {
+            BookmarkItem* item = new BookmarkItem();
+            item->setLabel(file->getName());
+            item->setPath(appendPaths(path, file->getName()));
+            item->setBitmap(GETBMPSMALL(gf_document));
+
+            result_items.push_back(item);
+        }
+    }
+
+
+    return result_items;
+}
+
+
+
+std::wstring ProjectBookmarkFs::getBookmarksLocation()
+{
+    if (!m_bookmarks_path.empty())
+        return m_bookmarks_path;
+
+    std::wstring path = towstr(g_app->getAppDataPath());
+    path += PATH_SEPARATOR_CHAR;
+    path += L"Bookmarks";
+
+    if (!xf_get_directory_exist(path))
+    {
+        if (!xf_mkdir(path))
+            return L"";
+    }
+
+    m_bookmarks_path = path;
+    return path;
+}
+
+
+std::wstring ProjectBookmarkFs::getBookmarkFilePath(const std::wstring& bookmark, const std::wstring& extension)
+{
+    std::wstring full_path = getBookmarksLocation();
+    if (full_path.empty())
+        return L"";
+    if (bookmark.length() == 0)
+        return full_path;
+    if (bookmark[0] != '/')
+        full_path += PATH_SEPARATOR_STR;
+    full_path += bookmark;
+    full_path += extension;
+    kl::replaceStr(full_path, L"/", PATH_SEPARATOR_STR);
+    return full_path;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 IBookmarkFsPtr createBookmarkFs()
 {
-    return static_cast<IBookmarkFs*>(new BookmarkFs);
+    return static_cast<IBookmarkFs*>(new ProjectBookmarkFs);
 }
