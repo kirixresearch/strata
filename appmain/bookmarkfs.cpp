@@ -900,11 +900,43 @@ bool ProjectBookmarkFs::loadBookmark(const std::wstring& path, Bookmark& bookmar
     return jsonToBookmark(json, bookmark);
     */
 
-    std::wstring contents;
-    if (!readStreamTextFile(g_app->getDatabase(), path, contents))
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
         return false;
 
-    return jsonToBookmark(contents, bookmark);
+    xd::IFileInfoPtr finfo = db->getFileInfo(path);
+    if (finfo->isMount())
+    {
+        std::wstring cstr, rpath;
+        if (db->getMountPoint(path, cstr, rpath))
+        {
+            bookmark.location = path;
+            bookmark.tags = L"";
+            bookmark.description = L"";
+            bookmark.icon = wxImage();
+            bookmark.run_target = false;
+
+            if (cstr.empty() && rpath.length() > 0)
+            {
+                bookmark.location = rpath;
+            }
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        std::wstring contents;
+        if (!readStreamTextFile(db, path, contents))
+            return false;
+
+        return jsonToBookmark(contents, bookmark);
+    }
+
 }
 
 bool ProjectBookmarkFs::saveBookmark(const std::wstring& path, Bookmark& bookmark)
