@@ -20,6 +20,7 @@ public:
     Bookmark()
     {
         run_target = false;
+        is_shortcut = false;
     }
 
 public:
@@ -28,6 +29,7 @@ public:
     std::wstring tags;
     std::wstring description;
     bool run_target;
+    bool is_shortcut;
     wxImage icon;
 };
 
@@ -57,8 +59,8 @@ public:
 };
 XCM_DECLARE_SMARTPTR(IBookmarkFs)
 
-
-IBookmarkFsPtr createBookmarkFs();
+IBookmarkFsPtr createAppBookmarkFs();
+IBookmarkFsPtr createProjectBookmarkFs();
 
 
 #endif

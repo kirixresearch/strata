@@ -531,7 +531,7 @@ bool MainApp::OnInit()
     m_job_scheduler->setInterval(21);
 
     // create bookmark fs object
-    m_bookmark_fs = createBookmarkFs();
+    m_bookmark_fs = createAppBookmarkFs();
 
     // initialize web client engine
     initWebClient();
@@ -1071,7 +1071,14 @@ void MainApp::setDatabase(xd::IDatabasePtr database)
         m_job_scheduler->load();
     }
 
-    m_bookmark_fs = createBookmarkFs();
+    if (getDbDriver() == L"xdnative")
+    {
+        m_bookmark_fs = createProjectBookmarkFs();
+    }
+     else
+    {
+        m_bookmark_fs = createAppBookmarkFs();
+    }
 }
 
 IBookmarkFsPtr MainApp::getBookmarkFs()
