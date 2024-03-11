@@ -276,6 +276,23 @@ static void activateItem(const std::wstring& path, int open_mask)
     if (!g_app->getBookmarkFs()->loadBookmark(path, b))
         return;
 
+    if (b.run_target)
+    {
+        xd::IDatabasePtr db = g_app->getDatabase();
+        if (db.isOk())
+        {
+            xd::IFileInfoPtr finfo = db->getFileInfo(b.location);
+            if (finfo.isOk())
+            {
+                if (finfo->getType() == xd::filetypeNode || finfo->getType() == xd::filetypeStream)
+                {
+                    g_app->getAppController()->execute(b.location);
+                    return;
+                }
+            }
+        }
+    }
+
     g_app->getAppController()->openAny(b.location, open_mask);
 }
 
