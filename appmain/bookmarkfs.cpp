@@ -1260,6 +1260,8 @@ std::wstring ProjectBookmarkFs::getProjectBookmarkFolder()
     return res;
 }
 
+// borrowed from dbdoc
+wxBitmap getShortcutBitmap(const wxBitmap& input_bmp);
 
 std::vector<IFsItemPtr> ProjectBookmarkFs::getBookmarkFolderItems(const std::wstring& folder_path)
 {
@@ -1301,10 +1303,74 @@ std::vector<IFsItemPtr> ProjectBookmarkFs::getBookmarkFolderItems(const std::wst
         }
         else
         {
+            std::wstring full_path = appendPaths(folder_path, file->getName());
+            wxBitmap bmp = GETBMPSMALL(gf_document);
+
+            Bookmark b;
+            if (loadBookmark(full_path, b))
+            {
+                if (b.is_shortcut)
+                {
+                    xd::IFileInfoPtr finfo = db->getFileInfo(b.location);
+                    if (finfo.isOk())
+                    {
+                        int ftype = finfo->getType();
+                        if (ftype == xd::filetypeFolder)
+                        {
+                            bmp = GETBMPSMALL(gf_folder_closed);
+                        }
+                        else if (ftype == xd::filetypeTable)
+                        {
+                            bmp = GETBMPSMALL(gf_table);
+                        }
+                        else if (ftype == xd::filetypeStream)
+                        {
+                            const std::wstring& mime_type = finfo->getMimeType();
+                            if (mime_type == L"application/vnd.kx.report")
+                            {
+                                bmp = GETBMPSMALL(gf_report);
+                            }
+                            else if (mime_type == L"application/vnd.kx.query")
+                            {
+                                bmp = GETBMPSMALL(gf_query);
+                            }
+                            else if (mime_type.substr(0, 19) == L"application/vnd.kx.")
+                            {
+                                bmp = GETBMPSMALL(gf_gear);
+                            }
+                            else
+                            {
+                                bmp = GETBMPSMALL(gf_script);
+                            }
+                        }
+
+                        bmp = getShortcutBitmap(bmp);
+                    }
+
+                    /*
+                    IFsItemPtr fsitem =  dbdoc->getFsItemFromPath(b.location);
+                    if (fsitem.isOk())
+                    {
+                        if (fsitem->getBitmap().IsOk())
+                        {
+                            bmp = fsitem->getBitmap();
+                        }
+                    }
+                    */
+                }
+                else
+                {
+                    if (b.icon.IsOk())
+                    {
+                        bmp = b.icon;
+                    }
+                }
+            }
+        
             BookmarkItem* item = new BookmarkItem();
             item->setLabel(file->getName());
-            item->setPath(appendPaths(folder_path, file->getName()));
-            item->setBitmap(GETBMPSMALL(gf_document));
+            item->setPath(full_path);
+            item->setBitmap(bmp);
 
             result_items.push_back(item);
         }

@@ -168,7 +168,7 @@ static wxMenu* createProjectsMenu(const std::vector<ProjectInfo>& projects,
 
 std::vector<std::pair<wxBitmap, wxBitmap> > g_shortcut_bitmaps;
 
-static wxBitmap getShortcutBitmap(const wxBitmap& input_bmp)
+wxBitmap getShortcutBitmap(const wxBitmap& input_bmp)
 {
     static const char* xpm_shortcut[] = {
     "7 7 6 1",

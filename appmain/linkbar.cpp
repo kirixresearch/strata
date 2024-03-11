@@ -1981,6 +1981,109 @@ void LinkBar::onFsDataDragOver(wxDragResult& def)
     }
 }
 
+// this function handles all drag and drop to the linkbar
+// from the project panel (or any existing object in the project,
+// in the case of the dragging from the url combobox)
+static void doProjectTreeDragDrop(IFsItemPtr item,
+                                  wxString drop_folder_path,
+                                  int link_drop_idx = -1)
+{
+    // get the full path of the item
+    wxString src_path = DbDoc::getFsItemPath(item);
+
+    // get the name (chop off folders)
+    wxString src_name = src_path.AfterLast(wxT('/'));
+    if (src_name.IsEmpty())
+        return;
+
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
+    IBookmarkFsPtr bookmark_fs = g_app->getBookmarkFs();
+    if (bookmark_fs.isNull())
+        return;
+
+    std::wstring destination_path = xd::appendPath(drop_folder_path.ToStdWstring(), src_name.ToStdWstring());
+
+    if (bookmark_fs->createBookmark(destination_path, src_path.ToStdWstring(), L"", L"", item->getBitmap().ConvertToImage()))
+    {
+        if (link_drop_idx != -1)
+        {
+            bookmark_fs->setFileVisualLocation(destination_path, link_drop_idx);
+        }
+    }
+
+/*
+    // determine the destination path
+    wxString dest_path;
+    if (drop_folder_path.Length() > 0)
+    {
+        getRemotePathIfExists(drop_folder_path);
+        dest_path = drop_folder_path;
+        dest_path += wxT("/");
+        dest_path += src_name;
+    }
+    else
+    {
+        dest_path = getLinkBarItemPath(src_name);
+    }
+
+
+    // find out if we're dragging something already in the bookmark
+    // folder to somewhere also in the bookmark folder.  This would amount
+    // to a simple move
+    wxString bookmark_folder = g_app->getBookmarkFolder();
+    bool inner_bookmark = false;
+    if (0 == src_path.Left(bookmark_folder.Length()).CmpNoCase(bookmark_folder) &&
+        0 == dest_path.Left(bookmark_folder.Length()).CmpNoCase(bookmark_folder))
+    {
+        inner_bookmark = true;
+    }
+
+
+
+
+
+    if (src_path != dest_path)
+    {
+        // copy the dragged item into the linkbar or drop folder
+        if (inner_bookmark)
+        {
+            db->moveFile(towstr(src_path), towstr(dest_path));
+        }
+        else if (isExternalMount(src_path))
+        {
+            // copy mount items to linkbar (or folder in the linkbar)
+            db->copyFile(towstr(src_path), towstr(dest_path));
+        }
+        else
+        {
+            IDbObjectFsItemPtr obj_item = item;
+            if (obj_item.isOk() && obj_item->getType() == dbobjtypeBookmark)
+            {
+                // copy bookmark items to linkbar (or folder in the linkbar)
+                db->copyFile(towstr(src_path), towstr(dest_path));
+            }
+            else
+            {
+                // for all other items, create a bookmark (link)
+                // and add it to the linkbar (or folder in the linkbar)
+                Bookmark::create(dest_path, src_path);
+            }
+        }
+    }
+
+
+    // if we're not dragging to a folder, set the
+    // position of the item on the linkbar
+    if (drop_folder_path.IsEmpty())
+    {
+        // position the item in the linkbar
+        DbDoc::setFileVisualLocation(dest_path, link_drop_idx);
+    }
+    */
+}
 
 void LinkBar::onFsDataFolderDrop(IFsItemPtr target, wxDataObject* data, wxDragResult* result)
 {
@@ -2185,6 +2288,25 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
             g_app->getBookmarkFs()->setFileVisualLocation(dest_path, link_drop_idx);
         }
     }
+    else
+    {
+        // dragging from the project panel to the linkbar
+
+        size_t i, count = items->size();
+        for (i = 0; i < count; ++i)
+        {
+            IFsItemPtr item = items->getItem(i);
+            if (item.isNull())
+                continue;
+
+            // convert the tool index to a link index
+            int link_drop_idx = m_drop_idx;
+            tool2LinkIndex(link_drop_idx);
+
+            doProjectTreeDragDrop(item, drop_folder_path, link_drop_idx + i);
+        }
+    }
+
 
     refresh();
     
