@@ -1313,20 +1313,6 @@ std::wstring ProjectBookmarkFs::getBookmarkFilePath(const std::wstring& bookmark
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 IBookmarkFsPtr createAppBookmarkFs()
 {
     return static_cast<IBookmarkFs*>(new AppBookmarkFs);

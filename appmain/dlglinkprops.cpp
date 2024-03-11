@@ -43,7 +43,7 @@ LinkPropsDialog::LinkPropsDialog(wxWindow* parent,
                                      -1,
                                      _("Link Properties"),
                                      wxDefaultPosition,
-                                     wxSize(360,280),
+                                     parent->FromDIP(wxSize(360,280)),
                                      wxDEFAULT_DIALOG_STYLE |
                                      wxRESIZE_BORDER |
                                      wxCLIP_CHILDREN |
@@ -164,6 +164,7 @@ int LinkPropsDialog::ShowModal()
                                             wxDefaultPosition);
     m_runtarget_checkbox->SetValue(m_run_target);
 
+
     
     wxBoxSizer* flags_sizer = new wxBoxSizer(wxHORIZONTAL);
     flags_sizer->AddSpacer(1);
@@ -244,13 +245,15 @@ int LinkPropsDialog::ShowModal()
         separator->Show(false);
         flags_sizer->Show(false);
     }
-     else if (m_mode == LinkPropsDialog::ModeRename)
+     else if (m_mode == LinkPropsDialog::ModeRename || m_mode == LinkPropsDialog::ModeCreateFolder)
     {
         separator->Show(false);
         location_sizer->Show(false);
         tags_sizer->Show(false);
         description_sizer->Show(false);
+        flags_sizer->Show(false);
     }
+
     
     SetSizer(main_sizer);
     Layout();

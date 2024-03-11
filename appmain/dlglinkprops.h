@@ -20,7 +20,7 @@ public:
     enum
     {
         ModeCreate        = 0,
-        ModeCreateSmall   = 1,
+        ModeCreateFolder  = 1,
         ModeEdit          = 2,
         ModeEditNoDesc    = 3,
         ModeRename        = 4

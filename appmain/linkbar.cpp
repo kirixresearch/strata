@@ -1096,7 +1096,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             wxString message = wxString::Format(_("Please enter the name of the folder:"));
             
             LinkPropsDialog dlg(this);
-            dlg.setMode(LinkPropsDialog::ModeRename);
+            dlg.setMode(LinkPropsDialog::ModeCreateFolder);
             dlg.setStartFolder(start_folder);
             dlg.setMessage(message);
             dlg.setName(_("New Folder"));
