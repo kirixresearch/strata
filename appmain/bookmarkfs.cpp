@@ -879,13 +879,16 @@ bool ProjectBookmarkFs::createBookmark(const std::wstring& path,
     return saveBookmark(path, b);
 }
 
-bool ProjectBookmarkFs::createFolder(const std::wstring& path)
+bool ProjectBookmarkFs::createFolder(const std::wstring& _path)
 {
-    std::wstring full_path = getBookmarkFilePath(path);
-    if (full_path.empty())
+    std::wstring base_path = getProjectBookmarkFolder();
+    std::wstring path = appendPaths(base_path, _path);
+
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
         return false;
 
-    return xf_mkdir(full_path);
+    return db->createFolder(path);
 }
 
 bool ProjectBookmarkFs::loadBookmark(const std::wstring& _path, Bookmark& bookmark)
@@ -958,33 +961,20 @@ bool ProjectBookmarkFs::deleteItem(const std::wstring& _path)
     if (db.isNull())
         return false;
 
-    db->deleteFile(path); // delete the old node file -- see above
     return db->deleteFile(path);
 }
 
-bool ProjectBookmarkFs::moveItem(const std::wstring& old_path, const std::wstring& new_path)
+bool ProjectBookmarkFs::moveItem(const std::wstring& _old_path, const std::wstring& _new_path)
 {
-/*
-    std::wstring p1 = getBookmarkFilePath(old_path);
-    std::wstring p2;
-    if (p1.empty())
+    std::wstring base_path = getProjectBookmarkFolder();
+    std::wstring old_path = appendPaths(base_path, _old_path);
+    std::wstring new_path = appendPaths(base_path, _new_path);
+
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
         return false;
 
-    if (xf_get_directory_exist(p1))
-    {
-        p2 = getBookmarkFilePath(new_path, L"");
-        if (p2.empty())
-            return false;
-
-        return xf_move(p1, p2);
-    }
-
-    p1 = getBookmarkFilePath(old_path);
-    p2 = getBookmarkFilePath(new_path);
-
-    return xf_move(p1, p2);
-*/
-    return false;
+    return db->moveFile(old_path, new_path);
 }
 
 
