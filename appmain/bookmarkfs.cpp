@@ -164,7 +164,20 @@ static bool jsonToBookmark(const std::wstring& json, Bookmark& bookmark)
         bookmark.location = bookmark_node["location"].getString();
         bookmark.tags = bookmark_node["tags"].getString();
         bookmark.description = bookmark_node["description"].getString();
-        bookmark.run_target = bookmark_node["run_target"].getBoolean();
+        
+        if (bookmark_node["run_target"].isString())
+        {
+            std::wstring run_target = bookmark_node["run_target"].getString();
+            if (run_target == L"true" || run_target == L"1")
+                bookmark.run_target = true;
+            else
+                bookmark.run_target = false;
+        }
+        else
+        {
+            bookmark.run_target = bookmark_node["run_target"].getBoolean();
+        }
+
         return true;
     }
 
