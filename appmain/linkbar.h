@@ -112,6 +112,9 @@ private:
     int m_last_id;                  // id of the last toolbar item we hovered over
     wxStopWatch m_hover_stopwatch;  // stopwatch to determine how long we've been hovering over the same item
     
+    wxSize m_max_popup_windows_size;
+    wxSize m_min_popup_windows_size;
+
     DECLARE_EVENT_TABLE()
 };
 

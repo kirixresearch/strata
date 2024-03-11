@@ -24,8 +24,6 @@
 
 
 const int LinkBarDropDownId = 6524;
-const wxSize MaxPopupWindowSize = wxSize(320, 480);
-const wxSize MinPopupWindowSize = wxSize(140, 20);
 
 
 // ripped directly from CfwTabArt
@@ -351,6 +349,9 @@ LinkBar::LinkBar(wxWindow* parent,
     m_last_id = -1;
     m_hover_stopwatch.Pause();
 
+    m_max_popup_windows_size = FromDIP(wxSize(320, 480));
+    m_min_popup_windows_size = FromDIP(wxSize(140, 20));
+
     // set up the linkbar as a drop target
     FsDataDropTarget* drop_target = new FsDataDropTarget;
     drop_target->sigDragLeave.connect(this, &LinkBar::onFsDataLeave);
@@ -621,7 +622,7 @@ void LinkBar::showPopupWindow(int id,
     m_popup_fspanel = createFsPanelObject();
     m_popup_fspanel->setStyle(fsstyleTreeHideRoot | fsstyleTrackSelect);
 
-    if (!m_popup_fspanel->create(m_popup_window, -1, wxPoint(1,1), MaxPopupWindowSize, 0))
+    if (!m_popup_fspanel->create(m_popup_window, -1, wxPoint(1,1), m_max_popup_windows_size, 0))
     {
         wxFAIL_MSG(wxT("Could not create FsPanel window"));
         return;
@@ -666,10 +667,10 @@ void LinkBar::showPopupWindow(int id,
 
 void LinkBar::recalcPopupWindowSize()
 {
-    int max_height = MaxPopupWindowSize.GetHeight();
-    int max_width  = MaxPopupWindowSize.GetWidth();
-    int min_height = MinPopupWindowSize.GetHeight();
-    int min_width  = MinPopupWindowSize.GetWidth();
+    int max_height = m_max_popup_windows_size.GetHeight();
+    int max_width  = m_max_popup_windows_size.GetWidth();
+    int min_height = m_min_popup_windows_size.GetHeight();
+    int min_width  = m_min_popup_windows_size.GetWidth();
     
     int new_width, new_height;
     m_popup_fspanel->getVirtualSize(&new_width, &new_height);
