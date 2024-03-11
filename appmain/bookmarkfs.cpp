@@ -1346,17 +1346,6 @@ std::vector<IFsItemPtr> ProjectBookmarkFs::getBookmarkFolderItems(const std::wst
 
                         bmp = getShortcutBitmap(bmp);
                     }
-
-                    /*
-                    IFsItemPtr fsitem =  dbdoc->getFsItemFromPath(b.location);
-                    if (fsitem.isOk())
-                    {
-                        if (fsitem->getBitmap().IsOk())
-                        {
-                            bmp = fsitem->getBitmap();
-                        }
-                    }
-                    */
                 }
                 else
                 {
