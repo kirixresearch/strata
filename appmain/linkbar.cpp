@@ -1999,6 +1999,10 @@ void LinkBar::onFsDataDragOver(wxDragResult& def)
     }
 }
 
+// borrowed from dbdoc
+wxBitmap getShortcutBitmap(const wxBitmap& input_bmp);
+
+
 // this function handles all drag and drop to the linkbar
 // from the project panel (or any existing object in the project,
 // in the case of the dragging from the url combobox)
@@ -2024,7 +2028,7 @@ static void doProjectTreeDragDrop(IFsItemPtr item,
 
     std::wstring destination_path = xd::appendPath(drop_folder_path.ToStdWstring(), src_name.ToStdWstring());
 
-    if (bookmark_fs->createBookmark(destination_path, src_path.ToStdWstring(), L"", L"", item->getBitmap().ConvertToImage()))
+    if (bookmark_fs->createBookmark(destination_path, src_path.ToStdWstring(), L"", L"", getShortcutBitmap(item->getBitmap()).ConvertToImage()))
     {
         if (link_drop_idx != -1)
         {
