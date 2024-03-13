@@ -851,6 +851,25 @@ public:
 
     std::wstring getBookmarkItemPath(IFsItemPtr item);
 
+public:
+
+    void setDatabase(xd::IDatabasePtr db)
+    {
+        m_assigned_database = db;
+    }
+
+protected:
+
+    xd::IDatabasePtr m_assigned_database;
+
+    virtual xd::IDatabasePtr getDatabase()
+    {
+        if (m_assigned_database.isOk())
+            return m_assigned_database;
+        else
+            return g_app->getDatabase();
+    }
+
 private:
 
 
@@ -897,7 +916,7 @@ bool ProjectBookmarkFs::createFolder(const std::wstring& _path)
     std::wstring base_path = getProjectBookmarkFolder();
     std::wstring path = appendPaths(base_path, _path);
 
-    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = getDatabase();
     if (db.isNull())
         return false;
 
@@ -909,7 +928,7 @@ bool ProjectBookmarkFs::loadBookmark(const std::wstring& _path, Bookmark& bookma
     std::wstring base_path = getProjectBookmarkFolder();
     std::wstring path = appendPaths(base_path, _path);
 
-    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = getDatabase();
     if (db.isNull())
         return false;
 
@@ -956,7 +975,7 @@ bool ProjectBookmarkFs::saveBookmark(const std::wstring& _path, Bookmark& bookma
 
     std::wstring json = bookmarkToJson(bookmark);
 
-    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = getDatabase();
     if (db.isNull())
         return false;
 
@@ -970,7 +989,7 @@ bool ProjectBookmarkFs::deleteItem(const std::wstring& _path)
     std::wstring base_path = getProjectBookmarkFolder();
     std::wstring path = appendPaths(base_path, _path);
 
-    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = getDatabase();
     if (db.isNull())
         return false;
 
@@ -983,7 +1002,7 @@ bool ProjectBookmarkFs::moveItem(const std::wstring& _old_path, const std::wstri
     std::wstring old_path = appendPaths(base_path, _old_path);
     std::wstring new_path = appendPaths(base_path, _new_path);
 
-    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = getDatabase();
     if (db.isNull())
         return false;
 
@@ -1003,7 +1022,7 @@ void ProjectBookmarkFs::loadOrder(const std::wstring& folder, std::vector<std::w
 {
     order.clear();
 
-    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = getDatabase();
     if (db.isNull())
         return;
 
@@ -1067,7 +1086,7 @@ void ProjectBookmarkFs::saveOrder(const std::wstring& folder, const std::vector<
     std::wstring base_path = getProjectBookmarkFolder();
     std::wstring path = appendPaths(appendPaths(base_path, folder), L".objorder2");
 
-    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = getDatabase();
     if (db.isNull())
         return;
 
@@ -1124,7 +1143,7 @@ void ProjectBookmarkFs::setFileVisualLocation(const std::wstring& _path, int ins
     std::wstring base_path = getProjectBookmarkFolder();
     std::wstring db_path = appendPaths(base_path, folder);
 
-    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = getDatabase();
     if (db.isOk())
     {
         xd::IFileInfoEnumPtr files = db->getFolderInfo(db_path);
@@ -1242,7 +1261,7 @@ void ProjectBookmarkFs::reorderBookmarkEntries(const std::wstring& folder, std::
 
 std::wstring ProjectBookmarkFs::getProjectBookmarkFolder()
 {
-    xd::IDatabasePtr database = g_app->getDatabase();
+    xd::IDatabasePtr database = getDatabase();
     if (database.isNull())
         return L"";
 
@@ -1270,7 +1289,7 @@ std::vector<IFsItemPtr> ProjectBookmarkFs::getBookmarkFolderItems(const std::wst
     std::wstring base_path = getProjectBookmarkFolder();
     std::wstring path = appendPaths(base_path, folder_path);
 
-    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = getDatabase();
     if (db.isNull())
     {
         return result_items;
@@ -1390,3 +1409,11 @@ IBookmarkFsPtr createProjectBookmarkFs()
 {
     return static_cast<IBookmarkFs*>(new ProjectBookmarkFs);
 }
+
+IBookmarkFsPtr createProjectBookmarkFsForDatabase(xd::IDatabasePtr db)
+{
+    ProjectBookmarkFs* fs = new ProjectBookmarkFs;
+    fs->setDatabase(db);
+    return static_cast<IBookmarkFs*>(fs);
+}
+

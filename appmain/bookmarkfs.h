@@ -61,6 +61,6 @@ XCM_DECLARE_SMARTPTR(IBookmarkFs)
 
 IBookmarkFsPtr createAppBookmarkFs();
 IBookmarkFsPtr createProjectBookmarkFs();
-
+IBookmarkFsPtr createProjectBookmarkFsForDatabase(xd::IDatabasePtr db);
 
 #endif

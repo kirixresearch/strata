@@ -5867,56 +5867,59 @@ bool AppController::createDefaultProject()
     return (created ? true : false);
 }
 
-void AppController::createDefaultLinks()
+void AppController::createDefaultLinks(xd::IDatabasePtr db)
 {
     IAppPreferencesPtr prefs = g_app->getAppPreferences();
+
+    IBookmarkFsPtr bookmark_fs = createProjectBookmarkFsForDatabase(db);
+
 
     wxString home_page = getAppPrefsDefaultString("general.location.home");
     if (home_page.Length() > 0)
     {
-        g_app->getBookmarkFs()->createBookmark(towstr(_("Home Page")), towstr(home_page));
+        bookmark_fs->createBookmark(towstr(_("Home Page")), towstr(home_page));
     }
 
     wxString online_help = getAppPrefsDefaultString("general.location.help");
     if (online_help.Length() > 0)
     {
-        g_app->getBookmarkFs()->createBookmark(towstr(_("Online Help")), towstr(online_help));
+        bookmark_fs->createBookmark(towstr(_("Online Help")), towstr(online_help));
     }
 
     wxString developer_resources = getAppPrefsDefaultString("general.location.resources");
     if (developer_resources.Length() > 0)
     {
-        g_app->getBookmarkFs()->createBookmark(towstr(_("Developer Resources")), towstr(developer_resources));
+        bookmark_fs->createBookmark(towstr(_("Developer Resources")), towstr(developer_resources));
     }
 
 /* removed in v5.0
     wxString support_forums = getAppPrefsDefaultString("general.location.support");
     if (support_forums.Length() > 0)
     {
-        g_app->getBookmarkFs()->createBookmark(towstr(_("Support Forums")), towstr(support_forums));
+        bookmark_fs->createBookmark(towstr(_("Support Forums")), towstr(support_forums));
     }
 */
 
     int idx = 0;
     if (home_page.Length() > 0)
     {
-        g_app->getBookmarkFs()->setFileVisualLocation(towstr(_("Home Page")), idx++);
+        bookmark_fs->setFileVisualLocation(towstr(_("Home Page")), idx++);
     }
 
     if (online_help.Length() > 0)
     {
-        g_app->getBookmarkFs()->setFileVisualLocation(towstr(_("Online Help")), idx++);
+        bookmark_fs->setFileVisualLocation(towstr(_("Online Help")), idx++);
     }
 
     if (developer_resources.Length() > 0)
     {
-        g_app->getBookmarkFs()->setFileVisualLocation(towstr(_("Developer Resources")), idx++);
+        bookmark_fs->setFileVisualLocation(towstr(_("Developer Resources")), idx++);
     }
 
 /* removed in v5.0
     if (support_forums.Length() > 0)
     {
-        g_app->getBookmarkFs()->setFileVisualLocation(towstr(_("Support Forums")), idx++);
+        bookmark_fs->setFileVisualLocation(towstr(_("Support Forums")), idx++);
     }
 */
 }
@@ -5951,6 +5954,11 @@ bool AppController::createProject(const wxString& location,
     xd::IDatabasePtr database = dbmgr->open(cstr + L";User Id=admin;Password=");
     if (database.isNull())
         return false;
+
+
+    // create default bookmarks in the database
+    createDefaultLinks(database);
+    
 
     // add an entry in the project manager
     ProjectMgr projmgr;
@@ -6091,7 +6099,7 @@ bool AppController::openProject(const ProjectInfo& info)
         bool default_links_created = prefs->getBoolean(wxT("general.default_links_created_2"), false);
         if (!default_links_created)
         {
-            createDefaultLinks();
+            createDefaultLinks(database);
             prefs->setBoolean(wxT("general.default_links_created_2"), true);
         }
     }

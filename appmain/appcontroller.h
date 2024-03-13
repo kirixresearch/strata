@@ -134,7 +134,7 @@ public:
     
     // project commands
     bool createDefaultProject();
-    void createDefaultLinks();
+    void createDefaultLinks(xd::IDatabasePtr db);
     void addDefaultItemsToProject();
     bool openProject(const ProjectInfo& info);
     bool openProject(xd::IDatabasePtr database);
