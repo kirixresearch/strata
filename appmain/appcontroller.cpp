@@ -1208,9 +1208,22 @@ bool AppController::init()
     g_app->setDbDoc(m_dbdoc);
 
 
-    int state;
-
     bool flush = false;
+
+    // create default bookmarks if they don't exist
+    bool default_bookmarks_created = prefs->getBoolean(wxT("general.default_links_created_2"), false);
+    if (!default_bookmarks_created)
+    {
+        IBookmarkFsPtr bookmark_fs = createAppBookmarkFs();
+
+        createDefaultBookmarks(bookmark_fs);
+        prefs->setBoolean(wxT("general.default_links_created_2"), true);
+        flush = true;
+    }
+
+
+
+    int state;
 
     // set the home page(s)
     if (!prefs->exists(wxT("general.location.home")))
@@ -1221,8 +1234,9 @@ bool AppController::init()
     }
 
     if (flush)
+    {
         prefs->flush();
-
+    }
 
     // create the column list panel
     state = sitetypeDockable | dockLeft | siteHidden;
@@ -5867,12 +5881,9 @@ bool AppController::createDefaultProject()
     return (created ? true : false);
 }
 
-void AppController::createDefaultLinks(xd::IDatabasePtr db)
+void AppController::createDefaultBookmarks(IBookmarkFsPtr bookmark_fs)
 {
     IAppPreferencesPtr prefs = g_app->getAppPreferences();
-
-    IBookmarkFsPtr bookmark_fs = createProjectBookmarkFsForDatabase(db);
-
 
     wxString home_page = getAppPrefsDefaultString("general.location.home");
     if (home_page.Length() > 0)
@@ -5957,7 +5968,8 @@ bool AppController::createProject(const wxString& location,
 
 
     // create default bookmarks in the database
-    createDefaultLinks(database);
+    IBookmarkFsPtr bookmark_fs = createProjectBookmarkFsForDatabase(database);
+    createDefaultBookmarks(bookmark_fs);
     
 
     // add an entry in the project manager
@@ -6091,17 +6103,8 @@ bool AppController::openProject(const ProjectInfo& info)
     g_app->setDatabaseConnectionString(connection_string);
 
     if (m_dbdoc)
-        m_dbdoc->setDatabase(database);
-
-    if (kl::icontains(info.connection_string, L"xdprovider=xdnative"))
     {
-        IAppPreferencesPtr prefs = g_app->getAppPreferences();
-        bool default_links_created = prefs->getBoolean(wxT("general.default_links_created_2"), false);
-        if (!default_links_created)
-        {
-            createDefaultLinks(database);
-            prefs->setBoolean(wxT("general.default_links_created_2"), true);
-        }
+        m_dbdoc->setDatabase(database);
     }
 
     if (info.entry_name.size() > 0)
