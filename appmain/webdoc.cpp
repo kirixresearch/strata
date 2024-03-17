@@ -672,12 +672,14 @@ void WebDoc::openURI(const wxString& uri, wxWebPostData* post_data)
             }
         }
 
+        // reset document icon
         wxBitmap bmp = GETBMPSMALL(gf_document);
         m_doc_site->setBitmap(bmp);
         FrameworkEvent* cfw_evt = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_DOC_BITMAP_UPDATED);
         cfw_evt->o_param = &bmp;
         g_app->getMainFrame()->sendEvent(cfw_evt);
 
+        // load the page
         m_webview->LoadURL(uri.Contains("://") ? uri : ("https://" + uri));
 
         return;
