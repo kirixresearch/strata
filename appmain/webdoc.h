@@ -216,6 +216,7 @@ private:
     void switchToWeb();
     void switchToSource();
     void savePageAsExternal();
+    wxString getFaviconLinkFromSource();
     
 private:
  

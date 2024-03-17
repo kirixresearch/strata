@@ -30,7 +30,9 @@
 #include <kl/md5.h>
 #include <kl/thread.h>
 #include <wx/mstream.h>
-
+#include <wx/regex.h>
+#include <wx/webrequest.h>
+#include <wx/uri.h>
 
 const int wxID_WEB = 9001;
 const int wxID_WEBVIEW = 9002;
@@ -156,6 +158,91 @@ END_EVENT_TABLE()
 
 
 
+class FaviconDownloader : public wxEvtHandler
+{
+public:
+    FaviconDownloader()
+    {
+        Bind(wxEVT_WEBREQUEST_STATE, &FaviconDownloader::onWebRequestState, this);
+    }
+
+    void downloadFavicon(const wxString& url)
+    {
+        // Create the web request for the specified URL
+        m_request = wxWebSession::GetDefault().CreateRequest(this, url);
+        if (!m_request.IsOk())
+        {
+            wxLogError("Failed to create web request.");
+            return;
+        }
+
+        // Start the request
+        m_request.Start();
+    }
+
+    void setTargetDocSite(IDocumentSitePtr doc_site)
+    {
+        m_doc_site = doc_site;
+    }
+
+    void setTargetBookmarkPath(const wxString& path)
+    {
+        m_bookmark_path = path;
+    }
+
+private:
+    wxWebRequest m_request;
+
+    void onWebRequestState(wxWebRequestEvent& event)
+    {
+        if (event.GetState() == wxWebRequest::State_Completed)
+        {
+            wxLogNull no_log; // supress logging to prevent png errors, etc.
+
+            // Request completed, try to load the image
+            wxImage image(*event.GetResponse().GetStream());
+            if (!image.IsOk())
+            {
+                wxLogError("Failed to load image from web response.");
+                onComplete(false);
+                return;
+            }
+
+            // If the image was loaded successfully, post an event with the image
+            onComplete(true, &image);
+        }
+        else if (event.GetState() == wxWebRequest::State_Failed)
+        {
+            wxLogError("Web Request failed.");
+            onComplete(false);
+        }
+    }
+
+    void onComplete(bool success, wxImage* image = nullptr)
+    {
+        if (success && image)
+        {
+            int favicon_size = g_app->getMainWindow()->FromDIP(100) > 100 ? 24 : 16;
+            image->Rescale(favicon_size, favicon_size);
+            wxBitmap bmp(*image);
+
+            if (m_doc_site)
+            {
+                m_doc_site->setBitmap(bmp);
+            }
+        }
+
+        if (!wxPendingDelete.Member(this))
+        {
+            wxPendingDelete.Append(this);
+        }
+    }
+
+private:
+
+    IDocumentSitePtr m_doc_site;
+    wxString m_bookmark_path;
+};
 
 
 
@@ -546,6 +633,24 @@ void WebDoc::savePageAsExternal()
     //m_webcontrol->SaveCurrent(dlg.GetPath());
 }
 
+wxString WebDoc::getFaviconLinkFromSource()
+{
+    wxString pageSource = m_webview->GetPageSource();
+    wxRegEx reIconLink("<link.*?rel=['\"](?:shortcut icon|icon)['\"].*?href=['\"](.*?)['\"].*?>", wxRE_DEFAULT | wxRE_ICASE);
+
+    if (reIconLink.IsValid()) {
+        if (reIconLink.Matches(pageSource)) {
+            size_t start, len;
+            if (reIconLink.GetMatch(&start, &len, 1)) {
+                return pageSource.Mid(start, len);
+            }
+        }
+    }
+
+    return ""; // return empty string if no favicon link found
+}
+
+
 // web doc api
 
 void WebDoc::openURI(const wxString& uri, wxWebPostData* post_data)
@@ -909,6 +1014,29 @@ void WebDoc::onWebViewNavigating(wxWebViewEvent& evt)
 void WebDoc::onWebViewNavigated(wxWebViewEvent& evt)
 {
     m_bitmap_updater.stop();
+
+    wxString favicon_link = getFaviconLinkFromSource();
+    if (!favicon_link.Contains("://"))
+    {
+        if (favicon_link.substr(0,1) != wxT("/"))
+        {
+            favicon_link = wxT("/") + favicon_link;
+        }
+
+        wxURI uri(m_url);
+        wxString port_string = uri.GetPort();
+        if (!port_string.IsEmpty())
+        {
+            port_string = wxT(":") + port_string;
+        }
+
+        favicon_link = uri.GetScheme() + wxT("://") + uri.GetServer() + port_string + favicon_link;
+    }
+
+
+    FaviconDownloader* fd = new FaviconDownloader();
+    fd->setTargetDocSite(m_doc_site);
+    fd->downloadFavicon(favicon_link);
 }
 
 
