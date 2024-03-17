@@ -57,6 +57,8 @@ public:
     
 private:
 
+    void updateRunTargetStatus();
+
     void onNameChanged(wxCommandEvent& evt);
     void onLocationChanged(wxCommandEvent& evt);
     void onTagsChanged(wxCommandEvent& evt);

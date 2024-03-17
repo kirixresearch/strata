@@ -43,9 +43,9 @@ LinkPropsDialog::LinkPropsDialog(wxWindow* parent,
                                  const wxString& description) :
                             wxDialog(parent, 
                                      -1,
-                                     _("Link Properties"),
+                                     _("Bookmark Properties"),
                                      wxDefaultPosition,
-                                     parent->FromDIP(wxSize(360,280)),
+                                     parent->FromDIP(wxSize(460,300)),
                                      wxDEFAULT_DIALOG_STYLE |
                                      wxRESIZE_BORDER |
                                      wxCLIP_CHILDREN |
@@ -111,7 +111,7 @@ int LinkPropsDialog::ShowModal()
                                                     wxDefaultPosition,
                                                     wxDefaultSize);
     m_bookmarkfs_combo = nullptr;
-    m_bookmarkfs_combo = new BookmarkFsComboCtrl(this, ID_BookmarkFsCtrl);
+    m_bookmarkfs_combo = new BookmarkFsComboCtrl(this, ID_BookmarkFsCtrl, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxCB_READONLY);
     m_bookmarkfs_combo->setBookmarkFs(g_app->getBookmarkFs());
 
     
@@ -289,6 +289,8 @@ int LinkPropsDialog::ShowModal()
     m_name_textctrl->SetFocus();
     m_name_textctrl->SetSelection(0,-1);
     
+    updateRunTargetStatus();
+
     return wxDialog::ShowModal();
 }
 
@@ -327,6 +329,20 @@ void LinkPropsDialog::onLocationChanged(wxCommandEvent& evt)
     
     m_location = evt.GetString();
 
+    updateRunTargetStatus();
+}
+
+void LinkPropsDialog::updateRunTargetStatus()
+{
+    if (m_location.Contains("://"))
+    {
+        m_runtarget_checkbox->SetValue(false);
+        m_runtarget_checkbox->Enable(false);
+    }
+    else
+    {
+        m_runtarget_checkbox->Enable(false);
+    }
 }
 
 void LinkPropsDialog::onTagsChanged(wxCommandEvent& evt)
