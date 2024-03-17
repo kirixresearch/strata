@@ -12,6 +12,7 @@
 #ifndef H_APP_DLGLINKPROPS_H
 #define H_APP_DLGLINKPROPS_H
 
+class BookmarkFsComboCtrl;
 
 class LinkPropsDialog : public wxDialog
 {
@@ -39,7 +40,7 @@ public:
     void setMode(int mode)                              { m_mode = mode;               }
     void setMessage(const wxString& message)            { m_message = message;         }
     
-    void setStartFolder(const wxString& path)           { m_start_folder = path;       }
+    void setFolder(const wxString& path)                { m_folder = path;             }
     void setName(const wxString& name)                  { m_name = name;               }
     void setLocation(const wxString& location)          { m_location = location;       }
     void setTags(const wxString& tags)                  { m_tags = tags;               }
@@ -48,6 +49,7 @@ public:
 
     wxString getPath();
     wxString getName();
+    wxString getFolder() const       { return m_folder; }
     wxString getLocation() const     { return m_location;    }
     wxString getTags() const         { return m_tags;        }
     wxString getDescription() const  { return m_description; }
@@ -65,12 +67,13 @@ private:
 private:
 
     wxTextCtrl*  m_name_textctrl;
+    BookmarkFsComboCtrl* m_bookmarkfs_combo;
     wxTextCtrl*  m_location_textctrl;
     wxTextCtrl*  m_tags_textctrl;
     wxTextCtrl*  m_description_textctrl;
     wxCheckBox*  m_runtarget_checkbox;
     
-    wxString m_start_folder;
+    wxString m_folder;
     wxString m_name;
     wxString m_location;
     wxString m_tags;

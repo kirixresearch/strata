@@ -341,6 +341,7 @@
     <ClCompile Include="..\appmain\artprovider.cpp" />
     <ClCompile Include="..\appmain\bitmapmgr.cpp" />
     <ClCompile Include="..\appmain\bookmarkfs.cpp" />
+    <ClCompile Include="..\appmain\bookmarkfscombo.cpp" />
     <ClCompile Include="..\appmain\commandmgr.cpp" />
     <ClCompile Include="..\appmain\commands.cpp" />
     <ClCompile Include="..\appmain\connectioninfo.cpp" />
@@ -738,6 +739,7 @@
     <ClInclude Include="..\appmain\artprovider.h" />
     <ClInclude Include="..\appmain\bitmapmgr.h" />
     <ClInclude Include="..\appmain\bookmarkfs.h" />
+    <ClInclude Include="..\appmain\bookmarkfscombo.h" />
     <ClInclude Include="..\appmain\commandmgr.h" />
     <ClInclude Include="..\appmain\commands.h" />
     <ClInclude Include="..\appmain\connectioninfo.h" />

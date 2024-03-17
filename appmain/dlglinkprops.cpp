@@ -11,14 +11,16 @@
 
 #include "appmain.h"
 #include "dlglinkprops.h"
+#include "bookmarkfscombo.h"
 
 enum
 {
     ID_NameTextCtrl = wxID_HIGHEST+1,
+    ID_BookmarkFsCtrl,
     ID_LocationTextCtrl,
     ID_TagsTextCtrl,
     ID_DescriptionTextCtrl,
-    ID_RunTargetCheckbox
+    ID_RunTargetCheckbox,
 };
 
 
@@ -102,10 +104,26 @@ int LinkPropsDialog::ShowModal()
     if (m_mode == LinkPropsDialog::ModeRename)
         label_name->Show(false);
     
-    // create the name sizer
+    // create the bookmark location sizer
+    wxStaticText* label_bookmark_location = new wxStaticText(this,
+                                                    -1,
+                                                    _("Folder:"),
+                                                    wxDefaultPosition,
+                                                    wxDefaultSize);
+    m_bookmarkfs_combo = nullptr;
+    m_bookmarkfs_combo = new BookmarkFsComboCtrl(this, ID_BookmarkFsCtrl);
+    m_bookmarkfs_combo->setBookmarkFs(g_app->getBookmarkFs());
+
+    
+    wxBoxSizer* bookmarkfs_sizer = new wxBoxSizer(wxHORIZONTAL);
+    bookmarkfs_sizer->Add(label_bookmark_location, 0, wxALIGN_CENTER);
+    bookmarkfs_sizer->Add(m_bookmarkfs_combo, 1, wxALIGN_CENTER);
+
+
+    // create the url/path sizer
     wxStaticText* label_location = new wxStaticText(this,
                                                     -1,
-                                                    _("URL:"),
+                                                    _("Target URL or Location:"),
                                                     wxDefaultPosition,
                                                     wxDefaultSize);
     m_location_textctrl = nullptr;
@@ -176,12 +194,14 @@ int LinkPropsDialog::ShowModal()
     {
         // measure the label widths
         wxSize label_size = getMaxTextSize(label_name,
-                                                label_location,
-                                                label_tags,
-                                                label_description);
+                                           label_bookmark_location,
+                                           label_location,
+                                           label_tags,
+                                           label_description);
         label_size.x += 10;
         
         name_sizer->SetItemMinSize(label_name, label_size);
+        bookmarkfs_sizer->SetItemMinSize(label_bookmark_location, label_size);
         location_sizer->SetItemMinSize(label_location, label_size);
         tags_sizer->SetItemMinSize(label_tags, label_size);
         description_sizer->SetItemMinSize(label_description, label_size);
@@ -191,8 +211,8 @@ int LinkPropsDialog::ShowModal()
     {
         // measure the label widths
         wxSize label_size = getMaxTextSize(label_name,
-                                                label_location,
-                                                label_tags);
+                                           label_location,
+                                           label_tags);
         label_size.x += 10;
         
         name_sizer->SetItemMinSize(label_name, label_size);
@@ -222,6 +242,7 @@ int LinkPropsDialog::ShowModal()
     main_sizer->Add(message_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, FromDIP(8));
     main_sizer->Add(name_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, FromDIP(8));
     main_sizer->Add(separator, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, FromDIP(8));
+    main_sizer->Add(bookmarkfs_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, FromDIP(8));
     main_sizer->Add(location_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, FromDIP(8));
     main_sizer->Add(tags_sizer, 2, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, FromDIP(8));
     main_sizer->Add(description_sizer, 3, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, FromDIP(8));
@@ -236,11 +257,17 @@ int LinkPropsDialog::ShowModal()
         tags_sizer->Show(false);
         separator->Show(false);
         spacer->Show(false);
+
+        if (m_mode == LinkPropsDialog::ModeEdit)
+        {
+            bookmarkfs_sizer->Show(false);
+        }
     }
      else if (m_mode == LinkPropsDialog::ModeEditNoDesc)
     {
         message_sizer->Show(false);
         tags_sizer->Show(false);
+        bookmarkfs_sizer->Show(false);
         description_sizer->Show(false);
         separator->Show(false);
         flags_sizer->Show(false);
@@ -249,6 +276,7 @@ int LinkPropsDialog::ShowModal()
     {
         separator->Show(false);
         location_sizer->Show(false);
+        bookmarkfs_sizer->Show(false);
         tags_sizer->Show(false);
         description_sizer->Show(false);
         flags_sizer->Show(false);
@@ -270,7 +298,9 @@ wxString LinkPropsDialog::getPath()
     trimUnwantedUrlChars(name);
     
     wxString retval;
-    retval += "/";
+    retval += m_bookmarkfs_combo->getPath();
+    if (retval.Last() != wxT('/'))
+        retval += wxT('/');
     retval += name;
     return retval;
 }

@@ -1901,6 +1901,8 @@ void AppController::onStopRecord(wxCommandEvent& evt)
 
 
 
+// borrowed from dbdoc
+wxBitmap getShortcutBitmap(const wxBitmap& input_bmp);
 
 void AppController::onCreateBookmark(wxCommandEvent& evt)
 {
@@ -1925,10 +1927,18 @@ void AppController::onCreateBookmark(wxCommandEvent& evt)
     wxString s = site->getCaption();
     trimUnwantedUrlChars(s);
 
+    wxString default_location = doc->getDocumentLocation();
+    if (default_location.substr(0, 1) == wxT("/") && default_location.Freq('/') == 1)
+    {
+        // remove initial slash (database path) if the object is in the root folder
+        default_location = default_location.Mid(1);
+    }
+
     // get new bookmark path from a dialog
     LinkPropsDialog dlg(g_app->getMainWindow());
     dlg.setMode(LinkPropsDialog::ModeCreate);
     dlg.setName(s);
+    dlg.setLocation(default_location);
     dlg.SetTitle(_("New Bookmark"));
     dlg.SetSize(wxSize(fromDIP(370), fromDIP(230)));
     dlg.SetMinSize(wxSize(fromDIP(370), fromDIP(200)));
@@ -1937,7 +1947,25 @@ void AppController::onCreateBookmark(wxCommandEvent& evt)
     if (dlg.ShowModal() != wxID_OK)
         return;
 
-    g_app->getBookmarkFs()->createBookmark(towstr(dlg.getPath()), towstr(doc->getDocumentLocation()));
+    wxImage img;
+
+    wxString location = dlg.getLocation();
+    if (location.find("://") == wxNOT_FOUND)
+    {
+        IFsItemPtr fsitem = g_app->getDbDoc()->getFsItemFromPath(location);
+        if (fsitem.isOk())
+        {
+            wxBitmap bmp = fsitem->getBitmap();
+            bmp = getShortcutBitmap(bmp);
+            img = bmp.ConvertToImage();
+        }
+    }
+    
+    g_app->getBookmarkFs()->createBookmark(dlg.getPath().ToStdWstring(),
+                                           dlg.getLocation().ToStdWstring(),
+                                           dlg.getTags().ToStdWstring(),
+                                           dlg.getDescription().ToStdWstring(),
+                                           img);
     m_linkbar->refresh();
 }
 

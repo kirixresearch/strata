@@ -1083,7 +1083,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
         case ID_LinkBar_NewBookmark:
         {
             LinkPropsDialog dlg(this);
-            dlg.setStartFolder(start_folder);
+            dlg.setFolder(start_folder);
             dlg.SetTitle(_("\"New Bookmark\" Properties"));
             dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 230)));
             dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
@@ -1115,7 +1115,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             
             LinkPropsDialog dlg(this);
             dlg.setMode(LinkPropsDialog::ModeCreateFolder);
-            dlg.setStartFolder(start_folder);
+            dlg.setFolder(start_folder);
             dlg.setMessage(message);
             dlg.setName(_("New Folder"));
             dlg.SetTitle(_("New Folder"));

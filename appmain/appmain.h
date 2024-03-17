@@ -44,6 +44,7 @@
 #include <wx/sashwin.h>
 #include <wx/cmdline.h>
 #include <wx/combo.h>
+#include <wx/bmpcbox.h>
 #include <wx/config.h>
 #include <wx/filename.h>
 
