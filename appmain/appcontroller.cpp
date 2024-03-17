@@ -4452,6 +4452,7 @@ bool AppController::openAny(const wxString& _location,
     // never display
     if (protocol.Left(4) == wxT("http") ||
         protocol.Left(5) == wxT("https") ||
+        location.Left(4) == wxT("www.") ||
         ext == wxT("HTML") ||
         ext == wxT("HTM") ||
         ext == wxT("XML") ||
