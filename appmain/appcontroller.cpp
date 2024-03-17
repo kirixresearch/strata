@@ -1950,14 +1950,34 @@ void AppController::onCreateBookmark(wxCommandEvent& evt)
     wxImage img;
 
     wxString location = dlg.getLocation();
-    if (location.find("://") == wxNOT_FOUND)
+
+    if (location == default_location && default_location.Length() > 0)
     {
-        IFsItemPtr fsitem = g_app->getDbDoc()->getFsItemFromPath(location);
-        if (fsitem.isOk())
+        // location did not change -- we can get the bitmap from the document
+        IWebDocPtr webdoc = doc;
+        if (webdoc.isOk())
         {
-            wxBitmap bmp = fsitem->getBitmap();
+            wxBitmap bmp = site->getBitmap();
+            img = bmp.ConvertToImage();
+        }
+        else
+        {
+            wxBitmap bmp = site->getBitmap();
             bmp = getShortcutBitmap(bmp);
             img = bmp.ConvertToImage();
+        }
+    }
+    else
+    {
+        if (location.find("://") == wxNOT_FOUND)
+        {
+            IFsItemPtr fsitem = g_app->getDbDoc()->getFsItemFromPath(location);
+            if (fsitem.isOk())
+            {
+                wxBitmap bmp = fsitem->getBitmap();
+                bmp = getShortcutBitmap(bmp);
+                img = bmp.ConvertToImage();
+            }
         }
     }
     

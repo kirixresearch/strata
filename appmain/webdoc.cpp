@@ -197,7 +197,7 @@ private:
     {
         if (event.GetState() == wxWebRequest::State_Completed)
         {
-            wxLogNull no_log; // supress logging to prevent png errors, etc.
+            wxLogNull no_log; // supress logging to prevent possible png errors, etc.
 
             // Request completed, try to load the image
             wxImage image(*event.GetResponse().GetStream());
@@ -229,6 +229,10 @@ private:
             if (m_doc_site)
             {
                 m_doc_site->setBitmap(bmp);
+
+                FrameworkEvent* cfw_evt = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_DOC_BITMAP_UPDATED);
+                cfw_evt->o_param = &bmp;
+                g_app->getMainFrame()->sendEvent(cfw_evt);
             }
         }
 
