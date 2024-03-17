@@ -341,7 +341,7 @@ void LinkPropsDialog::updateRunTargetStatus()
     }
     else
     {
-        m_runtarget_checkbox->Enable(false);
+        m_runtarget_checkbox->Enable(true);
     }
 }
 
