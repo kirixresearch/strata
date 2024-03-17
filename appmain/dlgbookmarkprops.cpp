@@ -10,7 +10,7 @@
 
 
 #include "appmain.h"
-#include "dlglinkprops.h"
+#include "dlgbookmarkprops.h"
 #include "bookmarkfscombo.h"
 
 enum
@@ -24,19 +24,19 @@ enum
 };
 
 
-// LinkPropsDialog class implementation
+// BookmarkPropsDialog class implementation
 
-BEGIN_EVENT_TABLE(LinkPropsDialog, wxDialog)
-    EVT_TEXT(ID_NameTextCtrl, LinkPropsDialog::onNameChanged)
-    EVT_TEXT(ID_LocationTextCtrl, LinkPropsDialog::onLocationChanged)
-    EVT_TEXT(ID_TagsTextCtrl, LinkPropsDialog::onTagsChanged)
-    EVT_TEXT(ID_DescriptionTextCtrl, LinkPropsDialog::onDescriptionChanged)
-    EVT_CHECKBOX(ID_RunTargetCheckbox, LinkPropsDialog::onRunTargetChanged)
-    EVT_SIZE(LinkPropsDialog::onSize)
+BEGIN_EVENT_TABLE(BookmarkPropsDialog, wxDialog)
+    EVT_TEXT(ID_NameTextCtrl, BookmarkPropsDialog::onNameChanged)
+    EVT_TEXT(ID_LocationTextCtrl, BookmarkPropsDialog::onLocationChanged)
+    EVT_TEXT(ID_TagsTextCtrl, BookmarkPropsDialog::onTagsChanged)
+    EVT_TEXT(ID_DescriptionTextCtrl, BookmarkPropsDialog::onDescriptionChanged)
+    EVT_CHECKBOX(ID_RunTargetCheckbox, BookmarkPropsDialog::onRunTargetChanged)
+    EVT_SIZE(BookmarkPropsDialog::onSize)
 END_EVENT_TABLE()
 
 
-LinkPropsDialog::LinkPropsDialog(wxWindow* parent,
+BookmarkPropsDialog::BookmarkPropsDialog(wxWindow* parent,
                                  const wxString& name,
                                  const wxString& location,
                                  const wxString& tags,
@@ -63,15 +63,15 @@ LinkPropsDialog::LinkPropsDialog(wxWindow* parent,
     m_description = description;
     m_run_target = false;
     
-    m_mode = LinkPropsDialog::ModeCreate;
+    m_mode = BookmarkPropsDialog::ModeCreate;
 }
 
-LinkPropsDialog::~LinkPropsDialog()
+BookmarkPropsDialog::~BookmarkPropsDialog()
 {
 
 }
 
-int LinkPropsDialog::ShowModal()
+int BookmarkPropsDialog::ShowModal()
 {
     // if we haven't specified a min size, do it now
     if (!GetMinSize().IsFullySpecified())
@@ -103,7 +103,7 @@ int LinkPropsDialog::ShowModal()
     name_sizer->Add(label_name, 0, wxALIGN_CENTER);
     name_sizer->Add(m_name_textctrl, 1, wxALIGN_CENTER);
 
-    if (m_mode == LinkPropsDialog::ModeRename)
+    if (m_mode == BookmarkPropsDialog::ModeRename)
         label_name->Show(false);
     
     // create the bookmark location sizer
@@ -191,8 +191,8 @@ int LinkPropsDialog::ShowModal()
     flags_sizer->Add(m_runtarget_checkbox);
 
 
-    if (m_mode == LinkPropsDialog::ModeCreate ||
-        m_mode == LinkPropsDialog::ModeEdit)
+    if (m_mode == BookmarkPropsDialog::ModeCreate ||
+        m_mode == BookmarkPropsDialog::ModeEdit)
     {
         // measure the label widths
         wxSize label_size = getMaxTextSize(label_name,
@@ -209,7 +209,7 @@ int LinkPropsDialog::ShowModal()
         description_sizer->SetItemMinSize(label_description, label_size);
         flags_sizer->SetItemMinSize((size_t)0, label_size);
     }
-     else if (m_mode == LinkPropsDialog::ModeEditNoDesc)
+     else if (m_mode == BookmarkPropsDialog::ModeEditNoDesc)
     {
         // measure the label widths
         wxSize label_size = getMaxTextSize(label_name,
@@ -252,20 +252,20 @@ int LinkPropsDialog::ShowModal()
     wxSizerItem* spacer = main_sizer->AddStretchSpacer();
     main_sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
     
-    if (m_mode == LinkPropsDialog::ModeCreate ||
-        m_mode == LinkPropsDialog::ModeEdit)
+    if (m_mode == BookmarkPropsDialog::ModeCreate ||
+        m_mode == BookmarkPropsDialog::ModeEdit)
     {
         message_sizer->Show(false);
         tags_sizer->Show(false);
         separator->Show(false);
         spacer->Show(false);
 
-        if (m_mode == LinkPropsDialog::ModeEdit)
+        if (m_mode == BookmarkPropsDialog::ModeEdit)
         {
             bookmarkfs_sizer->Show(false);
         }
     }
-     else if (m_mode == LinkPropsDialog::ModeEditNoDesc)
+     else if (m_mode == BookmarkPropsDialog::ModeEditNoDesc)
     {
         message_sizer->Show(false);
         tags_sizer->Show(false);
@@ -274,7 +274,7 @@ int LinkPropsDialog::ShowModal()
         separator->Show(false);
         flags_sizer->Show(false);
     }
-     else if (m_mode == LinkPropsDialog::ModeRename || m_mode == LinkPropsDialog::ModeCreateFolder)
+     else if (m_mode == BookmarkPropsDialog::ModeRename || m_mode == BookmarkPropsDialog::ModeCreateFolder)
     {
         separator->Show(false);
         location_sizer->Show(false);
@@ -296,7 +296,7 @@ int LinkPropsDialog::ShowModal()
     return wxDialog::ShowModal();
 }
 
-wxString LinkPropsDialog::getPath()
+wxString BookmarkPropsDialog::getPath()
 {
     wxString name = m_name;
     trimUnwantedUrlChars(name);
@@ -309,14 +309,14 @@ wxString LinkPropsDialog::getPath()
     return retval;
 }
 
-wxString LinkPropsDialog::getName()
+wxString BookmarkPropsDialog::getName()
 {
     wxString name = m_name;
     trimUnwantedUrlChars(name);
     return name;
 }
 
-void LinkPropsDialog::onNameChanged(wxCommandEvent& evt)
+void BookmarkPropsDialog::onNameChanged(wxCommandEvent& evt)
 {
     if (m_name_textctrl == nullptr)
         return;
@@ -324,7 +324,7 @@ void LinkPropsDialog::onNameChanged(wxCommandEvent& evt)
     m_name = evt.GetString();
 }
 
-void LinkPropsDialog::onLocationChanged(wxCommandEvent& evt)
+void BookmarkPropsDialog::onLocationChanged(wxCommandEvent& evt)
 {
     if (m_location_textctrl == nullptr)
         return;
@@ -334,7 +334,7 @@ void LinkPropsDialog::onLocationChanged(wxCommandEvent& evt)
     updateRunTargetStatus();
 }
 
-void LinkPropsDialog::updateRunTargetStatus()
+void BookmarkPropsDialog::updateRunTargetStatus()
 {
     if (m_location.Contains("://"))
     {
@@ -347,7 +347,7 @@ void LinkPropsDialog::updateRunTargetStatus()
     }
 }
 
-void LinkPropsDialog::onTagsChanged(wxCommandEvent& evt)
+void BookmarkPropsDialog::onTagsChanged(wxCommandEvent& evt)
 {
     if (m_tags_textctrl == nullptr)
         return;
@@ -356,7 +356,7 @@ void LinkPropsDialog::onTagsChanged(wxCommandEvent& evt)
 
 }
 
-void LinkPropsDialog::onDescriptionChanged(wxCommandEvent& evt)
+void BookmarkPropsDialog::onDescriptionChanged(wxCommandEvent& evt)
 {
     if (m_description_textctrl == nullptr)
         return;
@@ -365,7 +365,7 @@ void LinkPropsDialog::onDescriptionChanged(wxCommandEvent& evt)
 }
 
 
-void LinkPropsDialog::onRunTargetChanged(wxCommandEvent& evt)
+void BookmarkPropsDialog::onRunTargetChanged(wxCommandEvent& evt)
 {
     if (m_runtarget_checkbox == nullptr)
         return;
@@ -375,7 +375,7 @@ void LinkPropsDialog::onRunTargetChanged(wxCommandEvent& evt)
 
 
 
-void LinkPropsDialog::onSize(wxSizeEvent& evt)
+void BookmarkPropsDialog::onSize(wxSizeEvent& evt)
 {
     Layout();
 }

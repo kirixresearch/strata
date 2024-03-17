@@ -15,7 +15,7 @@
 #include "linkbar.h"
 #include "toolbars.h"
 #include "dbdoc.h"
-#include "dlglinkprops.h"
+#include "dlgbookmarkprops.h"
 #include "webdoc.h"
 #include <artprovider.h>   // angle brackets to allow overriding
 #include <wx/popupwin.h>
@@ -1039,7 +1039,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
         SetToolSticky(tool_id, false);
     
     // if we right-clicked on a folder, make sure the starting folder
-    // for the LinkPropsDialog is that folders path
+    // for the BookmarkPropsDialog is that folders path
     wxString start_folder = "";
     if (is_folder_clicked)
     {
@@ -1082,7 +1082,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
         }
         case ID_LinkBar_NewBookmark:
         {
-            LinkPropsDialog dlg(this);
+            BookmarkPropsDialog dlg(this);
             dlg.setFolder(start_folder);
             dlg.SetTitle(_("\"New Bookmark\" Properties"));
             dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 230)));
@@ -1113,8 +1113,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
         {
             wxString message = wxString::Format(_("Please enter the name of the folder:"));
             
-            LinkPropsDialog dlg(this);
-            dlg.setMode(LinkPropsDialog::ModeCreateFolder);
+            BookmarkPropsDialog dlg(this);
+            dlg.setMode(BookmarkPropsDialog::ModeCreateFolder);
             dlg.setFolder(start_folder);
             dlg.setMessage(message);
             dlg.setName(_("New Folder"));
@@ -1148,8 +1148,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 wxString title = wxString::Format(_("\"%s\" Properties"),
                                                   item->getLabel().c_str());
                                                   
-                LinkPropsDialog dlg(this);
-                dlg.setMode(LinkPropsDialog::ModeRename);
+                BookmarkPropsDialog dlg(this);
+                dlg.setMode(BookmarkPropsDialog::ModeRename);
                 dlg.setMessage(message);
                 dlg.setName(item->getLabel());
                 dlg.SetTitle(title);
@@ -1187,7 +1187,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 wxString title = wxString::Format(_("\"%s\" Properties"),
                                                     item->getLabel().c_str());
                     
-                LinkPropsDialog dlg(this);
+                BookmarkPropsDialog dlg(this);
                 dlg.setName(item->getLabel());
                 dlg.setLocation(b.location);
                 dlg.setTags(b.tags);
@@ -1240,8 +1240,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             wxString title = wxString::Format(_("\"%s\" Properties"),
                                                 item->getLabel().c_str());
                                                   
-            LinkPropsDialog dlg(this);
-            dlg.setMode(LinkPropsDialog::ModeRename);
+            BookmarkPropsDialog dlg(this);
+            dlg.setMode(BookmarkPropsDialog::ModeRename);
             dlg.setMessage(message);
             dlg.setName(item->getLabel());
             dlg.SetTitle(title);

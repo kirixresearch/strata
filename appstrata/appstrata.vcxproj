@@ -352,6 +352,7 @@
     <ClCompile Include="..\appmain\dbcombo.cpp" />
     <ClCompile Include="..\appmain\dbdoc.cpp" />
     <ClCompile Include="..\appmain\dlgauth.cpp" />
+    <ClCompile Include="..\appmain\dlgbookmarkprops.cpp" />
     <ClCompile Include="..\appmain\dlgcustomprompt.cpp" />
     <ClCompile Include="..\appmain\dlgdatabasefile.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -363,7 +364,6 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\appmain\dlglinkprops.cpp" />
     <ClCompile Include="..\appmain\dlgpagesetup.cpp" />
     <ClCompile Include="..\appmain\dlgpassword.cpp" />
     <ClCompile Include="..\appmain\dlgprojectmgr.cpp">
@@ -750,9 +750,9 @@
     <ClInclude Include="..\appmain\dbcombo.h" />
     <ClInclude Include="..\appmain\dbdoc.h" />
     <ClInclude Include="..\appmain\dlgauth.h" />
+    <ClInclude Include="..\appmain\dlgbookmarkprops.h" />
     <ClInclude Include="..\appmain\dlgcustomprompt.h" />
     <ClInclude Include="..\appmain\dlgdatabasefile.h" />
-    <ClInclude Include="..\appmain\dlglinkprops.h" />
     <ClInclude Include="..\appmain\dlgpagesetup.h" />
     <ClInclude Include="..\appmain\dlgpassword.h" />
     <ClInclude Include="..\appmain\dlgprojectmgr.h" />

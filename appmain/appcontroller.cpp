@@ -67,7 +67,7 @@
 #include <kl/url.h>
 #include "dbdoc.h"
 #include "linkbar.h"
-#include "dlglinkprops.h"
+#include "dlgbookmarkprops.h"
 
 #include "../webconnect/webcontrol.h"
 #include "../webconnect/webframe.h"
@@ -1935,8 +1935,8 @@ void AppController::onCreateBookmark(wxCommandEvent& evt)
     }
 
     // get new bookmark path from a dialog
-    LinkPropsDialog dlg(g_app->getMainWindow());
-    dlg.setMode(LinkPropsDialog::ModeCreate);
+    BookmarkPropsDialog dlg(g_app->getMainWindow());
+    dlg.setMode(BookmarkPropsDialog::ModeCreate);
     dlg.setName(s);
     dlg.setLocation(default_location);
     dlg.SetTitle(_("New Bookmark"));

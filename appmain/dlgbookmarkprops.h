@@ -9,12 +9,12 @@
  */
 
 
-#ifndef H_APP_DLGLINKPROPS_H
-#define H_APP_DLGLINKPROPS_H
+#ifndef H_APP_DLGBOOKMARKPROPS_H
+#define H_APP_DLGBOOKMARKPROPS_H
 
 class BookmarkFsComboCtrl;
 
-class LinkPropsDialog : public wxDialog
+class BookmarkPropsDialog : public wxDialog
 {
 public:
 
@@ -27,12 +27,12 @@ public:
         ModeRename        = 4
     };
     
-    LinkPropsDialog(wxWindow* parent,
+    BookmarkPropsDialog(wxWindow* parent,
                     const wxString& name = _("New Bookmark"),
                     const wxString& location  = wxEmptyString,
                     const wxString& tags = wxEmptyString,
                     const wxString& description = wxEmptyString);
-    ~LinkPropsDialog();
+    ~BookmarkPropsDialog();
     
     // wxDialog override
     int ShowModal();
@@ -89,5 +89,5 @@ private:
 };
 
 
-#endif  // __APP_DLGLINKPROPS_H
+#endif  // __APP_DLGBOOKMARKPROPS_H
 
