@@ -75,7 +75,9 @@ int LinkPropsDialog::ShowModal()
 {
     // if we haven't specified a min size, do it now
     if (!GetMinSize().IsFullySpecified())
+    {
         SetMinSize(GetSize());
+    }
 
     // create the message sizer
     wxStaticText* label_message = new wxStaticText(this, -1, m_message);
