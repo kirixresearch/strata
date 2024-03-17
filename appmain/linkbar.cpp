@@ -1159,22 +1159,25 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 
                 if (dlg.ShowModal() == wxID_OK)
                 {
-                    xd::IDatabasePtr db = g_app->getDatabase();
-                    if (db.isNull())
-                        return;
-                    
-                    wxString new_path = dlg.getPath();
-                    if (new_path.CmpNoCase(path) == 0)
-                        return;
-                    
-                    bool result = db->moveFile(towstr(path), towstr(new_path));
-                    if (!result)
-                        return;
-                    
-                    // position the folder in the linkbar
+                    wxString base_path = path;
+                    if (base_path.Last() == wxT('/'))
+                        base_path.RemoveLast();
+
+                    base_path = base_path.BeforeLast(wxT('/'));
+                    if (base_path.IsEmpty())
+                        base_path = wxT("/");
+
+                    if (base_path.Last() != wxT('/'))
+                        base_path += wxT('/');
+
+                    // rename the item
+                    wxString new_path = base_path + dlg.getName();
+                    g_app->getBookmarkFs()->moveItem(towstr(path), towstr(new_path));
+
+                    // position the folder in the bookmark bar
                     g_app->getBookmarkFs()->setFileVisualLocation(towstr(new_path), idx);
-                    
-                    // repopulate and refresh the linkbar
+
+                    // repopulate and refresh the bookmark toolbar
                     refresh();
                 }
             }
@@ -1188,6 +1191,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                                                     item->getLabel().c_str());
                     
                 BookmarkPropsDialog dlg(this);
+                dlg.setMode(BookmarkPropsDialog::ModeEdit);
                 dlg.setName(item->getLabel());
                 dlg.setLocation(b.location);
                 dlg.setTags(b.tags);
