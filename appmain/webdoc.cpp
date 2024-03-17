@@ -172,7 +172,6 @@ public:
         m_request = wxWebSession::GetDefault().CreateRequest(this, url);
         if (!m_request.IsOk())
         {
-            wxLogError("Failed to create web request.");
             return;
         }
 
@@ -203,7 +202,6 @@ private:
             wxImage image(*event.GetResponse().GetStream());
             if (!image.IsOk())
             {
-                wxLogError("Failed to load image from web response.");
                 onComplete(false);
                 return;
             }
@@ -213,7 +211,6 @@ private:
         }
         else if (event.GetState() == wxWebRequest::State_Failed)
         {
-            wxLogError("Web Request failed.");
             onComplete(false);
         }
     }
