@@ -293,6 +293,27 @@ static void activateItem(const std::wstring& path, int open_mask)
         }
     }
 
+    if (b.location.find(L"://") != b.location.npos)
+    {
+        int site_id = -1;
+        g_app->getAppController()->openWeb(b.location, NULL, open_mask, &site_id);
+        if (site_id != -1)
+        {
+            IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(site_id);
+            if (site.isOk())
+            {
+                IWebDocPtr webdoc = site->getDocument();
+                if (webdoc.isOk())
+                {
+                    // set the bookmark path that caused the webdoc to be opened
+                    webdoc->setBookmarkPath(path);
+                }
+            }
+        }
+
+        return;
+    }
+
     g_app->getAppController()->openAny(b.location, open_mask);
 }
 
@@ -471,7 +492,6 @@ void LinkBar::onItemActivated(IFsItemPtr item)
     }
 
     std::wstring bookmark_path = g_app->getBookmarkFs()->getBookmarkItemPath(item);
-    m_last_clicked_path = bookmark_path;
     activateItem(bookmark_path, open_flags);
 
     m_popup_window = popup_window;
@@ -900,7 +920,6 @@ void LinkBar::onToolButtonClick(wxCommandEvent& evt)
         }
 
         std::wstring bookmark_path = g_app->getBookmarkFs()->getBookmarkItemPath(item);
-        m_last_clicked_path = bookmark_path;
 
         activateItem(bookmark_path, open_mask);
     }
@@ -1123,6 +1142,16 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
             dlg.CenterOnScreen();
             
+            dlg.setOkCallback([&dlg]()
+            {
+                if (g_app->getBookmarkFs()->itemExists(towstr(dlg.getPath())))
+                {
+                    wxMessageBox(_("A item with that name already exists."), _("Error"), wxICON_ERROR);
+                    return false;
+                }
+                return true;
+            });
+
             if (dlg.ShowModal() == wxID_OK)
             {
                 g_app->getBookmarkFs()->createFolder(towstr(dlg.getPath()));
@@ -1157,7 +1186,17 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
                 dlg.CenterOnScreen();
                 
-                if (dlg.ShowModal() == wxID_OK)
+                dlg.setOkCallback([&dlg, &item]()
+                {
+                    if (dlg.getName() != item->getLabel() && g_app->getBookmarkFs()->itemExists(towstr(dlg.getPath())))
+                    {
+                        wxMessageBox(_("A item with that name already exists."), _("Error"), wxICON_ERROR);
+                        return false;
+                    }
+                    return true;
+                });
+
+                if (dlg.ShowModal() == wxID_OK && dlg.getName() != item->getLabel())
                 {
                     wxString base_path = path;
                     if (base_path.Last() == wxT('/'))
@@ -1201,7 +1240,17 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 230)));
                 dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
                 dlg.CenterOnScreen();
-                    
+
+                dlg.setOkCallback([&dlg, &item]()
+                {
+                    if (dlg.getName() != item->getLabel() && g_app->getBookmarkFs()->itemExists(towstr(dlg.getPath())))
+                    {
+                        wxMessageBox(_("A item with that name already exists."), _("Error"), wxICON_ERROR);
+                        return false;
+                    }
+                    return true;
+                });
+
                 if (dlg.ShowModal() == wxID_OK)
                 {
                     wxString new_path = dlg.getPath();
@@ -1252,7 +1301,17 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             dlg.SetSize(g_app->getMainWindow()->FromDIP(wxSize(370, 230)));
             dlg.SetMinSize(g_app->getMainWindow()->FromDIP(wxSize(370, 200)));
             dlg.CenterOnScreen();
-                
+            
+            dlg.setOkCallback([&dlg]()
+            {
+                if (g_app->getBookmarkFs()->itemExists(towstr(dlg.getPath())))
+                {
+                    wxMessageBox(_("A item with that name already exists."), _("Error"), wxICON_ERROR);
+                    return false;
+                }
+                return true;
+            });
+
             if (dlg.ShowModal() == wxID_OK)
             {
                 std::wstring old_path = g_app->getBookmarkFs()->getBookmarkItemPath(item);

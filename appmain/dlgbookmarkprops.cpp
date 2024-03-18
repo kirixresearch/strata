@@ -33,6 +33,7 @@ BEGIN_EVENT_TABLE(BookmarkPropsDialog, wxDialog)
     EVT_TEXT(ID_DescriptionTextCtrl, BookmarkPropsDialog::onDescriptionChanged)
     EVT_CHECKBOX(ID_RunTargetCheckbox, BookmarkPropsDialog::onRunTargetChanged)
     EVT_SIZE(BookmarkPropsDialog::onSize)
+    EVT_BUTTON(wxID_OK, BookmarkPropsDialog::onOk)
 END_EVENT_TABLE()
 
 
@@ -373,7 +374,16 @@ void BookmarkPropsDialog::onRunTargetChanged(wxCommandEvent& evt)
     m_run_target = m_runtarget_checkbox->GetValue();
 }
 
+void BookmarkPropsDialog::onOk(wxCommandEvent& evt)
+{
+    if (m_callback)
+    {
+        if (!m_callback())
+            return;
+    }
 
+    EndModal(wxID_OK);
+}
 
 void BookmarkPropsDialog::onSize(wxSizeEvent& evt)
 {

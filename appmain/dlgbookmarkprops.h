@@ -55,6 +55,9 @@ public:
     wxString getDescription() const  { return m_description; }
     bool     getRunTarget() const    { return m_run_target;  }
     
+    using OkCallbackFunction = std::function<bool()>;
+    void setOkCallback(OkCallbackFunction callback) { m_callback = callback; }
+
 private:
 
     void updateRunTargetStatus();
@@ -64,6 +67,7 @@ private:
     void onTagsChanged(wxCommandEvent& evt);
     void onDescriptionChanged(wxCommandEvent& evt);
     void onRunTargetChanged(wxCommandEvent& evt);
+    void onOk(wxCommandEvent& evt);
     void onSize(wxSizeEvent& evt);
     
 private:
@@ -84,6 +88,8 @@ private:
     
     int m_mode;
     wxString m_message;
+
+    OkCallbackFunction m_callback;
     
     DECLARE_EVENT_TABLE()
 };
