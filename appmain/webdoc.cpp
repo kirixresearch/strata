@@ -231,12 +231,50 @@ private:
                 cfw_evt->o_param = &bmp;
                 g_app->getMainFrame()->sendEvent(cfw_evt);
             }
+
+            if (m_bookmark_path.Length() > 0)
+            {
+                Bookmark b;
+                if (g_app->getBookmarkFs()->loadBookmark(m_bookmark_path.ToStdWstring(), b))
+                {
+                    if (areImagesEqual(*image, b.icon))
+                    {
+                        // no need to save the same image
+                        return;
+                    }
+
+                    b.icon = *image;
+                    g_app->getBookmarkFs()->saveBookmark(m_bookmark_path.ToStdWstring(), b);
+                    g_app->getAppController()->refreshLinkBar();
+                }
+            }
         }
 
         if (!wxPendingDelete.Member(this))
         {
             wxPendingDelete.Append(this);
         }
+    }
+
+
+    bool areImagesEqual(const wxImage& img1, const wxImage& img2)
+    {
+        if (img1.IsOk() == img2.IsOk())
+        {
+            return true;
+        }
+
+        if (!img1.IsOk() || !img2.IsOk() || img1.GetSize() != img2.GetSize() || img1.HasAlpha() != img2.HasAlpha())
+        {
+            return false;
+        }
+
+        if (img1.HasAlpha() && memcmp(img1.GetAlpha(), img2.GetAlpha(), img1.GetWidth() * img1.GetHeight()) != 0)
+        {
+            return false;
+        }
+
+        return memcmp(img1.GetData(), img2.GetData(), img1.GetWidth() * img1.GetHeight() * 3) == 0;
     }
 
 private:
@@ -1020,33 +1058,42 @@ void WebDoc::onWebViewNavigating(wxWebViewEvent& evt)
     }
 }
 
+static wxString getAbsoluteFaviconLink(const wxString& nav_url, const wxString& favicon_link)
+{
+    wxURI uri(nav_url);
+
+    wxString scheme = uri.GetScheme();
+    wxString server = uri.GetServer();
+    wxString port = uri.GetPort().IsEmpty() ? "" : ":" + uri.GetPort();
+    wxString path = uri.GetPath();
+
+    if (!path.StartsWith("/")) {
+        path = "/" + path;
+    }
+
+    wxString new_path = path.BeforeLast('/') + "/" + favicon_link;
+
+    return scheme + "://" + server + port + new_path;
+}
 
 void WebDoc::onWebViewNavigated(wxWebViewEvent& evt)
 {
     m_bitmap_updater.stop();
 
     wxString favicon_link = getFaviconLinkFromSource();
-    if (!favicon_link.Contains("://"))
+    if (favicon_link.Length() > 0)
     {
-        if (favicon_link.substr(0,1) != wxT("/"))
+        if (!favicon_link.Contains("://"))
         {
-            favicon_link = wxT("/") + favicon_link;
+            favicon_link = getAbsoluteFaviconLink(m_url, favicon_link);
         }
 
-        wxURI uri(m_url);
-        wxString port_string = uri.GetPort();
-        if (!port_string.IsEmpty())
-        {
-            port_string = wxT(":") + port_string;
-        }
-
-        favicon_link = uri.GetScheme() + wxT("://") + uri.GetServer() + port_string + favicon_link;
+        FaviconDownloader* fd = new FaviconDownloader();
+        fd->setTargetDocSite(m_doc_site);
+        fd->setTargetBookmarkPath(m_bookmark_path);
+        fd->downloadFavicon(favicon_link);
+        m_bookmark_path = wxT(""); // clear it so further navigation doesn't use it
     }
-
-
-    FaviconDownloader* fd = new FaviconDownloader();
-    fd->setTargetDocSite(m_doc_site);
-    fd->downloadFavicon(favicon_link);
 }
 
 

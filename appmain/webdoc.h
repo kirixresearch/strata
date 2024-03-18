@@ -30,6 +30,7 @@ public:
     virtual wxWebControl* getWebControl() = 0;
     virtual bool isViewingSource() const = 0;
     virtual wxImage getFavIcon() = 0;
+    virtual void setBookmarkPath(const wxString& path) = 0;
 };
 
 XCM_DECLARE_SMARTPTR(IWebDoc)
@@ -172,6 +173,7 @@ public:
     wxWebControl* getWebControl();
     bool isViewingSource() const;
     wxImage getFavIcon();
+    void setBookmarkPath(const wxString& path) { m_bookmark_path = path; }
     
     void showWebRes(int webres_id);
     
@@ -263,6 +265,7 @@ private:
     ProgressBitmapUpdater m_bitmap_updater;
     wxImage m_favicon;
     bool m_use_wxwebview;
+    wxString m_bookmark_path; // bookmark path that was used to open this doc
 
 private:
 
