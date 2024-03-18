@@ -52,6 +52,7 @@ public:
     virtual bool saveBookmark(const std::wstring& path, Bookmark& bookmark) = 0;
     virtual bool deleteItem(const std::wstring& path) = 0;
     virtual bool moveItem(const std::wstring& old_path, const std::wstring& new_path) = 0;
+    virtual bool itemExists(const std::wstring& path) = 0;
 
     virtual void setFileVisualLocation(const std::wstring& path, int insert_index) = 0;
 

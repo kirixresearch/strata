@@ -389,6 +389,7 @@ public:
     bool saveBookmark(const std::wstring& path, Bookmark& bookmark);
     bool deleteItem(const std::wstring& path);
     bool moveItem(const std::wstring& old_path, const std::wstring& new_path);
+    bool itemExists(const std::wstring& path);
 
     void setFileVisualLocation(const std::wstring& path, int insert_index);
 
@@ -504,6 +505,15 @@ bool AppBookmarkFs::moveItem(const std::wstring& old_path, const std::wstring& n
     return xf_move(p1, p2);
 }
 
+bool AppBookmarkFs::itemExists(const std::wstring& path)
+{
+    std::wstring p1 = getBookmarkFilePath(path, L"");
+    if (xf_get_directory_exist(p1))
+        return true;
+
+    p1 += L".json";
+    return xf_get_file_exist(p1);
+}
 
 std::wstring AppBookmarkFs::getBookmarkItemPath(IFsItemPtr item)
 {   
@@ -846,6 +856,7 @@ public:
     bool saveBookmark(const std::wstring& path, Bookmark& bookmark);
     bool deleteItem(const std::wstring& path);
     bool moveItem(const std::wstring& old_path, const std::wstring& new_path);
+    bool itemExists(const std::wstring& path);
 
     void setFileVisualLocation(const std::wstring& path, int insert_index);
 
@@ -1009,6 +1020,17 @@ bool ProjectBookmarkFs::moveItem(const std::wstring& _old_path, const std::wstri
     return db->moveFile(old_path, new_path);
 }
 
+bool ProjectBookmarkFs::itemExists(const std::wstring& _path)
+{
+    std::wstring base_path = getProjectBookmarkFolder();
+    std::wstring path = appendPaths(base_path, _path);
+
+    xd::IDatabasePtr db = getDatabase();
+    if (db.isNull())
+        return false;
+
+    return db->getFileExist(path);
+}
 
 std::wstring ProjectBookmarkFs::getBookmarkItemPath(IFsItemPtr item)
 {
