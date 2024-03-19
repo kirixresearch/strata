@@ -117,6 +117,12 @@ xd::IIteratorPtr TableIterator::clone()
         return xcm::null;
     }
 
+    if (m_table_set)
+    {
+        new_iter->m_table_set = m_table_set;
+        new_iter->m_table_set->ref();
+    }
+
     new_iter->m_table = m_table;
     new_iter->m_table->ref();
     new_iter->m_table_rowwidth = m_table_rowwidth;
