@@ -55,7 +55,7 @@ bool OracleSet::init()
         xd::IAttributesPtr attr = m_database->getAttributes();
         std::wstring definition_path = attr->getStringAttribute(xd::dbattrDefinitionDirectory);
 
-        setConfigFilePath(ExtFileInfo::getConfigFilenameFromSetId(definition_path, getSetId()));
+        //setConfigFilePath(ExtFileInfo::getConfigFilenameFromSetId(definition_path, getSetId()));
     }
     
     return true;
@@ -251,7 +251,7 @@ xd::Structure OracleSet::getStructure()
     }
 
 
-    appendCalcFields(s);
+    //appendCalcFields(s);
 
 
     return s;

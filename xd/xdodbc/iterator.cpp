@@ -21,6 +21,8 @@
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommonsql/xdcommonsql.h"
 #include "../xdcommon/localrowcache.h"
+#include "../xdcommon/cmnbaseset.h"
+#include "../xdcommon/extfileinfo.h"
 
 
 const std::string empty_string = "";
@@ -361,6 +363,50 @@ bool OdbcIterator::init(const std::wstring& query)
         }
     }
 
+    if (m_table.length() > 0)
+    {
+        std::wstring object_id = m_database->getObjectIdFromTableName(m_table);
+        xd::IAttributesPtr attr = m_database->getAttributes();
+        std::wstring config_file_path = ExtFileInfo::getConfigFilenameFromSetId(attr->getStringAttribute(xd::dbattrDefinitionDirectory), object_id);
+        CommonBaseSet cbs;
+        cbs.setConfigFilePath(config_file_path);
+        
+        xd::Structure s;
+        cbs.appendCalcFields(s);
+
+        for (auto& col : s.columns)
+        {
+            OdbcDataAccessInfo* dai = new OdbcDataAccessInfo;
+            dai->name = col.name;
+            dai->type = col.type;
+            dai->width = col.width;
+            dai->scale = col.scale;
+            dai->ordinal = m_fields.size()+1;
+            dai->str_val = new char[(dai->width+1)*sizeof(char)];
+            dai->wstr_val = new wchar_t[(dai->width+1)*sizeof(wchar_t)];
+            memset(dai->str_val, 0, (dai->width+1)*sizeof(char));
+            memset(dai->wstr_val, 0, (dai->width+1)*sizeof(wchar_t));
+            dai->int_val = 0;
+            dai->dbl_val = 0.0;
+            dai->bool_val = 0;
+            memset(&dai->date_val, 0, sizeof(SQL_DATE_STRUCT));
+            memset(&dai->datetime_val, 0, sizeof(SQL_TIMESTAMP_STRUCT));
+            dai->expr_text = col.expression;
+            m_fields.push_back(dai);
+        }
+
+        // now parse expressions in calculated fields
+
+        for (auto& field : m_fields)
+        {
+            if (field->expr_text.length() > 0)
+            {
+                field->expr = parse(field->expr_text);
+            }
+        }
+    }
+
+
 
 
     // position cursor at the beginning of the table
@@ -393,6 +439,7 @@ bool OdbcIterator::init(const xd::QueryParams& qp)
     query.reserve(1024);
 
     std::wstring tablename = getTablenameFromOfsPath(qp.from);
+    m_table = tablename;
 
     if (m_database->m_db_type == xd::dbtypeAccess)
     {

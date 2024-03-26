@@ -38,7 +38,7 @@ struct OracleInsertData
 };
 
 
-class OracleSet :  public CommonBaseSet
+class OracleSet
 {
 friend class OracleIterator;
 friend class OracleDatabase;
@@ -46,7 +46,6 @@ friend class OracleRowInserter;
 
     XCM_CLASS_NAME("xdoracle.Set")
     XCM_BEGIN_INTERFACE_MAP(OracleSet)
-        XCM_INTERFACE_ENTRY(CommonBaseSet)
     XCM_END_INTERFACE_MAP()
 
 public:

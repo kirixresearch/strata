@@ -4078,7 +4078,7 @@ bool XdnativeDatabase::modifyStructure(const std::wstring& path, const xd::Struc
         if (db.isNull())
             return xcm::null;
 
-        return db->modifyStructure(path, mod_params, job);
+        return db->modifyStructure(rpath, mod_params, job);
     }
 
 

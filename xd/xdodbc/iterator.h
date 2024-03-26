@@ -225,8 +225,8 @@ private:
     xd::rowpos_t m_row_pos;
     long m_row_count;
 
-
     std::wstring m_path;
+    std::wstring m_table;
 
     // info from OdbcDatabase
     int m_db_type;

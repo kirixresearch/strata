@@ -199,6 +199,8 @@ private:
     std::wstring getDefinitionDirectory();
     
     void setAttributes(HDBC connection = NULL);
+
+    std::wstring getObjectIdFromTableName(const std::wstring& tbl);
     
 private:
 

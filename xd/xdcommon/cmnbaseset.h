@@ -13,7 +13,7 @@
 #define H_XDCOMMON_CMNBASESET_H
 
 
-class CommonBaseSet : public xcm::IObject
+class CommonBaseSet
 {
 public:
 
@@ -27,10 +27,6 @@ public:
     void setObjectPath(const std::wstring& path);
     std::wstring getObjectPath();
     
-    virtual std::wstring getSetId() { return L""; }
-
-protected:
-
     bool modifyStructure(const xd::StructureModify& mod_params, bool* done_flag);
 
     // calculated field routines

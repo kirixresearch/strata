@@ -189,10 +189,13 @@ bool CommonBaseSet::modifyCalcField(const std::wstring& name, const xd::ColumnIn
 {
     KL_AUTO_LOCK(m_object_mutex);
     
-    if (!colinfo.calculated)
+    if (colinfo.mask & xd::ColumnInfo::maskCalculated)
     {
-        // this is a make permanent operation
-        return false;
+        if (!colinfo.calculated)
+        {
+            // this is a make permanent operation
+            return false;
+        }
     }
 
     std::wstring new_name, new_expr;
@@ -213,19 +216,19 @@ bool CommonBaseSet::modifyCalcField(const std::wstring& name, const xd::ColumnIn
                 new_scale = colinfo.scale;
                 new_expr  = colinfo.expression;
 
-                if (new_name.length() > 0)
+                if (colinfo.mask & xd::ColumnInfo::maskName)
                     it->name = new_name;
 
-                if (new_type != -1)
+                if (colinfo.mask & xd::ColumnInfo::maskType)
                     it->type = new_type;
 
-                if (new_width != -1)
+                if (colinfo.mask & xd::ColumnInfo::maskWidth)
                     it->width = new_width;
 
-                if (new_scale != -1)
+                if (colinfo.mask & xd::ColumnInfo::maskScale)
                     it->scale = new_scale;
 
-                if (new_expr.length() > 0)
+                if (colinfo.mask & xd::ColumnInfo::maskExpression)
                     it->expression = new_expr;
             }
         }
@@ -254,21 +257,21 @@ bool CommonBaseSet::modifyCalcField(const std::wstring& name, const xd::ColumnIn
                 new_scale = colinfo.scale;
                 new_expr  = colinfo.expression;
                 
-                if (new_name.length() > 0)
+                if (colinfo.mask & xd::ColumnInfo::maskName)
                 {
                     field.setChildContents(L"name", new_name);
                 }
                     
-                if (new_type != -1)
+                if (colinfo.mask & xd::ColumnInfo::maskType)
                     field.setChildContents(L"type", new_type);
 
-                if (new_width != -1)
+                if (colinfo.mask & xd::ColumnInfo::maskWidth)
                     field.setChildContents(L"width", new_width);
 
-                if (new_scale != -1)
+                if (colinfo.mask & xd::ColumnInfo::maskScale)
                     field.setChildContents(L"scale", new_scale);
 
-                if (new_expr.length() > 0)
+                if (colinfo.mask & xd::ColumnInfo::maskExpression)
                     field.setChildContents(L"expression", new_expr);
             }
         }
@@ -287,8 +290,7 @@ void CommonBaseSet::appendCalcFields(xd::Structure& structure)
     std::wstring name, expression;
     int type, width, scale;
     
-    std::wstring set_id = getSetId();
-    if (set_id.empty())
+    if (m_config_file_path.empty())
     {
         std::vector<xd::ColumnInfo>::iterator it;
         for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)

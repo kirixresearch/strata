@@ -22,6 +22,8 @@
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/dbfuncs.h"
+#include "../xdcommon/cmnbaseset.h"
+#include "../xdcommon/extfileinfo.h"
 #include "iterator.h"
 #include "inserter.h"
 #include <set>
@@ -1862,6 +1864,35 @@ xd::IFileInfoEnumPtr OdbcDatabase::getTreeFolderInfo(const std::wstring& path)
     return retval;
 }
 
+std::wstring OdbcDatabase::getObjectIdFromTableName(const std::wstring& tbl)
+{
+    std::wstring hash_src;
+
+    // legacy support to help load old versions of marks/calcfields/etc -- with dsn, as well as sql server
+    if (m_using_dsn)
+    {
+        hash_src = L"xdodbc:dsn:";
+        hash_src = m_database.length() > 0 ? m_database : m_server;  // dsn should be stored in database, but if not, use server
+        hash_src += L":";
+        hash_src += tbl;
+    }
+    else if (m_db_type == xd::dbtypeSqlServer)
+    {
+        hash_src = L"xdodbc:";
+        hash_src += m_server;
+        hash_src += L":";
+        hash_src += tbl;
+    }
+    else
+    {
+        hash_src = m_server + L";" + m_database + L";" + m_path + L";" + kl::itowstring(m_port) + L";" + tbl;
+    }
+
+    kl::makeLower(hash_src);
+    return kl::md5str(hash_src);
+}
+
+
 xd::IFileInfoEnumPtr OdbcDatabase::getFolderInfo(const std::wstring& path)
 {
     if (m_db_type == xd::dbtypeDb2)
@@ -1977,35 +2008,7 @@ xd::IFileInfoEnumPtr OdbcDatabase::getFolderInfo(const std::wstring& path)
         f->name = wtablename;
         f->type = xd::filetypeTable;
         f->format = xd::formatDefault;
-
-        std::wstring hash_src;
-
-        // legacy support to help load old versions of marks/calcfields/etc -- with dsn, as well as sql server
-        if (m_using_dsn)
-        {
-            hash_src = L"xdodbc:dsn:";
-            hash_src = m_database.length() > 0 ? m_database : m_server;  // dsn should be stored in database, but if not, use server
-            hash_src += L":";
-            hash_src += wtablename;
-
-            kl::makeLower(hash_src);
-        }
-        else if (m_db_type == xd::dbtypeSqlServer)
-        {
-            hash_src = L"xdodbc:";
-            hash_src += m_server;
-            hash_src += L":";
-            hash_src += wtablename;
-
-            kl::makeLower(hash_src);
-        }
-        else
-        {
-            hash_src = m_server + L";" + m_database + L";" + m_path + L";" + kl::itowstring(m_port) + L";" + wtablename;
-            kl::makeLower(hash_src);
-        }
-
-        f->object_id = kl::md5str(hash_src);
+        f->object_id = getObjectIdFromTableName(wtablename);
 
         retval->append(f);
     }
@@ -2428,18 +2431,34 @@ xd::Structure OdbcDatabase::describeTable(const std::wstring& path)
 
     closeConnection(conn);
 
-    /*
-    xd::Structure ret = m_structure->clone();
-    appendCalcFields(ret);
-    return ret;
-    */
+
+    std::wstring object_id = getObjectIdFromTableName(tablename);
+    xd::IAttributesPtr attr = this->getAttributes();
+    std::wstring config_file_path = ExtFileInfo::getConfigFilenameFromSetId(attr->getStringAttribute(xd::dbattrDefinitionDirectory), object_id);
+    CommonBaseSet cbs;
+    cbs.setConfigFilePath(config_file_path);
+    cbs.appendCalcFields(s);
 
     return s;
 }
 
+
 bool OdbcDatabase::modifyStructure(const std::wstring& path, const xd::StructureModify& mod_params, xd::IJob* job)
 {
-    return false;
+    std::wstring table_name = getTablenameFromOfsPath(path);
+    std::wstring object_id = getObjectIdFromTableName(table_name);
+
+    xd::IAttributesPtr attr = this->getAttributes();
+    std::wstring config_file_path = ExtFileInfo::getConfigFilenameFromSetId(attr->getStringAttribute(xd::dbattrDefinitionDirectory), object_id);
+
+    CommonBaseSet cbs;
+    cbs.setConfigFilePath(config_file_path);
+    
+    bool done = false;
+    if (!cbs.modifyStructure(mod_params, &done))
+        return false;
+
+    return true;
 }
 
 
