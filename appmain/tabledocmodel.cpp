@@ -721,6 +721,8 @@ public:
         m_row_size = node["row_size"].getInteger();
         kl::JsonNode columns = node["columns"];
 
+        m_cols.clear();
+
         size_t i, child_count = columns.getChildCount();
         for (i = 0; i < child_count; i++)
         {
@@ -1405,10 +1407,34 @@ bool TableDocModel::loadAndConvertOldVersionToNewJson()
             std::wstring hash = obj->getHash();
             if (!db->getFileExist(upgrades_path + L"/" + hash))
             {
-                writeStreamTextFile(db, upgrades_path + L"/" + hash, L"1");
-                obj->setDirty(true);
-                m_views.push_back(obj);
-                format_converted = true;
+                bool done = false;
+
+                std::wstring default_view_caption = towstr(_("Default View"));
+                if (viewobj->getDescription() == default_view_caption)
+                {
+                    if (m_views.size() == 1)
+                    {
+                        ITableDocViewPtr view = m_views[0];
+                        if (view.isOk() && view->getDescription() == default_view_caption)
+                        {
+                            // we are upgrading a default view -- we already have a single default view -- just update it
+                            std::wstring obj_id = m_views[0]->getObjectId();
+                            m_views[0]->readFromNode(new_view_format_node);
+                            m_views[0]->setObjectId(obj_id);
+                            m_views[0]->setDirty(true);
+                            done = true;
+                            format_converted = true;
+                        }
+                    }
+                }
+
+                if (!done)
+                {
+                    writeStreamTextFile(db, upgrades_path + L"/" + hash, L"1");
+                    obj->setDirty(true);
+                    m_views.push_back(obj);
+                    format_converted = true;
+                }
             }
         }
     }
