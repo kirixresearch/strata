@@ -309,7 +309,7 @@ enum
 enum
 {
     sqlPassThrough = 0x01,   // pass the query through to the underlying database without modification
-    sqlAlwaysCopy = 0x02,    // if set, a temporary result set table is created
+    sqlMaterialized = 0x02,  // if set, a materialized result set table is created
     sqlBrowse = 0x04         // the iterator is made suitable for viewing and forwards/backwards scrolling         
 };
 

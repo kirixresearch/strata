@@ -990,7 +990,7 @@ void ConsolePanel::runCommand(wxString& command)
     int flags = xd::sqlPassThrough;
     if (command[0] == '~')
     {
-        // for debugging purposes (not specifying sqlAlwaysCopy)
+        // for debugging purposes (not specifying sqlMaterialized)
         command.erase(0,1);
         flags = 0;
     }
@@ -998,7 +998,7 @@ void ConsolePanel::runCommand(wxString& command)
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.execute-job");
 
     // always create materialized output for commands executed in the console
-    job->setExtraValue(L"xd.sqlAlwaysCopy", L"true");
+    job->setExtraValue(L"xd.sqlMaterialized", L"true");
 
 
     std::wstring table = getTableNameFromSql(towstr(command));

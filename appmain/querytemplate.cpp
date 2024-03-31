@@ -122,7 +122,7 @@ jobs::IJobPtr QueryTemplate::execute(int site_id)
     {
         // local database queries require this because of
         // view bugs in queries that don't return all columns
-        job->setExtraValue(L"xd.sqlAlwaysCopy", L"true");
+        job->setExtraValue(L"xd.sqlMaterialized", L"true");
     }
      else
     {

@@ -2148,7 +2148,7 @@ bool PgsqlDatabase::execute(const std::wstring& command,
         // create an iterator based on our select statement
         PgsqlIterator* iter = new PgsqlIterator(this);
 
-        if (flags & xd::sqlAlwaysCopy)
+        if (flags & xd::sqlMaterialized)
         {
             std::wstring tbl = xd::getTemporaryPath();
             std::wstring command2 = L"CREATE TABLE " + tbl + L" AS " + command;

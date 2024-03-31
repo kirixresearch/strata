@@ -91,8 +91,8 @@ int ExecuteJob::runJob()
 
     if (getExtraValue(L"xd.sqlPassThrough") == L"true")
         flags |= xd::sqlPassThrough;
-    if (getExtraValue(L"xd.sqlAlwaysCopy") == L"true")
-        flags |= xd::sqlAlwaysCopy;
+    if (getExtraValue(L"xd.sqlMaterialized") == L"true")
+        flags |= xd::sqlMaterialized;
 
     xcm::IObjectPtr result;
     if (!m_db->execute(sql, flags, result, xd_job))

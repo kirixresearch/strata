@@ -3026,7 +3026,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
         phase_count++;
 
     // final set creation
-    if ((flags & xd::sqlAlwaysCopy) != 0 || p_distinct || p_into)
+    if ((flags & xd::sqlMaterialized) != 0 || p_distinct || p_into)
     {
         if (p_distinct)
             phase_count += 4;
@@ -3429,7 +3429,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
     }
 
 
-    if ((flags & xd::sqlAlwaysCopy) == 0 && !p_distinct && !p_into)
+    if ((flags & xd::sqlMaterialized) == 0 && !p_distinct && !p_into)
     {
         return iter;
     }

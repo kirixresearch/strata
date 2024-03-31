@@ -187,7 +187,7 @@ bool XdnativeDatabase::execute(const std::wstring& command,
         requote(new_command, L'[', L']',*quote_openchar.c_str(), *quote_closechar.c_str());
 
 
-    if (flags & xd::sqlAlwaysCopy)
+    if (flags & xd::sqlMaterialized)
     {
         flags = 0;
 
