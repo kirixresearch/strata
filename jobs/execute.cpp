@@ -89,7 +89,7 @@ int ExecuteJob::runJob()
 
     unsigned int flags = xd::sqlPassThrough;
     if (getExtraValue(L"xd.sqlAlwaysCopy") == L"true")
-        flags = xd::sqlAlwaysCopy;
+        flags |= xd::sqlAlwaysCopy;
 
     xcm::IObjectPtr result;
     if (!m_db->execute(sql, flags, result, xd_job))

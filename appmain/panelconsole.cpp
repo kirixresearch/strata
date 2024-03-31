@@ -986,8 +986,8 @@ void ConsolePanel::runCommand(wxString& command)
         return;
     }
 
-    // process Sql commands
-    int flags = xd::sqlPassThrough;        
+    // process SQL commands
+    int flags = xd::sqlPassThrough;
     if (command[0] == '~')
     {
         // for debugging purposes (not specifying sqlAlwaysCopy)
@@ -1008,8 +1008,10 @@ void ConsolePanel::runCommand(wxString& command)
             xd::IDatabasePtr mount_db;                    
             mount_db = db->getMountDatabase(table);
 
-            if (mount_db.isNull())
+           // if (mount_db.isNull())
+            {
                 flags |= xd::sqlAlwaysCopy;
+            }
         }
     }
 

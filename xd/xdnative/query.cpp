@@ -186,20 +186,68 @@ bool XdnativeDatabase::execute(const std::wstring& command,
     if (quote_openchar != L"[" || quote_closechar != L"]")
         requote(new_command, L'[', L']',*quote_openchar.c_str(), *quote_closechar.c_str());
 
-    if (!mount_db->execute(new_command, flags, result, job))
+
+    if (flags & xd::sqlAlwaysCopy)
     {
-        // proxy the error code and return false
-        m_error.setError(mount_db->getErrorCode(), mount_db->getErrorString());
-        return false;
+        flags = 0;
+
+        IJobInternalPtr ijob = job;
+        if (ijob)
+        {
+            int phase_pcts[] = { 50,50 };
+            ijob->setPhases(2, phase_pcts);
+            ijob->startPhase();
+        }
+
+        xcm::IObjectPtr mountdb_result;
+        if (!mount_db->execute(new_command, flags, mountdb_result, job))
+        {
+            // proxy the error code and return false
+            m_error.setError(mount_db->getErrorCode(), mount_db->getErrorString());
+            return false;
+        }
+
+        if (ijob)
+        {
+            ijob->startPhase();
+        }
+
+        xd::IIteratorPtr iter = mountdb_result;
+        if (iter.isNull())
+        {
+            m_error.setError(xd::errorGeneral, L"Failed to get iterator from mount database");
+            return false;
+        }
+
+        xd::CopyParams cp;
+        cp.iter_input = iter;
+        cp.output = xd::getTemporaryPath();
+        if (!copyData(&cp, job))
+        {
+            return false;
+        }
+
+        xd::QueryParams qp;
+        qp.from = cp.output;
+        result = query(qp);
+    }
+    else
+    {
+        if (!mount_db->execute(new_command, flags, result, job))
+        {
+            // proxy the error code and return false
+            m_error.setError(mount_db->getErrorCode(), mount_db->getErrorString());
+            return false;
+        }
     }
 
+
+/*
+    TODO: implement
 
     // if last character of table name is a slash, remove it
     if (primary_table_name[primary_table_name.length()-1] == '/')
         primary_table_name.erase(primary_table_name.length()-1, 1);
-
-/*
-    TODO: implement
 
     // if it's a query, rename the path to correspond to its mount path
     
