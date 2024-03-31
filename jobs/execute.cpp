@@ -87,7 +87,10 @@ int ExecuteJob::runJob()
     setXdJob(xd_job);
 
 
-    unsigned int flags = xd::sqlPassThrough;
+    unsigned int flags = 0;
+
+    if (getExtraValue(L"xd.sqlPassThrough") == L"true")
+        flags |= xd::sqlPassThrough;
     if (getExtraValue(L"xd.sqlAlwaysCopy") == L"true")
         flags |= xd::sqlAlwaysCopy;
 

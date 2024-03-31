@@ -995,28 +995,29 @@ void ConsolePanel::runCommand(wxString& command)
         flags = 0;
     }
 
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.execute-job");
+
+    // always create materialized output for commands executed in the console
+    job->setExtraValue(L"xd.sqlAlwaysCopy", L"true");
+
+
     std::wstring table = getTableNameFromSql(towstr(command));
     if (table.length() > 0)
     {
-        // find out if it's a local table, and if it
-        // is, turn on 'always copy';  tabledoc can't yet
-        // directly handle certain types of queries like
-        // select field1,field2 FROM tbl
+
         xd::IDatabasePtr db = g_app->getDatabase();
         if (db.isOk())
         {
             xd::IDatabasePtr mount_db;                    
             mount_db = db->getMountDatabase(table);
 
-           // if (mount_db.isNull())
+            if (mount_db.isOk())
             {
-                flags |= xd::sqlAlwaysCopy;
+                job->setExtraValue(L"xd.sqlPassThrough", L"true");
             }
         }
     }
 
-
-    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.execute-job");
 
 
     if (m_command_db_path.length() > 0)
@@ -1046,12 +1047,6 @@ void ConsolePanel::runCommand(wxString& command)
             job->setDatabase(mount_db);
     }
 
-
-
-
-
-    if (flags & xd::sqlAlwaysCopy)
-        job->setExtraValue(L"xd.sqlAlwaysCopy", L"true");
 
 
     // run the job
