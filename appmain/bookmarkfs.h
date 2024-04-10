@@ -25,6 +25,7 @@ public:
 
 public:
 
+    std::wstring connection_string; // optional, for bookmarks that are database connections
     std::wstring location;
     std::wstring tags;
     std::wstring description;

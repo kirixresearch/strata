@@ -954,12 +954,9 @@ bool ProjectBookmarkFs::loadBookmark(const std::wstring& _path, Bookmark& bookma
             bookmark.description = L"";
             bookmark.icon = wxImage();
             bookmark.run_target = false;
-
-            if (rpath.length() > 0)
-            {
-                bookmark.location = rpath;
-                bookmark.is_shortcut = true;
-            }
+            bookmark.connection_string = cstr;
+            bookmark.location = rpath;
+            bookmark.is_shortcut = true;
 
             return true;
         }

@@ -270,6 +270,55 @@ static std::vector<IFsItemPtr> enum2vec(IFsItemEnumPtr fs_enum)
 }
 
 
+static std::wstring findMountPointRecursive(const std::wstring& path, const std::wstring& search_cstr, xd::IDatabasePtr& db)
+{
+    xd::ConnectionString cs_search(search_cstr);
+    
+    xd::IFileInfoEnumPtr files = db->getFolderInfo(path);
+    for (size_t i = 0; i < files->size(); ++i)
+    {
+        xd::IFileInfoPtr file = files->getItem(i);
+        std::wstring name = file->getName();
+        if (name.substr(0,1) == L".")
+            continue;
+
+        if (file->isMount())
+        {
+            std::wstring cstr, rpath;
+            file->getMountInfo(cstr, rpath);
+
+            xd::ConnectionString cs_test(cstr);
+            if (cs_search.isEqual(cs_test))
+            {
+                return xd::appendPath(path, name);
+            }
+        }
+        else if (file->getType() == xd::filetypeFolder)
+        {
+            std::wstring new_path = xd::appendPath(path, name);
+            std::wstring found = findMountPointRecursive(new_path, search_cstr, db);
+            if (!found.empty())
+            {
+                return found;
+            }
+        }
+    }
+
+    return L"";
+}
+
+static std::wstring findMountPoint(const std::wstring& _cstr)
+{
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+    {
+        return L"";
+    }
+
+    return findMountPointRecursive(L"/", _cstr, db);
+}
+
+
 static void activateItem(const std::wstring& path, int open_mask)
 {
     Bookmark b;
@@ -313,6 +362,23 @@ static void activateItem(const std::wstring& path, int open_mask)
 
         return;
     }
+
+
+    if (b.connection_string.length() > 0)
+    {
+        // try to find an existing mount point with the same connection string
+        std::wstring mount_point = findMountPoint(b.connection_string);
+        if (mount_point.length() > 0)
+        {
+            b.location = xd::appendPath(mount_point, b.location);
+        }
+        else
+        {
+            appMessageBox(_("Could not find a connection for this bookmark. Please recreate the connection to continue."), _("Connection Not Found"), wxICON_ERROR);
+            return;
+        }
+    }
+
 
     g_app->getAppController()->openAny(b.location, open_mask);
 }

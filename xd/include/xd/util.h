@@ -624,6 +624,22 @@ public:
         return result;
     }
 
+    bool isEqual(const ConnectionString& other) const
+    {
+        if (m_map.size() != other.m_map.size())
+            return false;
+
+        for (const auto& pair : m_map)
+        {
+            auto it = other.m_map.find(pair.first);
+            if (it == other.m_map.end() || it->second != pair.second)
+                return false;
+        }
+
+        return true;
+    }
+
+
 
     bool setParameters(int dbtype,
                        const std::wstring& host,
