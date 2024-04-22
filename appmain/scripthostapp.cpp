@@ -3450,11 +3450,11 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
         {
             kl::JsonNode object = objects.appendElement();
 
-            object["source_connection"] = g_app->getDatabaseConnectionString();
-            object["destination_connection"] = cstr;
+            object["input_connection"] = g_app->getDatabaseConnectionString();
+            object["input"] = it->source_path;
 
-            object["source_path"] = it->source_path;
-            object["destination_path"] = it->destination_path;
+            object["output_connection"] = cstr;
+            object["output"] = it->destination_path;
 
             object["overwrite"].setBoolean(true);
 
