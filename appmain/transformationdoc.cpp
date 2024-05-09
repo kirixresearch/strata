@@ -105,41 +105,40 @@ struct ExpressionLookupInfo
 
 static ExpressionLookupInfo expr_lookup_arr[] =
 {
-    { charfmtTrimLeadingSpaces          , L"((LTRIM(%s)))"        , NULL },
-    { charfmtTrimLeadingZeros           , L"((LTRIM(%s,\"0\")))"  , NULL },
-    { charfmtTrimLeadingSpacesAndZeros  , L"((LTRIM(%s,\"0 \")))" , NULL },
-    { charfmtEmpty                      , L"((%s))"               , NULL },
-    
-    { numfmtLeadingNegativeEuropean     , L"((IIF(LTRIM(TRIM(TRIM(TRANSLATE(%s,\".\",\"\"))),\"- \")=TRIM(TRANSLATE(%s,\".\",\"\")),VAL(TRIM(TRANSLATE(%s,\".\",\"\"))),-1*VAL(LTRIM(TRIM(TRANSLATE(%s,\".\",\"\")) , \"- \")))))" , NULL },
-    { numfmtLeadingNegativeEnglish      , L"((IIF(LTRIM(TRIM(TRIM(TRANSLATE(%s,\",\",\"\"))),\"- \")=TRIM(TRANSLATE(%s,\",\",\"\")),VAL(TRIM(TRANSLATE(%s,\",\",\"\"))),-1*VAL(LTRIM(TRIM(TRANSLATE(%s,\",\",\"\")) , \"- \")))))" , NULL },
-    { numfmtTrailingNegativeEuropean    , L"((IIF(RTRIM(TRIM(TRIM(TRANSLATE(%s,\".\",\"\"))),\"- \")=TRIM(TRANSLATE(%s,\".\",\"\")),VAL(TRIM(TRANSLATE(%s,\".\",\"\"))),-1*VAL(RTRIM(TRIM(TRANSLATE(%s,\".\",\"\")),\"- \")))))"   , NULL },
-    { numfmtTrailingNegativeEnglish     , L"((IIF(RTRIM(TRIM(TRIM(TRANSLATE(%s,\",\",\"\"))),\"- \")=TRIM(TRANSLATE(%s,\",\",\"\")),VAL(TRIM(TRANSLATE(%s,\",\",\"\"))),-1*VAL(RTRIM(TRIM(TRANSLATE(%s,\",\",\"\")),\"- \")))))"   , NULL },
-    { numfmtParenthesisNegativeEuropean , L"((IIF(TRIM(TRIM(TRANSLATE(%s,\".\",\"\")),\"() \")=TRIM(TRANSLATE(%s,\".\",\"\")),VAL(TRIM(TRANSLATE(%s,\".\",\"\"))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,\".\",\"\")),\"() \")))))"         , NULL },
-    { numfmtParenthesisNegativeEnglish  , L"((IIF(TRIM(TRIM(TRANSLATE(%s,\",\",\"\")),\"() \")=TRIM(TRANSLATE(%s,\",\",\"\")),VAL(TRIM(TRANSLATE(%s,\",\",\"\"))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,\",\",\"\")),\"() \")))))"         , NULL },
-    { numfmtEmpty                       , L"((VAL(TRIM(%s))))"                                                                                                                                                                     , NULL },
-    
-    { datefmtYYYYMMDD  , L"((DATE(TRIM(%s),'YYYYMMDD')))"                                       , NULL },
-    { datefmtYYYYDDMM  , L"((DATE(TRIM(%s),'YYYYDDMM')))"                                       , NULL },
-    { datefmtMMDDYYYY  , L"((DATE(TRIM(%s),'MMDDYYYY')))"                                       , NULL },
-    { datefmtDDMMYYYY  , L"((DATE(TRIM(%s),'DDMMYYYY')))"                                       , NULL },
-    { datefmtYYMMDD    , L"((DATE(TRIM(%s),'YYMMDD')))"                                         , NULL },
-    { datefmtYYDDMM    , L"((DATE(TRIM(%s),'YYDDMM')))"                                         , NULL },
-    { datefmtMMDDYY    , L"((DATE(TRIM(%s),'MMDDYY')))"                                         , NULL },
-    { datefmtDDMMYY    , L"((DATE(TRIM(%s),'DDMMYY')))"                                         , NULL },
-    { datefmtYYYYDDD   , L"((DATE(VAL(SUBSTR(TRIM(%s),1,4)),1,1)+VAL(SUBSTR(TRIM(%s),5,3))-1))" , NULL },
-    { datefmtDDDYYYY   , L"((DATE(VAL(SUBSTR(TRIM(%s),4,4)),1,1)+VAL(SUBSTR(TRIM(%s),1,3))-1))" , NULL },
-    { datefmtJulian    , L"((DATE(0,0,0)+VAL(TRIM(%s))+1))"                                     , NULL },
-    { datefmtEmpty     , L"((DATE(TRIM(%s))))"                                                  , NULL },
-    
-    { boolfmtTF        , L"((UPPER(TRIM(%s))=\"T\"))"                                                                                                                          , NULL },
-    { boolfmtTrueFalse , L"((UPPER(TRIM(%s))=\"TRUE\"))"                                                                                                                       , NULL },
-    { boolfmtYN        , L"((UPPER(TRIM(%s))=\"Y\"))"                                                                                                                          , NULL },
-    { boolfmtYesNo     , L"((UPPER(TRIM(%s))=\"YES\"))"                                                                                                                        , NULL },
-    { boolfmt10        , L"((VAL(TRIM(%s))=1))"                                                                                                                                , NULL },
-    { boolfmtNot00     , L"((VAL(TRIM(%s))!=0))"                                                                                                                               , NULL },
-    { boolfmtEmpty     , L"((VAL(TRIM(%s))=1 OR TRIM(%s)=\"T\" OR TRIM(%s)=\"t\" OR UPPER(TRIM(%s))=\"TRUE\" OR UPPER(TRIM(%s))=\"YES\" OR TRIM(%s)=\"Y\" OR TRIM(%s)=\"y\"))" , NULL },
-};
+    { charfmtTrimLeadingSpaces,          LR"((LTRIM(%s)))", nullptr },
+    { charfmtTrimLeadingZeros,           LR"((LTRIM(%s,"0")))", nullptr },
+    { charfmtTrimLeadingSpacesAndZeros,  LR"((LTRIM(%s,"0 ")))", nullptr },
+    { charfmtEmpty,                      LR"((%s))", nullptr },
 
+    { numfmtLeadingNegativeEuropean,     LR"((IIF(LTRIM(TRIM(TRIM(TRANSLATE(%s,".",""))),"- ")=TRIM(TRANSLATE(%s,".","")),VAL(TRIM(TRANSLATE(%s,".",""))),-1*VAL(LTRIM(TRIM(TRANSLATE(%s,".","")) , "- ")))))", nullptr },
+    { numfmtLeadingNegativeEnglish,      LR"((IIF(LTRIM(TRIM(TRIM(TRANSLATE(%s,",",""))),"- ")=TRIM(TRANSLATE(%s,",","")),VAL(TRIM(TRANSLATE(%s,",",""))),-1*VAL(LTRIM(TRIM(TRANSLATE(%s,",","")) , "- ")))))", nullptr },
+    { numfmtTrailingNegativeEuropean,    LR"((IIF(RTRIM(TRIM(TRIM(TRANSLATE(%s,".",""))),"- ")=TRIM(TRANSLATE(%s,".","")),VAL(TRIM(TRANSLATE(%s,".",""))),-1*VAL(RTRIM(TRIM(TRANSLATE(%s,".","")),"- ")))))", nullptr },
+    { numfmtTrailingNegativeEnglish,     LR"((IIF(RTRIM(TRIM(TRIM(TRANSLATE(%s,",",""))),"- ")=TRIM(TRANSLATE(%s,",","")),VAL(TRIM(TRANSLATE(%s,",",""))),-1*VAL(RTRIM(TRIM(TRANSLATE(%s,",","")),"- ")))))", nullptr },
+    { numfmtParenthesisNegativeEuropean, LR"((IIF(TRIM(TRIM(TRANSLATE(%s,".","")),"() ")=TRIM(TRANSLATE(%s,".","")),VAL(TRIM(TRANSLATE(%s,".",""))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,".","")),"() ")))))", nullptr },
+    { numfmtParenthesisNegativeEnglish,  LR"((IIF(TRIM(TRIM(TRANSLATE(%s,",","")),"() ")=TRIM(TRANSLATE(%s,",","")),VAL(TRIM(TRANSLATE(%s,",",""))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,",","")),"() ")))))", nullptr },
+    { numfmtEmpty,                       LR"((VAL(TRIM(%s))))"                                                                                                                                                                     , nullptr },
+
+    { datefmtYYYYMMDD,                   LR"((DATE(TRIM(%s),'YYYYMMDD')))", nullptr },
+    { datefmtYYYYDDMM,                   LR"((DATE(TRIM(%s),'YYYYDDMM')))", nullptr },
+    { datefmtMMDDYYYY,                   LR"((DATE(TRIM(%s),'MMDDYYYY')))", nullptr },
+    { datefmtDDMMYYYY,                   LR"((DATE(TRIM(%s),'DDMMYYYY')))", nullptr },
+    { datefmtYYMMDD,                     LR"((DATE(TRIM(%s),'YYMMDD')))", nullptr },
+    { datefmtYYDDMM,                     LR"((DATE(TRIM(%s),'YYDDMM')))", nullptr },
+    { datefmtMMDDYY,                     LR"((DATE(TRIM(%s),'MMDDYY')))", nullptr },
+    { datefmtDDMMYY,                     LR"((DATE(TRIM(%s),'DDMMYY')))", nullptr },
+    { datefmtYYYYDDD,                    LR"((DATE(VAL(SUBSTR(TRIM(%s),1,4)),1,1)+VAL(SUBSTR(TRIM(%s),5,3))-1))", nullptr },
+    { datefmtDDDYYYY,                    LR"((DATE(VAL(SUBSTR(TRIM(%s),4,4)),1,1)+VAL(SUBSTR(TRIM(%s),1,3))-1))", nullptr },
+    { datefmtJulian,                     LR"((DATE(0,0,0)+VAL(TRIM(%s))+1))", nullptr },
+    { datefmtEmpty,                      LR"((DATE(TRIM(%s))))", nullptr },
+
+    { boolfmtTF,                         LR"((UPPER(TRIM(%s))="T"))", nullptr },
+    { boolfmtTrueFalse,                  LR"((UPPER(TRIM(%s))="TRUE"))", nullptr },
+    { boolfmtYN,                         LR"((UPPER(TRIM(%s))="Y"))", nullptr },
+    { boolfmtYesNo,                      LR"((UPPER(TRIM(%s))="YES"))", nullptr },
+    { boolfmt10,                         LR"((VAL(TRIM(%s))=1))", nullptr },
+    { boolfmtNot00,                      LR"((VAL(TRIM(%s))!=0))", nullptr },
+    { boolfmtEmpty,                      LR"((VAL(TRIM(%s))=1 OR TRIM(%s)="T" OR TRIM(%s)="t" OR UPPER(TRIM(%s))="TRUE" OR UPPER(TRIM(%s))="YES" OR TRIM(%s)="Y" OR TRIM(%s)="y"))", nullptr },
+};
 
 // utility functions
 
@@ -209,6 +208,9 @@ static std::wstring expr2regex(const std::wstring& expr)
     e.Replace("+", "\\+", true);
     e.Replace("*", "\\*", true);
     e.Replace("=", "\\=", true);
+    e.Replace("\"", "~~~QUOTE~~~", true);
+    e.Replace("'"," ~~~QUOTE~~~", true);
+    e.Replace("~~~QUOTE~~~", "[\"']", true);
     e.Replace("%s", "([^,\"()]+)", true);
 
     return towstr(e);
