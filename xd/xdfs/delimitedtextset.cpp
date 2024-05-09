@@ -1178,6 +1178,7 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
             col.width = it->max_width;
         }
 
+        col.source_width = it->max_width;
         col.scale = it->max_scale;
         col.nulls_allowed = false;
         m_def.columns.push_back(col);
