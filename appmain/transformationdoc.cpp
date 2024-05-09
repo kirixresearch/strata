@@ -106,17 +106,17 @@ struct ExpressionLookupInfo
 static ExpressionLookupInfo expr_lookup_arr[] =
 {
     { charfmtTrimLeadingSpaces,          LR"((LTRIM(%s)))", nullptr },
-    { charfmtTrimLeadingZeros,           LR"((LTRIM(%s,"0")))", nullptr },
-    { charfmtTrimLeadingSpacesAndZeros,  LR"((LTRIM(%s,"0 ")))", nullptr },
+    { charfmtTrimLeadingZeros,           LR"((LTRIM(%s,'0')))", nullptr },
+    { charfmtTrimLeadingSpacesAndZeros,  LR"((LTRIM(%s,'0 ')))", nullptr },
     { charfmtEmpty,                      LR"((%s))", nullptr },
 
-    { numfmtLeadingNegativeEuropean,     LR"((IIF(LTRIM(TRIM(TRIM(TRANSLATE(%s,".",""))),"- ")=TRIM(TRANSLATE(%s,".","")),VAL(TRIM(TRANSLATE(%s,".",""))),-1*VAL(LTRIM(TRIM(TRANSLATE(%s,".","")) , "- ")))))", nullptr },
-    { numfmtLeadingNegativeEnglish,      LR"((IIF(LTRIM(TRIM(TRIM(TRANSLATE(%s,",",""))),"- ")=TRIM(TRANSLATE(%s,",","")),VAL(TRIM(TRANSLATE(%s,",",""))),-1*VAL(LTRIM(TRIM(TRANSLATE(%s,",","")) , "- ")))))", nullptr },
-    { numfmtTrailingNegativeEuropean,    LR"((IIF(RTRIM(TRIM(TRIM(TRANSLATE(%s,".",""))),"- ")=TRIM(TRANSLATE(%s,".","")),VAL(TRIM(TRANSLATE(%s,".",""))),-1*VAL(RTRIM(TRIM(TRANSLATE(%s,".","")),"- ")))))", nullptr },
-    { numfmtTrailingNegativeEnglish,     LR"((IIF(RTRIM(TRIM(TRIM(TRANSLATE(%s,",",""))),"- ")=TRIM(TRANSLATE(%s,",","")),VAL(TRIM(TRANSLATE(%s,",",""))),-1*VAL(RTRIM(TRIM(TRANSLATE(%s,",","")),"- ")))))", nullptr },
-    { numfmtParenthesisNegativeEuropean, LR"((IIF(TRIM(TRIM(TRANSLATE(%s,".","")),"() ")=TRIM(TRANSLATE(%s,".","")),VAL(TRIM(TRANSLATE(%s,".",""))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,".","")),"() ")))))", nullptr },
-    { numfmtParenthesisNegativeEnglish,  LR"((IIF(TRIM(TRIM(TRANSLATE(%s,",","")),"() ")=TRIM(TRANSLATE(%s,",","")),VAL(TRIM(TRANSLATE(%s,",",""))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,",","")),"() ")))))", nullptr },
-    { numfmtEmpty,                       LR"((VAL(TRIM(%s))))"                                                                                                                                                                     , nullptr },
+    { numfmtLeadingNegativeEuropean,     LR"((IIF(LTRIM(TRIM(TRIM(TRANSLATE(%s,'.',''))),'- ')=TRIM(TRANSLATE(%s,'.','')),VAL(TRIM(TRANSLATE(%s,'.',''))),-1*VAL(LTRIM(TRIM(TRANSLATE(%s,'.','')) , '- ')))))", nullptr },
+    { numfmtLeadingNegativeEnglish,      LR"((IIF(LTRIM(TRIM(TRIM(TRANSLATE(%s,',',''))),'- ')=TRIM(TRANSLATE(%s,',','')),VAL(TRIM(TRANSLATE(%s,',',''))),-1*VAL(LTRIM(TRIM(TRANSLATE(%s,',','')) , '- ')))))", nullptr },
+    { numfmtTrailingNegativeEuropean,    LR"((IIF(RTRIM(TRIM(TRIM(TRANSLATE(%s,'.',''))),'- ')=TRIM(TRANSLATE(%s,'.','')),VAL(TRIM(TRANSLATE(%s,'.',''))),-1*VAL(RTRIM(TRIM(TRANSLATE(%s,'.','')),'- ')))))", nullptr },
+    { numfmtTrailingNegativeEnglish,     LR"((IIF(RTRIM(TRIM(TRIM(TRANSLATE(%s,',',''))),'- ')=TRIM(TRANSLATE(%s,',','')),VAL(TRIM(TRANSLATE(%s,',',''))),-1*VAL(RTRIM(TRIM(TRANSLATE(%s,',','')),'- ')))))", nullptr },
+    { numfmtParenthesisNegativeEuropean, LR"((IIF(TRIM(TRIM(TRANSLATE(%s,'.','')),'() ')=TRIM(TRANSLATE(%s,'.','')),VAL(TRIM(TRANSLATE(%s,'.',''))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,'.','')),'() ')))))", nullptr },
+    { numfmtParenthesisNegativeEnglish,  LR"((IIF(TRIM(TRIM(TRANSLATE(%s,',','')),'() ')=TRIM(TRANSLATE(%s,',','')),VAL(TRIM(TRANSLATE(%s,',',''))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,',','')),'() ')))))", nullptr },
+    { numfmtEmpty,                       LR"((VAL(TRIM(%s))))'                                                                                                                                                                     , nullptr },
 
     { datefmtYYYYMMDD,                   LR"((DATE(TRIM(%s),'YYYYMMDD')))", nullptr },
     { datefmtYYYYDDMM,                   LR"((DATE(TRIM(%s),'YYYYDDMM')))", nullptr },
@@ -131,13 +131,13 @@ static ExpressionLookupInfo expr_lookup_arr[] =
     { datefmtJulian,                     LR"((DATE(0,0,0)+VAL(TRIM(%s))+1))", nullptr },
     { datefmtEmpty,                      LR"((DATE(TRIM(%s))))", nullptr },
 
-    { boolfmtTF,                         LR"((UPPER(TRIM(%s))="T"))", nullptr },
-    { boolfmtTrueFalse,                  LR"((UPPER(TRIM(%s))="TRUE"))", nullptr },
-    { boolfmtYN,                         LR"((UPPER(TRIM(%s))="Y"))", nullptr },
-    { boolfmtYesNo,                      LR"((UPPER(TRIM(%s))="YES"))", nullptr },
+    { boolfmtTF,                         LR"((UPPER(TRIM(%s))='T'))", nullptr },
+    { boolfmtTrueFalse,                  LR"((UPPER(TRIM(%s))='TRUE'))", nullptr },
+    { boolfmtYN,                         LR"((UPPER(TRIM(%s))='Y'))", nullptr },
+    { boolfmtYesNo,                      LR"((UPPER(TRIM(%s))='YES'))", nullptr },
     { boolfmt10,                         LR"((VAL(TRIM(%s))=1))", nullptr },
     { boolfmtNot00,                      LR"((VAL(TRIM(%s))!=0))", nullptr },
-    { boolfmtEmpty,                      LR"((VAL(TRIM(%s))=1 OR TRIM(%s)="T" OR TRIM(%s)="t" OR UPPER(TRIM(%s))="TRUE" OR UPPER(TRIM(%s))="YES" OR TRIM(%s)="Y" OR TRIM(%s)="y"))", nullptr },
+    { boolfmtEmpty,                      LR"((VAL(TRIM(%s))=1 OR TRIM(%s)='T' OR TRIM(%s)='t' OR UPPER(TRIM(%s))='TRUE' OR UPPER(TRIM(%s))='YES' OR TRIM(%s)='Y' OR TRIM(%s)='y'))", nullptr },
 };
 
 // utility functions
@@ -209,7 +209,7 @@ static std::wstring expr2regex(const std::wstring& expr)
     e.Replace("*", "\\*", true);
     e.Replace("=", "\\=", true);
     e.Replace("\"", "~~~QUOTE~~~", true);
-    e.Replace("'"," ~~~QUOTE~~~", true);
+    e.Replace("'", "~~~QUOTE~~~", true);
     e.Replace("~~~QUOTE~~~", "[\"']", true);
     e.Replace("%s", "([^,\"()]+)", true);
 
