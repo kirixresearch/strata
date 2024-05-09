@@ -219,9 +219,11 @@ private:
     std::vector<wxString> m_textqualifier_labels;   // labels for text qualifier combobox
 
     xd::FormatDefinition m_def;
+    xd::FormatDefinition m_source_def; // definition for the source file
 
     xd::FormatDefinition m_def_frc;    // m_def copy with first-row-columns = true
     xd::FormatDefinition m_def_nofrc;  // m_def copy with first-row-columns = false
+    std::vector<std::wstring> m_detected_column_names;
 
     DECLARE_EVENT_TABLE()
 };

@@ -507,26 +507,7 @@ bool TextDoc::updateColumnList()
 
 xd::Structure TextDoc::getStructure()
 {
-    xd::Structure s;
-
-/*
-    TODO: implement
-
-    if (m_view == TextDoc::TextDelimitedView)
-    {
-        xd::IDelimitedTextSetPtr s = m_textdelimited_set;
-        if (s)
-            return s->getStructure();
-    }
-     else if (m_view == TextDoc::FixedLengthView)
-    {
-        xd::IFixedLengthDefinitionPtr s = m_fixedlength_set;
-        if (s)
-            return s->getStructure();
-    }
-   */
-
-    return s;
+    return m_def.columns;
 }
 
 wxString TextDoc::getPath()
@@ -541,41 +522,16 @@ void TextDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 {
     list.clear();
     
-    /* 
-
-    TODO: reimplement
-
-    xd::IxSetPtr set = getTextSet();
-    if (set.isNull())
-        return;
-
-    xd::Structure structure;
-    xd::IFixedLengthDefinitionPtr fset = set;
-    xd::IDelimitedTextSetPtr tset = set;
-    if (fset)
-        structure = fset->getSourceStructure();
-    if (tset)
-        structure = tset->getSourceStructure();
-        
-    if (structure.isNull())
-        return;
-        
-    int i, col_count = structure->getColumnCount();
-    list.reserve(col_count);
-    
-    for (i = 0; i < col_count; i++)
+    for (size_t i = 0; i < m_def.columns.size(); ++i)
     {
-        const xd::ColumnInfo& colinfo = structure->getColumnInfoByIdx(i);
-        if (colinfo.isNull())
-            continue;
-        
+        auto& col = m_def.columns[i];
+
         ColumnListItem item;
-        item.text = colinfo.name;
+        item.text = col.name;
         item.bitmap = GETBMPSMALL(gf_field);
         item.active = true;
         list.push_back(item);
     }
-    */
 }
 
 
@@ -615,6 +571,20 @@ inline void setTextQualifierComboBoxSelection(wxComboBox* combobox,
     {
         combobox->SetValue(text_qualifier);
         combobox->SetInsertionPointEnd();
+    }
+}
+
+static void useCharacterTypes(xd::FormatDefinition& fd)
+{
+    // change source column types to all character types
+    for (std::vector<xd::ColumnInfo>::iterator it = fd.columns.begin(); it != fd.columns.end(); ++it)
+    {
+        it->width = it->source_width;
+        it->type = (fd.encoding == xd::encodingUTF8 ||
+            fd.encoding == xd::encodingUCS2 ||
+            fd.encoding == xd::encodingUTF16 ||
+            fd.encoding == xd::encodingUTF16BE ||
+            fd.encoding == xd::encodingUTF32) ? xd::typeWideCharacter : xd::typeCharacter;
     }
 }
 
@@ -737,7 +707,7 @@ bool TextDoc::initDelimitedTextView()
     // set up the grid for the text-delimited set
     xd::QueryParams qp;
     qp.from = towstr(m_path);
-    qp.format = m_def;
+    qp.format = m_source_def;
     m_textdelimited_iter = db->query(qp);
     m_grid_model = new XdGridModel;
     m_grid_model->setIterator(m_textdelimited_iter);
@@ -798,28 +768,45 @@ bool TextDoc::open(const wxString& filename)
     m_path_is_datafile = finfo->isMount() ? false : true;
 
     m_def = xd::FormatDefinition();
+    m_source_def = xd::FormatDefinition();
+    m_detected_column_names.clear();
 
+    // first discern the source structure of the file
+    if (m_path_is_datafile)
+    {
+        xd::FormatDefinition defaults = m_source_def;
+        defaults.determine_structure = true;
+        defaults.determine_delimiters = true;
+        defaults.columns.clear();
+
+        if (!db->detectStreamFormat(towstr(filename), &m_source_def, &defaults, NULL))
+            return false;
+        m_def = m_source_def;
+
+        useCharacterTypes(m_source_def);
+    }
+    else
+    {
+        xd::FormatDefinition defaults = m_source_def;
+        defaults.determine_structure = true;
+        defaults.determine_delimiters = true;
+        defaults.columns.clear();
+
+        if (!db->detectStreamFormat(towstr(filename), &m_source_def, &defaults, NULL))
+            return false;
+
+        useCharacterTypes(m_source_def);
+
+        if (!db->loadDefinition(towstr(filename), &m_def))
+            return false;
+    }
+
+    // next, if there is a definition file, load it
     if (xf_get_file_exist(m_definition_file))
     {
         std::wstring def = xf_get_file_contents(m_definition_file);
         xd::Util::loadDefinitionFromString(def, &m_def);
     }
-    else
-    {
-        if (m_path_is_datafile)
-        {
-            if (!db->detectStreamFormat(towstr(filename), &m_def, NULL, NULL))
-                return false;
-        }
-        else
-        {
-            if (!db->loadDefinition(towstr(filename), &m_def))
-                return false;
-        }
-    }
-
-
-
 
 
     if (m_def.format == xd::formatDelimitedText)
@@ -954,7 +941,6 @@ void TextDoc::refreshDocuments()
         {
             tabledoc->open(towstr(m_path));
             tabledoc->refreshActiveView();
-
         }
 
         // if there are no columns left when we return to table, auto-populate with default
@@ -1174,7 +1160,7 @@ void TextDoc::refreshGrid()
 
     xd::QueryParams qp;
     qp.from = towstr(m_path);
-    qp.format = m_def;
+    qp.format = m_source_def;
     m_textdelimited_iter = db->query(qp);
 
     m_grid_model->setIterator(m_textdelimited_iter);
@@ -1252,6 +1238,7 @@ bool TextDoc::isLineDelimited()
     
     return false;
 }
+
 
 wxString TextDoc::getFieldDelimiters()
 {
@@ -1916,14 +1903,16 @@ void TextDoc::onTextDelimitedFieldDelimiterTextEnter(wxCommandEvent& evt)
     wxString s = evt.GetString(); 
     if (s.IsNumber())
     {
-        // users can optional key in an character code as a decimal value
+        // users can optionally key in a character code as a decimal value
         wxChar ch = kl::wtoi(towstr(s));
         s = ch;
     }
 
     // we didn't change delimiters, so we're done
     if (s == m_last_delimiters)
+    {
         return;
+    }
 
     // if the user typed in one of the default delimiters,
     // use that combobox entry instead
@@ -1940,9 +1929,10 @@ void TextDoc::onTextDelimitedFieldDelimiterTextEnter(wxCommandEvent& evt)
     defaults.columns.clear();
 
     wxBusyCursor bc;
-
-    db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
-        
+    db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_source_def, &defaults);
+    m_def = m_source_def;
+    useCharacterTypes(m_source_def);
+    m_detected_column_names.clear();
 
     refreshGrid();
     refreshDocuments();
@@ -1978,8 +1968,10 @@ void TextDoc::onTextDelimitedTextQualifierTextEnter(wxCommandEvent& evt)
     defaults.columns.clear();
 
     wxBusyCursor bc;
-    db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
-
+    db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_source_def, &defaults);
+    m_def = m_source_def;
+    useCharacterTypes(m_source_def);
+    m_detected_column_names.clear();
 
     refreshGrid();
     refreshDocuments();
@@ -2049,7 +2041,10 @@ void TextDoc::onTextDelimitedFieldDelimiterCombo(wxCommandEvent& evt)
     defaults.columns.clear();
 
     wxBusyCursor bc;
-    db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
+    db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_source_def, &defaults);
+    m_def = m_source_def;
+    useCharacterTypes(m_source_def);
+    m_detected_column_names.clear();
 
     refreshGrid();
     refreshDocuments();
@@ -2091,8 +2086,10 @@ void TextDoc::onTextDelimitedTextQualifierCombo(wxCommandEvent& evt)
     defaults.columns.clear();
 
     wxBusyCursor bc;
-    db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def, &defaults);
-
+    db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_source_def, &defaults);
+    m_def = m_source_def;
+    useCharacterTypes(m_source_def);
+    m_detected_column_names.clear();
 
     refreshGrid();
     refreshDocuments();
@@ -2118,34 +2115,53 @@ void TextDoc::onTextDelimitedFirstRowFieldNamesChecked(wxCommandEvent& evt)
 
     if (first_row_field_names)
     {
-        m_def.header_row = true;
-        if (m_def_frc.format == xd::formatDefault)
+        if (m_detected_column_names.size() == 0)
         {
-            xd::FormatDefinition defaults = m_def;
-            defaults.columns.clear();
+            // detected the column names
 
-            wxBusyCursor bc;
-            db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def_frc, &defaults);
+            xd::FormatDefinition result_definition;
+
+            xd::FormatDefinition defaults = m_def;
+            defaults.header_row = true;
+            defaults.columns.clear();
+            db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &result_definition, &defaults);
+
+            for (size_t i = 0; i < result_definition.columns.size(); ++i)
+            {
+                m_detected_column_names.push_back(result_definition.columns[i].name);
+            }
         }
 
-        m_def.columns = m_def_frc.columns;
+        m_def.header_row = true;
+        m_source_def.header_row = true;
+
+        for (size_t i = 0; i < m_detected_column_names.size(); ++i)
+        {
+            if (i < m_def.columns.size())
+            {
+                m_def.columns[i].name = m_detected_column_names[i];
+            }
+            if (i < m_source_def.columns.size())
+            {
+                m_source_def.columns[i].name = m_detected_column_names[i];
+            }
+        }
     }
      else
     {
         m_def.header_row = false;
-        if (m_def_nofrc.format == xd::formatDefault)
+        m_source_def.header_row = false;
+
+        // set the field captions to Field1, Field2, etc.
+        for (size_t i = 0; i < m_def.columns.size(); ++i)
         {
-            xd::FormatDefinition defaults = m_def;
-            defaults.columns.clear();
-
-            wxBusyCursor bc;
-            db->detectStreamFormat(m_path_is_datafile ? towstr(m_path) : m_def.data_path, &m_def_nofrc, &defaults);
+            wxString s = wxString::Format(wxT("Field%d"), (int)(i + 1));
+            m_def.columns[i].name = s.ToStdWstring();
+            m_source_def.columns[i].name = s.ToStdWstring();
         }
-
-        m_def.columns = m_def_nofrc.columns;
     }
 
-    save();
+    //save();
     refreshGrid();
     refreshDocuments();
 
