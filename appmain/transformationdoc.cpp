@@ -207,6 +207,7 @@ static std::wstring expr2regex(const std::wstring& expr)
     e.Replace("(", "\\(", true);
     e.Replace(")", "\\)", true);
     e.Replace("+", "\\+", true);
+    e.Replace("*", "\\*", true);
     e.Replace("=", "\\=", true);
     e.Replace("%s", "([^,\"()]+)", true);
 
@@ -2212,7 +2213,7 @@ void TransformationDoc::onGridCellRightClick(kcl::GridEvent& evt)
     int command = cc->getLastCommandId();
     PopEventHandler(true);
 
-    // -- post the event to the event handler --
+    // post the event to the event handler 
     wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, command);
     ::wxPostEvent(this, e);
 }
