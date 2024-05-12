@@ -910,6 +910,11 @@ void ExprBuilderPanel::setStructure(const xd::Structure& structure)
     m_col_list->setStructure(m_structure);
 }
 
+void ExprBuilderPanel::setValidationStructure(const xd::Structure& structure)
+{
+    m_structure_validation = structure;
+}
+
 wxString ExprBuilderPanel::getExpression()
 {
     return m_expr_text->GetValue();
@@ -967,7 +972,11 @@ bool ExprBuilderPanel::validate()
     bool valid = false;
     int type = xd::typeInvalid;
     
-    if (m_structure.isOk())
+    if (m_structure_validation.isOk())
+    {
+        type = g_app->getDatabase()->validateExpression(towstr(text), m_structure_validation).type;
+    }
+    else if (m_structure.isOk())
     {
         type = g_app->getDatabase()->validateExpression(towstr(text), m_structure).type;
     }

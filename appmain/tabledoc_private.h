@@ -233,6 +233,8 @@ private:
 
     std::wstring getWhereExpressionForRow(int row);
 
+    xd::Structure getStructureWithRelatedFields();
+
     void updateStatusSelectionSum();
     void updateStatusBar(bool row_count_update);
     void updateStatusBar();

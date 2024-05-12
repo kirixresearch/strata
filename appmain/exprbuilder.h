@@ -73,6 +73,8 @@ public:
     void setValidationEnabled(bool enable) { m_validation = enable; }
 
     void setStructure(const xd::Structure& structure);
+    void setValidationStructure(const xd::Structure& structure);
+
     wxString getExpression();
     int getExpressionType();
     void setExpression(const wxString& expr);
@@ -109,6 +111,8 @@ protected:
 protected:
     
     xd::Structure m_structure;
+    xd::Structure m_structure_validation;
+
     wxString m_ok_text;
     wxString m_cancel_text;
     int m_type_only;

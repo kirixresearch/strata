@@ -5880,6 +5880,51 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 
 }
 
+xd::Structure TableDoc::getStructureWithRelatedFields()
+{
+    xd::Structure structure;
+
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull() || m_iter.isNull())
+        return structure;
+
+    structure = m_iter->getStructure();
+
+
+    xd::IRelationSchemaPtr rels = db;
+    if (rels.isOk())
+    {
+        xd::IRelationEnumPtr rel_enum = rels->getRelationEnum(m_path);
+        xd::IRelationPtr rel;
+        size_t r, rel_count = rel_enum->size();
+
+        for (r = 0; r < rel_count; ++r)
+        {
+            rel = rel_enum->getItem(r);
+
+            if (rel.isNull())
+                continue;
+
+            xd::Structure right_structure = db->describeTable(rel->getRightTable());
+            if (right_structure.isNull())
+                continue;
+
+            size_t i, col_count = right_structure.getColumnCount();
+
+            for (i = 0; i < col_count; ++i)
+            {
+                xd::ColumnInfo colinfo = right_structure.getColumnInfoByIdx(i);
+                colinfo.name = rel->getTag() + L"." + colinfo.name;
+                structure.columns.push_back(colinfo);
+            }
+        }
+    }
+
+    return structure;
+}
+
+
+
 // IColumnListTarget::onColumnListDblClicked
 void TableDoc::onColumnListDblClicked(const std::vector<wxString>& items)
 {
@@ -7816,7 +7861,21 @@ void TableDoc::onFilter(wxCommandEvent& evt)
 
             ExprBuilderDocPanel* panel = new ExprBuilderDocPanel;
             panel->setOKText(_("Run"));
-            panel->setValidationEnabled((m_db_type == xd::dbtypeXdnative || m_db_type == xd::dbtypeFilesystem) ? true : false);
+
+            if (m_db_type == xd::dbtypeXdnative || m_db_type == xd::dbtypeFilesystem)
+            {
+                panel->setValidationEnabled(true);
+                xd::Structure validation_structure = getStructureWithRelatedFields();
+                if (validation_structure.isOk())
+                {
+                    panel->setValidationStructure(validation_structure);
+                }
+            }
+            else
+            {
+                panel->setValidationEnabled(false);
+            }
+
             site = m_frame->createSite(panel,
                                        sitetypeModeless |
                                        siteHidden,
