@@ -1337,8 +1337,11 @@ bool TableDocModel::loadAndConvertOldVersionToNewJson()
             return false;
 
         std::vector<std::wstring> views_keys = views_node.getChildKeys();
+        int old_view_counter = -1;
         for (auto view_key : views_keys)
         {
+            old_view_counter++;
+
             kl::JsonNode old_view_format_node = views_node.getChild(view_key);
             if (!old_view_format_node.isOk())
                 continue;
@@ -1410,14 +1413,17 @@ bool TableDocModel::loadAndConvertOldVersionToNewJson()
                 bool done = false;
 
                 std::wstring default_view_caption = towstr(_("Default View"));
-                if (viewobj->getDescription() == default_view_caption)
+                if (viewobj->getDescription() == default_view_caption && old_view_counter == 0)
                 {
-                    if (m_views.size() == 1)
+                    if (m_views.size() > 0)
                     {
                         ITableDocViewPtr view = m_views[0];
                         if (view.isOk() && view->getDescription() == default_view_caption)
                         {
-                            // we are upgrading a default view -- we already have a single default view -- just update it
+                            writeStreamTextFile(db, upgrades_path + L"/" + hash, L"1");
+
+                            // The "Default View" (if it is in the first position) of the old format should
+                            // always overwrite the default view (in the first position) of the new format
                             std::wstring obj_id = m_views[0]->getObjectId();
                             m_views[0]->readFromNode(new_view_format_node);
                             m_views[0]->setObjectId(obj_id);
