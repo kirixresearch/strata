@@ -5915,7 +5915,7 @@ xd::Structure TableDoc::getStructureWithRelatedFields()
             {
                 xd::ColumnInfo colinfo = right_structure.getColumnInfoByIdx(i);
                 colinfo.name = rel->getTag() + L"." + colinfo.name;
-                structure.columns.push_back(colinfo);
+                structure.createColumn(colinfo);
             }
         }
     }
@@ -8028,7 +8028,21 @@ void TableDoc::onDeleteRecords(wxCommandEvent& evt)
 
             ExprBuilderDocPanel* panel = new ExprBuilderDocPanel;
             panel->setOKText(_("Run"));
-            panel->setValidationEnabled((m_db_type == xd::dbtypeXdnative || m_db_type == xd::dbtypeFilesystem) ? true : false);
+
+            if (m_db_type == xd::dbtypeXdnative || m_db_type == xd::dbtypeFilesystem)
+            {
+                panel->setValidationEnabled(true);
+                xd::Structure validation_structure = getStructureWithRelatedFields();
+                if (validation_structure.isOk())
+                {
+                    panel->setValidationStructure(validation_structure);
+                }
+            }
+            else
+            {
+                panel->setValidationEnabled(false);
+            }
+
             site = m_frame->createSite(panel,
                                        sitetypeModeless |
                                        siteHidden,
@@ -8069,6 +8083,15 @@ void TableDoc::showReplacePanel(const wxString& def_condition, const wxString& d
 
             ReplaceRowsPanel* panel = new ReplaceRowsPanel;
             panel->setParameters(getBrowsePath(), def_condition, def_field);
+
+            if (m_db_type == xd::dbtypeXdnative || m_db_type == xd::dbtypeFilesystem)
+            {
+                xd::Structure validation_structure = getStructureWithRelatedFields();
+                if (validation_structure.isOk())
+                {
+                    panel->setValidationStructure(validation_structure);
+                }
+            }
 
             site = m_frame->createSite(panel,
                                        sitetypeModeless |

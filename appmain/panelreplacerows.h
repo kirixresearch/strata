@@ -29,6 +29,9 @@ public:
     ~ReplaceRowsPanel();
     void setParameters(const wxString& path, const wxString& expr, const wxString& field = wxT(""));
 
+    void setStructure(const xd::Structure& structure);
+    void setValidationStructure(const xd::Structure& structure);
+
 private:
 
     // IDocument
@@ -53,6 +56,7 @@ private:
 
     wxString m_path;
     xd::Structure m_structure;
+    xd::Structure m_structure_validation;
     xd::IIteratorPtr m_iter;
     IDocumentSitePtr m_doc_site;
     wxString m_default_expr;

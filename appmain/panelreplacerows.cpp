@@ -42,11 +42,20 @@ void ReplaceRowsPanel::setParameters(const wxString& path, const wxString& expr,
 {
     m_path = path;
     m_iter = g_app->getDatabase()->query(towstr(path), L"", L"", L"", NULL);
-    m_structure = m_iter->getStructure();
+    setStructure(m_iter->getStructure());
     m_default_expr = expr;
     m_default_field = field;
 }
 
+void ReplaceRowsPanel::setStructure(const xd::Structure& structure)
+{
+    m_structure = structure;
+}
+
+void ReplaceRowsPanel::setValidationStructure(const xd::Structure& structure)
+{
+    m_structure_validation = structure;
+}
 
 bool ReplaceRowsPanel::initDoc(IFramePtr frame,
                                IDocumentSitePtr site,
@@ -158,6 +167,11 @@ void ReplaceRowsPanel::populate()
 {
     m_expr_panel->setStructure(m_structure);
 
+    if (m_structure_validation.isOk())
+    {
+        m_expr_panel->setValidationStructure(m_structure_validation);
+    }
+
     // populate choicebox
 
     std::vector<wxString> fields;
@@ -183,7 +197,17 @@ bool ReplaceRowsPanel::isValidValue()
     replace_value.Trim(TRUE);
     
     wxString replace_field = m_field_choice->GetStringSelection();
-    const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(towstr(replace_field));
+    xd::ColumnInfo colinfo;
+    
+    if (m_structure_validation.isOk())
+    {
+        colinfo = m_structure_validation.getColumnInfo(towstr(replace_field));
+    }
+    else
+    {
+        colinfo = m_structure.getColumnInfo(towstr(replace_field));
+    }
+
     if (colinfo.isNull())
         return false;
 
@@ -238,7 +262,7 @@ void ReplaceRowsPanel::checkEnableRun()
         return;
 
     wxString replace_field = m_field_choice->GetStringSelection();
-    const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(towstr(replace_field));
+    const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(towstr(replace_field)); // the replace field should validate against the regular structure (not necessarily the validation structure)
     
     if (replace_field.IsEmpty() || colinfo.isNull())
     {
@@ -263,11 +287,23 @@ bool ReplaceRowsPanel::validate(bool* is_value)
     wxString replace_value = m_replace_text->GetValue();
     wxString replace_field = m_field_choice->GetStringSelection();
 
-    const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(towstr(replace_field));
-    if (colinfo.isOk())
+    if (m_structure_validation.isOk())
     {
-        int type = db->validateExpression(towstr(replace_value), m_structure).type;
-        valid = xd::isTypeCompatible(type, colinfo.type);
+        const xd::ColumnInfo& colinfo = m_structure_validation.getColumnInfo(towstr(replace_field));
+        if (colinfo.isOk())
+        {
+            int type = db->validateExpression(towstr(replace_value), m_structure_validation).type;
+            valid = xd::isTypeCompatible(type, colinfo.type);
+        }
+    }
+    else
+    {
+        const xd::ColumnInfo& colinfo = m_structure.getColumnInfo(towstr(replace_field));
+        if (colinfo.isOk())
+        {
+            int type = db->validateExpression(towstr(replace_value), m_structure).type;
+            valid = xd::isTypeCompatible(type, colinfo.type);
+        }
     }
 
 
