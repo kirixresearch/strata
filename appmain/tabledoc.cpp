@@ -7698,7 +7698,16 @@ void TableDoc::onCopyRecords(wxCommandEvent& evt)
                 return;
 
             ExprBuilderDocPanel* panel = new ExprBuilderDocPanel;
-            panel->setValidationEnabled((m_db_type == xd::dbtypeXdnative || m_db_type == xd::dbtypeFilesystem) ? true : false);
+
+            if (m_db_type == xd::dbtypeXdnative || m_db_type == xd::dbtypeFilesystem)
+            {
+                xd::Structure validation_structure = getStructureWithRelatedFields();
+                if (validation_structure.isOk())
+                {
+                    panel->setValidationStructure(validation_structure);
+                }
+            }
+
             panel->setOKText(_("Run"));
             site = m_frame->createSite(panel,
                                        sitetypeModeless |
