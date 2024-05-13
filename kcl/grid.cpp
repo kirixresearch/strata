@@ -8962,10 +8962,18 @@ void Grid::onKeyDown(wxKeyEvent& event)
 
             if (a != WXK_NONE)
             {
-                if (event.ShiftDown())
+                bool shiftDown = event.ShiftDown();
+                bool capsLockActive = wxGetKeyState(WXK_CAPITAL);
+
+                if ((shiftDown && !capsLockActive) || (!shiftDown && capsLockActive))
+                {
                     a = ::wxToupper(a);
+                }
                 else
+                {
                     a = ::wxTolower(a);
+                }
+
                 event.m_keyCode = a;
                 onChar(event);
             }
