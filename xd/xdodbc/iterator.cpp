@@ -425,9 +425,6 @@ bool OdbcIterator::init(const std::wstring& query)
     }
 
 
-
-
-    refreshStructure();
     
     return true;
 }
@@ -1099,6 +1096,67 @@ xd::Structure OdbcIterator::getStructure()
 
 bool OdbcIterator::refreshStructure()
 {
+    if (m_table.length() > 0)
+    {
+        // force getStructure to re-read the structure
+        m_structure.clear();
+
+        // remove all calculated fields because we will re-add them below
+        for (size_t i = 0; i < m_fields.size(); )
+        {
+            if (m_fields[i]->expr_text.length() > 0)
+            {
+                //delete m_fields[i]; // free memory if field is being removed
+                m_fields.erase(m_fields.begin() + i); // erase the element and adjust the iterator
+            }
+            else
+            {
+                ++i;
+            }
+        }
+
+
+        std::wstring object_id = m_database->getObjectIdFromTableName(m_table);
+        xd::IAttributesPtr attr = m_database->getAttributes();
+        std::wstring config_file_path = ExtFileInfo::getConfigFilenameFromSetId(attr->getStringAttribute(xd::dbattrDefinitionDirectory), object_id);
+        CommonBaseSet cbs;
+        cbs.setConfigFilePath(config_file_path);
+
+        xd::Structure s;
+        cbs.appendCalcFields(s);
+
+        for (auto& col : s.columns)
+        {
+            OdbcDataAccessInfo* dai = new OdbcDataAccessInfo;
+            dai->name = col.name;
+            dai->type = col.type;
+            dai->width = col.width;
+            dai->scale = col.scale;
+            dai->ordinal = m_fields.size() + 1;
+            dai->str_val = new char[(dai->width + 1) * sizeof(char)];
+            dai->wstr_val = new wchar_t[(dai->width + 1) * sizeof(wchar_t)];
+            memset(dai->str_val, 0, (dai->width + 1) * sizeof(char));
+            memset(dai->wstr_val, 0, (dai->width + 1) * sizeof(wchar_t));
+            dai->int_val = 0;
+            dai->dbl_val = 0.0;
+            dai->bool_val = 0;
+            memset(&dai->date_val, 0, sizeof(SQL_DATE_STRUCT));
+            memset(&dai->datetime_val, 0, sizeof(SQL_TIMESTAMP_STRUCT));
+            dai->expr_text = col.expression;
+            m_fields.push_back(dai);
+        }
+
+        // now parse expressions in calculated fields
+
+        for (auto& field : m_fields)
+        {
+            if (field->expr_text.length() > 0)
+            {
+                field->expr = parse(field->expr_text);
+            }
+        }
+    }
+
     return true;
 }
 
