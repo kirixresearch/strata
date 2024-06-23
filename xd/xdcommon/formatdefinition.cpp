@@ -108,6 +108,9 @@ std::wstring saveDefinitionToString(const xd::FormatDefinition& def)
             if (it->expression.length() > 0)
                 col["expression"] = it->expression;
 
+            if (it->calculated)
+                col["calculated"].setBoolean(true);
+
             if (def.format == xd::formatFixedLengthText)
             {
                 col["source_offset"].setInteger(it->source_offset);
@@ -216,6 +219,7 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def
             col.scale = (*it)["scale"].getInteger();
             col.source_offset = (*it)["source_offset"].getInteger();
             col.source_width = (*it)["source_width"].getInteger();
+            col.calculated = (*it)["calculated"].getBoolean();
 
             if (it->childExists("source_encoding"))
                 col.source_encoding = xd::stringToDbencoding((*it)["source_encoding"]);
@@ -224,8 +228,6 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def
 
             if (it->childExists("expression"))
                 col.expression = (*it)["expression"];
-
-            col.calculated = !col.expression.empty();
 
             if (it->childExists("nulls_allowed"))
                 col.nulls_allowed = (*it)["expression"].getBoolean();

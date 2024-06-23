@@ -239,7 +239,9 @@ bool DelimitedTextSet::getFormatDefinition(xd::FormatDefinition* def)
 {
     *def = m_def;
 
-    appendCalcFields(def->columns);
+    // removed on 23 June 2024 to prevent calc fields from appearing twice;
+    
+    //appendCalcFields(def->columns);
 
     return true;
 }
