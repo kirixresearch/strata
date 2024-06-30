@@ -373,6 +373,7 @@ class HostData : public kscript::ValueObject
         KSCRIPT_METHOD("copyFile", HostData::copyFile)
         KSCRIPT_METHOD("readTextStream", HostData::readTextStream)
         KSCRIPT_METHOD("writeTextStream", HostData::writeTextStream)
+        KSCRIPT_METHOD("getTemporaryName", HostData::getTemporaryName)
     END_KSCRIPT_CLASS()
 
 public:
@@ -389,6 +390,7 @@ public:
     void copyFile(kscript::ExprEnv* env, kscript::Value* retval);
     void readTextStream(kscript::ExprEnv* env, kscript::Value* retval);
     void writeTextStream(kscript::ExprEnv* env, kscript::Value* retval);
+    void getTemporaryName(kscript::ExprEnv* env, kscript::Value* retval);
 };
 
 

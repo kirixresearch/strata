@@ -543,6 +543,7 @@ void HostApp::getDatabaseConnectionString(kscript::ExprEnv* env, kscript::Value*
 // Description: Returns the application's current database connection
 //
 // Syntax: function HostApp.getDatabase() : DbConnection
+// Syntax: function HostApp.getDatabase(mount_path : String) : DbConnection
 //
 // Remarks: Returns a DbConnection object representing the application's
 //     current database connection.  Using this object allows programs
@@ -554,9 +555,28 @@ void HostApp::getDatabaseConnectionString(kscript::ExprEnv* env, kscript::Value*
 
 void HostApp::getDatabase(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    scripthost::DbConnection* db = scripthost::DbConnection::createObject(env);
-    db->setDatabase(g_app->getDatabase());
-    retval->setObject(db);
+    if (env->getParamCount() == 0)
+    {
+        scripthost::DbConnection* db = scripthost::DbConnection::createObject(env);
+        db->setDatabase(g_app->getDatabase());
+        retval->setObject(db);
+    }
+    else
+    {
+        xd::IDatabasePtr db = g_app->getDatabase();
+        xd::IDatabasePtr mount_db = db->getMountDatabase(env->getParam(0)->getString());
+        if (mount_db.isNull())
+        {
+            retval->setNull();
+            return;
+        }
+        else
+        {
+            scripthost::DbConnection* db = scripthost::DbConnection::createObject(env);
+            db->setDatabase(mount_db);
+            retval->setObject(db);
+        }
+    }
 }
 
 
@@ -3635,28 +3655,43 @@ void HostData::copyFile(kscript::ExprEnv* env, kscript::Value* retval)
     xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
-        
-    std::wstring param1 = env->getParam(0)->getString();
-    std::wstring param2 = env->getParam(1)->getString();
-    
-    xd::IFileInfoPtr f = db->getFileInfo(param1);
-    
-    if (f.isNull())
-        return;
-        
-    if (f->getType() == xd::filetypeTable)
+
+    if (env->getParam(0)->isObject() && env->getParam(0)->getObject()->isKindOf(L"DbResult"))
     {
+        scripthost::DbResult* result = (scripthost::DbResult*)env->getParam(0)->getObject();
+        xd::IIteratorPtr iter = result->getIterator();
+
+        std::wstring param2 = env->getParam(1)->getString();
+
         xd::CopyParams info;
-        info.input = param1;
+        info.iter_input = iter;
         info.output = param2;
 
         retval->setBoolean(db->copyData(&info, NULL));
     }
-     else
+    else
     {
-        retval->setBoolean(db->copyFile(param1, param2));
-    }
-   
+        std::wstring param1 = env->getParam(0)->getString();
+        std::wstring param2 = env->getParam(1)->getString();
+    
+        xd::IFileInfoPtr f = db->getFileInfo(param1);
+    
+        if (f.isNull())
+            return;
+        
+        if (f->getType() == xd::filetypeTable)
+        {
+            xd::CopyParams info;
+            info.input = param1;
+            info.output = param2;
+
+            retval->setBoolean(db->copyData(&info, NULL));
+        }
+         else
+        {
+            retval->setBoolean(db->copyFile(param1, param2));
+        }
+   }
 } 
 
 void HostData::readTextStream(kscript::ExprEnv* env, kscript::Value* retval)
@@ -3703,6 +3738,10 @@ void HostData::writeTextStream(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setBoolean(true);
 }
 
+void HostData::getTemporaryName(kscript::ExprEnv* env, kscript::Value* retval)
+{
+    retval->setString(xd::getTemporaryPath());
+}
 
 
 HostPrinting::HostPrinting()
