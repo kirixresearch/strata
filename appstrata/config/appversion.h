@@ -61,7 +61,7 @@
 #define APP_TRIAL_LICENSE_DAYS          30
 #define PALADIN_APP_TAG                 "KSTRATA"
 #define PALADIN_ENABLED                 0
-
+#define APP_ONLY_XDNATIVE_DIRECTORIES   0
 
 // configuration key name
 

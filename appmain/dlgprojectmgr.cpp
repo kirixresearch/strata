@@ -345,6 +345,22 @@ public:
                 return false;
             }
 
+            #if defined(APP_ONLY_XDNATIVE_DIRECTORIES) && (APP_ONLY_XDNATIVE_DIRECTORIES == 1)
+            if (xf_get_directory_exist(m_info->location))
+            {
+                std::wstring test_path = xf_concat_path(m_info->location, L"ofs");
+
+                if (!xf_get_directory_exist(test_path))
+                {
+                    appMessageBox(invalid_error_message,
+                        APPLICATION_NAME,
+                        wxOK | wxICON_EXCLAMATION | wxCENTER);
+                    resetFocus();
+                    return false;
+                }
+            }
+            #endif
+
             m_info->connection_string = getDefaultConnectionStringForLocation(m_info->location);
 
             if (m_info->connection_string.empty())
