@@ -60,13 +60,14 @@ private:
 
     bool saveJson();
     bool loadJson();
+
+    bool loadWithoutUpgrade();
     bool loadAndConvertOldVersionToNewJson();
 
 private:
 
     kl::mutex m_obj_mutex;
     std::wstring m_id;
-    bool m_convert_old_version;
 
     std::vector<ITableDocObjectPtr> m_marks;
     std::vector<ITableDocObjectPtr> m_views;

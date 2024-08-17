@@ -796,10 +796,8 @@ private:
 
 
 
-
 TableDocModel::TableDocModel()
 {
-    m_convert_old_version = true;
 }
 
 TableDocModel::~TableDocModel()
@@ -820,8 +818,7 @@ void TableDocModel::init(const std::wstring& id)
         load();
 }
 
-
-bool TableDocModel::load()
+bool TableDocModel::loadWithoutUpgrade()
 {
     if (m_id.empty())
         return false;
@@ -832,12 +829,17 @@ bool TableDocModel::load()
 
     loadJson();
 
-    if (m_convert_old_version)
+    return true;
+}
+
+bool TableDocModel::load()
+{
+    if (!loadWithoutUpgrade())
     {
-        loadAndConvertOldVersionToNewJson();
+        return false;
     }
 
-    return true;
+    return loadAndConvertOldVersionToNewJson();
 }
 
 bool TableDocModel::save()
@@ -956,7 +958,11 @@ bool TableDocModel::deleteObject(ITableDocObjectPtr obj)
         }
     }
 
-    m_to_delete.push_back(obj->getObjectId());
+    if (std::find(m_to_delete.begin(), m_to_delete.end(), obj->getObjectId()) == m_to_delete.end())
+    {
+        m_to_delete.push_back(obj->getObjectId());
+    }
+
     save();
 
     return true;
@@ -1039,12 +1045,8 @@ bool TableDocModel::saveJson()
 
     // we want to merge our changes with whatever already
     // exists in the json store; so first load what is there
-    {
-        bool b = m_convert_old_version;
-        m_convert_old_version = false;
-        load();
-        m_convert_old_version = b;
-    }
+    // (without loading older previously upgraded versions)
+    loadWithoutUpgrade();
 
 
     // first, remove all objects slated for deletion
@@ -1072,6 +1074,7 @@ bool TableDocModel::saveJson()
         }
     }
 
+    m_to_delete.clear();
 
     // now merge existing and add new objects
     std::vector<ITableDocObjectPtr>::iterator vit;
@@ -1079,6 +1082,9 @@ bool TableDocModel::saveJson()
     {
         if (!(*vit)->getDirty())
             continue;
+
+        ITableDocObjectPtr newobj = (*vit)->clone();
+        newobj->setDirty(false);
 
         bool found = false;
         size_t i;
@@ -1088,20 +1094,25 @@ bool TableDocModel::saveJson()
             if (m_views[i]->getObjectId() == (*vit)->getObjectId())
             {
                 found = true;
-                (*vit)->setDirty(false);
-                m_views[i] = (*vit)->clone();
+                m_views[i] = newobj;
                 break;
             }
         }
+
         if (!found)
-            m_views.push_back((*vit)->clone());
+        {
+            m_views.push_back(newobj);
+        }
     }
 
     std::vector<ITableDocObjectPtr>::iterator mit;
     for (mit = marks.begin(); mit != marks.end(); ++mit)
     {
-       if (!(*mit)->getDirty())
-            continue;
+        if (!(*mit)->getDirty())
+             continue;
+
+        ITableDocObjectPtr newobj = (*mit)->clone();
+        newobj->setDirty(false);
 
         bool found = false;
         size_t i;
@@ -1111,13 +1122,15 @@ bool TableDocModel::saveJson()
             if (m_marks[i]->getObjectId() == (*mit)->getObjectId())
             {
                 found = true;
-                (*mit)->setDirty(false);
-                m_marks[i] = (*mit)->clone();
+                m_marks[i] = newobj;
                 break;
             }
         }
+
         if (!found)
-            m_marks.push_back((*mit)->clone());
+        {
+            m_marks.push_back(newobj);
+        }
     }
 
 
@@ -1700,6 +1713,7 @@ void TableDocMgr::copyModel(const std::wstring& src_id, const std::wstring& dest
 
 ITableDocModelPtr TableDocMgr::loadModel(const std::wstring& set_id)
 {
+    wxASSERT_MSG(set_id.length() > 0, "specified set/object id is empty");
     return g_model_registry.loadModel(set_id);
 }
 
