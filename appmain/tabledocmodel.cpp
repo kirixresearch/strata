@@ -1539,32 +1539,54 @@ const wxColour DEFAULT_MARK_COLORS[7] =
 wxColour TableDocModel::getNextMarkColor()
 {
     ITableDocMarkEnumPtr vec = getMarkEnum();
-    int i, j, count = vec->size();
-    
+    int count = vec->size();
+
     if (count == 0)
         return DEFAULT_MARK_COLORS[0];
-    
-    for (i = count-1; i >= 0; --i)
+
+    // track which colors are currently used
+    std::vector<bool> colors_used(DEFAULT_MARK_COLOR_COUNT, false);
+
+    // mark which colors are already used in existing marks
+    for (int i = 0; i < count; ++i)
     {
         ITableDocMarkPtr vecmark = vec->getItem(i);
-        
-        for (j = 0; j < DEFAULT_MARK_COLOR_COUNT; ++j)
+        wxColour cur_color = vecmark->getBackgroundColor();
+
+        for (int j = 0; j < DEFAULT_MARK_COLOR_COUNT; ++j)
         {
-            if (vecmark->getBackgroundColor() == DEFAULT_MARK_COLORS[j])
+            if (cur_color == DEFAULT_MARK_COLORS[j])
             {
-                if (j >= DEFAULT_MARK_COLOR_COUNT-1)
-                    j = 0;
-                     else
-                    j++;
-                
-                return DEFAULT_MARK_COLORS[j];
+                colors_used[j] = true;
+                break;
             }
         }
     }
-    
+
+    // find the first available color not yet used
+    for (int j = 0; j < DEFAULT_MARK_COLOR_COUNT; ++j)
+    {
+        if (!colors_used[j])
+        {
+            return DEFAULT_MARK_COLORS[j];
+        }
+    }
+
+    // if all colors are used, go to the next one based on the last used color
+    ITableDocMarkPtr last_mark = vec->getItem(count - 1);
+    wxColour last_color = last_mark->getBackgroundColor();
+
+    for (int j = 0; j < DEFAULT_MARK_COLOR_COUNT; ++j)
+    {
+        if (last_color == DEFAULT_MARK_COLORS[j])
+        {
+            return DEFAULT_MARK_COLORS[(j + 1) % DEFAULT_MARK_COLOR_COUNT];
+        }
+    }
+
+    // fallback in case of an unexpected issue
     return DEFAULT_MARK_COLORS[0];
 }
-
 
 
 
