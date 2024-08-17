@@ -1617,6 +1617,7 @@ ITableDocPtr TableDocMgr::getActiveTableDoc(int* site_id)
 
 void TableDocMgr::copyModel(const std::wstring& src_id, const std::wstring& dest_id)
 {
+    // load and clone all objects from the source model
     ITableDocModelPtr src_model = TableDocMgr::loadModel(src_id);
     if (src_model.isNull())
     {
@@ -1634,25 +1635,33 @@ void TableDocMgr::copyModel(const std::wstring& src_id, const std::wstring& dest
     count = marks->size();
     for (i = 0; i < count; ++i)
     {
-        vec->append(marks->getItem(i));
+        ITableDocObjectPtr o = marks->getItem(i);
+        if (o.isOk())
+        {
+            vec->append(o->clone());
+        }
     }
 
     count = views->size();
     for (i = 0; i < count; ++i)
     {
-        vec->append(views->getItem(i));
+        ITableDocObjectPtr o = views->getItem(i);
+        if (o.isOk())
+        {
+            vec->append(o->clone());
+        }
     }
+
+    // "close" source model
+    src_model.clear();
 
     // assign every object a new id
     count = vec->size();
     for (i = 0; i < count; ++i)
     {
         ITableDocObjectPtr obj = vec->getItem(i);
-        if (obj)
-        {
-            obj->setObjectId(kl::getUniqueString());
-            obj->setDirty(true);
-        }
+        obj->setObjectId(kl::getUniqueString());
+        obj->setDirty(true);
     }
 
     // delete any existing model in the destination slot
@@ -1661,8 +1670,6 @@ void TableDocMgr::copyModel(const std::wstring& src_id, const std::wstring& dest
     // create new model and put objects in it
     ITableDocModelPtr dest_model = TableDocMgr::loadModel(dest_id);
     dest_model->writeMultipleObjects(vec);
-
-    src_model.clear();
     dest_model.clear();
 
     // released unused models
