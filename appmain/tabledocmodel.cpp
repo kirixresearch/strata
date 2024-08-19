@@ -935,6 +935,8 @@ bool TableDocModel::deleteObject(ITableDocObjectPtr obj)
     ITableDocViewPtr view = obj;
     ITableDocMarkPtr mark = obj;
 
+    std::wstring delete_object_id = obj->getObjectId();
+
     // update our cached version
     {
         std::vector<ITableDocObjectPtr>* vec = NULL;
@@ -949,7 +951,7 @@ bool TableDocModel::deleteObject(ITableDocObjectPtr obj)
             std::vector<ITableDocObjectPtr>::iterator it;
             for (it = vec->begin(); it != vec->end(); ++it)
             {
-                if ((*it)->getObjectId() == obj->getObjectId())
+                if ((*it)->getObjectId() == delete_object_id)
                 {
                     vec->erase(it);
                     break;
@@ -958,9 +960,9 @@ bool TableDocModel::deleteObject(ITableDocObjectPtr obj)
         }
     }
 
-    if (std::find(m_to_delete.begin(), m_to_delete.end(), obj->getObjectId()) == m_to_delete.end())
+    if (std::find(m_to_delete.begin(), m_to_delete.end(), delete_object_id) == m_to_delete.end())
     {
-        m_to_delete.push_back(obj->getObjectId());
+        m_to_delete.push_back(delete_object_id);
     }
 
     save();
