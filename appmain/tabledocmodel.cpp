@@ -82,14 +82,6 @@ public:
     {
         KL_AUTO_LOCK(m_obj_mutex);
 
-        if (set_id.empty())
-        {
-            TableDocModel* model = new TableDocModel;
-            model->init(L"");
-
-            return static_cast<ITableDocModel*>(model);
-        }
-
         ITableDocModelPtr model = lookupModel(set_id);
         if (model.isOk())
             return model;
@@ -821,7 +813,10 @@ void TableDocModel::init(const std::wstring& id)
 bool TableDocModel::loadWithoutUpgrade()
 {
     if (m_id.empty())
-        return false;
+    {
+        // it is a temporary model and is not loaded
+        return true;
+    }
 
     xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
@@ -834,6 +829,12 @@ bool TableDocModel::loadWithoutUpgrade()
 
 bool TableDocModel::load()
 {
+    if (m_id.empty())
+    {
+        // it is a temporary model and is not loaded
+        return true;
+    }
+
     if (!loadWithoutUpgrade())
     {
         return false;
@@ -845,7 +846,10 @@ bool TableDocModel::load()
 bool TableDocModel::save()
 {
     if (m_id.empty())
-        return false;
+    {
+        // it is a temporary model and is not saved to the store
+        return true;
+    }
 
     xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
@@ -1715,12 +1719,28 @@ void TableDocMgr::copyModel(const std::wstring& src_id, const std::wstring& dest
 
 ITableDocModelPtr TableDocMgr::loadModel(const std::wstring& set_id)
 {
-    wxASSERT_MSG(set_id.length() > 0, "specified set/object id is empty");
+    // if the set_id is empty, we create a temporary table doc model;
+    // these are not tracked by the model registry and are not saved to the database
+    if (set_id.empty())
+    {
+        TableDocModel* model = new TableDocModel;
+        model->init(L"");
+
+        return static_cast<ITableDocModel*>(model);
+    }
+
+
     return g_model_registry.loadModel(set_id);
 }
 
 bool TableDocMgr::deleteModel(const std::wstring& set_id)
 {
+    if (set_id.empty())
+    {
+        // the table doc model is temporary and in memory and we shouldn't do anything here
+        return true;
+    }
+
     g_model_registry.releaseModel(set_id);
 
     
