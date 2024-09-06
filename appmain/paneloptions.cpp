@@ -193,6 +193,7 @@ private:
         ID_StartupLocationTextCtrl = wxID_HIGHEST+1,
         ID_UseCurrentPageButton,
         ID_UseBlankPageButton,
+        ID_NoStartupPageButton,
         ID_ResetPanelsButton,
         ID_StartupProjectMgrRadio,
         ID_StartupOpenProjectRadio,
@@ -282,16 +283,20 @@ public:
                                         10);
         
         m_use_current_page_button = new wxButton(this, ID_UseCurrentPageButton,
-                                                 _("Use &Current Page"));
+                                               _("Use &Current Page"));
         m_use_blank_page_button = new wxButton(this, ID_UseBlankPageButton,
                                                _("Use &Blank Page"));
+        m_no_startup_page_button = new wxButton(this, ID_NoStartupPageButton,
+                                               _("No Startup Page"));
         
         wxBoxSizer* loc_button_sizer = new wxBoxSizer(wxHORIZONTAL);
         loc_button_sizer->AddStretchSpacer(1);
         loc_button_sizer->Add(m_use_current_page_button, 0, wxEXPAND);
-        loc_button_sizer->AddSpacer(8);
+        loc_button_sizer->AddSpacer(FromDIP(8));
         loc_button_sizer->Add(m_use_blank_page_button, 0, wxEXPAND);
-        
+        loc_button_sizer->AddSpacer(FromDIP(8));
+        loc_button_sizer->Add(m_no_startup_page_button, 0, wxEXPAND);
+
         wxStaticBox* location_static_box = new wxStaticBox(this, 
                                                          -1,
                                                          _("Home Page"));
@@ -566,9 +571,14 @@ public:
     
     void onUseBlankPageButtonClicked(wxCommandEvent& evt)
     {
-        m_startup_location_textctrl->SetValue(wxT("about:blank"));
+        m_startup_location_textctrl->SetValue("about:blank");
     }
     
+    void onNoStartupPageButtonClicked(wxCommandEvent& evt)
+    {
+        m_startup_location_textctrl->SetValue("");
+    }
+
     void onResetPanelsButtonClicked(wxCommandEvent& evt)
     {
         int res = appMessageBox(_("Are you sure you want to reset the location and size of all toolbars and panels?"),
@@ -624,7 +634,8 @@ private:
     wxTextCtrl* m_startup_location_textctrl;
     wxButton* m_use_current_page_button;
     wxButton* m_use_blank_page_button;
-    
+    wxButton* m_no_startup_page_button;
+
     wxChoice* m_openproject;
     wxChoice* m_toolbar_style;
 
@@ -642,6 +653,7 @@ private:
 BEGIN_EVENT_TABLE(GeneralOptionsPage, wxPanel)
     EVT_BUTTON(ID_UseCurrentPageButton, GeneralOptionsPage::onUseCurrentPageButtonClicked)
     EVT_BUTTON(ID_UseBlankPageButton, GeneralOptionsPage::onUseBlankPageButtonClicked)
+    EVT_BUTTON(ID_NoStartupPageButton, GeneralOptionsPage::onNoStartupPageButtonClicked)
     EVT_BUTTON(ID_ResetPanelsButton, GeneralOptionsPage::onResetPanelsButtonClicked)
     EVT_RADIOBUTTON(ID_StartupProjectMgrRadio, GeneralOptionsPage::onStartupRadioClicked)
     EVT_RADIOBUTTON(ID_StartupOpenProjectRadio, GeneralOptionsPage::onStartupRadioClicked)
