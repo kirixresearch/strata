@@ -1892,6 +1892,8 @@ void AppController::onStopRecord(wxCommandEvent& evt)
         return;
 
     IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(site_id);
+    if (site.isNull())
+        return;
     IEditorDocPtr doc = site->getDocument();
     if (doc.isNull())
         return;

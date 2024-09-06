@@ -1080,6 +1080,11 @@ void WebDoc::onWebViewNavigated(wxWebViewEvent& evt)
 {
     m_bitmap_updater.stop();
 
+    // due to some wxYield() calls deep within wxWebView, we need to not do this while
+    // a modal dialog is shown (especially the project manager)
+    if (g_app->getDatabase().isNull())
+        return;
+
     wxString favicon_link = getFaviconLinkFromSource();
     if (favicon_link.Length() > 0)
     {
