@@ -205,6 +205,7 @@ int BitmapMgr::getBitmapIconSize(int size_id)
 {
     static int small_size = -1, medium_size = -1, large_size = -1;
     
+#if APP_NEW_TOOLBARS == 1
     switch (size_id)
     {
         default:
@@ -217,16 +218,40 @@ int BitmapMgr::getBitmapIconSize(int size_id)
         case BitmapMgr::sizeMediumIcon:
             if (medium_size == -1)
             {
-                medium_size = wxTheApp->GetMainTopWindow()->FromDIP(100) <= 100 ? 24 : 32;
+                medium_size = wxTheApp->GetMainTopWindow()->FromDIP(100) <= 100 ? 20 : 24;
             }
             return medium_size;
         case BitmapMgr::sizeLargeIcon:
             if (large_size == -1)
             {
-                large_size = wxTheApp->GetMainTopWindow()->FromDIP(100) <= 100 ? 32 : 48;
+                large_size = wxTheApp->GetMainTopWindow()->FromDIP(100) <= 100 ? 24 : 32;
             }
             return large_size;
     }
+#else
+    switch (size_id)
+    {
+    default:
+    case BitmapMgr::sizeSmallIcon:
+        if (small_size == -1)
+        {
+            small_size = wxTheApp->GetMainTopWindow()->FromDIP(100) <= 100 ? 16 : 24;
+        }
+        return small_size;
+    case BitmapMgr::sizeMediumIcon:
+        if (medium_size == -1)
+        {
+            medium_size = wxTheApp->GetMainTopWindow()->FromDIP(100) <= 100 ? 24 : 32;
+        }
+        return medium_size;
+    case BitmapMgr::sizeLargeIcon:
+        if (large_size == -1)
+        {
+            large_size = wxTheApp->GetMainTopWindow()->FromDIP(100) <= 100 ? 32 : 48;
+        }
+        return large_size;
+    }
+#endif
 }
 
 

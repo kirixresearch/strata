@@ -32,10 +32,12 @@
 #define ID2BMP(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeNormal)
 #define ID2BMPSMALL(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeNormal, BitmapMgr::sizeSmallIcon)
 #define ID2BMPMEDIUM(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeNormal, BitmapMgr::sizeMediumIcon)
+#define ID2BMPLARGE(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeNormal, BitmapMgr::sizeLargeIcon)
 
 #define ID2DISBMP(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeDisabled)
 #define ID2DISBMPSMALL(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeDisabled, BitmapMgr::sizeSmallIcon)
 #define ID2DISBMPMEDIUM(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeNormal, BitmapMgr::sizeMediumIcon)
+#define ID2DISBMPLARGE(command_id) BitmapMgr::getBitmap(command_id, BitmapMgr::typeNormal, BitmapMgr::sizeLargeIcon)
 
 class BitmapEntry
 {
