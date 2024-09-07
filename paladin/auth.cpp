@@ -482,6 +482,7 @@ bool AuthImpl::loadAuthInfo()
     }
 
     char buf[255];
+    buf[0] = 0;
     char* tempp = fgets(buf, 254, f);
     str_code = buf;
     fclose(f);
