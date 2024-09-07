@@ -202,6 +202,13 @@ void ExKeyPool::sort()
 {
     // create a pointer array
     delete[] m_sorted_arr;
+    
+    if (m_entry_count == 0)
+    {
+        m_sorted_arr = NULL;
+        return;
+    }
+
     m_sorted_arr = new unsigned char*[m_entry_count];
     
     unsigned char* ptr = m_data;
