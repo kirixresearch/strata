@@ -6,8 +6,18 @@ if "%FrameworkDir%"=="" (
 )
 
 pushd "%~dp0"
+
+curl -L -o wxWidgets.zip https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.6/wxWidgets-3.2.6.zip
+
 rmdir wxWidgets /s /q
-unzip zip\wxwidgets.zip
+
+mkdir wxWidgets
+pushd wxWidgets
+unzip ..\wxWidgets.zip
+popd
+
+erase wxWidgets.zip
+
 unzip zip\microsoft.web.webview2.1.0.2210.55.nupkg -d wxWidgets\3rdparty\webview2
 
 pushd wxWidgets\include\wx\msw
@@ -25,7 +35,7 @@ SET MSBUILD_PLATFORM=x64
 goto done
 :done
 
-cd wxWidgets\build\msw
+pushd wxWidgets\build\msw
 
 msbuild wx_vc17.sln /t:Rebuild /p:Configuration=Debug /p:Platform=%MSBUILD_PLATFORM%
 msbuild wx_vc17.sln /t:Rebuild /p:Configuration=Release /p:Platform=%MSBUILD_PLATFORM%
