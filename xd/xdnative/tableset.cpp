@@ -667,6 +667,11 @@ bool TableSet::save()
 void TableSet::onOfsPathChanged(const std::wstring& new_path)
 {
     m_ofspath = new_path;
+
+    if (m_temporary && !xd::isTemporaryPath(m_ofspath))
+    {
+        setTemporary(false);
+    }
 }
 
 xd::IRowInserterPtr TableSet::getRowInserter()
