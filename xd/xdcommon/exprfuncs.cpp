@@ -2560,6 +2560,12 @@ void func_stripchars(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_sortchars(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     wchar_t* p0_str = env->m_eval_params[0]->getString();
     int p0_len = env->m_eval_params[0]->getDataLen();
 
@@ -2577,6 +2583,12 @@ void func_sortchars(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_left(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     wchar_t* p0 = env->m_eval_params[0]->getString();
     int p0_len = env->m_eval_params[0]->getDataLen();
     int p1 = env->m_eval_params[1]->getInteger();
@@ -2597,6 +2609,12 @@ void func_left(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_right(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     wchar_t* p0 = env->m_eval_params[0]->getString();
     int p0_len = env->m_eval_params[0]->getDataLen();
     int p1 = env->m_eval_params[1]->getInteger();
@@ -2736,6 +2754,12 @@ void func_rfind(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_repeat(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     const wchar_t* p0 = env->m_eval_params[0]->getString();
     int p1 = env->m_eval_params[1]->getInteger();
     int p0_len = env->m_eval_params[0]->getDataLen();
@@ -2761,6 +2785,12 @@ void func_repeat(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void func_translate(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
+    if (env->m_eval_params[0]->isNull())
+    {
+        retval->setNull();
+        return;
+    }
+
     const wchar_t* p0 = env->m_eval_params[0]->getString();
     const wchar_t* p1 = env->m_eval_params[1]->getString();
     const wchar_t* p2 = env->m_eval_params[2]->getString();
