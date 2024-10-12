@@ -569,6 +569,20 @@ xd::ColumnInfo createColInfo(int db_type,
         return xd::ColumnInfo();
     }
 
+
+    if (db_type == xd::dbtypeSqlServer)
+    {
+        if (col_odbc_type == SQL_LONGVARCHAR ||
+            col_odbc_type == SQL_WLONGVARCHAR ||
+            ((col_xd_type == xd::typeCharacter || col_xd_type == xd::typeWideCharacter) && col_width == 0))
+        {
+            // we don't know the width of this field, so set it to 255
+            col_width = 255;
+        }
+    }
+
+
+
     if (col_xd_type == xd::typeCharacter ||
         col_xd_type == xd::typeWideCharacter)
     {

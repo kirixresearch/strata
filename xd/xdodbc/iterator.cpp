@@ -205,12 +205,15 @@ bool OdbcIterator::init(const std::wstring& query)
             continue;
 
 
-        if (col_type == SQL_LONGVARCHAR ||
-            col_type == SQL_WLONGVARCHAR)
+        if (col_type == SQL_LONGVARCHAR || 
+            col_type == SQL_WLONGVARCHAR || 
+            ((col_xd_type == xd::typeCharacter || col_xd_type == xd::typeWideCharacter) && col_width == 0))
         {
-            // we don't know the width of this field, so set it to 512
-            col_width = 512;
+            // we don't know the width of this field, so set it to 255
+            col_width = 255;
         }
+
+
 
         if (col_type == SQL_GUID ||
             col_type == SQL_BINARY || 
