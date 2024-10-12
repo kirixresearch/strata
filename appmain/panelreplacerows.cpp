@@ -38,9 +38,10 @@ ReplaceRowsPanel::~ReplaceRowsPanel()
 {
 }
 
-void ReplaceRowsPanel::setParameters(const wxString& path, const wxString& expr, const wxString& field)
+void ReplaceRowsPanel::setParameters(const wxString& path, const wxString& tabledoc_path_to_refresh, const wxString& expr, const wxString& field)
 {
     m_path = path;
+    m_tabledoc_path_to_refresh = tabledoc_path_to_refresh;
     m_iter = g_app->getDatabase()->query(towstr(path), L"", L"", L"", NULL);
     setStructure(m_iter->getStructure());
     m_default_expr = expr;
@@ -339,10 +340,10 @@ static void onUpdateJobFinished(jobs::IJobPtr job)
 {
     kl::JsonNode params;
     params.fromString(job->getParameters());
-    std::wstring input = params["input"];
+    std::wstring tabledoc_path_to_refresh = params["tabledoc_path_to_refresh"];
 
     FrameworkEvent* cfw_event = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_REFRESH);
-    cfw_event->s_param = input;
+    cfw_event->s_param = tabledoc_path_to_refresh;
     g_app->getMainFrame()->postEvent(cfw_event);
 }
 
@@ -453,6 +454,8 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
 
     kl::JsonNode params;
     params["input"].setString(towstr(m_path));
+    params["tabledoc_path_to_refresh"].setString(towstr(m_tabledoc_path_to_refresh));
+
     if (condition.Length() > 0)
         params["where"].setString(towstr(condition));
 
@@ -460,7 +463,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
     kl::JsonNode update_info = params["set"].appendElement();
     update_info["column"].setString(towstr(replace_field));
     update_info["expression"].setString(towstr(replace_value));
-    
+
     job->getJobInfo()->setTitle(towstr(_("Update Values")));
     job->setParameters(params.toString());
 

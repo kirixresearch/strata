@@ -27,7 +27,7 @@ public:
 
     ReplaceRowsPanel();
     ~ReplaceRowsPanel();
-    void setParameters(const wxString& path, const wxString& expr, const wxString& field = wxT(""));
+    void setParameters(const wxString& path, const wxString& tabledoc_path_to_refresh, const wxString& expr, const wxString& field = wxT(""));
 
     void setStructure(const xd::Structure& structure);
     void setValidationStructure(const xd::Structure& structure);
@@ -55,6 +55,7 @@ private:
 private:
 
     wxString m_path;
+    wxString m_tabledoc_path_to_refresh;
     xd::Structure m_structure;
     xd::Structure m_structure_validation;
     xd::IIteratorPtr m_iter;

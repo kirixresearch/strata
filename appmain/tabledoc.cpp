@@ -8091,7 +8091,7 @@ void TableDoc::showReplacePanel(const wxString& def_condition, const wxString& d
             AppBusyCursor bc;
 
             ReplaceRowsPanel* panel = new ReplaceRowsPanel;
-            panel->setParameters(getBrowsePath(), def_condition, def_field);
+            panel->setParameters(getBrowsePath(), getPath(), def_condition, def_field);
 
             if (m_db_type == xd::dbtypeXdnative || m_db_type == xd::dbtypeFilesystem)
             {
