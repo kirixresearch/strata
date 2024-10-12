@@ -1040,6 +1040,12 @@ ITableDocViewEnumPtr TableDocModel::getViewEnum()
 
 bool TableDocModel::saveJson()
 {
+    if (m_id.empty())
+    {
+        // the table doc model is temporary and in memory and we shouldn't do anything here
+        return true;
+    }
+
     xd::IDatabasePtr db = g_app->getDatabase();
 
     std::vector<ITableDocObjectPtr> marks = m_marks;
@@ -1192,6 +1198,11 @@ bool TableDocModel::saveJson()
 
 bool TableDocModel::loadJson()
 {
+    if (m_id.empty())
+    {
+        return false;
+    }
+
     xd::IDatabasePtr db = g_app->getDatabase();
     kl::JsonNode node;
 
@@ -1260,6 +1271,12 @@ bool TableDocModel::loadJson()
 
 bool TableDocModel::fromJson(const std::wstring& json)
 {
+    if (m_id.empty())
+    {
+        // the table doc model is temporary and in memory and we shouldn't do anything here
+        return true;
+    }
+
     xd::IDatabasePtr db = g_app->getDatabase();
     kl::JsonNode node;
 
