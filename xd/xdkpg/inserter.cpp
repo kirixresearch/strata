@@ -368,8 +368,11 @@ bool KpgRowInserter::insertRow()
                 int2buf(buf + it->m_offset, (unsigned int)dt);
                 break;
             case xd::typeDateTime:
-                int2buf(buf + it->m_offset, (unsigned int)(it->m_datetime_val >> 32));
-                int2buf(buf + it->m_offset + 4, (unsigned int)(it->m_datetime_val & 0xffffffff));
+                dt = it->m_datetime_val;
+                dt >>= 32;
+                int2buf(buf + it->m_offset, (unsigned int)dt);
+                dt = it->m_datetime_val & 0xffffffff;
+                int2buf(buf + it->m_offset + 4, (unsigned int)dt);
                 break;
         }
 

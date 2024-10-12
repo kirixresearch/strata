@@ -543,7 +543,11 @@ xd::datetime_t KpgIterator::getDateTime(xd::objhandle_t data_handle)
     }
      else if (dai->type == xd::typeDateTime)
     {
-        return *(xd::datetime_t*)(m_row+dai->offset);
+        xd::datetime_t dt1, dt2;
+        dt1 = *(unsigned int*)(m_row + dai->offset);
+        dt2 = *(unsigned int*)(m_row + dai->offset + 4);
+
+        return (dt1 << 32) | dt2;
     }
      else
     {
