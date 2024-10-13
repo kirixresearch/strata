@@ -8343,7 +8343,12 @@ void Grid::onMouse(wxMouseEvent& event)
             }
         }
 
-
+        /*
+        
+        // 13 Oct 2024 this code works, but it causes problems with child table repositioning because
+        // every time the mouse hovers over a cell, getCellProperties is actually moving the
+        // iterator to a different row -- need to find a different solution for this
+        // to get the hand cursor back
         {
             int row, col, cell_xoff = 0;
             
@@ -8375,6 +8380,7 @@ void Grid::onMouse(wxMouseEvent& event)
                 }
             }
         }
+        */
 
 
         SetCursor(cursor);
