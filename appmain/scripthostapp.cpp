@@ -16,6 +16,7 @@
 #include "scriptgui.h"
 #include "scriptmenu.h"
 #include "../scripthost/db.h"
+#include "../scripthost/memory.h"
 #include "scriptbitmap.h"
 #include "scriptwebdom.h"
 #include "extensionpkg.h"
@@ -28,6 +29,7 @@
 #include "panelconsole.h"
 #include <kl/url.h>
 #include <kl/thread.h>
+#include <kl/memory.h>
 #include "../kscript/json.h"
 
 
@@ -415,6 +417,175 @@ void Extension::getTextResource(kscript::ExprEnv* env, void*, kscript::Value* re
     std::wstring res = kl::towstring(text);
     retval->setString(res);
 }
+
+
+
+
+// (METHOD) Extension.getBinaryResource
+//
+// Description: Loads a binary resource from an extension
+//
+// Syntax: static function Extension.getBinaryResource(path : String) : MemoryBuffer
+//
+// Remarks: Loads a binary resource from an extension package.  If the
+//     extension is packaged up into a kxt/zip file, the resource is loaded
+//     from that archive.  If the extension is not packaged up, but is rather
+//     one or more non-packaged files in a directory, the resource is loaded
+//     from that directory.
+//
+// Param(path): The path to the desired resource either in the extension
+//     file or extension directory
+// Returns: A valid string upon success, null otherwise
+
+void Extension::getBinaryResource(kscript::ExprEnv* env, void*, kscript::Value* retval)
+{
+    if (env->getParamCount() < 1)
+    {
+        // invalid number of parameters
+        retval->setNull();
+        return;
+    }
+
+    std::wstring filename = env->getParam(0)->getString();
+    std::string text;
+
+    // default to something going wrong
+    retval->setNull();
+
+    // try to get package reference
+    ExtensionPkg* pkg = NULL;
+    ScriptHost* script_host = (ScriptHost*)env->getParser()->getExtraLong();
+    if (script_host)
+        pkg = script_host->getPackage();
+
+
+    if (pkg)
+    {
+        // load the image from the extension package
+
+        wxInputStream* stream = pkg->getStream(filename);
+        if (!stream)
+        {
+            // resource doesn't exist, return failure
+            retval->setNull();
+            return;
+        }
+
+        kl::membuf membuf;
+        unsigned char* buf = new unsigned char[16384];
+        while (1)
+        {
+            stream->Read(buf, 16384);
+            size_t read = stream->LastRead();
+            if (read == 0)
+                break;
+            membuf.append(buf, read);
+        }
+        delete[] buf;
+
+        scripthost::MemoryBuffer* mem = scripthost::MemoryBuffer::createObject(env);
+        mem->setSizeInternal(membuf.getDataSize());
+        memcpy(mem->getBuffer(), membuf.getData(), membuf.getDataSize());
+        retval->setObject(mem);
+        return;
+    }
+    else
+    {
+        // load the resource from the directory the script is in
+        std::wstring path;
+
+        xd::IDatabasePtr db = g_app->getDatabase();
+        if (db.isOk())
+        {
+            path = towstr(script_host->getStartupPath());
+            if (path.length() == 0 || path[path.length() - 1] != '/')
+                path += '/';
+
+            if (filename.length() > 0 && filename[0] == '/')
+                path = path.substr(0, path.length() - 1);
+            path += filename;
+
+            if (db->getFileExist(path))
+            {
+                xd::IStreamPtr stream = db->openStream(path);
+                if (!stream)
+                {
+                    retval->setNull();
+                    return;
+                }
+
+                // load stream data
+                kl::membuf membuf;
+                unsigned char* buf = new unsigned char[16384];
+                unsigned long read = 0;
+                while (1)
+                {
+                    if (!stream->read(buf, 16384, &read))
+                        break;
+
+                    membuf.append(buf, read);
+
+                    if (read != 16384)
+                        break;
+                }
+                delete[] buf;
+
+                scripthost::MemoryBuffer* mem = scripthost::MemoryBuffer::createObject(env);
+                mem->setSizeInternal(membuf.getDataSize());
+                memcpy(mem->getBuffer(), membuf.getData(), membuf.getDataSize());
+                retval->setObject(mem);
+                return;
+            }
+        }
+
+
+
+        path = towstr(script_host->getStartupPath());
+        if (path.length() == 0 || path[path.length() - 1] != PATH_SEPARATOR_CHAR)
+            path += PATH_SEPARATOR_CHAR;
+
+        if (filename.length() > 0 && filename[0] == PATH_SEPARATOR_CHAR)
+            path = path.substr(0, path.length() - 1);
+        path += filename;
+
+        if (!xf_get_file_exist(path))
+        {
+            // file doesn't exist
+            retval->setNull();
+            return;
+        }
+
+        xf_file_t f = xf_open(path, xfOpen, xfRead, xfShareRead);
+        if (!f)
+        {
+            // cannot open file
+            retval->setNull();
+            return;
+        }
+
+        kl::membuf membuf;
+        unsigned char* buf = new unsigned char[16384];
+        while (1)
+        {
+            int read = xf_read(f, buf, 1, 16384);
+            if (read == 0)
+                break;
+            membuf.append(buf, read);
+            if (read != 16384)
+                break;
+        }
+        delete[] buf;
+        xf_close(f);
+
+        scripthost::MemoryBuffer* mem = scripthost::MemoryBuffer::createObject(env);
+        mem->setSizeInternal(membuf.getDataSize());
+        memcpy(mem->getBuffer(), membuf.getData(), membuf.getDataSize());
+        retval->setObject(mem);
+        return;
+    }
+
+}
+
 
 // (METHOD) Extension.isContextPackage
 //

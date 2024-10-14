@@ -51,6 +51,7 @@ class Extension : public kscript::ValueObject
         KSCRIPT_METHOD("constructor", Extension::constructor)
         KSCRIPT_STATIC_METHOD("getBitmapResource", Extension::getBitmapResource)
         KSCRIPT_STATIC_METHOD("getTextResource", Extension::getTextResource)
+        KSCRIPT_STATIC_METHOD("getBinaryResource", Extension::getBinaryResource)
         KSCRIPT_STATIC_METHOD("isContextPackage", Extension::isContextPackage)
     END_KSCRIPT_CLASS()
 
@@ -62,6 +63,7 @@ public:
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
     static void getBitmapResource(kscript::ExprEnv* env, void*, kscript::Value* retval);
     static void getTextResource(kscript::ExprEnv* env, void*, kscript::Value* retval);
+    static void getBinaryResource(kscript::ExprEnv* env, void*, kscript::Value* retval);
     static void isContextPackage(kscript::ExprEnv* env, void*, kscript::Value* retval);
 };
 
