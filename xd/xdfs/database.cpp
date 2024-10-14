@@ -456,7 +456,7 @@ static bool isTextFileExtension(const std::wstring& _ext)
     kl::makeUpper(ext);
     
     static const char* text_types[] = { "ASP", "C", "CC", "CPP", "CS", "CXX",
-                                        "H", "HPP", "JAVA", "JS", "JSP", "PL", "PHP", "PHTML", "RC", "SQL",
+                                        "H", "HPP", "JAVA", "JS", "JSP", "PL", "PHP", "PHTML", "PY", "RC", "SQL",
                                         (const char*)0 };
     
     for (size_t i = 0; text_types[i] != NULL; ++i)

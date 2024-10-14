@@ -2027,6 +2027,7 @@ static bool isValidOpenExtension(const wxString& ext)
         ext.CmpNoCase(wxT("tpl"))   == 0 ||
         ext.CmpNoCase(wxT("iim"))   == 0 ||
         ext.CmpNoCase(wxT("idl"))   == 0 ||
+        ext.CmpNoCase(wxT("py")) == 0 ||
         ext.CmpNoCase(wxT("js"))   == 0 ||
         ext.CmpNoCase(wxT("json")) == 0)
     {
