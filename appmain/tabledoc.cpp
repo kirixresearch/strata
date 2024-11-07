@@ -3490,6 +3490,7 @@ static bool getMenuItemExpr(const wxString& field,
                             int type,
                             int oper,
                             const wxString& value,
+                            bool is_value_null,
                             wxString& result)
 {
     wxString lhs = xd::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(field));
@@ -3515,7 +3516,7 @@ static bool getMenuItemExpr(const wxString& field,
 
     // handle null dates with special expression
     if ((type == xd::typeDate || type == xd::typeDateTime) &&
-         value == wxT("null"))
+         (value == wxT("null") || is_value_null))
     {
         if (oper == ID_ExprMenuItem_Equal)
         {
@@ -3532,6 +3533,44 @@ static bool getMenuItemExpr(const wxString& field,
         // don't do anything else for date and datetime types with
         // null values
         return false;
+    }
+
+    if (is_value_null)
+    {
+        if (g_app->getDbDriver() == L"xdnative")
+        {
+            if (oper == ID_ExprMenuItem_Equal)
+            {
+                result = wxString::Format(wxT("IsNull(%s)"), lhs.c_str());
+                return true;
+            }
+            else if (oper == ID_ExprMenuItem_NotEqual)
+            {
+                result = wxString::Format(wxT("Not IsNull(%s)"), lhs.c_str());
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (oper == ID_ExprMenuItem_Equal)
+            {
+                result = wxString::Format(wxT("%s IS NULL"), lhs.c_str());
+                return true;
+            }
+            else if (oper == ID_ExprMenuItem_NotEqual)
+            {
+                result = wxString::Format(wxT("%s IS NOT NULL"), lhs.c_str());
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 
     // quote character field values; handle special case for LIKE 
@@ -3596,6 +3635,7 @@ static bool getMenuItemExpr(const wxString& field,
 static wxMenu* createExprMenu(const wxString& field,
                               int field_type,
                               const wxString& value,
+                              bool is_value_null,
                               int base_id)
 {
     wxMenu* menu = new wxMenu;
@@ -3605,7 +3645,7 @@ static wxMenu* createExprMenu(const wxString& field,
     for (int i = 0; i < max_item; ++i)
     {
         wxString expression;
-        if (getMenuItemExpr(field, field_type, i, value, expression))
+        if (getMenuItemExpr(field, field_type, i, value, is_value_null, expression))
             menu->Append(base_id+i, expression);
     }
 
@@ -3738,6 +3778,7 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
     m_iter->releaseHandle(colhandle);
 
     wxString value;
+    bool is_value_null = xd_grid_model->isNull(row, model_col);
 
     switch (colinfo.type)
     {
@@ -3852,14 +3893,14 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
     menuPopup.Append(ID_Edit_Copy, _("&Copy"));
     menuPopup.Append(ID_Edit_Paste, _("&Paste"));
     menuPopup.AppendSeparator();
-    menuPopup.Append(27100, _("&Filter Records"), createExprMenu(colname, colinfo.type, value, 27100));
+    menuPopup.Append(27100, _("&Filter Records"), createExprMenu(colname, colinfo.type, value, is_value_null, 27100));
     menuPopup.Append(ID_Data_RemoveSortFilter, _("&Remove Sort/Filter"));
     menuPopup.AppendSeparator();
-    menuPopup.Append(27500, _("&Mark Records"), createExprMenu(colname, colinfo.type, value, 27500));
+    menuPopup.Append(27500, _("&Mark Records"), createExprMenu(colname, colinfo.type, value, is_value_null, 27500));
     menuPopup.AppendSeparator();
-    menuPopup.Append(27200, _("C&opy Records"), createExprMenu(colname, colinfo.type, value, 27200));
-    menuPopup.Append(27400, _("&Delete Records"), createExprMenu(colname, colinfo.type, value, 27400));
-    menuPopup.Append(27300, _("&Update Records"), createExprMenu(colname, colinfo.type, value, 27300));
+    menuPopup.Append(27200, _("C&opy Records"), createExprMenu(colname, colinfo.type, value, is_value_null, 27200));
+    menuPopup.Append(27400, _("&Delete Records"), createExprMenu(colname, colinfo.type, value, is_value_null, 27400));
+    menuPopup.Append(27300, _("&Update Records"), createExprMenu(colname, colinfo.type, value, is_value_null, 27300));
 
 
     if (getIsChildSet())
@@ -3884,7 +3925,7 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
     {
         // filter
         wxString expr;
-        getMenuItemExpr(colname, colinfo.type, command-27100, value, expr);
+        getMenuItemExpr(colname, colinfo.type, command-27100, value, is_value_null, expr);
         
         
         // --------------------
@@ -3902,14 +3943,14 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
     {
         // copy rows
         wxString expr;
-        getMenuItemExpr(colname, colinfo.type, command-27200, value, expr);
+        getMenuItemExpr(colname, colinfo.type, command-27200, value, is_value_null, expr);
         copyRecords(towstr(expr));
     }
      else if (command >= 27300 && command <= 27399)
     {
         // replace rows
         wxString expr;
-        getMenuItemExpr(colname, colinfo.type, command-27300, value, expr);
+        getMenuItemExpr(colname, colinfo.type, command-27300, value, is_value_null, expr);
         
         wxString cursor_column = getCursorColumnName(m_grid);
         showReplacePanel(expr, cursor_column);
@@ -3929,14 +3970,14 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
         if (res == wxYES)
         {
             wxString expr;
-            getMenuItemExpr(colname, colinfo.type, command-27400, value, expr);
+            getMenuItemExpr(colname, colinfo.type, command-27400, value, is_value_null, expr);
             deleteRecords(towstr(expr));
         }
     }
      else if (command >= 27500 && command <= 27599)
     {
         wxString expr;
-        getMenuItemExpr(colname, colinfo.type, command-27500, value, expr);
+        getMenuItemExpr(colname, colinfo.type, command-27500, value, is_value_null, expr);
         createNewMark(expr.c_str());
     }
      else
