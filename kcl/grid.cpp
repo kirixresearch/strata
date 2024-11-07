@@ -4103,6 +4103,20 @@ void darkenColor(wxColor& c, int amount = 70)
 }
 
 
+void lightenColor(wxColor& c, int amount = 70)
+{
+    int r, g, b;
+    r = c.Red();
+    g = c.Green();
+    b = c.Blue();
+
+    r = r + ((255 - r) * amount) / 100;
+    g = g + ((255 - g) * amount) / 100;
+    b = b + ((255 - b) * amount) / 100;
+
+    c.Set(r, g, b);
+}
+
 void Grid::calcColumnWidths()
 {
     int xoff, col, col_count;
@@ -4996,6 +5010,8 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                         {
                             text = wxT("<null>");
                         }
+
+                        lightenColor(fgcolor);
                     }
                     else
                     {
