@@ -208,6 +208,7 @@ class HostDocument : public kscript::ValueObject
     BEGIN_KSCRIPT_CLASS("HostDocument", HostDocument)
         KSCRIPT_GUI_METHOD("constructor", HostDocument::setCaption)
         KSCRIPT_GUI_METHOD("getCaption", HostDocument::getCaption)
+        KSCRIPT_GUI_METHOD("setCaption", HostDocument::setCaption)
         KSCRIPT_GUI_METHOD("getLocation", HostDocument::getLocation)
         KSCRIPT_GUI_METHOD("getType", HostDocument::getType)
         KSCRIPT_GUI_METHOD("getDOMDocument", HostDocument::getDOMDocument)
