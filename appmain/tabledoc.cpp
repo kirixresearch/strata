@@ -3486,7 +3486,8 @@ enum
 };
 
 
-static bool getMenuItemExpr(const wxString& field,
+static bool getMenuItemExpr(int xd_dbtype,
+                            const wxString& field,
                             int type,
                             int oper,
                             const wxString& value,
@@ -3537,7 +3538,7 @@ static bool getMenuItemExpr(const wxString& field,
 
     if (is_value_null)
     {
-        if (g_app->getDbDriver() == L"xdnative")
+        if (xd_dbtype == xd::dbtypeXdnative)
         {
             if (oper == ID_ExprMenuItem_Equal)
             {
@@ -3632,7 +3633,8 @@ static bool getMenuItemExpr(const wxString& field,
 }
 
 
-static wxMenu* createExprMenu(const wxString& field,
+static wxMenu* createExprMenu(int xd_dbtype,
+                              const wxString& field,
                               int field_type,
                               const wxString& value,
                               bool is_value_null,
@@ -3645,7 +3647,7 @@ static wxMenu* createExprMenu(const wxString& field,
     for (int i = 0; i < max_item; ++i)
     {
         wxString expression;
-        if (getMenuItemExpr(field, field_type, i, value, is_value_null, expression))
+        if (getMenuItemExpr(xd_dbtype, field, field_type, i, value, is_value_null, expression))
             menu->Append(base_id+i, expression);
     }
 
@@ -3893,14 +3895,14 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
     menuPopup.Append(ID_Edit_Copy, _("&Copy"));
     menuPopup.Append(ID_Edit_Paste, _("&Paste"));
     menuPopup.AppendSeparator();
-    menuPopup.Append(27100, _("&Filter Records"), createExprMenu(colname, colinfo.type, value, is_value_null, 27100));
+    menuPopup.Append(27100, _("&Filter Records"), createExprMenu(m_db_type, colname, colinfo.type, value, is_value_null, 27100));
     menuPopup.Append(ID_Data_RemoveSortFilter, _("&Remove Sort/Filter"));
     menuPopup.AppendSeparator();
-    menuPopup.Append(27500, _("&Mark Records"), createExprMenu(colname, colinfo.type, value, is_value_null, 27500));
+    menuPopup.Append(27500, _("&Mark Records"), createExprMenu(m_db_type, colname, colinfo.type, value, is_value_null, 27500));
     menuPopup.AppendSeparator();
-    menuPopup.Append(27200, _("C&opy Records"), createExprMenu(colname, colinfo.type, value, is_value_null, 27200));
-    menuPopup.Append(27400, _("&Delete Records"), createExprMenu(colname, colinfo.type, value, is_value_null, 27400));
-    menuPopup.Append(27300, _("&Update Records"), createExprMenu(colname, colinfo.type, value, is_value_null, 27300));
+    menuPopup.Append(27200, _("C&opy Records"), createExprMenu(m_db_type, colname, colinfo.type, value, is_value_null, 27200));
+    menuPopup.Append(27400, _("&Delete Records"), createExprMenu(m_db_type, colname, colinfo.type, value, is_value_null, 27400));
+    menuPopup.Append(27300, _("&Update Records"), createExprMenu(m_db_type, colname, colinfo.type, value, is_value_null, 27300));
 
 
     if (getIsChildSet())
@@ -3925,7 +3927,7 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
     {
         // filter
         wxString expr;
-        getMenuItemExpr(colname, colinfo.type, command-27100, value, is_value_null, expr);
+        getMenuItemExpr(m_db_type, colname, colinfo.type, command-27100, value, is_value_null, expr);
         
         
         // --------------------
@@ -3943,14 +3945,14 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
     {
         // copy rows
         wxString expr;
-        getMenuItemExpr(colname, colinfo.type, command-27200, value, is_value_null, expr);
+        getMenuItemExpr(m_db_type, colname, colinfo.type, command-27200, value, is_value_null, expr);
         copyRecords(towstr(expr));
     }
      else if (command >= 27300 && command <= 27399)
     {
         // replace rows
         wxString expr;
-        getMenuItemExpr(colname, colinfo.type, command-27300, value, is_value_null, expr);
+        getMenuItemExpr(m_db_type, colname, colinfo.type, command-27300, value, is_value_null, expr);
         
         wxString cursor_column = getCursorColumnName(m_grid);
         showReplacePanel(expr, cursor_column);
@@ -3970,14 +3972,14 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
         if (res == wxYES)
         {
             wxString expr;
-            getMenuItemExpr(colname, colinfo.type, command-27400, value, is_value_null, expr);
+            getMenuItemExpr(m_db_type, colname, colinfo.type, command-27400, value, is_value_null, expr);
             deleteRecords(towstr(expr));
         }
     }
      else if (command >= 27500 && command <= 27599)
     {
         wxString expr;
-        getMenuItemExpr(colname, colinfo.type, command-27500, value, is_value_null, expr);
+        getMenuItemExpr(m_db_type, colname, colinfo.type, command-27500, value, is_value_null, expr);
         createNewMark(expr.c_str());
     }
      else
