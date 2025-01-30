@@ -8,6 +8,7 @@ if "%FrameworkDir%"=="" (
 
 call cmd /c make_openssl
 call make_curl
+call make_postgres32
 call make_postgres
 call make_libmariadb
 call make_wxwidgets
