@@ -7,9 +7,9 @@ if "%FrameworkDir%"=="" (
 
 pushd "%~dp0"
 rmdir postgres32 /s /q
-rmdir postgres-REL_12_20 /s /q
-unzip zip\postgres-12.20.zip
-ren postgres-REL_12_20 postgres32
+rmdir postgres-REL_15_10 /s /q
+unzip zip\postgres-15.10.zip
+ren postgres-REL_15_10 postgres32
 
 rem if "%PLATFORM%"=="x64" (
 rem     perl -i -e "$/ = undef; $_ = <>; s/sub DeterminePlatform.*?shift;/sub DeterminePlatform\n{\n\tmy \$self = shift;\n\n\t\$self->{platform} = 'x64';\n\treturn;/s; print" postgres32/src/tools/msvc/Solution.pm
