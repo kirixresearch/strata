@@ -1,8 +1,8 @@
 @echo off
 set "SCRIPT_DIR=%~dp0"
 
-if not exist "%SCRIPT_DIR%supp\setup_supp.bat" (
-    echo Error: setup_supp.bat not found.
+if not exist "%SCRIPT_DIR%supp/util/perl/portableshell.bat" (
+    echo supp directory has not been setup yet.
     echo Please run: cd supp ^&^& setup_supp.bat
     exit /b 1
 )
