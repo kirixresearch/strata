@@ -6,8 +6,8 @@ if "%FrameworkDir%"=="" (
 )
 
 pushd "%~dp0"
-rmdir postgres32 /s /q
-rmdir postgres-REL_15_10 /s /q
+rmdir postgres /s /q >nul
+rmdir postgres-REL_15_10 /s /q >nul
 unzip zip\postgres-15.10.zip
 ren postgres-REL_15_10 postgres
 
