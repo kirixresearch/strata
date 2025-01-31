@@ -8,9 +8,11 @@ rmdir cmakewin32 /s/q 2>nul
 rmdir perlwin32 /s/q 2>nul
 ..\..\unzip cmakewin32.zip
 
+rmdir perl /s/q
 mkdir perl
 pushd perl
-..\..\..\unzip ..\..\zip\strawberry-perl-5.40.0.1-64bit-portable.zip
+rem ..\..\..\unzip ..\..\zip\strawberry-perl-5.40.0.1-64bit-portable.zip
+..\..\..\unzip ..\..\zip\strawberry-perl-5.38.2.2-64bit-portable.zip
 popd
 
 popd
