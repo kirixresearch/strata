@@ -14,6 +14,7 @@
 #include "panelrelationship.h"
 #include "relationdiagram.h"
 #include "tabledoc.h"
+#include "util.h"
 #include <set>
 
 
@@ -516,8 +517,8 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
 
             for (ni_it = new_info.begin(); ni_it != new_info.end(); ++ni_it)
             {
-                if (!oi_it->left_path.CmpNoCase(ni_it->left_path) &&
-                    !oi_it->right_path.CmpNoCase(ni_it->right_path))
+                if (isSamePath(oi_it->left_path.ToStdWstring(), ni_it->left_path.ToStdWstring()) &&
+                    isSamePath(oi_it->right_path.ToStdWstring(), ni_it->right_path.ToStdWstring()))
                 {
                     // found it, is it different?
                     found = true;

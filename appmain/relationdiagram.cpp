@@ -1467,14 +1467,12 @@ bool RelationBox::isLinked(const wxString& expr)
          line_it != m_diagram->m_lines.end();
          ++line_it)
     {
-        if (m_set_path == line_it->left_path &&
-            0 == expr.CmpNoCase(line_it->left_expr))
+        if (isSamePath(m_set_path.ToStdWstring(), line_it->left_path.ToStdWstring()) && 0 == expr.CmpNoCase(line_it->left_expr))
         {
             return true;
         }
 
-        if (m_set_path == line_it->right_path &&
-            0 == expr.CmpNoCase(line_it->right_expr))
+        if (isSamePath(m_set_path.ToStdWstring(), line_it->right_path.ToStdWstring()) && 0 == expr.CmpNoCase(line_it->right_expr))
         {
             return true;
         }
@@ -1811,7 +1809,7 @@ RelationBox* RelationDiagram::getBoxByName(const wxString& path)
     std::vector<RelationBox*>::iterator it;
     for (it = m_boxes.begin(); it != m_boxes.end(); ++it)
     {
-        if (path.CmpNoCase((*it)->getSetPath()) == 0)
+        if (isSamePath(path.ToStdWstring(), (*it)->getSetPath().ToStdWstring()))
             return (*it);
     }
     
@@ -1855,14 +1853,14 @@ void RelationDiagram::deleteLines(const wxString& path)
         std::vector<RelationLine>::iterator line_it;
         for (line_it = m_lines.begin(); line_it != m_lines.end(); ++line_it)
         {
-            if (path.CmpNoCase(line_it->left_path) == 0)
+            if (isSamePath(path.ToStdWstring(), line_it->left_path.ToStdWstring()))
             {
                 found = true;
                 m_lines.erase(line_it);
                 break;
             }
 
-            if (path.CmpNoCase(line_it->right_path) == 0)
+            if (isSamePath(path.ToStdWstring(), line_it->right_path.ToStdWstring()))
             {
                 found = true;
                 m_lines.erase(line_it);
@@ -1918,14 +1916,18 @@ void RelationDiagram::getLines(const wxString& left_path,
 
         if (!left_path.IsEmpty())
         {
-            if (left_path.CmpNoCase(line_it->left_path) != 0)
+            if (!isSamePath(left_path.ToStdWstring(), line_it->left_path.ToStdWstring()))
+            {
                 b = false;
+            }
         }
 
         if (!right_path.IsEmpty() && b)
         {
-            if (right_path.CmpNoCase(line_it->right_path) != 0)
+            if (!isSamePath(right_path.ToStdWstring(), line_it->right_path.ToStdWstring()))
+            {
                 b = false;
+            }
         }
 
         if (b)
@@ -1949,14 +1951,18 @@ void RelationDiagram::getOrigLines(const wxString& left_path,
 
         if (!left_path.IsEmpty())
         {
-            if (left_path.CmpNoCase(line_it->left_path) != 0)
+            if (!isSamePath(left_path.ToStdWstring(), line_it->left_path.ToStdWstring()))
+            {
                 b = false;
+            }
         }
 
         if (!right_path.IsEmpty() && b)
         {
-            if (right_path.CmpNoCase(line_it->right_path) != 0)
+            if (!isSamePath(right_path.ToStdWstring(), line_it->right_path.ToStdWstring()))
+            {
                 b = false;
+            }
         }
 
         if (b)
@@ -1978,7 +1984,7 @@ void RelationDiagram::_getRelationInfo(std::vector<RelationLine>& lines,
     std::vector<RelationLine>::iterator line_it;
     for (line_it = lines.begin(); line_it != lines.end(); ++line_it)
     {
-        if (left_path.CmpNoCase(line_it->left_path) != 0)
+        if (!isSamePath(left_path.ToStdWstring(), line_it->left_path.ToStdWstring()))
             continue;
 
         wxString left_path = line_it->left_path;
@@ -1992,7 +1998,7 @@ void RelationDiagram::_getRelationInfo(std::vector<RelationLine>& lines,
         std::vector<RelationInfo>::iterator r_it;
         for (r_it = info.begin(); r_it != info.end(); ++r_it)
         {
-            if (right_path.CmpNoCase(r_it->right_path) == 0)
+            if (isSamePath(right_path.ToStdWstring(), r_it->right_path.ToStdWstring()))
             {
                 r = &(*r_it);
                 break;
@@ -2041,7 +2047,7 @@ void RelationDiagram::onBoxClosing(RelationBox* box, bool* allow)
     std::vector<RelationBox*>::iterator it;
     for (it = m_boxes.begin(); it != m_boxes.end(); ++it)
     {
-        if (box_path.CmpNoCase((*it)->getSetPath()) == 0)
+        if (isSamePath(box_path.ToStdWstring(), (*it)->getSetPath().ToStdWstring()))
             box_count++;
     }
 
@@ -2166,7 +2172,7 @@ bool RelationDiagram::addBox(const wxString& path,
     std::vector<RelationBox*>::iterator it;
     for (it = m_boxes.begin(); it != m_boxes.end(); ++it)
     {
-        if ((*it)->getSetPath().CmpNoCase(path) == 0)
+        if (isSamePath((*it)->getSetPath().ToStdWstring(), path.ToStdWstring()))
             return false;
     }
 
@@ -2416,31 +2422,31 @@ void RelationDiagram::onTreeDataDropped(wxDragResult& drag_result,
 void RelationDiagram::onSetRenamed(const wxString& old_path,
                                    const wxString& new_path)
 {
+    std::wstring wstr_old_path = old_path.ToStdWstring();
+
     std::vector<RelationLine>::iterator line_it;
     for (line_it = m_lines.begin(); line_it != m_lines.end(); ++line_it)
     {
-        if (line_it->left_path.CmpNoCase(old_path) == 0)
+        if (isSamePath(line_it->left_path.ToStdWstring(), wstr_old_path))
             line_it->left_path = new_path;
 
-        if (line_it->right_path.CmpNoCase(old_path) == 0)
+        if (isSamePath(line_it->right_path.ToStdWstring(), wstr_old_path))
             line_it->right_path = new_path;
     }
 
-    for (line_it = m_orig_lines.begin();
-         line_it != m_orig_lines.end();
-         ++line_it)
+    for (line_it = m_orig_lines.begin(); line_it != m_orig_lines.end(); ++line_it)
     {
-        if (line_it->left_path.CmpNoCase(old_path) == 0)
+        if (isSamePath(line_it->left_path.ToStdWstring(), wstr_old_path))
             line_it->left_path = new_path;
 
-        if (line_it->right_path.CmpNoCase(old_path) == 0)
+        if (isSamePath(line_it->right_path.ToStdWstring(), wstr_old_path))
             line_it->right_path = new_path;
     }
 
     std::vector<RelationBox*>::iterator it;
     for (it = m_boxes.begin(); it != m_boxes.end(); ++it)
     {
-        if ((*it)->getSetPath().CmpNoCase(old_path) == 0)
+        if (isSamePath((*it)->getSetPath().ToStdWstring(), wstr_old_path))
         {
             wxString caption = new_path.AfterLast(wxT('/'));
             (*it)->setSetPath(new_path);
@@ -2496,14 +2502,14 @@ void RelationDiagram::onSetStructureChanged(const wxString& set_path)
         // fields that no longer exist in the table we've modified
         
         RelationLine* line = (*it);
-        if (set_path.CmpNoCase(line->left_path) == 0)
+        if (isSamePath(set_path.ToStdWstring(), line->left_path.ToStdWstring()))
         {
             line_expr = line->left_expr;
             if (!findFieldInList(fieldnames, line_expr))
                 to_delete.push_back(*it);
         }
         
-        if (set_path.CmpNoCase(line->right_path) == 0)
+        if (isSamePath(set_path.ToStdWstring(), line->right_path.ToStdWstring()))
         {
             line_expr = line->right_expr;
             if (!findFieldInList(fieldnames, line_expr))
