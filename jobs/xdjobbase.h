@@ -136,6 +136,11 @@ protected:
         m_xd_jobinfo->setXdJob(xdjob);
     }
 
+    XdJobInfo* getRawXdJobInfo()
+    {
+        return m_xd_jobinfo;
+    }
+
     void onJobFinished(IJobPtr job)
     {
         m_xd_jobinfo->setXdJob(xcm::null);

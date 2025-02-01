@@ -12,7 +12,8 @@
 #include "jobspch.h"
 #include "group.h"
 #include "util.h"
-
+#include "itertemptable.h"
+#include <kl/hex.h>
 
 namespace jobs
 {
@@ -81,14 +82,28 @@ int GroupJob::runJob()
         return 0;
     }    
 
-
     // get the parameters
     kl::JsonNode params_node;
     params_node.fromString(getParameters());
 
+    // Create converter instance
+    ConvertIterToTempTable converter;
+    std::wstring input_path = params_node["input"].getString();
+
+    // If we have a copy_iterator, convert it to a temp table
+    if (params_node.childExists("copy_iterator"))
+    {
+        xd::IIteratorPtr iter = (xd::IIterator*)(uintptr_t)(kl::hexToUint64(params_node["copy_iterator"].getString()));
+        if (!converter.execute(m_db, iter, getRawXdJobInfo()))
+        {
+            m_job_info->setState(jobStateFailed);
+            return 0;
+        }
+        input_path = converter.getTempTablePath();
+        m_to_delete.push_back(input_path);
+    }
 
     // get the input parameters
-    std::wstring input_path = params_node["input"].getString();
     std::wstring output_path = params_node["output"].getString();
     std::vector<kl::JsonNode> group_nodes = params_node["group"].getChildren();
     std::vector<kl::JsonNode> column_nodes = params_node["columns"].getChildren();

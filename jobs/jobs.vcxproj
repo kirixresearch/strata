@@ -28,6 +28,7 @@
     <ClCompile Include="execute.cpp" />
     <ClCompile Include="group.cpp" />
     <ClCompile Include="index.cpp" />
+    <ClCompile Include="itertemptable.cpp" />
     <ClCompile Include="jobbase.cpp" />
     <ClCompile Include="jobinfo.cpp" />
     <ClCompile Include="jobqueue.cpp" />
@@ -55,6 +56,7 @@
     <ClInclude Include="execute.h" />
     <ClInclude Include="group.h" />
     <ClInclude Include="index.h" />
+    <ClInclude Include="itertemptable.h" />
     <ClInclude Include="jobbase.h" />
     <ClInclude Include="jobinfo.h" />
     <ClInclude Include="jobqueue.h" />
