@@ -30,6 +30,7 @@
 #include "reportdoc.h"
 #include "dlgdatabasefile.h"
 #include "dlgshareview.h"
+#include "dlgwaitforjob.h"
 #include "toolbars.h"
 #include "textdoc.h"
 #include "transformationdoc.h"
@@ -6476,8 +6477,6 @@ static void onSummaryJobFinished(jobs::IJobPtr job)
                          wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
     }
-
-    
 }
 
 
@@ -8570,29 +8569,90 @@ static void setGroupFields(kcl::Grid* grid, GroupPanel* panel)
     }
 }
 
+
+static void showGroupPanel(int tabledoc_site_id, const wxString& path, const wxString& filter)
+{
+    IDocumentSitePtr group_panel_site, tabledoc_site;
+
+    tabledoc_site = g_app->getMainFrame()->lookupSiteById(tabledoc_site_id);
+
+    if (tabledoc_site.isNull())
+        return;
+
+    group_panel_site = g_app->getMainFrame()->lookupSite(wxT("GroupPanel"));
+    if (group_panel_site.isNull())
+    {
+        ITableDocPtr td = tabledoc_site->getDocument();
+        if (td.isNull())
+            return;
+
+        GroupPanel* panel = new GroupPanel;
+        panel->setParameters(path, filter);
+
+        group_panel_site = g_app->getMainFrame()->createSite(panel,
+            sitetypeModeless,
+            -1, -1, panel->FromDIP(600), panel->FromDIP(360));
+
+        group_panel_site->setMinSize(panel->FromDIP(600), panel->FromDIP(360));
+        group_panel_site->setName(wxT("GroupPanel"));
+        setGroupFields(td->getGrid(), panel);
+    }
+    else
+    {
+        if (!group_panel_site->getVisible())
+        {
+            group_panel_site->setVisible(true);
+        }
+    }
+}
+
+
+
+
+static void onChildFilterCopyFinished(jobs::IJobPtr job)
+{
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
+        return;
+
+    kl::JsonNode params;
+    params.fromString(job->getParameters());
+
+    int tabledoc_site_id = params["extra_docsite_id"].getInteger();
+    std::wstring childfilter_concrete_table = params["output"].getString();
+
+    showGroupPanel(tabledoc_site_id, childfilter_concrete_table, wxT(""));
+}
+
 void TableDoc::onGroup(wxCommandEvent& evt)
 {
-    IDocumentSitePtr site;
-    site = m_frame->lookupSite(wxT("GroupPanel"));
-    if (site.isNull())
+    if (getIsChildSet())
     {
-        GroupPanel* panel = new GroupPanel;
-        panel->setParameters(m_path, getFilter());
+        xd::IIteratorPtr iter = m_iter.isOk() ? m_iter->clone() : xcm::null;
+        if (iter.isNull())
+            return;
 
-        site = g_app->getMainFrame()->createSite(panel,
-                                                 sitetypeModeless,
-                                                 -1, -1, FromDIP(600), FromDIP(360));
+        // set up the job from the info we gathered
+        jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
+        job->getJobInfo()->setVisible(false);
 
-        site->setMinSize(FromDIP(600), FromDIP(360));
-        site->setName(wxT("GroupPanel"));
-        setGroupFields(m_grid, panel);
+        kl::JsonNode params;
+
+        params["input_iterator"].setString(kl::stdswprintf(L"%p", (const void*)m_iter));
+        params["output"].setString(xd::getTemporaryPath());
+        params["extra_docsite_id"].setInteger(m_doc_site->getId());
+
+        job->setParameters(params.toString());
+        job->setRefObject(iter); // job will hold on to this object for object lifetime reasons
+        job->sigJobFinished().connect(&onChildFilterCopyFinished);
+
+        DlgWaitForJob::start(job->getJobInfo());
+
+        g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
     }
-     else
+    else
     {
-        if (!site->getVisible())
-        {
-            site->setVisible(true);
-        }
+        int site_id = m_doc_site->getId();
+        showGroupPanel(site_id, m_path, getFilter());
     }
 }
 

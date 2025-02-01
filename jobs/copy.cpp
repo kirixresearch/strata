@@ -80,7 +80,6 @@ int CopyJob::runJob()
         return 0;
     }    
 
-
     xd::IJobPtr xd_job = m_db->createJob();
     setXdJob(xd_job);
 

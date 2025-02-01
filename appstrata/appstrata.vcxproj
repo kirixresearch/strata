@@ -392,6 +392,7 @@
     </ClCompile>
     <ClCompile Include="..\appmain\dlgreportprops.cpp" />
     <ClCompile Include="..\appmain\dlgshareview.cpp" />
+    <ClCompile Include="..\appmain\dlgwaitforjob.cpp" />
     <ClCompile Include="..\appmain\editordoc.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -772,6 +773,7 @@
     <ClInclude Include="..\appmain\dlgprojectmgr.h" />
     <ClInclude Include="..\appmain\dlgreportprops.h" />
     <ClInclude Include="..\appmain\dlgshareview.h" />
+    <ClInclude Include="..\appmain\dlgwaitforjob.h" />
     <ClInclude Include="..\appmain\dociface.h" />
     <ClInclude Include="..\appmain\editordoc.h" />
     <ClInclude Include="..\appmain\exportpages.h" />
