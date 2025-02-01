@@ -6510,10 +6510,23 @@ void TableDoc::onSummary(wxCommandEvent& evt)
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.summarize-job");
 
     kl::JsonNode params;
-    params["input"].setString(m_path);
-    params["output"].setString(xd::getTemporaryPath());
-    params["columns"].setArray();
-    params["where"].setString(getFilter());
+
+    if (getIsChildSet())
+    {
+        params["copy_iterator"].setString(kl::stdswprintf(L"%p", (const void*)m_iter.p));
+        params["output"].setString(xd::getTemporaryPath());
+        params["columns"].setArray();
+        params["where"].setString(getFilter());
+    }
+    else
+    {
+        params["input"].setString(m_path);
+        params["output"].setString(xd::getTemporaryPath());
+        params["columns"].setArray();
+        params["where"].setString(getFilter());
+    }
+
+
 
     std::vector<std::wstring>::iterator it, it_end;
     it_end = summary_columns.end();

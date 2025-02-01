@@ -10,6 +10,7 @@
 
 #include "jobspch.h"
 #include "kl/portable.h"
+#include "kl/hex.h"
 #include "summarize.h"
 #include <set>
 
@@ -59,6 +60,52 @@ bool SummarizeJob::isInputValid()
     return true;
 }
 
+
+class ConvertIterToTempTable
+{
+public:
+    ConvertIterToTempTable() {}
+        
+    ~ConvertIterToTempTable()
+    {
+        if (!m_temp_table_path.empty() && !m_db.isNull())
+        {
+            m_db->deleteFile(m_temp_table_path);
+        }
+    }
+
+    bool execute(xd::IDatabasePtr db, xd::IIteratorPtr _iter, IJobInfoPtr job_info)
+    {
+        m_db = db;
+
+        xd::IIteratorPtr iter = _iter.isOk() ? _iter->clone() : xcm::null;
+        if (iter.isNull())
+            return false;
+
+        iter->goFirst();
+
+        // Generate temp table name
+        m_temp_table_path = xd::getTemporaryPath();
+
+        // Copy data to temp table
+        xd::CopyParams info;
+        info.iter_input = iter;
+        info.output = m_temp_table_path;
+        info.append = false;
+        m_db->copyData(&info, NULL);
+
+        return true;
+    }
+
+    const std::wstring& getTempTablePath() const { return m_temp_table_path; }
+
+private:
+    xd::IDatabasePtr m_db;
+    std::wstring m_temp_table_path;
+};
+
+
+
 int SummarizeJob::runJob()
 {
     // make sure we have a valid input
@@ -78,15 +125,28 @@ int SummarizeJob::runJob()
         return 0;
     }
 
-
     // get the parameters
     kl::JsonNode params_node;
     params_node.fromString(getParameters());
 
+    // Create converter instance
+    ConvertIterToTempTable converter;
+    std::wstring input_path = params_node["input"].getString();
+
+    // If we have a copy_iterator, convert it to a temp table
+    if (params_node.childExists("copy_iterator"))
+    {
+        xd::IIteratorPtr iter = (xd::IIterator*)(uintptr_t)(kl::hexToUint64(params_node["copy_iterator"].getString()));
+        if (!converter.execute(m_db, iter, m_job_info))
+        {
+            m_job_info->setState(jobStateFailed);
+            return 0;
+        }
+        input_path = converter.getTempTablePath();
+    }
 
     // STEP 1: build the group job parameters from the summarize parameters
 
-    std::wstring input_path = params_node["input"].getString();
     std::wstring output_path = params_node["output"].getString();
 
     std::vector<kl::JsonNode> input_columns = params_node["columns"].getChildren();
