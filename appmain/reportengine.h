@@ -251,6 +251,7 @@ public:
         m_print_from_page = 0;
         m_print_to_page = 0;
         m_print_all_pages = false;    
+        m_printer_name = wxEmptyString;
     }
     
 	ReportPrintInfo(const ReportPrintInfo& c)
@@ -264,6 +265,7 @@ public:
         m_print_from_page = c.m_print_from_page;
         m_print_to_page = c.m_print_to_page;
         m_print_all_pages = c.m_print_all_pages;
+        m_printer_name = c.m_printer_name;
     }
 
     ReportPrintInfo& operator=(const ReportPrintInfo& c)
@@ -277,6 +279,7 @@ public:
         m_print_from_page = c.m_print_from_page;
         m_print_to_page = c.m_print_to_page;
         m_print_all_pages = c.m_print_all_pages;
+        m_printer_name = c.m_printer_name;
         return *this;
     }
 
@@ -304,6 +307,9 @@ public:
     void setAllPages(bool all_pages) { m_print_all_pages = all_pages; }
     bool getAllPages() { return m_print_all_pages; }
 
+    void setPrinterName(const wxString& printer_name) { m_printer_name = printer_name; }
+    wxString getPrinterName() const { return m_printer_name; }
+
 private:
 
     int m_page_width;           // canvas model coordinates
@@ -315,6 +321,7 @@ private:
     int m_print_from_page;
     int m_print_to_page;
     bool m_print_all_pages;
+    wxString m_printer_name;    // name of the printer to use
 };
 
 

@@ -474,6 +474,7 @@ bool ReportDoc::print(bool show_print_dialog)
     printdialogdata.SetFromPage(1);
     printdialogdata.SetToPage(page_count);
 
+    wxString printer_name;
     if (!show_print_dialog)
     {
         // if we're not showing the dialog, print all the pages
@@ -487,6 +488,9 @@ bool ReportDoc::print(bool show_print_dialog)
 
         // get the updated print data from the print dialog
         printdialogdata = dialog.GetPrintDialogData();
+        
+        // get the printer name from the dialog
+        printer_name = printdialogdata.GetPrintData().GetPrinterName();
     }
 
     // GetPaperSize() only in mm; use GetPaperId() for dimensions in mm*10
@@ -510,6 +514,7 @@ bool ReportDoc::print(bool show_print_dialog)
     info.setFromPage(printdialogdata.GetFromPage());
     info.setToPage(printdialogdata.GetToPage());
     info.setAllPages(printdialogdata.GetAllPages());
+    info.setPrinterName(printer_name); // Add the printer name to the print info
 
     // create a new report print pdf; it will destroy 
     // itself when done

@@ -1033,7 +1033,13 @@ void ReportOutputPrinter::onReportLayoutEngineUpdated()
 
     // create a printer object; will be destroyed when printing 
     // is done or there's a printing problem
+
+    wxPrintData pd;
+    pd.SetPrinterName(m_print_info.getPrinterName());
+
+
     wxPrintDialogData data;
+    data.SetPrintData(pd);
     data.SetAllPages(m_print_info.getAllPages());
     data.SetMinPage(m_print_info.getMinPage());
     data.SetMaxPage(m_print_info.getMaxPage());
