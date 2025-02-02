@@ -374,9 +374,9 @@ bool JobSchedulerPanel::initDoc(IFramePtr frame,
 
     // create horizontal sizer
     wxBoxSizer* horz_sizer = new wxBoxSizer(wxHORIZONTAL);
-    horz_sizer->Add(m_joblist_grid, 1, wxEXPAND);
+    horz_sizer->Add(m_joblist_grid, 2, wxEXPAND);
     horz_sizer->AddSpacer(FromDIP(8));
-    horz_sizer->Add(createVerticalSizer(), 0, wxEXPAND);
+    horz_sizer->Add(createVerticalSizer(), 1, wxEXPAND);
 
     // create main sizer
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
