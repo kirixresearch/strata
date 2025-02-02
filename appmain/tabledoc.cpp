@@ -4214,7 +4214,7 @@ void TableDoc::onGridCursorMove(kcl::GridEvent& evt)
     if (evt.GetRow() != evt.GetDestinationRow())
     {
         updateStatusBar(false);
-        updateChildWindows();
+        updateChildWindowsLazy();
     }
 }
 
@@ -4489,6 +4489,44 @@ static wxString generateContextSyncMarkExpression(
         
     return res;
 }
+
+
+/*!
+ * Updates child windows on the next message loop iteration to prevent display problems.
+ *
+ * This deferred update was necessary to fix a timing issue where child tables would
+ * sometimes display incorrect aggregate results. The problem was particularly evident
+ * when the parent table contained calculated fields, as the calculation chain would
+ * not be fully resolved before the child windows were updated.
+ *
+ * By deferring the update to the next message loop iteration, we ensure that:
+ * 1. All parent calculations are complete
+ * 2. Aggregate results in child tables are computed with final values
+ * 3. The display reflects accurate relationships between parent and child
+ */
+
+void TableDoc::updateChildWindowsLazy()
+{
+    // Create a one-shot timer that will fire immediately on the next message loop iteration
+    class UpdateTimer : public wxTimer
+    {
+    public:
+        UpdateTimer(TableDoc* doc) : m_doc(doc) {}
+
+        void Notify() override
+        {
+            m_doc->updateChildWindows();
+            delete this; // Self cleanup
+        }
+
+    private:
+        TableDoc* m_doc;
+    };
+
+    UpdateTimer* timer = new UpdateTimer(this);
+    timer->Start(0, true); // One shot timer with 0ms delay
+}
+
 
 void TableDoc::updateChildWindows()
 {

@@ -240,6 +240,7 @@ private:
     void updateStatusBar();
     void resetChildWindows();
     void updateChildWindows();
+    void updateChildWindowsLazy();
     void deleteSelectedRows();
     void deleteSelectedColumns();
     bool deleteSelectedRowsColumns();
