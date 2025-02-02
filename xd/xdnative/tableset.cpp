@@ -119,8 +119,9 @@ xd::IIteratorPtr TableIterator::clone()
 
     if (m_table_set)
     {
+        // this is the same pointer as BaseIterator::m_set (see baseClone),
+        // so it does not carry a reference
         new_iter->m_table_set = m_table_set;
-        new_iter->m_table_set->ref();
     }
 
     new_iter->m_table = m_table;

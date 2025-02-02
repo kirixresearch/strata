@@ -1499,12 +1499,18 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
             if (db->getFileExist(save_path))
             {
                 // if file exists, overwrite (the user was prompted)
-                db->deleteFile(save_path);
+                if (!db->deleteFile(save_path))
+                {
+                    appMessageBox(_("The file could not be saved in the specified location. The destination location may by in use."),
+                        APPLICATION_NAME,
+                        wxOK | wxICON_EXCLAMATION | wxCENTER);
+                    return;
+                }
             }
 
             if (!db->moveFile(m_path, save_path))
             {
-                appMessageBox(_("The file could not be saved in the specified location.  The destination location may by in use."),
+                appMessageBox(_("The file could not be saved in the specified location. The destination location may by in use. (2)"),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 return;
@@ -7703,6 +7709,7 @@ void TableDoc::copyRecords(const std::wstring& condition)
     wxString columns = buildSelectedColumnExpression(m_grid);
 
     xd::IIteratorPtr iter = m_iter->clone();
+
     if (iter.isOk())
     {
         iter->goFirst();
