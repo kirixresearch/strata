@@ -105,9 +105,10 @@ int InetAuth::installLicense(paladin::Authentication* global_auth,
         global_auth->setActivationCode(act_code);
 
         if (global_auth->checkAuth() == paladin::errNone)
+        {
+            apphookPostLicenseCheck();
             err = errorSuccess;
-
-        apphookPostLicenseCheck();
+        }
     }
      else if (result == paladin::errClockUnsynced)
     {

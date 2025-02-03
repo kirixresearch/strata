@@ -598,7 +598,11 @@ AppController::~AppController()
 bool AppController::checkLicense(bool show_warnings)
 {
 #if PALADIN_ENABLED
-    if (g_auth->checkAuth() != paladin::errNone)
+    if (g_auth->checkAuth() == paladin::errNone)
+    {
+        apphookPostLicenseCheck();
+    }
+    else
     {
         // if authentication failed, try to install
         // a license to let the user evaluate the product
@@ -6702,10 +6706,12 @@ void AppController::showLicenseManager()
     dlg.ShowModal();
 
 
-    if (g_auth->checkAuth() != paladin::errNone)
+    if (g_auth->checkAuth() == paladin::errNone)
     {
         apphookPostLicenseCheck();
-		
+    }
+    else
+    {
         // hide all modeless panels that were showing
 
         IDocumentSitePtr doc_site;
