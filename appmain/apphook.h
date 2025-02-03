@@ -20,6 +20,7 @@ void apphookAppStartup();
 void apphookAppReady();
 
 void apphookPostOpenProject();
+void apphookPostLicenseCheck();
 
 bool apphookOpenTemplate(const wxString& location,
                          xd::IFileInfoPtr file_info,

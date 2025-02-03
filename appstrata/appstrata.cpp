@@ -32,6 +32,10 @@ void apphookAppReady()
 {
 }
 
+void apphookPostLicenseCheck()
+{
+}
+
 void apphookPostOpenProject()
 {
 }

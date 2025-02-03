@@ -11,6 +11,7 @@
 
 #include "appmain.h"
 #include "inetauth.h"
+#include "apphook.h"
 #include "../paladin/paladin.h"
 #include "../paladin/crc.h"
 
@@ -105,6 +106,8 @@ int InetAuth::installLicense(paladin::Authentication* global_auth,
 
         if (global_auth->checkAuth() == paladin::errNone)
             err = errorSuccess;
+
+        apphookPostLicenseCheck();
     }
      else if (result == paladin::errClockUnsynced)
     {

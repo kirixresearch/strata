@@ -615,6 +615,8 @@ bool AppController::checkLicense(bool show_warnings)
         // if the last step failed, definitively return an error
         if (g_auth->checkAuth() != paladin::errNone)
             return false;
+
+        apphookPostLicenseCheck();
     }
 #endif
 
