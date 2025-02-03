@@ -6704,6 +6704,8 @@ void AppController::showLicenseManager()
 
     if (g_auth->checkAuth() != paladin::errNone)
     {
+        apphookPostLicenseCheck();
+		
         // hide all modeless panels that were showing
 
         IDocumentSitePtr doc_site;
