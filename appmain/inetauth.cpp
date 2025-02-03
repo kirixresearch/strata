@@ -106,6 +106,7 @@ int InetAuth::installLicense(paladin::Authentication* global_auth,
 
         if (global_auth->checkAuth() == paladin::errNone)
         {
+            apphookLicenseInstalled();
             apphookPostLicenseCheck();
             err = errorSuccess;
         }

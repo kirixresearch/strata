@@ -620,6 +620,7 @@ bool AppController::checkLicense(bool show_warnings)
         if (g_auth->checkAuth() != paladin::errNone)
             return false;
 
+        apphookLicenseInstalled();
         apphookPostLicenseCheck();
     }
 #endif
@@ -6708,6 +6709,7 @@ void AppController::showLicenseManager()
 
     if (g_auth->checkAuth() == paladin::errNone)
     {
+        apphookLicenseInstalled();
         apphookPostLicenseCheck();
     }
     else
