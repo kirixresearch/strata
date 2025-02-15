@@ -116,7 +116,7 @@ static ExpressionLookupInfo expr_lookup_arr[] =
     { numfmtTrailingNegativeEnglish,     LR"((IIF(RTRIM(TRIM(TRIM(TRANSLATE(%s,',',''))),'- ')=TRIM(TRANSLATE(%s,',','')),VAL(TRIM(TRANSLATE(%s,',',''))),-1*VAL(RTRIM(TRIM(TRANSLATE(%s,',','')),'- ')))))", nullptr },
     { numfmtParenthesisNegativeEuropean, LR"((IIF(TRIM(TRIM(TRANSLATE(%s,'.','')),'() ')=TRIM(TRANSLATE(%s,'.','')),VAL(TRIM(TRANSLATE(%s,'.',''))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,'.','')),'() ')))))", nullptr },
     { numfmtParenthesisNegativeEnglish,  LR"((IIF(TRIM(TRIM(TRANSLATE(%s,',','')),'() ')=TRIM(TRANSLATE(%s,',','')),VAL(TRIM(TRANSLATE(%s,',',''))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,',','')),'() ')))))", nullptr },
-    { numfmtEmpty,                       LR"((VAL(TRIM(%s))))'                                                                                                                                                                     , nullptr },
+    { numfmtEmpty,                       LR"((VAL(TRIM(%s))))", nullptr },
 
     { datefmtYYYYMMDD,                   LR"((DATE(TRIM(%s),'YYYYMMDD')))", nullptr },
     { datefmtYYYYDDMM,                   LR"((DATE(TRIM(%s),'YYYYDDMM')))", nullptr },
