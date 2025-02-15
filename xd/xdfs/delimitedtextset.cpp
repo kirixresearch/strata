@@ -960,7 +960,7 @@ bool DelimitedTextSet::determineColumns(int check_rows, int max_seconds, xd::IJo
     {
         row_cell_count = (int)m_file.getRowCellCount();
 
-        // the current row has more cells than any of the preceeding rows
+        // the current row has more cells than any of the preceding rows
         while (col_count < row_cell_count)
         {
             wchar_t temps[81];
