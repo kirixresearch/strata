@@ -561,6 +561,11 @@ bool FsDatabase::getFileFormat(const std::wstring& path,
                 res = determineSetFormatInfo(stream, info);
             }
 
+            if (info->delimiter == L"," && info->text_qualifier == L"")
+            {
+                 // if we are determining delimiters and it is a comma, set the text qualifier to " by default
+                 info->text_qualifier = L"\"";
+            }
 
             // because the file extension is csv, don't let determineSetFormatInfo
             // guess anything different (happens sometimes with one-column csv's,
