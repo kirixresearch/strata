@@ -837,7 +837,8 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
     wxString source_name;
     int format_comboidx;
 
-    expr.Replace(wxString::Format(L"rawvalue(%d)", (row+1)), colinfo.name);
+    expr.Replace(wxString::Format(L"rawvalue(%d)", (row + 1)), wxString::Format(L"field(%d)", (row + 1)));
+    expr.Replace(wxString::Format(L"field(%d)", (row + 1)), colinfo.name);
 
     bool res = getInfoFromDestinationExpression(expr,
                                                 colinfo.type,
@@ -1456,23 +1457,7 @@ xd::Structure TransformationDoc::createStructureFromGrid()
 
 xd::Structure TransformationDoc::getSourceStructure()
 {
-    xd::Structure s;
-
-/*
-    xd::Structure s;
-    if (m_init_set.isOk())
-    {
-        xd::IFixedLengthDefinitionPtr fset = m_init_set;
-        xd::IDelimitedTextSetPtr tset = m_init_set;
-        if (fset)
-            return fset->getSourceStructure();
-         else if (tset)
-            return tset->getSourceStructure();
-    }
-    
-    */
-
-    return s;
+    return createStructureFromGrid();
 }
 
 
@@ -1862,6 +1847,7 @@ void TransformationDoc::onGridNeedTooltipText(kcl::GridEvent& evt)
     int row_count = m_grid->getRowCount();
     int row = evt.GetRow();
     int col = evt.GetColumn();
+    xd::Structure source_structure;
     
     if (col != colRowNumber && col != colFieldName && col != colFieldFormula)
         return;
@@ -1902,7 +1888,13 @@ void TransformationDoc::onGridNeedTooltipText(kcl::GridEvent& evt)
             {
                 int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
                 wxString expr = getFieldExpression(row);
-                int res = validateExpression(getSourceStructure(), expr, type);
+
+                if (source_structure.isNull())
+                {
+                    source_structure = getSourceStructure();
+                }
+
+                int res = validateExpression(source_structure, expr, type);
                 
                 if (res == StructureValidator::ExpressionTypeMismatch)
                     msg = _("This formula has a return type that does not match the field type");
@@ -2083,9 +2075,15 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
         if (expr.IsEmpty())
             expr = getFieldExpression(row);
         
-        if (expr_combosel == -1)
+        if (expr.Length() > 0 && expr_combosel == -1)
         {
-            int res = validateExpression(getSourceStructure(), expr, type);
+            xd::Structure source_structure = getSourceStructure();
+            wxString field_name = m_grid->getCellString(row, colFieldName);
+
+            // don't allow the field to use its own column name (to avoid circular references)
+            source_structure.deleteColumn(field_name.ToStdWstring());
+
+            int res = validateExpression(source_structure, expr, type);
             updateExpressionIcon(row, res);
         }
          else
@@ -2184,8 +2182,7 @@ void TransformationDoc::onGridCellRightClick(kcl::GridEvent& evt)
         col < 0 || col >= m_grid->getColumnCount())
         return;
 
-    // -- if the user clicked on a row that was not
-    //    previously selected, select the row --
+    // if the user clicked on a row that was not previously selected, select the row
     if (!m_grid->isRowSelected(row))
     {
         m_grid->clearSelection();
