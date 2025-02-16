@@ -25,6 +25,10 @@ namespace xd
 
 // database manager instantiator
 
+/**
+ * @brief Gets a database manager instance
+ * @return IDatabaseMgrPtr Pointer to database manager
+ */
 inline IDatabaseMgrPtr getDatabaseMgr()
 {
     IDatabaseMgrPtr dbmgr;
@@ -47,6 +51,10 @@ public:
 XCM_DECLARE_SMARTPTR(IDatabaseParserBinder)
 
 
+/**
+ * @brief Binds an expression parser to the database
+ * @param parser Pointer to the parser to bind
+ */
 inline void bindExprParser(void* parser)
 {
     IDatabaseParserBinderPtr e;
@@ -60,6 +68,11 @@ inline void bindExprParser(void* parser)
 
 // general utility functions
 
+/**
+ * @brief Converts a database type to its string representation
+ * @param type Integer representing the database type
+ * @return std::wstring The string representation of the type
+ */
 inline std::wstring dbtypeToString(int type)
 {
     switch (type)
@@ -81,6 +94,11 @@ inline std::wstring dbtypeToString(int type)
     }
 }
 
+/**
+ * @brief Converts a string representation to its database type
+ * @param type String representation of the database type
+ * @return int The corresponding database type
+ */
 inline int stringToDbtype(const std::wstring& type)
 {
          if (type == L"undefined")     return xd::typeUndefined;
@@ -103,6 +121,11 @@ inline int stringToDbtype(const std::wstring& type)
 
 // general utility functions
 
+/**
+ * @brief Converts a database encoding type to its string representation
+ * @param type Integer representing the database encoding
+ * @return std::wstring The string representation of the encoding
+ */
 inline std::wstring dbencodingToString(int type)
 {
     switch (type)
@@ -124,6 +147,11 @@ inline std::wstring dbencodingToString(int type)
 }
 
 
+/**
+ * @brief Converts a string representation to its database encoding type
+ * @param type String representation of the database encoding
+ * @return int The corresponding database encoding type
+ */
 inline int stringToDbencoding(const std::wstring& type)
 {
          if (type == L"invalid")   return xd::encodingInvalid;
@@ -141,6 +169,12 @@ inline int stringToDbencoding(const std::wstring& type)
     else return xd::encodingInvalid;
 }
 
+/**
+ * @brief Checks if two database types are compatible
+ * @param type1 First database type
+ * @param type2 Second database type
+ * @return bool True if types are compatible, false otherwise
+ */
 inline bool isTypeCompatible(int type1, int type2)
 {
     // determines if two tango types are compatible
@@ -184,6 +218,12 @@ inline bool isTypeCompatible(int type1, int type2)
 }
 
 
+/**
+ * @brief Quotes an identifier using database-specific quote characters
+ * @param db Database pointer
+ * @param identifier The identifier to quote
+ * @return std::wstring The quoted identifier
+ */
 inline std::wstring quoteIdentifier(xd::IDatabasePtr db, const std::wstring& identifier)
 {
     if (db.isOk())
@@ -202,6 +242,12 @@ inline std::wstring quoteIdentifier(xd::IDatabasePtr db, const std::wstring& ide
     return identifier;
 }
 
+/**
+ * @brief Quotes an identifier only if it contains spaces
+ * @param db Database pointer
+ * @param identifier The identifier to potentially quote
+ * @return std::wstring The quoted identifier if necessary
+ */
 inline std::wstring quoteIdentifierIfNecessary(xd::IDatabasePtr db, const std::wstring& identifier)
 {
      if (identifier.find(' ') == identifier.npos)
@@ -211,6 +257,12 @@ inline std::wstring quoteIdentifierIfNecessary(xd::IDatabasePtr db, const std::w
 }
 
 
+/**
+ * @brief Removes quotes from an identifier
+ * @param db Database pointer
+ * @param identifier The quoted identifier
+ * @return std::wstring The identifier with quotes removed
+ */
 inline std::wstring dequoteIdentifier(xd::IDatabasePtr db, const std::wstring& identifier)
 {
     if (db.isOk())
@@ -271,6 +323,10 @@ inline void requoteAllIdentifiers(xd::IDatabasePtr db, std::vector<std::wstring>
     }
 }
 
+/**
+ * @brief Generates a temporary path name
+ * @return std::wstring A unique temporary path name
+ */
 inline std::wstring getTemporaryPath()
 {
     int i;
@@ -298,6 +354,11 @@ inline std::wstring getTemporaryPath()
     return temp_path;
 }
 
+/**
+ * @brief Checks if a path is a temporary path
+ * @param path Path to check
+ * @return bool True if path is temporary, false otherwise
+ */
 inline bool isTemporaryPath(const std::wstring& path)
 {
     if (path.find(L"xtmp_") != path.npos ||
@@ -310,6 +371,13 @@ inline bool isTemporaryPath(const std::wstring& path)
 }
 
 
+/**
+ * @brief Appends a new part to a path with proper separator
+ * @param path Base path
+ * @param newpart Part to append
+ * @param ch Path separator character (defaults to '/')
+ * @return std::wstring The combined path
+ */
 inline std::wstring appendPath(const std::wstring& path, const std::wstring& newpart, wchar_t ch = '/')
 {
     if (newpart.empty()) return path;
@@ -321,6 +389,43 @@ inline std::wstring appendPath(const std::wstring& path, const std::wstring& new
          else
         ret += newpart;
     return ret;
+}
+
+/**
+ * @brief Checks if a field name is used in an expression
+ * @param expr The expression to check
+ * @param field The field name to search for
+ * @return bool True if the field is used in the expression, false otherwise
+ * 
+ * Examples:
+ * expressionContainsField(L"field1 > 1", L"field1") returns true
+ * expressionContainsField(L"field1 > 1", L"field") returns false
+ * expressionContainsField(L"substring(field1, 1, 2)", L"field1") returns true
+ */
+inline bool expressionContainsField(const std::wstring& expr, const std::wstring& field)
+{
+    size_t pos = 0;
+    while ((pos = expr.find(field, pos)) != std::wstring::npos) 
+    {
+        // Check character before field name (if not at start)
+        bool validStart = (pos == 0) || 
+                         !iswalnum(expr[pos - 1]) && 
+                         expr[pos - 1] != L'_';
+
+        // Check character after field name (if not at end)
+        size_t endPos = pos + field.length();
+        bool validEnd = (endPos >= expr.length()) || 
+                       !iswalnum(expr[endPos]) && 
+                       expr[endPos] != L'_';
+
+        if (validStart && validEnd) {
+            return true;
+        }
+
+        pos = endPos;
+    }
+    
+    return false;
 }
 
 
@@ -701,3 +806,4 @@ private:
 
 
 #endif
+
