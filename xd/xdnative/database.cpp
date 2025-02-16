@@ -4350,7 +4350,12 @@ xd::ColumnInfo XdnativeDatabase::validateExpression(const std::wstring& expressi
     parser->addFunction(L"recid", false, NULL, false, L"s()", this);
     parser->addFunction(L"reccrc", false, NULL, false, L"x()", this);
     
-    
+
+    // needed for csv files in xdfs
+    parser->addFunction(L"field", false, NULL, false, L"s(n)", this);
+    parser->addFunction(L"rawvalue", false, NULL, false, L"s(n)", this);
+
+
     // create field bindings and add them to the expression parser
 
     parser->setParseHook(kscript::ExprParseHookInfo::typeFunction |
