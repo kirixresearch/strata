@@ -68,12 +68,12 @@ bool FixedLengthTextSet::init(const std::wstring& filename, const xd::FormatDefi
     {
         if (m_database->loadAssignedDefinition(filename, &m_def))
         {
-            int i = 1; // rawvalue() is 1-based
+            int i = 1; // field()/rawvalue() is 1-based
             for (auto &col : m_def.columns)
             {
                 if (col.expression.find(L"$SRCFIELD"))
                 {
-                    std::wstring replacement = kl::stdswprintf(L"rawvalue(%d)", i++);
+                    std::wstring replacement = kl::stdswprintf(L"field(%d)", i++);
                     kl::replaceStr(col.expression, L"$SRCFIELD", replacement, true);
                 }
             }

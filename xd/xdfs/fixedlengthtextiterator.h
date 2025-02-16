@@ -153,7 +153,7 @@ public:
 protected:
 
     static void func_recno(kscript::ExprEnv* env, void* param, kscript::Value* retval);
-    static void func_rawvalue(kscript::ExprEnv* env, void* param, kscript::Value* retval);
+    static void func_field(kscript::ExprEnv* env, void* param, kscript::Value* retval);
     void onParserInit(kscript::ExprParser* parser);
 
 private:

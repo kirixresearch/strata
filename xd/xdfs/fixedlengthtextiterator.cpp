@@ -845,7 +845,7 @@ void FixedLengthTextIterator::func_recno(kscript::ExprEnv* env, void* param, ksc
     retval->setDouble((double)((FixedLengthTextIterator*)param)->m_row_num);
 }
 
-void FixedLengthTextIterator::func_rawvalue(kscript::ExprEnv* env, void* param, kscript::Value* retval)
+void FixedLengthTextIterator::func_field(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
     retval->setString(((FixedLengthTextIterator*)param)->m_row.getString(env->m_eval_params[0]->getInteger() - 1));
 }
@@ -853,7 +853,8 @@ void FixedLengthTextIterator::func_rawvalue(kscript::ExprEnv* env, void* param, 
 void FixedLengthTextIterator::onParserInit(kscript::ExprParser* parser)
 {
     parser->addFunction(L"recno", false, FixedLengthTextIterator::func_recno, false, L"f()", this);
-    parser->addFunction(L"rawvalue", false, FixedLengthTextIterator::func_rawvalue, false, L"s(i)", this);
+    parser->addFunction(L"rawvalue", false, FixedLengthTextIterator::func_field, false, L"s(i)", this);
+    parser->addFunction(L"field", false, FixedLengthTextIterator::func_field, false, L"s(i)", this);
 }
 
 xd::objhandle_t FixedLengthTextIterator::getHandle(const std::wstring& expr)
