@@ -996,7 +996,7 @@ public:
                          size,
                          choice_count,
                          choices,
-                         style)
+                         style | wxTE_PROCESS_ENTER)
     {
         m_grid = grid;
         m_start_idx = -1;
@@ -1125,6 +1125,12 @@ private:
     {
     }
 
+    void onTextEnter(wxCommandEvent& evt)
+    {
+        m_last_key = WXK_RETURN;
+        Destroy();
+    }
+
 private:
 
     Grid* m_grid;
@@ -1141,6 +1147,7 @@ BEGIN_EVENT_TABLE(GridComboCtrl, wxComboBox)
     EVT_KEY_DOWN(GridComboCtrl::onKeyDown)
     EVT_KILL_FOCUS(GridComboCtrl::onKillFocus)
     EVT_MOUSEWHEEL(GridComboCtrl::onMouseWheel)
+    EVT_TEXT_ENTER(-1, GridComboCtrl::onTextEnter)
 END_EVENT_TABLE()
 
 
