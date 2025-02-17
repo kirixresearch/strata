@@ -108,7 +108,7 @@ static ExpressionLookupInfo expr_lookup_arr[] =
     { charfmtTrimLeadingSpaces,          L"(( LTRIM(%s) ))", nullptr },
     { charfmtTrimLeadingZeros,           L"(( LTRIM(%s,'0') ))", nullptr },
     { charfmtTrimLeadingSpacesAndZeros,  L"(( LTRIM(%s,'0 ') ))", nullptr },
-    { charfmtEmpty,                      L"(( %s))", nullptr },
+    { charfmtEmpty,                      L"(( %s ))", nullptr },
                                               
     { numfmtLeadingNegativeEuropean,     L"(( IIF(LTRIM(TRIM(TRIM(TRANSLATE(%s,'.',''))),'- ')=TRIM(TRANSLATE(%s,'.','')),VAL(TRIM(TRANSLATE(%s,'.',''))),-1*VAL(LTRIM(TRIM(TRANSLATE(%s,'.','')) , '- '))) ))", nullptr },
     { numfmtLeadingNegativeEnglish,      L"(( IIF(LTRIM(TRIM(TRIM(TRANSLATE(%s,',',''))),'- ')=TRIM(TRANSLATE(%s,',','')),VAL(TRIM(TRANSLATE(%s,',',''))),-1*VAL(LTRIM(TRIM(TRANSLATE(%s,',','')) , '- '))) ))", nullptr },
@@ -116,7 +116,7 @@ static ExpressionLookupInfo expr_lookup_arr[] =
     { numfmtTrailingNegativeEnglish,     L"(( IIF(RTRIM(TRIM(TRIM(TRANSLATE(%s,',',''))),'- ')=TRIM(TRANSLATE(%s,',','')),VAL(TRIM(TRANSLATE(%s,',',''))),-1*VAL(RTRIM(TRIM(TRANSLATE(%s,',','')),'- '))) ))", nullptr },
     { numfmtParenthesisNegativeEuropean, L"(( IIF(TRIM(TRIM(TRANSLATE(%s,'.','')),'() ')=TRIM(TRANSLATE(%s,'.','')),VAL(TRIM(TRANSLATE(%s,'.',''))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,'.','')),'() '))) ))", nullptr },
     { numfmtParenthesisNegativeEnglish,  L"(( IIF(TRIM(TRIM(TRANSLATE(%s,',','')),'() ')=TRIM(TRANSLATE(%s,',','')),VAL(TRIM(TRANSLATE(%s,',',''))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,',','')),'() '))) ))", nullptr },
-    { numfmtEmpty,                       L"(( VAL(TRIM(%s))))", nullptr },
+    { numfmtEmpty,                       L"(( VAL(TRIM(%s)) ))", nullptr },
                                               
     { datefmtYYYYMMDD,                   L"(( DATE(TRIM(%s),'YYYYMMDD') ))", nullptr },
     { datefmtYYYYDDMM,                   L"(( DATE(TRIM(%s),'YYYYDDMM') ))", nullptr },
