@@ -94,8 +94,8 @@ struct ExpressionLookupInfo
 {
     int format;
     const wchar_t* expr;
-    klregex::wregex* regex;
-    
+    std::wregex* regex;
+
     ~ExpressionLookupInfo()
     {
         delete regex;
@@ -1149,10 +1149,10 @@ wxString TransformationDoc::createDestinationExpression(int row)
 }
 
 bool TransformationDoc::getInfoFromDestinationExpression(
-                                             const wxString& expression,
-                                             int xd_type,
-                                             wxString* source_name,
-                                             int* format_comboidx)
+                                          const wxString& expression,
+                                          int xd_type,
+                                          wxString* source_name,
+                                          int* format_comboidx)
 {
     if (expression.Mid(0, 2) != wxT("((") &&
         expression.Mid(expression.Length()-2, 2) != wxT("))"))
@@ -1166,39 +1166,35 @@ bool TransformationDoc::getInfoFromDestinationExpression(
     }
 
     std::wstring wexpression = towstr(expression);
-    const wchar_t* match_expr = wexpression.c_str();
-    const wchar_t* start = match_expr;
-    const wchar_t* end = match_expr + wcslen(match_expr);
 
-    klregex::wmatch matchres;
-
-    // create the klregex::wregex for the array entry if it doesn't exist
+    // create the std::wregex for the array entry if it doesn't exist
     int i, count = sizeof(expr_lookup_arr)/sizeof(ExpressionLookupInfo);
     for (i = 0; i < count; ++i)
     {
         if (expr_lookup_arr[i].regex == NULL)
         {
             std::wstring regex_str = expr2regex(expr_lookup_arr[i].expr);
-            expr_lookup_arr[i].regex = new klregex::wregex(regex_str);
+            expr_lookup_arr[i].regex = new std::wregex(regex_str);
         }
     }
 
     // now, try to match the expression using the regex
+    std::wsmatch matchres;
     for (i = 0; i < count; ++i)
     {
-        if (expr_lookup_arr[i].regex->match(start, end, matchres))
+        if (std::regex_match(wexpression, matchres, *expr_lookup_arr[i].regex))
         {
-            klregex::wsubmatch name_match = matchres[1];
-            
             // fill out the source name
-            if (name_match.isValid())
-                *source_name = name_match.str();
+            if (matchres.size() > 1)
+            {
+                *source_name = matchres[1].str();
+            }
             source_name->Trim(true);
             source_name->Trim(false);
             
             // fill out the format combobox's index
             *format_comboidx = format2comboIdx(xd_type,
-                                               expr_lookup_arr[i].format);
+                                             expr_lookup_arr[i].format);
             return true;
         }
     }
