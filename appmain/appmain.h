@@ -27,7 +27,7 @@
 #include <clocale>
 #include <string>
 #include <vector>
-
+#include <regex>
 
 // wxWidgets includes
 
