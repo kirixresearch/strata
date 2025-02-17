@@ -105,39 +105,39 @@ struct ExpressionLookupInfo
 
 static ExpressionLookupInfo expr_lookup_arr[] =
 {
-    { charfmtTrimLeadingSpaces,          LR"((LTRIM(%s)))", nullptr },
-    { charfmtTrimLeadingZeros,           LR"((LTRIM(%s,'0')))", nullptr },
-    { charfmtTrimLeadingSpacesAndZeros,  LR"((LTRIM(%s,'0 ')))", nullptr },
-    { charfmtEmpty,                      LR"((%s))", nullptr },
-
-    { numfmtLeadingNegativeEuropean,     LR"((IIF(LTRIM(TRIM(TRIM(TRANSLATE(%s,'.',''))),'- ')=TRIM(TRANSLATE(%s,'.','')),VAL(TRIM(TRANSLATE(%s,'.',''))),-1*VAL(LTRIM(TRIM(TRANSLATE(%s,'.','')) , '- ')))))", nullptr },
-    { numfmtLeadingNegativeEnglish,      LR"((IIF(LTRIM(TRIM(TRIM(TRANSLATE(%s,',',''))),'- ')=TRIM(TRANSLATE(%s,',','')),VAL(TRIM(TRANSLATE(%s,',',''))),-1*VAL(LTRIM(TRIM(TRANSLATE(%s,',','')) , '- ')))))", nullptr },
-    { numfmtTrailingNegativeEuropean,    LR"((IIF(RTRIM(TRIM(TRIM(TRANSLATE(%s,'.',''))),'- ')=TRIM(TRANSLATE(%s,'.','')),VAL(TRIM(TRANSLATE(%s,'.',''))),-1*VAL(RTRIM(TRIM(TRANSLATE(%s,'.','')),'- ')))))", nullptr },
-    { numfmtTrailingNegativeEnglish,     LR"((IIF(RTRIM(TRIM(TRIM(TRANSLATE(%s,',',''))),'- ')=TRIM(TRANSLATE(%s,',','')),VAL(TRIM(TRANSLATE(%s,',',''))),-1*VAL(RTRIM(TRIM(TRANSLATE(%s,',','')),'- ')))))", nullptr },
-    { numfmtParenthesisNegativeEuropean, LR"((IIF(TRIM(TRIM(TRANSLATE(%s,'.','')),'() ')=TRIM(TRANSLATE(%s,'.','')),VAL(TRIM(TRANSLATE(%s,'.',''))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,'.','')),'() ')))))", nullptr },
-    { numfmtParenthesisNegativeEnglish,  LR"((IIF(TRIM(TRIM(TRANSLATE(%s,',','')),'() ')=TRIM(TRANSLATE(%s,',','')),VAL(TRIM(TRANSLATE(%s,',',''))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,',','')),'() ')))))", nullptr },
-    { numfmtEmpty,                       LR"((VAL(TRIM(%s))))", nullptr },
-
-    { datefmtYYYYMMDD,                   LR"((DATE(TRIM(%s),'YYYYMMDD')))", nullptr },
-    { datefmtYYYYDDMM,                   LR"((DATE(TRIM(%s),'YYYYDDMM')))", nullptr },
-    { datefmtMMDDYYYY,                   LR"((DATE(TRIM(%s),'MMDDYYYY')))", nullptr },
-    { datefmtDDMMYYYY,                   LR"((DATE(TRIM(%s),'DDMMYYYY')))", nullptr },
-    { datefmtYYMMDD,                     LR"((DATE(TRIM(%s),'YYMMDD')))", nullptr },
-    { datefmtYYDDMM,                     LR"((DATE(TRIM(%s),'YYDDMM')))", nullptr },
-    { datefmtMMDDYY,                     LR"((DATE(TRIM(%s),'MMDDYY')))", nullptr },
-    { datefmtDDMMYY,                     LR"((DATE(TRIM(%s),'DDMMYY')))", nullptr },
-    { datefmtYYYYDDD,                    LR"((DATE(VAL(SUBSTR(TRIM(%s),1,4)),1,1)+VAL(SUBSTR(TRIM(%s),5,3))-1))", nullptr },
-    { datefmtDDDYYYY,                    LR"((DATE(VAL(SUBSTR(TRIM(%s),4,4)),1,1)+VAL(SUBSTR(TRIM(%s),1,3))-1))", nullptr },
-    { datefmtJulian,                     LR"((DATE(0,0,0)+VAL(TRIM(%s))+1))", nullptr },
-    { datefmtEmpty,                      LR"((DATE(TRIM(%s))))", nullptr },
-
-    { boolfmtTF,                         LR"((UPPER(TRIM(%s))='T'))", nullptr },
-    { boolfmtTrueFalse,                  LR"((UPPER(TRIM(%s))='TRUE'))", nullptr },
-    { boolfmtYN,                         LR"((UPPER(TRIM(%s))='Y'))", nullptr },
-    { boolfmtYesNo,                      LR"((UPPER(TRIM(%s))='YES'))", nullptr },
-    { boolfmt10,                         LR"((VAL(TRIM(%s))=1))", nullptr },
-    { boolfmtNot00,                      LR"((VAL(TRIM(%s))!=0))", nullptr },
-    { boolfmtEmpty,                      LR"((VAL(TRIM(%s))=1 OR TRIM(%s)='T' OR TRIM(%s)='t' OR UPPER(TRIM(%s))='TRUE' OR UPPER(TRIM(%s))='YES' OR TRIM(%s)='Y' OR TRIM(%s)='y'))", nullptr },
+    { charfmtTrimLeadingSpaces,          L"(( LTRIM(%s) ))", nullptr },
+    { charfmtTrimLeadingZeros,           L"(( LTRIM(%s,'0') ))", nullptr },
+    { charfmtTrimLeadingSpacesAndZeros,  L"(( LTRIM(%s,'0 ') ))", nullptr },
+    { charfmtEmpty,                      L"(( %s))", nullptr },
+                                              
+    { numfmtLeadingNegativeEuropean,     L"(( IIF(LTRIM(TRIM(TRIM(TRANSLATE(%s,'.',''))),'- ')=TRIM(TRANSLATE(%s,'.','')),VAL(TRIM(TRANSLATE(%s,'.',''))),-1*VAL(LTRIM(TRIM(TRANSLATE(%s,'.','')) , '- '))) ))", nullptr },
+    { numfmtLeadingNegativeEnglish,      L"(( IIF(LTRIM(TRIM(TRIM(TRANSLATE(%s,',',''))),'- ')=TRIM(TRANSLATE(%s,',','')),VAL(TRIM(TRANSLATE(%s,',',''))),-1*VAL(LTRIM(TRIM(TRANSLATE(%s,',','')) , '- '))) ))", nullptr },
+    { numfmtTrailingNegativeEuropean,    L"(( IIF(RTRIM(TRIM(TRIM(TRANSLATE(%s,'.',''))),'- ')=TRIM(TRANSLATE(%s,'.','')),VAL(TRIM(TRANSLATE(%s,'.',''))),-1*VAL(RTRIM(TRIM(TRANSLATE(%s,'.','')),'- '))) ))", nullptr },
+    { numfmtTrailingNegativeEnglish,     L"(( IIF(RTRIM(TRIM(TRIM(TRANSLATE(%s,',',''))),'- ')=TRIM(TRANSLATE(%s,',','')),VAL(TRIM(TRANSLATE(%s,',',''))),-1*VAL(RTRIM(TRIM(TRANSLATE(%s,',','')),'- '))) ))", nullptr },
+    { numfmtParenthesisNegativeEuropean, L"(( IIF(TRIM(TRIM(TRANSLATE(%s,'.','')),'() ')=TRIM(TRANSLATE(%s,'.','')),VAL(TRIM(TRANSLATE(%s,'.',''))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,'.','')),'() '))) ))", nullptr },
+    { numfmtParenthesisNegativeEnglish,  L"(( IIF(TRIM(TRIM(TRANSLATE(%s,',','')),'() ')=TRIM(TRANSLATE(%s,',','')),VAL(TRIM(TRANSLATE(%s,',',''))),-1*VAL(TRIM(TRIM(TRANSLATE(%s,',','')),'() '))) ))", nullptr },
+    { numfmtEmpty,                       L"(( VAL(TRIM(%s))))", nullptr },
+                                              
+    { datefmtYYYYMMDD,                   L"(( DATE(TRIM(%s),'YYYYMMDD') ))", nullptr },
+    { datefmtYYYYDDMM,                   L"(( DATE(TRIM(%s),'YYYYDDMM') ))", nullptr },
+    { datefmtMMDDYYYY,                   L"(( DATE(TRIM(%s),'MMDDYYYY') ))", nullptr },
+    { datefmtDDMMYYYY,                   L"(( DATE(TRIM(%s),'DDMMYYYY') ))", nullptr },
+    { datefmtYYMMDD,                     L"(( DATE(TRIM(%s),'YYMMDD') ))", nullptr },
+    { datefmtYYDDMM,                     L"(( DATE(TRIM(%s),'YYDDMM') ))", nullptr },
+    { datefmtMMDDYY,                     L"(( DATE(TRIM(%s),'MMDDYY') ))", nullptr },
+    { datefmtDDMMYY,                     L"(( DATE(TRIM(%s),'DDMMYY') ))", nullptr },
+    { datefmtYYYYDDD,                    L"(( DATE(VAL(SUBSTR(TRIM(%s),1,4)),1,1)+VAL(SUBSTR(TRIM(%s),5,3))-1 ))", nullptr },
+    { datefmtDDDYYYY,                    L"(( DATE(VAL(SUBSTR(TRIM(%s),4,4)),1,1)+VAL(SUBSTR(TRIM(%s),1,3))-1 ))", nullptr },
+    { datefmtJulian,                     L"(( DATE(0,0,0)+VAL(TRIM(%s))+1 ))", nullptr },
+    { datefmtEmpty,                      L"(( DATE(TRIM(%s)) ))", nullptr },
+                                              
+    { boolfmtTF,                         L"(( UPPER(TRIM(%s))='T' ))", nullptr },
+    { boolfmtTrueFalse,                  L"(( UPPER(TRIM(%s))='TRUE' ))", nullptr },
+    { boolfmtYN,                         L"(( UPPER(TRIM(%s))='Y' ))", nullptr },
+    { boolfmtYesNo,                      L"(( UPPER(TRIM(%s))='YES' ))", nullptr },
+    { boolfmt10,                         L"(( VAL(TRIM(%s))=1 ))", nullptr },
+    { boolfmtNot00,                      L"(( VAL(TRIM(%s))!=0 ))", nullptr },
+    { boolfmtEmpty,                      L"(( VAL(TRIM(%s))=1 OR TRIM(%s)='T' OR TRIM(%s)='t' OR UPPER(TRIM(%s))='TRUE' OR UPPER(TRIM(%s))='YES' OR TRIM(%s)='Y' OR TRIM(%s)='y' ))", nullptr },
 };
 
 // utility functions
@@ -211,7 +211,7 @@ static std::wstring expr2regex(const std::wstring& expr)
     e.Replace("\"", "~~~QUOTE~~~", true);
     e.Replace("'", "~~~QUOTE~~~", true);
     e.Replace("~~~QUOTE~~~", "[\"']", true);
-    e.Replace("%s", "([^,\"()]+)", true);
+    e.Replace("%s", "([^,\"]+)", true);
 
     return towstr(e);
 }
@@ -1114,7 +1114,7 @@ wxString TransformationDoc::createDestinationExpression(int row)
     std::wstring quoted_source_name;
     if (source_name == L"" || source_name == field)
     {
-        quoted_source_name = kl::stdswprintf(L"rawvalue(%d)", row+1);
+        quoted_source_name = kl::stdswprintf(L"field(%d)", row+1);
     }
      else
     {
@@ -1148,14 +1148,21 @@ wxString TransformationDoc::createDestinationExpression(int row)
     return quoted_source_name;
 }
 
+static bool isSpecialExpression(const wxString& expression)
+{
+    bool is_special = expression.Length() >= 3 &&
+                      expression.Mid(0, 3) == wxT("(( ") && 
+                      expression.Mid(expression.Length()-3, 3) == wxT(" ))");
+    return is_special;
+}
+
 bool TransformationDoc::getInfoFromDestinationExpression(
                                           const wxString& expression,
                                           int xd_type,
                                           wxString* source_name,
                                           int* format_comboidx)
 {
-    if (expression.Mid(0, 2) != wxT("((") &&
-        expression.Mid(expression.Length()-2, 2) != wxT("))"))
+    if (!isSpecialExpression(expression))
     {
         // this is safe to do since the source name cell in the grid
         // is a wxChoice cell, so if the expression isn't a source name,
@@ -1195,6 +1202,7 @@ bool TransformationDoc::getInfoFromDestinationExpression(
             // fill out the format combobox's index
             *format_comboidx = format2comboIdx(xd_type,
                                              expr_lookup_arr[i].format);
+
             return true;
         }
     }
@@ -1880,7 +1888,7 @@ void TransformationDoc::onGridNeedTooltipText(kcl::GridEvent& evt)
         }
          else if (col == colFieldFormula)
         {
-            if (it->row == row)
+            if (it->row == row && false)
             {
                 int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
                 wxString expr = getFieldExpression(row);
