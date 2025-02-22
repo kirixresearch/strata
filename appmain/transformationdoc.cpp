@@ -84,7 +84,6 @@ enum GridColumnIndexes
     colFieldType,
     colFieldWidth,
     colFieldScale,
-    colSourceName,
     colSourceOffset,
     colSourceWidth,
     colSourceEncoding,
@@ -428,7 +427,6 @@ void TransformationDoc::resizeAllGridColumnsToFitDoc()
     m_grid->setColumnSize(colFieldType, medium_x);
     m_grid->setColumnSize(colFieldWidth, small_x);
     m_grid->setColumnSize(colFieldScale, small_x);
-    m_grid->setColumnSize(colSourceName, medium_x);
     m_grid->setColumnSize(colSourceOffset, medium_x);
     m_grid->setColumnSize(colSourceWidth, medium_x);
     m_grid->setColumnSize(colSourceEncoding, medium_x);
@@ -436,14 +434,12 @@ void TransformationDoc::resizeAllGridColumnsToFitDoc()
 
     if (m_def.format == xd::formatFixedLengthText)
     {
-        m_grid->hideColumn(colSourceName);
     }
     else
     {
         m_grid->hideColumn(colSourceEncoding);
         m_grid->hideColumn(colSourceWidth);
         m_grid->hideColumn(colSourceOffset);
-        m_grid->hideColumn(colSourceName);
     }
 
     int colidxRowNumber = m_grid->getColumnViewIdx(colRowNumber);
@@ -451,7 +447,6 @@ void TransformationDoc::resizeAllGridColumnsToFitDoc()
     int colidxFieldType = m_grid->getColumnViewIdx(colFieldType);
     int colidxFieldWidth = m_grid->getColumnViewIdx(colFieldWidth);
     int colidxFieldScale = m_grid->getColumnViewIdx(colFieldScale);
-    int colidxSourceName = m_grid->getColumnViewIdx(colSourceName);
     int colidxSourceOffset = m_grid->getColumnViewIdx(colSourceOffset);
     int colidxSourceWidth = m_grid->getColumnViewIdx(colSourceWidth);
     int colidxSourceEncoding = m_grid->getColumnViewIdx(colSourceEncoding);
@@ -464,7 +459,6 @@ void TransformationDoc::resizeAllGridColumnsToFitDoc()
     w -= colidxFieldType >= 0 ? m_grid->getColumnSize(colFieldType) : 0;
     w -= colidxFieldWidth >= 0 ? m_grid->getColumnSize(colFieldWidth) : 0;
     w -= colidxFieldScale >= 0 ? m_grid->getColumnSize(colFieldScale) : 0;
-    w -= colidxSourceName >= 0 ? m_grid->getColumnSize(colSourceName) : 0;
     w -= colidxSourceOffset >= 0 ? m_grid->getColumnSize(colSourceOffset) : 0;
     w -= colidxSourceWidth >= 0 ? m_grid->getColumnSize(colSourceWidth) : 0;
     w -= colidxSourceEncoding >= 0 ? m_grid->getColumnSize(colSourceEncoding) : 0;
@@ -528,7 +522,6 @@ bool TransformationDoc::initDoc(IFramePtr frame,
     m_grid->createModelColumn(colFieldType, _("Type"), kcl::Grid::typeCharacter, 1, 0);
     m_grid->createModelColumn(colFieldWidth, _("Width"), kcl::Grid::typeInteger, 5, 0);
     m_grid->createModelColumn(colFieldScale, _("Decimals"), kcl::Grid::typeInteger, 5, 0);
-    m_grid->createModelColumn(colSourceName, _("Source Name"), kcl::Grid::typeCharacter, 80, 0);
     m_grid->createModelColumn(colSourceOffset, _("Source Offset"), kcl::Grid::typeInteger, 10, 0);
     m_grid->createModelColumn(colSourceWidth, _("Source Width"), kcl::Grid::typeInteger, 5, 0);
     m_grid->createModelColumn(colSourceEncoding, _("Source Encoding"), kcl::Grid::typeCharacter, 20, 0);
@@ -790,7 +783,6 @@ void TransformationDoc::insertRow(int row, bool calculated)
     m_grid->setCellString(row, colFieldName, "");
     m_grid->setCellInteger(row, colFieldWidth, 20);
     m_grid->setCellInteger(row, colFieldScale, 0);
-    m_grid->setCellString(row, colSourceName, EMPTY_SOURCENAME_STR);
     m_grid->setCellString(row, colFieldFormula, "");
     m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
 
@@ -870,30 +862,11 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
                                                 &format_comboidx);
     if (!res)
     {
-        // there were no matches, which means it is a custom expression
-        
-        m_grid->setCellString(row, colSourceName, source_name);
-        
-        // if the source name cell's dropdown returns -1 after setting
-        // the source name, then the expression is not a source name
-        if (m_grid->getCellComboSel(row, colSourceName) == -1)
-            m_grid->setCellString(row, colSourceName, EMPTY_SOURCENAME_STR);
-            
         m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
-        
-        // only set the expression cell's text if the column info's
-        // expression was not a source name
-        wxString wx_expr = colinfo.expression;
-        if (wx_expr.CmpNoCase(m_grid->getCellString(row, colSourceName)) != 0)
-            m_grid->setCellString(row, colFieldFormula, wx_expr);
     }
      else
     {
-        if (source_name == colinfo.name)
-            source_name = L"--";
-
         // we found a match, so populate the cells with the matched info
-        m_grid->setCellString(row, colSourceName, source_name);
         m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
         m_grid->setCellComboSel(row, colFieldFormula, format_comboidx);
     }
@@ -1076,28 +1049,16 @@ void TransformationDoc::updateStatusBar()
 
 wxString TransformationDoc::createDestinationExpression(int row)
 {
-    std::wstring field = m_grid->getCellString(row, colFieldName).ToStdWstring();
     int xd_type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
     int format_comboidx = m_grid->getCellComboSel(row, colFieldFormula);
-    std::wstring source_name = m_grid->getCellString(row, colSourceName).ToStdWstring();
-    if (source_name == L"--")
-        source_name = L"";
+    std::wstring source_name = L"";
    
     if (format_comboidx == -1 && source_name == L"")
     {
         return "";
     }
 
-    std::wstring quoted_source_name;
-    if (source_name == L"" || source_name == field)
-    {
-        quoted_source_name = kl::stdswprintf(L"field(%d)", row+1);
-    }
-     else
-    {
-        quoted_source_name = xd::quoteIdentifier(g_app->getDatabase(), source_name);
-    }
-
+    std::wstring quoted_source_name = kl::stdswprintf(L"field(%d)", row+1);
 
     // translate from the combobox index and xd type
     // to the expression format index
@@ -1110,7 +1071,7 @@ wxString TransformationDoc::createDestinationExpression(int row)
         return quoted_source_name;
     
     // lookup the expression in our lookup array
-    int i, count = sizeof(expr_lookup_arr)/sizeof(ExpressionLookupInfo);
+    int i, count = sizeof(expr_lookup_arr) / sizeof(ExpressionLookupInfo);
     for (i = 0; i < count; ++i)
     {
         if (expr_lookup_arr[i].format == expr_format)
@@ -1672,7 +1633,7 @@ bool TransformationDoc::doSave()
     {
         m_def.columns.clear();
 
-        std::wstring name, source_name, expression;
+        std::wstring name, expression;
         int type, width, scale, format_sel;
         int source_offset, source_width, source_encoding;
 
@@ -1685,10 +1646,9 @@ bool TransformationDoc::doSave()
             type = m_grid->getCellComboSel(row, colFieldType);
             width = m_grid->getCellInteger(row, colFieldWidth);
             scale = m_grid->getCellInteger(row, colFieldScale);
-            source_name = m_grid->getCellString(row, colSourceName);
             source_offset = m_grid->getCellInteger(row, colSourceOffset);
             source_width = m_grid->getCellInteger(row, colSourceWidth);
-            source_encoding = m_grid->getCellComboSel(row, colSourceEncoding);
+            source_encoding = choice2xdencoding(m_grid->getCellComboSel(row, colSourceEncoding));
             format_sel = m_grid->getCellComboSel(row, colFieldFormula);
             expression = getFieldExpression(row);
 
@@ -1868,7 +1828,8 @@ void TransformationDoc::onGridBeginEdit(kcl::GridEvent& evt)
 
 void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
 {
-    int col = evt.GetColumn();
+    int view_col = evt.GetColumn();
+    int col = m_grid->getColumnModelIdx(view_col);
     int row = evt.GetRow();
     int type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
 
@@ -1986,38 +1947,11 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
             }
         }
     }
-     else if (col == colSourceName)
-    {
-        wxString source_name = evt.GetString();
-        wxString field_name = m_grid->getCellString(row, colFieldName);
-        wxString expr_text = m_grid->getCellString(row, colFieldFormula);
-        
-        if (source_name != EMPTY_SOURCENAME_STR)
-        {
-            // fill out an empty fieldname with the selected source name by default
-            if (field_name.IsEmpty())
-                m_grid->setCellString(row, colFieldName, source_name);
-            
-            // remove default double-quoted expression when selecting a source name
-            if (expr_text == "\"\"")
-                m_grid->setCellString(row, colFieldFormula, wxEmptyString);
-        }
-    }
      else if (col == colFieldFormula)
     {
-        wxString source_name = m_grid->getCellString(row, colSourceName);
         wxString expr = evt.GetString();
         int expr_combosel = evt.GetExtraLong();
 
-        // if we can't match the cell's string to a combo selection
-        // then we know we're typing in a custom expression
-        if (!expr.IsEmpty() && expr_combosel == -1)
-            m_grid->setCellString(row, colSourceName, EMPTY_SOURCENAME_STR);
-        
-        // if the expression is empty, construct it from the grid cells
-        if (expr.IsEmpty())
-            expr = getFieldExpression(row);
-        
         if (expr.Length() > 0 && expr_combosel == -1)
         {
             xd::Structure source_structure = getSourceStructure();
@@ -2033,6 +1967,7 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
         {
             m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
         }
+        return;
     }
     
     m_grid->refresh(kcl::Grid::refreshAll);
@@ -2079,16 +2014,6 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
         // the current field type selection with the last selection --
         // we need to do this so we know how to update the column's row width
         m_last_selected_fieldtype = m_grid->getCellComboSel(row, colFieldType);
-    }
-     else if (col == colSourceName)
-    {
-        int type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
-        wxString expr = getFieldExpression(row);
-        
-        // make sure either a source field or an expression is specified
-        int res = validateExpression(getSourceStructure(), expr, type);
-        updateExpressionIcon(row, res);
-        m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldFormula);
     }
      else if (col == colFieldFormula)
     {
