@@ -637,42 +637,6 @@ void TransformationDoc::close()
 {
 }
 
-void TransformationDoc::getTransformation(std::vector<TransformField>& result)
-{
-    wxString input_name;
-    wxString name;
-    int type;
-    int width;
-    int scale;
-    wxString expression;
-    bool calculated;
-
-    int row, row_count = m_grid->getRowCount();
-    
-    result.clear();
-    result.reserve(row_count);
-    
-    for (row = 0; row < row_count; ++row)
-    {
-        input_name = m_grid->getCellString(row, colSourceName);
-        name = m_grid->getCellString(row, colFieldName);
-        type = m_grid->getCellComboSel(row, colFieldType);
-        width = m_grid->getCellInteger(row, colFieldWidth);
-        scale = m_grid->getCellInteger(row, colFieldScale);
-        expression = m_grid->getCellString(row, colFieldFormula);
-        calculated = isFieldCalculated(m_grid, row);
-        
-        TransformField field = getInputFieldByName(input_name);
-        field.output_name = name;
-        field.output_type = choice2xd(type);
-        field.output_width = width;
-        field.output_scale = scale;
-        field.output_expression = expression;
-        field.calculated = calculated;
-        
-        result.push_back(field);
-    }
-}
 
 void TransformationDoc::getColumnListItems(std::vector<ColumnListItem>& items)
 {
@@ -730,13 +694,6 @@ void TransformationDoc::onColumnListDblClicked(const std::vector<wxString>& item
 
 TransformField TransformationDoc::getInputFieldByName(const wxString& input_name)
 {
-    std::vector<TransformField>::iterator it;
-    for (it = m_source_fields.begin(); it != m_source_fields.end(); ++it)
-    {
-        if (it->input_name == input_name)
-            return *it;
-    }
-    
     TransformField f;
     return f;
 }
@@ -1258,37 +1215,6 @@ void TransformationDoc::populateSourceFieldDropDown()
 {
     if (!m_grid)
         return;
-
-    m_source_fields.clear();
-
-    xd::Structure s = createStructureFromGrid();
-    for (auto& col : s.columns)
-    {
-        TransformField field;
-        field.input_name = col.name;
-        field.input_type = col.type;
-        field.input_width = col.width;
-        field.input_scale = col.scale;
-        field.input_offset = col.source_offset;
-        m_source_fields.push_back(field);
-    }
-
-
-    kcl::CellProperties props;
-    props.mask = kcl::CellProperties::cpmaskCtrlType |
-                 kcl::CellProperties::cpmaskCbChoices;
-    props.ctrltype = kcl::Grid::ctrltypeDropList;
-    props.cbchoices.clear();
-    props.cbchoices.push_back(EMPTY_SOURCENAME_STR);
-    
-    std::vector<TransformField>::iterator it;
-    for (it = m_source_fields.begin(); it != m_source_fields.end(); ++it)
-    {
-        props.cbchoices.push_back(it->input_name);
-    }
-    
-    m_grid->setModelColumnProperties(colSourceName, &props);
-    m_grid->refresh(kcl::Grid::refreshAll);
 }
 
 void TransformationDoc::clearProblemRows()

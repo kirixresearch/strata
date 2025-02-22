@@ -109,8 +109,6 @@ public:
 
     virtual void initFromDefinition() = 0;
     virtual void close() = 0;
-    
-    virtual void getTransformation(std::vector<TransformField>& result) = 0;
 };
 
 XCM_DECLARE_SMARTPTR(ITransformationDoc)
@@ -150,8 +148,6 @@ public:
     // ITransformationDoc
     void initFromDefinition();
     void close();
-
-    void getTransformation(std::vector<TransformField>& result);
 
 private:
 
@@ -246,7 +242,6 @@ private:
     
     kcl::RowSelectionGrid* m_grid;
     
-    std::vector<TransformField> m_source_fields;
     bool m_dirty;
     int m_last_selected_fieldtype;
 
