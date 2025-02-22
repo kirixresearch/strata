@@ -130,7 +130,7 @@ ITextDocPtr createTextDoc(const std::wstring& filename,
 
     if (container_wnd)
     {
-        tabledoc_site = frame->createSite(container_wnd, tabledoc,  false);
+        tabledoc_site = frame->createSite(container_wnd, tabledoc, false);
     }
      else
     {
