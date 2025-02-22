@@ -594,7 +594,7 @@ void TransformationDoc::onSiteActivated()
     }
 }
 
-void TransformationDoc::initFromDefinition()
+void TransformationDoc::populate()
 {
     const xd::FormatDefinition& def = m_def;
 

@@ -107,7 +107,7 @@ xcm_interface ITransformationDoc : public xcm::IObject
 
 public:
 
-    virtual void initFromDefinition() = 0;
+    virtual void populate() = 0;
     virtual void close() = 0;
 };
 
@@ -146,7 +146,7 @@ public:
     virtual ~TransformationDoc();
     
     // ITransformationDoc
-    void initFromDefinition();
+    void populate();
     void close();
 
 private:
