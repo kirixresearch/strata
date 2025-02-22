@@ -11,71 +11,13 @@
 
 #include "appmain.h"
 #include "fieldlistcontrol.h"
-
+#include "fieldtypechoice.h"
 
 enum
 {
     FieldListCtrlId = 7765
 };
 
-
-// utility functions
-
-wxString xd2text(int xd_type)
-{
-    switch (xd_type)
-    {
-        default:
-        case xd::typeUndefined:      return _("Undefined");
-        case xd::typeInvalid:        return _("Invalid");
-        case xd::typeCharacter:      return _("Character");
-        case xd::typeWideCharacter:  return _("Wide Char.");
-        case xd::typeBinary:         return _("Binary");
-        case xd::typeNumeric:        return _("Numeric");
-        case xd::typeDouble:         return _("Double");
-        case xd::typeInteger:        return _("Integer");
-        case xd::typeDate:           return _("Date");
-        case xd::typeDateTime:       return _("DateTime");
-        case xd::typeBoolean:        return _("Boolean");
-    }
-
-    return wxT("");
-}
-
-int text2xd(const wxString& text)
-{
-    if (text.CmpNoCase(_("Invalid")) == 0)
-        return xd::typeInvalid;
-
-    if (text.CmpNoCase(_("Character")) == 0)
-        return xd::typeCharacter;
-
-    if (text.CmpNoCase(_("Wide Char.")) == 0)
-        return xd::typeWideCharacter;
-
-    if (text.CmpNoCase(_("Binary")) == 0)
-        return xd::typeBinary;
-
-    if (text.CmpNoCase(_("Numeric")) == 0)
-        return xd::typeNumeric;
-
-    if (text.CmpNoCase(_("Double")) == 0)
-        return xd::typeDouble;
-
-    if (text.CmpNoCase(_("Integer")) == 0)
-        return xd::typeInteger;
-
-    if (text.CmpNoCase(_("Date")) == 0)
-        return xd::typeDate;
-
-    if (text.CmpNoCase(_("DateTime")) == 0)
-        return xd::typeDateTime;
-
-    if (text.CmpNoCase(_("Boolean")) == 0)
-        return xd::typeBoolean;
-
-    return xd::typeUndefined;
-}
 
 
 // predicate helper function for sorting the FieldListItem class
@@ -89,8 +31,6 @@ static bool sortByNameD(const FieldListItem& l, const FieldListItem& r)
 {
     return l.name.CmpNoCase(r.name) > 0;
 }
-
-
 
 
 BEGIN_EVENT_TABLE(FieldListControl, wxPanel)
@@ -385,7 +325,7 @@ void FieldListControl::populate()
         }
 
         if (m_grid->getColumnViewIdx(ColTypeIdx) != -1)
-            m_grid->setCellString(idx, ColTypeIdx, xd2text(it->type));
+            m_grid->setCellString(idx, ColTypeIdx, xdtype2text(it->type));
 
         if (m_grid->getColumnViewIdx(ColWidthIdx) != -1)
             m_grid->setCellInteger(idx, ColWidthIdx, it->width);
@@ -419,7 +359,7 @@ void FieldListControl::populate()
         }
 
         if (m_grid->getColumnViewIdx(ColTypeIdx) != -1)
-            m_grid->setCellString(idx, ColTypeIdx, xd2text(it->type));
+            m_grid->setCellString(idx, ColTypeIdx, xdtype2text(it->type));
 
         if (m_grid->getColumnViewIdx(ColWidthIdx) != -1)
             m_grid->setCellInteger(idx, ColWidthIdx, it->width);
@@ -476,7 +416,3 @@ void FieldListControl::onSize(wxSizeEvent& evt)
 {
     evt.Skip();
 }
-
-
-
-

@@ -602,14 +602,14 @@ bool StructureDoc::initDoc(IFramePtr frame,
     props.mask = kcl::CellProperties::cpmaskCtrlType |
                  kcl::CellProperties::cpmaskCbChoices;
     props.ctrltype = kcl::Grid::ctrltypeDropList;
-    props.cbchoices.push_back(xd2text(xd::typeCharacter));
-    props.cbchoices.push_back(xd2text(xd::typeWideCharacter));
-    props.cbchoices.push_back(xd2text(xd::typeNumeric));
-    props.cbchoices.push_back(xd2text(xd::typeDouble));
-    props.cbchoices.push_back(xd2text(xd::typeInteger));
-    props.cbchoices.push_back(xd2text(xd::typeDate));
-    props.cbchoices.push_back(xd2text(xd::typeDateTime));
-    props.cbchoices.push_back(xd2text(xd::typeBoolean));
+    props.cbchoices.push_back(xdtype2text(xd::typeCharacter));
+    props.cbchoices.push_back(xdtype2text(xd::typeWideCharacter));
+    props.cbchoices.push_back(xdtype2text(xd::typeNumeric));
+    props.cbchoices.push_back(xdtype2text(xd::typeDouble));
+    props.cbchoices.push_back(xdtype2text(xd::typeInteger));
+    props.cbchoices.push_back(xdtype2text(xd::typeDate));
+    props.cbchoices.push_back(xdtype2text(xd::typeDateTime));
+    props.cbchoices.push_back(xdtype2text(xd::typeBoolean));
     m_grid->setModelColumnProperties(colFieldType, &props);
     
     props.mask = kcl::CellProperties::cpmaskEditable |

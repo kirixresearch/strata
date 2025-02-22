@@ -33,7 +33,7 @@ enum FieldTypeChoiceIndex
 // -- utility functions --
 
 
-static inline wxString xd2text(int xd_type)
+inline wxString xdtype2text(int xd_type)
 {
     switch (xd_type)
     {
@@ -54,7 +54,46 @@ static inline wxString xd2text(int xd_type)
     return wxT("");
 }
 
-static inline int xdtype2choice(int xd_type)
+
+inline int text2xdtype(const wxString& text)
+{
+    if (text.CmpNoCase(_("Invalid")) == 0)
+        return xd::typeInvalid;
+
+    if (text.CmpNoCase(_("Character")) == 0)
+        return xd::typeCharacter;
+
+    if (text.CmpNoCase(_("Wide Char.")) == 0)
+        return xd::typeWideCharacter;
+
+    if (text.CmpNoCase(_("Wide Character")) == 0)
+        return xd::typeWideCharacter;
+
+    if (text.CmpNoCase(_("Binary")) == 0)
+        return xd::typeBinary;
+
+    if (text.CmpNoCase(_("Numeric")) == 0)
+        return xd::typeNumeric;
+
+    if (text.CmpNoCase(_("Double")) == 0)
+        return xd::typeDouble;
+
+    if (text.CmpNoCase(_("Integer")) == 0)
+        return xd::typeInteger;
+
+    if (text.CmpNoCase(_("Date")) == 0)
+        return xd::typeDate;
+
+    if (text.CmpNoCase(_("DateTime")) == 0)
+        return xd::typeDateTime;
+
+    if (text.CmpNoCase(_("Boolean")) == 0)
+        return xd::typeBoolean;
+
+    return xd::typeUndefined;
+}
+
+inline int xdtype2choice(int xd_type)
 {
     switch(xd_type)
     {
@@ -71,7 +110,7 @@ static inline int xdtype2choice(int xd_type)
     return comboCharacter;
 }
 
-static inline int choice2xdtype(int choice_idx)
+inline int choice2xdtype(int choice_idx)
 {
     switch(choice_idx)
     {
