@@ -70,7 +70,7 @@ int FieldTypeChoice::getXdType()
 
 void FieldTypeChoice::setXdChoice(int xd_type)
 {
-    int idx = xd2choice(xd_type);
+    int idx = xdtype2choice(xd_type);
     SetSelection(idx);
 }
 

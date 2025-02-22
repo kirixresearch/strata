@@ -54,7 +54,7 @@ static inline wxString xd2text(int xd_type)
     return wxT("");
 }
 
-static inline int xd2choice(int xd_type)
+static inline int xdtype2choice(int xd_type)
 {
     switch(xd_type)
     {
