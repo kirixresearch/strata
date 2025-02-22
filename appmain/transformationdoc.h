@@ -173,7 +173,6 @@ private:
     void resizeAllGridColumnsToFitDoc();
     void updateNumberColumn();
     void updateExpressionIcon(int row, int validation_res);
-    void updateRowWidthAndScale(int row);
     void updateRowCellProps(int row);
     void updateStatusBar();
     void checkOverlayText();

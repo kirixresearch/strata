@@ -980,53 +980,6 @@ void TransformationDoc::updateExpressionIcon(int row, int validation_res)
     }
 }
 
-void TransformationDoc::updateRowWidthAndScale(int row)
-{
-    // NOTE: now that we hide default field widths and scales (e.g. width
-    //       is hidden for date, double, etc. because it is standard), we
-    //       actually don't need to update these values until we actually
-    //       save the structure (this will help greatly when switching
-    //       back and forth between types because existing info will
-    //       not be lost every time the type changes
-    
-    if (m_last_selected_fieldtype == -1)
-        return;
-    
-    int last_xd_type = choice2xd(m_last_selected_fieldtype);
-    int xd_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
-    
-    TransformField* f = (TransformField*)(m_grid->getRowData(row));
-    
-    if (xd_type == xd::typeCharacter ||
-        xd_type == xd::typeWideCharacter)
-    {
-        if (last_xd_type == xd::typeCharacter ||
-            last_xd_type == xd::typeWideCharacter)
-        {
-            return;
-        }
-        
-        // if the width of the field was set to something less than
-        // the original input width, revert back to the input width
-        int width = m_grid->getCellInteger(row, colFieldWidth);
-        if (width < f->output_width)
-        {
-            m_grid->setCellInteger(row, colFieldWidth, f->output_width);
-        }
-    }
-    
-    if (xd_type == xd::typeNumeric)
-    {
-        // if the width of the field was set to something above
-        // the max numeric width, cap it off
-        int width = m_grid->getCellInteger(row, colFieldWidth);
-        if (width > xd::max_numeric_width)
-        {
-            m_grid->setCellInteger(row, colFieldWidth,
-                                   xd::max_numeric_width);
-        }
-    }
-}
 
 void TransformationDoc::updateStatusBar()
 {
@@ -2057,7 +2010,6 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
             m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
         }
         
-        updateRowWidthAndScale(row);
         updateRowCellProps(row);
         m_grid->refresh(kcl::Grid::refreshAll);
         
