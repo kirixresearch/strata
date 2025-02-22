@@ -195,7 +195,6 @@ private:
                                           wxString* source_name,
                                           int* format_comboidx);
 
-    void populateSourceFieldDropDown();
     xd::Structure createStructureFromGrid();
     xd::Structure getSourceStructure();
     

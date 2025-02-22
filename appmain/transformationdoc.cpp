@@ -478,8 +478,6 @@ bool TransformationDoc::initDoc(IFramePtr frame,
     m_grid->createModelColumn(colFieldFormula, _("Format/Formula"), kcl::Grid::typeCharacter, 4096, 0);
     m_grid->createDefaultView();
 
-    // set cell properties for source fields choice control
-    populateSourceFieldDropDown();
     
     // set cell properties for field type choice control
     kcl::CellProperties props;
@@ -617,7 +615,6 @@ void TransformationDoc::populate()
     
 
     updateNumberColumn();
-    populateSourceFieldDropDown();
 
     resizeAllGridColumnsToFitDoc();
 
@@ -681,7 +678,6 @@ void TransformationDoc::onColumnListDblClicked(const std::vector<wxString>& item
     }
 
     updateNumberColumn();
-    populateSourceFieldDropDown();
     m_grid->moveCursor(m_grid->getRowCount()-1, colFieldName);
     m_grid->scrollVertToCursor();
     m_grid->refresh(kcl::Grid::refreshAll);
@@ -764,7 +760,6 @@ void TransformationDoc::insertSelectedRows(bool calculated)
     }
 
     updateNumberColumn();
-    populateSourceFieldDropDown();
     m_grid->refresh(kcl::Grid::refreshAll);
     updateStatusBar();
 }
@@ -1205,11 +1200,6 @@ wxString TransformationDoc::getFieldExpression(int row)
     return expression;
 }
 
-void TransformationDoc::populateSourceFieldDropDown()
-{
-    if (!m_grid)
-        return;
-}
 
 void TransformationDoc::clearProblemRows()
 {
@@ -1432,7 +1422,6 @@ void TransformationDoc::onDeletedRows(std::vector<int> rows)
     //       so it will take care of the grid refresh for us
     checkOverlayText();
     updateNumberColumn();
-    populateSourceFieldDropDown();
     updateStatusBar();
     m_dirty = true;
 }
@@ -1490,7 +1479,6 @@ void TransformationDoc::onFrameEvent(FrameworkEvent& evt)
                         TODO: implement
                         initFromSet(m_init_set);
                         updateNumberColumn();
-                        populateSourceFieldDropDown();
                         checkOverlayText();
                         */
 
@@ -1781,7 +1769,6 @@ void TransformationDoc::onDeleteField(wxCommandEvent& evt)
     m_grid->deleteSelectedRows();
     checkOverlayText();
     updateNumberColumn();
-    populateSourceFieldDropDown();
     m_grid->refresh(kcl::Grid::refreshAll);
     updateStatusBar();
 }
@@ -1885,7 +1872,6 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
         // cell's text has not yet changed)
         m_grid->setCellString(row, colFieldName, evt.GetString());
         
-        populateSourceFieldDropDown();
         clearProblemRows();
         checkDuplicateFieldnames(CheckMarkRows);
         checkInvalidFieldnames(CheckMarkRows);
