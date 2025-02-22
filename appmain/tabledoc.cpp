@@ -1834,9 +1834,7 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
         filename = filenameToUrl(filename);
         
         // open new file
-        textdoc->open(filename);
-       // transdoc->initFromDefinition(textdoc->getPath());
-        
+        textdoc->open(filename);  
        
         // reload grid
         createModel();

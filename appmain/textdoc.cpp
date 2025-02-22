@@ -149,7 +149,7 @@ ITextDocPtr createTextDoc(const std::wstring& filename,
     transdoc_site = frame->createSite(container_wnd,
                                       static_cast<IDocument*>(transdoc),
                                       false);
-    transdoc->initFromDefinition(textdoc->getDefinition());
+    transdoc->initFromDefinition();
 
 
 
@@ -915,7 +915,7 @@ void TextDoc::refreshDocuments()
     ITransformationDocPtr transdoc;
     transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
     if (transdoc)
-        transdoc->initFromDefinition(m_def);
+        transdoc->initFromDefinition();
 
     // update the TableDoc's base set
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
@@ -1370,7 +1370,7 @@ void TextDoc::onTextViewColumnAdded(TextViewColumn& col)
     ITransformationDocPtr transdoc;
     transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
     if (transdoc)
-        transdoc->initFromDefinition(m_def);
+        transdoc->initFromDefinition();
     
     // add the column to the TableDoc's view
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
@@ -1427,7 +1427,7 @@ void TextDoc::onTextViewColumnDeleted(TextViewColumn& col)
     ITransformationDocPtr transdoc;
     transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
     if (transdoc)
-        transdoc->initFromDefinition(m_def);
+        transdoc->initFromDefinition();
 
     // delete the column from the TableDoc's view
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
@@ -1498,7 +1498,7 @@ void TextDoc::onTextViewColumnModified(TextViewColumn& col, TextViewColumn& new_
     ITransformationDocPtr transdoc;
     transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
     if (transdoc)
-        transdoc->initFromDefinition(m_def);
+        transdoc->initFromDefinition();
 
     // update the TableDoc
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
@@ -1600,7 +1600,7 @@ void TextDoc::onSave(wxCommandEvent& evt)
             ITransformationDocPtr transdoc;
             transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
             if (transdoc)
-                transdoc->initFromDefinition(m_def);
+                transdoc->initFromDefinition();
 
             // update the TableDoc's base set
             ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
@@ -1809,7 +1809,7 @@ void TextDoc::onFixedLengthRowWidthTextEnter(wxCommandEvent& evt)
         ITransformationDocPtr transdoc;
         transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
         if (transdoc)
-            transdoc->initFromDefinition(m_def);
+            transdoc->initFromDefinition();
     }
 
     /*
@@ -1852,7 +1852,7 @@ void TextDoc::onFixedLengthRowWidthSpun(wxSpinEvent& evt)
         ITransformationDocPtr transdoc;
         transdoc = lookupOtherDocument(m_doc_site, "appmain.TransformationDoc");
         if (transdoc)
-            transdoc->initFromDefinition(m_def);
+            transdoc->initFromDefinition();
     }
 
     // update the TableDoc's base set

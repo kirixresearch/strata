@@ -107,7 +107,7 @@ xcm_interface ITransformationDoc : public xcm::IObject
 
 public:
 
-    virtual void initFromDefinition(const xd::FormatDefinition& def) = 0;
+    virtual void initFromDefinition() = 0;
     virtual void close() = 0;
     
     virtual void getTransformation(std::vector<TransformField>& result) = 0;
@@ -151,7 +151,7 @@ public:
     virtual ~TransformationDoc();
     
     // ITransformationDoc
-    void initFromDefinition(const xd::FormatDefinition& def);
+    void initFromDefinition();
     void close();
 
     void getTransformation(std::vector<TransformField>& result);
@@ -183,6 +183,7 @@ private:
     void insertSelectedRows(bool dynamic = false);
     void insertRowFromColumnInfo(int row, const xd::ColumnInfo& colinfo);
 
+    void resizeAllGridColumnsToFitDoc();
     void updateNumberColumn();
     void updateExpressionIcon(int row, int validation_res);
     void updateRowWidthAndScale(int row);

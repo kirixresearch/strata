@@ -2187,13 +2187,13 @@ int Grid::getColumnModelIdxByName(const wxString& col_name)
     return m_model->getColumnIndex(col_name);
 }
 
-void Grid::hideColumn(int col)
+void Grid::hideColumn(int view_col)
 {
-    if (col < 0 || col >= (int)m_viewcols.size())
+    if (view_col < 0 || view_col >= (int)m_viewcols.size())
         return;
 
-    delete m_viewcols[col];
-    m_viewcols.erase(m_viewcols.begin() + col);
+    delete m_viewcols[view_col];
+    m_viewcols.erase(m_viewcols.begin() + view_col);
     m_viewcol_lookup.clear();
 
 
@@ -2210,7 +2210,7 @@ void Grid::hideColumn(int col)
 
 
     GridEvent evt;
-    evt.SetColumn(col);
+    evt.SetColumn(view_col);
     evt.SetUserEvent(false);
     fireEvent(wxEVT_KCLGRID_COLUMN_HIDE, evt);
 }
@@ -2653,6 +2653,20 @@ bool Grid::getColumnRect(int col, wxRect& rect)
     return false;
 }
     
+void Grid::getTextExtent(const wxString& text, int* width, int* height)
+{
+    m_memdc.SetFont(m_font);
+
+    int w, h;
+    m_memdc.GetTextExtent(text, &w, &h);
+
+    if (width) {
+        *width = toDIP(w);
+    }
+    if (height) {
+        *height = toDIP(h);
+    }
+}
 
 
 

@@ -85,6 +85,9 @@ enum GridColumnIndexes
     colFieldWidth,
     colFieldScale,
     colSourceName,
+    colSourceOffset,
+    colSourceWidth,
+    colSourceEncoding,
     colFieldFormula
 };
     
@@ -346,24 +349,75 @@ TransformationDoc::~TransformationDoc()
 }
 
 
-inline void resizeAllGridColumnsToFitDoc(kcl::Grid* grid)
+void TransformationDoc::resizeAllGridColumnsToFitDoc()
 {
     // this code changes the two proportional columns to be non-proportionally
     // sized, which will make the grid fill the client window size initially,
     // but still allow the user to resize each column
+
+    m_grid->createDefaultView();
+
+    int tiny_x = 0, tiny_y = 0;
+    m_grid->getTextExtent("XXXXX", &tiny_x, &tiny_y);
+
+    int small_x=0, small_y=0;
+    m_grid->getTextExtent("DecimalsX", &small_x, &small_y);
+
+    int medium_x=0, medium_y=0;
+    m_grid->getTextExtent("Source EncodingX", &medium_x, &medium_y);
+
+    m_grid->setColumnSize(colRowNumber, tiny_x);
+    m_grid->setColumnSize(colFieldName, 100);
+    m_grid->setColumnSize(colFieldType, medium_x);
+    m_grid->setColumnSize(colFieldWidth, small_x);
+    m_grid->setColumnSize(colFieldScale, small_x);
+    m_grid->setColumnSize(colSourceName, medium_x);
+    m_grid->setColumnSize(colSourceOffset, medium_x);
+    m_grid->setColumnSize(colSourceWidth, medium_x);
+    m_grid->setColumnSize(colSourceEncoding, medium_x);
+    m_grid->setColumnSize(colFieldFormula, 200);
+
+    if (m_def.format == xd::formatFixedLengthText)
+    {
+        m_grid->hideColumn(colSourceName);
+    }
+    else
+    {
+        m_grid->hideColumn(colSourceEncoding);
+        m_grid->hideColumn(colSourceWidth);
+        m_grid->hideColumn(colSourceOffset);
+        m_grid->hideColumn(colSourceName);
+    }
+
+    int colidxRowNumber = m_grid->getColumnViewIdx(colRowNumber);
+    int colidxFieldName = m_grid->getColumnViewIdx(colFieldName);
+    int colidxFieldType = m_grid->getColumnViewIdx(colFieldType);
+    int colidxFieldWidth = m_grid->getColumnViewIdx(colFieldWidth);
+    int colidxFieldScale = m_grid->getColumnViewIdx(colFieldScale);
+    int colidxSourceName = m_grid->getColumnViewIdx(colSourceName);
+    int colidxSourceOffset = m_grid->getColumnViewIdx(colSourceOffset);
+    int colidxSourceWidth = m_grid->getColumnViewIdx(colSourceWidth);
+    int colidxSourceEncoding = m_grid->getColumnViewIdx(colSourceEncoding);
+    int colidxFieldFormula = m_grid->getColumnViewIdx(colFieldFormula);
+
+
     int w, h;
-    grid->GetClientSize(&w, &h);
-    w -= grid->getColumnSize(colRowNumber);
-    w -= grid->getColumnSize(colSourceName);
-    w -= grid->getColumnSize(colFieldType);
-    w -= grid->getColumnSize(colFieldWidth);
-    w -= grid->getColumnSize(colFieldScale);
-    grid->setColumnSize(colFieldName, w*30/100);
-    grid->setColumnSize(colFieldFormula, w*70/100);
+    m_grid->GetClientSize(&w, &h);
+    w -= colidxRowNumber >= 0 ? m_grid->getColumnSize(colidxRowNumber) : 0;
+    w -= colidxFieldType >= 0 ? m_grid->getColumnSize(colFieldType) : 0;
+    w -= colidxFieldWidth >= 0 ? m_grid->getColumnSize(colFieldWidth) : 0;
+    w -= colidxFieldScale >= 0 ? m_grid->getColumnSize(colFieldScale) : 0;
+    w -= colidxSourceName >= 0 ? m_grid->getColumnSize(colSourceName) : 0;
+    w -= colidxSourceOffset >= 0 ? m_grid->getColumnSize(colSourceOffset) : 0;
+    w -= colidxSourceWidth >= 0 ? m_grid->getColumnSize(colSourceWidth) : 0;
+    w -= colidxSourceEncoding >= 0 ? m_grid->getColumnSize(colSourceEncoding) : 0;
+    m_grid->setColumnSize(colidxFieldName, w * 30 / 100);
+    m_grid->setColumnSize(colidxFieldFormula, w * 70 / 100);
+
 
     // refresh the row selection grid
-    grid->moveCursor(0, colFieldName);
-    grid->refresh(kcl::Grid::refreshAll);
+    m_grid->moveCursor(0, colFieldName);
+    m_grid->refresh(kcl::Grid::refreshAll);
 }
 
 bool TransformationDoc::initDoc(IFramePtr frame,
@@ -418,16 +472,11 @@ bool TransformationDoc::initDoc(IFramePtr frame,
     m_grid->createModelColumn(colFieldWidth, _("Width"), kcl::Grid::typeInteger, 5, 0);
     m_grid->createModelColumn(colFieldScale, _("Decimals"), kcl::Grid::typeInteger, 5, 0);
     m_grid->createModelColumn(colSourceName, _("Source Name"), kcl::Grid::typeCharacter, 80, 0);
+    m_grid->createModelColumn(colSourceOffset, _("Source Offset"), kcl::Grid::typeInteger, 10, 0);
+    m_grid->createModelColumn(colSourceWidth, _("Source Width"), kcl::Grid::typeInteger, 5, 0);
+    m_grid->createModelColumn(colSourceEncoding, _("Source Encoding"), kcl::Grid::typeCharacter, 20, 0);
     m_grid->createModelColumn(colFieldFormula, _("Format/Formula"), kcl::Grid::typeCharacter, 4096, 0);
     m_grid->createDefaultView();
-    
-    m_grid->setColumnSize(colRowNumber, 30);
-    m_grid->setColumnSize(colFieldName, 140);
-    m_grid->setColumnSize(colFieldType, 110);
-    m_grid->setColumnSize(colFieldWidth, 55);
-    m_grid->setColumnSize(colFieldScale, 55);
-    m_grid->setColumnSize(colSourceName, 120);
-    m_grid->setColumnSize(colFieldFormula, 160);
 
     // set cell properties for source fields choice control
     populateSourceFieldDropDown();
@@ -462,7 +511,7 @@ bool TransformationDoc::initDoc(IFramePtr frame,
     Layout();
 
     // fits all of the grid's columns to the size of the document
-    resizeAllGridColumnsToFitDoc(m_grid);
+    resizeAllGridColumnsToFitDoc();
 
     // make this grid a drop target and connect the signal
     kcl::GridDataDropTarget* drop_target = new kcl::GridDataDropTarget(m_grid);
@@ -539,11 +588,16 @@ bool TransformationDoc::onSiteClosing(bool force)
 void TransformationDoc::onSiteActivated()
 {
     if (m_grid)
+    {
+        resizeAllGridColumnsToFitDoc();
         updateStatusBar();
+    }
 }
 
-void TransformationDoc::initFromDefinition(const xd::FormatDefinition& def)
+void TransformationDoc::initFromDefinition()
 {
+    const xd::FormatDefinition& def = m_def;
+
     std::vector<xd::ColumnInfo>::const_iterator cit;
 
     // clear the grid
@@ -565,7 +619,7 @@ void TransformationDoc::initFromDefinition(const xd::FormatDefinition& def)
     updateNumberColumn();
     populateSourceFieldDropDown();
 
-    resizeAllGridColumnsToFitDoc(m_grid);
+    resizeAllGridColumnsToFitDoc();
 
     // refresh the row selection grid
     if (m_grid->getRowCount() > 0)

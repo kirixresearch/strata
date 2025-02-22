@@ -672,6 +672,7 @@ public:
 
     bool getRowRect(int row, wxRect& rect);
     bool getColumnRect(int col, wxRect& rect);
+    void getTextExtent(const wxString& text, int* width, int* height);
 
     void setRowHeight(int row_height);
     int getRowHeight();
@@ -762,7 +763,7 @@ public:
     void getAllSelections(std::vector<SelectionRect>& selrect);
     bool removeSelection(unsigned int idx);
 
-    void hideColumn(int col);
+    void hideColumn(int view_col);
     int insertColumn(int position, int modelcol_idx);
     int insertColumnSeparator(int position);
     void setColumn(int position, int modelcol_idx);
