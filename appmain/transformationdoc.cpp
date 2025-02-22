@@ -199,6 +199,60 @@ static int combo2formatIdx(int xd_type, int combo_idx)
     return -1;
 }
 
+enum EncodingComboIndexes
+{
+    comboUndefined = 0,
+    comboASCII,
+    comboEBCDIC,
+    comboCOMP,
+    comboCOMP3
+};
+
+wxString choice2encodingLabel(int choice_idx)
+{
+    switch (choice_idx)
+    {
+        case comboUndefined:  return _("Default");
+        case comboASCII:      return _("ASCII");
+        case comboEBCDIC:     return _("EBCDIC");
+        case comboCOMP:       return _("COMP");
+        case comboCOMP3:      return _("COMP-3");
+    }
+    return _("Undefined");
+}
+
+inline int choice2xdencoding(int choice_idx)
+{
+    switch (choice_idx)
+    {
+        case comboUndefined:  return xd::encodingUndefined;
+        case comboASCII:      return xd::encodingASCII;
+        case comboEBCDIC:     return xd::encodingEBCDIC;
+        case comboCOMP:       return xd::encodingCOMP;
+        case comboCOMP3:      return xd::encodingCOMP3;
+    }
+
+    return xd::encodingUndefined; // Return undefined if choice not found
+}
+
+inline int xdencoding2choice(int encoding)
+{
+    switch (encoding)
+    {
+        case xd::encodingInvalid:
+        case xd::encodingUndefined: return comboUndefined;
+        case xd::encodingASCII:     return comboASCII;
+        case xd::encodingEBCDIC:    return comboEBCDIC;
+        case xd::encodingCOMP:      return comboCOMP;
+        case xd::encodingCOMP3:     return comboCOMP3;
+    }
+
+    return comboASCII; // Default to ASCII if encoding not found
+}
+
+
+
+
 static std::wstring expr2regex(const std::wstring& expr)
 {
     // even though it is a little slower to convert to wxString and back,
@@ -481,29 +535,53 @@ bool TransformationDoc::initDoc(IFramePtr frame,
     m_grid->createModelColumn(colFieldFormula, _("Format/Formula"), kcl::Grid::typeCharacter, 4096, 0);
     m_grid->createDefaultView();
 
+
+    // set properties for row number field
+    {
+        kcl::CellProperties props;
+        props.mask = kcl::CellProperties::cpmaskEditable |
+            kcl::CellProperties::cpmaskAlignment |
+            kcl::CellProperties::cpmaskBitmapAlignment;
+        props.editable = false;
+        props.alignment = kcl::Grid::alignRight;
+        props.bitmap_alignment = kcl::Grid::alignRight;
+        m_grid->setModelColumnProperties(colRowNumber, &props);
+    }
     
     // set cell properties for field type choice control
-    kcl::CellProperties props;
-    props.mask = kcl::CellProperties::cpmaskCtrlType |
-                 kcl::CellProperties::cpmaskCbChoices;
-    props.ctrltype = kcl::Grid::ctrltypeDropList;
-    props.cbchoices.push_back(xdtype2text(xd::typeCharacter));
-    props.cbchoices.push_back(xdtype2text(xd::typeWideCharacter));
-    props.cbchoices.push_back(xdtype2text(xd::typeNumeric));
-    props.cbchoices.push_back(xdtype2text(xd::typeDouble));
-    props.cbchoices.push_back(xdtype2text(xd::typeInteger));
-    props.cbchoices.push_back(xdtype2text(xd::typeDate));
-    props.cbchoices.push_back(xdtype2text(xd::typeDateTime));
-    props.cbchoices.push_back(xdtype2text(xd::typeBoolean));
-    m_grid->setModelColumnProperties(colFieldType, &props);
-    
-    props.mask = kcl::CellProperties::cpmaskEditable |
-                 kcl::CellProperties::cpmaskAlignment |
-                 kcl::CellProperties::cpmaskBitmapAlignment;
-    props.editable = false;
-    props.alignment = kcl::Grid::alignRight;
-    props.bitmap_alignment = kcl::Grid::alignRight;
-    m_grid->setModelColumnProperties(colRowNumber, &props);
+    {
+        kcl::CellProperties props;
+        props.mask = kcl::CellProperties::cpmaskCtrlType |
+                     kcl::CellProperties::cpmaskCbChoices;
+        props.ctrltype = kcl::Grid::ctrltypeDropList;
+        props.cbchoices.push_back(xdtype2text(xd::typeCharacter));
+        props.cbchoices.push_back(xdtype2text(xd::typeWideCharacter));
+        props.cbchoices.push_back(xdtype2text(xd::typeNumeric));
+        props.cbchoices.push_back(xdtype2text(xd::typeDouble));
+        props.cbchoices.push_back(xdtype2text(xd::typeInteger));
+        props.cbchoices.push_back(xdtype2text(xd::typeDate));
+        props.cbchoices.push_back(xdtype2text(xd::typeDateTime));
+        props.cbchoices.push_back(xdtype2text(xd::typeBoolean));
+        m_grid->setModelColumnProperties(colFieldType, &props);
+    }
+
+
+    // set cell properties for the encoding choice control
+    {
+        kcl::CellProperties props;
+        props.mask = kcl::CellProperties::cpmaskCtrlType |
+                     kcl::CellProperties::cpmaskCbChoices;
+        props.ctrltype = kcl::Grid::ctrltypeDropList;
+
+        props.cbchoices.push_back(choice2encodingLabel(comboUndefined));
+        props.cbchoices.push_back(choice2encodingLabel(comboASCII));
+        props.cbchoices.push_back(choice2encodingLabel(comboEBCDIC));
+        props.cbchoices.push_back(choice2encodingLabel(comboCOMP));
+        props.cbchoices.push_back(choice2encodingLabel(comboCOMP3));
+
+        m_grid->setModelColumnProperties(colSourceEncoding, &props);
+    }
+   
 
     // create main sizer
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
@@ -767,8 +845,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
 
     m_grid->setCellInteger(row, colSourceOffset, colinfo.source_offset);
     m_grid->setCellInteger(row, colSourceWidth, colinfo.source_width);
-
-
+    m_grid->setCellComboSel(row, colSourceEncoding, xdencoding2choice(colinfo.source_encoding));
 
     if (/*caculated*/ false)
         m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_lightning_16));
