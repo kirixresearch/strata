@@ -507,7 +507,9 @@ bool TransformationDoc::initDoc(IFramePtr frame,
                                        -1,
                                        wxPoint(0,0),
                                        docsite_wnd->GetClientSize(),
-                                       wxBORDER_NONE);
+                                       wxBORDER_NONE,
+                                       false,
+                                       false);
     m_grid->setDragFormat(wxT("transformationdoc"));
     m_grid->setRowSelectionGridFlags(kcl::RowSelectionGrid::refreshNone);
     m_grid->setOverlayFont(overlay_font);
@@ -725,49 +727,10 @@ void TransformationDoc::getColumnListItems(std::vector<ColumnListItem>& items)
 
 void TransformationDoc::onColumnListDblClicked(const std::vector<wxString>& items)
 {
-/*
-    xd::Structure s = getTextSourceStructure(m_doc_site);
-    if (s.isNull())
-        return;
-        
-    m_grid->Freeze();
-
-    int row = m_grid->getRowCount();
-
-    // inserting fields in from the field panel
-    std::vector<wxString>::const_iterator it;
-    for (it = items.begin(); it != items.end(); ++it)
-    {
-        // get the column info from the column name we double-clicked
-        xd::IColumnInfoPtr colinfo = s->getColumnInfo(towstr(*it));
-        if (colinfo.isNull())
-            continue;
-        
-        // we need to set the expression to the source column name
-        // so that we know which source column this column refers to
-        colinfo->setExpression(colinfo->getName());
-        
-        insertRowFromColumnInfo(row, colinfo);
-        row++;
-    }
-
-    updateNumberColumn();
-    m_grid->moveCursor(m_grid->getRowCount()-1, colFieldName);
-    m_grid->scrollVertToCursor();
-    m_grid->refresh(kcl::Grid::refreshAll);
-    
-    m_grid->Thaw();
-    
-    updateStatusBar();
-*/
 }
 
 void TransformationDoc::checkOverlayText()
 {
-    if (m_grid->getRowCount() == 0)
-        m_grid->setOverlayText(_("To add fields to this table, drag in fields\nfrom the Fields Panel or double-click here"));
-         else
-        m_grid->setOverlayText(wxEmptyString);
 }
 
 void TransformationDoc::insertRow(int row, bool calculated)
@@ -2165,51 +2128,6 @@ void TransformationDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
         }
          else if (fmt.GetId() == kcl::getGridDataFormat(wxT("fieldspanel")))
         {
-        /*
-            xd::Structure s = getTextSourceStructure(m_doc_site);
-            if (s.isNull())
-                return;
-                
-            xd::IColumnInfoPtr colinfo;
-            
-            int drop_row = drop_target->getDropRow();
-
-            // dragging fields in from the field panel
-            kcl::GridDraggedCells cells = drop_target->getDraggedCells();
-            kcl::GridDraggedCells::iterator it;
-            for (it = cells.begin(); it != cells.end(); ++it)
-            {
-                // only look at the first column from the fields panel
-                if ((*it)->m_col != 0)
-                    continue;
-                
-                // get the column info from the column name we dragged in
-                colinfo = s->getColumnInfo(towstr((*it)->m_strvalue));
-                if (colinfo.isNull())
-                    continue;
-                
-                // we need to set the expression to the source column name
-                // so that we know which source column this column refers to
-                colinfo->setExpression(colinfo->getName());
-                
-                insertRowFromColumnInfo(drop_row, colinfo);
-                drop_row++;
-            }
-            
-            // if nothing was selected when we dropped the data,
-            // select the row with the cursor in it now
-            if (m_grid->getSelectionCount() == 0)
-            {
-                int cursor_row = m_grid->getCursorRow();
-                m_grid->setRowSelected(cursor_row, true);
-            }
-
-            updateNumberColumn();
-            checkDuplicateFieldnames(CheckMarkRows);
-            checkInvalidFieldnames(CheckMarkRows);
-            m_grid->refresh(kcl::Grid::refreshAll);
-            updateStatusBar();
-        */
         }
 
         m_dirty = true;
