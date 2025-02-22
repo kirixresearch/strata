@@ -9125,7 +9125,8 @@ void Grid::onComboSelectionChanged(wxCommandEvent& event)
     }
 
     m_edit_combosel = sel;
-    setCellComboSel(m_cursor_row, m_cursor_col, sel);
+    int model_col = getColumnModelIdx(m_cursor_col);
+    setCellComboSel(m_cursor_row, model_col, sel);
 
     kcl::GridEvent evt;
     evt.SetRow(m_cursor_row);
