@@ -676,36 +676,10 @@ void TransformationDoc::getTransformation(std::vector<TransformField>& result)
 
 void TransformationDoc::setInputStructure(const std::vector<TransformField>& input_fields)
 {
-/*
-    m_source_fields = input_fields;
-    populateSourceFieldDropDown();
-*/
 }
 
 void TransformationDoc::setInputStructure(const xd::Structure& structure)
 {
-/*
-    m_source_fields.clear();
-    
-    TransformField field;
-    
-    size_t i, count = structure.getColumnCount();
-    for (i = 0; i < count; ++i)
-    {
-        const xd::ColumnInfo& col = structure.getColumnInfoByIdx(i);
-        if (col.isOk())
-        {
-            field.input_name = col.name;
-            field.input_type = col.type;
-            field.input_width = col.width;
-            field.input_scale = col.scale;
-            field.input_offset = col.source_offset;
-            m_source_fields.push_back(field);
-        }
-    }
-    
-    populateSourceFieldDropDown();
-*/
 }
 
 void TransformationDoc::getColumnListItems(std::vector<ColumnListItem>& items)
