@@ -692,12 +692,6 @@ void TransformationDoc::onColumnListDblClicked(const std::vector<wxString>& item
 */
 }
 
-TransformField TransformationDoc::getInputFieldByName(const wxString& input_name)
-{
-    TransformField f;
-    return f;
-}
-
 void TransformationDoc::checkOverlayText()
 {
     if (m_grid->getRowCount() == 0)

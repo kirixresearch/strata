@@ -166,9 +166,6 @@ private:
     void getColumnListItems(std::vector<ColumnListItem>& items);
     void onColumnListDblClicked(const std::vector<wxString>& items);
 
-    // TransformationDoc methods
-    TransformField getInputFieldByName(const wxString& input_name);
-    
     void insertRow(int row, bool dynamic = false);
     void insertSelectedRows(bool dynamic = false);
     void insertRowFromColumnInfo(int row, const xd::ColumnInfo& colinfo);
