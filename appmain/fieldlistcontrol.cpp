@@ -63,7 +63,7 @@ FieldListControl::FieldListControl(wxWindow* parent,
     m_grid->createModelColumn(-1, _("Name"), kcl::Grid::typeCharacter, 80, 0);
     m_grid->createModelColumn(-1, _("Type"), kcl::Grid::typeCharacter, 40, 0);
     m_grid->createModelColumn(-1, _("Width"), kcl::Grid::typeInteger, 9, 0);
-    m_grid->createModelColumn(-1, _("Dec."), kcl::Grid::typeInteger, 9, 0);
+    m_grid->createModelColumn(-1, _("Dec"), kcl::Grid::typeInteger, 9, 0);
 
     // it is very important for grid drag and drop purposes that this grid
     // has the "id" that is assigned in this constructor assigned to it
