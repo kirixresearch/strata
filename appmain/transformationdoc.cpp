@@ -674,14 +674,6 @@ void TransformationDoc::getTransformation(std::vector<TransformField>& result)
     }
 }
 
-void TransformationDoc::setInputStructure(const std::vector<TransformField>& input_fields)
-{
-}
-
-void TransformationDoc::setInputStructure(const xd::Structure& structure)
-{
-}
-
 void TransformationDoc::getColumnListItems(std::vector<ColumnListItem>& items)
 {
     // get the column list from the text doc (it will figure out the

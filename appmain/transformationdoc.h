@@ -111,9 +111,6 @@ public:
     virtual void close() = 0;
     
     virtual void getTransformation(std::vector<TransformField>& result) = 0;
-
-    virtual void setInputStructure(const std::vector<TransformField>& input_fields) = 0;
-    virtual void setInputStructure(const xd::Structure& structure) = 0;
 };
 
 XCM_DECLARE_SMARTPTR(ITransformationDoc)
@@ -155,9 +152,6 @@ public:
     void close();
 
     void getTransformation(std::vector<TransformField>& result);
-
-    void setInputStructure(const std::vector<TransformField>& input_fields);
-    void setInputStructure(const xd::Structure& structure);
 
 private:
 
