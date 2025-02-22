@@ -221,11 +221,14 @@ static std::wstring expr2regex(const std::wstring& expr)
     
 static bool isFieldCalculated(kcl::Grid* grid, int row)
 {
-    TransformField* f = (TransformField*)grid->getRowData(row);
+    return false;
+    /*
+    ransformField* f = (ransformField*)grid->getRowData(row);
     if (!f)
         return false;
 
     return f->calculated;
+    */
 }
 
 static std::vector<RowErrorChecker> getRowErrorCheckerVector(
@@ -701,33 +704,20 @@ void TransformationDoc::insertRow(int row, bool calculated)
     if (row == -1)
         row = m_grid->getRowCount();
     
-    TransformField* f = new TransformField;
-    f->input_name = wxEmptyString;
-    f->input_type = xd::typeCharacter;
-    f->input_width = 20;
-    f->input_scale = 0;
-    f->input_offset = 0;
-    f->output_name = wxEmptyString;
-    f->output_type = xd::typeCharacter;
-    f->output_width = 20;
-    f->output_scale = 0;
-    f->output_expression = "";
-    f->calculated = calculated;
-    f->original = false;
-    
+    int xd_type = xd::typeCharacter;
+
     m_grid->insertRow(row);
-    m_grid->setRowData(row, (intptr_t)f);
     m_grid->setCellBitmap(row, colRowNumber, calculated ? GETBMP(gf_lightning_16) : GETBMP(gf_blank_16));
-    m_grid->setCellComboSel(row, colFieldType, xd2choice(f->output_type));
-    m_grid->setCellString(row, colFieldName, f->output_name);
-    m_grid->setCellInteger(row, colFieldWidth, f->output_width);
-    m_grid->setCellInteger(row, colFieldScale, f->output_scale);
+    m_grid->setCellComboSel(row, colFieldType, xd2choice(xd_type));
+    m_grid->setCellString(row, colFieldName, "");
+    m_grid->setCellInteger(row, colFieldWidth, 20);
+    m_grid->setCellInteger(row, colFieldScale, 0);
     m_grid->setCellString(row, colSourceName, EMPTY_SOURCENAME_STR);
-    m_grid->setCellString(row, colFieldFormula, f->output_expression);
+    m_grid->setCellString(row, colFieldFormula, "");
     m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
 
     // make sure either a source field or an expression is specified
-    int valid_res = validateExpression(getSourceStructure(), f->output_expression, f->output_type);
+    int valid_res = validateExpression(getSourceStructure(), "", xd_type);
     updateExpressionIcon(row, valid_res);
 
     updateRowCellProps(row);
@@ -768,29 +758,19 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
 {
     if (row == -1)
         row = m_grid->getRowCount();
-        
-    TransformField* f = new TransformField;
-    f->input_name = colinfo.name;
-    f->input_type = xd::typeCharacter;
-    f->input_width = colinfo.source_width;
-    f->input_scale = 0;
-    f->input_offset = colinfo.source_offset;
-    f->input_encoding = colinfo.source_encoding;
-    f->output_name = colinfo.name;
-    f->output_type = colinfo.type;
-    f->output_width = colinfo.width;
-    f->output_scale = colinfo.scale;
-    f->output_expression = L"";
-    f->calculated = false;
-    f->original = true;
     
     m_grid->insertRow(row);
-    m_grid->setRowData(row, (intptr_t)f);
-    m_grid->setCellString(row, colFieldName, f->output_name);
-    m_grid->setCellComboSel(row, colFieldType, xd2choice(f->output_type));
-    m_grid->setCellInteger(row, colFieldWidth, f->output_width);
-    m_grid->setCellInteger(row, colFieldScale, f->output_scale);
-    if (f->calculated)
+    m_grid->setCellString(row, colFieldName, colinfo.name);
+    m_grid->setCellComboSel(row, colFieldType, xd2choice(colinfo.type));
+    m_grid->setCellInteger(row, colFieldWidth, colinfo.width);
+    m_grid->setCellInteger(row, colFieldScale, colinfo.scale);
+
+    m_grid->setCellInteger(row, colSourceOffset, colinfo.source_offset);
+    m_grid->setCellInteger(row, colSourceWidth, colinfo.source_width);
+
+
+
+    if (/*caculated*/ false)
         m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_lightning_16));
      else
         m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_blank_16));
@@ -1617,19 +1597,21 @@ bool TransformationDoc::doSave()
 
         std::wstring name, source_name, expression;
         int type, width, scale, format_sel;
+        int source_offset, source_width, source_encoding;
 
 
         // populate the new structure
         int row, row_count = m_grid->getRowCount();
         for (row = 0; row < row_count; ++row)
         {
-            TransformField* f = (TransformField*)m_grid->getRowData(row);
-
             name = m_grid->getCellString(row, colFieldName);
             type = m_grid->getCellComboSel(row, colFieldType);
             width = m_grid->getCellInteger(row, colFieldWidth);
             scale = m_grid->getCellInteger(row, colFieldScale);
             source_name = m_grid->getCellString(row, colSourceName);
+            source_offset = m_grid->getCellInteger(row, colSourceOffset);
+            source_width = m_grid->getCellInteger(row, colSourceWidth);
+            source_encoding = m_grid->getCellComboSel(row, colSourceEncoding);
             format_sel = m_grid->getCellComboSel(row, colFieldFormula);
             expression = getFieldExpression(row);
 
@@ -1639,8 +1621,9 @@ bool TransformationDoc::doSave()
             colinfo.width = width;
             colinfo.scale = scale;
             colinfo.expression = expression;
-            colinfo.source_offset = f->input_offset;
-            colinfo.source_width = f->input_width;
+            colinfo.source_offset = source_offset;
+            colinfo.source_width = source_width;
+            colinfo.source_encoding = source_encoding;
 
             m_def.createColumn(colinfo);
         }
