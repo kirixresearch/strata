@@ -816,8 +816,8 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
     wxString source_name;
     int format_comboidx;
 
-    expr.Replace(wxString::Format(L"rawvalue(%d)", (row + 1)), wxString::Format(L"field(%d)", (row + 1)));
-    expr.Replace(wxString::Format(L"field(%d)", (row + 1)), colinfo.name);
+    //expr.Replace(wxString::Format(L"rawvalue(%d)", (row + 1)), wxString::Format(L"field(%d)", (row + 1)));
+    //expr.Replace(wxString::Format(L"field(%d)", (row + 1)), colinfo.name);
 
     bool res = getInfoFromDestinationExpression(expr,
                                                 colinfo.type,
@@ -826,6 +826,13 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
     if (!res)
     {
         m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
+        m_grid->setCellString(row, colFieldFormula, expr);
+        int valid_res = StructureValidator::ErrorNone;
+        if (expr.Length() > 0)
+        {
+            valid_res = validateExpression(m_def.columns, expr, colinfo.type);
+            updateExpressionIcon(row, valid_res);
+        }
     }
      else
     {
@@ -1244,6 +1251,9 @@ int TransformationDoc::validateStructure()
     {
         type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
         expr = getFieldExpression(row);
+
+        if (expr.Length() == 0)
+            continue;
         
         valid = validateExpression(source_structure, expr, type);
         if (valid == StructureValidator::ExpressionValid)
@@ -1329,8 +1339,6 @@ xd::Structure TransformationDoc::getSourceStructure()
     return createStructureFromGrid();
 }
 
-
-// -- event handling --
 
 void TransformationDoc::onInsertingRows(std::vector<int> rows)
 {
@@ -1777,7 +1785,8 @@ void TransformationDoc::onGridNeedTooltipText(kcl::GridEvent& evt)
 void TransformationDoc::onGridBeginEdit(kcl::GridEvent& evt)
 {
     int row = evt.GetRow();
-    int col = evt.GetColumn();
+    int view_col = evt.GetColumn();
+    int col = m_grid->getColumnModelIdx(view_col);
     
     // store the last selected field type for comparison later on
     if (col == colFieldType)
@@ -1948,7 +1957,8 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
         return;
     }
     
-    int col = evt.GetColumn();
+    int view_col = evt.GetColumn();
+    int col = m_grid->getColumnModelIdx(view_col);
     int row = evt.GetRow();
 
     if (col == colFieldType)
@@ -1957,9 +1967,17 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
         {
             int type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
             wxString expr = getFieldExpression(row);
-        
-            int res = validateExpression(getSourceStructure(), expr, type);
-            updateExpressionIcon(row, res);
+            
+            if (expr.Length() > 0)
+            {
+                xd::Structure source_structure = getSourceStructure();
+                int res = validateExpression(source_structure, expr, type);
+                updateExpressionIcon(row, res);
+            }
+            else
+            {
+                m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
+            }
         }
          else
         {
