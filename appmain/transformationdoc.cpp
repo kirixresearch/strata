@@ -835,7 +835,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row, const xd::ColumnInfo& c
 
 void TransformationDoc::updateRowCellProps(int row)
 {
-    int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+    int type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
     
     bool width_editable = true;
     bool decimal_editable = true;
@@ -1000,7 +1000,7 @@ void TransformationDoc::updateStatusBar()
 wxString TransformationDoc::createDestinationExpression(int row)
 {
     std::wstring field = m_grid->getCellString(row, colFieldName).ToStdWstring();
-    int xd_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+    int xd_type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
     int format_comboidx = m_grid->getCellComboSel(row, colFieldFormula);
     std::wstring source_name = m_grid->getCellString(row, colSourceName).ToStdWstring();
     if (source_name == L"--")
@@ -1241,7 +1241,7 @@ int TransformationDoc::validateStructure()
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+        type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
         expr = getFieldExpression(row);
         
         valid = validateExpression(source_structure, expr, type);
@@ -1312,7 +1312,7 @@ xd::Structure TransformationDoc::createStructureFromGrid()
         xd::ColumnInfo col;
 
         col.name = towstr(m_grid->getCellString(row, colFieldName));
-        col.type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+        col.type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
         col.width = m_grid->getCellInteger(row, colFieldWidth);
         col.scale = m_grid->getCellInteger(row, colFieldScale);
         col.calculated = isFieldCalculated(m_grid, row);
@@ -1549,7 +1549,7 @@ bool TransformationDoc::doSave()
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+        int type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
         int width = -1;
         int scale = -1;
         
@@ -1617,7 +1617,7 @@ bool TransformationDoc::doSave()
 
             xd::ColumnInfo colinfo;
             colinfo.name = name;
-            colinfo.type = choice2xd(type);
+            colinfo.type = choice2xdtype(type);
             colinfo.width = width;
             colinfo.scale = scale;
             colinfo.expression = expression;
@@ -1753,7 +1753,7 @@ void TransformationDoc::onGridNeedTooltipText(kcl::GridEvent& evt)
         {
             if (it->row == row && false)
             {
-                int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+                int type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
                 wxString expr = getFieldExpression(row);
 
                 if (source_structure.isNull())
@@ -1793,7 +1793,7 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
 {
     int col = evt.GetColumn();
     int row = evt.GetRow();
-    int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+    int type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
 
     m_last_selected_fieldtype = -1;
 
@@ -1980,7 +1980,7 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
     {
         if (m_grid->getCellComboSel(row, colFieldFormula) == -1)
         {
-            int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+            int type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
             wxString expr = getFieldExpression(row);
         
             int res = validateExpression(getSourceStructure(), expr, type);
@@ -2005,7 +2005,7 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
     }
      else if (col == colSourceName)
     {
-        int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+        int type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
         wxString expr = getFieldExpression(row);
         
         // make sure either a source field or an expression is specified
@@ -2015,7 +2015,7 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
     }
      else if (col == colFieldFormula)
     {
-        int xd_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+        int xd_type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
         int combo_idx  = evt.GetExtraLong();
         int format_idx = combo2formatIdx(xd_type, combo_idx);
         

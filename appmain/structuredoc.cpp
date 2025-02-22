@@ -64,7 +64,7 @@ static std::vector<RowErrorChecker> getRowErrorCheckerVector(
     {
         wxString fieldname = grid->getCellString(row, colFieldName);
         wxString expression = grid->getCellString(row, colFieldFormula);
-        int type = choice2xd(grid->getCellComboSel(row, colFieldType));
+        int type = choice2xdtype(grid->getCellComboSel(row, colFieldType));
         bool calculated_field = false;
         StructureField* f = (StructureField*)(grid->getRowData(row));
         if (f->dynamic)
@@ -186,7 +186,7 @@ void StructureDoc::createModifyJobInstructions(kl::JsonNode& params, size_t* _ac
 
             kl::JsonNode modify_param = node["params"];
             modify_param["name"].setString(towstr(name));
-            modify_param["type"].setString(xd::dbtypeToString(choice2xd(type)));
+            modify_param["type"].setString(xd::dbtypeToString(choice2xdtype(type)));
             modify_param["width"].setInteger(width);
             modify_param["scale"].setInteger(scale);
             modify_param["expression"].setString(towstr(expr));
@@ -200,7 +200,7 @@ void StructureDoc::createModifyJobInstructions(kl::JsonNode& params, size_t* _ac
         {
             // we're modifying an existing field
             if (f->name.Cmp(name) != 0 ||
-                f->type != choice2xd(type) ||
+                f->type != choice2xdtype(type) ||
                 f->width != width ||
                 f->scale != scale ||
                 f->expr != expr ||
@@ -216,8 +216,8 @@ void StructureDoc::createModifyJobInstructions(kl::JsonNode& params, size_t* _ac
 
                 if (f->name.Cmp(name) != 0)
                     modify_param["name"].setString(towstr(name));
-                if (f->type != choice2xd(type))
-                    modify_param["type"].setString(xd::dbtypeToString(choice2xd(type)));
+                if (f->type != choice2xdtype(type))
+                    modify_param["type"].setString(xd::dbtypeToString(choice2xdtype(type)));
                 if (f->width != width)
                     modify_param["width"].setInteger(width);
                 if (f->scale != scale)
@@ -377,7 +377,7 @@ bool StructureDoc::doSave()
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+        int type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
         int width = m_grid->getCellInteger(row, colFieldWidth);
         int scale = m_grid->getCellInteger(row, colFieldScale);
 
@@ -927,8 +927,8 @@ void StructureDoc::updateRowWidthAndScale(int row)
     if (m_last_selected_fieldtype == -1)
         return;
     
-    int last_xd_type = choice2xd(m_last_selected_fieldtype);
-    int xd_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+    int last_xd_type = choice2xdtype(m_last_selected_fieldtype);
+    int xd_type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
     
     StructureField* f = (StructureField*)(m_grid->getRowData(row));
 
@@ -1047,7 +1047,7 @@ void StructureDoc::updateRowWidthAndScale(int row)
 void StructureDoc::updateRowCellProps(int row)
 {
     int combo_sel = m_grid->getCellComboSel(row, colFieldType);
-    int type = choice2xd(combo_sel);
+    int type = choice2xdtype(combo_sel);
     
     bool width_editable = true;
     bool decimal_editable = true;
@@ -1388,7 +1388,7 @@ bool StructureDoc::createTable()
         
         xd::ColumnInfo col;
         col.name = towstr(name);
-        col.type = choice2xd(type);
+        col.type = choice2xdtype(type);
         col.width = width;
         col.scale = scale;
         col.expression = towstr(expr);
@@ -1437,7 +1437,7 @@ xd::Structure StructureDoc::createStructureFromGrid()
     {
         xd::ColumnInfo col;
         col.name = towstr(m_grid->getCellString(row, colFieldName));
-        col.type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+        col.type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
         col.width = m_grid->getCellInteger(row, colFieldWidth);
         col.scale = m_grid->getCellInteger(row, colFieldScale);
         col.expression = towstr(m_grid->getCellString(row, colFieldFormula));
@@ -1927,7 +1927,7 @@ void StructureDoc::onGridNeedTooltipText(kcl::GridEvent& evt)
                 if (!isCalculatedField(m_grid, row))
                     continue;
                 
-                int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+                int type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
                 wxString expr = m_grid->getCellString(row, colFieldFormula);
                 int res = validateExpression(expr, type);
                 
@@ -2006,7 +2006,7 @@ void StructureDoc::onGridBeginEdit(kcl::GridEvent& evt)
             return;
         }
         
-        int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+        int type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
         wxString expr = m_grid->getCellString(row, colFieldFormula);
         
         int res = validateExpression(expr, type);
@@ -2023,7 +2023,7 @@ void StructureDoc::onGridEndEdit(kcl::GridEvent& evt)
 
     int row = evt.GetRow();
     int col = evt.GetColumn();
-    int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+    int type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
     m_last_selected_fieldtype = -1;
 
     // set the changed flag
@@ -2109,7 +2109,7 @@ void StructureDoc::onGridEditChange(kcl::GridEvent& evt)
     
     if (col == colFieldType)
     {
-        int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+        int type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
         wxString expr = m_grid->getCellString(row, colFieldFormula);
         
         // if the expression is valid, don't show
@@ -2133,7 +2133,7 @@ void StructureDoc::onGridEditChange(kcl::GridEvent& evt)
     }
      else if (col == colFieldFormula)
     {
-        int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+        int type = choice2xdtype(m_grid->getCellComboSel(row, colFieldType));
         wxString expr = evt.GetString();
 
         int res = validateExpression(expr, type);

@@ -64,7 +64,7 @@ FieldTypeChoice::~FieldTypeChoice()
 
 int FieldTypeChoice::getXdType()
 {
-    int retval = choice2xd(GetSelection());
+    int retval = choice2xdtype(GetSelection());
     return retval;
 }
 

@@ -71,7 +71,7 @@ static inline int xdtype2choice(int xd_type)
     return comboCharacter;
 }
 
-static inline int choice2xd(int choice_idx)
+static inline int choice2xdtype(int choice_idx)
 {
     switch(choice_idx)
     {
