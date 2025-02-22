@@ -126,7 +126,7 @@ ITextDocPtr createTextDoc(const std::wstring& filename,
     ITableDocPtr tabledoc = TableDocMgr::createTableDoc();
 
     // create a new TransformationDoc
-    TransformationDoc* transdoc = new TransformationDoc();
+    TransformationDoc* transdoc = new TransformationDoc(textdoc->getDefinition());
 
     if (container_wnd)
     {

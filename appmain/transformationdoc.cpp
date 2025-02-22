@@ -299,7 +299,8 @@ BEGIN_EVENT_TABLE(TransformationDoc, wxWindow)
 END_EVENT_TABLE()
 
 
-TransformationDoc::TransformationDoc()
+TransformationDoc::TransformationDoc(xd::FormatDefinition& def)
+    : m_def(def)
 {
     m_dirty = false;
     m_grid = NULL;
@@ -1731,8 +1732,7 @@ bool TransformationDoc::doSave()
     ITextDocPtr textdoc = lookupOtherDocument(m_doc_site, "appmain.TextDoc");
     if (textdoc)
     {
-        xd::FormatDefinition& def = textdoc->getDefinition();
-        def.columns.clear();
+        m_def.columns.clear();
 
         std::wstring name, source_name, expression;
         int type, width, scale, format_sel;
@@ -1761,7 +1761,7 @@ bool TransformationDoc::doSave()
             colinfo.source_offset = f->input_offset;
             colinfo.source_width = f->input_width;
 
-            def.createColumn(colinfo);
+            m_def.createColumn(colinfo);
         }
 
         textdoc->save(false);

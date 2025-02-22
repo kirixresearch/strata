@@ -147,7 +147,7 @@ public:
     
 public:
     
-    TransformationDoc();
+    TransformationDoc(xd::FormatDefinition& def);
     virtual ~TransformationDoc();
     
     // ITransformationDoc
@@ -245,6 +245,7 @@ private:
 
 private:
 
+    xd::FormatDefinition& m_def;
     IFramePtr m_frame;            // ptr to the application frame
     IDocumentSitePtr m_doc_site;  // ptr to our document site
     
