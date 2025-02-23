@@ -1493,6 +1493,7 @@ void Grid::construct()
 
     m_destroying = false;
     m_model = NULL;
+    m_cell_render_hook = NULL;
     m_gui_initialized = false;
     m_cursor_visible = true;
     m_control = NULL;
@@ -1597,6 +1598,11 @@ Grid::~Grid()
 void Grid::setDragFormat(const wxString& format)
 {
     m_drag_format = format;
+}
+
+void Grid::setCellRenderHook(CellRenderHook hook)
+{
+    m_cell_render_hook = hook;
 }
 
 void Grid::setOptionState(int option_mask, bool state)
@@ -4861,10 +4867,21 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                                m_row_height))
                 {
                     int model_row = rowdata->m_model_row;
+                    int model_col = m_viewcols[col]->m_modelcol;
 
-                    if (m_viewcols[col]->m_modelcol != -1)
+                    if (model_col != -1)
                     {
-                        celldata = &(rowdata->m_coldata[m_viewcols[col]->m_modelcol]);
+                        celldata = &(rowdata->m_coldata[model_col]);
+
+                        if (m_cell_render_hook)
+                        {
+                            m_render_hook_celldata = *celldata;
+                            bool res = m_cell_render_hook(this, model_row, col, model_col, m_render_hook_celldata);
+                            if (res)
+                            {
+                                celldata = &m_render_hook_celldata;
+                            }
+                        }
                     }
                     else
                     {

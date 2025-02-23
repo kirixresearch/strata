@@ -526,6 +526,10 @@ public:
 };
 
 
+typedef bool (*CellRenderHook)(Grid* grid, int row, int col, int model_col, CellData& cell_data);
+
+
+
 WX_DECLARE_STRING_HASH_MAP(int, wxStringToColIdxHashMap);
 
 class Grid : public wxNavigationEnabled<wxControl>
@@ -818,6 +822,9 @@ public:
     int getColumnModelIdx(int view_col);
     int getColumnModelIdxByName(const wxString& col_name);
 
+    // Add the setter for the render hook
+    void setCellRenderHook(CellRenderHook hook);
+
 private:
 
     int fromDIP(int d);
@@ -980,6 +987,7 @@ private:
     wxColor m_base_color;             // 3d face color
 
     CellData m_empty_cell;
+    CellData m_render_hook_celldata;
     RowData m_empty_row;
 
     static wxBitmap m_bmp_checkbox_on;
@@ -1018,6 +1026,9 @@ private:
     SelectionRect* m_action_selrect;
     wxMemoryDC m_movecol_dc;
     wxBitmap m_movecol_bmp;
+
+    // Add the member variable to store the hook
+    CellRenderHook m_cell_render_hook;
 
     DECLARE_EVENT_TABLE()
 };
