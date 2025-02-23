@@ -1271,8 +1271,14 @@ int TransformationDoc::validateStructure()
 
         if (expr.Length() == 0)
             continue;
-        
-        valid = validateExpression(source_structure, expr, type);
+
+        xd::Structure source_structure_without_own_fieldname = source_structure;
+        wxString field_name = m_grid->getCellString(row, colFieldName);
+
+        // don't allow the field to use its own column name (to avoid circular references)
+        source_structure_without_own_fieldname.deleteColumn(field_name.ToStdWstring());
+
+        valid = validateExpression(source_structure_without_own_fieldname, expr, type);
         if (valid == StructureValidator::ExpressionValid)
             continue;
         
@@ -1409,6 +1415,17 @@ void TransformationDoc::onFrameEvent(FrameworkEvent& evt)
 
             if (active_site == m_doc_site)
             {
+                // if we're editing the grid, end the edit
+                if (m_grid->isEditing())
+                    m_grid->endEdit(true);
+
+                if (!doErrorCheck())
+                {
+                    // don't allow the view switcher to change
+                    *(bool*)evt.o_param = false;
+                    return;
+                }
+
                 if (m_dirty)
                 {
                     int result = appMessageBox(_("Would you like to save the changes made to the table's structure?"),
@@ -1956,7 +1973,6 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
         {
             m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_blank_16));
         }
-        return;
     }
     
     m_grid->refresh(kcl::Grid::refreshAll);

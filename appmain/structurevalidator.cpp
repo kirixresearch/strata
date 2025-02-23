@@ -79,7 +79,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
                                   wxOK | wxICON_EXCLAMATION | wxCENTER,
                                   g_app->getMainWindow());
     }
-/*
+
     // NOTE: these messages end up getting in the way more than helping; sometimes,
     // it might be useful to create a structure with some placeholder calculated
     // fields or just get to the table view without validating every calculated field;
@@ -109,7 +109,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
         
         return retcode;
     }
-*/
+
     *block = false;
     return -1;
 }
