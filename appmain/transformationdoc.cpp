@@ -471,6 +471,22 @@ void TransformationDoc::resizeAllGridColumnsToFitDoc()
     m_grid->refresh(kcl::Grid::refreshAll);
 }
 
+bool cell_render_hook(kcl::Grid* grid, int row, int col, int model_col, kcl::CellData& cell_data)
+{
+    if (model_col == colFieldFormula)
+    {
+        if (cell_data.m_strvalue == "")
+        {
+            cell_data.m_strvalue = _("None");
+            cell_data.fgcolor = *wxLIGHT_GREY;
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
 bool TransformationDoc::initDoc(IFramePtr frame,
                                 IDocumentSitePtr doc_site,
                                 wxWindow* docsite_wnd,
@@ -530,6 +546,7 @@ bool TransformationDoc::initDoc(IFramePtr frame,
     m_grid->createModelColumn(colFieldFormula, _("Format/Formula"), kcl::Grid::typeCharacter, 4096, 0);
     m_grid->createDefaultView();
 
+    m_grid->setCellRenderHook(cell_render_hook);
 
     // set properties for row number field
     {
