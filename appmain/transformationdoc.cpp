@@ -694,11 +694,8 @@ void TransformationDoc::populate()
     // clear the grid
     m_grid->deleteAllRows();
     
-
-
     // populate the grid from the table's destination structure
     int row = 0;
-
 
     for (cit = def.columns.cbegin(); cit != def.columns.cend(); ++cit)
     {
@@ -706,7 +703,6 @@ void TransformationDoc::populate()
         row++;
     }
     
-
     updateNumberColumn();
 
     resizeAllGridColumnsToFitDoc();
@@ -721,6 +717,8 @@ void TransformationDoc::populate()
 
     // update the status bar
     updateStatusBar();
+
+    m_dirty = false;
 }
 
 void TransformationDoc::close()
@@ -1451,12 +1449,9 @@ void TransformationDoc::onFrameEvent(FrameworkEvent& evt)
                     // revert the grid to the original structure
                     if (result == wxNO)
                     {
-                        /*
-                        TODO: implement
-                        initFromSet(m_init_set);
+                        populate();
                         updateNumberColumn();
                         checkOverlayText();
-                        */
 
                         // we'll refresh the grid below, after we've switched
                         // views, so we don't see any flicker
@@ -1846,6 +1841,12 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
         if (evt.GetEditCancelled())
             return;
 
+        if (m_grid->getCellString(row, colFieldName) == evt.GetString())
+        {
+            evt.Veto();
+            return;
+        }
+
         // this will force the cell's text to be the text that we just
         // entered (this is necessary because we use getCellString()
         // in the checkDuplicateFieldnames() function below and the
@@ -1861,6 +1862,12 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
     {
         if (evt.GetEditCancelled())
             return;
+
+        if (m_grid->getCellInteger(row, colFieldWidth) == evt.GetInt())
+        {
+            evt.Veto();
+            return;
+        }
 
         // conform to max character field width
         if (type == xd::typeCharacter || type == xd::typeWideCharacter)
@@ -1919,6 +1926,12 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
     {
         if (evt.GetEditCancelled())
             return;
+
+        if (m_grid->getCellInteger(row, colFieldScale) == evt.GetInt())
+        {
+            evt.Veto();
+            return;
+        }
 
         if (type == xd::typeDouble || type == xd::typeNumeric)
         {
