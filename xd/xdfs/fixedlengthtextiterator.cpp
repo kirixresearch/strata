@@ -957,8 +957,10 @@ xd::ColumnInfo FixedLengthTextIterator::getInfo(xd::objhandle_t data_handle)
         colinfo.width = dai->width;
     }
     
-    if (dai->expr_text.length() > 0)
-        colinfo.calculated = true;
+    //if (dai->expr_text.length() > 0)
+    //    colinfo.calculated = true;
+
+    colinfo.calculated = dai->calculated;
 
     return colinfo;
 }
