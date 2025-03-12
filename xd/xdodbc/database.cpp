@@ -2494,7 +2494,8 @@ bool OdbcDatabase::execute(const std::wstring& command,
         ++p;
     }
 
-    if (0 == wcscasecmp(first_word.c_str(), L"SELECT"))
+    if (0 == wcscasecmp(first_word.c_str(), L"SELECT") ||
+        0 == wcscasecmp(first_word.c_str(), L"WITH"))
     {
         // create an iterator based on our select statement
         OdbcIterator* iter = new OdbcIterator(this);
