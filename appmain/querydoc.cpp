@@ -1600,6 +1600,11 @@ void QueryDoc::populateDiagramFromTemplate()
                                               join_it->right_path,
                                               right_columns[i]);
 
+                    if (!line)
+                    {
+                        continue;
+                    }
+
                     int join_type = join_it->join_type;
 
                     line->user = join_type;

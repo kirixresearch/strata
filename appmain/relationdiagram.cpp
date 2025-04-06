@@ -1759,6 +1759,20 @@ RelationLine* RelationDiagram::addLine(const wxString& left_path,
                                        const wxString& right_path,
                                        const wxString& right_expr)
 {
+    // check if line already exists
+    std::vector<RelationLine>::iterator line_it;
+    for (line_it = m_lines.begin(); line_it != m_lines.end(); ++line_it)
+    {
+        if (isSamePath(left_path.ToStdWstring(), line_it->left_path.ToStdWstring()) &&
+            isSamePath(right_path.ToStdWstring(), line_it->right_path.ToStdWstring()) &&
+            left_expr.CmpNoCase(line_it->left_expr) == 0 &&
+            right_expr.CmpNoCase(line_it->right_expr) == 0)
+        {
+            // line already exists
+            return &(*line_it);
+        }
+    }
+
     RelationLine line;
     line.left_path = left_path;
     line.left_expr = left_expr;

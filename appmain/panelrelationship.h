@@ -94,6 +94,7 @@ private:
     void onClose(wxCommandEvent& evt);
     void onAddTable(wxCommandEvent& evt);
     void onUpdateRelationships(wxCommandEvent& evt);
+    void onRelationshipJobFinished(jobs::IJobPtr job);
 
 private:
 

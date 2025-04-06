@@ -419,7 +419,7 @@ struct UpdateInfo
 };
 
 
-static void onRelationshipJobFinished(jobs::IJobPtr job)
+static void onRelationshipJobFinishedStatic(jobs::IJobPtr job)
 {
     if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
@@ -601,13 +601,21 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
     job->getJobInfo()->setTitle(towstr(_("Creating Relationships")));
     job->setParameters(params.toString());
 
-    job->sigJobFinished().connect(&onRelationshipJobFinished);
+    job->sigJobFinished().connect(&onRelationshipJobFinishedStatic);
+    job->sigJobFinished().connect(this, &RelationshipPanel::onRelationshipJobFinished);
     g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 
 
     m_diagram->resetModified();
     m_diagram->save();
     
+    m_update_button->Enable(false);
+    m_changed = false;
+}
+
+void RelationshipPanel::onRelationshipJobFinished(jobs::IJobPtr job)
+{
+    loadRelationships();
     m_update_button->Enable(false);
     m_changed = false;
 }
@@ -658,7 +666,7 @@ void RelationshipPanel::loadRelationships()
                 if (!relationship_on_mount)
                 {
                     xd::IndexInfoEnum right_table_indexes = db->getIndexEnum(right_table_path);
-                    xd::IndexInfo idx = lookupIndex(right_table_indexes, rel->getRightExpression(), false);
+                    xd::IndexInfo idx = lookupIndex(right_table_indexes, rel->getRightExpression(), true);
 
                     if (!idx.isOk())
                     {
