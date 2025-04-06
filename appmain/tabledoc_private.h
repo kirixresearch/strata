@@ -35,6 +35,31 @@ namespace kscript
     class Value;
 };
 
+enum UndoActionType
+{
+    UndoAction_CellEdit          // Single cell edit
+    // UndoAction_ColumnEdit,    // Column property change
+    // UndoAction_ColumnInsert,  // Column insertion
+    // UndoAction_ColumnDelete,  // Column deletion
+    // UndoAction_RowInsert,     // Row insertion
+    // UndoAction_RowDelete,     // Row deletion
+    // UndoAction_BatchEdit      // Multiple cell edits in one operation
+};
+
+class UndoRecord
+{
+public:
+    UndoRecord() : action_type(UndoAction_CellEdit), row(-1), model_col(-1) {}
+    
+    UndoActionType action_type;  // type of change
+    int row;                     // row affected
+    int model_col;               // model column index affected
+    
+    // For cell edits
+    std::wstring old_value;      // previous value
+    std::wstring new_value;      // new value
+    int data_type;               // data type of the cell
+};
 
 enum
 {
@@ -228,6 +253,12 @@ private:
     wxString makeCaption(const wxString& title);
     void initializeDefaultView(ITableDocViewPtr view, const xd::Structure& v_struct);
 
+    // Undo/Redo operation methods
+    bool getUndoOperation(UndoRecord& record);
+    bool getRedoOperation(UndoRecord& record);
+    void clearUndoStack();
+    void clearRedoStack();
+
     xd::objhandle_t getTemporaryHandle(const wxString& expr);
     void freeTemporaryHandles();
 
@@ -319,6 +350,10 @@ private:
     void onKillFocus(wxFocusEvent& evt);
     void onEraseBackground(wxEraseEvent& evt);
     
+    // Undo/Redo handlers
+    void onUndo(wxCommandEvent& evt);
+    void onRedo(wxCommandEvent& evt);
+    
     void onSetOrder(wxCommandEvent& evt);
     void onRemoveOrder(wxCommandEvent& evt);
     void onSetOrderAscending(wxCommandEvent& evt);
@@ -373,6 +408,10 @@ private:
 
     xd::IIteratorPtr m_iter;
     ITableDocViewPtr m_active_view;
+
+    // Undo/Redo management
+    std::vector<UndoRecord> m_undo_stack;     // Stack of undoable actions
+    std::vector<UndoRecord> m_redo_stack;     // Stack of redoable actions
 
     IFramePtr m_frame;                                  // ptr to the application frame
     IDocumentSitePtr m_doc_site;                        // ptr to our document site

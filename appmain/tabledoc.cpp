@@ -1099,11 +1099,16 @@ void TableDoc::onUpdateUI(wxUpdateUIEvent& evt)
         evt.Enable(false);
         return;
     }
-    
-    // always disable undo/redo
-    if (id == ID_Edit_Undo || id == ID_Edit_Redo)
+
+    if (id == ID_Edit_Undo)
     {
-        evt.Enable(false);
+        evt.Enable(!m_undo_stack.empty());
+        return;
+    }
+
+    if (id == ID_Edit_Redo)
+    {
+        evt.Enable(!m_redo_stack.empty());
         return;
     }
 
@@ -5476,6 +5481,81 @@ void TableDoc::onGridKeyDown(kcl::GridEvent& evt)
         evt.Skip();
     }
 }
+
+
+bool TableDoc::getUndoOperation(UndoRecord& record)
+{
+    if (m_undo_stack.empty())
+        return false;
+        
+    // Get the last operation from the stack
+    record = m_undo_stack.back();
+    
+    // Remove it from the stack
+    m_undo_stack.pop_back();
+    
+    return true;
+}
+
+bool TableDoc::getRedoOperation(UndoRecord& record)
+{
+    if (m_redo_stack.empty())
+        return false;
+        
+    // Get the last operation from the stack
+    record = m_redo_stack.back();
+    
+    // Remove it from the stack
+    m_redo_stack.pop_back();
+    
+    return true;
+}
+
+void TableDoc::clearUndoStack()
+{
+    m_undo_stack.clear();
+}
+
+void TableDoc::clearRedoStack()
+{
+    m_redo_stack.clear();
+}
+
+
+void TableDoc::onUndo(wxCommandEvent& evt)
+{
+    UndoRecord record;
+    if (!getUndoOperation(record))
+        return;
+
+    switch (record.action_type)
+    {
+        case UndoAction_CellEdit:
+            // TODO: Implement cell edit undo
+            break;
+    }
+
+    // Move to redo stack
+    m_redo_stack.push_back(record);
+}
+
+void TableDoc::onRedo(wxCommandEvent& evt)
+{
+    UndoRecord record;
+    if (!getRedoOperation(record))
+        return;
+
+    switch (record.action_type)
+    {
+        case UndoAction_CellEdit:
+            // TODO: Implement cell edit redo
+            break;
+    }
+
+    // Move back to undo stack
+    m_undo_stack.push_back(record);
+}
+
 
 
 void TableDoc::onHideColumn(wxCommandEvent& evt)
