@@ -77,6 +77,8 @@ BEGIN_EVENT_TABLE(TableDoc, wxWindow)
     EVT_MENU(ID_Data_EditStructure, TableDoc::onEditStructure)
     EVT_MENU(ID_Data_EditIndexes, TableDoc::onEditIndexes)
     EVT_MENU(ID_Data_Summary, TableDoc::onSummary)
+    EVT_MENU(ID_Edit_Undo, TableDoc::onUndo)
+    EVT_MENU(ID_Edit_Redo, TableDoc::onRedo)
     EVT_MENU(ID_Edit_Cut, TableDoc::onCut)
     EVT_MENU(ID_Edit_Copy, TableDoc::onCopy)
     EVT_MENU(ID_Edit_Paste, TableDoc::onPaste)
@@ -2842,6 +2844,8 @@ wxWindow* TableDoc::getDocumentWindow()
 
 void TableDoc::setIterator(xd::IIteratorPtr iter, bool go_first)
 {
+    clearUndoRedoStacks();
+
     // save the cursor column and column selections so
     // we can restore them after we set the iterator
     int cursor_column = 0;
@@ -5156,9 +5160,11 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     UndoRecord r;
     r.action_type = UndoAction_CellEdit;
     r.old_value = previous_value;
-    r.new_value = L"";
+    r.new_value = evt.GetString();
+    r.col_name = col_name;
     r.row = m_grid->getCursorRow();
     r.model_col = model_col;
+    r.rowid = rowid;
 
     pushUndoOperation(r);
 }
@@ -5573,6 +5579,11 @@ void TableDoc::clearRedoStack()
     m_redo_stack.clear();
 }
 
+void TableDoc::clearUndoRedoStacks()
+{
+    m_undo_stack.clear();
+    m_redo_stack.clear();
+}
 
 void TableDoc::onUndo(wxCommandEvent& evt)
 {
@@ -5583,8 +5594,38 @@ void TableDoc::onUndo(wxCommandEvent& evt)
     switch (record.action_type)
     {
         case UndoAction_CellEdit:
-            // TODO: Implement cell edit undo
+        {
+            int view_col = m_grid->getColumnViewIdx(record.model_col);
+            if (view_col < 0 || view_col >= m_grid->getColumnCount())
+            {
+                view_col = 0;
+            }
+
+            if (view_col >= m_grid->getColumnCount())
+            {
+                return;
+            }
+
+            // undo the edit
+            xd::IDatabasePtr db = g_app->getDatabase();
+            if (db.isNull())
+            {
+                return;
+            }
+
+            doCellEdit(db,
+                record.col_name,
+                record.primary_key,
+                record.rowid,
+                record.old_value);
+
+            m_grid->moveCursor(record.row, view_col, false);
+            m_grid->scrollVertToCursor();
+            m_grid->scrollHorzToColumn(view_col);
+            m_grid->refresh(kcl::Grid::refreshAll);
+
             break;
+        }
     }
 
     // Move to redo stack
@@ -5600,8 +5641,38 @@ void TableDoc::onRedo(wxCommandEvent& evt)
     switch (record.action_type)
     {
         case UndoAction_CellEdit:
-            // TODO: Implement cell edit redo
+        {
+            int view_col = m_grid->getColumnViewIdx(record.model_col);
+            if (view_col < 0 || view_col >= m_grid->getColumnCount())
+            {
+                view_col = 0;
+            }
+
+            if (view_col >= m_grid->getColumnCount())
+            {
+                return;
+            }
+
+            // undo the edit
+            xd::IDatabasePtr db = g_app->getDatabase();
+            if (db.isNull())
+            {
+                return;
+            }
+
+            doCellEdit(db,
+                record.col_name,
+                record.primary_key,
+                record.rowid,
+                record.new_value);
+
+            m_grid->moveCursor(record.row, view_col, false);
+            m_grid->scrollVertToCursor();
+            m_grid->scrollHorzToColumn(view_col);
+            m_grid->refresh(kcl::Grid::refreshAll);
+
             break;
+        }
     }
 
     // Move back to undo stack

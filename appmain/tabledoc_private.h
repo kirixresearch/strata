@@ -56,6 +56,9 @@ public:
         action_type = record.action_type;
         row = record.row;
         model_col = record.model_col;
+        rowid = record.rowid;
+        col_name = record.col_name;
+        primary_key = record.primary_key;
         old_value = record.old_value;
         new_value = record.new_value;
         data_type = record.data_type;
@@ -68,6 +71,9 @@ public:
             action_type = record.action_type;
             row = record.row;
             model_col = record.model_col;
+            rowid = record.rowid;
+            col_name = record.col_name;
+            primary_key = record.primary_key;
             old_value = record.old_value;
             new_value = record.new_value;
             data_type = record.data_type;
@@ -78,8 +84,11 @@ public:
     UndoActionType action_type;  // type of change
     int row;                     // row affected
     int model_col;               // model column index affected
+    xd::rowid_t rowid;           // row id of the affected row (if applicable)
     
     // For cell edits
+    std::wstring col_name;       // name of the column
+    std::wstring primary_key;    // name of the primary key column
     std::wstring old_value;      // previous value
     std::wstring new_value;      // new value
     int data_type;               // data type of the cell
@@ -283,6 +292,7 @@ private:
     bool getRedoOperation(UndoRecord& record);
     void clearUndoStack();
     void clearRedoStack();
+    void clearUndoRedoStacks();
 
     xd::objhandle_t getTemporaryHandle(const wxString& expr);
     void freeTemporaryHandles();
