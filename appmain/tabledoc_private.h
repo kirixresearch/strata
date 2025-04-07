@@ -311,6 +311,12 @@ private:
                       bool match_case,
                       bool whole_cell);
 
+    void doCellEdit(xd::IDatabasePtr db,
+         const wxString& col_name,
+         const wxString& primary_key,
+         xd::rowid_t rowid,
+         const wxString& new_value);
+
     void getReportCreateInfo(ReportCreateInfo& data);
     bool print(const wxString& caption = wxT(""));
     bool saveAsPdf(const wxString& path);

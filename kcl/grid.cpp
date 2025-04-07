@@ -9381,6 +9381,7 @@ void Grid::onEndEditCleanup(wxCommandEvent& event)
             kcl::GridEvent evt;
             evt.SetRow(row);
             evt.SetColumn(col);
+            evt.SetString(m_edit_value);
             evt.SetInt(tempi);
             evt.SetExtraLong(m_edit_combosel);
             evt.SetUserEvent(event.GetInt() ? true : false);
@@ -9409,6 +9410,7 @@ void Grid::onEndEditCleanup(wxCommandEvent& event)
             kcl::GridEvent evt;
             evt.SetRow(row);
             evt.SetColumn(col);
+            evt.SetString(m_edit_value);
             evt.SetDouble(tempd);
             evt.SetExtraLong(m_edit_combosel);
             evt.SetUserEvent(event.GetInt() ? true : false);
@@ -9427,6 +9429,7 @@ void Grid::onEndEditCleanup(wxCommandEvent& event)
             kcl::GridEvent evt;
             evt.SetRow(row);
             evt.SetColumn(col);
+            evt.SetString(m_edit_value);
             evt.SetBoolean(tempb);
             evt.SetExtraLong(m_edit_combosel);
             evt.SetUserEvent(event.GetInt() ? true : false);

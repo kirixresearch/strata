@@ -47,6 +47,7 @@
 #include <wx/bmpcbox.h>
 #include <wx/config.h>
 #include <wx/filename.h>
+#include <wx/except.h>
 
 #ifdef WIN32
 #include <wx/msw/helpchm.h>

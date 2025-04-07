@@ -631,5 +631,22 @@ private:
 };
 
 
+class AppException : public std::exception
+{
+public:
+    AppException(const wxString& message) 
+        : m_message(message), 
+          m_what(tostr(message)) 
+    {}
+    
+    const wxString& GetMessage() const { return m_message; }
+    const char* what() const noexcept override { return m_what.c_str(); }
+    
+private:
+    wxString m_message;
+    std::string m_what;
+};
+
+
 #endif // __APP_UTIL_H
 

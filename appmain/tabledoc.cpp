@@ -5119,6 +5119,56 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     wxString previous_value = m_grid->getCellString(evt.GetRow(), evt.GetColumn());
 
 
+    try
+    {
+        doCellEdit(db,
+            col_name,
+            primary_key,
+            rowid,
+            evt.GetString());
+    }
+    catch (const AppException& e)
+    {
+        if (evt.GetUserEvent())
+        {
+            appMessageBox(e.GetMessage(),
+                APPLICATION_NAME,
+                wxOK | wxICON_EXCLAMATION | wxCENTER);
+
+            m_grid->SetFocus();
+        }
+
+        evt.Veto();
+        return;
+    }
+
+
+    // this next line forces our model to get recalculate
+    // where it is.  This must be done because the key
+    // value may have been edited and the iterator repositioned
+    if (getDbDriver() == L"xdnative")
+        model->reset();
+
+    m_grid->refresh(kcl::Grid::refreshAll);
+
+
+    // add undo record
+    UndoRecord r;
+    r.action_type = UndoAction_CellEdit;
+    r.old_value = previous_value;
+    r.new_value = L"";
+    r.row = m_grid->getCursorRow();
+    r.model_col = model_col;
+
+    pushUndoOperation(r);
+}
+
+void TableDoc::doCellEdit(xd::IDatabasePtr db,
+                          const wxString& col_name,
+                          const wxString& primary_key,
+                          xd::rowid_t rowid,
+                          const wxString& new_value)
+{
     // first, we need to build a where clause
     std::wstring where_str;
     
@@ -5243,11 +5293,11 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         case xd::typeWideCharacter:
         {
             // fill out update_info for ICacheRowUpdate below
-            update_info.wstr_val = towstr(evt.GetString());
+            update_info.wstr_val = new_value.ToStdWstring();
             update_info.str_val = kl::tostring(update_info.wstr_val);
 
             // double the quotes, if present
-            wxString in = evt.GetString();
+            wxString in = new_value;
             wxString out;
 
             in.Trim(TRUE);  // trim right
@@ -5270,21 +5320,25 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         }
 
         case xd::typeInteger:
-            // fill out update_info for ICacheRowUpdate below
-            update_info.int_val = evt.GetInt();
+        {
+            int new_int = kl::wtoi(new_value.ToStdWstring());
 
-            str = wxString::Format(wxT("%s=%d"), quoted_col_name.c_str(),
-                                                 evt.GetInt());
+            // fill out update_info for ICacheRowUpdate below
+            update_info.int_val = new_int;
+
+            str = wxString::Format(wxT("%s=%d"), quoted_col_name.c_str(), new_int);
             break;
-            
+        }
+
         case xd::typeDouble:
         case xd::typeNumeric:
         {
-            // fill out update_info for ICacheRowUpdate below
-            update_info.dbl_val = evt.GetDouble();
+            double new_double = wxAtof(new_value);
 
-            wxString num = wxString::Format(wxT("%.*f"), col_info.scale,
-                                                         evt.GetDouble());
+            // fill out update_info for ICacheRowUpdate below
+            update_info.dbl_val = new_double;
+
+            wxString num = wxString::Format(wxT("%.*f"), col_info.scale, new_double);
             num.Replace(wxT(","), wxT("."));
 
             str = quoted_col_name;
@@ -5294,49 +5348,48 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         break;
         
         case xd::typeBoolean:
+        {
+            wxString upper = new_value.Upper();
+
+            bool new_bool = (upper == wxT("TRUE") ||
+                             upper == wxT("YES") ||
+                             upper == wxT("Y") ||
+                             upper == wxT("T") ||
+                             upper == wxT("1")) ? true : false;
+
             // fill out update_info for ICacheRowUpdate below
-            update_info.bool_val = evt.GetBoolean();
+            update_info.bool_val = new_bool;
 
             if (getDbDriver() == L"xdnative")
             {
                 str = wxString::Format(wxT("%s=%s"), quoted_col_name.c_str(),
-                                                     evt.GetBoolean() ? wxT("true") : wxT("false"));
+                                       new_bool ? wxT("true") : wxT("false"));
             }
              else
             {
                 str = wxString::Format(wxT("%s=%s"), quoted_col_name.c_str(),
-                                                     evt.GetBoolean() ? wxT("1") : wxT("0"));
+                                       new_bool ? wxT("1") : wxT("0"));
             }
             
             break;
-            
+        }
+
         case xd::typeDateTime:
         case xd::typeDate:
         {
             int y, m, d, hh, mm, ss;
-            bool valid = Locale::parseDateTime(evt.GetString(),
-                                                    &y, &m, &d,
-                                                    &hh, &mm, &ss);
+            bool valid = Locale::parseDateTime(new_value,
+                                               &y, &m, &d,
+                                               &hh, &mm, &ss);
 
             if (!valid)
             {
-                if (evt.GetUserEvent())
-                {
-                    appMessageBox(_("The date entered was not formatted correctly."),
-                                       APPLICATION_NAME,
-                                       wxOK | wxICON_EXCLAMATION | wxCENTER);
-
-                    m_grid->SetFocus();
-                }
-
-                evt.Veto();
-                return;
+                throw AppException(_("The date entered was not formatted correctly."));
             }
 
             if (hh == -1 || mm == -1)
             {
                 update_info.date_val = xd::DateTime(y, m, d);
-                
                 
                 if (getDbDriver() == L"xdoracle")
                 {
@@ -5407,28 +5460,6 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         xcm::IObjectPtr result;
         m_mount_db->execute(L"COMMIT", 0, result, NULL);
     }
-    
-    
-    // this next line forces our model to get recalculate
-    // where it is.  This must be done because the key
-    // value may have been edited and the iterator repositioned
-    if (getDbDriver() == L"xdnative")
-        model->reset();
-
-    m_grid->refresh(kcl::Grid::refreshAll);
-
-
-
-
-    // add undo record
-    UndoRecord r;
-    r.action_type = UndoAction_CellEdit;
-    r.old_value = previous_value;
-    r.new_value = L"";
-    r.row = m_grid->getCursorRow();
-    r.model_col = model_col;
-    
-    pushUndoOperation(r);   
 }
 
 
