@@ -50,6 +50,30 @@ class UndoRecord
 {
 public:
     UndoRecord() : action_type(UndoAction_CellEdit), row(-1), model_col(-1) {}
+
+    UndoRecord(const UndoRecord& record)
+    {
+        action_type = record.action_type;
+        row = record.row;
+        model_col = record.model_col;
+        old_value = record.old_value;
+        new_value = record.new_value;
+        data_type = record.data_type;
+    }
+ 
+    UndoRecord& operator=(const UndoRecord& record)
+    {
+        if (this != &record)
+        {
+            action_type = record.action_type;
+            row = record.row;
+            model_col = record.model_col;
+            old_value = record.old_value;
+            new_value = record.new_value;
+            data_type = record.data_type;
+        }
+        return *this;
+    }
     
     UndoActionType action_type;  // type of change
     int row;                     // row affected
@@ -254,6 +278,7 @@ private:
     void initializeDefaultView(ITableDocViewPtr view, const xd::Structure& v_struct);
 
     // Undo/Redo operation methods
+    void pushUndoOperation(const UndoRecord& record);
     bool getUndoOperation(UndoRecord& record);
     bool getRedoOperation(UndoRecord& record);
     void clearUndoStack();

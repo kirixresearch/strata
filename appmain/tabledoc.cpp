@@ -5116,6 +5116,9 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         return;
 
 
+    wxString previous_value = m_grid->getCellString(evt.GetRow(), evt.GetColumn());
+
+
     // first, we need to build a where clause
     std::wstring where_str;
     
@@ -5413,6 +5416,19 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         model->reset();
 
     m_grid->refresh(kcl::Grid::refreshAll);
+
+
+
+
+    // add undo record
+    UndoRecord r;
+    r.action_type = UndoAction_CellEdit;
+    r.old_value = previous_value;
+    r.new_value = L"";
+    r.row = m_grid->getCursorRow();
+    r.model_col = model_col;
+    
+    pushUndoOperation(r);   
 }
 
 
@@ -5482,6 +5498,11 @@ void TableDoc::onGridKeyDown(kcl::GridEvent& evt)
     }
 }
 
+void TableDoc::pushUndoOperation(const UndoRecord& record)
+{
+    m_undo_stack.push_back(record);
+    m_redo_stack.clear();
+};
 
 bool TableDoc::getUndoOperation(UndoRecord& record)
 {
