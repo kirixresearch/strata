@@ -26,7 +26,10 @@ class KeyBuilderPanel;
 #include "panelfind.h"
 #include "xdgridmodel.h"
 #include <map>
+#include <deque>
 
+// Maximum number of undo/redo operations to store
+const int MAX_UNDO_REDO_STACK_SIZE = 3;
 
 // forward declarations
 namespace kscript
@@ -451,15 +454,15 @@ private:
     ITableDocViewPtr m_active_view;
 
     // Undo/Redo management
-    std::vector<UndoRecord> m_undo_stack;     // Stack of undoable actions
-    std::vector<UndoRecord> m_redo_stack;     // Stack of redoable actions
+    std::deque<UndoRecord> m_undo_stack;  // Stack of undoable actions
+    std::deque<UndoRecord> m_redo_stack;  // Stack of redoable actions
 
-    IFramePtr m_frame;                                  // ptr to the application frame
-    IDocumentSitePtr m_doc_site;                        // ptr to our document site
-    IXdGridModelPtr m_grid_model;                       // grid's model
-    ITableDocModelPtr m_model;                          // our model (stores marks, views, etc)
+    IFramePtr m_frame;                    // ptr to the application frame
+    IDocumentSitePtr m_doc_site;          // ptr to our document site
+    IXdGridModelPtr m_grid_model;         // grid's model
+    ITableDocModelPtr m_model;            // our model (stores marks, views, etc)
     std::wstring m_last_model_id;
-    kcl::Grid* m_grid;                                  // grid control
+    kcl::Grid* m_grid;                    // grid control
 
     std::map<wxString, xd::objhandle_t> m_handle_map; // handle map for marks
 

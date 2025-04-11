@@ -5539,19 +5539,21 @@ void TableDoc::pushUndoOperation(const UndoRecord& record)
 {
     m_undo_stack.push_back(record);
     m_redo_stack.clear();
-};
+
+    // Limit the undo stack size
+    if (m_undo_stack.size() > MAX_UNDO_REDO_STACK_SIZE)
+    {
+        m_undo_stack.pop_front();
+    }
+}
 
 bool TableDoc::getUndoOperation(UndoRecord& record)
 {
     if (m_undo_stack.empty())
         return false;
-        
-    // Get the last operation from the stack
+
     record = m_undo_stack.back();
-    
-    // Remove it from the stack
     m_undo_stack.pop_back();
-    
     return true;
 }
 
@@ -5559,13 +5561,9 @@ bool TableDoc::getRedoOperation(UndoRecord& record)
 {
     if (m_redo_stack.empty())
         return false;
-        
-    // Get the last operation from the stack
+
     record = m_redo_stack.back();
-    
-    // Remove it from the stack
     m_redo_stack.pop_back();
-    
     return true;
 }
 
@@ -5628,8 +5626,14 @@ void TableDoc::onUndo(wxCommandEvent& evt)
         }
     }
 
-    // Move to redo stack
+    // Push the undone operation to the redo stack
     m_redo_stack.push_back(record);
+
+    // Trim front if redo stack exceeds limit
+    if (m_redo_stack.size() > MAX_UNDO_REDO_STACK_SIZE)
+    {
+        m_redo_stack.pop_front();
+    }
 }
 
 void TableDoc::onRedo(wxCommandEvent& evt)
@@ -5675,8 +5679,14 @@ void TableDoc::onRedo(wxCommandEvent& evt)
         }
     }
 
-    // Move back to undo stack
+    // Push the redone operation back to the undo stack
     m_undo_stack.push_back(record);
+
+    // Trim front if undo stack exceeds limit
+    if (m_undo_stack.size() > MAX_UNDO_REDO_STACK_SIZE)
+    {
+        m_undo_stack.pop_front();
+    }
 }
 
 
@@ -7128,7 +7138,7 @@ bool TableDoc::findNextCell(const wxString& search,
 
     if (row < 0 || row >= m_grid->getRowCount())
         return false;
-
+        
 
     wxString search_upper = search;
     search_upper.MakeUpper();
