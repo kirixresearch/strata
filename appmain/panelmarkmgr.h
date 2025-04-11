@@ -18,8 +18,6 @@
 class DlgExprBuilder;
 
 
-
-
 xcm_interface IMarkMgr : public xcm::IObject
 {
     XCM_INTERFACE_NAME("appmain.IMarkMgr")

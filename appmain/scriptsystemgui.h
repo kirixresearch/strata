@@ -13,9 +13,6 @@
 #define H_APP_SCRIPTSYSTEM_H
 
 
-#include <wx/process.h>
-
-
 class SystemColors : public kscript::ValueObject
 {
     typedef kscript::ValueObject BaseClass;

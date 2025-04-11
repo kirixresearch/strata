@@ -27,6 +27,8 @@
 #include <clocale>
 #include <string>
 #include <vector>
+#include <set>
+#include <queue>
 #include <regex>
 
 // wxWidgets includes
@@ -48,6 +50,9 @@
 #include <wx/config.h>
 #include <wx/filename.h>
 #include <wx/except.h>
+#include <wx/process.h>
+#include <wx/colourdata.h>
+
 
 #ifdef WIN32
 #include <wx/msw/helpchm.h>

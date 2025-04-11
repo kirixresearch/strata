@@ -13,10 +13,9 @@
 #define H_APP_SCRIPTHOST_H
 
 
-#include <queue>
+
 #include "appmain.h"
 #include "../kscript/kscript.h"
-#include <kl/thread.h>
 
 // class forwards
 

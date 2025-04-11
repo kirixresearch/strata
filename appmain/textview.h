@@ -13,8 +13,6 @@
 #define H_APP_TEXTVIEW_H
 
 
-#include "appmain.h"
-
 
 class TextViewModel
 {

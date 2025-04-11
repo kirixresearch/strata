@@ -13,8 +13,8 @@
 #define H_APP_FIELDTYPECHOICE_H
 
 
-// -- NOTE: The enum and the array of wxStrings below need to
-//          correspond to each other exactly --
+// NOTE: The enum and the array of wxStrings below
+// need to correspond to each other exactly
 
 enum FieldTypeChoiceIndex
 {

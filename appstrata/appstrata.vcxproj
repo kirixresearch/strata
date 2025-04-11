@@ -870,7 +870,6 @@
     <ClInclude Include="..\appmain\tabledoc.h" />
     <ClInclude Include="..\appmain\tabledoc_private.h" />
     <ClInclude Include="..\appmain\tabledocmodel.h" />
-    <ClInclude Include="..\appmain\tangojobbase.h" />
     <ClInclude Include="..\appmain\textdoc.h" />
     <ClInclude Include="..\appmain\textview.h" />
     <ClInclude Include="..\appmain\toolbars.h" />

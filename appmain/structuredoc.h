@@ -17,6 +17,7 @@
 
 
 // -- forward declarations --
+
 class StructureField
 {
 public:

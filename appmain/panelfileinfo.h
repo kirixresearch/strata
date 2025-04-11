@@ -13,9 +13,6 @@
 #define H_APP_PANELFILEINFO_H
 
 
-#include <set>
-
-
 class ProjectFileInfo
 {
 public:

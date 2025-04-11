@@ -13,7 +13,6 @@
 #define H_APP_SCRIPTPROCESS_H
 
 
-#include <wx/process.h>
 #include <wx/txtstrm.h>
 
 

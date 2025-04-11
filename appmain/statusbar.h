@@ -13,10 +13,6 @@
 #define H_APP_STATUSBAR_H
 
 
-#include <kl/xcm.h>
-#include "framework.h"
-
-
 // NOTE: The current way we've implemented statusbars does not 
 //       allow the ability to create indexes for each status bar 
 //       item (which would allow the notion of inserting an item 

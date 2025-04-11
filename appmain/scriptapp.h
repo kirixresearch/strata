@@ -17,8 +17,6 @@
 #include "../kscript/kscript.h"
 #include "../kscript/jsobject.h"
 #include "../kscript/jsarray.h"
-#include <queue>
-#include <set>
 
 
 // -- forwards --

@@ -12,13 +12,7 @@
 #ifndef H_APP_SCRIPTDLG_H
 #define H_APP_SCRIPTDLG_H
 
-
-#if wxCHECK_VERSION(2,9,0)
-#include <wx/colourdata.h>
-#endif
-
 #include "scriptgui.h"
-
 
 class FileDialog : public FormControl
 {
