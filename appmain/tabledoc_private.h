@@ -29,7 +29,7 @@ class KeyBuilderPanel;
 #include <deque>
 
 // Maximum number of undo/redo operations to store
-const int MAX_UNDO_REDO_STACK_SIZE = 3;
+const int MAX_UNDO_REDO_STACK_SIZE = 100;
 
 // forward declarations
 namespace kscript

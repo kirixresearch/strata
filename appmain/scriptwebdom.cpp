@@ -52,7 +52,7 @@ static WebDOMNode* createAppropriateDOMNode(kscript::ExprEnv* env, wxDOMNode& no
 }
 
 
-// (CLASS) WebDOMNode
+// (IGNORE_CLASS) WebDOMNode
 // Category: DOM
 // Derives:
 // Description: A class that represents a DOM node.
@@ -83,7 +83,7 @@ void WebDOMNode::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
 }
 
-// (METHOD) WebDOMNode.getOwnerDocument
+// (IGNORE_METHOD) WebDOMNode.getOwnerDocument
 // Description: Gets the document to which the node belongs.
 //
 // Syntax: WebDOMNode.getOwnerDocument() : wxDOMDocument
@@ -111,7 +111,7 @@ void WebDOMNode::getOwnerDocument(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.getNodeName
+// (IGNORE_METHOD) WebDOMNode.getNodeName
 // Description: Gets the name of this node.
 //
 // Syntax: WebDOMNode.getNodeName() : String
@@ -130,7 +130,7 @@ void WebDOMNode::getNodeName(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.getNodeType
+// (IGNORE_METHOD) WebDOMNode.getNodeType
 // Description: Gets the type of this node.
 //
 // Syntax: WebDOMNode.getNodeType() : Integer
@@ -149,7 +149,7 @@ void WebDOMNode::getNodeType(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.getNodeValue
+// (IGNORE_METHOD) WebDOMNode.getNodeValue
 // Description: Gets the value of this node.
 //
 // Syntax: WebDOMNode.getNodeValue() : String
@@ -168,7 +168,7 @@ void WebDOMNode::getNodeValue(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.setNodeValue
+// (IGNORE_METHOD) WebDOMNode.setNodeValue
 // Description: Sets the value of this node.
 //
 // Syntax: WebDOMNode.getNodeValue(text : String)
@@ -186,7 +186,7 @@ void WebDOMNode::setNodeValue(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.getParentNode
+// (IGNORE_METHOD) WebDOMNode.getParentNode
 // Description: Gets the parent node of this node.
 //
 // Syntax: WebDOMNode.getParentNode() : WebDOMNode
@@ -214,7 +214,7 @@ void WebDOMNode::getParentNode(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.getChildNodes
+// (IGNORE_METHOD) WebDOMNode.getChildNodes
 // Description: Gets the child nodes of this node.
 //
 // Syntax: WebDOMNode.getChildNodes() : Array(WebDOMNode)
@@ -251,7 +251,7 @@ void WebDOMNode::getChildNodes(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.getFirstChild
+// (IGNORE_METHOD) WebDOMNode.getFirstChild
 // Description: Gets the first child node of this node.
 //
 // Syntax: WebDOMNode.getFirstChild() : WebDOMNode
@@ -279,7 +279,7 @@ void WebDOMNode::getFirstChild(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.getLastChild
+// (IGNORE_METHOD) WebDOMNode.getLastChild
 // Description: Gets the last child node of this node.
 //
 // Syntax: WebDOMNode.getLastChild() : WebDOMNode
@@ -307,7 +307,7 @@ void WebDOMNode::getLastChild(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.getPreviousSibling
+// (IGNORE_METHOD) WebDOMNode.getPreviousSibling
 // Description: Gets the previous sibling node of this node.
 //
 // Syntax: WebDOMNode.getPreviousSibling() : WebDOMNode
@@ -335,7 +335,7 @@ void WebDOMNode::getPreviousSibling(kscript::ExprEnv* env, kscript::Value* retva
     }
 }
 
-// (METHOD) WebDOMNode.getNextSibling
+// (IGNORE_METHOD) WebDOMNode.getNextSibling
 // Description: Gets the next sibling node of this node.
 //
 // Syntax: WebDOMNode.getNextSibling() : WebDOMNode
@@ -363,7 +363,7 @@ void WebDOMNode::getNextSibling(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.insertBefore
+// (IGNORE_METHOD) WebDOMNode.insertBefore
 // Description: Inserts a child node before another child node
 //     within this node's children.
 //
@@ -436,7 +436,7 @@ void WebDOMNode::insertBefore(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.replaceChild
+// (IGNORE_METHOD) WebDOMNode.replaceChild
 // Description: Replaces a child node of this node with another node.
 //
 // Syntax: WebDOMNode.replaceChild(new_child : WebDOMNode,
@@ -492,7 +492,7 @@ void WebDOMNode::replaceChild(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.removeChild
+// (IGNORE_METHOD) WebDOMNode.removeChild
 // Description: Removes a child node from this node.
 //
 // Syntax: WebDOMNode.removeChild(old_child : WebDOMNode) : WebDOMNode
@@ -533,7 +533,7 @@ void WebDOMNode::removeChild(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.appendChild
+// (IGNORE_METHOD) WebDOMNode.appendChild
 // Description: Appends a child node to this node.
 //
 // Syntax: WebDOMNode.appendChild(new_child : WebDOMNode) : WebDOMNode
@@ -574,7 +574,7 @@ void WebDOMNode::appendChild(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.cloneNode
+// (IGNORE_METHOD) WebDOMNode.cloneNode
 // Description: Clones this node.
 //
 // Syntax: WebDOMNode.cloneNode(deep : Boolean) : WebDOMNode
@@ -611,7 +611,7 @@ void WebDOMNode::cloneNode(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.normalize
+// (IGNORE_METHOD) WebDOMNode.normalize
 // Description: Removes all empty text nodes and consolidates adjacent
 //     text nodes into a single node.
 //
@@ -629,7 +629,7 @@ void WebDOMNode::normalize(kscript::ExprEnv* env, kscript::Value* retval)
 }
 
 
-// (METHOD) WebDOMNode.hasChildNodes
+// (IGNORE_METHOD) WebDOMNode.hasChildNodes
 // Description: Returns true if this node has child nodes, and false otherwise.
 //
 // Syntax: WebDOMNode.hasChildNodes() : Boolean
@@ -649,7 +649,7 @@ void WebDOMNode::hasChildNodes(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setBoolean(m_node.HasChildNodes());
 }
 
-// (METHOD) WebDOMNode.hasAttributes
+// (IGNORE_METHOD) WebDOMNode.hasAttributes
 // Description: Returns true if this node has attributes, and false otherwise.
 //
 // Syntax: WebDOMNode.hasAttributes() : Boolean
@@ -669,7 +669,7 @@ void WebDOMNode::hasAttributes(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setBoolean(m_node.HasAttributes());
 }
 
-// (METHOD) WebDOMNode.getPrefix
+// (IGNORE_METHOD) WebDOMNode.getPrefix
 // Description: Returns the prefix
 //
 // Syntax: WebDOMNode.getPrefix() : String
@@ -690,7 +690,7 @@ void WebDOMNode::getPrefix(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.setPrefix
+// (IGNORE_METHOD) WebDOMNode.setPrefix
 // Description: Sets the prefix
 //
 // Syntax: WebDOMNode.setPrefix(value : String)
@@ -710,7 +710,7 @@ void WebDOMNode::setPrefix(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.getNamespaceURI
+// (IGNORE_METHOD) WebDOMNode.getNamespaceURI
 // Description: Returns the namespace URI
 //
 // Syntax: WebDOMNode.getNamespaceURI() : String
@@ -731,7 +731,7 @@ void WebDOMNode::getNamespaceURI(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMNode.getLocalName
+// (IGNORE_METHOD) WebDOMNode.getLocalName
 // Description: Returns the local name
 //
 // Syntax: WebDOMNode.getLocalName : String
@@ -846,7 +846,7 @@ void WebDOMNode::addEventListener(kscript::ExprEnv* env, kscript::Value* retval)
 
 
 
-// (CLASS) WebDOMText
+// (IGNORE_CLASS) WebDOMText
 // Category: DOM
 // Derives: WebDOMNode
 // Description: A class that represents a DOM text node.
@@ -872,7 +872,7 @@ void WebDOMText::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
 }
 
-// (METHOD) WebDOMText.setData
+// (IGNORE_METHOD) WebDOMText.setData
 // Description: Sets the data for the text node.
 //
 // Syntax: WebDOMText.setData(text : String) : Boolean
@@ -900,7 +900,7 @@ void WebDOMText::setData(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setBoolean(true);
 }
 
-// (METHOD) WebDOMText.getData
+// (IGNORE_METHOD) WebDOMText.getData
 // Description: Gets the data of the text node.
 //
 // Syntax: WebDOMText.getData() : String
@@ -920,7 +920,7 @@ void WebDOMText::getData(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (CLASS) WebDOMAttr
+// (IGNORE_CLASS) WebDOMAttr
 // Category: DOM
 // Derives: WebDOMNode
 // Description: A class that represents a DOM attribute node.
@@ -946,7 +946,7 @@ void WebDOMAttr::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
 }
 
-// (METHOD) WebDOMAttr.getName
+// (IGNORE_METHOD) WebDOMAttr.getName
 // Description: Gets the name of this attribute node.
 //
 // Syntax: WebDOMAttr.getName() : String
@@ -968,7 +968,7 @@ void WebDOMAttr::getName(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMAttr.getSpecified
+// (IGNORE_METHOD) WebDOMAttr.getSpecified
 // Description:
 //
 // Syntax: WebDOMAttr.getSpecified() : Boolean
@@ -990,7 +990,7 @@ void WebDOMAttr::getSpecified(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMAttr.getValue
+// (IGNORE_METHOD) WebDOMAttr.getValue
 // Description: Gets the value of this attribute node.
 //
 // Syntax: WebDOMAttr.getValue() : String
@@ -1012,7 +1012,7 @@ void WebDOMAttr::getValue(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMAttr.getOwnerElement
+// (IGNORE_METHOD) WebDOMAttr.getOwnerElement
 // Description: Gets the element to which the node belongs.
 //
 // Syntax: WebDOMAttr.getOwnerElement() : wxDOMElement
@@ -1045,7 +1045,7 @@ void WebDOMAttr::getOwnerElement(kscript::ExprEnv* env, kscript::Value* retval)
 }
 
 
-// (CLASS) WebDOMElement
+// (IGNORE_CLASS) WebDOMElement
 // Category: DOM
 // Derives: WebDOMNode
 // Description: A class that represents a DOM element.
@@ -1071,7 +1071,7 @@ void WebDOMElement::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
 }
 
-// (METHOD) WebDOMElement.getTagName
+// (IGNORE_METHOD) WebDOMElement.getTagName
 // Description: Gets the tag name of this element.
 //
 // Syntax: WebDOMElement.getTagName() : String
@@ -1092,7 +1092,7 @@ void WebDOMElement::getTagName(kscript::ExprEnv* env, kscript::Value* retval)
 }
 
 
-// (METHOD) WebDOMElement.getAttributes
+// (IGNORE_METHOD) WebDOMElement.getAttributes
 // Description: Gets the attributes of this node.
 //
 // Syntax: WebDOMNode.getAttributes() : Array(WebDOMAttr)
@@ -1138,7 +1138,7 @@ void WebDOMElement::getAttributes(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMElement.getElementsByTagName
+// (IGNORE_METHOD) WebDOMElement.getElementsByTagName
 // Description: Gets an array of child elements having the specified tag name.
 //
 // Syntax: WebDOMElement.getElementsByTagName(tag_name : String) : Array(WebDOMElement)
@@ -1185,7 +1185,7 @@ void WebDOMElement::getElementsByTagName(kscript::ExprEnv* env, kscript::Value* 
     }
 }
 
-// (METHOD) WebDOMElement.getAttribute
+// (IGNORE_METHOD) WebDOMElement.getAttribute
 // Description: Gets the attribute of this element.
 //
 // Syntax: WebDOMElement.getAttribute(attr : String) : String
@@ -1208,7 +1208,7 @@ void WebDOMElement::getAttribute(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMElement.setAttribute
+// (IGNORE_METHOD) WebDOMElement.setAttribute
 // Description: Sets the attribute of this element to a specified value.
 //
 // Syntax: WebDOMElement.setAttribute(attr : String,
@@ -1232,7 +1232,7 @@ void WebDOMElement::setAttribute(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMElement.removeAttribute
+// (IGNORE_METHOD) WebDOMElement.removeAttribute
 // Description: Removes the specified attribute from this element.
 //
 // Syntax: WebDOMElement.removeAttribute(attr : String)
@@ -1251,7 +1251,7 @@ void WebDOMElement::removeAttribute(kscript::ExprEnv* env, kscript::Value* retva
     }
 }
 
-// (METHOD) WebDOMElement.getAttributeNode
+// (IGNORE_METHOD) WebDOMElement.getAttributeNode
 // Description: Gets the attribute node of this element.
 //
 // Syntax: WebDOMElement.getAttributeNode(attr : String) : WebDOMAttr
@@ -1285,7 +1285,7 @@ void WebDOMElement::getAttributeNode(kscript::ExprEnv* env, kscript::Value* retv
     }
 }
 
-// (METHOD) WebDOMElement.setAttributeNode
+// (IGNORE_METHOD) WebDOMElement.setAttributeNode
 // Description: Sets the attribute node of this element.
 //
 // Syntax: WebDOMElement.setAttributeNode(attr : WebDOMAttr) : WebDOMAttr
@@ -1330,7 +1330,7 @@ void WebDOMElement::setAttributeNode(kscript::ExprEnv* env, kscript::Value* retv
     }
 }
 
-// (METHOD) WebDOMElement.removeAttributeNode
+// (IGNORE_METHOD) WebDOMElement.removeAttributeNode
 // Description: Removes the attribute node of this element.
 //
 // Syntax: WebDOMElement.removeAttributeNode(attr : WebDOMAttr) : WebDOMAttr
@@ -1375,7 +1375,7 @@ void WebDOMElement::removeAttributeNode(kscript::ExprEnv* env, kscript::Value* r
     }
 }
 
-// (METHOD) WebDOMElement.hasAttribute
+// (IGNORE_METHOD) WebDOMElement.hasAttribute
 // Description: Returns true if the specified attribute exists, 
 //     and false otherwise.
 //
@@ -1398,7 +1398,7 @@ void WebDOMElement::hasAttribute(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (CLASS) WebDOMDocument
+// (IGNORE_CLASS) WebDOMDocument
 // Category: DOM
 // Derives: WebDOMNode
 // Description: A class that represents a DOM document.
@@ -1424,7 +1424,7 @@ void WebDOMDocument::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
 }
 
-// (METHOD) WebDOMDocument.getDocumentElement
+// (IGNORE_METHOD) WebDOMDocument.getDocumentElement
 // Description: Gets the document element.
 //
 // Syntax: WebDOMDocument.getDocumentElement() : wxDOMElement
@@ -1453,7 +1453,7 @@ void WebDOMDocument::getDocumentElement(kscript::ExprEnv* env, kscript::Value* r
     }
 }
 
-// (METHOD) WebDOMDocument.getElementById
+// (IGNORE_METHOD) WebDOMDocument.getElementById
 // Description: Gets the element with a particular id from a document.
 //
 // Syntax: WebDOMDocument.getElementById(id : String) : WebDOMElement
@@ -1485,7 +1485,7 @@ void WebDOMDocument::getElementById(kscript::ExprEnv* env, kscript::Value* retva
     }
 }
 
-// (METHOD) WebDOMDocument.getElementsByTagName
+// (IGNORE_METHOD) WebDOMDocument.getElementsByTagName
 // Description: Gets an array of child elements having the specified tag name.
 //
 // Syntax: WebDOMDocument.getElementsByTagName(tag_name : String) : Array(WebDOMElement)
@@ -1534,7 +1534,7 @@ void WebDOMDocument::getElementsByTagName(kscript::ExprEnv* env, kscript::Value*
     }
 }
 
-// (METHOD) WebDOMDocument.importNode
+// (IGNORE_METHOD) WebDOMDocument.importNode
 // Description: Imports a node into this document.
 //
 // Syntax: WebDOMDocument.importNode(node : WebDOMNode,
@@ -1587,7 +1587,7 @@ void WebDOMDocument::importNode(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMDocument.createElement
+// (IGNORE_METHOD) WebDOMDocument.createElement
 // Description: Creates an element.
 //
 // Syntax: WebDOMDocument.createElement(tag_name : String) : WebDOMElement
@@ -1620,7 +1620,7 @@ void WebDOMDocument::createElement(kscript::ExprEnv* env, kscript::Value* retval
     }
 }
 
-// (METHOD) WebDOMDocument.createAttribute
+// (IGNORE_METHOD) WebDOMDocument.createAttribute
 // Description: Creates an attribute.
 //
 // Syntax: WebDOMDocument.createAttribute(name : String) : WebDOMAttr
@@ -1652,7 +1652,7 @@ void WebDOMDocument::createAttribute(kscript::ExprEnv* env, kscript::Value* retv
     }
 }
 
-// (METHOD) WebDOMDocument.createTextNode
+// (IGNORE_METHOD) WebDOMDocument.createTextNode
 // Description: Creates a text node.
 //
 // Syntax: WebDOMDocument.createTextNode(name : String) : WebDOMAttr
@@ -1685,7 +1685,7 @@ void WebDOMDocument::createTextNode(kscript::ExprEnv* env, kscript::Value* retva
 }
 
 
-// (CLASS) WebDOMHTMLElement
+// (IGNORE_CLASS) WebDOMHTMLElement
 // Category: DOM
 // Derives: WebDOMElement
 // Description: A class that represents a DOM html element.
@@ -1711,7 +1711,7 @@ void WebDOMHTMLElement::constructor(kscript::ExprEnv* env, kscript::Value* retva
 {
 }
 
-// (METHOD) WebDOMHTMLElement.getId
+// (IGNORE_METHOD) WebDOMHTMLElement.getId
 // Description: Gets the element's id.
 //
 // Syntax: WebDOMHTMLElement.getId() : String
@@ -1734,7 +1734,7 @@ void WebDOMHTMLElement::getId(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setString(e.GetId().wc_str());
 }
 
-// (METHOD) WebDOMHTMLElement.setId
+// (IGNORE_METHOD) WebDOMHTMLElement.setId
 // Description: Sets the element's id.
 //
 // Syntax: WebDOMHTMLElement.setId(value : String)
@@ -1757,7 +1757,7 @@ void WebDOMHTMLElement::setId(kscript::ExprEnv* env, kscript::Value* retval)
     e.SetId(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLElement.getTitle
+// (IGNORE_METHOD) WebDOMHTMLElement.getTitle
 // Description: Gets the element's title.
 //
 // Syntax: WebDOMHTMLElement.getTitle() : String
@@ -1780,7 +1780,7 @@ void WebDOMHTMLElement::getTitle(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setString(e.GetTitle().wc_str());
 }
 
-// (METHOD) WebDOMHTMLElement.setTitle
+// (IGNORE_METHOD) WebDOMHTMLElement.setTitle
 // Description: Sets the element's title
 //
 // Syntax: WebDOMHTMLElement.setTitle(value : String)
@@ -1803,7 +1803,7 @@ void WebDOMHTMLElement::setTitle(kscript::ExprEnv* env, kscript::Value* retval)
     e.SetTitle(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLElement.getLang
+// (IGNORE_METHOD) WebDOMHTMLElement.getLang
 // Description:
 //
 // Syntax: WebDOMHTMLElement.getLang() : String
@@ -1826,7 +1826,7 @@ void WebDOMHTMLElement::getLang(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setString(e.GetLang().wc_str());
 }
 
-// (METHOD) WebDOMHTMLElement.setLang
+// (IGNORE_METHOD) WebDOMHTMLElement.setLang
 // Description:
 //
 // Syntax: WebDOMHTMLElement.setLang(value : String)
@@ -1849,7 +1849,7 @@ void WebDOMHTMLElement::setLang(kscript::ExprEnv* env, kscript::Value* retval)
     e.SetLang(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLElement.getDir
+// (IGNORE_METHOD) WebDOMHTMLElement.getDir
 // Description:
 //
 // Syntax: WebDOMHTMLElement.getDir() : String
@@ -1872,7 +1872,7 @@ void WebDOMHTMLElement::getDir(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setString(e.GetDir().wc_str());
 }
 
-// (METHOD) WebDOMHTMLElement.setDir
+// (IGNORE_METHOD) WebDOMHTMLElement.setDir
 // Description:
 //
 // Syntax: WebDOMHTMLElement.setDir(value : String)
@@ -1895,7 +1895,7 @@ void WebDOMHTMLElement::setDir(kscript::ExprEnv* env, kscript::Value* retval)
     e.SetDir(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLElement.getClassName
+// (IGNORE_METHOD) WebDOMHTMLElement.getClassName
 // Description:
 //
 // Syntax: WebDOMHTMLElement.getClassName() : String
@@ -1918,7 +1918,7 @@ void WebDOMHTMLElement::getClassName(kscript::ExprEnv* env, kscript::Value* retv
     retval->setString(e.GetClassName().wc_str());
 }
 
-// (METHOD) WebDOMHTMLElement.setClassName
+// (IGNORE_METHOD) WebDOMHTMLElement.setClassName
 // Description:
 //
 // Syntax: WebDOMHTMLElement.setClassName(value : String)
@@ -1942,7 +1942,7 @@ void WebDOMHTMLElement::setClassName(kscript::ExprEnv* env, kscript::Value* retv
 }
 
 
-// (METHOD) WebDOMHTMLElement.getValue
+// (IGNORE_METHOD) WebDOMHTMLElement.getValue
 // Description: Returns the current value of the node.
 //
 // Syntax: WebDOMHTMLElement.getValue() : String
@@ -1966,7 +1966,7 @@ void WebDOMHTMLElement::getValue(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setString(e.GetValue().wc_str());
 }
 
-// (METHOD) WebDOMHTMLElement.setValue
+// (IGNORE_METHOD) WebDOMHTMLElement.setValue
 // Description: Sets the current value of the node.
 //
 // Syntax: WebDOMHTMLElement.setValue(text : String)
@@ -1997,7 +1997,7 @@ void WebDOMHTMLElement::setValue(kscript::ExprEnv* env, kscript::Value* retval)
 
 
 
-// (METHOD) WebDOMHTMLElement.getTabIndex
+// (IGNORE_METHOD) WebDOMHTMLElement.getTabIndex
 // Description:
 //
 // Syntax: WebDOMHTMLElement.getTabIndex() : Integer
@@ -2020,7 +2020,7 @@ void WebDOMHTMLElement::getTabIndex(kscript::ExprEnv* env, kscript::Value* retva
     retval->setInteger(e.GetTabIndex());
 }
 
-// (METHOD) WebDOMHTMLElement.setTabIndex
+// (IGNORE_METHOD) WebDOMHTMLElement.setTabIndex
 // Description:
 //
 // Syntax: WebDOMHTMLElement.setTabIndex(value : Integer)
@@ -2044,7 +2044,7 @@ void WebDOMHTMLElement::setTabIndex(kscript::ExprEnv* env, kscript::Value* retva
 }
 
 
-// (METHOD) WebDOMHTMLElement.getAccessKey
+// (IGNORE_METHOD) WebDOMHTMLElement.getAccessKey
 // Description:
 //
 // Syntax: WebDOMHTMLElement.getAccessKey() : String
@@ -2067,7 +2067,7 @@ void WebDOMHTMLElement::getAccessKey(kscript::ExprEnv* env, kscript::Value* retv
     retval->setString(e.GetAccessKey().wc_str());
 }
 
-// (METHOD) WebDOMHTMLElement.setAccessKey
+// (IGNORE_METHOD) WebDOMHTMLElement.setAccessKey
 // Description:
 //
 // Syntax: WebDOMHTMLElement.setAccessKey(value : String)
@@ -2091,7 +2091,7 @@ void WebDOMHTMLElement::setAccessKey(kscript::ExprEnv* env, kscript::Value* retv
 }
 
 
-// (CLASS) WebDOMHTMLAnchorElement
+// (IGNORE_CLASS) WebDOMHTMLAnchorElement
 // Category: DOM
 // Derives: WebDOMHTMLElement
 // Description: A class that represents an HTML anchor element.
@@ -2118,7 +2118,7 @@ void WebDOMHTMLAnchorElement::constructor(kscript::ExprEnv* env, kscript::Value*
 }
 
 
-// (METHOD) WebDOMHTMLAnchorElement.getCharset
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.getCharset
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.getCharset() : String
@@ -2141,7 +2141,7 @@ void WebDOMHTMLAnchorElement::getCharset(kscript::ExprEnv* env, kscript::Value* 
     retval->setString(e.GetCharset().wc_str());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.setCharset
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.setCharset
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.setCharset(value : String)
@@ -2164,7 +2164,7 @@ void WebDOMHTMLAnchorElement::setCharset(kscript::ExprEnv* env, kscript::Value* 
     e.SetCharset(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.getCoords
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.getCoords
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.getCoords() : String
@@ -2187,7 +2187,7 @@ void WebDOMHTMLAnchorElement::getCoords(kscript::ExprEnv* env, kscript::Value* r
     retval->setString(e.GetCoords().wc_str());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.setCoords
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.setCoords
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.setCoords(value : String)
@@ -2210,7 +2210,7 @@ void WebDOMHTMLAnchorElement::setCoords(kscript::ExprEnv* env, kscript::Value* r
     e.SetCoords(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.getHref
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.getHref
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.getHref() : String
@@ -2233,7 +2233,7 @@ void WebDOMHTMLAnchorElement::getHref(kscript::ExprEnv* env, kscript::Value* ret
     retval->setString(e.GetHref().wc_str());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.setHref
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.setHref
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.setHref(value : String)
@@ -2256,7 +2256,7 @@ void WebDOMHTMLAnchorElement::setHref(kscript::ExprEnv* env, kscript::Value* ret
     e.SetHref(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.getHreflang
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.getHreflang
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.getHreflang() : String
@@ -2279,7 +2279,7 @@ void WebDOMHTMLAnchorElement::getHreflang(kscript::ExprEnv* env, kscript::Value*
     retval->setString(e.GetHreflang().wc_str());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.setHreflang
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.setHreflang
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.setHreflang(value : String)
@@ -2302,7 +2302,7 @@ void WebDOMHTMLAnchorElement::setHreflang(kscript::ExprEnv* env, kscript::Value*
     e.SetHreflang(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.getName
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.getName
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.getName() : String
@@ -2325,7 +2325,7 @@ void WebDOMHTMLAnchorElement::getName(kscript::ExprEnv* env, kscript::Value* ret
     retval->setString(e.GetName().wc_str());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.setName
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.setName
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.setName(value : String)
@@ -2348,7 +2348,7 @@ void WebDOMHTMLAnchorElement::setName(kscript::ExprEnv* env, kscript::Value* ret
     e.SetName(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.getRel
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.getRel
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.getRel() : String
@@ -2371,7 +2371,7 @@ void WebDOMHTMLAnchorElement::getRel(kscript::ExprEnv* env, kscript::Value* retv
     retval->setString(e.GetRel().wc_str());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.setRel
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.setRel
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.setRel(value : String)
@@ -2394,7 +2394,7 @@ void WebDOMHTMLAnchorElement::setRel(kscript::ExprEnv* env, kscript::Value* retv
     e.SetRel(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.getRev
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.getRev
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.getRev() : String
@@ -2417,7 +2417,7 @@ void WebDOMHTMLAnchorElement::getRev(kscript::ExprEnv* env, kscript::Value* retv
     retval->setString(e.GetRev().wc_str());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.setRev
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.setRev
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.setRev(value : String)
@@ -2440,7 +2440,7 @@ void WebDOMHTMLAnchorElement::setRev(kscript::ExprEnv* env, kscript::Value* retv
     e.SetRev(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.getShape
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.getShape
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.getShape() : String
@@ -2463,7 +2463,7 @@ void WebDOMHTMLAnchorElement::getShape(kscript::ExprEnv* env, kscript::Value* re
     retval->setString(e.GetShape().wc_str());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.setShape
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.setShape
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.setShape(value : String)
@@ -2487,7 +2487,7 @@ void WebDOMHTMLAnchorElement::setShape(kscript::ExprEnv* env, kscript::Value* re
 }
 
 
-// (METHOD) WebDOMHTMLAnchorElement.getTarget
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.getTarget
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.getTarget() : String
@@ -2510,7 +2510,7 @@ void WebDOMHTMLAnchorElement::getTarget(kscript::ExprEnv* env, kscript::Value* r
     retval->setString(e.GetTarget().wc_str());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.setTarget
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.setTarget
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.setTarget(value : String)
@@ -2533,7 +2533,7 @@ void WebDOMHTMLAnchorElement::setTarget(kscript::ExprEnv* env, kscript::Value* r
     e.SetTarget(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.getType
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.getType
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.getType() : String
@@ -2556,7 +2556,7 @@ void WebDOMHTMLAnchorElement::getType(kscript::ExprEnv* env, kscript::Value* ret
     retval->setString(e.GetType().wc_str());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.setType
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.setType
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.setType(value : String)
@@ -2579,7 +2579,7 @@ void WebDOMHTMLAnchorElement::setType(kscript::ExprEnv* env, kscript::Value* ret
     e.SetType(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.blur
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.blur
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.blur()
@@ -2598,7 +2598,7 @@ void WebDOMHTMLAnchorElement::blur(kscript::ExprEnv* env, kscript::Value* retval
     e.Blur();
 }
 
-// (METHOD) WebDOMHTMLAnchorElement.focus
+// (IGNORE_METHOD) WebDOMHTMLAnchorElement.focus
 // Description:
 //
 // Syntax: WebDOMHTMLAnchorElement.focus()
@@ -2617,7 +2617,7 @@ void WebDOMHTMLAnchorElement::focus(kscript::ExprEnv* env, kscript::Value* retva
     e.Focus();
 }
 
-// (CLASS) WebDOMHTMLButtonElement
+// (IGNORE_CLASS) WebDOMHTMLButtonElement
 // Category: DOM
 // Derives: WebDOMHTMLElement
 // Description: A class that represents an HTML button element.
@@ -2644,7 +2644,7 @@ void WebDOMHTMLButtonElement::constructor(kscript::ExprEnv* env, kscript::Value*
 }
 
 
-// (METHOD) WebDOMHTMLButtonElement.getDisabled
+// (IGNORE_METHOD) WebDOMHTMLButtonElement.getDisabled
 // Description:
 //
 // Syntax: WebDOMHTMLButtonElement.getDisabled() : Boolean
@@ -2667,7 +2667,7 @@ void WebDOMHTMLButtonElement::getDisabled(kscript::ExprEnv* env, kscript::Value*
     retval->setBoolean(e.GetDisabled());
 }
 
-// (METHOD) WebDOMHTMLButtonElement.setDisabled
+// (IGNORE_METHOD) WebDOMHTMLButtonElement.setDisabled
 // Description:
 //
 // Syntax: WebDOMHTMLButtonElement.setDisabled(value : Boolean)
@@ -2690,7 +2690,7 @@ void WebDOMHTMLButtonElement::setDisabled(kscript::ExprEnv* env, kscript::Value*
     e.SetDisabled(env->getParam(0)->getBoolean());
 }
 
-// (METHOD) WebDOMHTMLButtonElement.getName
+// (IGNORE_METHOD) WebDOMHTMLButtonElement.getName
 // Description:
 //
 // Syntax: WebDOMHTMLButtonElement.getName() : String
@@ -2713,7 +2713,7 @@ void WebDOMHTMLButtonElement::getName(kscript::ExprEnv* env, kscript::Value* ret
     retval->setString(e.GetName().wc_str());
 }
 
-// (METHOD) WebDOMHTMLButtonElement.setName
+// (IGNORE_METHOD) WebDOMHTMLButtonElement.setName
 // Description:
 //
 // Syntax: WebDOMHTMLButtonElement.setName(value : String)
@@ -2737,7 +2737,7 @@ void WebDOMHTMLButtonElement::setName(kscript::ExprEnv* env, kscript::Value* ret
 }
 
 
-// (METHOD) WebDOMHTMLButtonElement.getType
+// (IGNORE_METHOD) WebDOMHTMLButtonElement.getType
 // Description:
 //
 // Syntax: WebDOMHTMLButtonElement.getType() : String
@@ -2760,7 +2760,7 @@ void WebDOMHTMLButtonElement::getType(kscript::ExprEnv* env, kscript::Value* ret
     retval->setString(e.GetType().wc_str());
 }
 
-// (CLASS) WebDOMHTMLInputElement
+// (IGNORE_CLASS) WebDOMHTMLInputElement
 // Category: DOM
 // Derives: WebDOMHTMLElement
 // Description: A class that represents an HTML input element.
@@ -2786,7 +2786,7 @@ void WebDOMHTMLInputElement::constructor(kscript::ExprEnv* env, kscript::Value* 
 {
 }
 
-// (METHOD) WebDOMHTMLInputElement.getDefaultValue
+// (IGNORE_METHOD) WebDOMHTMLInputElement.getDefaultValue
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.getDefaultValue() : String
@@ -2809,7 +2809,7 @@ void WebDOMHTMLInputElement::getDefaultValue(kscript::ExprEnv* env, kscript::Val
     retval->setString(e.GetDefaultValue().wc_str());
 }
 
-// (METHOD) WebDOMHTMLInputElement.setDefaultValue
+// (IGNORE_METHOD) WebDOMHTMLInputElement.setDefaultValue
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.setDefaultValue(value : String)
@@ -2832,7 +2832,7 @@ void WebDOMHTMLInputElement::setDefaultValue(kscript::ExprEnv* env, kscript::Val
     e.SetDefaultValue(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLInputElement.getDefaultChecked
+// (IGNORE_METHOD) WebDOMHTMLInputElement.getDefaultChecked
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.getDefaultChecked() : Boolean
@@ -2855,7 +2855,7 @@ void WebDOMHTMLInputElement::getDefaultChecked(kscript::ExprEnv* env, kscript::V
     retval->setBoolean(e.GetDefaultChecked());
 }
 
-// (METHOD) WebDOMHTMLInputElement.setDefaultChecked
+// (IGNORE_METHOD) WebDOMHTMLInputElement.setDefaultChecked
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.setDefaultChecked(value : Boolean)
@@ -2878,7 +2878,7 @@ void WebDOMHTMLInputElement::setDefaultChecked(kscript::ExprEnv* env, kscript::V
     e.SetDefaultChecked(env->getParam(0)->getBoolean());
 }
 
-// (METHOD) WebDOMHTMLInputElement.getAccept
+// (IGNORE_METHOD) WebDOMHTMLInputElement.getAccept
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.getAccept() : String
@@ -2901,7 +2901,7 @@ void WebDOMHTMLInputElement::getAccept(kscript::ExprEnv* env, kscript::Value* re
     retval->setString(e.GetAccept().wc_str());
 }
 
-// (METHOD) WebDOMHTMLInputElement.setAccept
+// (IGNORE_METHOD) WebDOMHTMLInputElement.setAccept
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.setAccept(value : String)
@@ -2924,7 +2924,7 @@ void WebDOMHTMLInputElement::setAccept(kscript::ExprEnv* env, kscript::Value* re
     e.SetAccept(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLInputElement.getAlign
+// (IGNORE_METHOD) WebDOMHTMLInputElement.getAlign
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.getAlign() : String
@@ -2947,7 +2947,7 @@ void WebDOMHTMLInputElement::getAlign(kscript::ExprEnv* env, kscript::Value* ret
     retval->setString(e.GetAlign().wc_str());
 }
 
-// (METHOD) WebDOMHTMLInputElement.setAlign
+// (IGNORE_METHOD) WebDOMHTMLInputElement.setAlign
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.setAlign(value : String)
@@ -2970,7 +2970,7 @@ void WebDOMHTMLInputElement::setAlign(kscript::ExprEnv* env, kscript::Value* ret
     e.SetAlign(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLInputElement.getAlt
+// (IGNORE_METHOD) WebDOMHTMLInputElement.getAlt
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.getAlt() : String
@@ -2993,7 +2993,7 @@ void WebDOMHTMLInputElement::getAlt(kscript::ExprEnv* env, kscript::Value* retva
     retval->setString(e.GetAlt().wc_str());
 }
 
-// (METHOD) WebDOMHTMLInputElement.setAlt
+// (IGNORE_METHOD) WebDOMHTMLInputElement.setAlt
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.setAlt(value : String)
@@ -3016,7 +3016,7 @@ void WebDOMHTMLInputElement::setAlt(kscript::ExprEnv* env, kscript::Value* retva
     e.SetAlt(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLInputElement.getChecked
+// (IGNORE_METHOD) WebDOMHTMLInputElement.getChecked
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.getChecked() : Boolean
@@ -3039,7 +3039,7 @@ void WebDOMHTMLInputElement::getChecked(kscript::ExprEnv* env, kscript::Value* r
     retval->setBoolean(e.GetChecked());
 }
 
-// (METHOD) WebDOMHTMLInputElement.setChecked
+// (IGNORE_METHOD) WebDOMHTMLInputElement.setChecked
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.setChecked(value : Boolean)
@@ -3062,7 +3062,7 @@ void WebDOMHTMLInputElement::setChecked(kscript::ExprEnv* env, kscript::Value* r
     e.SetChecked(env->getParam(0)->getBoolean());
 }
 
-// (METHOD) WebDOMHTMLInputElement.getDisabled
+// (IGNORE_METHOD) WebDOMHTMLInputElement.getDisabled
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.getDisabled() : Boolean
@@ -3085,7 +3085,7 @@ void WebDOMHTMLInputElement::getDisabled(kscript::ExprEnv* env, kscript::Value* 
     retval->setBoolean(e.GetDisabled());
 }
 
-// (METHOD) WebDOMHTMLInputElement.setDisabled
+// (IGNORE_METHOD) WebDOMHTMLInputElement.setDisabled
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.setDisabled(value : Boolean)
@@ -3108,7 +3108,7 @@ void WebDOMHTMLInputElement::setDisabled(kscript::ExprEnv* env, kscript::Value* 
     e.SetDisabled(env->getParam(0)->getBoolean());
 }
 
-// (METHOD) WebDOMHTMLInputElement.getMaxLength
+// (IGNORE_METHOD) WebDOMHTMLInputElement.getMaxLength
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.getMaxLength() : Integer
@@ -3131,7 +3131,7 @@ void WebDOMHTMLInputElement::getMaxLength(kscript::ExprEnv* env, kscript::Value*
     retval->setInteger(e.GetMaxLength());
 }
 
-// (METHOD) WebDOMHTMLInputElement.setMaxLength
+// (IGNORE_METHOD) WebDOMHTMLInputElement.setMaxLength
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.setMaxLength(value : Integer)
@@ -3154,7 +3154,7 @@ void WebDOMHTMLInputElement::setMaxLength(kscript::ExprEnv* env, kscript::Value*
     e.SetMaxLength(env->getParam(0)->getInteger());
 }
 
-// (METHOD) WebDOMHTMLInputElement.getName
+// (IGNORE_METHOD) WebDOMHTMLInputElement.getName
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.getName() : String
@@ -3177,7 +3177,7 @@ void WebDOMHTMLInputElement::getName(kscript::ExprEnv* env, kscript::Value* retv
     retval->setString(e.GetName().wc_str());
 }
 
-// (METHOD) WebDOMHTMLInputElement.setName
+// (IGNORE_METHOD) WebDOMHTMLInputElement.setName
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.setName(value : String)
@@ -3200,7 +3200,7 @@ void WebDOMHTMLInputElement::setName(kscript::ExprEnv* env, kscript::Value* retv
     e.SetName(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLInputElement.getReadOnly
+// (IGNORE_METHOD) WebDOMHTMLInputElement.getReadOnly
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.getReadOnly() : Boolean
@@ -3223,7 +3223,7 @@ void WebDOMHTMLInputElement::getReadOnly(kscript::ExprEnv* env, kscript::Value* 
     retval->setBoolean(e.GetReadOnly());
 }
 
-// (METHOD) WebDOMHTMLInputElement.setReadOnly
+// (IGNORE_METHOD) WebDOMHTMLInputElement.setReadOnly
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.setReadOnly(value : Boolean)
@@ -3246,7 +3246,7 @@ void WebDOMHTMLInputElement::setReadOnly(kscript::ExprEnv* env, kscript::Value* 
     e.SetReadOnly(env->getParam(0)->getBoolean());
 }
 
-// (METHOD) WebDOMHTMLInputElement.getSize
+// (IGNORE_METHOD) WebDOMHTMLInputElement.getSize
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.getSize() : Integer
@@ -3269,7 +3269,7 @@ void WebDOMHTMLInputElement::getSize(kscript::ExprEnv* env, kscript::Value* retv
     retval->setInteger(e.GetSize());
 }
 
-// (METHOD) WebDOMHTMLInputElement.setSize
+// (IGNORE_METHOD) WebDOMHTMLInputElement.setSize
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.setSize(value : Integer)
@@ -3292,7 +3292,7 @@ void WebDOMHTMLInputElement::setSize(kscript::ExprEnv* env, kscript::Value* retv
     e.SetSize(env->getParam(0)->getInteger());
 }
 
-// (METHOD) WebDOMHTMLInputElement.getSrc
+// (IGNORE_METHOD) WebDOMHTMLInputElement.getSrc
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.getSrc() : String
@@ -3315,7 +3315,7 @@ void WebDOMHTMLInputElement::getSrc(kscript::ExprEnv* env, kscript::Value* retva
     retval->setString(e.GetSrc().wc_str());
 }
 
-// (METHOD) WebDOMHTMLInputElement.setSrc
+// (IGNORE_METHOD) WebDOMHTMLInputElement.setSrc
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.setSrc(value : String)
@@ -3339,7 +3339,7 @@ void WebDOMHTMLInputElement::setSrc(kscript::ExprEnv* env, kscript::Value* retva
 }
 
 
-// (METHOD) WebDOMHTMLInputElement.getType
+// (IGNORE_METHOD) WebDOMHTMLInputElement.getType
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.getType() : String
@@ -3362,7 +3362,7 @@ void WebDOMHTMLInputElement::getType(kscript::ExprEnv* env, kscript::Value* retv
     retval->setString(e.GetType().wc_str());
 }
 
-// (METHOD) WebDOMHTMLInputElement.setType
+// (IGNORE_METHOD) WebDOMHTMLInputElement.setType
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.setType(value : String)
@@ -3385,7 +3385,7 @@ void WebDOMHTMLInputElement::setType(kscript::ExprEnv* env, kscript::Value* retv
     e.SetType(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLInputElement.getUseMap
+// (IGNORE_METHOD) WebDOMHTMLInputElement.getUseMap
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.getUseMap() : String
@@ -3408,7 +3408,7 @@ void WebDOMHTMLInputElement::getUseMap(kscript::ExprEnv* env, kscript::Value* re
     retval->setString(e.GetUseMap().wc_str());
 }
 
-// (METHOD) WebDOMHTMLInputElement.setUseMap
+// (IGNORE_METHOD) WebDOMHTMLInputElement.setUseMap
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.setUseMap(value : String)
@@ -3431,7 +3431,7 @@ void WebDOMHTMLInputElement::setUseMap(kscript::ExprEnv* env, kscript::Value* re
     e.SetUseMap(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLInputElement.blur
+// (IGNORE_METHOD) WebDOMHTMLInputElement.blur
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.blur()
@@ -3450,7 +3450,7 @@ void WebDOMHTMLInputElement::blur(kscript::ExprEnv* env, kscript::Value* retval)
     e.Blur();
 }
 
-// (METHOD) WebDOMHTMLInputElement.focus
+// (IGNORE_METHOD) WebDOMHTMLInputElement.focus
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.focus()
@@ -3469,7 +3469,7 @@ void WebDOMHTMLInputElement::focus(kscript::ExprEnv* env, kscript::Value* retval
     e.Focus();
 }
 
-// (METHOD) WebDOMHTMLInputElement.select
+// (IGNORE_METHOD) WebDOMHTMLInputElement.select
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.select()
@@ -3488,7 +3488,7 @@ void WebDOMHTMLInputElement::select(kscript::ExprEnv* env, kscript::Value* retva
     e.Select();
 }
 
-// (METHOD) WebDOMHTMLInputElement.click
+// (IGNORE_METHOD) WebDOMHTMLInputElement.click
 // Description:
 //
 // Syntax: WebDOMHTMLInputElement.click()
@@ -3507,7 +3507,7 @@ void WebDOMHTMLInputElement::click(kscript::ExprEnv* env, kscript::Value* retval
     e.Click();
 }
 
-// (CLASS) WebDOMHTMLLinkElement
+// (IGNORE_CLASS) WebDOMHTMLLinkElement
 // Category: DOM
 // Derives: WebDOMHTMLElement
 // Description: A class that represents an HTML link element.
@@ -3533,7 +3533,7 @@ void WebDOMHTMLLinkElement::constructor(kscript::ExprEnv* env, kscript::Value* r
 {
 }
 
-// (METHOD) WebDOMHTMLLinkElement.getDisabled
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.getDisabled
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.getDisabled() : Boolean
@@ -3556,7 +3556,7 @@ void WebDOMHTMLLinkElement::getDisabled(kscript::ExprEnv* env, kscript::Value* r
     retval->setBoolean(e.GetDisabled());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.setDisabled
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.setDisabled
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.setDisabled(value : Boolean)
@@ -3579,7 +3579,7 @@ void WebDOMHTMLLinkElement::setDisabled(kscript::ExprEnv* env, kscript::Value* r
     e.SetDisabled(env->getParam(0)->getBoolean());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.getCharset
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.getCharset
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.getCharset() : String
@@ -3602,7 +3602,7 @@ void WebDOMHTMLLinkElement::getCharset(kscript::ExprEnv* env, kscript::Value* re
     retval->setString(e.GetCharset().wc_str());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.setCharset
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.setCharset
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.setCharset(value : String)
@@ -3625,7 +3625,7 @@ void WebDOMHTMLLinkElement::setCharset(kscript::ExprEnv* env, kscript::Value* re
     e.SetCharset(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.getHref
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.getHref
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.getHref() : String
@@ -3648,7 +3648,7 @@ void WebDOMHTMLLinkElement::getHref(kscript::ExprEnv* env, kscript::Value* retva
     retval->setString(e.GetHref().wc_str());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.setHref
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.setHref
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.setHref(value : String)
@@ -3671,7 +3671,7 @@ void WebDOMHTMLLinkElement::setHref(kscript::ExprEnv* env, kscript::Value* retva
     e.SetHref(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.getHreflang
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.getHreflang
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.getHreflang() : String
@@ -3694,7 +3694,7 @@ void WebDOMHTMLLinkElement::getHreflang(kscript::ExprEnv* env, kscript::Value* r
     retval->setString(e.GetHreflang().wc_str());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.setHreflang
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.setHreflang
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.setHreflang(value : String)
@@ -3717,7 +3717,7 @@ void WebDOMHTMLLinkElement::setHreflang(kscript::ExprEnv* env, kscript::Value* r
     e.SetHreflang(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.getMedia
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.getMedia
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.getMedia() : String
@@ -3740,7 +3740,7 @@ void WebDOMHTMLLinkElement::getMedia(kscript::ExprEnv* env, kscript::Value* retv
     retval->setString(e.GetMedia().wc_str());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.setMedia
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.setMedia
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.setMedia(value : String)
@@ -3763,7 +3763,7 @@ void WebDOMHTMLLinkElement::setMedia(kscript::ExprEnv* env, kscript::Value* retv
     e.SetMedia(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.getRel
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.getRel
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.getRel() : String
@@ -3786,7 +3786,7 @@ void WebDOMHTMLLinkElement::getRel(kscript::ExprEnv* env, kscript::Value* retval
     retval->setString(e.GetRel().wc_str());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.setRel
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.setRel
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.setRel(value : String)
@@ -3809,7 +3809,7 @@ void WebDOMHTMLLinkElement::setRel(kscript::ExprEnv* env, kscript::Value* retval
     e.SetRel(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.getRev
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.getRev
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.getRev() : String
@@ -3832,7 +3832,7 @@ void WebDOMHTMLLinkElement::getRev(kscript::ExprEnv* env, kscript::Value* retval
     retval->setString(e.GetRev().wc_str());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.setRev
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.setRev
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.setRev(value : String)
@@ -3855,7 +3855,7 @@ void WebDOMHTMLLinkElement::setRev(kscript::ExprEnv* env, kscript::Value* retval
     e.SetRev(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.getTarget
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.getTarget
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.getTarget() : String
@@ -3878,7 +3878,7 @@ void WebDOMHTMLLinkElement::getTarget(kscript::ExprEnv* env, kscript::Value* ret
     retval->setString(e.GetTarget().wc_str());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.setTarget
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.setTarget
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.setTarget(value : String)
@@ -3901,7 +3901,7 @@ void WebDOMHTMLLinkElement::setTarget(kscript::ExprEnv* env, kscript::Value* ret
     e.SetTarget(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.getType
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.getType
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.getType() : String
@@ -3924,7 +3924,7 @@ void WebDOMHTMLLinkElement::getType(kscript::ExprEnv* env, kscript::Value* retva
     retval->setString(e.GetType().wc_str());
 }
 
-// (METHOD) WebDOMHTMLLinkElement.setType
+// (IGNORE_METHOD) WebDOMHTMLLinkElement.setType
 // Description:
 //
 // Syntax: WebDOMHTMLLinkElement.setType(value : String)
@@ -3947,7 +3947,7 @@ void WebDOMHTMLLinkElement::setType(kscript::ExprEnv* env, kscript::Value* retva
     e.SetType(env->getParam(0)->getString());
 }
 
-// (CLASS) WebDOMHTMLOptionElement
+// (IGNORE_CLASS) WebDOMHTMLOptionElement
 // Category: DOM
 // Derives: WebDOMHTMLElement
 // Description: A class that represents an HTML option element.
@@ -3973,7 +3973,7 @@ void WebDOMHTMLOptionElement::constructor(kscript::ExprEnv* env, kscript::Value*
 {
 }
 
-// (METHOD) WebDOMHTMLOptionElement.getDefaultSelected
+// (IGNORE_METHOD) WebDOMHTMLOptionElement.getDefaultSelected
 // Description:
 //
 // Syntax: WebDOMHTMLOptionElement.getDefaultSelected() : Boolean
@@ -3996,7 +3996,7 @@ void WebDOMHTMLOptionElement::getDefaultSelected(kscript::ExprEnv* env, kscript:
     retval->setBoolean(e.GetDefaultSelected());
 }
 
-// (METHOD) WebDOMHTMLOptionElement.setDefaultSelected
+// (IGNORE_METHOD) WebDOMHTMLOptionElement.setDefaultSelected
 // Description:
 //
 // Syntax: WebDOMHTMLOptionElement.setDefaultSelected(value : Boolean)
@@ -4019,7 +4019,7 @@ void WebDOMHTMLOptionElement::setDefaultSelected(kscript::ExprEnv* env, kscript:
     e.SetDefaultSelected(env->getParam(0)->getBoolean());
 }
 
-// (METHOD) WebDOMHTMLOptionElement.getText
+// (IGNORE_METHOD) WebDOMHTMLOptionElement.getText
 // Description:
 //
 // Syntax: WebDOMHTMLOptionElement.getText() : String
@@ -4042,7 +4042,7 @@ void WebDOMHTMLOptionElement::getText(kscript::ExprEnv* env, kscript::Value* ret
     retval->setString(e.GetText().wc_str());
 }
 
-// (METHOD) WebDOMHTMLOptionElement.getIndex
+// (IGNORE_METHOD) WebDOMHTMLOptionElement.getIndex
 // Description:
 //
 // Syntax: WebDOMHTMLOptionElement.getIndex() : Integer
@@ -4065,7 +4065,7 @@ void WebDOMHTMLOptionElement::getIndex(kscript::ExprEnv* env, kscript::Value* re
     retval->setInteger(e.GetIndex());
 }
 
-// (METHOD) WebDOMHTMLOptionElement.getDisabled
+// (IGNORE_METHOD) WebDOMHTMLOptionElement.getDisabled
 // Description:
 //
 // Syntax: WebDOMHTMLOptionElement.getDisabled() : Boolean
@@ -4088,7 +4088,7 @@ void WebDOMHTMLOptionElement::getDisabled(kscript::ExprEnv* env, kscript::Value*
     retval->setBoolean(e.GetDisabled());
 }
 
-// (METHOD) WebDOMHTMLOptionElement.setDisabled
+// (IGNORE_METHOD) WebDOMHTMLOptionElement.setDisabled
 // Description:
 //
 // Syntax: WebDOMHTMLOptionElement.setDisabled(value : Boolean)
@@ -4111,7 +4111,7 @@ void WebDOMHTMLOptionElement::setDisabled(kscript::ExprEnv* env, kscript::Value*
     e.SetDisabled(env->getParam(0)->getBoolean());
 }
 
-// (METHOD) WebDOMHTMLOptionElement.getLabel
+// (IGNORE_METHOD) WebDOMHTMLOptionElement.getLabel
 // Description:
 //
 // Syntax: WebDOMHTMLOptionElement.getLabel() : String
@@ -4134,7 +4134,7 @@ void WebDOMHTMLOptionElement::getLabel(kscript::ExprEnv* env, kscript::Value* re
     retval->setString(e.GetLabel().wc_str());
 }
 
-// (METHOD) WebDOMHTMLOptionElement.setLabel
+// (IGNORE_METHOD) WebDOMHTMLOptionElement.setLabel
 // Description:
 //
 // Syntax: WebDOMHTMLOptionElement.setLabel(value : String)
@@ -4157,7 +4157,7 @@ void WebDOMHTMLOptionElement::setLabel(kscript::ExprEnv* env, kscript::Value* re
     e.SetLabel(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLOptionElement.getSelected
+// (IGNORE_METHOD) WebDOMHTMLOptionElement.getSelected
 // Description:
 //
 // Syntax: WebDOMHTMLOptionElement.getSelected() : Boolean
@@ -4180,7 +4180,7 @@ void WebDOMHTMLOptionElement::getSelected(kscript::ExprEnv* env, kscript::Value*
     retval->setBoolean(e.GetSelected());
 }
 
-// (METHOD) WebDOMHTMLOptionElement.setSelected
+// (IGNORE_METHOD) WebDOMHTMLOptionElement.setSelected
 // Description:
 //
 // Syntax: WebDOMHTMLOptionElement.setSelected(value : Boolean)
@@ -4203,7 +4203,7 @@ void WebDOMHTMLOptionElement::setSelected(kscript::ExprEnv* env, kscript::Value*
     e.SetSelected(env->getParam(0)->getBoolean());
 }
 
-// (CLASS) WebDOMHTMLSelectElement
+// (IGNORE_CLASS) WebDOMHTMLSelectElement
 // Category: DOM
 // Derives: WebDOMHTMLElement
 // Description: A class that represents an HTML select element.
@@ -4229,7 +4229,7 @@ void WebDOMHTMLSelectElement::constructor(kscript::ExprEnv* env, kscript::Value*
 { 
 }
 
-// (METHOD) WebDOMHTMLSelectElement.getType
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.getType
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.getType() : String
@@ -4252,7 +4252,7 @@ void WebDOMHTMLSelectElement::getType(kscript::ExprEnv* env, kscript::Value* ret
     retval->setString(e.GetType().wc_str());
 }
 
-// (METHOD) WebDOMHTMLSelectElement.getSelectedIndex
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.getSelectedIndex
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.getSelectedIndex() : Integer
@@ -4275,7 +4275,7 @@ void WebDOMHTMLSelectElement::getSelectedIndex(kscript::ExprEnv* env, kscript::V
     retval->setInteger(e.GetSelectedIndex());
 }
 
-// (METHOD) WebDOMHTMLSelectElement.setSelectedIndex
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.setSelectedIndex
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.setSelectedIndex(value : Integer)
@@ -4298,7 +4298,7 @@ void WebDOMHTMLSelectElement::setSelectedIndex(kscript::ExprEnv* env, kscript::V
     e.SetSelectedIndex(env->getParam(0)->getInteger());
 }
 
-// (METHOD) WebDOMHTMLSelectElement.getLength
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.getLength
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.getLength() : Integer
@@ -4321,7 +4321,7 @@ void WebDOMHTMLSelectElement::getLength(kscript::ExprEnv* env, kscript::Value* r
     retval->setInteger(e.GetLength());
 }
 
-// (METHOD) WebDOMHTMLSelectElement.setLength
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.setLength
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.setLength(value : Integer)
@@ -4344,7 +4344,7 @@ void WebDOMHTMLSelectElement::setLength(kscript::ExprEnv* env, kscript::Value* r
     e.SetLength(env->getParam(0)->getInteger());
 }
 
-// (METHOD) WebDOMHTMLSelectElement.getDisabled
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.getDisabled
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.getDisabled() : Boolean
@@ -4367,7 +4367,7 @@ void WebDOMHTMLSelectElement::getDisabled(kscript::ExprEnv* env, kscript::Value*
     retval->setBoolean(e.GetDisabled());
 }
 
-// (METHOD) WebDOMHTMLSelectElement.setDisabled
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.setDisabled
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.setDisabled(value : Boolean)
@@ -4390,7 +4390,7 @@ void WebDOMHTMLSelectElement::setDisabled(kscript::ExprEnv* env, kscript::Value*
     e.SetDisabled(env->getParam(0)->getBoolean());
 }
 
-// (METHOD) WebDOMHTMLSelectElement.getMultiple
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.getMultiple
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.getMultiple() : Boolean
@@ -4413,7 +4413,7 @@ void WebDOMHTMLSelectElement::getMultiple(kscript::ExprEnv* env, kscript::Value*
     retval->setBoolean(e.GetMultiple());
 }
 
-// (METHOD) WebDOMHTMLSelectElement.setMultiple
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.setMultiple
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.setMultiple(value : Boolean)
@@ -4436,7 +4436,7 @@ void WebDOMHTMLSelectElement::setMultiple(kscript::ExprEnv* env, kscript::Value*
     e.SetMultiple(env->getParam(0)->getBoolean());
 }
 
-// (METHOD) WebDOMHTMLSelectElement.getName
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.getName
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.getName() : String
@@ -4459,7 +4459,7 @@ void WebDOMHTMLSelectElement::getName(kscript::ExprEnv* env, kscript::Value* ret
     retval->setString(e.GetName().wc_str());
 }
 
-// (METHOD) WebDOMHTMLSelectElement.setName
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.setName
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.setName(value : String)
@@ -4482,7 +4482,7 @@ void WebDOMHTMLSelectElement::setName(kscript::ExprEnv* env, kscript::Value* ret
     e.SetName(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLSelectElement.getSize
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.getSize
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.getSize() : Integer
@@ -4505,7 +4505,7 @@ void WebDOMHTMLSelectElement::getSize(kscript::ExprEnv* env, kscript::Value* ret
     retval->setInteger(e.GetSize());
 }
 
-// (METHOD) WebDOMHTMLSelectElement.setSize
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.setSize
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.setSize(value : Integer)
@@ -4529,7 +4529,7 @@ void WebDOMHTMLSelectElement::setSize(kscript::ExprEnv* env, kscript::Value* ret
 }
 
 
-// (METHOD) WebDOMHTMLSelectElement.add
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.add
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.add(element : WebDOMHTMLElement,
@@ -4585,7 +4585,7 @@ void WebDOMHTMLSelectElement::add(kscript::ExprEnv* env, kscript::Value* retval)
     }
 }
 
-// (METHOD) WebDOMHTMLSelectElement.remove
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.remove
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.remove(value : Integer)
@@ -4611,7 +4611,7 @@ void WebDOMHTMLSelectElement::remove(kscript::ExprEnv* env, kscript::Value* retv
     }
 }
 
-// (METHOD) WebDOMHTMLSelectElement.blur
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.blur
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.blur()
@@ -4630,7 +4630,7 @@ void WebDOMHTMLSelectElement::blur(kscript::ExprEnv* env, kscript::Value* retval
     e.Blur();
 }
 
-// (METHOD) WebDOMHTMLSelectElement.focus
+// (IGNORE_METHOD) WebDOMHTMLSelectElement.focus
 // Description:
 //
 // Syntax: WebDOMHTMLSelectElement.focus()
@@ -4649,7 +4649,7 @@ void WebDOMHTMLSelectElement::focus(kscript::ExprEnv* env, kscript::Value* retva
     e.Focus();
 }
 
-// (CLASS) WebDOMHTMLTextAreaElement
+// (IGNORE_CLASS) WebDOMHTMLTextAreaElement
 // Category: DOM
 // Derives: WebDOMHTMLElement
 // Description: A class that represents an HTML text area element.
@@ -4675,7 +4675,7 @@ void WebDOMHTMLTextAreaElement::constructor(kscript::ExprEnv* env, kscript::Valu
 {
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.getDefaultValue
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.getDefaultValue
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.getDefaultValue() : String
@@ -4698,7 +4698,7 @@ void WebDOMHTMLTextAreaElement::getDefaultValue(kscript::ExprEnv* env, kscript::
     retval->setString(e.GetDefaultValue().wc_str());
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.setDefaultValue
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.setDefaultValue
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.setDefaultValue(value : String)
@@ -4721,7 +4721,7 @@ void WebDOMHTMLTextAreaElement::setDefaultValue(kscript::ExprEnv* env, kscript::
     e.SetDefaultValue(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.getCols
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.getCols
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.getCols() : Integer
@@ -4744,7 +4744,7 @@ void WebDOMHTMLTextAreaElement::getCols(kscript::ExprEnv* env, kscript::Value* r
     retval->setInteger(e.GetCols());
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.setCols
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.setCols
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.setCols(value : Integer)
@@ -4767,7 +4767,7 @@ void WebDOMHTMLTextAreaElement::setCols(kscript::ExprEnv* env, kscript::Value* r
     e.SetCols(env->getParam(0)->getInteger());
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.getDisabled
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.getDisabled
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.getDisabled() : Boolean
@@ -4790,7 +4790,7 @@ void WebDOMHTMLTextAreaElement::getDisabled(kscript::ExprEnv* env, kscript::Valu
     retval->setBoolean(e.GetDisabled());
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.setDisabled
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.setDisabled
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.setDisabled(value : Boolean)
@@ -4813,7 +4813,7 @@ void WebDOMHTMLTextAreaElement::setDisabled(kscript::ExprEnv* env, kscript::Valu
     e.SetDisabled(env->getParam(0)->getBoolean());
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.getName
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.getName
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.getName() : String
@@ -4836,7 +4836,7 @@ void WebDOMHTMLTextAreaElement::getName(kscript::ExprEnv* env, kscript::Value* r
     retval->setString(e.GetName().wc_str());
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.setName
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.setName
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.setName(value : String)
@@ -4859,7 +4859,7 @@ void WebDOMHTMLTextAreaElement::setName(kscript::ExprEnv* env, kscript::Value* r
     e.SetName(env->getParam(0)->getString());
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.getReadOnly
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.getReadOnly
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.getReadOnly() : Boolean
@@ -4882,7 +4882,7 @@ void WebDOMHTMLTextAreaElement::getReadOnly(kscript::ExprEnv* env, kscript::Valu
     retval->setBoolean(e.GetReadOnly());
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.setReadOnly
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.setReadOnly
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.setReadOnly(value : Boolean)
@@ -4905,7 +4905,7 @@ void WebDOMHTMLTextAreaElement::setReadOnly(kscript::ExprEnv* env, kscript::Valu
     e.SetReadOnly(env->getParam(0)->getBoolean());
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.getRows
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.getRows
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.getRows() : Integer
@@ -4928,7 +4928,7 @@ void WebDOMHTMLTextAreaElement::getRows(kscript::ExprEnv* env, kscript::Value* r
     retval->setInteger(e.GetRows());
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.setRows
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.setRows
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.setRows(value : Integer)
@@ -4951,7 +4951,7 @@ void WebDOMHTMLTextAreaElement::setRows(kscript::ExprEnv* env, kscript::Value* r
     e.SetRows(env->getParam(0)->getInteger());
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.getType
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.getType
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.getType() : String
@@ -4974,7 +4974,7 @@ void WebDOMHTMLTextAreaElement::getType(kscript::ExprEnv* env, kscript::Value* r
     retval->setString(e.GetType().wc_str());
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.blur
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.blur
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.blur()
@@ -4993,7 +4993,7 @@ void WebDOMHTMLTextAreaElement::blur(kscript::ExprEnv* env, kscript::Value* retv
     e.Blur();
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.focus
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.focus
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.focus()
@@ -5012,7 +5012,7 @@ void WebDOMHTMLTextAreaElement::focus(kscript::ExprEnv* env, kscript::Value* ret
     e.Focus();
 }
 
-// (METHOD) WebDOMHTMLTextAreaElement.select
+// (IGNORE_METHOD) WebDOMHTMLTextAreaElement.select
 // Description:
 //
 // Syntax: WebDOMHTMLTextAreaElement.select()
