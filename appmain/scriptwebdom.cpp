@@ -860,7 +860,7 @@ WebDOMText::~WebDOMText()
 {
 }
 
-// (CONSTRUCTOR) WebDOMText.constructor
+// (IGNORE_CONSTRUCTOR) WebDOMText.constructor
 //
 // Description: Creates a new WebDOMText object.
 //
@@ -934,7 +934,7 @@ WebDOMAttr::~WebDOMAttr()
 {
 }
 
-// (CONSTRUCTOR) WebDOMAttr.constructor
+// (IGNORE_CONSTRUCTOR) WebDOMAttr.constructor
 //
 // Description: Creates a new WebDOMAttr object.
 //
@@ -1059,7 +1059,7 @@ WebDOMElement::~WebDOMElement()
 {
 }
 
-// (CONSTRUCTOR) WebDOMElement.constructor
+// (IGNORE_CONSTRUCTOR) WebDOMElement.constructor
 //
 // Description: Creates a new WebDOMElement object.
 //
@@ -1412,7 +1412,7 @@ WebDOMDocument::~WebDOMDocument()
 {
 }
 
-// (CONSTRUCTOR) WebDOMDocument.constructor
+// (IGNORE_CONSTRUCTOR) WebDOMDocument.constructor
 //
 // Description: Creates a new WebDOMDocument object.
 //
@@ -1699,7 +1699,7 @@ WebDOMHTMLElement::~WebDOMHTMLElement()
 {
 }
 
-// (CONSTRUCTOR) WebDOMHTMLElement.constructor
+// (IGNORE_CONSTRUCTOR) WebDOMHTMLElement.constructor
 //
 // Description: Creates a new WebDOMHTMLElement object.
 //
@@ -2105,7 +2105,7 @@ WebDOMHTMLAnchorElement::~WebDOMHTMLAnchorElement()
 {
 }
 
-// (CONSTRUCTOR) WebDOMHTMLAnchorElement.constructor
+// (IGNORE_CONSTRUCTOR) WebDOMHTMLAnchorElement.constructor
 //
 // Description: Creates a new WebDOMHTMLAnchorElement object.
 //
@@ -2631,7 +2631,7 @@ WebDOMHTMLButtonElement::~WebDOMHTMLButtonElement()
 {
 }
 
-// (CONSTRUCTOR) WebDOMHTMLButtonElement.constructor
+// (IGNORE_CONSTRUCTOR) WebDOMHTMLButtonElement.constructor
 //
 // Description: Creates a new WebDOMHTMLButtonElement object.
 //
@@ -2774,7 +2774,7 @@ WebDOMHTMLInputElement::~WebDOMHTMLInputElement()
 {
 }
 
-// (CONSTRUCTOR) WebDOMHTMLInputElement.constructor
+// (IGNORE_CONSTRUCTOR) WebDOMHTMLInputElement.constructor
 //
 // Description: Creates a new WebDOMHTMLInputElement object.
 //
@@ -3521,7 +3521,7 @@ WebDOMHTMLLinkElement::~WebDOMHTMLLinkElement()
 {
 }
 
-// (CONSTRUCTOR) WebDOMHTMLLinkElement.constructor
+// (IGNORE_CONSTRUCTOR) WebDOMHTMLLinkElement.constructor
 //
 // Description: Creates a new WebDOMHTMLLinkElement object.
 //
@@ -3961,7 +3961,7 @@ WebDOMHTMLOptionElement::~WebDOMHTMLOptionElement()
 {
 }
 
-// (CONSTRUCTOR) WebDOMHTMLOptionElement.constructor
+// (IGNORE_CONSTRUCTOR) WebDOMHTMLOptionElement.constructor
 //
 // Description: Creates a new WebDOMHTMLOptionElement object.
 //
@@ -4217,7 +4217,7 @@ WebDOMHTMLSelectElement::~WebDOMHTMLSelectElement()
 {
 }
 
-// (CONSTRUCTOR) WebDOMHTMLSelectElement.constructor
+// (IGNORE_CONSTRUCTOR) WebDOMHTMLSelectElement.constructor
 //
 // Description: Creates a new WebDOMHTMLSelectElement object.
 //
@@ -4663,7 +4663,7 @@ WebDOMHTMLTextAreaElement::~WebDOMHTMLTextAreaElement()
 {
 }
 
-// (CONSTRUCTOR) WebDOMHTMLTextAreaElement.constructor
+// (IGNORE_CONSTRUCTOR) WebDOMHTMLTextAreaElement.constructor
 //
 // Description: Creates a new WebDOMHTMLTextAreaElement object.
 //
