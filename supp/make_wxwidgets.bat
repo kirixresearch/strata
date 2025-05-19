@@ -6,14 +6,10 @@ if "%FrameworkDir%"=="" (
 )
 
 pushd "%~dp0"
-
-curl -L -o wxWidgets.zip https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.6/wxWidgets-3.2.6.zip
-
 rmdir wxWidgets /s /q
-
 mkdir wxWidgets
 pushd wxWidgets
-unzip ..\wxWidgets.zip
+unzip ..\zip\wxWidgets-3.2.8.zip
 popd
 
 erase wxWidgets.zip
