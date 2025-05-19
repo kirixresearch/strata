@@ -674,7 +674,19 @@ void WebDoc::savePageAsExternal()
 
 wxString WebDoc::getFaviconLinkFromSource()
 {
-    wxString pageSource = m_webview->GetPageSource();
+    wxString script = R"(
+        (function() {
+            try {
+                return document.documentElement.outerHTML;
+            } catch (e) {
+                return 'JS_ERROR:' + e.message;
+            }
+        })();
+    )";
+
+    wxString pageSource = "";
+    m_webview->RunScript(script, &pageSource);
+
     wxRegEx reIconLink("<link.*?rel=['\"](?:shortcut icon|icon)['\"].*?href=['\"](.*?)['\"].*?>", wxRE_DEFAULT | wxRE_ICASE);
 
     if (reIconLink.IsValid()) {
