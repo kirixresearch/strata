@@ -3443,6 +3443,10 @@ void Grid::copySelection()
             }
 
             const wxChar* p = cell_text.c_str();
+
+            // skip an initial quote on each line to prevent pasting problems in Excel
+            if (*p == wxT('"'))
+                p++;
             
             if (use_text_qualifier)
                 result += wxT("\"");
@@ -3511,7 +3515,6 @@ void Grid::copySelection()
 
     if (use_column_captions)
         result = caption_row + result;
-
 
     // write text to the clipboard
     if (wxTheClipboard->Open())
