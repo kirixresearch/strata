@@ -24,6 +24,10 @@ void apphookInitMenuBar(wxMenuBar* menubar)
 {
 }
 
+void apphookInitPanels()
+{
+}
+
 void apphookAppStartup()
 {
 }

@@ -1258,8 +1258,6 @@ bool AppController::init()
     info.Position(1);
 
 
-
-
     // create the marks panel
     state = sitetypeDockable | dockRight | siteHidden;
     MarkMgrPanel* markmgr_panel = new MarkMgrPanel;
@@ -1267,6 +1265,8 @@ bool AppController::init()
     m_markmanagerpanel_site->setCaption(_("Marks"));
     m_markmanagerpanel_site->setName(wxT("MarksPanel"));
 
+
+    apphookInitPanels(); // init additional specific application panels
 
 
     // load frame perspective (if any has been saved)
