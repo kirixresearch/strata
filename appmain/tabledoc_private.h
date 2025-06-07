@@ -189,6 +189,7 @@ public:
     void showIndexPanel();
     void showCreateDynamicField();
     void showEditDynamicField(const wxString& field);
+    void showFilterPanel(const wxString& condition);
     void createOrShowStructureDoc();
     bool createDynamicField(const wxString& col_name,
                             int type,

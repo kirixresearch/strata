@@ -5901,6 +5901,61 @@ void TableDoc::showEditDynamicField(const wxString& column_name)
 }
 
 
+void TableDoc::showFilterPanel(const wxString& condition)
+{
+    IDocumentSitePtr site;
+    site = m_frame->lookupSite(wxT("FilterPanel"));
+    if (site.isNull())
+    {
+        {
+            AppBusyCursor bc;
+
+            xd::Structure structure = g_app->getDatabase()->describeTable(m_path);
+            if (structure.isNull())
+                return;
+
+            ExprBuilderDocPanel* panel = new ExprBuilderDocPanel;
+            panel->setOKText(_("Run"));
+
+            if (m_db_type == xd::dbtypeXdnative || m_db_type == xd::dbtypeFilesystem)
+            {
+                panel->setValidationEnabled(true);
+                xd::Structure validation_structure = getStructureWithRelatedFields();
+                if (validation_structure.isOk())
+                {
+                    panel->setValidationStructure(validation_structure);
+                }
+            }
+            else
+            {
+                panel->setValidationEnabled(false);
+            }
+
+            site = m_frame->createSite(panel,
+                sitetypeModeless |
+                siteHidden,
+                -1, -1, FromDIP(560), FromDIP(310));
+            site->setMinSize(FromDIP(560), FromDIP(310));
+            site->setCaption(makeCaption(_("Filter")));
+            site->setName(wxT("FilterPanel"));
+
+            panel->setStructure(structure);
+            panel->setExpression(condition);
+            panel->setOKText(_("Run"));
+            panel->sigOkPressed.connect(this, &TableDoc::onFilterOk);
+            panel->setTypeOnly(xd::typeBoolean);
+            panel->setEmptyOk(true);
+        }
+
+        site->setVisible(true);
+    }
+    else
+    {
+        if (!site->getVisible())
+            site->setVisible(true);
+    }
+}
+
 void TableDoc::onCreateDynamicField(wxCommandEvent& evt)
 {
     showCreateDynamicField();
@@ -8168,57 +8223,7 @@ void TableDoc::onQuickFilter(wxCommandEvent& evt)
 
 void TableDoc::onFilter(wxCommandEvent& evt)
 {
-    IDocumentSitePtr site;
-    site = m_frame->lookupSite(wxT("FilterPanel"));
-    if (site.isNull())
-    {
-        {
-            AppBusyCursor bc;
-
-            xd::Structure structure = g_app->getDatabase()->describeTable(m_path);
-            if (structure.isNull())
-                return;
-
-            ExprBuilderDocPanel* panel = new ExprBuilderDocPanel;
-            panel->setOKText(_("Run"));
-
-            if (m_db_type == xd::dbtypeXdnative || m_db_type == xd::dbtypeFilesystem)
-            {
-                panel->setValidationEnabled(true);
-                xd::Structure validation_structure = getStructureWithRelatedFields();
-                if (validation_structure.isOk())
-                {
-                    panel->setValidationStructure(validation_structure);
-                }
-            }
-            else
-            {
-                panel->setValidationEnabled(false);
-            }
-
-            site = m_frame->createSite(panel,
-                                       sitetypeModeless |
-                                       siteHidden,
-                                       -1, -1, FromDIP(560), FromDIP(310));
-            site->setMinSize(FromDIP(560), FromDIP(310));
-            site->setCaption(makeCaption(_("Filter")));
-            site->setName(wxT("FilterPanel"));
-
-            panel->setStructure(structure);
-            panel->setExpression(m_filter);
-            panel->setOKText(_("Run"));
-            panel->sigOkPressed.connect(this, &TableDoc::onFilterOk);
-            panel->setTypeOnly(xd::typeBoolean);
-            panel->setEmptyOk(true);
-        }
-
-        site->setVisible(true);
-    }
-     else
-    {
-        if (!site->getVisible())
-            site->setVisible(true);
-    }
+    showFilterPanel(m_filter);
 }
 
 void TableDoc::onRemoveFilter(wxCommandEvent& evt)

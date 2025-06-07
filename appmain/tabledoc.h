@@ -267,6 +267,7 @@ public:
     virtual void showIndexPanel() = 0;
     virtual void showCreateDynamicField() = 0;
     virtual void showEditDynamicField(const wxString& column_name) = 0;
+    virtual void showFilterPanel(const wxString& condition) = 0;
     virtual void deleteAllRelations() = 0;
     virtual int getRelationshipSync() = 0;
     virtual void setRelationshipSync(int state) = 0;
