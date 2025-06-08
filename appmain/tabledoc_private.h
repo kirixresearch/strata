@@ -225,6 +225,8 @@ public:
     void setSortOrder(const std::wstring& new_value);
     std::wstring getSortOrder();
 
+    void setFilterAndSort(const std::wstring& condition, const std::wstring& sort_order);
+
     void setGroupBreak(const std::wstring& expr);
     std::wstring getGroupBreak();
 
@@ -339,6 +341,7 @@ private:
     void onSaveAsJobFinished(jobs::IJobPtr saveas_job);
     void onFilterJobFinished(jobs::IJobPtr query_job);
     void onSortJobFinished(jobs::IJobPtr query_job);
+    void onFilterSortJobFinished(jobs::IJobPtr query_job);
     void onDeleteJobFinished(jobs::IJobPtr delete_job);
     void onAlterTableJobFinished(jobs::IJobPtr job);
     void onEditDynamicFieldOk(ColPropsPanel* panel);

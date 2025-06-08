@@ -3310,6 +3310,107 @@ void TableDoc::onSortJobFinished(jobs::IJobPtr query_job)
     updateStatusBar();
 }
 
+
+void TableDoc::onFilterSortJobFinished(jobs::IJobPtr job)
+{
+    if (job.isNull())
+    {
+        return;
+    }
+
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
+    {
+        // if the job is cancelled or failed, update the filter toolbar item
+        // and we're done
+        if (job->getJobInfo()->getState() == jobs::jobStateCancelled ||
+            job->getJobInfo()->getState() == jobs::jobStateFailed)
+        {
+            g_app->getAppController()->updateQuickFilterToolBarItem();
+        }
+
+        return;
+    }
+
+
+    kl::JsonNode params_node;
+    params_node.fromString(job->getParameters());
+
+    kl::JsonNode where_node = params_node["where"];
+    kl::JsonNode order_node = params_node["order"];
+
+    // if the job that finished is the quick filter job,
+    // reset the filter pending state
+    {
+        int id = job->getJobId();
+        if (id == m_quick_filter_jobid)
+            m_quick_filter_jobid = quickFilterNotPending;
+    }
+
+    bool remove_group_break = true;
+    if (order_node.isOk())
+    {
+        m_sort_order = getOrderExprFromJobParam(order_node);
+
+        // if we have a group break and the group break isn't a subset
+        // of the new sort order, remove the group break
+        std::vector< std::pair<std::wstring, bool> > sort_fields;
+        std::vector<std::wstring> group_fields;
+
+        sort_fields = sortExprToVector(m_sort_order);
+        kl::parseDelimitedList(m_group_break, group_fields, ',', true);
+
+        if (group_fields.size() <= sort_fields.size())
+        {
+            remove_group_break = false;
+
+            std::vector<std::wstring>::iterator it, it_end;
+            it_end = group_fields.end();
+
+            int i = 0;
+            for (it = group_fields.begin(); it != it_end; ++it)
+            {
+                if (*it != sort_fields[i].first)
+                {
+                    remove_group_break = true;
+                    break;
+                }
+
+                ++i;
+            }
+        }
+    }
+
+    if (remove_group_break)
+        setGroupBreak(wxT(""));
+
+
+    xd::IIteratorPtr iter = job->getResultObject();
+    if (iter.isOk())
+    {
+        kl::JsonNode params_node;
+        params_node.fromString(job->getParameters());
+        m_filter = params_node["where"].getString();
+
+        setBrowseSet(iter->getTable(), iter);
+    }
+
+    updateStatusBar();
+    g_app->getAppController()->updateQuickFilterToolBarItem();
+
+    wxString suffix;
+    if (m_filter.length() > 0)
+    {
+        suffix = wxT(" [");
+        suffix += _("Filtered");
+        suffix += wxT("]");
+    }
+
+    setCaption(wxEmptyString, suffix);
+}
+
+
+
+
 void TableDoc::onDeleteJobFinished(jobs::IJobPtr delete_job)
 {
     m_grid->reset();

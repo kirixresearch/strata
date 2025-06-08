@@ -247,13 +247,15 @@ public:
     virtual void onColumnNameChanged(const std::wstring& old_name,
                                      const std::wstring& new_name) = 0;
 
-    virtual void setSortOrder(const std::wstring& new_value) = 0;
-    virtual std::wstring getSortOrder() = 0;
-
     virtual std::wstring getFilter() = 0;
     virtual void setQuickFilter(const std::wstring& val) = 0;
     virtual void setFilter(const std::wstring& condition) = 0;
     virtual void removeFilter() = 0;
+
+    virtual void setSortOrder(const std::wstring& new_value) = 0;
+    virtual std::wstring getSortOrder() = 0;
+
+    virtual void setFilterAndSort(const std::wstring& condition, const std::wstring& sort_order) = 0;
 
     virtual void copyRecords(const std::wstring& condition) = 0;
     virtual void deleteRecords(const std::wstring& condition) = 0;

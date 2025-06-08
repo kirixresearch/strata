@@ -17,18 +17,16 @@
 
 
 
-void TableDoc::setFilter(const std::wstring& filter)
+void TableDoc::setFilter(const std::wstring& condition)
 {
-    if (filter.empty())
+    if (condition.empty())
         removeFilter();
-
 
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.query-job");
 
     // configure the job parameters
     kl::JsonNode params;
-    params = createSortFilterJobParams(m_path, filter, m_sort_order);
-
+    params = createSortFilterJobParams(m_path, condition, m_sort_order);
 
     // set the job parameters and start the job
     wxString title = wxString::Format(_("Filtering '%s'"),
@@ -134,6 +132,34 @@ std::wstring TableDoc::getSortOrder()
 {
     return m_sort_order;
 }
+
+void TableDoc::setFilterAndSort(const std::wstring& condition, const std::wstring& sort_order)
+{
+    if (condition.empty())
+        removeFilter();
+
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.query-job");
+
+    // configure the job parameters
+    kl::JsonNode params;
+    params = createSortFilterJobParams(m_path, condition, sort_order);
+
+    // set the job parameters and start the job
+    wxString title = wxString::Format(_("Querying '%s'"),
+        getCaption().c_str());
+
+    job->getJobInfo()->setTitle(towstr(title));
+    job->setParameters(params.toString());
+
+    job->sigJobFinished().connect(this, &TableDoc::onFilterJobFinished);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
+
+
+    // if the job is a quick filter job, track the ID
+    if (m_quick_filter_jobid == quickFilterPending)
+        m_quick_filter_jobid = job->getJobInfo()->getJobId();
+}
+
 
 void TableDoc::setGroupBreak(const std::wstring& _expr)
 {
