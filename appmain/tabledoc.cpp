@@ -5221,7 +5221,13 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         return;
 
 
-    wxString previous_value = m_grid->getCellString(evt.GetRow(), evt.GetColumn());
+    wxString previous_value = m_grid->getCellString(evt.GetRow(), model_col);
+    wxString new_value = evt.GetString();
+
+    if (model_colinfo->getType() == kcl::Grid::typeBoolean)
+    {
+        new_value = evt.GetBoolean() ? wxT("1") : wxT("0");
+    }
 
 
     try
@@ -5230,7 +5236,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
             col_name,
             primary_key,
             rowid,
-            evt.GetString());
+            new_value);
     }
     catch (const AppException& e)
     {
