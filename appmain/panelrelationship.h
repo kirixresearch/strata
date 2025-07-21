@@ -22,11 +22,6 @@ public:
     
     RelDiagramWatcher();
     void onFrameEvent(FrameworkEvent& evt);
-
-private:
-
-    void onSetRenamed(const wxString& old_path,
-                      const wxString& new_path);
 };
 
 

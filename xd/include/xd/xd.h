@@ -595,6 +595,7 @@ struct CopyParams
     std::wstring input;
     std::wstring output;
     bool append;
+    xd::FormatDefinition input_format; // format definition for input path 'input'
 
     std::wstring where;
     std::wstring order;

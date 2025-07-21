@@ -38,8 +38,6 @@ void RelDiagramWatcher::onFrameEvent(FrameworkEvent& evt)
 {
     if (evt.name == FRAMEWORK_EVT_TREEPANEL_OFS_FILE_RENAMED)
     {
-        onSetRenamed(evt.s_param, evt.s_param2);
-
         IDocumentSitePtr site;
         site = g_app->getMainFrame()->lookupSite(wxT("RelationshipsPanel"));
         if (site.isOk())
@@ -68,17 +66,6 @@ void RelDiagramWatcher::onFrameEvent(FrameworkEvent& evt)
             panel->onSetStructureChanged(evt.s_param);
         }
     }
-}
-
-void RelDiagramWatcher::onSetRenamed(const wxString& old_path,
-                                     const wxString& new_path)
-{
-
-    // TODO: should we store the set id in the relationship panel
-    // so that this isn't necessary?
-
-    // TODO: if path is stored in the relationship diagram, then
-    // we need to rename the path elements in the panel info
 }
 
 
