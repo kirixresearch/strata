@@ -38,6 +38,8 @@ void RelDiagramWatcher::onFrameEvent(FrameworkEvent& evt)
 {
     if (evt.name == FRAMEWORK_EVT_TREEPANEL_OFS_FILE_RENAMED)
     {
+        RelationDiagram::renameTablePath(evt.s_param, evt.s_param2);
+
         IDocumentSitePtr site;
         site = g_app->getMainFrame()->lookupSite(wxT("RelationshipsPanel"));
         if (site.isOk())

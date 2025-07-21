@@ -183,6 +183,9 @@ static bool sortD(const wxString& l, const wxString& r)
 
 
 
+
+
+
 // -- RelationBox class implementation --
 
 BEGIN_EVENT_TABLE(RelationBox, wxControl)
@@ -3052,4 +3055,58 @@ void RelationDiagram::resetModified()
 
 
 
+
+
+
+// static 
+bool RelationDiagram::renameTablePath(const wxString& old_path, const wxString& new_path)
+{
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return false;
+
+    // load the current diagram data
+    kl::JsonNode node;
+    std::wstring path = kl::stdswprintf(L"/.appdata/%ls/panels/relmgrpanel",
+        g_app->getDatabase()->getActiveUid().c_str());
+
+    node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    if (!node.isOk())
+        return false;
+
+    // make sure it's in the right format
+    if (!isValidFileVersion(node, L"application/vnd.kx.relmgrpanel", 1))
+        return false;
+
+    kl::JsonNode boxes_node = node["boxes"];
+    if (!boxes_node.isOk())
+        return false;
+
+    // loop through all boxes and rename if match
+    std::vector<kl::JsonNode> boxes_children_node = boxes_node.getChildren();
+    std::vector<kl::JsonNode>::iterator it, it_end;
+    it_end = boxes_children_node.end();
+    bool found = false;
+
+    for (it = boxes_children_node.begin(); it != it_end; ++it)
+    {
+        kl::JsonNode boxes_child_node = *it;
+        wxString box_path = boxes_child_node["path"].getString();
+
+        if (isSamePath(box_path.ToStdWstring(), old_path.ToStdWstring()))
+        {
+            boxes_child_node["path"].setString(towstr(new_path));
+            found = true;
+        }
+    }
+
+    if (!found)
+        return false;
+
+    // save the updated diagram data
+    if (!JsonConfig::saveToDb(node, g_app->getDatabase(), path, L"application/vnd.kx.relmgrpanel"))
+        return false;
+
+    return true;
+}
 
