@@ -276,12 +276,13 @@ void RelationshipPanel::validateUpdateButton()
         active = false;
 
     m_update_button->Enable(active);
-    m_changed = true;
 }
 
 void RelationshipPanel::onDiagramUpdated()
 {
     validateUpdateButton();
+
+    m_changed = true;
 }
 
 
@@ -689,5 +690,7 @@ void RelationshipPanel::loadRelationships()
 
     if (update_button)
         validateUpdateButton();
+
+    m_changed = false;
 }
 

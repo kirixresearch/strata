@@ -274,6 +274,8 @@ public:
                       const wxString& new_path);
     void onSetStructureChanged(const wxString& set_path);
 
+    static bool renameTablePath(const wxString& old_path, const wxString& new_path);
+
 public: // signals
 
     xcm::signal1<wxString> sigSetRemoved;
