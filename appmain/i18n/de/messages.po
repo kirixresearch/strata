@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: appmain\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-23 19:51+0200\n"
+"POT-Creation-Date: 2025-09-04 04:07+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -13,7 +13,7 @@ msgstr ""
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SourceCharset: iso-8859-1\n"
 "X-Poedit-Bookmarks: 180,-1,-1,-1,-1,-1,-1,31,948,-1\n"
-"X-Generator: Poedit 3.4.4\n"
+"X-Generator: Poedit 3.7\n"
 "X-Poedit-KeywordsList: _\n"
 "X-Poedit-SearchPath-0: appmain\n"
 "X-Poedit-SearchPath-1: kcl\n"
@@ -32,8 +32,8 @@ msgid ""
 "The clock was set back on your computer.  Please reset the clock to the "
 "normal time or re-license this software."
 msgstr ""
-"Die Systemuhr an Ihrem Computer wurde zurückgestellt.  Bitte stellen Sie die "
-"Uhr richtig oder lizenzieren Sie diese Software neu."
+"Die Uhr Ihres Computers wurde zurückgestellt. Bitte stellen Sie die Uhr auf "
+"die richtige Zeit oder lizenzieren Sie die Software erneut."
 
 #: appmain/app.cpp:1317
 msgid "ctrl"
@@ -75,475 +75,475 @@ msgstr "&OK"
 msgid "&Save"
 msgstr "&Speichern"
 
-#: appmain/app.cpp:1329 appmain/appcontroller.cpp:815
+#: appmain/app.cpp:1329 appmain/appcontroller.cpp:822
 msgid "Save &As..."
 msgstr "Speichern &unter..."
 
-#: appmain/appcontroller.cpp:803
+#: appmain/appcontroller.cpp:810
 msgid "&Tab\tCtrl+T"
 msgstr "&Registerkarte\tStrg+T"
 
-#: appmain/appcontroller.cpp:804
+#: appmain/appcontroller.cpp:811
 msgid "T&able"
 msgstr "Tabelle"
 
-#: appmain/appcontroller.cpp:805 appmain/dbdoc.cpp:3123
+#: appmain/appcontroller.cpp:812 appmain/dbdoc.cpp:3123
 msgid "&Report"
 msgstr "Bericht"
 
-#: appmain/appcontroller.cpp:806 appmain/dbdoc.cpp:3124
+#: appmain/appcontroller.cpp:813 appmain/dbdoc.cpp:3124
 msgid "&Query"
 msgstr "Abfrage"
 
-#: appmain/appcontroller.cpp:807 appmain/dbdoc.cpp:3125
+#: appmain/appcontroller.cpp:814 appmain/dbdoc.cpp:3125
 msgid "&Script"
 msgstr "Programm"
 
-#: appmain/appcontroller.cpp:810 appmain/dbdoc.cpp:3133 appmain/dbdoc.cpp:3183
+#: appmain/appcontroller.cpp:817 appmain/dbdoc.cpp:3133 appmain/dbdoc.cpp:3183
 msgid "&New"
 msgstr "Neu"
 
-#: appmain/appcontroller.cpp:811
+#: appmain/appcontroller.cpp:818
 msgid "&Open...\tCtrl+O"
 msgstr "Öffnen...\tStrg+O"
 
-#: appmain/appcontroller.cpp:812
+#: appmain/appcontroller.cpp:819
 msgid "&Close\tCtrl+W"
 msgstr "Schließen\tStrg+W"
 
-#: appmain/appcontroller.cpp:814
+#: appmain/appcontroller.cpp:821
 msgid "&Save\tCtrl+S"
 msgstr "Speichern\tStrg+S"
 
-#: appmain/appcontroller.cpp:816
+#: appmain/appcontroller.cpp:823
 msgid "Save As Ex&ternal..."
 msgstr "Speichern extern unter.."
 
-#: appmain/appcontroller.cpp:818
+#: appmain/appcontroller.cpp:825
 msgid "&Bookmark This Location...\tCtrl+D"
 msgstr "Lesezeichen für diese Seite hinzufügen...\tStrg+D"
 
-#: appmain/appcontroller.cpp:819
+#: appmain/appcontroller.cpp:826
 msgid "Refres&h\tCtrl+R"
 msgstr "Aktualisieren\tStrg+R"
 
-#: appmain/appcontroller.cpp:821 appmain/dbdoc.cpp:3136
+#: appmain/appcontroller.cpp:828 appmain/dbdoc.cpp:3136
 msgid "&Import..."
 msgstr "&Importieren..."
 
-#: appmain/appcontroller.cpp:822 appmain/dbdoc.cpp:3137
+#: appmain/appcontroller.cpp:829 appmain/dbdoc.cpp:3137
 msgid "&Export..."
 msgstr "&Exportieren..."
 
-#: appmain/appcontroller.cpp:823 appmain/dbdoc.cpp:3138
+#: appmain/appcontroller.cpp:830 appmain/dbdoc.cpp:3138
 msgid "Create Co&nnection..."
 msgstr "Verbindung erstellen..."
 
-#: appmain/appcontroller.cpp:827 appmain/dbdoc.cpp:3142
+#: appmain/appcontroller.cpp:834 appmain/dbdoc.cpp:3142
 msgid "P&rojects..."
 msgstr "&Projekte..."
 
-#: appmain/appcontroller.cpp:829
+#: appmain/appcontroller.cpp:836
 msgid "Page Set&up..."
 msgstr "Seiteneinstellungen..."
 
-#: appmain/appcontroller.cpp:830
+#: appmain/appcontroller.cpp:837
 msgid "&Print...\tCtrl+P"
 msgstr "&Drucken...\tStrg+P"
 
-#: appmain/appcontroller.cpp:832
+#: appmain/appcontroller.cpp:839
 msgid "E&xit"
 msgstr "&Beenden"
 
-#: appmain/appcontroller.cpp:835
+#: appmain/appcontroller.cpp:842
 msgid "&Undo\tCtrl+Z"
 msgstr "&Rückgängig\tStrg+Z"
 
-#: appmain/appcontroller.cpp:836
+#: appmain/appcontroller.cpp:843
 msgid "&Redo\tCtrl+Y"
 msgstr "&Wiederholen\tStrg+Y"
 
-#: appmain/appcontroller.cpp:838
+#: appmain/appcontroller.cpp:845
 msgid "Cu&t\tCtrl+X"
 msgstr "&Ausschneiden\tStrg+X"
 
-#: appmain/appcontroller.cpp:839
+#: appmain/appcontroller.cpp:846
 msgid "&Copy\tCtrl+C"
 msgstr "&Kopieren\tStrg+C"
 
-#: appmain/appcontroller.cpp:840
+#: appmain/appcontroller.cpp:847
 msgid "&Paste\tCtrl+V"
 msgstr "&Einfügen\tStrg+V"
 
-#: appmain/appcontroller.cpp:841 appmain/dbdoc.cpp:3073 appmain/dbdoc.cpp:3085
+#: appmain/appcontroller.cpp:848 appmain/dbdoc.cpp:3073 appmain/dbdoc.cpp:3085
 #: appmain/dbdoc.cpp:3189 appmain/dbdoc.cpp:3284 appmain/dbdoc.cpp:3299
 #: appmain/dbdoc.cpp:3314 appmain/dbdoc.cpp:3330 appmain/dbdoc.cpp:3343
 #: appmain/linkbar.cpp:1099 appmain/querydoc.cpp:929
-#: appmain/structuredoc.cpp:2187 appmain/transformationdoc.cpp:2206
+#: appmain/structuredoc.cpp:2187 appmain/transformationdoc.cpp:2097
 msgid "&Delete"
 msgstr "&Löschen"
 
-#: appmain/appcontroller.cpp:843
+#: appmain/appcontroller.cpp:850
 msgid "Select &All\tCtrl+A"
 msgstr "&Alles markieren\tStrg+A"
 
-#: appmain/appcontroller.cpp:845
+#: appmain/appcontroller.cpp:852
 msgid "&Find...\tCtrl+F"
 msgstr "&Suchen...\tStrg+F"
 
-#: appmain/appcontroller.cpp:846
+#: appmain/appcontroller.cpp:853
 msgid "R&eplace...\tCtrl+H"
 msgstr "&Ersetzen..\tStrg+H"
 
-#: appmain/appcontroller.cpp:848
+#: appmain/appcontroller.cpp:855
 msgid "&Go To...\tCtrl+G"
-msgstr "&Gehe zu..."
+msgstr "&Gehe zu...\tStrg+G"
 
-#: appmain/appcontroller.cpp:850
+#: appmain/appcontroller.cpp:857
 msgid "Pr&otect Data"
 msgstr "&Daten schützen"
 
-#: appmain/appcontroller.cpp:859
+#: appmain/appcontroller.cpp:866
 msgid "&Next\tCtrl+Tab"
 msgstr "&Nächste\tStrg+Tab"
 
-#: appmain/appcontroller.cpp:860
+#: appmain/appcontroller.cpp:867
 msgid "&Previous\tCtrl+Shift+Tab"
 msgstr "&Vorherige\tStrg+Shift+Tab"
 
-#: appmain/appcontroller.cpp:862
+#: appmain/appcontroller.cpp:869
 msgid "New &Horizontal Group"
 msgstr "Neue &horizontale Gruppe"
 
-#: appmain/appcontroller.cpp:863
+#: appmain/appcontroller.cpp:870
 msgid "New &Vertical Group"
 msgstr "Neue &vertikale Gruppe"
 
-#: appmain/appcontroller.cpp:873
+#: appmain/appcontroller.cpp:880
 msgid "&Increase\tCtrl++"
 msgstr "&Vergrößern\tStrg++"
 
-#: appmain/appcontroller.cpp:874
+#: appmain/appcontroller.cpp:881
 msgid "&Decrease\tCtrl+-"
 msgstr "&Verkleinern\tStrg+-"
 
-#: appmain/appcontroller.cpp:876
+#: appmain/appcontroller.cpp:883
 msgid "Size To &Fit"
 msgstr "Passend für die Seite vergrößern"
 
-#: appmain/appcontroller.cpp:877
+#: appmain/appcontroller.cpp:884
 msgid "Size To &Width"
 msgstr "Passend für die Breite der Seite vergrößern"
 
-#: appmain/appcontroller.cpp:879
+#: appmain/appcontroller.cpp:886
 msgid "&Normal\tCtrl+0"
 msgstr "&Normal\tStrg+0"
 
-#: appmain/appcontroller.cpp:884
+#: appmain/appcontroller.cpp:891
 msgid "&Tabs"
 msgstr "&Registerkarten"
 
-#: appmain/appcontroller.cpp:885
+#: appmain/appcontroller.cpp:892
 msgid "&Zoom"
 msgstr "&Zoom"
 
-#: appmain/appcontroller.cpp:887 appmain/appcontroller.cpp:3693
+#: appmain/appcontroller.cpp:894 appmain/appcontroller.cpp:3703
 msgid "&Navigation Toolbar"
 msgstr "F&ormat-Symbolleiste"
 
-#: appmain/appcontroller.cpp:888 appmain/appcontroller.cpp:3694
+#: appmain/appcontroller.cpp:895 appmain/appcontroller.cpp:3704
 msgid "&Bookmarks Toolbar"
 msgstr "Lesezeichen-Symbolleiste"
 
-#: appmain/appcontroller.cpp:889 appmain/appcontroller.cpp:3695
+#: appmain/appcontroller.cpp:896 appmain/appcontroller.cpp:3705
 msgid "F&ormat Toolbar"
 msgstr "F&ormat-Symbolleiste"
 
-#: appmain/appcontroller.cpp:891
+#: appmain/appcontroller.cpp:898
 msgid "St&atus Bar"
 msgstr "Statusleiste"
 
-#: appmain/appcontroller.cpp:893
+#: appmain/appcontroller.cpp:900
 msgid "&Project Panel\tCtrl+B"
 msgstr "&Projektpanel\tStrg+B"
 
-#: appmain/appcontroller.cpp:894
+#: appmain/appcontroller.cpp:901
 msgid "&Console Panel\tCtrl+K"
 msgstr "Konsole\tCtrl+M"
 
-#: appmain/appcontroller.cpp:895 appmain/appcontroller.cpp:3699
+#: appmain/appcontroller.cpp:902 appmain/appcontroller.cpp:3709
 msgid "&Fields Panel"
 msgstr "&Feldliste"
 
-#: appmain/appcontroller.cpp:896 appmain/appcontroller.cpp:3700
+#: appmain/appcontroller.cpp:903 appmain/appcontroller.cpp:3710
 msgid "&Marks Panel"
 msgstr "&Markierungspanel"
 
-#: appmain/appcontroller.cpp:898
+#: appmain/appcontroller.cpp:905
 msgid "F&ull Screen\tF11"
 msgstr "Vollbild\tF11"
 
-#: appmain/appcontroller.cpp:903 appmain/tabledoc.cpp:4088
+#: appmain/appcontroller.cpp:910 appmain/tabledoc.cpp:4246
 msgid "Insert &Calculated Field..."
 msgstr "Berechnetes Feld einfügen..."
 
-#: appmain/appcontroller.cpp:904 appmain/tabledoc.cpp:4090
+#: appmain/appcontroller.cpp:911 appmain/tabledoc.cpp:4248
 msgid "&Edit Calculated Field..."
-msgstr "&Berechnetes Feld bearbeiten"
+msgstr "&Berechnetes Feld bearbeiten..."
 
-#: appmain/appcontroller.cpp:905 appmain/tabledoc.cpp:4093
+#: appmain/appcontroller.cpp:912 appmain/tabledoc.cpp:4251
 msgid "Convert to Fixed &Field"
 msgstr "Zu fixiertem Feld umwandeln"
 
-#: appmain/appcontroller.cpp:906 appmain/tabledoc.cpp:4094
+#: appmain/appcontroller.cpp:913 appmain/tabledoc.cpp:4252
 msgid "&Delete Calculated Field"
 msgstr "&Berechnetes Feld löschen"
 
-#: appmain/appcontroller.cpp:908 appmain/tabledoc.cpp:4099
+#: appmain/appcontroller.cpp:915 appmain/tabledoc.cpp:4257
 msgid "&Insert Column..."
 msgstr "&Spalten einfügen..."
 
-#: appmain/appcontroller.cpp:909 appmain/tabledoc.cpp:4100
+#: appmain/appcontroller.cpp:916 appmain/tabledoc.cpp:4258
 msgid "&Hide Column"
 msgstr "&Spalten ausblenden"
 
-#: appmain/appcontroller.cpp:912
+#: appmain/appcontroller.cpp:919
 msgid "&Insert Group Break"
 msgstr "&Gruppentrenner einblenden"
 
-#: appmain/appcontroller.cpp:913
+#: appmain/appcontroller.cpp:920
 msgid "&Remove Group Break"
 msgstr "&Gruppentrenner ausblenden"
 
-#: appmain/appcontroller.cpp:915
+#: appmain/appcontroller.cpp:922
 msgid "&Group Records..."
-msgstr "&Datensätze gruppieren"
+msgstr "&Datensätze gruppieren..."
 
-#: appmain/appcontroller.cpp:918
+#: appmain/appcontroller.cpp:925
 msgid "&Sort..."
 msgstr "&Sortieren..."
 
-#: appmain/appcontroller.cpp:919
+#: appmain/appcontroller.cpp:926
 msgid "&Filter...\tCtrl+J"
-msgstr "Filter..."
+msgstr "Filter...\tStrg+J"
 
-#: appmain/appcontroller.cpp:920
+#: appmain/appcontroller.cpp:927
 msgid "&Remove Sort/Filter\tCtrl+M"
 msgstr "&Sortierung/Filter entfernen"
 
-#: appmain/appcontroller.cpp:922
+#: appmain/appcontroller.cpp:929
 msgid "Edit &Indexes..."
 msgstr "Index bearbeiten..."
 
-#: appmain/appcontroller.cpp:924
+#: appmain/appcontroller.cpp:931
 msgid "&Columns"
 msgstr "&Spalten"
 
-#: appmain/appcontroller.cpp:925
+#: appmain/appcontroller.cpp:932
 msgid "&Groups"
 msgstr "&Gruppen"
 
-#: appmain/appcontroller.cpp:927
+#: appmain/appcontroller.cpp:934
 msgid "&Mark Records..."
 msgstr "&Datensätze markieren..."
 
-#: appmain/appcontroller.cpp:929
+#: appmain/appcontroller.cpp:936
 msgid "C&opy Records...\tCtrl+E"
-msgstr "Datensätze k&opieren..."
+msgstr "Datensätze k&opieren...\tStrg+E"
 
-#: appmain/appcontroller.cpp:930
+#: appmain/appcontroller.cpp:937
 msgid "&Append Records..."
 msgstr "&Datensätze hinzufügen..."
 
-#: appmain/appcontroller.cpp:931
+#: appmain/appcontroller.cpp:938
 msgid "&Delete Records..."
 msgstr "Datensätze &löschen..."
 
-#: appmain/appcontroller.cpp:932
+#: appmain/appcontroller.cpp:939
 msgid "&Update Records..."
 msgstr "Datensätze &aktualisieren..."
 
-#: appmain/appcontroller.cpp:934 appmain/tabledoc.cpp:4102
+#: appmain/appcontroller.cpp:941 appmain/tabledoc.cpp:4260
 msgid "Summari&ze"
 msgstr "&Zusammenfassen"
 
-#: appmain/appcontroller.cpp:937 appmain/appcontroller.cpp:2873
+#: appmain/appcontroller.cpp:944 appmain/appcontroller.cpp:2883
 msgid "&No Relationship Filter or Mark"
 msgstr "Kein Filter"
 
-#: appmain/appcontroller.cpp:938 appmain/appcontroller.cpp:2874
+#: appmain/appcontroller.cpp:945 appmain/appcontroller.cpp:2884
 msgid "&Filter Related Records"
 msgstr "&Bezugsdatensätze filtern"
 
-#: appmain/appcontroller.cpp:939 appmain/appcontroller.cpp:2875
+#: appmain/appcontroller.cpp:946 appmain/appcontroller.cpp:2885
 msgid "&Mark Related Records"
 msgstr "&Bezugsdatensätze markieren"
 
-#: appmain/appcontroller.cpp:942
+#: appmain/appcontroller.cpp:949
 msgid "&Relationships..."
 msgstr "&Verknüpfungen..."
 
-#: appmain/appcontroller.cpp:943
+#: appmain/appcontroller.cpp:950
 msgid "Rel&ated Records"
 msgstr "Buzugsdatensätze filtern"
 
-#: appmain/appcontroller.cpp:945
+#: appmain/appcontroller.cpp:952
 msgid "Ru&n Script/Query\tAlt+Enter"
 msgstr "Programm/Abfrage ausführen\tAlt+Enter"
 
-#: appmain/appcontroller.cpp:946
+#: appmain/appcontroller.cpp:953
 msgid "&Cancel Job\tCtrl+Break"
 msgstr "&Job abbrechen"
 
-#: appmain/appcontroller.cpp:951
+#: appmain/appcontroller.cpp:958
 msgid "&Divide Table..."
 msgstr "&Tabelle teilen..."
 
-#: appmain/appcontroller.cpp:952
+#: appmain/appcontroller.cpp:959
 msgid "&Merge Tables..."
 msgstr "&Tabelllen zusammenfügen..."
 
-#: appmain/appcontroller.cpp:954
+#: appmain/appcontroller.cpp:961
 msgid "Compact &Project"
 msgstr "Projekt kompaktieren"
 
-#: appmain/appcontroller.cpp:956
+#: appmain/appcontroller.cpp:963
 msgid "&Jobs..."
 msgstr "&Jobs..."
 
-#: appmain/appcontroller.cpp:957
+#: appmain/appcontroller.cpp:964
 msgid "Sc&hedule Jobs..."
 msgstr "&Geplante Jobs..."
 
-#: appmain/appcontroller.cpp:958
+#: appmain/appcontroller.cpp:965
 msgid "&Extensions..."
 msgstr "Erweiterungen..."
 
-#: appmain/appcontroller.cpp:960
+#: appmain/appcontroller.cpp:967
 msgid "&Options..."
 msgstr "&Einstellungen..."
 
-#: appmain/appcontroller.cpp:984
+#: appmain/appcontroller.cpp:991
 msgid "&Online Help"
 msgstr "&Online-Hilfe"
 
-#: appmain/appcontroller.cpp:990
+#: appmain/appcontroller.cpp:997
 msgid "&Developer Resources"
 msgstr "Ressourcen für Entwickler"
 
-#: appmain/appcontroller.cpp:1022
+#: appmain/appcontroller.cpp:1029
 msgid "&Activate..."
 msgstr "&Aktivieren..."
 
-#: appmain/appcontroller.cpp:1039
+#: appmain/appcontroller.cpp:1046
 msgid "A&bout..."
 msgstr "&Info..."
 
-#: appmain/appcontroller.cpp:1044
+#: appmain/appcontroller.cpp:1051
 msgid "&File"
 msgstr "&Datei"
 
-#: appmain/appcontroller.cpp:1045
+#: appmain/appcontroller.cpp:1052
 msgid "&Edit"
 msgstr "&Bearbeiten"
 
-#: appmain/appcontroller.cpp:1046
+#: appmain/appcontroller.cpp:1053
 msgid "&View"
 msgstr "&Ansicht"
 
-#: appmain/appcontroller.cpp:1047
+#: appmain/appcontroller.cpp:1054
 msgid "&Data"
 msgstr "Daten"
 
-#: appmain/appcontroller.cpp:1048
+#: appmain/appcontroller.cpp:1055
 msgid "&Tools"
 msgstr "Extras"
 
-#: appmain/appcontroller.cpp:1049
+#: appmain/appcontroller.cpp:1056
 msgid "&Help"
 msgstr "?"
 
-#: appmain/appcontroller.cpp:1060
+#: appmain/appcontroller.cpp:1067
 msgid "Navigation Toolbar"
 msgstr "Navigations-Symbolleiste"
 
-#: appmain/appcontroller.cpp:1071 appmain/bookmarkfscombo.cpp:165
+#: appmain/appcontroller.cpp:1078 appmain/bookmarkfscombo.cpp:165
 msgid "Bookmarks Toolbar"
 msgstr "Lesezeichen-Symbolleiste"
 
-#: appmain/appcontroller.cpp:1082
+#: appmain/appcontroller.cpp:1089
 msgid "Format Toolbar"
 msgstr "Format-Symbolleiste"
 
-#: appmain/appcontroller.cpp:1116
+#: appmain/appcontroller.cpp:1123
 msgid "Show/Hide Project Panel"
 msgstr "Projektpanel anzeigen/ausblenden"
 
-#: appmain/appcontroller.cpp:1121
+#: appmain/appcontroller.cpp:1128
 msgid "Show/Hide Fields Panel"
 msgstr "Feldliste anzeigen/ausblenden"
 
-#: appmain/appcontroller.cpp:1126
+#: appmain/appcontroller.cpp:1133
 msgid "Show/Hide Marks Panel"
 msgstr "Markierungspanel anzeigen/ausblenden"
 
-#: appmain/appcontroller.cpp:1131
+#: appmain/appcontroller.cpp:1138
 msgid "Show/Hide Relationships Panel"
 msgstr "Verknüpfungen anzeigen/ausblenden"
 
-#: appmain/appcontroller.cpp:1199 appmain/appcontroller.cpp:7212
+#: appmain/appcontroller.cpp:1206 appmain/appcontroller.cpp:7227
 #: appmain/panelconsole.cpp:547
 msgid "Console"
 msgstr "Console"
 
-#: appmain/appcontroller.cpp:1206 appmain/dbcombo.cpp:312 appmain/dbdoc.cpp:106
+#: appmain/appcontroller.cpp:1213 appmain/dbcombo.cpp:312 appmain/dbdoc.cpp:106
 #: appmain/dlgdatabasefile.cpp:266 appmain/paneldatabaseinfo.cpp:63
 msgid "Project"
 msgstr "Projekt"
 
-#: appmain/appcontroller.cpp:1245 appmain/panelcolumnlist.cpp:69
+#: appmain/appcontroller.cpp:1252 appmain/panelcolumnlist.cpp:69
 msgid "Fields"
 msgstr "Felder"
 
-#: appmain/appcontroller.cpp:1260 appmain/panelmarkmgr.cpp:141
+#: appmain/appcontroller.cpp:1265 appmain/panelmarkmgr.cpp:141
 msgid "Marks"
 msgstr "Markierungen"
 
-#: appmain/appcontroller.cpp:1686
+#: appmain/appcontroller.cpp:1693
 msgid "Tab"
 msgstr "Registerkarte"
 
-#: appmain/appcontroller.cpp:1690 appmain/panelfileinfo.cpp:399
+#: appmain/appcontroller.cpp:1697 appmain/panelfileinfo.cpp:399
 #: appmain/panelfileinfo.cpp:556
 msgid "Table"
 msgstr "Tabelle"
 
-#: appmain/appcontroller.cpp:1694 appmain/panelfileinfo.cpp:405
-#: appmain/panelfileinfo.cpp:560 appmain/paneloptions.cpp:2576
+#: appmain/appcontroller.cpp:1701 appmain/panelfileinfo.cpp:405
+#: appmain/panelfileinfo.cpp:560 appmain/paneloptions.cpp:2588
 msgid "Report"
 msgstr "Bericht"
 
-#: appmain/appcontroller.cpp:1698 appmain/panelconsole.cpp:1056
+#: appmain/appcontroller.cpp:1705 appmain/panelconsole.cpp:1056
 #: appmain/panelfileinfo.cpp:411 appmain/panelfileinfo.cpp:564
 #: appmain/querytemplate.cpp:155 appmain/reportmodel.cpp:1207
 msgid "Query"
 msgstr "Abfrage"
 
-#: appmain/appcontroller.cpp:1702 appmain/jobscript.cpp:21
+#: appmain/appcontroller.cpp:1709 appmain/jobscript.cpp:21
 #: appmain/jobscript.cpp:74 appmain/panelfileinfo.cpp:417
-#: appmain/panelfileinfo.cpp:568 appmain/paneloptions.cpp:2577
+#: appmain/panelfileinfo.cpp:568 appmain/paneloptions.cpp:2589
 msgid "Script"
 msgstr "Programm"
 
-#: appmain/appcontroller.cpp:1911
+#: appmain/appcontroller.cpp:1920
 msgid "A project must be open in order to create a bookmark."
 msgstr "Ein Projekt muss offen sein, um ein Lesezeichen erstellen zu können."
 
-#: appmain/appcontroller.cpp:1942 appmain/dlgbookmarkprops.h:31
+#: appmain/appcontroller.cpp:1951 appmain/dlgbookmarkprops.h:31
 msgid "New Bookmark"
 msgstr "Neues Lesezeichen"
 
-#: appmain/appcontroller.cpp:2151 appmain/connectionpages.cpp:399
+#: appmain/appcontroller.cpp:2161 appmain/connectionpages.cpp:399
 #: appmain/connectionpages.cpp:537 appmain/connectionpages.cpp:544
 #: appmain/dlgconnection.cpp:290 appmain/editordoc.cpp:1832
 #: appmain/importwizard.cpp:126 appmain/panelextensionmgr.cpp:448
@@ -551,76 +551,76 @@ msgstr "Neues Lesezeichen"
 msgid "All Files"
 msgstr "Alle Dateien"
 
-#: appmain/appcontroller.cpp:2153 appmain/importwizard.cpp:128
+#: appmain/appcontroller.cpp:2163 appmain/importwizard.cpp:128
 msgid "All Text Files"
 msgstr "Alle Textdateien"
 
-#: appmain/appcontroller.cpp:2155 appmain/connectionpages.cpp:531
+#: appmain/appcontroller.cpp:2165 appmain/connectionpages.cpp:531
 #: appmain/dlgconnection.cpp:300 appmain/importwizard.cpp:130
-#: appmain/tabledoc.cpp:1620
+#: appmain/tabledoc.cpp:1634
 msgid "Comma-Delimited Files"
 msgstr "Kommagetrennte Dateien"
 
-#: appmain/appcontroller.cpp:2157 appmain/connectionpages.cpp:533
+#: appmain/appcontroller.cpp:2167 appmain/connectionpages.cpp:533
 #: appmain/dlgconnection.cpp:302 appmain/importwizard.cpp:132
-#: appmain/tabledoc.cpp:1624
+#: appmain/tabledoc.cpp:1638
 msgid "Tab-Delimited Files"
 msgstr "Tabgetrennte Dateien"
 
-#: appmain/appcontroller.cpp:2159 appmain/connectionpages.cpp:149
+#: appmain/appcontroller.cpp:2169 appmain/connectionpages.cpp:149
 #: appmain/connectionpages.cpp:526 appmain/dlgconnection.cpp:298
-#: appmain/importwizard.cpp:134 appmain/tabledoc.cpp:1628
+#: appmain/importwizard.cpp:134 appmain/tabledoc.cpp:1642
 msgid "Microsoft FoxPro/Xbase Files"
 msgstr "Microsoft FoxPro/Xbase Dateien"
 
-#: appmain/appcontroller.cpp:2161 appmain/connectionpages.cpp:516
+#: appmain/appcontroller.cpp:2171 appmain/connectionpages.cpp:516
 #: appmain/dlgconnection.cpp:294 appmain/importwizard.cpp:136
-#: appmain/tabledoc.cpp:1630
+#: appmain/tabledoc.cpp:1644
 msgid "Microsoft Access Files"
 msgstr "Mircrosoft Access Dateien"
 
-#: appmain/appcontroller.cpp:2163 appmain/connectionpages.cpp:521
+#: appmain/appcontroller.cpp:2173 appmain/connectionpages.cpp:521
 #: appmain/dlgconnection.cpp:296 appmain/importwizard.cpp:138
-#: appmain/tabledoc.cpp:1632
+#: appmain/tabledoc.cpp:1646
 msgid "Microsoft Excel Files"
 msgstr "Mircrosoft Excel Dateien"
 
-#: appmain/appcontroller.cpp:2165 appmain/connectionpages.cpp:511
+#: appmain/appcontroller.cpp:2175 appmain/connectionpages.cpp:511
 #: appmain/dlgconnection.cpp:292 appmain/importwizard.cpp:140
-#: appmain/querydoc.cpp:2196 appmain/tabledoc.cpp:1618
+#: appmain/querydoc.cpp:2201 appmain/tabledoc.cpp:1632
 msgid "Package Files"
 msgstr "Paketdateien"
 
-#: appmain/appcontroller.cpp:2167
+#: appmain/appcontroller.cpp:2177
 msgid "Sqlite databases"
 msgstr "Sqllite-Datenbanken"
 
-#: appmain/appcontroller.cpp:2169
+#: appmain/appcontroller.cpp:2179
 msgid "DuckDb databases"
 msgstr "DuckDb-Datenbanken"
 
-#: appmain/appcontroller.cpp:2171 appmain/webdoc.cpp:657
+#: appmain/appcontroller.cpp:2181 appmain/webdoc.cpp:657
 msgid "HTML Files"
 msgstr "HTML Dateien"
 
-#: appmain/appcontroller.cpp:2173 appmain/editordoc.cpp:1828
+#: appmain/appcontroller.cpp:2183 appmain/editordoc.cpp:1828
 #: appmain/panelextensionmgr.cpp:446
 msgid "Script Files"
 msgstr "Programmdateien"
 
-#: appmain/appcontroller.cpp:2178
+#: appmain/appcontroller.cpp:2188
 msgid "Open File(s)"
 msgstr "Datei öffnen"
 
-#: appmain/appcontroller.cpp:2212
+#: appmain/appcontroller.cpp:2222
 msgid ""
 "More than one file type was selected.  Please select only one file type to "
 "continue."
 msgstr ""
 "Mehr als ein Dateityp wurde auswählt. Bitte wählen Sie nur einen Dateityp, "
-"um fortzufahren. "
+"um fortzufahren."
 
-#: appmain/appcontroller.cpp:2254
+#: appmain/appcontroller.cpp:2264
 #, c-format
 msgid ""
 "One or more of the selected files could not be opened because it is not "
@@ -629,31 +629,31 @@ msgstr ""
 "Eine oder mehrere Dateien konnten nicht geöffnet werden, da sie nicht durch "
 "%s unterstützt werden."
 
-#: appmain/appcontroller.cpp:2265
+#: appmain/appcontroller.cpp:2275
 msgid ""
 "One or more of the selected files could not be opened either because they "
 "are already in use or no longer exist."
 msgstr ""
-"Eine oder mehrere Dateien konnten nicht geöffnet werden. Entweder werden sie "
-"gerade benutzt oder existieren nicht mehr. "
+"Eine oder mehrere ausgewählte Dateien konnten nicht geöffnet werden, weil "
+"sie entweder in Gebrauch sind oder nicht mehr existieren."
 
-#: appmain/appcontroller.cpp:2316
+#: appmain/appcontroller.cpp:2326
 msgid "Please close all panels before closing the project."
-msgstr "Bitte schließen Sie alle Panels bevor Sie das Projekt schließen. "
+msgstr "Bitte schließen Sie alle Panels, bevor Sie das Projekt schließen."
 
-#: appmain/appcontroller.cpp:2401
+#: appmain/appcontroller.cpp:2411
 msgid "To exit full screen mode, press F11."
 msgstr "Um den Vollbildmodus auszuschalten, drücken Sie die F11-Taste."
 
-#: appmain/appcontroller.cpp:2641
+#: appmain/appcontroller.cpp:2651
 msgid "&New Bookmark..."
-msgstr "Neues Lesezeichen"
+msgstr "Neues Lesezeichen..."
 
-#: appmain/appcontroller.cpp:2642
+#: appmain/appcontroller.cpp:2652
 msgid "Share Data View..."
 msgstr "Datenansicht teilen..."
 
-#: appmain/appcontroller.cpp:3538
+#: appmain/appcontroller.cpp:3548
 #, c-format
 msgid ""
 "There are currently jobs scheduled to run.  If you choose to exit %s, these "
@@ -664,15 +664,15 @@ msgstr ""
 "wie geplant laufen.  Möchten Sie %s im Hintergrund laufen lassen oder das "
 "Programm beenden?"
 
-#: appmain/appcontroller.cpp:3542
+#: appmain/appcontroller.cpp:3552
 msgid "Run Jobs in Background"
 msgstr "Jobs in Hintergrund laufen lassen"
 
-#: appmain/appcontroller.cpp:3543 appmain/dlgprojectmgr.cpp:634
+#: appmain/appcontroller.cpp:3553 appmain/dlgprojectmgr.cpp:650
 msgid "Exit"
 msgstr "Beenden"
 
-#: appmain/appcontroller.cpp:3562
+#: appmain/appcontroller.cpp:3572
 #, c-format
 msgid ""
 "There are currently jobs scheduled to run.  If you choose to exit %s, these "
@@ -682,89 +682,89 @@ msgstr ""
 "wie geplant laufen.  Möchten Sie %s im Hintergrund laufen lassen oder das "
 "Programm beenden?"
 
-#: appmain/appcontroller.cpp:3697
+#: appmain/appcontroller.cpp:3707
 msgid "&Project Panel"
 msgstr "&Projektpanel"
 
-#: appmain/appcontroller.cpp:3698
+#: appmain/appcontroller.cpp:3708
 msgid "&Console Panel"
 msgstr "Konsole"
 
-#: appmain/appcontroller.cpp:3701
+#: appmain/appcontroller.cpp:3711
 msgid "&Relationships Panel"
 msgstr "&Verküpfungen"
 
-#: appmain/appcontroller.cpp:3703
+#: appmain/appcontroller.cpp:3713
 msgid "&Status Bar"
 msgstr "Statusleiste"
 
-#: appmain/appcontroller.cpp:3705
+#: appmain/appcontroller.cpp:3715
 msgid "F&ull Screen"
 msgstr "Vollbild"
 
-#: appmain/appcontroller.cpp:3874 appmain/appcontroller.cpp:3890
-#: appmain/tabledoc.cpp:901 appmain/webdoc.cpp:539
+#: appmain/appcontroller.cpp:3884 appmain/appcontroller.cpp:3900
+#: appmain/tabledoc.cpp:904 appmain/webdoc.cpp:539
 msgid "Source View"
 msgstr "Quellenansicht"
 
-#: appmain/appcontroller.cpp:3875 appmain/webdoc.cpp:542
+#: appmain/appcontroller.cpp:3885 appmain/webdoc.cpp:542
 msgid "Web Page View"
 msgstr "Webseite-Ansicht"
 
-#: appmain/appcontroller.cpp:3882 appmain/appcontroller.cpp:3891
-#: appmain/appcontroller.cpp:3899 appmain/appcontroller.cpp:3908
-#: appmain/appcontroller.cpp:3918 appmain/querydoc.cpp:1956
-#: appmain/reportdoc.cpp:2340 appmain/sqldoc.cpp:489
-#: appmain/structuredoc.cpp:1585 appmain/tabledoc.cpp:890
-#: appmain/tabledoc.cpp:903 appmain/tabledoc.cpp:912
+#: appmain/appcontroller.cpp:3892 appmain/appcontroller.cpp:3901
+#: appmain/appcontroller.cpp:3909 appmain/appcontroller.cpp:3918
+#: appmain/appcontroller.cpp:3928 appmain/querydoc.cpp:1961
+#: appmain/reportdoc.cpp:2345 appmain/sqldoc.cpp:489
+#: appmain/structuredoc.cpp:1585 appmain/tabledoc.cpp:893
+#: appmain/tabledoc.cpp:906 appmain/tabledoc.cpp:915
 msgid "Design View"
 msgstr "Designansicht"
 
-#: appmain/appcontroller.cpp:3883 appmain/reportdoc.cpp:2344
+#: appmain/appcontroller.cpp:3893 appmain/reportdoc.cpp:2349
 msgid "Layout View"
 msgstr "Layoutansicht"
 
-#: appmain/appcontroller.cpp:3892 appmain/appcontroller.cpp:3900
-#: appmain/appcontroller.cpp:3909 appmain/appcontroller.cpp:3919
-#: appmain/querydoc.cpp:1959 appmain/sqldoc.cpp:492
-#: appmain/structuredoc.cpp:1589 appmain/tabledoc.cpp:917
+#: appmain/appcontroller.cpp:3902 appmain/appcontroller.cpp:3910
+#: appmain/appcontroller.cpp:3919 appmain/appcontroller.cpp:3929
+#: appmain/querydoc.cpp:1964 appmain/sqldoc.cpp:492
+#: appmain/structuredoc.cpp:1589 appmain/tabledoc.cpp:920
 msgid "Table View"
 msgstr "Tabellenansicht"
 
-#: appmain/appcontroller.cpp:3907 appmain/querydoc.cpp:1953
-#: appmain/sqldoc.cpp:486 appmain/tabledoc.cpp:887
+#: appmain/appcontroller.cpp:3917 appmain/querydoc.cpp:1958
+#: appmain/sqldoc.cpp:486 appmain/tabledoc.cpp:890
 msgid "SQL View"
 msgstr "SQL-Ansicht"
 
-#: appmain/appcontroller.cpp:3938
+#: appmain/appcontroller.cpp:3948
 msgid "&New Tab"
 msgstr "&Neue Registierkarte"
 
-#: appmain/appcontroller.cpp:3944
+#: appmain/appcontroller.cpp:3954
 msgid "&Duplicate Tab"
 msgstr "&Registerkarte verdoppeln"
 
-#: appmain/appcontroller.cpp:3948
+#: appmain/appcontroller.cpp:3958
 msgid "&Refresh Tab"
 msgstr "&Registerkarte aktualisieren"
 
-#: appmain/appcontroller.cpp:3949
+#: appmain/appcontroller.cpp:3959
 msgid "Refresh &All Tabs"
 msgstr "&Alle Registerkarten aktualisieren"
 
-#: appmain/appcontroller.cpp:3951
+#: appmain/appcontroller.cpp:3961
 msgid "&Bookmark This Location..."
 msgstr "Lesezeichen für diese Seite hinzufügen..."
 
-#: appmain/appcontroller.cpp:3953
+#: appmain/appcontroller.cpp:3963
 msgid "&Close Tab"
 msgstr "Registerkarte &schließen"
 
-#: appmain/appcontroller.cpp:3954
+#: appmain/appcontroller.cpp:3964
 msgid "Close &Other Tabs"
 msgstr "&Andere Registerrkarten schließen"
 
-#: appmain/appcontroller.cpp:4551
+#: appmain/appcontroller.cpp:4561
 msgid ""
 "This report could not be opened.  It may have an invalid format or may have "
 "been created with a different version."
@@ -772,34 +772,35 @@ msgstr ""
 "Dieser Bericht konnte nicht geöffnet werden.  Entweder ist sein Format "
 "ungültig, oder er wurde mit einer anderen Version erstellt."
 
-#: appmain/appcontroller.cpp:5042 appmain/appcontroller.cpp:5050
+#: appmain/appcontroller.cpp:5052 appmain/appcontroller.cpp:5060
 #, c-format
 msgid "%s on %s"
 msgstr "%s auf %s"
 
-#: appmain/appcontroller.cpp:5087 appmain/importwizard.cpp:537
+#: appmain/appcontroller.cpp:5097 appmain/importwizard.cpp:537
 msgid ""
 "There was an error opening the specified Microsoft Excel file.  Make sure "
 "the file is not open by another application."
 msgstr ""
-"Es gab einen Fehler beim Öffnen der angegebenen Microsoft Excel-Datei. Bitte "
-"überprüfen Sie, ob die Datei in einer anderen Andwendung offen ist. "
+"Beim Öffnen der angegebenen Microsoft-Excel-Datei ist ein Fehler "
+"aufgetreten. Stellen Sie sicher, dass die Datei nicht von einer anderen "
+"Anwendung geöffnet ist."
 
-#: appmain/appcontroller.cpp:5100
+#: appmain/appcontroller.cpp:5110
 #, c-format
 msgid "Open '%s'"
 msgstr "Öffnen '%s'"
 
-#: appmain/appcontroller.cpp:5116
+#: appmain/appcontroller.cpp:5126
 msgid "Select the tables you would like to open from this file."
 msgstr "Wählen Sie die Tabellen aus, die Sie von dieser Datei öffnen möchten."
 
-#: appmain/appcontroller.cpp:5129
+#: appmain/appcontroller.cpp:5139
 #, c-format
 msgid "Importing from '%s'"
 msgstr "Importieren von '%s'"
 
-#: appmain/appcontroller.cpp:5140
+#: appmain/appcontroller.cpp:5150
 msgid ""
 "No tables were opened from the Microsoft Excel file because no tables in the "
 "list were selected."
@@ -807,7 +808,7 @@ msgstr ""
 "Die Tabellen der Microsoft Excel-Datei konnten nicht geöffnet werden, da "
 "keine Tabellen in der Liste ausgwählt wurden."
 
-#: appmain/appcontroller.cpp:5197 appmain/importwizard.cpp:535
+#: appmain/appcontroller.cpp:5207 appmain/importwizard.cpp:535
 msgid ""
 "There was an error opening the specified Microsoft Access file.  Make sure "
 "the file is not open by another application."
@@ -815,12 +816,12 @@ msgstr ""
 "Beim Öffnen der Microsoft-Access Datei ist ein Fehler aufgetreten.  Bitte "
 "überprüfen Sie, ob die Datei in einer anderen Anwendung offen ist."
 
-#: appmain/appcontroller.cpp:5210 appmain/appcontroller.cpp:5258
+#: appmain/appcontroller.cpp:5220 appmain/appcontroller.cpp:5268
 #, c-format
 msgid "Import '%s'"
 msgstr "Importieren '%s'"
 
-#: appmain/appcontroller.cpp:5244
+#: appmain/appcontroller.cpp:5254
 msgid ""
 "There was an error opening the specified package file.  Make sure the file "
 "is valid, and is not open by another application."
@@ -828,36 +829,36 @@ msgstr ""
 "Beim Öffnen der angegebenen Paketdatei ist ein Fehler aufgetreten.  Bitte "
 "überprüfen Sie, ob die Datei in einer anderen Anwendung offen ist."
 
-#: appmain/appcontroller.cpp:5316
+#: appmain/appcontroller.cpp:5326
 msgid "Would you like to create a report from the selected columns?"
 msgstr "Möchten Sie einen Bericht erstellen aus den gewählten Spalten?"
 
-#: appmain/appcontroller.cpp:5489
+#: appmain/appcontroller.cpp:5499
 msgid "Could not initialize database environment"
-msgstr "Datenbankumgebung konnte nicht hergestellt werden."
+msgstr "Die Datenbankumgebung konnte nicht initialisiert werden"
 
-#: appmain/appcontroller.cpp:5501
+#: appmain/appcontroller.cpp:5511
 msgid "Input file not found"
 msgstr "Die Eingangsdatei konnte nicht gefunden werden."
 
-#: appmain/appcontroller.cpp:5761
+#: appmain/appcontroller.cpp:5771
 msgid "This report could not be printed."
 msgstr "Dieser Bericht konnte nicht gedruckt werden."
 
-#: appmain/appcontroller.cpp:5940 appmain/appcontroller.cpp:5966
-#: appmain/paneloptions.cpp:297
+#: appmain/appcontroller.cpp:5950 appmain/appcontroller.cpp:5976
+#: appmain/paneloptions.cpp:302
 msgid "Home Page"
 msgstr "Startseite"
 
-#: appmain/appcontroller.cpp:5946 appmain/appcontroller.cpp:5971
+#: appmain/appcontroller.cpp:5956 appmain/appcontroller.cpp:5981
 msgid "Online Help"
 msgstr "&Online-Hilfe"
 
-#: appmain/appcontroller.cpp:5952 appmain/appcontroller.cpp:5976
+#: appmain/appcontroller.cpp:5962 appmain/appcontroller.cpp:5986
 msgid "Developer Resources"
 msgstr "Ressourcen für Entwickler"
 
-#: appmain/appcontroller.cpp:5998 appmain/appcontroller.cpp:6060
+#: appmain/appcontroller.cpp:6008 appmain/appcontroller.cpp:6070
 msgid ""
 "Your system is missing a software component.  To correct this problem, "
 "please reinstall the software."
@@ -865,7 +866,7 @@ msgstr ""
 "Ihrem System fehlt eine Softwarekomponente. Um dieses Problem zu beheben, "
 "installieren Sie die Software neu."
 
-#: appmain/appcontroller.cpp:6078
+#: appmain/appcontroller.cpp:6088
 msgid ""
 "The specified project could not be opened.  The path does not exist or is "
 "invalid."
@@ -873,11 +874,11 @@ msgstr ""
 "Das angegebene Projekt konnte nicht geöffnet werden. Der Pfad existiert "
 "nicht oder ist ungültig."
 
-#: appmain/appcontroller.cpp:6093
+#: appmain/appcontroller.cpp:6103
 msgid "The specified path does not contain a valid database project."
-msgstr "Der angegebene Pfad beinhaltet kein gültiges Datenbankprojekt. "
+msgstr "Der angegebene Pfad enthält kein gültiges Datenbankprojekt."
 
-#: appmain/appcontroller.cpp:6113
+#: appmain/appcontroller.cpp:6123
 msgid ""
 "This project is currently stored in an older format and must be \n"
 "converted to a newer format before it can be used by this application.\n"
@@ -893,15 +894,15 @@ msgstr ""
 "die das alte Format unterstützen.\n"
 "Möchten Sie dieses Projekt in ein neueres Format umwandeln?"
 
-#: appmain/appcontroller.cpp:6143
+#: appmain/appcontroller.cpp:6153
 msgid "The specified project could not be opened."
 msgstr "Das spezifizierte Projekt konnte nicht geöffnet werden."
 
-#: appmain/appcontroller.cpp:6245
+#: appmain/appcontroller.cpp:6255
 msgid "Cancelling all running jobs..."
 msgstr "Alle laufenden Jobs werden beendet..."
 
-#: appmain/appcontroller.cpp:6288
+#: appmain/appcontroller.cpp:6298
 msgid ""
 "There are currently jobs running.  Would you like to cancel all running jobs "
 "and exit?"
@@ -909,7 +910,7 @@ msgstr ""
 "Derzeit werden mehrere Jobs ausgeführt.  Möchten Sie alle Jobs abbrechen und "
 "das Programm beenden?"
 
-#: appmain/appcontroller.cpp:6290
+#: appmain/appcontroller.cpp:6300
 msgid ""
 "There are currently jobs running.  Would you like to cancel all running jobs "
 "and continue?"
@@ -917,35 +918,35 @@ msgstr ""
 "Derzeit werden mehrere Jobs ausgeführt.  Möchten Sie alle Jobs abbrechen und "
 "beenden?"
 
-#: appmain/appcontroller.cpp:6295
+#: appmain/appcontroller.cpp:6305
 msgid "Cancel Jobs and Exit"
 msgstr "Jobs abbrechen und Programm beenden"
 
-#: appmain/appcontroller.cpp:6295
+#: appmain/appcontroller.cpp:6305
 msgid "Cancel Jobs and Continue"
 msgstr "Jobs abbrechen und beenden"
 
-#: appmain/appcontroller.cpp:6296
+#: appmain/appcontroller.cpp:6306
 msgid "Don't Exit"
 msgstr "Nicht beenden"
 
-#: appmain/appcontroller.cpp:6296
+#: appmain/appcontroller.cpp:6306
 msgid "Don't Continue"
 msgstr "Nicht beenden"
 
-#: appmain/appcontroller.cpp:6297
+#: appmain/appcontroller.cpp:6307
 msgid "Force Exit"
 msgstr "Sofort beenden"
 
-#: appmain/appcontroller.cpp:6440
+#: appmain/appcontroller.cpp:6450
 msgid "Would you like to compact this project?"
 msgstr "Möchten Sie dieses Projekt kompaktieren?"
 
-#: appmain/appcontroller.cpp:6453
+#: appmain/appcontroller.cpp:6463
 msgid "Project successfully compacted."
 msgstr "Projekt wurde erfolgreich kompaktiert."
 
-#: appmain/appcontroller.cpp:6678
+#: appmain/appcontroller.cpp:6688
 msgid ""
 "Untitled documents must be either saved or closed before using the license "
 "manager."
@@ -953,11 +954,11 @@ msgstr ""
 "Unbenannte Dokumente müssen entweder gespeichert oder geschlossen werden, "
 "bevor der Lizenzmanager genutzt werden kann."
 
-#: appmain/appcontroller.cpp:6679
+#: appmain/appcontroller.cpp:6689
 msgid "License Manager"
 msgstr "Lizenzmanager"
 
-#: appmain/appcontroller.cpp:6978
+#: appmain/appcontroller.cpp:6993
 msgid ""
 "This project is currently set to 'read-only' status to protect your data "
 "from unintentional changes.  Would you like to temporarily remove the 'read-"
@@ -968,22 +969,22 @@ msgstr ""
 "Möchten Sie den 'Schreibschutz'-Status vorübergehend aufheben, um diesen "
 "Vorgang durchzuführen?"
 
-#: appmain/appcontroller.cpp:7058
+#: appmain/appcontroller.cpp:7073
 msgid "About"
 msgstr "Info"
 
-#: appmain/appcontroller.cpp:7071
+#: appmain/appcontroller.cpp:7086
 msgid "To create a database table, please create or open a project."
 msgstr ""
 "Um eine Datenbanktabelle anzulegen, muss ein Projekt geöffnet oder "
 "hergestellt werden."
 
-#: appmain/appcontroller.cpp:7144 appmain/panelrelationship.cpp:167
+#: appmain/appcontroller.cpp:7159 appmain/panelrelationship.cpp:157
 #: appmain/toolbars.cpp:189
 msgid "Relationships"
-msgstr "Verknüpfungen..."
+msgstr "Verknüpfungen"
 
-#: appmain/appcontroller.cpp:7297
+#: appmain/appcontroller.cpp:7312
 msgid "A project must first be opened to display project properties."
 msgstr ""
 "Ein Projekt muss zuerst geöffnet werden, um die Projekteigenschaften "
@@ -1021,7 +1022,7 @@ msgstr "Dateityp:"
 msgid "Text-Delimited Files"
 msgstr "Tabgetrennte Dateien"
 
-#: appmain/connectionpages.cpp:148 appmain/tabledoc.cpp:1626
+#: appmain/connectionpages.cpp:148 appmain/tabledoc.cpp:1640
 msgid "Fixed-Length Files"
 msgstr "Dateien mit fester Länge"
 
@@ -1098,7 +1099,7 @@ msgstr "Datei komprimieren"
 #: appmain/connectionpages.cpp:305 appmain/dlgconnection.cpp:937
 #: appmain/exportwizard.cpp:281 appmain/importwizard.cpp:324
 msgid "A valid location needs to be specified to continue."
-msgstr "Ein gültiger Ort muss angegeben werden, um fortzufahren. "
+msgstr "Es muss ein gültiger Speicherort angegeben werden, um fortzufahren."
 
 #: appmain/connectionpages.cpp:306 appmain/dlgconnection.cpp:938
 #: appmain/exportwizard.cpp:282 appmain/exportwizard.cpp:295
@@ -1111,8 +1112,8 @@ msgid ""
 "The specified folder does not exist or is invalid.  Please choose a valid "
 "folder to continue."
 msgstr ""
-"Der spezifizierte Ordner existiert nicht oder ist ungültig.  Bitte wählen "
-"Sie einen gültigen Ordner, um fortzufahren. "
+"Der angegebene Ordner ist nicht vorhanden oder ungültig.  Bitte wählen Sie "
+"einen gültigen Ordner aus, um fortzufahren."
 
 #: appmain/connectionpages.cpp:329
 msgid "Invalid Path"
@@ -1155,16 +1156,16 @@ msgstr "Beschreibung"
 #, c-format
 msgid "%s is missing a required component (xdodbc) and must be reinstalled"
 msgstr ""
-"%s fehlt eine notwendige Komponente (xdodbc) und muss erneut installiert "
-"werden. "
+"%s fehlt eine erforderliche Komponente (xdodbc). Die Software muss neu "
+"installiert werden"
 
 #: appmain/connectionpages.cpp:893 appmain/dlgconnection.cpp:1340
 msgid ""
 "Please contact your database administrator\n"
 "to set up an ODBC database connection"
 msgstr ""
-"Bitte kontaktieren Sie Ihren Datenbank- Administrator,\n"
-"um eine ODBC Dantenbankverbindung zu konfiguieren."
+"Bitte wenden Sie sich an Ihren Datenbankadministrator,\n"
+"um eine ODBC-Datenbankverbindung einzurichten"
 
 #: appmain/connectionpages.cpp:938 appmain/dlgconnection.cpp:320
 msgid ""
@@ -1296,7 +1297,7 @@ msgstr ""
 msgid "Project '%s'"
 msgstr "Projekt '%s'"
 
-#: appmain/dbdoc.cpp:163 appmain/tabledoc.cpp:3637 appmain/tabledoc.cpp:3672
+#: appmain/dbdoc.cpp:163 appmain/tabledoc.cpp:3794 appmain/tabledoc.cpp:3829
 msgid "&Edit..."
 msgstr "Bearbeiten..."
 
@@ -1408,8 +1409,8 @@ msgstr "Speicherort des Objekts auswählen"
 #: appmain/exprbuilder.cpp:1210 appmain/exprbuilder.cpp:1229
 #: appmain/moduleremoveduprec.cpp:170 appmain/moduleremoveduprec.cpp:183
 #: appmain/panelmerge.cpp:221 appmain/panelsplit.cpp:348
-#: appmain/querydoc.cpp:1072 appmain/reportdoc.cpp:2785
-#: appmain/reportdoc.cpp:4668 appmain/textdoc.cpp:1586
+#: appmain/querydoc.cpp:1072 appmain/reportdoc.cpp:2790
+#: appmain/reportdoc.cpp:4673 appmain/textdoc.cpp:1586
 msgid "OK"
 msgstr "OK"
 
@@ -1461,21 +1462,21 @@ msgstr ""
 
 #: appmain/dbdoc.cpp:3068 appmain/dbdoc.cpp:3268 appmain/dbdoc.cpp:3291
 #: appmain/dbdoc.cpp:3306 appmain/dbdoc.cpp:3321 appmain/dbdoc.cpp:3337
-#: appmain/dlgprojectmgr.cpp:808 appmain/linkbar.cpp:1090
+#: appmain/dlgprojectmgr.cpp:824 appmain/linkbar.cpp:1090
 msgid "&Open"
 msgstr "&Öffnen"
 
 #: appmain/dbdoc.cpp:3070 appmain/dbdoc.cpp:3281 appmain/dbdoc.cpp:3296
 #: appmain/dbdoc.cpp:3311 appmain/dbdoc.cpp:3327 appmain/dbdoc.cpp:3340
-#: appmain/reportdoc.cpp:3504 appmain/tabledoc.cpp:3851
+#: appmain/reportdoc.cpp:3509 appmain/tabledoc.cpp:4009
 msgid "Cu&t"
 msgstr "Ausschnei&den"
 
 #: appmain/dbdoc.cpp:3071 appmain/dbdoc.cpp:3282 appmain/dbdoc.cpp:3297
 #: appmain/dbdoc.cpp:3312 appmain/dbdoc.cpp:3328 appmain/dbdoc.cpp:3341
-#: appmain/querydoc.cpp:928 appmain/reportdoc.cpp:3505
-#: appmain/structuredoc.cpp:2186 appmain/tabledoc.cpp:3852
-#: appmain/tabledoc.cpp:4664 appmain/transformationdoc.cpp:2205
+#: appmain/querydoc.cpp:928 appmain/reportdoc.cpp:3510
+#: appmain/structuredoc.cpp:2186 appmain/tabledoc.cpp:4010
+#: appmain/tabledoc.cpp:4860 appmain/transformationdoc.cpp:2096
 msgid "&Copy"
 msgstr "&Kopieren"
 
@@ -1506,7 +1507,7 @@ msgid "&Switch Project"
 msgstr "Projekt wechseln"
 
 #: appmain/dbdoc.cpp:3147 appmain/dbdoc.cpp:3167 appmain/dbdoc.cpp:3187
-#: appmain/reportdoc.cpp:3506 appmain/tabledoc.cpp:3853
+#: appmain/reportdoc.cpp:3511 appmain/tabledoc.cpp:4011
 msgid "&Paste"
 msgstr "&Einfügen"
 
@@ -1528,7 +1529,7 @@ msgstr "Verbindung bearbeiten..."
 
 #: appmain/dbdoc.cpp:3170 appmain/dbdoc.cpp:3190 appmain/dbdoc.cpp:3285
 #: appmain/dbdoc.cpp:3300 appmain/dbdoc.cpp:3315 appmain/dbdoc.cpp:3331
-#: appmain/dbdoc.cpp:3344 appmain/dlgprojectmgr.cpp:809
+#: appmain/dbdoc.cpp:3344 appmain/dlgprojectmgr.cpp:825
 #: appmain/linkbar.cpp:1100
 msgid "&Rename"
 msgstr "&Umbenennen"
@@ -1568,7 +1569,7 @@ msgstr "Ausführen"
 
 #: appmain/dbdoc.cpp:3383
 msgid "Files can only be dragged into folders"
-msgstr "Dateien können nur in einen Ordner verschoben werden."
+msgstr "Dateien können nur in Ordner gezogen werden"
 
 #: appmain/dlgauth.cpp:35 appmain/dlgauth.cpp:40 appmain/dlgauth.cpp:69
 msgid "Expired"
@@ -1606,8 +1607,8 @@ msgid ""
 "Thank you for installing %s.  Prior to working with the software, it must "
 "first be activated."
 msgstr ""
-"Danke, dass Sie %s installiert haben.  Um mit der Software arbeiten zu "
-"können, müssen Sie diese zunächste aktivieren. "
+"Vielen Dank für die Installation von %s. Bevor Sie mit der Software arbeiten "
+"können, muss sie zunächst aktiviert werden."
 
 #: appmain/dlgauth.cpp:104
 msgid "Activate Automatically"
@@ -1717,12 +1718,12 @@ msgid ""
 "A serial number is required to activate the software; for further help, "
 "please contact us at %s"
 msgstr ""
-"Eine Seriennummer ist erforderlich, um die Software zu aktivieren.  Für "
-"weitere Details nehmen Sie bitte Kontakt mit %s auf. "
+"Zur Aktivierung der Software ist eine Seriennummer erforderlich; für weitere "
+"Hilfe kontaktieren Sie uns bitte unter %s"
 
 #: appmain/dlgauth.cpp:410
 msgid "Serial Number"
-msgstr "Seriennummer:"
+msgstr "Seriennummer"
 
 #: appmain/dlgauth.cpp:459
 #, c-format
@@ -1743,9 +1744,9 @@ msgid ""
 "Your computer's clock is set to the wrong date or time.  Please set your "
 "computer's clock to the correct date and time and try again."
 msgstr ""
-"Die Uhr Ihres Computer ist falsch eingestellt in Datum oder Uhrzeit. Bitte "
-"stellen Sie die Uhr Ihres Computers richtig ein und versuchen Sie es "
-"nocheinmal. "
+"Die Uhr Ihres Computers ist auf das falsche Datum oder die falsche Uhrzeit "
+"eingestellt.  Bitte stellen Sie die Uhr Ihres Computers auf das richtige "
+"Datum und die richtige Uhrzeit ein und versuchen Sie es erneut."
 
 #: appmain/dlgauth.cpp:480
 #, c-format
@@ -1807,7 +1808,7 @@ msgstr ""
 
 #: appmain/dlgauth.cpp:641
 msgid "Please enter your serial number to continue."
-msgstr "Bitte geben Sie Ihre Seriennummer ein, um fortzufahren. "
+msgstr "Bitte geben Sie Ihre Seriennummer ein, um fortzufahren."
 
 #: appmain/dlgauth.cpp:729
 msgid "Your license is now activated.  Thank you."
@@ -1841,7 +1842,7 @@ msgstr "Zieldatei ausführen"
 
 #: appmain/dlgconnection.cpp:273
 msgid "Database"
-msgstr "Datenbank:"
+msgstr "Datenbank"
 
 #: appmain/dlgconnection.cpp:274
 msgid "Data Sources"
@@ -1865,7 +1866,7 @@ msgid "Import to:"
 msgstr "Importieren in:"
 
 #: appmain/dlgconnection.cpp:557 appmain/exportpages.cpp:108
-#: appmain/importpages.cpp:150 appmain/transformationdoc.cpp:419
+#: appmain/importpages.cpp:150
 msgid "Source Name"
 msgstr "Quellenname"
 
@@ -1934,6 +1935,7 @@ msgstr "Leerzeile"
 #: appmain/exportpages.cpp:644 appmain/exportpages.cpp:684
 #: appmain/importpages.cpp:803 appmain/importpages.cpp:845
 #: appmain/textdoc.cpp:277 appmain/textdoc.cpp:282
+#: appmain/transformationdoc.cpp:480
 msgid "None"
 msgstr "Keine"
 
@@ -1987,8 +1989,8 @@ msgid ""
 "This software is missing a required component (xdodbc) and must be "
 "reinstalled"
 msgstr ""
-"Dieser Software fehlt eine notwendige Komponente (xdodbc) . Die Software "
-"muss erneut installiert werden. "
+"Dieser Software fehlt eine erforderliche Komponente (xdodbc) und sie muss "
+"neu installiert werden"
 
 #: appmain/dlgcustomprompt.cpp:47
 msgid "Yes"
@@ -2009,10 +2011,10 @@ msgid "Open"
 msgstr "Öffnen"
 
 #: appmain/dlgdatabasefile.cpp:84 appmain/editordoc.cpp:1838
-#: appmain/editordoc.cpp:1865 appmain/querydoc.cpp:2133
-#: appmain/querydoc.cpp:2202 appmain/reportdoc.cpp:649
-#: appmain/reportdoc.cpp:4300 appmain/structuredoc.cpp:1365
-#: appmain/tabledoc.cpp:1644 appmain/textdoc.cpp:1331 appmain/webdoc.cpp:663
+#: appmain/editordoc.cpp:1865 appmain/querydoc.cpp:2138
+#: appmain/querydoc.cpp:2207 appmain/reportdoc.cpp:654
+#: appmain/reportdoc.cpp:4305 appmain/structuredoc.cpp:1365
+#: appmain/tabledoc.cpp:1658 appmain/textdoc.cpp:1331 appmain/webdoc.cpp:663
 msgid "Save As"
 msgstr "Speichern unter"
 
@@ -2033,19 +2035,19 @@ msgid ""
 "The file name you have entered is a folder. A folder is not valid for this "
 "operation."
 msgstr ""
-"Der Dateiname, den Sie verwendet haben, bezieht sich auf einen Ordner.  Ein "
-"Ordner ist nicht gültig für diesen Vorgang. "
+"Der Der eingegebene Dateiname ist ein Ordner. Ein Ordner ist für diesen "
+"Vorgang nicht zulässig."
 
 #: appmain/dlgdatabasefile.cpp:454
 msgid "The file name you have entered does not exist."
-msgstr "Die Datei existiert nicht. "
+msgstr "Der eingegebene Dateiname existiert nicht."
 
 #: appmain/dlgdatabasefile.cpp:468
 msgid ""
 "The file name you have entered is a folder, and is not a valid target "
 "location."
 msgstr ""
-"Der eingegebene Dateiname ist ein Ordner und ist kein gültiger Zielort. "
+"Der eingegebene Dateiname ist ein Ordner und ist kein gültiger Zielort."
 
 #: appmain/dlgdatabasefile.cpp:477
 msgid ""
@@ -2126,7 +2128,7 @@ msgid "New Project"
 msgstr "Neues Projekt"
 
 #: appmain/dlgprojectmgr.cpp:98 appmain/dlgprojectmgr.cpp:121
-#: appmain/paneldatabaseinfo.cpp:77 appmain/paneloptions.cpp:278
+#: appmain/paneldatabaseinfo.cpp:77 appmain/paneloptions.cpp:279
 msgid "Location:"
 msgstr "Ort:"
 
@@ -2158,7 +2160,7 @@ msgstr ""
 msgid "The specified folder or file does not contain a valid database project."
 msgstr "Der angegebene Ordner enthält kein gültiges Datenbankprojekt."
 
-#: appmain/dlgprojectmgr.cpp:370
+#: appmain/dlgprojectmgr.cpp:386
 msgid ""
 "The specified project already exists in the project manager list. Would you "
 "like to add it anyway?"
@@ -2166,7 +2168,7 @@ msgstr ""
 "Das angegebene Projekt ist bereits in der Projektmanager-Liste vorhanden. "
 "Möchten Sie es trotzdem hinzufügen?"
 
-#: appmain/dlgprojectmgr.cpp:401
+#: appmain/dlgprojectmgr.cpp:417
 msgid ""
 "The specified location is empty.  Please enter the location of the project "
 "you would like to create."
@@ -2174,7 +2176,7 @@ msgstr ""
 "Der angegebene Ort ist leer. Bitte geben Sie den Ort des Projekts ein, das "
 "Sie erstellen möchten."
 
-#: appmain/dlgprojectmgr.cpp:416 appmain/dlgprojectmgr.cpp:425
+#: appmain/dlgprojectmgr.cpp:432 appmain/dlgprojectmgr.cpp:441
 msgid ""
 "The specified folder could not be created.  Please check to make sure the "
 "specified path is valid."
@@ -2182,20 +2184,20 @@ msgstr ""
 "Der angegebene Ordner konnte nicht erstellt werden. Bitte überprüfen Sie, ob "
 "der angegebene Pfad gültig ist."
 
-#: appmain/dlgprojectmgr.cpp:442
+#: appmain/dlgprojectmgr.cpp:458
 msgid "The specified folder already contains a project."
 msgstr "Der angegebene Ordner enthält bereits ein Projekt."
 
-#: appmain/dlgprojectmgr.cpp:469
+#: appmain/dlgprojectmgr.cpp:485
 msgid ""
 "The specified folder is not empty.  It is highly recommended that an empty "
 "folder is used when creating a new project.  Would you like to continue?"
 msgstr ""
-"Der angegebene Ordner ist nicht leer. Es ist sehr empfehlenswert einen "
-"leeren Ordner zu benutzen, wenn ein neues Projekt erstellt wird. Wollen Sie "
-"fortfahren. "
+"Der angegebene Ordner ist nicht leer.  Es wird dringend empfohlen, beim "
+"Erstellen eines neuen Projekts einen leeren Ordner zu verwenden.  Möchten "
+"Sie fortfahren?"
 
-#: appmain/dlgprojectmgr.cpp:484
+#: appmain/dlgprojectmgr.cpp:500
 msgid ""
 "An error occurred while attempting to create the project.  The specified "
 "location is probably inaccessible or invalid."
@@ -2203,75 +2205,75 @@ msgstr ""
 "Ein Fehler ist aufgetreten, während des Versuchs das Projekt zu erstellen. "
 "Dieser angegebene Speicherort is wahrscheinlich unzugänglich oder ungültig."
 
-#: appmain/dlgprojectmgr.cpp:579
+#: appmain/dlgprojectmgr.cpp:595
 msgid "Projects"
 msgstr "Projekte"
 
-#: appmain/dlgprojectmgr.cpp:594
+#: appmain/dlgprojectmgr.cpp:610
 msgid "Project Name"
 msgstr "Projektname"
 
-#: appmain/dlgprojectmgr.cpp:595 appmain/fieldlistcontrol.cpp:124
+#: appmain/dlgprojectmgr.cpp:611 appmain/fieldlistcontrol.cpp:64
 #: appmain/panelfileinfo.cpp:307 appmain/structuredoc.cpp:587
-#: appmain/transformationdoc.cpp:416 kcl/filepanel.cpp:123
+#: appmain/transformationdoc.cpp:540 kcl/filepanel.cpp:123
 msgid "Type"
 msgstr "Typ"
 
-#: appmain/dlgprojectmgr.cpp:596 appmain/toolbars.cpp:163
+#: appmain/dlgprojectmgr.cpp:612 appmain/toolbars.cpp:163
 #: appmain/toolbars.cpp:224
 msgid "Location"
 msgstr "Ort"
 
-#: appmain/dlgprojectmgr.cpp:597 appmain/panelfileinfo.cpp:308
-#: appmain/reportdoc.cpp:3621 appmain/reportdoc.cpp:3642 kcl/filepanel.cpp:121
+#: appmain/dlgprojectmgr.cpp:613 appmain/panelfileinfo.cpp:308
+#: appmain/reportdoc.cpp:3626 appmain/reportdoc.cpp:3647 kcl/filepanel.cpp:121
 msgid "Size"
 msgstr "Größe"
 
-#: appmain/dlgprojectmgr.cpp:598
+#: appmain/dlgprojectmgr.cpp:614
 msgid "User"
 msgstr "Benutzer"
 
-#: appmain/dlgprojectmgr.cpp:624
+#: appmain/dlgprojectmgr.cpp:640
 msgid "Add Project..."
 msgstr "Projekt hinzufügen..."
 
-#: appmain/dlgprojectmgr.cpp:628
+#: appmain/dlgprojectmgr.cpp:644
 msgid "Open Project"
 msgstr "Projekt öffnen"
 
-#: appmain/dlgprojectmgr.cpp:747 appmain/editordoc.cpp:1098
-#: appmain/querydoc.cpp:1421 appmain/reportdoc.cpp:2538 appmain/sqldoc.cpp:226
-#: appmain/structuredoc.cpp:1117 appmain/tabledoc.cpp:1725
-#: appmain/tabledoc.cpp:2736 appmain/tabledoc.cpp:2751 appmain/textdoc.cpp:1570
-#: appmain/webdoc.cpp:412 appmain/webdoc.cpp:1023
+#: appmain/dlgprojectmgr.cpp:763 appmain/editordoc.cpp:1098
+#: appmain/querydoc.cpp:1421 appmain/reportdoc.cpp:2543 appmain/sqldoc.cpp:226
+#: appmain/structuredoc.cpp:1117 appmain/tabledoc.cpp:1739
+#: appmain/tabledoc.cpp:2748 appmain/tabledoc.cpp:2763 appmain/textdoc.cpp:1570
+#: appmain/webdoc.cpp:412 appmain/webdoc.cpp:1035
 msgid "(Untitled)"
 msgstr "(Unbenannt)"
 
-#: appmain/dlgprojectmgr.cpp:778
+#: appmain/dlgprojectmgr.cpp:794
 msgid "Local"
 msgstr "Lokal"
 
-#: appmain/dlgprojectmgr.cpp:778
+#: appmain/dlgprojectmgr.cpp:794
 msgid "Network"
 msgstr "Netzwerk"
 
-#: appmain/dlgprojectmgr.cpp:792
+#: appmain/dlgprojectmgr.cpp:808
 msgid ""
 "Click on the 'Add Project...' button\n"
 "below to create a new project"
 msgstr ""
-"Klicken Sie unten auf 'Projekt hinzufügen...',\n"
-"um ein neues Projekt zu erstellen."
+"Unten auf „Projekt hinzufügen…“ klicken,\n"
+"um ein neues Projekt zu erstellen"
 
-#: appmain/dlgprojectmgr.cpp:811
+#: appmain/dlgprojectmgr.cpp:827
 msgid "Remove from &List"
 msgstr "Von der &Liste entfernen"
 
-#: appmain/dlgprojectmgr.cpp:814
+#: appmain/dlgprojectmgr.cpp:830
 msgid "Show in Explorer"
 msgstr "Im Explorer anzeigen"
 
-#: appmain/dlgprojectmgr.cpp:870
+#: appmain/dlgprojectmgr.cpp:886
 #, c-format
 msgid ""
 "A project must be selected in order to run %s.  Are you sure you would like "
@@ -2280,7 +2282,7 @@ msgstr ""
 "Ein Projekt muss ausgewählt werden, um %s  auszuführen. Möchten Sie %s "
 "beenden?"
 
-#: appmain/dlgprojectmgr.cpp:1039
+#: appmain/dlgprojectmgr.cpp:1055
 msgid ""
 "The selected project is currently open.  Please close the project before "
 "deleting it."
@@ -2288,7 +2290,7 @@ msgstr ""
 "Das ausgewählte Projekt ist derzeit geöffnet.  Bitte schließen Sie das "
 "Pojekt bevor Sie es löschen."
 
-#: appmain/dlgprojectmgr.cpp:1046
+#: appmain/dlgprojectmgr.cpp:1062
 msgid ""
 "WARNING:  This operation will delete the selected project and all of its "
 "contents.  This includes all tables, queries, scripts, reports and other "
@@ -2300,7 +2302,7 @@ msgstr ""
 "Objekte, die in dem Projekt enthalten sind. Drücken Sie 'Ja', nur wenn Sie "
 "ganz sicher sind, dass Sie das Projekt löschen möchten."
 
-#: appmain/dlgreportprops.cpp:175 appmain/reportdoc.cpp:4413
+#: appmain/dlgreportprops.cpp:175 appmain/reportdoc.cpp:4418
 #: appmain/toolbars.cpp:528
 msgid "Report Settings"
 msgstr "Berichteinstellungen"
@@ -2330,7 +2332,7 @@ msgid "Headers and Footers"
 msgstr "Kopf- und Fußzeilen"
 
 #: appmain/dlgreportprops.cpp:276 appmain/exprbuilder.cpp:1320
-#: appmain/structuredoc.cpp:586 appmain/transformationdoc.cpp:415
+#: appmain/structuredoc.cpp:586 appmain/transformationdoc.cpp:539
 msgid "Field Name"
 msgstr "Feldname"
 
@@ -2341,11 +2343,11 @@ msgstr "Richtung sortieren"
 
 #: appmain/dlgreportprops.cpp:278
 msgid "Group Header"
-msgstr "Gruppenheader:"
+msgstr "Gruppenkopf"
 
 #: appmain/dlgreportprops.cpp:279
 msgid "Group Footer"
-msgstr "Gruppenfooter:"
+msgstr "Gruppenfuß"
 
 #: appmain/dlgreportprops.cpp:280
 msgid "Page Break"
@@ -2378,7 +2380,7 @@ msgid "This field name does not exist in the specified source table"
 msgstr "Dieser Feldname existiert nicht in der spezifizierten Eingangstabelle"
 
 #: appmain/dlgreportprops.cpp:655 appmain/panelsplit.cpp:347
-#: appmain/reportdoc.cpp:2784
+#: appmain/reportdoc.cpp:2789
 msgid "Select Source Table"
 msgstr "Quellentabelle auswählen"
 
@@ -2391,16 +2393,29 @@ msgid ""
 "To share your current view, click the button to the Share button.  Paste the "
 "generated link in the location bar to load the view again."
 msgstr ""
-"Um die jetzige Datenansicht zu teilen, klicken Sie auf die Schaltfläche "
-"\"Teilen.\""
+"Um die aktuelle Ansicht freizugeben, klicken Sie auf die Schaltfläche "
+"„Teilen“. Fügen Sie den erzeugten Link in die Adressleiste ein, um die "
+"Ansicht erneut zu laden."
 
-#: appmain/dlgshareview.cpp:87 appmain/tabledoc.cpp:7717
+#: appmain/dlgshareview.cpp:87 appmain/tabledoc.cpp:8190
 msgid "Copy"
 msgstr "Kopieren"
 
 #: appmain/dlgshareview.cpp:90 appmain/panelfileinfo.cpp:330
 msgid "Close"
 msgstr "Schließen"
+
+#: appmain/dlgwaitforjob.cpp:31
+msgid "Please Wait..."
+msgstr ""
+
+#: appmain/dlgwaitforjob.cpp:45 appmain/exportwizard.cpp:870
+#: appmain/exprbuilder.cpp:526 appmain/exprbuilder.cpp:548
+#: appmain/exprbuilder.cpp:1211 appmain/exprbuilder.cpp:1230
+#: appmain/paneljobmgr.cpp:220 appmain/querydoc.cpp:1330
+#: appmain/relationdiagram.cpp:3005 appmain/tabledoc.cpp:6995 kcl/wizard.cpp:47
+msgid "Cancel"
+msgstr "Abbrechen"
 
 #: appmain/editordoc.cpp:1135
 #, c-format
@@ -2412,7 +2427,7 @@ msgid "Go To Line"
 msgstr "Gehe zur Zeile"
 
 #: appmain/editordoc.cpp:1402 appmain/querydoc.cpp:491
-#: appmain/reportdoc.cpp:2047
+#: appmain/reportdoc.cpp:2052
 msgid "Would you like to save the changes made to this document?"
 msgstr "Möchten Sie die Änderungen an diesem Dokument speichern?"
 
@@ -2441,7 +2456,7 @@ msgstr ""
 
 #: appmain/exportpages.cpp:98 appmain/exportwizard.cpp:390
 msgid "Export to"
-msgstr "Exportiern zu:"
+msgstr "Exportieren nach"
 
 #: appmain/exportpages.cpp:353
 msgid ""
@@ -2469,8 +2484,8 @@ msgid ""
 "This table has the same name as another table\n"
 "in this list and has an invalid name"
 msgstr ""
-"Diese Tabelle hat denselben Namen wie eine andere Tabelle\n"
-"aus dieser Liste und hat einen ungültigen Namen."
+"Diese Tabelle hat denselben Namen wie eine andere\n"
+"in der Liste und ist deshalb ungültig benannt"
 
 #: appmain/exportpages.cpp:478 appmain/importpages.cpp:599
 msgid "This table has the same name as another table in this list"
@@ -2577,7 +2592,7 @@ msgid ""
 "continue."
 msgstr ""
 "Der angegebene Pfad ist ungültig. Bitte geben Sie einen gültigen Pfad ein, "
-"um fortzufahren. "
+"um fortzufahren."
 
 #: appmain/exportwizard.cpp:359 appmain/importwizard.cpp:392
 #: appmain/importwizard.cpp:398
@@ -2697,11 +2712,10 @@ msgid ""
 "\n"
 "NOTE: Only the exported tables will have their fieldnames changed."
 msgstr ""
-"Eine oder mehrere Tabellen beinhalten Feldnamen, die in der Exportstabelle "
-"ungültig sind. Möchten Sie, dass %s die Feldnamen beim Exportieren "
-"korrigiert?\n"
+"Einige Tabellen enthalten ungültige Feldnamen für das Exportziel. Soll %s "
+"die Feldnamen beim Export korrigieren?\n"
 "\n"
-"(Hinweis: Nur bei exportieren Tabellen werden Feldnamen verändert.) "
+"Hinweis: Nur die exportierten Tabellen sind betroffen."
 
 #: appmain/exportwizard.cpp:866
 msgid "Fix Invalid Fieldnames?"
@@ -2710,14 +2724,6 @@ msgstr "Ungültige Feldnamen korrigieren?"
 #: appmain/exportwizard.cpp:869
 msgid "Fix Fieldnames"
 msgstr "Feldnamen korrigieren"
-
-#: appmain/exportwizard.cpp:870 appmain/exprbuilder.cpp:526
-#: appmain/exprbuilder.cpp:548 appmain/exprbuilder.cpp:1211
-#: appmain/exprbuilder.cpp:1230 appmain/paneljobmgr.cpp:220
-#: appmain/querydoc.cpp:1330 appmain/relationdiagram.cpp:2982
-#: appmain/tabledoc.cpp:6523 kcl/wizard.cpp:47
-msgid "Cancel"
-msgstr "Abbrechen"
 
 #: appmain/exportwizard.cpp:916
 msgid ""
@@ -2849,8 +2855,8 @@ msgstr "AVG(input)"
 #: appmain/exprbuilder.cpp:67
 msgid "An aggregate function returning the average value from its input values"
 msgstr ""
-"Eine Aggregatfunktion, die den Durchschnittswert ihrer Eingabewerte "
-"zurückgibt."
+"Eine Aggregatfunktion, die den Durchschnittswert aus ihren Eingabewerten "
+"zurückgibt"
 
 #: appmain/exprbuilder.cpp:68
 msgid "CEILING(number [, precision])"
@@ -3033,7 +3039,7 @@ msgstr "LEAST(value1 [, value2, ...])"
 
 #: appmain/exprbuilder.cpp:86
 msgid "Returns the smallest value from the input parameters"
-msgstr "Gibt den kleinsten Wert aus den Eingabeparametern zurück."
+msgstr "Gibt den kleinsten Wert aus den Eingabeparametern zurück"
 
 #: appmain/exprbuilder.cpp:87
 msgid "LEFT(string, length)"
@@ -3077,7 +3083,7 @@ msgstr "LOWER(string)"
 
 #: appmain/exprbuilder.cpp:92
 msgid "Converts all characters in a string to lowercase"
-msgstr "ergibt die Zeichenkette in Kleinschreibung"
+msgstr "konvertiert alle Zeichen in einer Zeichenkette in Kleinbuchstaben"
 
 #: appmain/exprbuilder.cpp:93
 msgid "LPAD(string, length [, list])"
@@ -3464,13 +3470,12 @@ msgstr "Funktionsname"
 msgid "More..."
 msgstr "Mehr..."
 
-#: appmain/exprbuilder.cpp:990 appmain/fieldlistcontrol.cpp:30
-#: appmain/fieldlistcontrol.cpp:47 appmain/fieldtypechoice.h:42
-#: appmain/util.cpp:655 kcl/validcontrol.cpp:91
+#: appmain/exprbuilder.cpp:990 appmain/fieldtypechoice.h:42
+#: appmain/fieldtypechoice.h:60 appmain/util.cpp:655 kcl/validcontrol.cpp:91
 msgid "Invalid"
 msgstr "Ungültig"
 
-#: appmain/exprbuilder.cpp:995 appmain/panelreplacerows.cpp:310
+#: appmain/exprbuilder.cpp:995 appmain/panelreplacerows.cpp:311
 #: kcl/validcontrol.cpp:90
 msgid "Valid"
 msgstr "Gültig"
@@ -3483,83 +3488,83 @@ msgstr "Formelentwurf"
 msgid "Key Builder"
 msgstr "Schlüsselentwurf"
 
-#: appmain/fieldlistcontrol.cpp:29 appmain/fieldtypechoice.h:41
-#: appmain/util.cpp:654
-msgid "Undefined"
-msgstr "Undefiniert"
-
-#: appmain/fieldlistcontrol.cpp:31 appmain/fieldlistcontrol.cpp:50
-#: appmain/fieldtypechoice.cpp:43 appmain/fieldtypechoice.h:43
-#: appmain/panelcolprops.cpp:119 appmain/panelcolprops.cpp:142
-#: appmain/util.cpp:656
-msgid "Character"
-msgstr "Charakter"
-
-#: appmain/fieldlistcontrol.cpp:32 appmain/fieldlistcontrol.cpp:53
-msgid "Wide Char."
-msgstr "Unicode Char."
-
-#: appmain/fieldlistcontrol.cpp:33 appmain/fieldlistcontrol.cpp:56
-#: appmain/fieldtypechoice.h:45 appmain/util.cpp:658
-msgid "Binary"
-msgstr "Binär"
-
-#: appmain/fieldlistcontrol.cpp:34 appmain/fieldlistcontrol.cpp:59
-#: appmain/fieldtypechoice.cpp:45 appmain/fieldtypechoice.h:46
-#: appmain/panelcolprops.cpp:121 appmain/paneloptions.cpp:954
-#: appmain/util.cpp:659
-msgid "Numeric"
-msgstr "Numerisch"
-
-#: appmain/fieldlistcontrol.cpp:35 appmain/fieldlistcontrol.cpp:62
-#: appmain/fieldtypechoice.cpp:46 appmain/fieldtypechoice.h:47
-#: appmain/panelcolprops.cpp:122 appmain/util.cpp:660
-msgid "Double"
-msgstr "Doppelt"
-
-#: appmain/fieldlistcontrol.cpp:36 appmain/fieldlistcontrol.cpp:65
-#: appmain/fieldtypechoice.cpp:47 appmain/fieldtypechoice.h:48
-#: appmain/panelcolprops.cpp:123 appmain/util.cpp:661
-msgid "Integer"
-msgstr "Integer"
-
-#: appmain/fieldlistcontrol.cpp:37 appmain/fieldlistcontrol.cpp:68
-#: appmain/fieldtypechoice.cpp:48 appmain/fieldtypechoice.h:49
-#: appmain/panelcolprops.cpp:124 appmain/util.cpp:662
-msgid "Date"
-msgstr "Datum"
-
-#: appmain/fieldlistcontrol.cpp:38 appmain/fieldlistcontrol.cpp:71
-#: appmain/fieldtypechoice.cpp:49 appmain/fieldtypechoice.h:50
-#: appmain/panelcolprops.cpp:125 appmain/util.cpp:663
-msgid "DateTime"
-msgstr "DateTime"
-
-#: appmain/fieldlistcontrol.cpp:39 appmain/fieldlistcontrol.cpp:74
-#: appmain/fieldtypechoice.cpp:50 appmain/fieldtypechoice.h:51
-#: appmain/panelcolprops.cpp:126 appmain/paneloptions.cpp:956
-#: appmain/util.cpp:664
-msgid "Boolean"
-msgstr "Boolean"
-
-#: appmain/fieldlistcontrol.cpp:123 appmain/relationdiagram.cpp:251
+#: appmain/fieldlistcontrol.cpp:63 appmain/relationdiagram.cpp:254
 #: kcl/filepanel.cpp:120
 msgid "Name"
 msgstr "Name"
 
-#: appmain/fieldlistcontrol.cpp:125 appmain/structuredoc.cpp:588
-#: appmain/transformationdoc.cpp:417
+#: appmain/fieldlistcontrol.cpp:65 appmain/structuredoc.cpp:588
+#: appmain/transformationdoc.cpp:541
 msgid "Width"
 msgstr "Breite"
 
-#: appmain/fieldlistcontrol.cpp:126
-msgid "Dec."
+#: appmain/fieldlistcontrol.cpp:66
+#, fuzzy
+#| msgid "Dec."
+msgid "Dec"
 msgstr "Dez."
 
+#: appmain/fieldtypechoice.cpp:43 appmain/fieldtypechoice.h:43
+#: appmain/fieldtypechoice.h:63 appmain/panelcolprops.cpp:119
+#: appmain/panelcolprops.cpp:142 appmain/util.cpp:656
+msgid "Character"
+msgstr "Charakter"
+
 #: appmain/fieldtypechoice.cpp:44 appmain/fieldtypechoice.h:44
-#: appmain/panelcolprops.cpp:120 appmain/util.cpp:657
+#: appmain/fieldtypechoice.h:69 appmain/panelcolprops.cpp:120
+#: appmain/util.cpp:657
 msgid "Wide Character"
 msgstr "Unicode Charakter"
+
+#: appmain/fieldtypechoice.cpp:45 appmain/fieldtypechoice.h:46
+#: appmain/fieldtypechoice.h:75 appmain/panelcolprops.cpp:121
+#: appmain/paneloptions.cpp:966 appmain/util.cpp:659
+msgid "Numeric"
+msgstr "Numerisch"
+
+#: appmain/fieldtypechoice.cpp:46 appmain/fieldtypechoice.h:47
+#: appmain/fieldtypechoice.h:78 appmain/panelcolprops.cpp:122
+#: appmain/util.cpp:660
+msgid "Double"
+msgstr "Doppelt"
+
+#: appmain/fieldtypechoice.cpp:47 appmain/fieldtypechoice.h:48
+#: appmain/fieldtypechoice.h:81 appmain/panelcolprops.cpp:123
+#: appmain/util.cpp:661
+msgid "Integer"
+msgstr "Integer"
+
+#: appmain/fieldtypechoice.cpp:48 appmain/fieldtypechoice.h:49
+#: appmain/fieldtypechoice.h:84 appmain/panelcolprops.cpp:124
+#: appmain/util.cpp:662
+msgid "Date"
+msgstr "Datum"
+
+#: appmain/fieldtypechoice.cpp:49 appmain/fieldtypechoice.h:50
+#: appmain/fieldtypechoice.h:87 appmain/panelcolprops.cpp:125
+#: appmain/util.cpp:663
+msgid "DateTime"
+msgstr "DateTime"
+
+#: appmain/fieldtypechoice.cpp:50 appmain/fieldtypechoice.h:51
+#: appmain/fieldtypechoice.h:90 appmain/panelcolprops.cpp:126
+#: appmain/paneloptions.cpp:968 appmain/util.cpp:664
+msgid "Boolean"
+msgstr "Boolean"
+
+#: appmain/fieldtypechoice.h:41 appmain/transformationdoc.cpp:220
+#: appmain/util.cpp:654
+msgid "Undefined"
+msgstr "Undefiniert"
+
+#: appmain/fieldtypechoice.h:45 appmain/fieldtypechoice.h:72
+#: appmain/util.cpp:658
+msgid "Binary"
+msgstr "Binär"
+
+#: appmain/fieldtypechoice.h:66
+msgid "Wide Char."
+msgstr "Unicode Char."
 
 #: appmain/fspanel.cpp:341 appmain/panelfind.cpp:175 kcl/filepanel.cpp:520
 msgid "Look in:"
@@ -3569,11 +3574,11 @@ msgstr "Suche in:"
 msgid "Filesystem Panel"
 msgstr "Dateisystem Panel"
 
-#: appmain/fspanel.cpp:1176 appmain/paneloptions.cpp:318
+#: appmain/fspanel.cpp:1176 appmain/paneloptions.cpp:323
 msgid "Large Icons"
 msgstr "Große Symbole"
 
-#: appmain/fspanel.cpp:1177 appmain/paneloptions.cpp:317
+#: appmain/fspanel.cpp:1177 appmain/paneloptions.cpp:322
 msgid "Small Icons"
 msgstr "Kleine Symbole"
 
@@ -3599,11 +3604,11 @@ msgstr ""
 #: appmain/importpages.cpp:549
 msgid "To load an import template, please create or open a project"
 msgstr ""
-"Um eine Importvorlage zu öffnen, erstellen oder öffnen Sie bitte ein Projekt."
+"Um eine Importvorlage zu laden, erstellen oder öffnen Sie bitte ein Projekt"
 
 #: appmain/importpages.cpp:654
 msgid "No tables were specified for import"
-msgstr "Keine Tabellen wurden für den Import spezifiziert. "
+msgstr "Es wurden keine Tabellen für den Import angegeben"
 
 #: appmain/importpages.cpp:662
 #, c-format
@@ -3735,7 +3740,7 @@ msgstr ""
 #: appmain/importwizard.cpp:781
 msgid "To save the import template, please create or open a project"
 msgstr ""
-"Um eine Importvorlage zu öffnen, erstellen oder öffnen Sie bitte ein Projekt."
+"Um die Importvorlage zu speichern: Bitte ein Projekt erstellen oder öffnen"
 
 #: appmain/importwizard.cpp:791
 msgid "Save Import Template"
@@ -3814,7 +3819,7 @@ msgstr "Sortieren"
 
 #: appmain/linkbar.cpp:1578
 msgid "Insert Calculated Field"
-msgstr "Berechnetes Feld einfügen..."
+msgstr "Berechnetes Feld einfügen"
 
 #: appmain/linkbar.cpp:1579
 msgid "Group Data"
@@ -3872,11 +3877,11 @@ msgid "Duplicate Record Removal"
 msgstr "Entfernung duplizierter Datensätze"
 
 #: appmain/moduleremoveduprec.cpp:308 appmain/panelgroup.cpp:297
-#: appmain/panelmerge.cpp:142 appmain/panelreplacerows.cpp:105
-#: appmain/panelsplit.cpp:249 appmain/tabledoc.cpp:7388
-#: appmain/tabledoc.cpp:7711 appmain/tabledoc.cpp:7722
-#: appmain/tabledoc.cpp:7872 appmain/tabledoc.cpp:7898
-#: appmain/tabledoc.cpp:8039 appmain/tabledoc.cpp:8065
+#: appmain/panelmerge.cpp:142 appmain/panelreplacerows.cpp:106
+#: appmain/panelsplit.cpp:249 appmain/tabledoc.cpp:6025
+#: appmain/tabledoc.cpp:6051 appmain/tabledoc.cpp:7860
+#: appmain/tabledoc.cpp:8184 appmain/tabledoc.cpp:8195
+#: appmain/tabledoc.cpp:8462 appmain/tabledoc.cpp:8488
 msgid "Run"
 msgstr "Ausführen"
 
@@ -3890,7 +3895,7 @@ msgstr "Duplizierte Datensätze entfernen"
 
 #: appmain/panelcolprops.cpp:112 appmain/panelcolprops.cpp:276
 msgid "Calculated Field"
-msgstr "Berechnetes Feld einfügen..."
+msgstr "Berechnetes Feld"
 
 #: appmain/panelcolprops.cpp:118
 msgid "(Auto)"
@@ -3937,7 +3942,7 @@ msgstr ""
 "Veränderungen in der Tabellenstruktur.\n"
 "Möchten Sie das jetzt tun?"
 
-#: appmain/panelcolprops.cpp:1176 appmain/tabledoc.cpp:8415
+#: appmain/panelcolprops.cpp:1176 appmain/tabledoc.cpp:8838
 msgid "Creating Index"
 msgstr "Index wird erstellt"
 
@@ -4069,7 +4074,7 @@ msgstr "%d Programm"
 msgid "%d Scripts"
 msgstr "%d Programme"
 
-#: appmain/panelfind.cpp:86 appmain/panelfind.cpp:342 appmain/tabledoc.cpp:6506
+#: appmain/panelfind.cpp:86 appmain/panelfind.cpp:342 appmain/tabledoc.cpp:6978
 msgid "Find"
 msgstr "Suchen"
 
@@ -4125,7 +4130,7 @@ msgstr "Alle finden"
 msgid "Replace &All"
 msgstr "&Alles ersetzen"
 
-#: appmain/panelfind.cpp:261 appmain/paneloptions.cpp:2533
+#: appmain/panelfind.cpp:261 appmain/paneloptions.cpp:2545
 msgid "Options"
 msgstr "Einstellungen"
 
@@ -4135,7 +4140,7 @@ msgstr "Suchen und Ersetzen"
 
 #: appmain/panelfind.cpp:767
 msgid "Please enter a search location."
-msgstr "Bitte geben Sie einen Suchort ein:"
+msgstr "Bitte geben Sie einen Suchort ein."
 
 #: appmain/panelgroup.cpp:58
 msgid "<Count>"
@@ -4174,8 +4179,8 @@ msgid ""
 "Select fields from the list on the left and\n"
 "drag them here to add them to the output table"
 msgstr ""
-"Wählen Sie Felder von der linken Liste und \n"
-"ziehen Sie sie hierher, um sie in die Ausgangstabelle einzufügen."
+"Felder aus der linken Liste hierher ziehen,\n"
+"um sie der Ausgabetabelle hinzuzufügen"
 
 #: appmain/panelgroup.cpp:616
 msgid "The output table could not be created."
@@ -4281,7 +4286,7 @@ msgid "Add"
 msgstr "Hinzufügen"
 
 #: appmain/panelindex.cpp:286 appmain/panelview.cpp:168
-#: appmain/tabledoc.cpp:8060
+#: appmain/tabledoc.cpp:8483
 msgid "Delete"
 msgstr "Löschen"
 
@@ -4363,7 +4368,7 @@ msgstr "Fehlgeschlagen am %s um %s (%s)"
 
 #: appmain/paneljobmgr.cpp:584
 msgid "Jobs"
-msgstr "Jobs..."
+msgstr "Jobs"
 
 #: appmain/paneljobmgr.cpp:588
 msgid "Clean Up"
@@ -4546,9 +4551,9 @@ msgid ""
 "Project Panel and drag them here\n"
 "to add processes to this job"
 msgstr ""
-"Selektieren Sie Skriptprogramme oder Abfragen\n"
-"von dem Projektpanel und ziehen Sie sie\n"
-"hierher, um diesem Job Schritte hinzuzufügen."
+"Skripte oder Abfragen aus dem\n"
+"Projekt-Panel hierher ziehen,\n"
+"um diesem Job Schritte hinzuzufügen"
 
 #: appmain/paneljobscheduler.cpp:926
 #, c-format
@@ -4578,7 +4583,7 @@ msgstr ""
 msgid "Color"
 msgstr "Farbe"
 
-#: appmain/panelmarkmgr.cpp:168 appmain/reportdoc.cpp:4664
+#: appmain/panelmarkmgr.cpp:168 appmain/reportdoc.cpp:4669
 #: appmain/structuredoc.cpp:590
 msgid "Formula"
 msgstr "Formel"
@@ -4616,23 +4621,23 @@ msgstr "Markierung bearbeiten..."
 msgid "Delete &Mark"
 msgstr "Markierung löschen"
 
-#: appmain/panelmarkmgr.cpp:730 appmain/tabledoc.cpp:3855
+#: appmain/panelmarkmgr.cpp:730 appmain/tabledoc.cpp:4013
 msgid "&Filter Records"
 msgstr "Datensätze filtern"
 
-#: appmain/panelmarkmgr.cpp:731 appmain/tabledoc.cpp:3860
+#: appmain/panelmarkmgr.cpp:731 appmain/tabledoc.cpp:4018
 msgid "C&opy Records"
 msgstr "Datensätze &kopieren"
 
-#: appmain/panelmarkmgr.cpp:732 appmain/tabledoc.cpp:3861
+#: appmain/panelmarkmgr.cpp:732 appmain/tabledoc.cpp:4019
 msgid "&Delete Records"
 msgstr "&Datensätze löschen"
 
-#: appmain/panelmarkmgr.cpp:733 appmain/tabledoc.cpp:3862
+#: appmain/panelmarkmgr.cpp:733 appmain/tabledoc.cpp:4020
 msgid "&Update Records"
 msgstr "Datensätze &aktualisieren"
 
-#: appmain/panelmarkmgr.cpp:829 appmain/tabledoc.cpp:3923
+#: appmain/panelmarkmgr.cpp:829 appmain/tabledoc.cpp:4081
 msgid ""
 "Performing this operation will permanently delete data.  Are you sure\n"
 "you want to delete the records that meet the selected condition?"
@@ -4662,16 +4667,16 @@ msgid ""
 "Select tables from the Project Panel and\n"
 "drag them here to append them to this table"
 msgstr ""
-"Wählen Sie Tabellen aus dem Projektpanel aus\n"
-"und ziehen Sie diese hierher, um sie zu dieser Tabelle hinzuzufügen."
+"Tabellen aus dem Projekt-Panel hierher ziehen,\n"
+"um sie dieser Tabelle hinzuzufügen"
 
 #: appmain/panelmerge.cpp:241
 msgid ""
 "Select tables from the Project Panel and\n"
 "drag them here to add them to the output table"
 msgstr ""
-"Wählen Sie Tabellen von dem Projektpanel und\n"
-"ziehen Sie sie hierher, um sie zu der Ausgangstabelle hinzuzufügen."
+"Tabellen aus dem Projekt-Panel hierher ziehen,\n"
+"um sie der Zieltabelle hinzuzufügen"
 
 #: appmain/panelmerge.cpp:255 appmain/panelsplit.cpp:815
 msgid ""
@@ -4729,47 +4734,53 @@ msgstr "Tabellen zusammenfügen"
 msgid "<Last Open Project>"
 msgstr "<Letztes Projekt>"
 
-#: appmain/paneloptions.cpp:220
+#: appmain/paneloptions.cpp:221
 msgid "Show Project Manager"
 msgstr "Projektmanager anzeigen"
 
-#: appmain/paneloptions.cpp:230
+#: appmain/paneloptions.cpp:231
 msgid "Automatically Load Project:"
 msgstr "Projekt automatisch öffnen:"
 
-#: appmain/paneloptions.cpp:263
+#: appmain/paneloptions.cpp:264
 msgid "Startup"
 msgstr "Startup"
 
-#: appmain/paneloptions.cpp:285
+#: appmain/paneloptions.cpp:286
 msgid "Use &Current Page"
 msgstr "&Aktuelle Seite benutzen"
 
-#: appmain/paneloptions.cpp:287
+#: appmain/paneloptions.cpp:288
 msgid "Use &Blank Page"
 msgstr "&Neue Seite benutzen"
 
-#: appmain/paneloptions.cpp:312
+#: appmain/paneloptions.cpp:290
+#, fuzzy
+#| msgid "Startup"
+msgid "No Startup Page"
+msgstr "Startup"
+
+#: appmain/paneloptions.cpp:317
 msgid "Navigation Toolbar Style:"
 msgstr "Navigations-Symbolleiste Stil:"
 
-#: appmain/paneloptions.cpp:319
+#: appmain/paneloptions.cpp:324
 msgid "Large Icons with Text"
 msgstr "Große Symbole mit Text"
 
-#: appmain/paneloptions.cpp:335
+#: appmain/paneloptions.cpp:340
 msgid "Reset Toolbars and Panels"
 msgstr "Standardeinstellung der Symbolleisten und Panels zurücksetzen"
 
-#: appmain/paneloptions.cpp:342
+#: appmain/paneloptions.cpp:347
 msgid "Toolbars and Panels"
 msgstr "Symbolleisten und Panels"
 
-#: appmain/paneloptions.cpp:352
+#: appmain/paneloptions.cpp:357
 msgid "Automatically check for updates (recommended)"
 msgstr "Automatische Aktualisierung durchführen (empfohlen)"
 
-#: appmain/paneloptions.cpp:560
+#: appmain/paneloptions.cpp:565
 msgid ""
 "The current page is not a web document so it cannot be used as your home "
 "page."
@@ -4777,7 +4788,7 @@ msgstr ""
 "Diese Seite ist kein Webdokument und kann nicht als Startseite verwendet "
 "werden."
 
-#: appmain/paneloptions.cpp:574
+#: appmain/paneloptions.cpp:584
 msgid ""
 "Are you sure you want to reset the location and size of all toolbars and "
 "panels?"
@@ -4785,209 +4796,209 @@ msgstr ""
 "Sind Sie sicher, dass Sie den Ort/ Namen und Größe aller Symbolleisten und "
 "Panels zurücksetzen wollen?"
 
-#: appmain/paneloptions.cpp:575
+#: appmain/paneloptions.cpp:585
 msgid "Reset View?"
 msgstr "Ansicht zurücksetzen?"
 
-#: appmain/paneloptions.cpp:791
+#: appmain/paneloptions.cpp:803
 msgid "Show horizontal grid lines"
 msgstr "Horizontale Rahmenlinien zeigen"
 
-#: appmain/paneloptions.cpp:792
+#: appmain/paneloptions.cpp:804
 msgid "Show vertical grid lines"
 msgstr "Veritkale Rahmenlinien zeigen"
 
-#: appmain/paneloptions.cpp:793
+#: appmain/paneloptions.cpp:805
 msgid "Show shaded rows every..."
 msgstr "Schattierte Zeilen zeigen..."
 
-#: appmain/paneloptions.cpp:798
+#: appmain/paneloptions.cpp:810
 msgid "Wrap text in character fields"
 msgstr "Zeilenumbruch in Zeichenfeldern"
 
-#: appmain/paneloptions.cpp:799
+#: appmain/paneloptions.cpp:811
 msgid "Use check boxes for boolean fields"
 msgstr "Kontrollkästchen für Boolean-Felder verwenden"
 
-#: appmain/paneloptions.cpp:801
+#: appmain/paneloptions.cpp:813
 msgid "View and Formatting"
 msgstr "Ansicht und Formatierung"
 
-#: appmain/paneloptions.cpp:826 appmain/toolbars.cpp:545
+#: appmain/paneloptions.cpp:838 appmain/toolbars.cpp:545
 msgid "Text Color"
 msgstr "Textfarbe"
 
-#: appmain/paneloptions.cpp:841
+#: appmain/paneloptions.cpp:853
 msgid "Background Color"
 msgstr "Hintergrund Farbe"
 
-#: appmain/paneloptions.cpp:856
+#: appmain/paneloptions.cpp:868
 msgid "Line Color"
 msgstr "Gitterlinienfarbe"
 
-#: appmain/paneloptions.cpp:871
+#: appmain/paneloptions.cpp:883
 msgid "Invalid Area Color"
 msgstr "Farbe des Gitterrahmens"
 
-#: appmain/paneloptions.cpp:886
+#: appmain/paneloptions.cpp:898
 msgid "Shaded Row Color"
 msgstr "Schattierte Zeilenfarbe"
 
-#: appmain/paneloptions.cpp:916
+#: appmain/paneloptions.cpp:928
 msgid "Colors and Font"
 msgstr "Farben und Schrift"
 
-#: appmain/paneloptions.cpp:953
+#: appmain/paneloptions.cpp:965
 msgid "Text"
 msgstr "Text"
 
-#: appmain/paneloptions.cpp:955
+#: appmain/paneloptions.cpp:967
 msgid "Date/Time"
 msgstr "Datum/Uhrzeit"
 
-#: appmain/paneloptions.cpp:969
+#: appmain/paneloptions.cpp:981
 msgid "Text Cell (0,0)"
 msgstr "Textzelle (0,0)"
 
-#: appmain/paneloptions.cpp:971
+#: appmain/paneloptions.cpp:983
 msgid "Text Cell (2,0)"
 msgstr "Textzelle (2,0)"
 
-#: appmain/paneloptions.cpp:1037
+#: appmain/paneloptions.cpp:1049
 msgid "Preview"
 msgstr "Vorschau"
 
-#: appmain/paneloptions.cpp:1498
+#: appmain/paneloptions.cpp:1510
 msgid "Directly connect to the Internet"
 msgstr "Direkt mit dem Internet verbinden"
 
-#: appmain/paneloptions.cpp:1505
+#: appmain/paneloptions.cpp:1517
 msgid "Automatically detect proxy settings for this network"
 msgstr "Die Proxy-Einstellungen automatisch für dieses Netzwerk erkennen"
 
-#: appmain/paneloptions.cpp:1511
+#: appmain/paneloptions.cpp:1523
 msgid "Manually configure proxy settings"
 msgstr "Manuelle Proxy-Konfiguration"
 
-#: appmain/paneloptions.cpp:1519
+#: appmain/paneloptions.cpp:1531
 msgid "HTTP Proxy:"
 msgstr "HTTP Proxy:"
 
-#: appmain/paneloptions.cpp:1526 appmain/paneloptions.cpp:1545
-#: appmain/paneloptions.cpp:1564 appmain/paneloptions.cpp:1583
+#: appmain/paneloptions.cpp:1538 appmain/paneloptions.cpp:1557
+#: appmain/paneloptions.cpp:1576 appmain/paneloptions.cpp:1595
 msgid "Port:"
 msgstr "Port:"
 
-#: appmain/paneloptions.cpp:1538
+#: appmain/paneloptions.cpp:1550
 msgid "FTP Proxy:"
 msgstr "FTP Proxy:"
 
-#: appmain/paneloptions.cpp:1557
+#: appmain/paneloptions.cpp:1569
 msgid "SSL Proxy:"
 msgstr "SSL Proxy:"
 
-#: appmain/paneloptions.cpp:1576
+#: appmain/paneloptions.cpp:1588
 msgid "SOCKS Proxy:"
 msgstr "SOCKS Proxy:"
 
-#: appmain/paneloptions.cpp:1612 appmain/paneloptions.cpp:1644
+#: appmain/paneloptions.cpp:1624 appmain/paneloptions.cpp:1656
 msgid "Proxy Settings (Advanced)"
 msgstr "Proxyeinstellungen (Fortgeschritten)"
 
-#: appmain/paneloptions.cpp:1631
+#: appmain/paneloptions.cpp:1643
 msgid "Open web links with:"
 msgstr "Weblinks öffnen mit:"
 
-#: appmain/paneloptions.cpp:1633
+#: appmain/paneloptions.cpp:1645
 msgid "Application"
 msgstr "Applikation"
 
-#: appmain/paneloptions.cpp:1634
+#: appmain/paneloptions.cpp:1646
 msgid "System Default"
 msgstr "Systemstandard\\"
 
-#: appmain/paneloptions.cpp:1890
+#: appmain/paneloptions.cpp:1902
 msgid "Block pop-up windows"
 msgstr "Pop-up Fenster blockieren"
 
-#: appmain/paneloptions.cpp:1894
+#: appmain/paneloptions.cpp:1906
 msgid "Accept cookies from sites"
 msgstr "Annahme aller Cookies aus Internetseiten"
 
-#: appmain/paneloptions.cpp:1898
+#: appmain/paneloptions.cpp:1910
 msgid "Keep until they expire"
 msgstr "Behalten bis die abgelaufen sind"
 
-#: appmain/paneloptions.cpp:1904
+#: appmain/paneloptions.cpp:1916
 #, c-format
 msgid "Keep until %s is closed"
 msgstr "Behalten bis %s beendet wird"
 
-#: appmain/paneloptions.cpp:1911
+#: appmain/paneloptions.cpp:1923
 msgid "Clear Private Data"
 msgstr "Private Daten löschen"
 
-#: appmain/paneloptions.cpp:1918
+#: appmain/paneloptions.cpp:1930
 msgid "Pop-ups"
 msgstr "Pop-ups"
 
-#: appmain/paneloptions.cpp:1931
+#: appmain/paneloptions.cpp:1943
 msgid "Cookies"
 msgstr "Cookies"
 
-#: appmain/paneloptions.cpp:2011
+#: appmain/paneloptions.cpp:2023
 msgid "Are you sure you want to clear all private data?"
 msgstr "Sind Sie sicher, dass Sie alle privaten Daten löschen möchten?"
 
-#: appmain/paneloptions.cpp:2085
+#: appmain/paneloptions.cpp:2097
 msgid "Font"
 msgstr "Schrift"
 
-#: appmain/paneloptions.cpp:2270
+#: appmain/paneloptions.cpp:2282
 msgid "Show line numbers"
 msgstr "Zeilennummer anzeigen"
 
-#: appmain/paneloptions.cpp:2274
+#: appmain/paneloptions.cpp:2286
 msgid "Show syntax highlighting"
 msgstr "Syntax hervorheben"
 
-#: appmain/paneloptions.cpp:2278
+#: appmain/paneloptions.cpp:2290
 msgid "Show whitespace characters (spaces, tabs, etc.)"
 msgstr "Leerzeichen zeigen (Leerzeichen, Tabs, usw.)"
 
-#: appmain/paneloptions.cpp:2282
+#: appmain/paneloptions.cpp:2294
 msgid "Insert spaces"
 msgstr "Leerstellen einfügen"
 
-#: appmain/paneloptions.cpp:2289
+#: appmain/paneloptions.cpp:2301
 msgid "Keep tabs"
 msgstr "Registrierkarte behalten"
 
-#: appmain/paneloptions.cpp:2315 appmain/paneloptions.cpp:2572
+#: appmain/paneloptions.cpp:2327 appmain/paneloptions.cpp:2584
 msgid "General"
 msgstr "Allgemein"
 
-#: appmain/paneloptions.cpp:2328
+#: appmain/paneloptions.cpp:2340
 msgid "Tabs"
 msgstr "Registerkarten"
 
-#: appmain/paneloptions.cpp:2573
+#: appmain/paneloptions.cpp:2585
 msgid "Internet"
 msgstr "Internet"
 
-#: appmain/paneloptions.cpp:2574
+#: appmain/paneloptions.cpp:2586
 msgid "Privacy"
 msgstr "Datenschutz"
 
-#: appmain/paneloptions.cpp:2575
+#: appmain/paneloptions.cpp:2587
 msgid "Datasheet"
 msgstr "Datenblatt"
 
-#: appmain/paneloptions.cpp:2582
+#: appmain/paneloptions.cpp:2594
 msgid "Restore Defaults"
 msgstr "Standardeinstellungen wiederherstellen"
 
-#: appmain/paneloptions.cpp:2838
+#: appmain/paneloptions.cpp:2850
 msgid ""
 "Restoring the default general settings will cause you to lose your current "
 "settings.\n"
@@ -4997,13 +5008,13 @@ msgstr ""
 "der derzeitigen Einstellungen.\n"
 "Möchten Sie fortfahren?"
 
-#: appmain/paneloptions.cpp:2839 appmain/paneloptions.cpp:2853
-#: appmain/paneloptions.cpp:2867 appmain/paneloptions.cpp:2881
-#: appmain/paneloptions.cpp:2895 appmain/paneloptions.cpp:2909
+#: appmain/paneloptions.cpp:2851 appmain/paneloptions.cpp:2865
+#: appmain/paneloptions.cpp:2879 appmain/paneloptions.cpp:2893
+#: appmain/paneloptions.cpp:2907 appmain/paneloptions.cpp:2921
 msgid "Restore Defaults?"
 msgstr "Standardeinstellungen wiederherstellen?"
 
-#: appmain/paneloptions.cpp:2852
+#: appmain/paneloptions.cpp:2864
 msgid ""
 "Restoring the default Internet settings will cause you to lose your current "
 "settings.\n"
@@ -5013,7 +5024,7 @@ msgstr ""
 "der derzeitigen Einstellungen.\n"
 "Möchten Sie fortfahren?"
 
-#: appmain/paneloptions.cpp:2866
+#: appmain/paneloptions.cpp:2878
 msgid ""
 "Restoring the default privacy settings will cause you to lose your current "
 "settings.\n"
@@ -5023,7 +5034,7 @@ msgstr ""
 "derzeitigen Einstellungen.\n"
 "Möchten Sie fortfahren?"
 
-#: appmain/paneloptions.cpp:2880
+#: appmain/paneloptions.cpp:2892
 msgid ""
 "Restoring the default datasheet settings will cause you to lose your current "
 "settings.\n"
@@ -5033,7 +5044,7 @@ msgstr ""
 "der derzeitigen Einstellungen.\n"
 "Möchten Sie fortfahren?"
 
-#: appmain/paneloptions.cpp:2894
+#: appmain/paneloptions.cpp:2906
 msgid ""
 "Restoring the default report settings will cause you to lose your current "
 "settings.\n"
@@ -5043,7 +5054,7 @@ msgstr ""
 "der derzeitigen Einstellungen.\n"
 "Möchten Sie fortfahren?"
 
-#: appmain/paneloptions.cpp:2908
+#: appmain/paneloptions.cpp:2920
 msgid ""
 "Restoring the default script settings will cause you to lose your current "
 "settings.\n"
@@ -5053,56 +5064,54 @@ msgstr ""
 "derzeitigen Einstellungen.\n"
 "Möchten Sie fortfahren?"
 
-#: appmain/panelrelationship.cpp:170 appmain/querydoc.cpp:240
+#: appmain/panelrelationship.cpp:160 appmain/querydoc.cpp:240
 msgid "Add Table..."
 msgstr "Tabelle hinzufügen..."
 
-#: appmain/panelrelationship.cpp:171
+#: appmain/panelrelationship.cpp:161
 msgid "Update Relationships"
 msgstr "Verknüpfungen aktualisieren"
 
-#: appmain/panelrelationship.cpp:250
+#: appmain/panelrelationship.cpp:240
 msgid ""
 "Would you like to save your changes and activate the specified relationships?"
 msgstr ""
 "Möchten Sie die Veränderungen speichern und die angegebenen Verknüpfungen "
 "speichern?"
 
-#: appmain/panelrelationship.cpp:256
+#: appmain/panelrelationship.cpp:246
 msgid "Would you like to save the changes made to the relationships?"
-msgstr ""
-"Möchten Sie die Veränderungen, die Sie an den Verknüpfungen vorgenommen "
-"haben, speichern."
+msgstr "Möchten Sie die Änderungen an den Verknüpfungen speichern?"
 
-#: appmain/panelrelationship.cpp:351
+#: appmain/panelrelationship.cpp:342
 msgid "Circular relationships cannot be created."
 msgstr "Zirkuläre Verknüpfungen können nicht erstellt werden."
 
-#: appmain/panelrelationship.cpp:600
+#: appmain/panelrelationship.cpp:591
 msgid "Creating Relationships"
 msgstr "Verknüpfungen werden erstellt"
 
-#: appmain/panelreplacerows.cpp:70
+#: appmain/panelreplacerows.cpp:71
 msgid "Update Records"
 msgstr "Datensätze aktualisieren"
 
-#: appmain/panelreplacerows.cpp:72
+#: appmain/panelreplacerows.cpp:73
 msgid "When the following formula is true, replace values in"
 msgstr "Wenn die folgende Kondition erfüllt wird, Werte ersetzen in"
 
-#: appmain/panelreplacerows.cpp:73
+#: appmain/panelreplacerows.cpp:74
 msgid "with"
 msgstr "mit"
 
-#: appmain/panelreplacerows.cpp:129
+#: appmain/panelreplacerows.cpp:130
 msgid "Update"
 msgstr "Aktualisierung"
 
-#: appmain/panelreplacerows.cpp:317
+#: appmain/panelreplacerows.cpp:318
 msgid "Value"
 msgstr "Wert"
 
-#: appmain/panelreplacerows.cpp:358
+#: appmain/panelreplacerows.cpp:359
 msgid ""
 "No field has been selected to update.  Please select a valid field to update "
 "to continue."
@@ -5110,7 +5119,7 @@ msgstr ""
 "Kein Feld zum Aktialisieren wurde gewählt.  Bitte wählen Sie ein gültiges "
 "Feld, um fortzufahren."
 
-#: appmain/panelreplacerows.cpp:366
+#: appmain/panelreplacerows.cpp:367
 msgid ""
 "The selected field to update does not exist or is invalid.  Please select a "
 "valid field to update to continue."
@@ -5118,7 +5127,7 @@ msgstr ""
 "Das angegebene Feld existiert nicht oder ist ungültig.  Bitte wählen Sie ein "
 "gültiges Feld zum Aktualisieren, um fortzufahren."
 
-#: appmain/panelreplacerows.cpp:374
+#: appmain/panelreplacerows.cpp:375
 msgid ""
 "The replace value is not valid for the selected field.  Please enter a valid "
 "replace value for this field to continue."
@@ -5126,7 +5135,7 @@ msgstr ""
 "Der angegebene Wert ist nicht gültig für das selektierte Feld.  Bitte geben "
 "Sie einen gültigen Wert für dieses Feld ein, um fortzufahren."
 
-#: appmain/panelreplacerows.cpp:383
+#: appmain/panelreplacerows.cpp:384
 msgid ""
 "The formula entered for updating matching records is empty.  All values in "
 "the selected field will be replaced with\n"
@@ -5135,7 +5144,7 @@ msgstr ""
 "Die eingegebene Formel ist leer.  Alle Werte in der gewählten Spalte werden "
 "aktualisiert mit dem angegebenen Wert.  Möchten Sie fortfahren?"
 
-#: appmain/panelreplacerows.cpp:464
+#: appmain/panelreplacerows.cpp:467
 msgid "Update Values"
 msgstr "Datensätze aktualisieren"
 
@@ -5169,7 +5178,7 @@ msgstr "Tabellenpräfix:"
 
 #: appmain/panelsplit.cpp:194
 msgid "Record Count:"
-msgstr "Datensatzanzahl"
+msgstr "Datensatzanzahl:"
 
 #: appmain/panelsplit.cpp:207
 msgid "Table Count:"
@@ -5205,7 +5214,7 @@ msgstr ""
 
 #: appmain/panelsplit.cpp:400
 msgid "Divide Table"
-msgstr "&Tabelle teilen..."
+msgstr "&Tabelle aufteilen"
 
 #: appmain/panelsplit.cpp:450
 msgid "ERROR"
@@ -5260,9 +5269,9 @@ msgid ""
 "To add source tables to this query, drag in\n"
 "tables from the Project Panel or double-click here"
 msgstr ""
-"Um zu dieser Abfrage Quell-Tabellen hinzuzufügen,\n"
-"ziehen Sie die entsprechenden Tabellen aus dem Projektpanel\n"
-"auf dieses Fenster oder klicken Sie zweimal hier."
+"Um dieser Abfrage Quelltabellen hinzuzufügen,\n"
+"ziehen Sie Tabellen aus dem Projekt-Panel hierher\n"
+"oder doppelklicken Sie hier"
 
 #: appmain/querydoc.cpp:339
 msgid "Input Formula"
@@ -5330,20 +5339,20 @@ msgid "6. Descending"
 msgstr "6. absteigend"
 
 #: appmain/querydoc.cpp:919 appmain/structuredoc.cpp:2178
-#: appmain/transformationdoc.cpp:2196
+#: appmain/transformationdoc.cpp:2087
 msgid "&Insert Field"
 msgstr "&Feld einfügen"
 
-#: appmain/querydoc.cpp:923 appmain/transformationdoc.cpp:2200
+#: appmain/querydoc.cpp:923 appmain/transformationdoc.cpp:2091
 msgid "&Insert Fields"
 msgstr "&Felder einfügen"
 
 #: appmain/querydoc.cpp:931 appmain/structuredoc.cpp:2189
-#: appmain/transformationdoc.cpp:2208
+#: appmain/transformationdoc.cpp:2099
 msgid "Select &All"
 msgstr "&Alles markieren"
 
-#: appmain/querydoc.cpp:1106 appmain/relationdiagram.cpp:2320
+#: appmain/querydoc.cpp:1106 appmain/relationdiagram.cpp:2343
 msgid ""
 "One or more of the items is a folder.  Folders cannot be added to the "
 "relationship diagram."
@@ -5351,7 +5360,7 @@ msgstr ""
 "Ein oder mehrere von den Artikeln sind Ordner. Ordner könne nicht in ein "
 "Verknüpfungsdiagramm hinzugefügt werden."
 
-#: appmain/querydoc.cpp:1114 appmain/relationdiagram.cpp:2329
+#: appmain/querydoc.cpp:1114 appmain/relationdiagram.cpp:2352
 msgid ""
 "One or more of the items is an external table.  External tables cannot be "
 "added to the relationship diagram."
@@ -5359,7 +5368,7 @@ msgstr ""
 "Ein oder mehrere von den Artikel sind eine externe Tabelle. Externe "
 "Tabelllen können nicht in ein Verknüpfungsdiagramm hinzugefügt werden."
 
-#: appmain/querydoc.cpp:1125 appmain/relationdiagram.cpp:2342
+#: appmain/querydoc.cpp:1125 appmain/relationdiagram.cpp:2365
 msgid ""
 "One or more of the items is not a table.  Items that are not tables cannot "
 "be added to the relationship diagram."
@@ -5367,7 +5376,7 @@ msgstr ""
 "Ein oder mehrere von den Artikeln ist keine Tabelle. Artikel, die keine  "
 "Tabelllen sind, können nicht in ein Verknüpfungsdiagramm hinzugefügt werden."
 
-#: appmain/querydoc.cpp:1141 appmain/relationdiagram.cpp:2371
+#: appmain/querydoc.cpp:1141 appmain/relationdiagram.cpp:2394
 msgid "One or more of the items could not be found in the project."
 msgstr ""
 "Ein oder mehrere von den Artikeln konnen nicht im Projekt gefunden werden."
@@ -5384,20 +5393,20 @@ msgstr "Inner Join"
 msgid "Left Outer Join"
 msgstr "Left Outer Join"
 
-#: appmain/querydoc.cpp:1328 appmain/relationdiagram.cpp:2980
+#: appmain/querydoc.cpp:1328 appmain/relationdiagram.cpp:3003
 msgid "Delete Relation"
 msgstr "Relation löschen"
 
-#: appmain/querydoc.cpp:1758
+#: appmain/querydoc.cpp:1763
 msgid ""
 "To add output fields to this query, drag in\n"
 "fields from the above tables or double-click here"
 msgstr ""
-"Um Ausgangsfelder zu dieser Abfrage hinzuzufügen,\n"
-"ziehen Sie Felder von den Tabellen\n"
-"oder klicken Sie zweimal hier. "
+"Um dieser Abfrage Ausgabefelder hinzuzufügen,\n"
+"ziehen Sie Felder aus den obigen Tabellen hierher\n"
+"oder doppelklicken Sie hier"
 
-#: appmain/querydoc.cpp:1976
+#: appmain/querydoc.cpp:1981
 msgid ""
 "A query is already running.  Please wait until the query has finished "
 "running or cancel the job."
@@ -5405,19 +5414,19 @@ msgstr ""
 "Die Abfrage läuft bereits. Bitte warten Sie bis die Abfrage zu Ende gelaufen "
 "ist oder brechen Sie den Job ab."
 
-#: appmain/querydoc.cpp:2152
+#: appmain/querydoc.cpp:2157
 msgid "There was an error saving the specified query."
 msgstr "Es gab einen Fehler beim Speichern der angegebenen Abfrage."
 
-#: appmain/querydoc.cpp:2264
+#: appmain/querydoc.cpp:2269
 msgid "Please specify a primary selection table."
 msgstr "Bitte geben Sie die primäre Selektionstabelle an."
 
-#: appmain/querydoc.cpp:2275
+#: appmain/querydoc.cpp:2280
 msgid "Please specify at the most one primary selection table."
 msgstr "Bitte geben Sie höchstens eine primäre Selektionstabelle an."
 
-#: appmain/querydoc.cpp:2284
+#: appmain/querydoc.cpp:2289
 msgid ""
 "No query parameters are currently specified.  Please add at least one "
 "parameter to the query definition."
@@ -5425,11 +5434,11 @@ msgstr ""
 "Keine Abfragenparameter sind derzeit angegeben.  Bitte fügen Sie mindestens "
 "einen Parameter zu der Abfragendenfinition hinzu."
 
-#: appmain/querydoc.cpp:2321
+#: appmain/querydoc.cpp:2326
 msgid "An input field or formula is missing."
 msgstr "Ein Eingangsfeld oder eine Formel fehlt."
 
-#: appmain/querydoc.cpp:2387
+#: appmain/querydoc.cpp:2392
 msgid ""
 "The sort order has an error.  Two or more identical sort specifiers have "
 "been found."
@@ -5437,11 +5446,11 @@ msgstr ""
 "Die Sortierung ist fehlerhaft. Zwei oder mehrere identischen "
 "Sortierungsfelder wurden spezifiziert."
 
-#: appmain/querydoc.cpp:2432
+#: appmain/querydoc.cpp:2437
 msgid "The query condition contains an error."
 msgstr "Die Abfragekondition enthält Fehler."
 
-#: appmain/querydoc.cpp:2448
+#: appmain/querydoc.cpp:2453
 msgid "The constructed SQL statement is empty."
 msgstr "Die konstruierte SQL-Anweisung ist leer."
 
@@ -5455,7 +5464,7 @@ msgstr ""
 "Die Tabelle konnte nicht geöffnet werden.  Sie wird eventuell bereits "
 "benutzt."
 
-#: appmain/relationdiagram.cpp:1328
+#: appmain/relationdiagram.cpp:1331
 msgid ""
 "Multi-field relationships cannot be created at one time.  Please connect "
 "each pair of fields individually."
@@ -5463,15 +5472,15 @@ msgstr ""
 "Mulit-Feld Vernküpfungen können nicht zur selben Zeit erstellt werden. Bitte "
 "verbinden Sie jedes Paar der Felder individuell."
 
-#: appmain/relationdiagram.cpp:1550
+#: appmain/relationdiagram.cpp:1551
 msgid ""
 "To add tables, double-click here\n"
 "or drag in tables from the Project Panel"
 msgstr ""
-"Um Tabellen hinzuzufügen, klicken Sie zweimal hier\n"
-"oder ziehen Sie Tabellen von dem Projektpanel."
+"Um Tabellen hinzuzufügen, doppelklicken Sie hier\n"
+"oder ziehen Sie Tabellen aus dem Projekt-Panel hierher"
 
-#: appmain/relationdiagram.cpp:2068
+#: appmain/relationdiagram.cpp:2091
 msgid ""
 "Removing this table from the diagram will remove all relationships "
 "associated with this table.  Would you like to continue?"
@@ -5479,7 +5488,7 @@ msgstr ""
 "Löschen Sie diese Tabelle vom Diagramm, dann löschen Sie auch alle damit "
 "verbundenen Verknüpfungen mit dieser Tabellle. Möchten Sie fortfahren?"
 
-#: appmain/relationdiagram.cpp:2406
+#: appmain/relationdiagram.cpp:2429
 msgid ""
 "One or more of the tables was not added because it already exists in the "
 "relationship diagram."
@@ -5487,134 +5496,134 @@ msgstr ""
 "Eine oder mehrer dieser Tabellen wurde nicht hinzugefügt, weil diese bereits "
 "in dem Verknüpfungsdiagramm existieren."
 
-#: appmain/reportdoc.cpp:643
+#: appmain/reportdoc.cpp:648
 msgid "PDF Files"
 msgstr "PDF-Dateien"
 
-#: appmain/reportdoc.cpp:850
+#: appmain/reportdoc.cpp:855
 msgid "All Image Files"
 msgstr "Alle Grafikdateien"
 
-#: appmain/reportdoc.cpp:852
+#: appmain/reportdoc.cpp:857
 msgid "Bitmap Files"
 msgstr "Bitmap-Dateien"
 
-#: appmain/reportdoc.cpp:854
+#: appmain/reportdoc.cpp:859
 msgid "JPEG Images"
 msgstr "JPEG-Dateien"
 
-#: appmain/reportdoc.cpp:856
+#: appmain/reportdoc.cpp:861
 msgid "PNG Images"
 msgstr "PNG-Dateien"
 
-#: appmain/reportdoc.cpp:858
+#: appmain/reportdoc.cpp:863
 msgid "Graphics Interface Files"
 msgstr "GIF-Dateien"
 
-#: appmain/reportdoc.cpp:863
+#: appmain/reportdoc.cpp:868
 msgid "Choose File(s)"
 msgstr "Datei(en) wählen"
 
-#: appmain/reportdoc.cpp:2592
+#: appmain/reportdoc.cpp:2597
 msgid "Source: "
-msgstr "Quelldatei:"
+msgstr "Quelldatei: "
 
-#: appmain/reportdoc.cpp:2594
+#: appmain/reportdoc.cpp:2599
 #, c-format
 msgid "Page: %s"
 msgstr "Seite: %s"
 
-#: appmain/reportdoc.cpp:2597
+#: appmain/reportdoc.cpp:2602
 #, c-format
 msgid "Page Count: %s"
 msgstr "Seitenanzahl: %s"
 
-#: appmain/reportdoc.cpp:3176
+#: appmain/reportdoc.cpp:3181
 msgid "Only one item can be selected as the source for a report."
 msgstr "Nur ein Objekt kann als Quelle für den Bericht ausgewählt werden."
 
-#: appmain/reportdoc.cpp:3193
+#: appmain/reportdoc.cpp:3198
 msgid "The selected item could not be found in the project."
 msgstr "Das ausgewählte Objekt konnte nicht geöffnet werden."
 
-#: appmain/reportdoc.cpp:3415
+#: appmain/reportdoc.cpp:3420
 msgid "To set the data source for this report, drag in"
 msgstr "Um die Quellendatei für diesen Bericht zu erstellen, ziehen Sie"
 
-#: appmain/reportdoc.cpp:3416
+#: appmain/reportdoc.cpp:3421
 msgid "a table from the Project Panel or double-click here"
-msgstr "eine Tabelle von dem Projektpanel oder klicken Sie zweimal hier."
+msgstr "eine Tabelle aus dem Projektpanel oder doppelklicken Sie zweimal hier"
 
-#: appmain/reportdoc.cpp:3511
+#: appmain/reportdoc.cpp:3516
 msgid "Insert &Fields..."
-msgstr "&Felder einfügen"
+msgstr "&Felder einfügen..."
 
-#: appmain/reportdoc.cpp:3517
+#: appmain/reportdoc.cpp:3522
 msgid "<Current Date>"
 msgstr "<Heutiges Datum>"
 
-#: appmain/reportdoc.cpp:3518
+#: appmain/reportdoc.cpp:3523
 msgid "<Data Source>"
 msgstr "<Datenquelle>"
 
-#: appmain/reportdoc.cpp:3520
+#: appmain/reportdoc.cpp:3525
 msgid "<Page Number>"
 msgstr "<Seitennummer>"
 
-#: appmain/reportdoc.cpp:3521
+#: appmain/reportdoc.cpp:3526
 msgid "<Page Count>"
 msgstr "<Seitenanzahl>"
 
-#: appmain/reportdoc.cpp:3522
+#: appmain/reportdoc.cpp:3527
 msgid "<Page Number> of <Page Count>"
 msgstr "<Seitennummer> von <Seitenanzahl>"
 
-#: appmain/reportdoc.cpp:3523
+#: appmain/reportdoc.cpp:3528
 msgid "Page <Page Number>"
 msgstr "Seite <Seitennummerr>"
 
-#: appmain/reportdoc.cpp:3524
+#: appmain/reportdoc.cpp:3529
 msgid "Page <Page Number> of <Page Count>"
 msgstr "Seite <Seitennummberr> von <Seitenanzahl>"
 
-#: appmain/reportdoc.cpp:3526
+#: appmain/reportdoc.cpp:3531
 msgid "Custom Formula..."
 msgstr "Beliebige Formel..."
 
-#: appmain/reportdoc.cpp:3528
+#: appmain/reportdoc.cpp:3533
 msgid "Insert For&mula"
 msgstr "Formel einfügen"
 
-#: appmain/reportdoc.cpp:3539
+#: appmain/reportdoc.cpp:3544
 msgid "&Insert Row"
 msgstr "Reihen einfügen"
 
-#: appmain/reportdoc.cpp:3540
+#: appmain/reportdoc.cpp:3545
 msgid "&Delete Row"
 msgstr "Reihen löschen"
 
-#: appmain/reportdoc.cpp:3547
+#: appmain/reportdoc.cpp:3552
 msgid "&Insert Column"
-msgstr "&Spalten einfügen..."
+msgstr "&Spalten einfügen"
 
-#: appmain/reportdoc.cpp:3548
+#: appmain/reportdoc.cpp:3553
 msgid "&Delete Column"
 msgstr "&Spalten löschen"
 
-#: appmain/reportdoc.cpp:3552
+#: appmain/reportdoc.cpp:3557
 msgid "Clear Co&ntents"
 msgstr "&Inhalte löschen"
 
-#: appmain/reportdoc.cpp:3556
+#: appmain/reportdoc.cpp:3561
 msgid "&Report Settings..."
 msgstr "Berichteinstellungen..."
 
-#: appmain/reportdoc.cpp:4160
+#: appmain/reportdoc.cpp:4165
 #, c-format
 msgid "Page number (1 - %d):"
 msgstr "Seitennummer (1 - %d):"
 
-#: appmain/reportdoc.cpp:4161
+#: appmain/reportdoc.cpp:4166
 msgid "Go To Page"
 msgstr "Gehe zu Seite"
 
@@ -5732,7 +5741,7 @@ msgstr "Ungültiger numerische Konstante"
 
 #: appmain/scripthost.cpp:1224
 msgid "This construction is only allowed in class scope"
-msgstr "Diese Konstruktion ist nur im Klassebereich erlaubt."
+msgstr "Dieser Konstrukt ist nur im Klassebereich erlaubt"
 
 #: appmain/scripthost.cpp:1228
 #, c-format
@@ -5753,7 +5762,7 @@ msgstr "Unbekannter Fehler"
 
 #: appmain/scripthost.cpp:1282
 msgid "Uncaught exception."
-msgstr "Ungefangene Exception"
+msgstr "nicht abgefangene Ausnahme"
 
 #: appmain/scripthost.cpp:1286
 msgid "Syntax error."
@@ -5761,7 +5770,7 @@ msgstr "Syntaxfehler."
 
 #: appmain/scripthost.cpp:1290
 msgid "Type error."
-msgstr "Typ Fehler"
+msgstr "Typfehler."
 
 #: appmain/scripthost.cpp:1294
 msgid "Range error."
@@ -5810,35 +5819,35 @@ msgstr ""
 "Datensätze. Die Modifizierung der Tabelle wird den Filter löschen. Möchten "
 "Sie fortfahren?"
 
-#: appmain/structuredoc.cpp:511 appmain/tabledoc.cpp:5751
-#: appmain/tabledoc.cpp:6159
+#: appmain/structuredoc.cpp:511 appmain/tabledoc.cpp:6212
+#: appmain/tabledoc.cpp:6620
 #, c-format
 msgid "Modifying Structure of '%s'"
 msgstr "Die Struktur von '%s' modifizieren"
 
-#: appmain/structuredoc.cpp:589 appmain/transformationdoc.cpp:418
+#: appmain/structuredoc.cpp:589 appmain/transformationdoc.cpp:542
 msgid "Decimals"
 msgstr "Dezimale"
 
 #: appmain/structuredoc.cpp:705 appmain/structuredoc.cpp:1617
-#: appmain/transformationdoc.cpp:516 appmain/transformationdoc.cpp:1536
+#: appmain/transformationdoc.cpp:657 appmain/transformationdoc.cpp:1429
 msgid "Would you like to save the changes made to the table's structure?"
 msgstr ""
 "Möchten Sie die Veränderungen, die Sie an der Tabellenstruktur vorgenommen "
 "haben, speichern?"
 
 #: appmain/structuredoc.cpp:1148 appmain/textdoc.cpp:1197
-#: appmain/transformationdoc.cpp:1079
+#: appmain/transformationdoc.cpp:1015
 #, c-format
 msgid "Field Count: %d"
 msgstr "Feldanzahl: %d"
 
-#: appmain/structuredoc.cpp:1149 appmain/transformationdoc.cpp:1080
+#: appmain/structuredoc.cpp:1149 appmain/transformationdoc.cpp:1016
 #, c-format
 msgid "Record Width: %d"
 msgstr "Datensatzbreite: %d"
 
-#: appmain/structuredoc.cpp:1166 appmain/transformationdoc.cpp:726
+#: appmain/structuredoc.cpp:1166
 msgid ""
 "To add fields to this table, drag in fields\n"
 "from the Fields Panel or double-click here"
@@ -5925,32 +5934,68 @@ msgstr ""
 msgid "Invalid Table Names"
 msgstr "Ungültige Tabellennamen"
 
-#: appmain/tabledoc.cpp:1506
+#: appmain/structurevalidator.cpp:94
 msgid ""
-"The file could not be saved in the specified location.  The destination "
+"One or more formulas has invalid syntax.  Check to make sure all formulas "
+"have valid syntax to continue."
+msgstr ""
+"Eine oder mehrere Formeln haben ein ungültigen Syntax. Bitte überprüfen Sie "
+"alle Formeln nach gültiger Syntax, um weiter fortzufahren."
+
+#: appmain/structurevalidator.cpp:95 appmain/structurevalidator.cpp:104
+msgid "Invalid Formula(s)"
+msgstr "Ungültige Formel(en)"
+
+#: appmain/structurevalidator.cpp:103
+msgid ""
+"One or more of the formulas has a return type that does not match the field "
+"type.  Would you like to continue?"
+msgstr ""
+"Eine oder mehrere Formel haben einen Ergebnistyp, der dem Feldtyp nicht "
+"passt.  Möchten Sie trotzdem fortfahren?"
+
+#: appmain/tabledoc.cpp:1511
+#, fuzzy
+#| msgid ""
+#| "The file could not be saved in the specified location.  The destination "
+#| "location may by in use."
+msgid ""
+"The file could not be saved in the specified location. The destination "
 "location may by in use."
 msgstr ""
 "Die Datei konnte nicht in dem angegebenen Speicherort gesichert werden.  Der "
 "Speicherort wird wahrscheinlich gerade benutzt."
 
-#: appmain/tabledoc.cpp:1586 appmain/tabledoc.cpp:1728
+#: appmain/tabledoc.cpp:1520
+#, fuzzy
+#| msgid ""
+#| "The file could not be saved in the specified location.  The destination "
+#| "location may by in use."
+msgid ""
+"The file could not be saved in the specified location. The destination "
+"location may by in use. (2)"
+msgstr ""
+"Die Datei konnte nicht in dem angegebenen Speicherort gesichert werden.  Der "
+"Speicherort wird wahrscheinlich gerade benutzt."
+
+#: appmain/tabledoc.cpp:1600 appmain/tabledoc.cpp:1742
 #, c-format
 msgid "Saving '%s' as '%s'"
 msgstr "Speichern '%s' als '%s'"
 
-#: appmain/tabledoc.cpp:1622
+#: appmain/tabledoc.cpp:1636
 msgid "Comma-Delimited Interchange Files"
 msgstr "Kommagetrennte Austauchdateien (*.csv)"
 
-#: appmain/tabledoc.cpp:1634
+#: appmain/tabledoc.cpp:1648
 msgid "Structure Files"
 msgstr "Strukturdateien"
 
-#: appmain/tabledoc.cpp:1641 appmain/tabledoc.cpp:1726
+#: appmain/tabledoc.cpp:1655 appmain/tabledoc.cpp:1740
 msgid "Untitled"
 msgstr "Unbenannt"
 
-#: appmain/tabledoc.cpp:1842
+#: appmain/tabledoc.cpp:1854
 msgid ""
 "The file could not be reloaded, because the file is locked or marked as read "
 "only"
@@ -5958,88 +6003,88 @@ msgstr ""
 "Die Datei konnte nicht erneut geladen werden, da die Datei als "
 "schreibgeschütz markiert oderverschlüsselt ist"
 
-#: appmain/tabledoc.cpp:1971 appmain/tabledocapi.cpp:34
+#: appmain/tabledoc.cpp:1983 appmain/tabledocapi.cpp:32
 #, c-format
 msgid "Filtering '%s'"
 msgstr "Filtere  '%s'"
 
-#: appmain/tabledoc.cpp:2183
+#: appmain/tabledoc.cpp:2195
 #, c-format
 msgid "Sum: %s"
 msgstr "Summe: %s"
 
-#: appmain/tabledoc.cpp:2250 appmain/tabledoc.cpp:2256
+#: appmain/tabledoc.cpp:2262 appmain/tabledoc.cpp:2268
 #, c-format
 msgid "Position: %s"
 msgstr "Position: %s"
 
-#: appmain/tabledoc.cpp:2251
+#: appmain/tabledoc.cpp:2263
 #, c-format
 msgid "Record Count: %s"
 msgstr "Datensatzanzahl: %s"
 
-#: appmain/tabledoc.cpp:2889 appmain/tabledocmodel.cpp:1415
+#: appmain/tabledoc.cpp:2903 appmain/tabledocmodel.cpp:1451
 msgid "Default View"
 msgstr "Standardansicht"
 
-#: appmain/tabledoc.cpp:3237
+#: appmain/tabledoc.cpp:3251 appmain/tabledoc.cpp:3404
 msgid "Filtered"
 msgstr "Gefiltert"
 
-#: appmain/tabledoc.cpp:3646
+#: appmain/tabledoc.cpp:3803
 msgid "Default Order"
 msgstr "Standardsortierung"
 
-#: appmain/tabledoc.cpp:3856 appmain/tabledoc.cpp:4083
+#: appmain/tabledoc.cpp:4014 appmain/tabledoc.cpp:4241
 msgid "&Remove Sort/Filter"
 msgstr "&Sortierung/Filter entfernen"
 
-#: appmain/tabledoc.cpp:3858
+#: appmain/tabledoc.cpp:4016
 msgid "&Mark Records"
 msgstr "Datensätze &markieren"
 
-#: appmain/tabledoc.cpp:4079
+#: appmain/tabledoc.cpp:4237
 msgid "Sort &Ascending"
 msgstr "&Aufsteigend sortieren"
 
-#: appmain/tabledoc.cpp:4080
+#: appmain/tabledoc.cpp:4238
 msgid "&Sort Descending"
 msgstr "&Absteigend sortieren"
 
-#: appmain/tabledoc.cpp:4082
+#: appmain/tabledoc.cpp:4240
 msgid "Sort &Orders"
 msgstr "Sortierungen"
 
-#: appmain/tabledoc.cpp:4085
+#: appmain/tabledoc.cpp:4243
 msgid "Insert &Group Break"
 msgstr "Gruppentrenner einblenden"
 
-#: appmain/tabledoc.cpp:4086
+#: appmain/tabledoc.cpp:4244
 msgid "Re&move Group Break"
 msgstr "&Gruppentrenner ausblenden"
 
-#: appmain/tabledoc.cpp:4097
+#: appmain/tabledoc.cpp:4255
 msgid "Column &Views"
 msgstr "&Spaltenansichten"
 
-#: appmain/tabledoc.cpp:4558
+#: appmain/tabledoc.cpp:4754
 msgid "[Matching Records]"
 msgstr "[Passende Datensätze]"
 
-#: appmain/tabledoc.cpp:4581
+#: appmain/tabledoc.cpp:4777
 msgid "[Matching Records And Context]"
 msgstr "[Passende Datensätze mit Kontext]"
 
-#: appmain/tabledoc.cpp:4666
+#: appmain/tabledoc.cpp:4862
 msgid "&Delete Record"
 msgstr "&Datensätze löschen"
 
-#: appmain/tabledoc.cpp:4738
+#: appmain/tabledoc.cpp:4934
 #, c-format
 msgid "Name: %s, Type: %s, Width: %d, Decimals: %d"
 msgstr "Name: %s, Type: %s, Breite: %d, Dezimalzahlen: %d"
 
-#: appmain/tabledoc.cpp:5015
+#: appmain/tabledoc.cpp:5211
 msgid ""
 "The database table does not have a primary key specified, which is required "
 "for editing data values."
@@ -6047,23 +6092,28 @@ msgstr ""
 "Diese Datentabelle hat keinen primären Schlüssel.  Ein primärer Schlüssel "
 "wird benötigt, um einen Wert zu ändern."
 
-#: appmain/tabledoc.cpp:5231
+#: appmain/tabledoc.cpp:5500
 msgid "The date entered was not formatted correctly."
 msgstr "Die Eingabe des Datums war nicht korrekt formatiert."
 
-#: appmain/tabledoc.cpp:5708
+#: appmain/tabledoc.cpp:6046 appmain/toolbars.cpp:186 appmain/toolbars.cpp:198
+#: appmain/toolbars.cpp:249
+msgid "Filter"
+msgstr "Filtern"
+
+#: appmain/tabledoc.cpp:6169
 msgid "One or more of the selected calculated fields does not exist."
 msgstr "Eine oder mehere der selektierten berechneten Felder existieren nicht."
 
-#: appmain/tabledoc.cpp:5716
+#: appmain/tabledoc.cpp:6177
 msgid "This operation may only be performed on calculated fields."
 msgstr "Diese Operation kann nur an berechneten Feldern ausgeführt werden."
 
-#: appmain/tabledoc.cpp:5947
+#: appmain/tabledoc.cpp:6408
 msgid "Unable to delete records on external files."
 msgstr "Datensätze in externen Dateien können nicht gelöscht werden."
 
-#: appmain/tabledoc.cpp:5995
+#: appmain/tabledoc.cpp:6456
 #, c-format
 msgid ""
 "Performing this operation will permanently delete data.  Are you sure\n"
@@ -6072,7 +6122,7 @@ msgstr ""
 "Durch diese Operation werden Daten dauerhaft gelöscht.\n"
 "Sind Sie sicher, dass Sie %zu Datensatz/Datensätze löschen möchten?"
 
-#: appmain/tabledoc.cpp:6113
+#: appmain/tabledoc.cpp:6574
 msgid ""
 "Performing this operation will permanently delete data.  Are you sure\n"
 "you want to delete the following field(s):"
@@ -6080,41 +6130,41 @@ msgstr ""
 "Bei der Ausführung dieser Operation werden die Daten permanent gelöscht.\n"
 "Sind Sie sicher, dass Sie die folgenden Felder löschen wollen:"
 
-#: appmain/tabledoc.cpp:6316
+#: appmain/tabledoc.cpp:6777
 msgid "Only a single cell may be cut."
 msgstr "Nur eine einzige Zelle wird wahrscheinlich geschnitten."
 
-#: appmain/tabledoc.cpp:6431
+#: appmain/tabledoc.cpp:6892
 msgid "An output set could not be created."
 msgstr "Eine Ausgangstabelle konnte nicht erstellt werden."
 
-#: appmain/tabledoc.cpp:6484
+#: appmain/tabledoc.cpp:6956
 #, c-format
 msgid "Summarizing '%s'"
 msgstr "'%s' wird zusammengefasst"
 
-#: appmain/tabledoc.cpp:6519
+#: appmain/tabledoc.cpp:6991
 msgid "Please wait while the data is being searched..."
 msgstr "Bitte warten Sie, solange die Daten durchsucht werden..."
 
-#: appmain/tabledoc.cpp:6770
+#: appmain/tabledoc.cpp:7242
 #, c-format
 msgid "Record number (1 - %s):"
 msgstr "Datensatznummer (1 - %s)"
 
-#: appmain/tabledoc.cpp:6772
+#: appmain/tabledoc.cpp:7244
 msgid "Go To Record"
 msgstr "Gehe zu Datensatz"
 
-#: appmain/tabledoc.cpp:7309
+#: appmain/tabledoc.cpp:7781
 msgid "The beginning of the data has been reached."
 msgstr "Der Anfang der Daten wurde erreicht."
 
-#: appmain/tabledoc.cpp:7315
+#: appmain/tabledoc.cpp:7787
 msgid "The end of the data has been reached."
 msgstr "Das Ende der Daten wurde erreicht."
 
-#: appmain/tabledoc.cpp:7389
+#: appmain/tabledoc.cpp:7861
 msgid ""
 "Select fields from the list on the left and\n"
 "drag them here to define the table sort order"
@@ -6122,31 +6172,32 @@ msgstr ""
 "Wählen Sie Felder von der linken Liste und ziehen Sie die Felder hierher, \n"
 "um die Tabellensortierungsordnung zu definieren"
 
-#: appmain/tabledoc.cpp:7396 appmain/toolbars.cpp:185
+#: appmain/tabledoc.cpp:7868 appmain/toolbars.cpp:185
 msgid "Sort"
 msgstr "Sortieren"
 
-#: appmain/tabledoc.cpp:7620 appmain/tabledoc.cpp:7663
+#: appmain/tabledoc.cpp:8093 appmain/tabledoc.cpp:8136
 #, c-format
 msgid "Copying Records from '%s'"
 msgstr "Datensätze kopieren von '%s'"
 
-#: appmain/tabledoc.cpp:7893 appmain/toolbars.cpp:186 appmain/toolbars.cpp:198
-#: appmain/toolbars.cpp:249
-msgid "Filter"
-msgstr "Filtern"
-
-#: appmain/tabledoc.cpp:7982
+#: appmain/tabledoc.cpp:8405
 #, c-format
 msgid "Deleting records in '%s'"
 msgstr "Datensätze löschen in '%s'"
 
-#: appmain/tabledocapi.cpp:123
+#: appmain/tabledocapi.cpp:121
 #, c-format
 msgid "Sorting '%s'"
 msgstr "Sortiere '%s'"
 
-#: appmain/tabledocapi.cpp:165
+#: appmain/tabledocapi.cpp:148
+#, fuzzy, c-format
+#| msgid "Filtering '%s'"
+msgid "Querying '%s'"
+msgstr "Filtere  '%s'"
+
+#: appmain/tabledocapi.cpp:191
 #, c-format
 msgid "Mark #%d"
 msgstr "Markierung #%d"
@@ -6174,6 +6225,7 @@ msgid "ASCII/Unicode"
 msgstr "ASCII/Unicode"
 
 #: appmain/textdoc.cpp:270 appmain/textview.cpp:2319
+#: appmain/transformationdoc.cpp:216
 msgid "EBCDIC"
 msgstr "EBCDIC"
 
@@ -6194,8 +6246,8 @@ msgid "Pipe (|)"
 msgstr "Pipe (|)"
 
 #: appmain/textdoc.cpp:278 appmain/textdoc.cpp:283
-#: appmain/transformationdoc.cpp:311 appmain/transformationdoc.cpp:319
-#: appmain/transformationdoc.cpp:332 appmain/transformationdoc.cpp:340
+#: appmain/transformationdoc.cpp:371 appmain/transformationdoc.cpp:379
+#: appmain/transformationdoc.cpp:392 appmain/transformationdoc.cpp:400
 msgid "Other..."
 msgstr "Sonstige..."
 
@@ -6251,7 +6303,7 @@ msgstr "Spalte umbenennen"
 msgid "Default Encoding"
 msgstr "Standardkodierung"
 
-#: appmain/textview.cpp:2317
+#: appmain/textview.cpp:2317 appmain/transformationdoc.cpp:215
 msgid "ASCII"
 msgstr "ASCII"
 
@@ -6410,35 +6462,67 @@ msgstr "Randstil"
 msgid "Fill Color"
 msgstr "Füllfarbe"
 
-#: appmain/transformationdoc.cpp:308
+#: appmain/transformationdoc.cpp:214
+msgid "Default"
+msgstr "Standard"
+
+#: appmain/transformationdoc.cpp:217
+msgid "COMP"
+msgstr ""
+
+#: appmain/transformationdoc.cpp:218
+#, fuzzy
+#| msgid "COMP-3 Numeric"
+msgid "COMP-3"
+msgstr "COMP-3 Numerisch"
+
+#: appmain/transformationdoc.cpp:368
 msgid "Trim leading spaces"
 msgstr "Führende Leerzeilen löschen"
 
-#: appmain/transformationdoc.cpp:309
+#: appmain/transformationdoc.cpp:369
 msgid "Trim leading zeros"
 msgstr "Führende Nullen löschen"
 
-#: appmain/transformationdoc.cpp:310
+#: appmain/transformationdoc.cpp:370
 msgid "Trim leading spaces and zeros"
 msgstr "Führende Leerzeilen und Nullen löschen"
 
-#: appmain/transformationdoc.cpp:331
+#: appmain/transformationdoc.cpp:391
 msgid "Julian Date"
 msgstr "Julianisches Datum"
 
-#: appmain/transformationdoc.cpp:339
+#: appmain/transformationdoc.cpp:399
 msgid "Not 0/0"
-msgstr "kein 0/0"
+msgstr "nicht 0/0"
 
-#: appmain/transformationdoc.cpp:378
+#: appmain/transformationdoc.cpp:500
 msgid "Structure"
 msgstr "Struktur"
 
-#: appmain/transformationdoc.cpp:420
+#: appmain/transformationdoc.cpp:543
+#, fuzzy
+#| msgid "Start Offset:"
+msgid "Source Offset"
+msgstr "Beginnoffset:"
+
+#: appmain/transformationdoc.cpp:544
+#, fuzzy
+#| msgid "Source: "
+msgid "Source Width"
+msgstr "Quelldatei:"
+
+#: appmain/transformationdoc.cpp:545
+#, fuzzy
+#| msgid "Encoding:"
+msgid "Source Encoding"
+msgstr "Kodierung:"
+
+#: appmain/transformationdoc.cpp:546
 msgid "Format/Formula"
 msgstr "Format/Formel"
 
-#: appmain/transformationdoc.cpp:1886
+#: appmain/transformationdoc.cpp:1776
 msgid ""
 "This field has the same name as another field\n"
 "in this list and has an invalid name"
@@ -6446,19 +6530,19 @@ msgstr ""
 "Dieses Feld hat denselben Namen wie ein anderes Feld\n"
 "in dieser Liste und hat einen ungültigen Namen"
 
-#: appmain/transformationdoc.cpp:1891
+#: appmain/transformationdoc.cpp:1781
 msgid "This field has the same name as another field in this list"
 msgstr "Dieses Feld hat denselben Namen wie ein anderes Feld in dieser Liste."
 
-#: appmain/transformationdoc.cpp:1893
+#: appmain/transformationdoc.cpp:1783
 msgid "This field has an invalid name"
 msgstr "Dieses Feld hat einen ungültigen Namen"
 
-#: appmain/transformationdoc.cpp:1908
+#: appmain/transformationdoc.cpp:1804
 msgid "This formula has a return type that does not match the field type"
 msgstr "Diese Formel ergibt einen Wert, dessen Typ dem Feldtyp nicht passt.="
 
-#: appmain/transformationdoc.cpp:1910
+#: appmain/transformationdoc.cpp:1806
 msgid "This formula has invalid syntax"
 msgstr "Diese Fomel hat eine ungültige Syntax"
 
@@ -6485,7 +6569,7 @@ msgid ""
 "are completed."
 msgstr ""
 "Es sind Jobs, die derzeit laufen. Bitte aktualisieren Sie %s nach dem alle "
-"laufenden Jobs beendet sind. "
+"laufenden Jobs beendet sind."
 
 #: appmain/updater.cpp:606
 msgid ""
@@ -6582,7 +6666,7 @@ msgid ""
 "filename."
 msgstr ""
 "Der spezifizierte Ausgangspfad ist ungültig, weil er einen ungültigen "
-"Dateinamen spezifiziert. "
+"Dateinamen spezifiziert."
 
 #: appmain/util.cpp:1787
 msgid ""
@@ -6597,7 +6681,7 @@ msgid ""
 "The specified output file name already exists.  Would you like to overwrite "
 "it?"
 msgstr ""
-"Die angegebene Ausgangsdatei existiert bereits.  Möchten Sie diese ersetzen? "
+"Die angegebene Ausgangsdatei existiert bereits.  Möchten Sie diese ersetzen?"
 
 #: appmain/util.cpp:2579
 #, c-format
@@ -6630,7 +6714,7 @@ msgstr "Mehr Füllfarben..."
 
 #: kcl/colorpanel.cpp:338
 msgid "No Fill Color"
-msgstr "Keine Füllfarbe..."
+msgstr "Keine Füllfarbe"
 
 #: kcl/colorpanel.cpp:342
 msgid "More Line Colors..."
@@ -7096,9 +7180,6 @@ msgstr "Fertig"
 #~ msgid "Column Width (pixels)"
 #~ msgstr "Spaltenbreite (pixels)"
 
-#~ msgid "Default"
-#~ msgstr "Standard"
-
 #~ msgid "Left"
 #~ msgstr "Links"
 
@@ -7128,20 +7209,3 @@ msgstr "Fertig"
 
 #~ msgid "The specified path does not contain a valid project."
 #~ msgstr "Der spezifizierte Pfad beinhaltet kein gültiges Projekt. "
-
-#~ msgid ""
-#~ "One or more formulas has invalid syntax.  Check to make sure all formulas "
-#~ "have valid syntax to continue."
-#~ msgstr ""
-#~ "Eine oder mehrere Formeln haben ein ungültigen Syntax. Bitte überprüfen "
-#~ "Sie alle Formeln nach gültiger Syntax, um weiter fortzufahren."
-
-#~ msgid "Invalid Formula(s)"
-#~ msgstr "Ungültige Formel(en)"
-
-#~ msgid ""
-#~ "One or more of the formulas has a return type that does not match the "
-#~ "field type.  Would you like to continue?"
-#~ msgstr ""
-#~ "Eine oder mehrere Formel haben einen Ergebnistyp, der dem Feldtyp nicht "
-#~ "passt.  Möchten Sie trotzdem fortfahren?"
