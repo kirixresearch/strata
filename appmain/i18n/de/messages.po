@@ -4226,7 +4226,8 @@ msgstr ""
 #: appmain/panelgroup.cpp:780
 msgid "One or more group field definitions has an invalid function type."
 msgstr ""
-"Ein oder mehrere Gruppenfelderdefinitionen hat einen ungültigen Funktionstyp."
+"Eine oder mehrere Gruppenfelddefinitionen weisen einen ungültigen "
+"Funktionstyp auf."
 
 #: appmain/panelgroup.cpp:810
 msgid ""
@@ -4234,22 +4235,22 @@ msgid ""
 "of the fields in the detail output.  Please make sure that the name of each "
 "output field is unique."
 msgstr ""
-"Zwei oder mehrere Felder haben denselben Ausgangsnamen, oder stehen in "
-"Widerspruch zu einem der Felder in der Detailausgabe. Bitte überprüfen Sie, "
-"dass der Name von jedem Ausgangsfeld einmalig ist."
+"Zwei oder mehr Felder haben denselben Ausgabenamen oder können mit einem der "
+"Felder in der Detailausgabe in Konflikt stehen.  Bitte stellen Sie sicher, "
+"dass der Name jedes Ausgabefeldes eindeutig ist."
 
 #: appmain/panelgroup.cpp:816
 msgid ""
 "Two or more fields have the same output name.  Please make sure that the "
 "name of each output field is unique."
 msgstr ""
-"Zwei oder mehrere Felder haben denselben Ausgangsnamen. Bitte überprüfen "
-"Sie, dass der Name von jedem Ausgangsfeld einmalig ist."
+"Zwei oder mehr Felder haben denselben Ausgabenamen.  Bitte stellen Sie "
+"sicher, dass der Name jedes Ausgabefeldes eindeutig ist."
 
 #: appmain/panelgroup.cpp:921
 #, c-format
 msgid "Grouping '%s'"
-msgstr "Gruppieren '%s'"
+msgstr "Gruppierung \"%s\""
 
 #: appmain/panelindex.cpp:80
 msgid "Index names cannot contain the following characters:"
@@ -4257,7 +4258,7 @@ msgstr "Indexnamen dürfen die folgenden Zeichen nicht enthalten:"
 
 #: appmain/panelindex.cpp:96
 msgid "Index names cannot begin with the following characters:"
-msgstr "Indexnamen dürfen mit den folgenden Zeichen nicht beginnen:"
+msgstr "Indexnamen dürfen nicht mit den folgenden Zeichen beginnen:"
 
 #: appmain/panelindex.cpp:168 appmain/panelindex.cpp:193
 msgid "Indexes"
@@ -4266,11 +4267,11 @@ msgstr "Indizes"
 #: appmain/panelindex.cpp:205
 msgid "This index has the same name as another index in this list"
 msgstr ""
-"Dieser Index hat denselben Namen wie ein anderer Index von dieser Liste."
+"Dieser Index hat den gleichen Namen wie ein anderer Index in dieser Liste"
 
 #: appmain/panelindex.cpp:208
 msgid "Index names cannot contain spaces"
-msgstr "Indexnamen dürfen keine Leerstellen enthalten"
+msgstr "Indexnamen dürfen keine Leerzeichen enthalten"
 
 #: appmain/panelindex.cpp:221 appmain/panelview.cpp:132
 msgid "Available Fields"
@@ -4295,8 +4296,8 @@ msgid ""
 "To create an index on this table,\n"
 "click the 'Add' button below"
 msgstr ""
-"Um einen Index zu erstellen,\n"
-"klicken Sie auf die Schaltfläche 'Hinzufügen'"
+"Um einen Index für diese Tabelle zu erstellen,\n"
+"Klicken Sie unten auf die Schaltfläche \"Hinzufügen\""
 
 #: appmain/panelindex.cpp:544 appmain/panelview.cpp:331
 msgid ""
@@ -4304,8 +4305,8 @@ msgid ""
 "'Available Fields' list\n"
 "and drag them here"
 msgstr ""
-"Wählen Sie Felder\n"
-"von der linken Liste\n"
+"Wählen Sie Felder aus der\n"
+"Liste 'Verfügbare Felder'\n"
 "und ziehen Sie sie hierher"
 
 #: appmain/panelindex.cpp:617
@@ -4330,7 +4331,7 @@ msgstr "Index"
 
 #: appmain/paneljobmgr.cpp:71
 msgid "Paused"
-msgstr "Pause"
+msgstr "Pausiert"
 
 #: appmain/paneljobmgr.cpp:73
 msgid "Queued"
@@ -4349,12 +4350,12 @@ msgstr "Ausführen (%s)"
 #: appmain/paneljobmgr.cpp:124
 #, c-format
 msgid "Finished on %s at %s (%s)"
-msgstr "Beendet am %s at %s (%s)"
+msgstr "Fertig am %s um %s (%s)"
 
 #: appmain/paneljobmgr.cpp:130
 #, c-format
 msgid "Cancelling (%s)"
-msgstr "Abbrechen (%s)"
+msgstr "Wird abgebrochen (%s)"
 
 #: appmain/paneljobmgr.cpp:133
 #, c-format
@@ -5116,24 +5117,25 @@ msgid ""
 "No field has been selected to update.  Please select a valid field to update "
 "to continue."
 msgstr ""
-"Kein Feld zum Aktialisieren wurde gewählt.  Bitte wählen Sie ein gültiges "
-"Feld, um fortzufahren."
+"Es wurde kein Feld zum Aktualisieren ausgewählt.  Bitte wählen Sie ein "
+"gültiges Feld aus, das aktualisiert werden soll, um fortzufahren."
 
 #: appmain/panelreplacerows.cpp:367
 msgid ""
 "The selected field to update does not exist or is invalid.  Please select a "
 "valid field to update to continue."
 msgstr ""
-"Das angegebene Feld existiert nicht oder ist ungültig.  Bitte wählen Sie ein "
-"gültiges Feld zum Aktualisieren, um fortzufahren."
+"Das ausgewählte Feld, das aktualisiert werden soll, ist nicht vorhanden oder "
+"ungültig.  Bitte wählen Sie ein gültiges Feld aus, das aktualisiert werden "
+"soll, um fortzufahren."
 
 #: appmain/panelreplacerows.cpp:375
 msgid ""
 "The replace value is not valid for the selected field.  Please enter a valid "
 "replace value for this field to continue."
 msgstr ""
-"Der angegebene Wert ist nicht gültig für das selektierte Feld.  Bitte geben "
-"Sie einen gültigen Wert für dieses Feld ein, um fortzufahren."
+"Der Ersetzungswert ist für das ausgewählte Feld ungültig.  Geben Sie einen "
+"gültigen Ersetzungswert für dieses Feld ein, um fortzufahren."
 
 #: appmain/panelreplacerows.cpp:384
 msgid ""
@@ -5141,16 +5143,17 @@ msgid ""
 "the selected field will be replaced with\n"
 "the specified replace value.  Are you sure you want to continue?"
 msgstr ""
-"Die eingegebene Formel ist leer.  Alle Werte in der gewählten Spalte werden "
-"aktualisiert mit dem angegebenen Wert.  Möchten Sie fortfahren?"
+"Die eingegebene Formel zum Aktualisieren übereinstimmender Datensätze ist "
+"leer. Alle Werte im ausgewählten Feld werden durch den angegebenen "
+"Ersatzwert ersetzt. Möchten Sie den Vorgang wirklich fortsetzen?"
 
 #: appmain/panelreplacerows.cpp:467
 msgid "Update Values"
-msgstr "Datensätze aktualisieren"
+msgstr "Werte aktualisieren"
 
 #: appmain/panelsplit.cpp:150
 msgid "Divide"
-msgstr "Dividieren"
+msgstr "Teilen"
 
 #: appmain/panelsplit.cpp:156
 msgid "Divide By:"
@@ -5225,8 +5228,8 @@ msgid ""
 "One or more of the items dragged from the project panel is an external table "
 "and cannot be specified as the source table."
 msgstr ""
-"Ein oder mehrere Artikel, die aus dem Projektpanel verschoben worden sind, "
-"sind externe Tabellen und können nicht als Quellentabelle angegeben werden."
+"Mindestens eines der Elemente, die aus dem Projektfenster gezogen werden, "
+"sind eine externe Tabelle und können nicht als Quelltabelle angegeben werden."
 
 #: appmain/panelview.cpp:44
 msgid "-- Column Break --"
@@ -5357,33 +5360,34 @@ msgid ""
 "One or more of the items is a folder.  Folders cannot be added to the "
 "relationship diagram."
 msgstr ""
-"Ein oder mehrere von den Artikeln sind Ordner. Ordner könne nicht in ein "
-"Verknüpfungsdiagramm hinzugefügt werden."
+"Bei einem oder mehreren Elementen handelt es sich um einen Ordner.  Ordner "
+"können dem Verknüpfungsdiagramm nicht hinzugefügt werden."
 
 #: appmain/querydoc.cpp:1114 appmain/relationdiagram.cpp:2352
 msgid ""
 "One or more of the items is an external table.  External tables cannot be "
 "added to the relationship diagram."
 msgstr ""
-"Ein oder mehrere von den Artikel sind eine externe Tabelle. Externe "
-"Tabelllen können nicht in ein Verknüpfungsdiagramm hinzugefügt werden."
+"Bei einem oder mehreren Elementen handelt es sich um eine externe Tabelle.  "
+"Externe Tabellen können dem Verknüpfungsdiagramm nicht hinzugefügt werden."
 
 #: appmain/querydoc.cpp:1125 appmain/relationdiagram.cpp:2365
 msgid ""
 "One or more of the items is not a table.  Items that are not tables cannot "
 "be added to the relationship diagram."
 msgstr ""
-"Ein oder mehrere von den Artikeln ist keine Tabelle. Artikel, die keine  "
-"Tabelllen sind, können nicht in ein Verknüpfungsdiagramm hinzugefügt werden."
+"Bei einem oder mehreren der Elemente handelt es sich nicht um eine Tabelle.  "
+"Elemente, bei denen es sich nicht um Tabellen handelt, können dem "
+"Verknüpfungsdiagramm nicht hinzugefügt werden."
 
 #: appmain/querydoc.cpp:1141 appmain/relationdiagram.cpp:2394
 msgid "One or more of the items could not be found in the project."
 msgstr ""
-"Ein oder mehrere von den Artikeln konnen nicht im Projekt gefunden werden."
+"Eines oder mehrere der Elemente konnten im Projekt nicht gefunden werden."
 
 #: appmain/querydoc.cpp:1188
 msgid "The data set already exists in the diagram."
-msgstr "Die Datentabelle exisiert bereits in dem Diagramm."
+msgstr "Die Datentabelle existiert bereits in dem Diagramm."
 
 #: appmain/querydoc.cpp:1325
 msgid "Inner Join"
@@ -5779,7 +5783,7 @@ msgstr "Bereichsfehler."
 #: appmain/scripthost.cpp:1301
 #, c-format
 msgid "Reference error: while evaluating '%ls'."
-msgstr "Referenzfehler: '%ls'."
+msgstr "Referenzfehler: bei der Auswertung von '%ls'."
 
 #: appmain/scripthost.cpp:1307
 msgid "Reference error."
@@ -5787,7 +5791,7 @@ msgstr "Referenzfehler."
 
 #: appmain/scripthost.cpp:1313
 msgid "No entry point."
-msgstr "Kein Startpunkt."
+msgstr "Kein Einstiegspunkt."
 
 #: appmain/scripthost.cpp:1317
 msgid "Object expected, but is missing."
@@ -5800,34 +5804,34 @@ msgstr "Objekttyp passt nicht (vielleicht fehlende 'new'-Anweisung)"
 #: appmain/scripthost.cpp:1325
 #, c-format
 msgid "Term '%ls' does not evaluate to a function."
-msgstr "Term '%ls' berechnet sich zu einer Funktion nicht."
+msgstr "Der Begriff '%ls' wird nicht zu einer Funktion ausgewertet."
 
 #: appmain/structuredoc.cpp:444
 msgid ""
 "The structure cannot be modified while the table is showing filtered related "
 "records."
 msgstr ""
-"Die Struktur kann nicht modifiziert werden, während die Tabelle gefilterte "
-"bezogene Datensätze anzeigt."
+"Die Struktur kann nicht geändert werden, während in der Tabelle gefilterte "
+"zugehörige Datensätze angezeigt werden."
 
 #: appmain/structuredoc.cpp:462
 msgid ""
 "The table you want to modify is currently showing filtered records.  "
 "Modifying the table will remove the filter.  Would you like to continue?"
 msgstr ""
-"Die Tabelle, die Sie derzeit modifizieren wollen zeigt gefilterte "
-"Datensätze. Die Modifizierung der Tabelle wird den Filter löschen. Möchten "
+"In der Tabelle, die Sie ändern möchten, werden derzeit gefilterte Datensätze "
+"angezeigt.  Wenn Sie die Tabelle ändern, wird der Filter entfernt.  Möchten "
 "Sie fortfahren?"
 
 #: appmain/structuredoc.cpp:511 appmain/tabledoc.cpp:6212
 #: appmain/tabledoc.cpp:6620
 #, c-format
 msgid "Modifying Structure of '%s'"
-msgstr "Die Struktur von '%s' modifizieren"
+msgstr "Ändern der Struktur von '%s'"
 
 #: appmain/structuredoc.cpp:589 appmain/transformationdoc.cpp:542
 msgid "Decimals"
-msgstr "Dezimale"
+msgstr "Dezimalen"
 
 #: appmain/structuredoc.cpp:705 appmain/structuredoc.cpp:1617
 #: appmain/transformationdoc.cpp:657 appmain/transformationdoc.cpp:1429
