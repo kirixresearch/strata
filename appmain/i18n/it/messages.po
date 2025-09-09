@@ -15,9 +15,9 @@ msgstr ""
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-Bookmarks: 180,-1,-1,-1,-1,-1,-1,31,948,-1\n"
 "X-Poedit-KeywordsList: _\n"
+"X-Poedit-SourceCharset: iso-8859-1\n"
 "X-Poedit-SearchPath-0: appmain\n"
 "X-Poedit-SearchPath-1: kcl\n"
-"X-Poedit-SourceCharset: iso-8859-1\n"
 
 #. AI-generated
 #: appmain/app.cpp:137
@@ -26,20 +26,13 @@ msgstr "&Mostra Finestra Principale"
 
 #. AI-generated
 #: appmain/app.cpp:214
-msgid ""
-"Your license for this application has expired.  Please renew your license."
-msgstr ""
-"La tua licenza per questa applicazione è scaduta. Si prega di rinnovare la "
-"licenza."
+msgid "Your license for this application has expired.  Please renew your license."
+msgstr "La tua licenza per questa applicazione è scaduta. Si prega di rinnovare la licenza."
 
 #. AI-generated
 #: appmain/app.cpp:221
-msgid ""
-"The clock was set back on your computer.  Please reset the clock to the "
-"normal time or re-license this software."
-msgstr ""
-"L'orologio è stato riportato indietro sul tuo computer. Si prega di "
-"reimpostare l'orologio all'ora normale o di rilicenziare questo software."
+msgid "The clock was set back on your computer.  Please reset the clock to the normal time or re-license this software."
+msgstr "L'orologio è stato riportato indietro sul tuo computer. Si prega di reimpostare l'orologio all'ora normale o di rilicenziare questo software."
 
 #. AI-generated
 #: appmain/app.cpp:1317
@@ -217,11 +210,9 @@ msgid "&Paste\tCtrl+V"
 msgstr "&Incolla\tCtrl+V"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:848 appmain/dbdoc.cpp:3073 appmain/dbdoc.cpp:3085
-#: appmain/dbdoc.cpp:3189 appmain/dbdoc.cpp:3284 appmain/dbdoc.cpp:3299
-#: appmain/dbdoc.cpp:3314 appmain/dbdoc.cpp:3330 appmain/dbdoc.cpp:3343
-#: appmain/linkbar.cpp:1099 appmain/querydoc.cpp:929
-#: appmain/structuredoc.cpp:2187 appmain/transformationdoc.cpp:2097
+#: appmain/appcontroller.cpp:848 appmain/dbdoc.cpp:3073 appmain/dbdoc.cpp:3085 appmain/dbdoc.cpp:3189 appmain/dbdoc.cpp:3284 appmain/dbdoc.cpp:3299
+#: appmain/dbdoc.cpp:3314 appmain/dbdoc.cpp:3330 appmain/dbdoc.cpp:3343 appmain/linkbar.cpp:1099 appmain/querydoc.cpp:929 appmain/structuredoc.cpp:2187
+#: appmain/transformationdoc.cpp:2097
 msgid "&Delete"
 msgstr "&Elimina"
 
@@ -611,15 +602,12 @@ msgid "Show/Hide Relationships Panel"
 msgstr "Mostra/Nascondi pannello delle relazioni"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:1206 appmain/appcontroller.cpp:7227
-#: appmain/panelconsole.cpp:547
+#: appmain/appcontroller.cpp:1206 appmain/appcontroller.cpp:7227 appmain/panelconsole.cpp:547
 msgid "Console"
 msgstr "Console"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:1213 appmain/dbcombo.cpp:312
-#: appmain/dbdoc.cpp:106 appmain/dlgdatabasefile.cpp:266
-#: appmain/paneldatabaseinfo.cpp:63
+#: appmain/appcontroller.cpp:1213 appmain/dbcombo.cpp:312 appmain/dbdoc.cpp:106 appmain/dlgdatabasefile.cpp:266 appmain/paneldatabaseinfo.cpp:63
 msgid "Project"
 msgstr "Progetto"
 
@@ -639,28 +627,24 @@ msgid "Tab"
 msgstr "Tab"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:1697 appmain/panelfileinfo.cpp:399
-#: appmain/panelfileinfo.cpp:556
+#: appmain/appcontroller.cpp:1697 appmain/panelfileinfo.cpp:399 appmain/panelfileinfo.cpp:556
 msgid "Table"
 msgstr "Tabella"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:1701 appmain/panelfileinfo.cpp:405
-#: appmain/panelfileinfo.cpp:560 appmain/paneloptions.cpp:2588
+#: appmain/appcontroller.cpp:1701 appmain/panelfileinfo.cpp:405 appmain/panelfileinfo.cpp:560 appmain/paneloptions.cpp:2588
 msgid "Report"
 msgstr "Report"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:1705 appmain/panelconsole.cpp:1056
-#: appmain/panelfileinfo.cpp:411 appmain/panelfileinfo.cpp:564
-#: appmain/querytemplate.cpp:155 appmain/reportmodel.cpp:1207
+#: appmain/appcontroller.cpp:1705 appmain/panelconsole.cpp:1056 appmain/panelfileinfo.cpp:411 appmain/panelfileinfo.cpp:564 appmain/querytemplate.cpp:155
+#: appmain/reportmodel.cpp:1207
 msgid "Query"
 msgstr "Query"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:1709 appmain/jobscript.cpp:21
-#: appmain/jobscript.cpp:74 appmain/panelfileinfo.cpp:417
-#: appmain/panelfileinfo.cpp:568 appmain/paneloptions.cpp:2589
+#: appmain/appcontroller.cpp:1709 appmain/jobscript.cpp:21 appmain/jobscript.cpp:74 appmain/panelfileinfo.cpp:417 appmain/panelfileinfo.cpp:568
+#: appmain/paneloptions.cpp:2589
 msgid "Script"
 msgstr "Script"
 
@@ -675,11 +659,9 @@ msgid "New Bookmark"
 msgstr "Nuovo Segnalibro"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:2161 appmain/connectionpages.cpp:399
-#: appmain/connectionpages.cpp:537 appmain/connectionpages.cpp:544
-#: appmain/dlgconnection.cpp:290 appmain/editordoc.cpp:1832
-#: appmain/importwizard.cpp:126 appmain/panelextensionmgr.cpp:448
-#: appmain/scriptdlg.cpp:28 appmain/webdoc.cpp:655
+#: appmain/appcontroller.cpp:2161 appmain/connectionpages.cpp:399 appmain/connectionpages.cpp:537 appmain/connectionpages.cpp:544
+#: appmain/dlgconnection.cpp:290 appmain/editordoc.cpp:1832 appmain/importwizard.cpp:126 appmain/panelextensionmgr.cpp:448 appmain/scriptdlg.cpp:28
+#: appmain/webdoc.cpp:655
 msgid "All Files"
 msgstr "Tutti i file"
 
@@ -689,44 +671,34 @@ msgid "All Text Files"
 msgstr "Tutti i file di testo"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:2165 appmain/connectionpages.cpp:531
-#: appmain/dlgconnection.cpp:300 appmain/importwizard.cpp:130
-#: appmain/tabledoc.cpp:1634
+#: appmain/appcontroller.cpp:2165 appmain/connectionpages.cpp:531 appmain/dlgconnection.cpp:300 appmain/importwizard.cpp:130 appmain/tabledoc.cpp:1634
 msgid "Comma-Delimited Files"
 msgstr "File delimitati da virgole"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:2167 appmain/connectionpages.cpp:533
-#: appmain/dlgconnection.cpp:302 appmain/importwizard.cpp:132
-#: appmain/tabledoc.cpp:1638
+#: appmain/appcontroller.cpp:2167 appmain/connectionpages.cpp:533 appmain/dlgconnection.cpp:302 appmain/importwizard.cpp:132 appmain/tabledoc.cpp:1638
 msgid "Tab-Delimited Files"
 msgstr "File delimitati da tab"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:2169 appmain/connectionpages.cpp:149
-#: appmain/connectionpages.cpp:526 appmain/dlgconnection.cpp:298
+#: appmain/appcontroller.cpp:2169 appmain/connectionpages.cpp:149 appmain/connectionpages.cpp:526 appmain/dlgconnection.cpp:298
 #: appmain/importwizard.cpp:134 appmain/tabledoc.cpp:1642
 msgid "Microsoft FoxPro/Xbase Files"
 msgstr "File FoxPro/Xbase di Microsoft"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:2171 appmain/connectionpages.cpp:516
-#: appmain/dlgconnection.cpp:294 appmain/importwizard.cpp:136
-#: appmain/tabledoc.cpp:1644
+#: appmain/appcontroller.cpp:2171 appmain/connectionpages.cpp:516 appmain/dlgconnection.cpp:294 appmain/importwizard.cpp:136 appmain/tabledoc.cpp:1644
 msgid "Microsoft Access Files"
 msgstr "File di Access di Microsoft"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:2173 appmain/connectionpages.cpp:521
-#: appmain/dlgconnection.cpp:296 appmain/importwizard.cpp:138
-#: appmain/tabledoc.cpp:1646
+#: appmain/appcontroller.cpp:2173 appmain/connectionpages.cpp:521 appmain/dlgconnection.cpp:296 appmain/importwizard.cpp:138 appmain/tabledoc.cpp:1646
 msgid "Microsoft Excel Files"
 msgstr "File di Excel di Microsoft"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:2175 appmain/connectionpages.cpp:511
-#: appmain/dlgconnection.cpp:292 appmain/importwizard.cpp:140
-#: appmain/querydoc.cpp:2201 appmain/tabledoc.cpp:1632
+#: appmain/appcontroller.cpp:2175 appmain/connectionpages.cpp:511 appmain/dlgconnection.cpp:292 appmain/importwizard.cpp:140 appmain/querydoc.cpp:2201
+#: appmain/tabledoc.cpp:1632
 msgid "Package Files"
 msgstr "File di pacchetto"
 
@@ -746,8 +718,7 @@ msgid "HTML Files"
 msgstr "File HTML"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:2183 appmain/editordoc.cpp:1828
-#: appmain/panelextensionmgr.cpp:446
+#: appmain/appcontroller.cpp:2183 appmain/editordoc.cpp:1828 appmain/panelextensionmgr.cpp:446
 msgid "Script Files"
 msgstr "File di script"
 
@@ -758,31 +729,19 @@ msgstr "Apri file"
 
 #. AI-generated
 #: appmain/appcontroller.cpp:2222
-msgid ""
-"More than one file type was selected.  Please select only one file type to "
-"continue."
-msgstr ""
-"È stato selezionato più di un tipo di file. Seleziona solo un tipo di file "
-"per continuare."
+msgid "More than one file type was selected.  Please select only one file type to continue."
+msgstr "È stato selezionato più di un tipo di file. Seleziona solo un tipo di file per continuare."
 
 #. AI-generated
 #: appmain/appcontroller.cpp:2264
 #, c-format
-msgid ""
-"One or more of the selected files could not be opened because it is not "
-"supported by %s."
-msgstr ""
-"Uno o più dei file selezionati non potrebbe essere aperto perché non è "
-"supportato da %s."
+msgid "One or more of the selected files could not be opened because it is not supported by %s."
+msgstr "Uno o più dei file selezionati non potrebbe essere aperto perché non è supportato da %s."
 
 #. AI-generated
 #: appmain/appcontroller.cpp:2275
-msgid ""
-"One or more of the selected files could not be opened either because they "
-"are already in use or no longer exist."
-msgstr ""
-"Uno o più dei file selezionati non potrebbe essere aperto perché sono già in"
-" uso o non esistono più."
+msgid "One or more of the selected files could not be opened either because they are already in use or no longer exist."
+msgstr "Uno o più dei file selezionati non potrebbe essere aperto perché sono già in uso o non esistono più."
 
 #. AI-generated
 #: appmain/appcontroller.cpp:2326
@@ -808,13 +767,11 @@ msgstr "Condividi Vista Dati..."
 #: appmain/appcontroller.cpp:3548
 #, c-format
 msgid ""
-"There are currently jobs scheduled to run.  If you choose to exit %s, these "
-"jobs will not run as scheduled.  Would you like to run %s in the background "
+"There are currently jobs scheduled to run.  If you choose to exit %s, these jobs will not run as scheduled.  Would you like to run %s in the background "
 "or exit?"
 msgstr ""
-"Ci sono attualmente dei lavori programmati per essere eseguiti. Se decidi di"
-" uscire da %s, questi lavori non saranno eseguiti come programmato. Desideri"
-" eseguire %s in background o uscire?"
+"Ci sono attualmente dei lavori programmati per essere eseguiti. Se decidi di uscire da %s, questi lavori non saranno eseguiti come programmato. "
+"Desideri eseguire %s in background o uscire?"
 
 #. AI-generated
 #: appmain/appcontroller.cpp:3552
@@ -829,12 +786,9 @@ msgstr "Esci"
 #. AI-generated
 #: appmain/appcontroller.cpp:3572
 #, c-format
-msgid ""
-"There are currently jobs scheduled to run.  If you choose to exit %s, these "
-"jobs will not run as scheduled.  Are you sure you want to exit %s?"
+msgid "There are currently jobs scheduled to run.  If you choose to exit %s, these jobs will not run as scheduled.  Are you sure you want to exit %s?"
 msgstr ""
-"Ci sono attualmente lavori pianificati da eseguire. Se scegli di uscire da "
-"%s, questi lavori non verranno eseguiti come programmato. Sei sicuro di "
+"Ci sono attualmente lavori pianificati da eseguire. Se scegli di uscire da %s, questi lavori non verranno eseguiti come programmato. Sei sicuro di "
 "voler uscire da %s?"
 
 #. AI-generated
@@ -863,8 +817,7 @@ msgid "F&ull Screen"
 msgstr "&Schermo intero"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:3884 appmain/appcontroller.cpp:3900
-#: appmain/tabledoc.cpp:904 appmain/webdoc.cpp:539
+#: appmain/appcontroller.cpp:3884 appmain/appcontroller.cpp:3900 appmain/tabledoc.cpp:904 appmain/webdoc.cpp:539
 msgid "Source View"
 msgstr "Vista sorgente"
 
@@ -874,12 +827,9 @@ msgid "Web Page View"
 msgstr "Vista pagina web"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:3892 appmain/appcontroller.cpp:3901
-#: appmain/appcontroller.cpp:3909 appmain/appcontroller.cpp:3918
-#: appmain/appcontroller.cpp:3928 appmain/querydoc.cpp:1961
-#: appmain/reportdoc.cpp:2345 appmain/sqldoc.cpp:489
-#: appmain/structuredoc.cpp:1585 appmain/tabledoc.cpp:893
-#: appmain/tabledoc.cpp:906 appmain/tabledoc.cpp:915
+#: appmain/appcontroller.cpp:3892 appmain/appcontroller.cpp:3901 appmain/appcontroller.cpp:3909 appmain/appcontroller.cpp:3918
+#: appmain/appcontroller.cpp:3928 appmain/querydoc.cpp:1961 appmain/reportdoc.cpp:2345 appmain/sqldoc.cpp:489 appmain/structuredoc.cpp:1585
+#: appmain/tabledoc.cpp:893 appmain/tabledoc.cpp:906 appmain/tabledoc.cpp:915
 msgid "Design View"
 msgstr "Vista design"
 
@@ -889,16 +839,13 @@ msgid "Layout View"
 msgstr "Vista layout"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:3902 appmain/appcontroller.cpp:3910
-#: appmain/appcontroller.cpp:3919 appmain/appcontroller.cpp:3929
-#: appmain/querydoc.cpp:1964 appmain/sqldoc.cpp:492
-#: appmain/structuredoc.cpp:1589 appmain/tabledoc.cpp:920
+#: appmain/appcontroller.cpp:3902 appmain/appcontroller.cpp:3910 appmain/appcontroller.cpp:3919 appmain/appcontroller.cpp:3929 appmain/querydoc.cpp:1964
+#: appmain/sqldoc.cpp:492 appmain/structuredoc.cpp:1589 appmain/tabledoc.cpp:920
 msgid "Table View"
 msgstr "Vista tabella"
 
 #. AI-generated
-#: appmain/appcontroller.cpp:3917 appmain/querydoc.cpp:1958
-#: appmain/sqldoc.cpp:486 appmain/tabledoc.cpp:890
+#: appmain/appcontroller.cpp:3917 appmain/querydoc.cpp:1958 appmain/sqldoc.cpp:486 appmain/tabledoc.cpp:890
 msgid "SQL View"
 msgstr "Vista SQL"
 
@@ -939,12 +886,8 @@ msgstr "Chiudi &Altre Schede"
 
 #. AI-generated
 #: appmain/appcontroller.cpp:4561
-msgid ""
-"This report could not be opened.  It may have an invalid format or may have "
-"been created with a different version."
-msgstr ""
-"Impossibile aprire questo rapporto. Potrebbe avere un formato non valido o "
-"potrebbe essere stato creato con una versione diversa."
+msgid "This report could not be opened.  It may have an invalid format or may have been created with a different version."
+msgstr "Impossibile aprire questo rapporto. Potrebbe avere un formato non valido o potrebbe essere stato creato con una versione diversa."
 
 #. AI-generated
 #: appmain/appcontroller.cpp:5052 appmain/appcontroller.cpp:5060
@@ -954,13 +897,8 @@ msgstr "%s su %s"
 
 #. AI-generated
 #: appmain/appcontroller.cpp:5097 appmain/importwizard.cpp:537
-msgid ""
-"There was an error opening the specified Microsoft Excel file.  Make sure "
-"the file is not open by another application."
-msgstr ""
-"Si è verificato un errore nell'apertura del file Microsoft Excel "
-"specificato. Assicurarsi che il file non sia aperto da un'altra "
-"applicazione."
+msgid "There was an error opening the specified Microsoft Excel file.  Make sure the file is not open by another application."
+msgstr "Si è verificato un errore nell'apertura del file Microsoft Excel specificato. Assicurarsi che il file non sia aperto da un'altra applicazione."
 
 #. AI-generated
 #: appmain/appcontroller.cpp:5110
@@ -981,22 +919,13 @@ msgstr "Importazione da '%s'"
 
 #. AI-generated
 #: appmain/appcontroller.cpp:5150
-msgid ""
-"No tables were opened from the Microsoft Excel file because no tables in the"
-" list were selected."
-msgstr ""
-"Nessuna tabella è stata aperta dal file Microsoft Excel perché nessuna "
-"tabella nella lista è stata selezionata."
+msgid "No tables were opened from the Microsoft Excel file because no tables in the list were selected."
+msgstr "Nessuna tabella è stata aperta dal file Microsoft Excel perché nessuna tabella nella lista è stata selezionata."
 
 #. AI-generated
 #: appmain/appcontroller.cpp:5207 appmain/importwizard.cpp:535
-msgid ""
-"There was an error opening the specified Microsoft Access file.  Make sure "
-"the file is not open by another application."
-msgstr ""
-"Si è verificato un errore nell'apertura del file Microsoft Access "
-"specificato. Assicurarsi che il file non sia aperto da un'altra "
-"applicazione."
+msgid "There was an error opening the specified Microsoft Access file.  Make sure the file is not open by another application."
+msgstr "Si è verificato un errore nell'apertura del file Microsoft Access specificato. Assicurarsi che il file non sia aperto da un'altra applicazione."
 
 #. AI-generated
 #: appmain/appcontroller.cpp:5220 appmain/appcontroller.cpp:5268
@@ -1006,13 +935,8 @@ msgstr "Importa '%s'"
 
 #. AI-generated
 #: appmain/appcontroller.cpp:5254
-msgid ""
-"There was an error opening the specified package file.  Make sure the file "
-"is valid, and is not open by another application."
-msgstr ""
-"Si è verificato un errore nell'apertura del pacchetto specificato. "
-"Assicurarsi che il file sia valido e non sia aperto da un'altra "
-"applicazione."
+msgid "There was an error opening the specified package file.  Make sure the file is valid, and is not open by another application."
+msgstr "Si è verificato un errore nell'apertura del pacchetto specificato. Assicurarsi che il file sia valido e non sia aperto da un'altra applicazione."
 
 #. AI-generated
 #: appmain/appcontroller.cpp:5326
@@ -1035,8 +959,7 @@ msgid "This report could not be printed."
 msgstr "Questo rapporto non può essere stampato."
 
 #. AI-generated
-#: appmain/appcontroller.cpp:5950 appmain/appcontroller.cpp:5976
-#: appmain/paneloptions.cpp:302
+#: appmain/appcontroller.cpp:5950 appmain/appcontroller.cpp:5976 appmain/paneloptions.cpp:302
 msgid "Home Page"
 msgstr "Pagina principale"
 
@@ -1052,21 +975,13 @@ msgstr "Risorse per sviluppatori"
 
 #. AI-generated
 #: appmain/appcontroller.cpp:6008 appmain/appcontroller.cpp:6070
-msgid ""
-"Your system is missing a software component.  To correct this problem, "
-"please reinstall the software."
-msgstr ""
-"Al tuo sistema manca un componente software. Per risolvere questo problema, "
-"si prega di reinstallare il software."
+msgid "Your system is missing a software component.  To correct this problem, please reinstall the software."
+msgstr "Al tuo sistema manca un componente software. Per risolvere questo problema, si prega di reinstallare il software."
 
 #. AI-generated
 #: appmain/appcontroller.cpp:6088
-msgid ""
-"The specified project could not be opened.  The path does not exist or is "
-"invalid."
-msgstr ""
-"Impossibile aprire il progetto specificato. Il percorso non esiste o non è "
-"valido."
+msgid "The specified project could not be opened.  The path does not exist or is invalid."
+msgstr "Impossibile aprire il progetto specificato. Il percorso non esiste o non è valido."
 
 #. AI-generated
 #: appmain/appcontroller.cpp:6103
@@ -1100,21 +1015,13 @@ msgstr "Annullamento di tutti i lavori in corso..."
 
 #. AI-generated
 #: appmain/appcontroller.cpp:6298
-msgid ""
-"There are currently jobs running.  Would you like to cancel all running jobs"
-" and exit?"
-msgstr ""
-"Ci sono attualmente lavori in corso. Vorresti annullare tutti i lavori in "
-"corso ed uscire?"
+msgid "There are currently jobs running.  Would you like to cancel all running jobs and exit?"
+msgstr "Ci sono attualmente lavori in corso. Vorresti annullare tutti i lavori in corso ed uscire?"
 
 #. AI-generated
 #: appmain/appcontroller.cpp:6300
-msgid ""
-"There are currently jobs running.  Would you like to cancel all running jobs"
-" and continue?"
-msgstr ""
-"Ci sono attualmente lavori in corso. Vuoi annullare tutti i lavori in corso "
-"e continuare?"
+msgid "There are currently jobs running.  Would you like to cancel all running jobs and continue?"
+msgstr "Ci sono attualmente lavori in corso. Vuoi annullare tutti i lavori in corso e continuare?"
 
 #. AI-generated
 #: appmain/appcontroller.cpp:6305
@@ -1153,12 +1060,8 @@ msgstr "Progetto compattato con successo."
 
 #. AI-generated
 #: appmain/appcontroller.cpp:6688
-msgid ""
-"Untitled documents must be either saved or closed before using the license "
-"manager."
-msgstr ""
-"I documenti senza titolo devono essere salvati o chiusi prima di utilizzare "
-"il gestore di licenze."
+msgid "Untitled documents must be either saved or closed before using the license manager."
+msgstr "I documenti senza titolo devono essere salvati o chiusi prima di utilizzare il gestore di licenze."
 
 #. AI-generated
 #: appmain/appcontroller.cpp:6689
@@ -1168,13 +1071,11 @@ msgstr "Gestore di Licenza"
 #. AI-generated
 #: appmain/appcontroller.cpp:6993
 msgid ""
-"This project is currently set to 'read-only' status to protect your data "
-"from unintentional changes.  Would you like to temporarily remove the 'read-"
+"This project is currently set to 'read-only' status to protect your data from unintentional changes.  Would you like to temporarily remove the 'read-"
 "only' status to perform this operation?"
 msgstr ""
-"Questo progetto è attualmente impostato come 'sola lettura' per proteggere i"
-" tuoi dati da modifiche non intenzionali. Vorresti rimuovere temporaneamente"
-" lo status 'sola lettura' per eseguire questa operazione?"
+"Questo progetto è attualmente impostato come 'sola lettura' per proteggere i tuoi dati da modifiche non intenzionali. Vorresti rimuovere "
+"temporaneamente lo status 'sola lettura' per eseguire questa operazione?"
 
 #. AI-generated
 #: appmain/appcontroller.cpp:7073
@@ -1184,21 +1085,17 @@ msgstr "Informazioni"
 #. AI-generated
 #: appmain/appcontroller.cpp:7086
 msgid "To create a database table, please create or open a project."
-msgstr ""
-"Per creare una tabella del database, per favore crea o apri un progetto."
+msgstr "Per creare una tabella del database, per favore crea o apri un progetto."
 
 #. AI-generated
-#: appmain/appcontroller.cpp:7159 appmain/panelrelationship.cpp:157
-#: appmain/toolbars.cpp:189
+#: appmain/appcontroller.cpp:7159 appmain/panelrelationship.cpp:157 appmain/toolbars.cpp:189
 msgid "Relationships"
 msgstr "Relazioni"
 
 #. AI-generated
 #: appmain/appcontroller.cpp:7312
 msgid "A project must first be opened to display project properties."
-msgstr ""
-"Un progetto deve prima essere aperto per visualizzare le proprietà del "
-"progetto."
+msgstr "Un progetto deve prima essere aperto per visualizzare le proprietà del progetto."
 
 #. AI-generated
 #: appmain/appprint.h:100
@@ -1223,11 +1120,8 @@ msgstr "$c pagina stampata"
 
 #. AI-generated
 #: appmain/connectionpages.cpp:133
-msgid ""
-"Please enter the location of the folder to which you would like to connect."
-msgstr ""
-"Si prega di inserire la posizione della cartella a cui si desidera "
-"connettersi."
+msgid "Please enter the location of the folder to which you would like to connect."
+msgstr "Si prega di inserire la posizione della cartella a cui si desidera connettersi."
 
 #. AI-generated
 #: appmain/connectionpages.cpp:138 appmain/textdoc.cpp:964
@@ -1260,18 +1154,14 @@ msgid "Package File"
 msgstr "File del Pacchetto"
 
 #. AI-generated
-#: appmain/connectionpages.cpp:163 appmain/dlgbookmarkprops.cpp:113
-#: appmain/exportwizard.cpp:485
+#: appmain/connectionpages.cpp:163 appmain/dlgbookmarkprops.cpp:113 appmain/exportwizard.cpp:485
 msgid "Folder:"
 msgstr "Cartella:"
 
 #. AI-generated
-#: appmain/connectionpages.cpp:176 appmain/dlgconnection.cpp:536
-#: appmain/dlgprojectmgr.cpp:102 appmain/dlgprojectmgr.cpp:125
-#: appmain/dlgreportprops.cpp:197 appmain/importpages.cpp:189
-#: appmain/moduleremoveduprec.cpp:54 appmain/moduleremoveduprec.cpp:70
-#: appmain/panelmerge.cpp:101 appmain/panelsplit.cpp:171
-#: appmain/querydoc.cpp:256
+#: appmain/connectionpages.cpp:176 appmain/dlgconnection.cpp:536 appmain/dlgprojectmgr.cpp:102 appmain/dlgprojectmgr.cpp:125
+#: appmain/dlgreportprops.cpp:197 appmain/importpages.cpp:189 appmain/moduleremoveduprec.cpp:54 appmain/moduleremoveduprec.cpp:70
+#: appmain/panelmerge.cpp:101 appmain/panelsplit.cpp:171 appmain/querydoc.cpp:256
 msgid "Browse..."
 msgstr "Sfoglia..."
 
@@ -1331,26 +1221,19 @@ msgid "Compress File"
 msgstr "Comprimi File"
 
 #. AI-generated
-#: appmain/connectionpages.cpp:305 appmain/dlgconnection.cpp:937
-#: appmain/exportwizard.cpp:281 appmain/importwizard.cpp:324
+#: appmain/connectionpages.cpp:305 appmain/dlgconnection.cpp:937 appmain/exportwizard.cpp:281 appmain/importwizard.cpp:324
 msgid "A valid location needs to be specified to continue."
 msgstr "È necessario specificare una posizione valida per continuare."
 
 #. AI-generated
-#: appmain/connectionpages.cpp:306 appmain/dlgconnection.cpp:938
-#: appmain/exportwizard.cpp:282 appmain/exportwizard.cpp:295
-#: appmain/importwizard.cpp:325
+#: appmain/connectionpages.cpp:306 appmain/dlgconnection.cpp:938 appmain/exportwizard.cpp:282 appmain/exportwizard.cpp:295 appmain/importwizard.cpp:325
 msgid "Invalid Location"
 msgstr "Posizione non valida"
 
 #. AI-generated
 #: appmain/connectionpages.cpp:328
-msgid ""
-"The specified folder does not exist or is invalid.  Please choose a valid "
-"folder to continue."
-msgstr ""
-"La cartella specificata non esiste o non è valida. Si prega di scegliere una"
-" cartella valida per continuare."
+msgid "The specified folder does not exist or is invalid.  Please choose a valid folder to continue."
+msgstr "La cartella specificata non esiste o non è valida. Si prega di scegliere una cartella valida per continuare."
 
 #. AI-generated
 #: appmain/connectionpages.cpp:329
@@ -1368,22 +1251,19 @@ msgid "Choose Files"
 msgstr "Scegli file"
 
 #. AI-generated
-#: appmain/connectionpages.cpp:392 appmain/panelextensionmgr.cpp:453
-#: appmain/scriptdlg.cpp:35
+#: appmain/connectionpages.cpp:392 appmain/panelextensionmgr.cpp:453 appmain/scriptdlg.cpp:35
 msgid "Choose File"
 msgstr "Scegli file"
 
 #. AI-generated
-#: appmain/connectionpages.cpp:535 appmain/connectionpages.cpp:542
-#: appmain/dlgconnection.cpp:304 appmain/editordoc.cpp:1830
+#: appmain/connectionpages.cpp:535 appmain/connectionpages.cpp:542 appmain/dlgconnection.cpp:304 appmain/editordoc.cpp:1830
 msgid "Text Files"
 msgstr "File di testo"
 
 #. AI-generated
 #: appmain/connectionpages.cpp:713 appmain/dlgconnection.cpp:466
 msgid "Please select the ODBC data source to which you would like to connect."
-msgstr ""
-"Si prega di selezionare la fonte dati ODBC a cui si desidera connettersi."
+msgstr "Si prega di selezionare la fonte dati ODBC a cui si desidera connettersi."
 
 #. AI-generated
 #: appmain/connectionpages.cpp:727 appmain/dlgconnection.cpp:479
@@ -1391,8 +1271,7 @@ msgid "Data Source"
 msgstr "Fonte dati"
 
 #. AI-generated
-#: appmain/connectionpages.cpp:728 appmain/dlgconnection.cpp:480
-#: appmain/panelmarkmgr.cpp:167
+#: appmain/connectionpages.cpp:728 appmain/dlgconnection.cpp:480 appmain/panelmarkmgr.cpp:167
 msgid "Description"
 msgstr "Descrizione"
 
@@ -1400,8 +1279,7 @@ msgstr "Descrizione"
 #: appmain/connectionpages.cpp:848
 #, c-format
 msgid "%s is missing a required component (xdodbc) and must be reinstalled"
-msgstr ""
-"A %s manca un componente richiesto (xdodbc) e deve essere reinstallato"
+msgstr "A %s manca un componente richiesto (xdodbc) e deve essere reinstallato"
 
 #. AI-generated
 #: appmain/connectionpages.cpp:893 appmain/dlgconnection.cpp:1340
@@ -1414,12 +1292,8 @@ msgstr ""
 
 #. AI-generated
 #: appmain/connectionpages.cpp:938 appmain/dlgconnection.cpp:320
-msgid ""
-"Please enter the connection settings for the database to which you would "
-"like to connect."
-msgstr ""
-"Si prega di inserire le impostazioni di connessione per il database a cui si"
-" desidera connettersi."
+msgid "Please enter the connection settings for the database to which you would like to connect."
+msgstr "Si prega di inserire le impostazioni di connessione per il database a cui si desidera connettersi."
 
 #. AI-generated
 #: appmain/connectionpages.cpp:945 appmain/dlgconnection.cpp:355
@@ -1437,14 +1311,12 @@ msgid "Port Number:"
 msgstr "Numero di porta:"
 
 #. AI-generated
-#: appmain/connectionpages.cpp:1002 appmain/dlgconnection.cpp:397
-#: appmain/dlgpassword.cpp:36
+#: appmain/connectionpages.cpp:1002 appmain/dlgconnection.cpp:397 appmain/dlgpassword.cpp:36
 msgid "User Name:"
 msgstr "Nome utente:"
 
 #. AI-generated
-#: appmain/connectionpages.cpp:1021 appmain/dlgconnection.cpp:413
-#: appmain/dlgpassword.cpp:50
+#: appmain/connectionpages.cpp:1021 appmain/dlgconnection.cpp:413 appmain/dlgpassword.cpp:50
 msgid "Password:"
 msgstr "Password:"
 
@@ -1454,12 +1326,9 @@ msgid "Save Password"
 msgstr "Salva Password"
 
 #. AI-generated
-#: appmain/connectionpages.cpp:1191 appmain/dlgconnection.cpp:914
-#: appmain/dlgconnection.cpp:1029 appmain/importpages.cpp:398
-#: appmain/importwizard.cpp:539
+#: appmain/connectionpages.cpp:1191 appmain/dlgconnection.cpp:914 appmain/dlgconnection.cpp:1029 appmain/importpages.cpp:398 appmain/importwizard.cpp:539
 msgid "There was an error connecting to the specified database."
-msgstr ""
-"Si è verificato un errore durante la connessione al database specificato."
+msgstr "Si è verificato un errore durante la connessione al database specificato."
 
 #. AI-generated
 #: appmain/connectionpages.cpp:1206
@@ -1467,8 +1336,7 @@ msgid "Your system may be lacking the necessary Oracle client software."
 msgstr "Al tuo sistema potrebbe mancare il necessario software client Oracle."
 
 #. AI-generated
-#: appmain/connectionpages.cpp:1211 appmain/linkbar.cpp:1215
-#: appmain/linkbar.cpp:1259 appmain/linkbar.cpp:1314 appmain/linkbar.cpp:1375
+#: appmain/connectionpages.cpp:1211 appmain/linkbar.cpp:1215 appmain/linkbar.cpp:1259 appmain/linkbar.cpp:1314 appmain/linkbar.cpp:1375
 msgid "Error"
 msgstr "Errore"
 
@@ -1478,11 +1346,8 @@ msgid "<Enter page message here>"
 msgstr "<Inserisci qui il messaggio della pagina>"
 
 #. AI-generated
-#: appmain/connectionpages.cpp:1324 appmain/connectionpages.cpp:1357
-#: appmain/connectionwizard.cpp:264 appmain/dlgdatabasefile.cpp:85
-#: appmain/dlgdatabasefile.cpp:285 appmain/importwizard.cpp:103
-#: appmain/linkbar.cpp:1576 appmain/panelfileinfo.cpp:329
-#: appmain/toolbars.cpp:184
+#: appmain/connectionpages.cpp:1324 appmain/connectionpages.cpp:1357 appmain/connectionwizard.cpp:264 appmain/dlgdatabasefile.cpp:85
+#: appmain/dlgdatabasefile.cpp:285 appmain/importwizard.cpp:103 appmain/linkbar.cpp:1576 appmain/panelfileinfo.cpp:329 appmain/toolbars.cpp:184
 msgid "Save"
 msgstr "Salva"
 
@@ -1492,8 +1357,7 @@ msgid "File"
 msgstr "File"
 
 #. AI-generated
-#: appmain/connectionwizard.cpp:125 appmain/dlgconnection.cpp:272
-#: appmain/panelfileinfo.cpp:393 appmain/panelfileinfo.cpp:552
+#: appmain/connectionwizard.cpp:125 appmain/dlgconnection.cpp:272 appmain/panelfileinfo.cpp:393 appmain/panelfileinfo.cpp:552
 msgid "Folder"
 msgstr "Cartella"
 
@@ -1538,8 +1402,7 @@ msgid "Connect"
 msgstr "Connetti"
 
 #. AI-generated
-#: appmain/connectionwizard.cpp:283 appmain/exportwizard.cpp:112
-#: appmain/importwizard.cpp:118
+#: appmain/connectionwizard.cpp:283 appmain/exportwizard.cpp:112 appmain/importwizard.cpp:118
 msgid "Path Selection"
 msgstr "Selezione Percorso"
 
@@ -1549,20 +1412,17 @@ msgid "ODBC Data Source"
 msgstr "Sorgente Dati ODBC"
 
 #. AI-generated
-#: appmain/connectionwizard.cpp:285 appmain/exportwizard.cpp:114
-#: appmain/importwizard.cpp:120
+#: appmain/connectionwizard.cpp:285 appmain/exportwizard.cpp:114 appmain/importwizard.cpp:120
 msgid "Server Properties"
 msgstr "Proprietà Server"
 
 #. AI-generated
-#: appmain/connectionwizard.cpp:600 appmain/exportwizard.cpp:215
-#: appmain/importwizard.cpp:255
+#: appmain/connectionwizard.cpp:600 appmain/exportwizard.cpp:215 appmain/importwizard.cpp:255
 msgid "Please enter the username and password for the selected database."
 msgstr "Inserisci il nome utente e la password del database selezionato."
 
 #. AI-generated
-#: appmain/dbcombo.cpp:310 appmain/dbdoc.cpp:104
-#: appmain/dlgdatabasefile.cpp:264
+#: appmain/dbcombo.cpp:310 appmain/dbdoc.cpp:104 appmain/dlgdatabasefile.cpp:264
 #, c-format
 msgid "Project '%s'"
 msgstr "Progetto '%s'"
@@ -1594,7 +1454,8 @@ msgid ""
 "\n"
 msgstr ""
 "Stai per rimuovere le seguenti connessioni.\n"
-"Sei sicuro di voler continuare?"
+"Sei sicuro di voler continuare?\n"
+"\n"
 
 #. AI-generated
 #: appmain/dbdoc.cpp:1647
@@ -1604,7 +1465,8 @@ msgid ""
 "\n"
 msgstr ""
 "Stai per eliminare i seguenti elementi.\n"
-"Sei sicuro di voler continuare?"
+"Sei sicuro di voler continuare?\n"
+"\n"
 
 #. AI-generated
 #: appmain/dbdoc.cpp:1669
@@ -1619,7 +1481,8 @@ msgid ""
 "\n"
 msgstr ""
 "Stai per rimuovere la seguente connessione esterna.\n"
-"Sei sicuro?"
+"Sei sicuro?\n"
+"\n"
 
 #. AI-generated
 #: appmain/dbdoc.cpp:1722
@@ -1627,8 +1490,8 @@ msgid ""
 "One or more of the following items could not be deleted.  They may be in use.\n"
 "\n"
 msgstr ""
-"Uno o più dei seguenti elementi non può essere cancellato. Potrebbero essere"
-" in uso."
+"Uno o più dei seguenti elementi non può essere cancellato. Potrebbero essere in uso.\n"
+"\n"
 
 #. AI-generated
 #: appmain/dbdoc.cpp:1726
@@ -1638,7 +1501,8 @@ msgid ""
 "\n"
 msgstr ""
 "Uno o più dei seguenti elementi non può essere cancellato. Potrebbero essere in uso o in sola lettura,\n"
-"o potresti non avere i privilegi utente per eliminarli."
+"o potresti non avere i privilegi utente per eliminarli.\n"
+"\n"
 
 #. AI-generated
 #: appmain/dbdoc.cpp:1860 appmain/editordoc.cpp:2223
@@ -1674,13 +1538,9 @@ msgid "Select Item Location"
 msgstr "Seleziona Posizione Elemento"
 
 #. AI-generated
-#: appmain/dbdoc.cpp:2153 appmain/dlgdatabasefile.cpp:73
-#: appmain/dlgdatabasefile.cpp:287 appmain/dlgreportprops.cpp:656
-#: appmain/exprbuilder.cpp:525 appmain/exprbuilder.cpp:547
-#: appmain/exprbuilder.cpp:1210 appmain/exprbuilder.cpp:1229
-#: appmain/moduleremoveduprec.cpp:170 appmain/moduleremoveduprec.cpp:183
-#: appmain/panelmerge.cpp:221 appmain/panelsplit.cpp:348
-#: appmain/querydoc.cpp:1072 appmain/reportdoc.cpp:2790
+#: appmain/dbdoc.cpp:2153 appmain/dlgdatabasefile.cpp:73 appmain/dlgdatabasefile.cpp:287 appmain/dlgreportprops.cpp:656 appmain/exprbuilder.cpp:525
+#: appmain/exprbuilder.cpp:547 appmain/exprbuilder.cpp:1210 appmain/exprbuilder.cpp:1229 appmain/moduleremoveduprec.cpp:170
+#: appmain/moduleremoveduprec.cpp:183 appmain/panelmerge.cpp:221 appmain/panelsplit.cpp:348 appmain/querydoc.cpp:1072 appmain/reportdoc.cpp:2790
 #: appmain/reportdoc.cpp:4673 appmain/textdoc.cpp:1586
 msgid "OK"
 msgstr "OK"
@@ -1701,8 +1561,7 @@ msgid "New Table"
 msgstr "Nuova Tavola"
 
 #. AI-generated
-#: appmain/dbdoc.cpp:2303 appmain/dbdoc.cpp:2331 appmain/dbdoc.cpp:2359
-#: appmain/dbdoc.cpp:2387
+#: appmain/dbdoc.cpp:2303 appmain/dbdoc.cpp:2331 appmain/dbdoc.cpp:2359 appmain/dbdoc.cpp:2387
 msgid "A file could not be created in this folder."
 msgstr "Non è possibile creare un file in questa cartella."
 
@@ -1724,47 +1583,37 @@ msgstr "Nuovo Script"
 #. AI-generated
 #: appmain/dbdoc.cpp:2851 appmain/dbdoc.cpp:2915
 #, c-format
-msgid ""
-"An object with the name '%s' already exists.  Please choose a different "
-"name."
+msgid "An object with the name '%s' already exists.  Please choose a different name."
 msgstr "Un oggetto con il nome '%s' esiste già.  Scegli un nome diverso."
 
 #. AI-generated
 #: appmain/dbdoc.cpp:2969
-msgid ""
-"The file or table cannot be renamed right now.  The file or table may be in "
-"use or otherwise locked.   Please try again later."
+msgid "The file or table cannot be renamed right now.  The file or table may be in use or otherwise locked.   Please try again later."
 msgstr ""
-"Il file o la tabella non possono essere rinominati al momento. Il file o la "
-"tabella potrebbero essere in uso o bloccati in altro modo. Per favore "
+"Il file o la tabella non possono essere rinominati al momento. Il file o la tabella potrebbero essere in uso o bloccati in altro modo. Per favore "
 "riprova più tardi."
 
 #. AI-generated
-#: appmain/dbdoc.cpp:3068 appmain/dbdoc.cpp:3268 appmain/dbdoc.cpp:3291
-#: appmain/dbdoc.cpp:3306 appmain/dbdoc.cpp:3321 appmain/dbdoc.cpp:3337
+#: appmain/dbdoc.cpp:3068 appmain/dbdoc.cpp:3268 appmain/dbdoc.cpp:3291 appmain/dbdoc.cpp:3306 appmain/dbdoc.cpp:3321 appmain/dbdoc.cpp:3337
 #: appmain/dlgprojectmgr.cpp:824 appmain/linkbar.cpp:1090
 msgid "&Open"
 msgstr "&Apri"
 
 #. AI-generated
-#: appmain/dbdoc.cpp:3070 appmain/dbdoc.cpp:3281 appmain/dbdoc.cpp:3296
-#: appmain/dbdoc.cpp:3311 appmain/dbdoc.cpp:3327 appmain/dbdoc.cpp:3340
+#: appmain/dbdoc.cpp:3070 appmain/dbdoc.cpp:3281 appmain/dbdoc.cpp:3296 appmain/dbdoc.cpp:3311 appmain/dbdoc.cpp:3327 appmain/dbdoc.cpp:3340
 #: appmain/reportdoc.cpp:3509 appmain/tabledoc.cpp:4009
 msgid "Cu&t"
 msgstr "&Taglia"
 
 #. AI-generated
-#: appmain/dbdoc.cpp:3071 appmain/dbdoc.cpp:3282 appmain/dbdoc.cpp:3297
-#: appmain/dbdoc.cpp:3312 appmain/dbdoc.cpp:3328 appmain/dbdoc.cpp:3341
-#: appmain/querydoc.cpp:928 appmain/reportdoc.cpp:3510
-#: appmain/structuredoc.cpp:2186 appmain/tabledoc.cpp:4010
-#: appmain/tabledoc.cpp:4860 appmain/transformationdoc.cpp:2096
+#: appmain/dbdoc.cpp:3071 appmain/dbdoc.cpp:3282 appmain/dbdoc.cpp:3297 appmain/dbdoc.cpp:3312 appmain/dbdoc.cpp:3328 appmain/dbdoc.cpp:3341
+#: appmain/querydoc.cpp:928 appmain/reportdoc.cpp:3510 appmain/structuredoc.cpp:2186 appmain/tabledoc.cpp:4010 appmain/tabledoc.cpp:4860
+#: appmain/transformationdoc.cpp:2096
 msgid "&Copy"
 msgstr "&Copia"
 
 #. AI-generated
-#: appmain/dbdoc.cpp:3075 appmain/dbdoc.cpp:3089 appmain/dbdoc.cpp:3149
-#: appmain/dbdoc.cpp:3172 appmain/dbdoc.cpp:3302 appmain/dbdoc.cpp:3317
+#: appmain/dbdoc.cpp:3075 appmain/dbdoc.cpp:3089 appmain/dbdoc.cpp:3149 appmain/dbdoc.cpp:3172 appmain/dbdoc.cpp:3302 appmain/dbdoc.cpp:3317
 #: appmain/dbdoc.cpp:3333 appmain/dbdoc.cpp:3346 appmain/linkbar.cpp:1106
 msgid "Properti&es"
 msgstr "&Proprietà"
@@ -1795,8 +1644,7 @@ msgid "&Switch Project"
 msgstr "&Cambia Progetto"
 
 #. AI-generated
-#: appmain/dbdoc.cpp:3147 appmain/dbdoc.cpp:3167 appmain/dbdoc.cpp:3187
-#: appmain/reportdoc.cpp:3511 appmain/tabledoc.cpp:4011
+#: appmain/dbdoc.cpp:3147 appmain/dbdoc.cpp:3167 appmain/dbdoc.cpp:3187 appmain/reportdoc.cpp:3511 appmain/tabledoc.cpp:4011
 msgid "&Paste"
 msgstr "&Incolla"
 
@@ -1821,10 +1669,8 @@ msgid "Edit &Connection..."
 msgstr "Modifica &Connessione..."
 
 #. AI-generated
-#: appmain/dbdoc.cpp:3170 appmain/dbdoc.cpp:3190 appmain/dbdoc.cpp:3285
-#: appmain/dbdoc.cpp:3300 appmain/dbdoc.cpp:3315 appmain/dbdoc.cpp:3331
-#: appmain/dbdoc.cpp:3344 appmain/dlgprojectmgr.cpp:825
-#: appmain/linkbar.cpp:1100
+#: appmain/dbdoc.cpp:3170 appmain/dbdoc.cpp:3190 appmain/dbdoc.cpp:3285 appmain/dbdoc.cpp:3300 appmain/dbdoc.cpp:3315 appmain/dbdoc.cpp:3331
+#: appmain/dbdoc.cpp:3344 appmain/dlgprojectmgr.cpp:825 appmain/linkbar.cpp:1100
 msgid "&Rename"
 msgstr "&Rinomina"
 
@@ -1859,8 +1705,7 @@ msgid "&Edit Structure"
 msgstr "&Modifica Struttura"
 
 #. AI-generated
-#: appmain/dbdoc.cpp:3277 appmain/dbdoc.cpp:3292 appmain/dbdoc.cpp:3307
-#: appmain/dbdoc.cpp:3322 appmain/dbdoc.cpp:3338
+#: appmain/dbdoc.cpp:3277 appmain/dbdoc.cpp:3292 appmain/dbdoc.cpp:3307 appmain/dbdoc.cpp:3322 appmain/dbdoc.cpp:3338
 msgid "Open &With"
 msgstr "Apri &Con"
 
@@ -1914,12 +1759,8 @@ msgstr "Aiuto Attivazione Software"
 #. AI-generated
 #: appmain/dlgauth.cpp:102
 #, c-format
-msgid ""
-"Thank you for installing %s.  Prior to working with the software, it must "
-"first be activated."
-msgstr ""
-"Grazie per aver installato %s.  Prima di lavorare con il software, deve "
-"prima essere attivato."
+msgid "Thank you for installing %s.  Prior to working with the software, it must first be activated."
+msgstr "Grazie per aver installato %s.  Prima di lavorare con il software, deve prima essere attivato."
 
 #. AI-generated
 #: appmain/dlgauth.cpp:104
@@ -1929,17 +1770,13 @@ msgstr "Attiva Automaticamente"
 #. AI-generated
 #: appmain/dlgauth.cpp:105
 msgid ""
-"Activating automatically over the Internet is the easiest way to get your "
-"software up and running.  Simply enter the serial code (provided in your "
-"email confirmation) and then click the OK button.  Your software will be "
-"activated over the Internet and you'll be able to begin using the software "
+"Activating automatically over the Internet is the easiest way to get your software up and running.  Simply enter the serial code (provided in your "
+"email confirmation) and then click the OK button.  Your software will be activated over the Internet and you'll be able to begin using the software "
 "immediately."
 msgstr ""
-"L'attivazione automatica via Internet è il modo più semplice per far "
-"funzionare il tuo software.  Inserisci semplicemente il codice seriale "
-"(fornito nella tua email di conferma) e poi clicca il pulsante OK.  Il tuo "
-"software sarà attivato via Internet e sarai in grado di iniziare ad "
-"utilizzare il software immediatamente."
+"L'attivazione automatica via Internet è il modo più semplice per far funzionare il tuo software.  Inserisci semplicemente il codice seriale (fornito "
+"nella tua email di conferma) e poi clicca il pulsante OK.  Il tuo software sarà attivato via Internet e sarai in grado di iniziare ad utilizzare il "
+"software immediatamente."
 
 #. AI-generated
 #: appmain/dlgauth.cpp:106
@@ -1950,28 +1787,21 @@ msgstr "Attiva Manualmente"
 #: appmain/dlgauth.cpp:107
 #, c-format
 msgid ""
-"Sometimes it is difficult to activate automatically, which is often caused "
-"by restrictions set up by corporate firewalls.  If you find yourself in this"
-" situation, you can still activate %s using a manually-generated activation "
-"code."
+"Sometimes it is difficult to activate automatically, which is often caused by restrictions set up by corporate firewalls.  If you find yourself in this "
+"situation, you can still activate %s using a manually-generated activation code."
 msgstr ""
-"A volte è difficile attivare automaticamente, il che è spesso causato da "
-"restrizioni impostate dai firewall aziendali.  Se ti trovi in questa "
-"situazione, puoi comunque attivare %s utilizzando un codice di attivazione "
-"generato manualmente."
+"A volte è difficile attivare automaticamente, il che è spesso causato da restrizioni impostate dai firewall aziendali.  Se ti trovi in questa "
+"situazione, puoi comunque attivare %s utilizzando un codice di attivazione generato manualmente."
 
 #. AI-generated
 #: appmain/dlgauth.cpp:109
 #, c-format
 msgid ""
-"To obtain an Activation Code manually, login to your online account (%s) and"
-" follow the instructions provided.  Once you have your activation code, "
+"To obtain an Activation Code manually, login to your online account (%s) and follow the instructions provided.  Once you have your activation code, "
 "enter it and click the OK button to begin using the software."
 msgstr ""
-"Per ottenere un Codice di Attivazione manualmente, accedi al tuo account "
-"online (%s) e segui le istruzioni fornite.  Una volta ottenuto il tuo codice"
-" di attivazione, inseriscilo e clicca il pulsante OK per iniziare a "
-"utilizzare il software."
+"Per ottenere un Codice di Attivazione manualmente, accedi al tuo account online (%s) e segui le istruzioni fornite.  Una volta ottenuto il tuo codice "
+"di attivazione, inseriscilo e clicca il pulsante OK per iniziare a utilizzare il software."
 
 #. AI-generated
 #: appmain/dlgauth.cpp:111
@@ -1981,12 +1811,8 @@ msgstr "Ulteriore Aiuto"
 #. AI-generated
 #: appmain/dlgauth.cpp:112
 #, c-format
-msgid ""
-"If you have any questions or need any help activating %s, please contact our"
-" support team at %s or %s."
-msgstr ""
-"Se hai qualsiasi domanda o hai bisogno di aiuto per attivare %s, contatta il"
-" nostro team di supporto a %s o %s."
+msgid "If you have any questions or need any help activating %s, please contact our support team at %s or %s."
+msgstr "Se hai qualsiasi domanda o hai bisogno di aiuto per attivare %s, contatta il nostro team di supporto a %s o %s."
 
 #. AI-generated
 #: appmain/dlgauth.cpp:232
@@ -2027,25 +1853,17 @@ msgstr "Stato"
 #: appmain/dlgauth.cpp:343
 #, c-format
 msgid ""
-"To continue using %s beyond the first %d day(s), a serial number is "
-"required.  You may obtain this number by purchasing %s; please contact %s "
-"for more details.  For help activating this software, please click the Help "
-"button below."
+"To continue using %s beyond the first %d day(s), a serial number is required.  You may obtain this number by purchasing %s; please contact %s for more "
+"details.  For help activating this software, please click the Help button below."
 msgstr ""
-"Per continuare a utilizzare %s oltre i primi %d giorni, è necessario un "
-"numero di serie.  Puoi ottenere questo numero acquistando %s; contatta %s "
-"per ulteriori dettagli.  Per aiuto nell'attivazione di questo software, fai "
-"clic sul pulsante Aiuto qui sotto."
+"Per continuare a utilizzare %s oltre i primi %d giorni, è necessario un numero di serie.  Puoi ottenere questo numero acquistando %s; contatta %s per "
+"ulteriori dettagli.  Per aiuto nell'attivazione di questo software, fai clic sul pulsante Aiuto qui sotto."
 
 #. AI-generated
 #: appmain/dlgauth.cpp:348
 #, c-format
-msgid ""
-"A serial number is required to activate the software; for further help, "
-"please contact us at %s"
-msgstr ""
-"Per attivare il software è necessario un numero di serie; per ulteriori "
-"informazioni, contattaci a %s"
+msgid "A serial number is required to activate the software; for further help, please contact us at %s"
+msgstr "Per attivare il software è necessario un numero di serie; per ulteriori informazioni, contattaci a %s"
 
 #. AI-generated
 #: appmain/dlgauth.cpp:410
@@ -2056,85 +1874,61 @@ msgstr "Numero di Serie"
 #: appmain/dlgauth.cpp:459
 #, c-format
 msgid ""
-"The license server could not be contacted.  Your computer may not have the "
-"necessary Internet access or may be behind a firewall or proxy server.  "
-"Please try again and, if activation still does not work, contact %s for "
-"further information."
+"The license server could not be contacted.  Your computer may not have the necessary Internet access or may be behind a firewall or proxy server.  "
+"Please try again and, if activation still does not work, contact %s for further information."
 msgstr ""
-"Impossibile contattare il server di licenze.  Il tuo computer potrebbe non "
-"avere l'accesso a Internet necessario o potrebbe essere dietro un firewall o"
-" un proxy server.  Si prega di riprovare e, se l'attivazione ancora non "
-"funziona, contatta %s per ulteriori informazioni."
+"Impossibile contattare il server di licenze.  Il tuo computer potrebbe non avere l'accesso a Internet necessario o potrebbe essere dietro un firewall o "
+"un proxy server.  Si prega di riprovare e, se l'attivazione ancora non funziona, contatta %s per ulteriori informazioni."
 
 #. AI-generated
 #: appmain/dlgauth.cpp:470
-msgid ""
-"Your computer's clock is set to the wrong date or time.  Please set your "
-"computer's clock to the correct date and time and try again."
+msgid "Your computer's clock is set to the wrong date or time.  Please set your computer's clock to the correct date and time and try again."
 msgstr ""
-"L'orologio del tuo computer è impostato sulla data o sull'ora sbagliate.  Si"
-" prega di impostare l'orologio del computer sulla data e sull'ora corrette e"
-" provare di nuovo."
+"L'orologio del tuo computer è impostato sulla data o sull'ora sbagliate.  Si prega di impostare l'orologio del computer sulla data e sull'ora corrette "
+"e provare di nuovo."
 
 #. AI-generated
 #: appmain/dlgauth.cpp:480
 #, c-format
 msgid ""
-"%s could not be activated with the serial number provided.  Please check to "
-"make sure the serial number matches the one you were given and try again.  "
+"%s could not be activated with the serial number provided.  Please check to make sure the serial number matches the one you were given and try again.  "
 "If activation still does not work, contact %s for further information."
 msgstr ""
-"%s non può essere attivato con il numero di serie fornito.  Si prega di "
-"verificare che il numero di serie corrisponda a quello che ti è stato dato e"
-" prova di nuovo.  Se l'attivazione ancora non funziona, contatta %s per "
-"ulteriori informazioni."
+"%s non può essere attivato con il numero di serie fornito.  Si prega di verificare che il numero di serie corrisponda a quello che ti è stato dato e "
+"prova di nuovo.  Se l'attivazione ancora non funziona, contatta %s per ulteriori informazioni."
 
 #. AI-generated
 #: appmain/dlgauth.cpp:492
 #, c-format
 msgid ""
-"The serial number provided has either expired or is invalid.  Please check "
-"to make sure the serial number matches the one you were given and try again."
-"  If activation still does not work, contact %s for further information."
+"The serial number provided has either expired or is invalid.  Please check to make sure the serial number matches the one you were given and try "
+"again.  If activation still does not work, contact %s for further information."
 msgstr ""
-"Il numero di serie fornito è scaduto o non valido.  Si prega di verificare "
-"che il numero di serie corrisponda a quello che ti è stato dato e prova di "
-"nuovo.  Se l'attivazione ancora non funziona, contatta %s per ulteriori "
-"informazioni."
+"Il numero di serie fornito è scaduto o non valido.  Si prega di verificare che il numero di serie corrisponda a quello che ti è stato dato e prova di "
+"nuovo.  Se l'attivazione ancora non funziona, contatta %s per ulteriori informazioni."
 
 #. AI-generated
 #: appmain/dlgauth.cpp:504
 #, c-format
-msgid ""
-"The serial number entered is not associated with this product.  Please "
-"contact %s or your system administrator for more information."
+msgid "The serial number entered is not associated with this product.  Please contact %s or your system administrator for more information."
 msgstr ""
-"Il numero di serie inserito non è associato a questo prodotto.  Si prega di "
-"contattare %s o l'amministratore di sistema per ulteriori informazioni."
+"Il numero di serie inserito non è associato a questo prodotto.  Si prega di contattare %s o l'amministratore di sistema per ulteriori informazioni."
 
 #. AI-generated
 #: appmain/dlgauth.cpp:517
 #, c-format
-msgid ""
-"The maximum number of installations for this license has been reached.  "
-"Please contact %s for more information."
-msgstr ""
-"Il numero massimo di installazioni per questa licenza è stato raggiunto. "
-"Contatta %s per maggiori informazioni."
+msgid "The maximum number of installations for this license has been reached.  Please contact %s for more information."
+msgstr "Il numero massimo di installazioni per questa licenza è stato raggiunto. Contatta %s per maggiori informazioni."
 
 #. AI-generated
 #: appmain/dlgauth.cpp:620
 #, c-format
 msgid ""
-"%s could not be activated with the activation code provided.  Please check "
-"to make sure the activation code matches the one you were given and try "
-"again.  If activation still does not work, contact %s for further "
-"information."
+"%s could not be activated with the activation code provided.  Please check to make sure the activation code matches the one you were given and try "
+"again.  If activation still does not work, contact %s for further information."
 msgstr ""
-"%s non può essere attivato con il codice di attivazione fornito. Si prega di"
-" verificare che il codice di attivazione corrisponda a quello ricevuto e "
-"riprovare. Se l'attivazione non funziona ancora, contatta %s per ulteriori "
-"informazioni."
+"%s non può essere attivato con il codice di attivazione fornito. Si prega di verificare che il codice di attivazione corrisponda a quello ricevuto e "
+"riprovare. Se l'attivazione non funziona ancora, contatta %s per ulteriori informazioni."
 
 #. AI-generated
 #: appmain/dlgauth.cpp:641
@@ -2152,8 +1946,7 @@ msgid "Bookmark Properties"
 msgstr "Proprietà del segnalibro"
 
 #. AI-generated
-#: appmain/dlgbookmarkprops.cpp:95 appmain/dlgdatabasefile.cpp:161
-#: appmain/dlgprojectmgr.cpp:90 appmain/panelcolprops.cpp:128
+#: appmain/dlgbookmarkprops.cpp:95 appmain/dlgdatabasefile.cpp:161 appmain/dlgprojectmgr.cpp:90 appmain/panelcolprops.cpp:128
 #: appmain/paneldatabaseinfo.cpp:54
 msgid "Name:"
 msgstr "Nome:"
@@ -2209,21 +2002,18 @@ msgid "Import to:"
 msgstr "Importa in:"
 
 #. AI-generated
-#: appmain/dlgconnection.cpp:557 appmain/exportpages.cpp:108
-#: appmain/importpages.cpp:150
+#: appmain/dlgconnection.cpp:557 appmain/exportpages.cpp:108 appmain/importpages.cpp:150
 msgid "Source Name"
 msgstr "Nome sorgente"
 
 #. AI-generated
-#: appmain/dlgconnection.cpp:558 appmain/exportpages.cpp:109
-#: appmain/importpages.cpp:151
+#: appmain/dlgconnection.cpp:558 appmain/exportpages.cpp:109 appmain/importpages.cpp:151
 msgid "Destination Name"
 msgstr "Nome destinazione"
 
 #. AI-generated
-#: appmain/dlgconnection.cpp:559 appmain/exportpages.cpp:110
-#: appmain/exportwizard.cpp:309 appmain/importpages.cpp:152
-#: appmain/panelmerge.cpp:70 appmain/panelmerge.cpp:122
+#: appmain/dlgconnection.cpp:559 appmain/exportpages.cpp:110 appmain/exportwizard.cpp:309 appmain/importpages.cpp:152 appmain/panelmerge.cpp:70
+#: appmain/panelmerge.cpp:122
 msgid "Append"
 msgstr "Aggiungi"
 
@@ -2238,41 +2028,32 @@ msgid "Select None"
 msgstr "Nessuna selezione"
 
 #. AI-generated
-#: appmain/dlgconnection.cpp:620 appmain/exportpages.cpp:620
-#: appmain/importpages.cpp:778
+#: appmain/dlgconnection.cpp:620 appmain/exportpages.cpp:620 appmain/importpages.cpp:778
 msgid "Field Delimiters"
 msgstr "Delimitatori di campo"
 
 #. AI-generated
-#: appmain/dlgconnection.cpp:624 appmain/exportpages.cpp:624
-#: appmain/importpages.cpp:782
+#: appmain/dlgconnection.cpp:624 appmain/exportpages.cpp:624 appmain/importpages.cpp:782
 msgid "Text Qualifier"
 msgstr "Qualificatore di testo"
 
 #. AI-generated
 #: appmain/dlgconnection.cpp:628 appmain/importpages.cpp:786
-msgid ""
-"Modify the settings below to determine how the text-delimited files should "
-"be read."
-msgstr ""
-"Modifica le impostazioni sottostanti per determinare come devono essere "
-"letti i file delimitati da testo."
+msgid "Modify the settings below to determine how the text-delimited files should be read."
+msgstr "Modifica le impostazioni sottostanti per determinare come devono essere letti i file delimitati da testo."
 
 #. AI-generated
-#: appmain/dlgconnection.cpp:636 appmain/exportpages.cpp:636
-#: appmain/importpages.cpp:794
+#: appmain/dlgconnection.cpp:636 appmain/exportpages.cpp:636 appmain/importpages.cpp:794
 msgid "Comma"
 msgstr "Virgola"
 
 #. AI-generated
-#: appmain/dlgconnection.cpp:641 appmain/exportpages.cpp:641
-#: appmain/importpages.cpp:799 appmain/textdoc.cpp:273
+#: appmain/dlgconnection.cpp:641 appmain/exportpages.cpp:641 appmain/importpages.cpp:799 appmain/textdoc.cpp:273
 msgid "Tab "
 msgstr "Tab"
 
 #. AI-generated
-#: appmain/dlgconnection.cpp:642 appmain/exportpages.cpp:642
-#: appmain/importpages.cpp:800
+#: appmain/dlgconnection.cpp:642 appmain/exportpages.cpp:642 appmain/importpages.cpp:800
 msgid "Semicolon"
 msgstr "Punto e virgola"
 
@@ -2282,42 +2063,34 @@ msgid "Pipe"
 msgstr "Pipe"
 
 #. AI-generated
-#: appmain/dlgconnection.cpp:644 appmain/exportpages.cpp:643
-#: appmain/importpages.cpp:802
+#: appmain/dlgconnection.cpp:644 appmain/exportpages.cpp:643 appmain/importpages.cpp:802
 msgid "Space"
 msgstr "Spazio"
 
 #. AI-generated
-#: appmain/dlgconnection.cpp:645 appmain/dlgconnection.cpp:687
-#: appmain/exportpages.cpp:644 appmain/exportpages.cpp:684
-#: appmain/importpages.cpp:803 appmain/importpages.cpp:845
-#: appmain/textdoc.cpp:277 appmain/textdoc.cpp:282
-#: appmain/transformationdoc.cpp:480
+#: appmain/dlgconnection.cpp:645 appmain/dlgconnection.cpp:687 appmain/exportpages.cpp:644 appmain/exportpages.cpp:684 appmain/importpages.cpp:803
+#: appmain/importpages.cpp:845 appmain/textdoc.cpp:277 appmain/textdoc.cpp:282 appmain/transformationdoc.cpp:480
 msgid "None"
 msgstr "Nessuno"
 
 #. AI-generated
-#: appmain/dlgconnection.cpp:646 appmain/dlgconnection.cpp:688
-#: appmain/exportpages.cpp:645 appmain/exportpages.cpp:685
-#: appmain/importpages.cpp:804 appmain/importpages.cpp:846
+#: appmain/dlgconnection.cpp:646 appmain/dlgconnection.cpp:688 appmain/exportpages.cpp:645 appmain/exportpages.cpp:685 appmain/importpages.cpp:804
+#: appmain/importpages.cpp:846
 msgid "Other:"
 msgstr "Altro:"
 
 #. AI-generated
-#: appmain/dlgconnection.cpp:681 appmain/exportpages.cpp:678
-#: appmain/importpages.cpp:839 appmain/textdoc.cpp:280
+#: appmain/dlgconnection.cpp:681 appmain/exportpages.cpp:678 appmain/importpages.cpp:839 appmain/textdoc.cpp:280
 msgid "Quotation Marks (\")"
 msgstr "Virgolette (\")"
 
 #. AI-generated
-#: appmain/dlgconnection.cpp:686 appmain/exportpages.cpp:683
-#: appmain/importpages.cpp:844 appmain/textdoc.cpp:281
+#: appmain/dlgconnection.cpp:686 appmain/exportpages.cpp:683 appmain/importpages.cpp:844 appmain/textdoc.cpp:281
 msgid "Single Quote (')"
 msgstr "Apostrofo (')"
 
 #. AI-generated
-#: appmain/dlgconnection.cpp:716 appmain/exportpages.cpp:713
-#: appmain/importpages.cpp:874 appmain/textdoc.cpp:1101
+#: appmain/dlgconnection.cpp:716 appmain/exportpages.cpp:713 appmain/importpages.cpp:874 appmain/textdoc.cpp:1101
 msgid "First row contains field names"
 msgstr "La prima riga contiene i nomi dei campi"
 
@@ -2344,8 +2117,7 @@ msgstr "Connessione non riuscita"
 #. AI-generated
 #: appmain/dlgconnection.cpp:963
 msgid "There was an error connecting to the specified package file."
-msgstr ""
-"Si è verificato un errore nel collegamento al file di pacchetto specificato."
+msgstr "Si è verificato un errore nel collegamento al file di pacchetto specificato."
 
 #. AI-generated
 #: appmain/dlgconnection.cpp:967
@@ -2354,12 +2126,8 @@ msgstr "Allarme"
 
 #. AI-generated
 #: appmain/dlgconnection.cpp:1296
-msgid ""
-"This software is missing a required component (xdodbc) and must be "
-"reinstalled"
-msgstr ""
-"A questo software manca un componente richiesto (xdodbc) e deve essere "
-"reinstallato"
+msgid "This software is missing a required component (xdodbc) and must be reinstalled"
+msgstr "A questo software manca un componente richiesto (xdodbc) e deve essere reinstallato"
 
 #. AI-generated
 #: appmain/dlgcustomprompt.cpp:47
@@ -2377,18 +2145,14 @@ msgid "Select Folder"
 msgstr "Seleziona cartella"
 
 #. AI-generated
-#: appmain/dlgdatabasefile.cpp:78 appmain/dlgdatabasefile.cpp:79
-#: appmain/dlgdatabasefile.cpp:283 appmain/linkbar.cpp:1575
-#: appmain/toolbars.cpp:183
+#: appmain/dlgdatabasefile.cpp:78 appmain/dlgdatabasefile.cpp:79 appmain/dlgdatabasefile.cpp:283 appmain/linkbar.cpp:1575 appmain/toolbars.cpp:183
 msgid "Open"
 msgstr "Apri"
 
 #. AI-generated
-#: appmain/dlgdatabasefile.cpp:84 appmain/editordoc.cpp:1838
-#: appmain/editordoc.cpp:1865 appmain/querydoc.cpp:2138
-#: appmain/querydoc.cpp:2207 appmain/reportdoc.cpp:654
-#: appmain/reportdoc.cpp:4305 appmain/structuredoc.cpp:1365
-#: appmain/tabledoc.cpp:1658 appmain/textdoc.cpp:1331 appmain/webdoc.cpp:663
+#: appmain/dlgdatabasefile.cpp:84 appmain/editordoc.cpp:1838 appmain/editordoc.cpp:1865 appmain/querydoc.cpp:2138 appmain/querydoc.cpp:2207
+#: appmain/reportdoc.cpp:654 appmain/reportdoc.cpp:4305 appmain/structuredoc.cpp:1365 appmain/tabledoc.cpp:1658 appmain/textdoc.cpp:1331
+#: appmain/webdoc.cpp:663
 msgid "Save As"
 msgstr "Salva con nome"
 
@@ -2399,21 +2163,13 @@ msgstr "Salva in:"
 
 #. AI-generated
 #: appmain/dlgdatabasefile.cpp:416 appmain/util.cpp:1754
-msgid ""
-"The specified output path is invalid because it does not specify a valid "
-"folder."
-msgstr ""
-"Il percorso di output specificato non è valido perché non specifica una "
-"cartella valida."
+msgid "The specified output path is invalid because it does not specify a valid folder."
+msgstr "Il percorso di output specificato non è valido perché non specifica una cartella valida."
 
 #. AI-generated
 #: appmain/dlgdatabasefile.cpp:444
-msgid ""
-"The file name you have entered is a folder. A folder is not valid for this "
-"operation."
-msgstr ""
-"Il nome del file che hai inserito è una cartella. Una cartella non è valida "
-"per questa operazione."
+msgid "The file name you have entered is a folder. A folder is not valid for this operation."
+msgstr "Il nome del file che hai inserito è una cartella. Una cartella non è valida per questa operazione."
 
 #. AI-generated
 #: appmain/dlgdatabasefile.cpp:454
@@ -2422,18 +2178,12 @@ msgstr "Il nome del file che hai inserito non esiste."
 
 #. AI-generated
 #: appmain/dlgdatabasefile.cpp:468
-msgid ""
-"The file name you have entered is a folder, and is not a valid target "
-"location."
-msgstr ""
-"Il nome del file che hai inserito è una cartella e non è una posizione di "
-"destinazione valida."
+msgid "The file name you have entered is a folder, and is not a valid target location."
+msgstr "Il nome del file che hai inserito è una cartella e non è una posizione di destinazione valida."
 
 #. AI-generated
 #: appmain/dlgdatabasefile.cpp:477
-msgid ""
-"The file name you have entered already exists.  Would you like to overwrite "
-"it?"
+msgid "The file name you have entered already exists.  Would you like to overwrite it?"
 msgstr "Il nome del file che hai inserito esiste già. Vuoi sovrascriverlo?"
 
 #. AI-generated
@@ -2527,8 +2277,7 @@ msgid "New Project"
 msgstr "Nuovo Progetto"
 
 #. AI-generated
-#: appmain/dlgprojectmgr.cpp:98 appmain/dlgprojectmgr.cpp:121
-#: appmain/paneldatabaseinfo.cpp:77 appmain/paneloptions.cpp:279
+#: appmain/dlgprojectmgr.cpp:98 appmain/dlgprojectmgr.cpp:121 appmain/paneldatabaseinfo.cpp:77 appmain/paneloptions.cpp:279
 msgid "Location:"
 msgstr "Posizione:"
 
@@ -2539,12 +2288,8 @@ msgstr "Aggiungi un progetto esistente alla lista dei progetti"
 
 #. AI-generated
 #: appmain/dlgprojectmgr.cpp:147
-msgid ""
-"Please select whether you would like to create a new project or add an "
-"existing project to the project manager list."
-msgstr ""
-"Seleziona se desideri creare un nuovo progetto o aggiungi un progetto "
-"esistente alla lista dei progetti."
+msgid "Please select whether you would like to create a new project or add an existing project to the project manager list."
+msgstr "Seleziona se desideri creare un nuovo progetto o aggiungi un progetto esistente alla lista dei progetti."
 
 #. AI-generated
 #: appmain/dlgprojectmgr.cpp:266 appmain/dlgprojectmgr.cpp:283
@@ -2553,47 +2298,28 @@ msgstr "Seleziona una cartella del progetto"
 
 #. AI-generated
 #: appmain/dlgprojectmgr.cpp:320
-msgid ""
-"The specified location is empty.  Please enter the location of the project "
-"you would like to add."
-msgstr ""
-"La posizione specificata è vuota. Inserisci la posizione del progetto che "
-"desideri aggiungere."
+msgid "The specified location is empty.  Please enter the location of the project you would like to add."
+msgstr "La posizione specificata è vuota. Inserisci la posizione del progetto che desideri aggiungere."
 
 #. AI-generated
 #: appmain/dlgprojectmgr.cpp:337
-msgid ""
-"The specified folder or file does not contain a valid database project."
-msgstr ""
-"La cartella o il file specificato non contengono un progetto di database "
-"valido."
+msgid "The specified folder or file does not contain a valid database project."
+msgstr "La cartella o il file specificato non contengono un progetto di database valido."
 
 #. AI-generated
 #: appmain/dlgprojectmgr.cpp:386
-msgid ""
-"The specified project already exists in the project manager list. Would you "
-"like to add it anyway?"
-msgstr ""
-"Il progetto specificato esiste già nella lista dei progetti. Vuoi "
-"aggiungerlo comunque?"
+msgid "The specified project already exists in the project manager list. Would you like to add it anyway?"
+msgstr "Il progetto specificato esiste già nella lista dei progetti. Vuoi aggiungerlo comunque?"
 
 #. AI-generated
 #: appmain/dlgprojectmgr.cpp:417
-msgid ""
-"The specified location is empty.  Please enter the location of the project "
-"you would like to create."
-msgstr ""
-"La posizione specificata è vuota. Inserisci la posizione del progetto che "
-"desideri creare."
+msgid "The specified location is empty.  Please enter the location of the project you would like to create."
+msgstr "La posizione specificata è vuota. Inserisci la posizione del progetto che desideri creare."
 
 #. AI-generated
 #: appmain/dlgprojectmgr.cpp:432 appmain/dlgprojectmgr.cpp:441
-msgid ""
-"The specified folder could not be created.  Please check to make sure the "
-"specified path is valid."
-msgstr ""
-"Non è stato possibile creare la cartella specificata. Verifica che il "
-"percorso specificato sia valido."
+msgid "The specified folder could not be created.  Please check to make sure the specified path is valid."
+msgstr "Non è stato possibile creare la cartella specificata. Verifica che il percorso specificato sia valido."
 
 #. AI-generated
 #: appmain/dlgprojectmgr.cpp:458
@@ -2603,20 +2329,13 @@ msgstr "La cartella specificata contiene già un progetto."
 #. AI-generated
 #: appmain/dlgprojectmgr.cpp:485
 msgid ""
-"The specified folder is not empty.  It is highly recommended that an empty "
-"folder is used when creating a new project.  Would you like to continue?"
-msgstr ""
-"La cartella specificata non è vuota. Si consiglia di utilizzare una cartella"
-" vuota quando si crea un nuovo progetto. Vuoi continuare?"
+"The specified folder is not empty.  It is highly recommended that an empty folder is used when creating a new project.  Would you like to continue?"
+msgstr "La cartella specificata non è vuota. Si consiglia di utilizzare una cartella vuota quando si crea un nuovo progetto. Vuoi continuare?"
 
 #. AI-generated
 #: appmain/dlgprojectmgr.cpp:500
-msgid ""
-"An error occurred while attempting to create the project.  The specified "
-"location is probably inaccessible or invalid."
-msgstr ""
-"Si è verificato un errore durante il tentativo di creare il progetto. La "
-"posizione specificata è probabilmente inaccessibile o non valida."
+msgid "An error occurred while attempting to create the project.  The specified location is probably inaccessible or invalid."
+msgstr "Si è verificato un errore durante il tentativo di creare il progetto. La posizione specificata è probabilmente inaccessibile o non valida."
 
 #. AI-generated
 #: appmain/dlgprojectmgr.cpp:595
@@ -2629,21 +2348,18 @@ msgid "Project Name"
 msgstr "Nome del Progetto"
 
 #. AI-generated
-#: appmain/dlgprojectmgr.cpp:611 appmain/fieldlistcontrol.cpp:64
-#: appmain/panelfileinfo.cpp:307 appmain/structuredoc.cpp:587
+#: appmain/dlgprojectmgr.cpp:611 appmain/fieldlistcontrol.cpp:64 appmain/panelfileinfo.cpp:307 appmain/structuredoc.cpp:587
 #: appmain/transformationdoc.cpp:540 kcl/filepanel.cpp:123
 msgid "Type"
 msgstr "Tipo"
 
 #. AI-generated
-#: appmain/dlgprojectmgr.cpp:612 appmain/toolbars.cpp:163
-#: appmain/toolbars.cpp:224
+#: appmain/dlgprojectmgr.cpp:612 appmain/toolbars.cpp:163 appmain/toolbars.cpp:224
 msgid "Location"
 msgstr "Posizione"
 
 #. AI-generated
-#: appmain/dlgprojectmgr.cpp:613 appmain/panelfileinfo.cpp:308
-#: appmain/reportdoc.cpp:3626 appmain/reportdoc.cpp:3647 kcl/filepanel.cpp:121
+#: appmain/dlgprojectmgr.cpp:613 appmain/panelfileinfo.cpp:308 appmain/reportdoc.cpp:3626 appmain/reportdoc.cpp:3647 kcl/filepanel.cpp:121
 msgid "Size"
 msgstr "Dimensione"
 
@@ -2663,11 +2379,9 @@ msgid "Open Project"
 msgstr "Apri Progetto"
 
 #. AI-generated
-#: appmain/dlgprojectmgr.cpp:763 appmain/editordoc.cpp:1098
-#: appmain/querydoc.cpp:1421 appmain/reportdoc.cpp:2543 appmain/sqldoc.cpp:226
-#: appmain/structuredoc.cpp:1117 appmain/tabledoc.cpp:1739
-#: appmain/tabledoc.cpp:2748 appmain/tabledoc.cpp:2763
-#: appmain/textdoc.cpp:1570 appmain/webdoc.cpp:412 appmain/webdoc.cpp:1035
+#: appmain/dlgprojectmgr.cpp:763 appmain/editordoc.cpp:1098 appmain/querydoc.cpp:1421 appmain/reportdoc.cpp:2543 appmain/sqldoc.cpp:226
+#: appmain/structuredoc.cpp:1117 appmain/tabledoc.cpp:1739 appmain/tabledoc.cpp:2748 appmain/tabledoc.cpp:2763 appmain/textdoc.cpp:1570
+#: appmain/webdoc.cpp:412 appmain/webdoc.cpp:1035
 msgid "(Untitled)"
 msgstr "(Senza titolo)"
 
@@ -2686,9 +2400,7 @@ msgstr "Rete"
 msgid ""
 "Click on the 'Add Project...' button\n"
 "below to create a new project"
-msgstr ""
-"Clicca sul pulsante 'Aggiungi Progetto...' sotto per creare un nuovo "
-"progetto"
+msgstr "Clicca sul pulsante 'Aggiungi Progetto...' sotto per creare un nuovo progetto"
 
 #. AI-generated
 #: appmain/dlgprojectmgr.cpp:827
@@ -2703,38 +2415,25 @@ msgstr "Mostra in Esplora risorse"
 #. AI-generated
 #: appmain/dlgprojectmgr.cpp:886
 #, c-format
-msgid ""
-"A project must be selected in order to run %s.  Are you sure you would like "
-"to exit %s?"
-msgstr ""
-"Un progetto deve essere selezionato per eseguire %s. Sei sicuro di voler "
-"uscire da %s?"
+msgid "A project must be selected in order to run %s.  Are you sure you would like to exit %s?"
+msgstr "Un progetto deve essere selezionato per eseguire %s. Sei sicuro di voler uscire da %s?"
 
 #. AI-generated
 #: appmain/dlgprojectmgr.cpp:1055
-msgid ""
-"The selected project is currently open.  Please close the project before "
-"deleting it."
-msgstr ""
-"Il progetto selezionato è attualmente aperto. Chiudi il progetto prima di "
-"eliminarlo."
+msgid "The selected project is currently open.  Please close the project before deleting it."
+msgstr "Il progetto selezionato è attualmente aperto. Chiudi il progetto prima di eliminarlo."
 
 #. AI-generated
 #: appmain/dlgprojectmgr.cpp:1062
 msgid ""
-"WARNING:  This operation will delete the selected project and all of its "
-"contents.  This includes all tables, queries, scripts, reports and other "
-"objects contained in the project.  Press 'Yes' only if you are absolutely "
-"certain you want to delete this project."
+"WARNING:  This operation will delete the selected project and all of its contents.  This includes all tables, queries, scripts, reports and other "
+"objects contained in the project.  Press 'Yes' only if you are absolutely certain you want to delete this project."
 msgstr ""
-"ATTENZIONE: Questa operazione eliminerà il progetto selezionato e tutti i "
-"suoi contenuti. Questo include tutte le tabelle, le query, gli script, i "
-"report e altri oggetti contenuti nel progetto. Premi 'Sì' solo se sei "
-"assolutamente certo di voler eliminare questo progetto."
+"ATTENZIONE: Questa operazione eliminerà il progetto selezionato e tutti i suoi contenuti. Questo include tutte le tabelle, le query, gli script, i "
+"report e altri oggetti contenuti nel progetto. Premi 'Sì' solo se sei assolutamente certo di voler eliminare questo progetto."
 
 #. AI-generated
-#: appmain/dlgreportprops.cpp:175 appmain/reportdoc.cpp:4418
-#: appmain/toolbars.cpp:528
+#: appmain/dlgreportprops.cpp:175 appmain/reportdoc.cpp:4418 appmain/toolbars.cpp:528
 msgid "Report Settings"
 msgstr "Impostazioni rapporto"
 
@@ -2769,14 +2468,12 @@ msgid "Headers and Footers"
 msgstr "Tajuk dan Kaki Surat"
 
 #. AI-generated
-#: appmain/dlgreportprops.cpp:276 appmain/exprbuilder.cpp:1320
-#: appmain/structuredoc.cpp:586 appmain/transformationdoc.cpp:539
+#: appmain/dlgreportprops.cpp:276 appmain/exprbuilder.cpp:1320 appmain/structuredoc.cpp:586 appmain/transformationdoc.cpp:539
 msgid "Field Name"
 msgstr "Nama Medan"
 
 #. AI-generated
-#: appmain/dlgreportprops.cpp:277 appmain/exprbuilder.cpp:1330
-#: appmain/panelindex.cpp:238
+#: appmain/dlgreportprops.cpp:277 appmain/exprbuilder.cpp:1330 appmain/panelindex.cpp:238
 msgid "Sort Direction"
 msgstr "Arah Susunan"
 
@@ -2796,14 +2493,12 @@ msgid "Page Break"
 msgstr "Menghentikan Halaman"
 
 #. AI-generated
-#: appmain/dlgreportprops.cpp:292 appmain/exprbuilder.cpp:1335
-#: appmain/panelindex.cpp:260
+#: appmain/dlgreportprops.cpp:292 appmain/exprbuilder.cpp:1335 appmain/panelindex.cpp:260
 msgid "Ascending"
 msgstr "Menaik"
 
 #. AI-generated
-#: appmain/dlgreportprops.cpp:293 appmain/exprbuilder.cpp:1336
-#: appmain/panelindex.cpp:261
+#: appmain/dlgreportprops.cpp:293 appmain/exprbuilder.cpp:1336 appmain/panelindex.cpp:261
 msgid "Descending"
 msgstr "Menurun"
 
@@ -2828,8 +2523,7 @@ msgid "This field name does not exist in the specified source table"
 msgstr "Nama medan ini tidak wujud dalam jadual sumber yang ditentukan"
 
 #. AI-generated
-#: appmain/dlgreportprops.cpp:655 appmain/panelsplit.cpp:347
-#: appmain/reportdoc.cpp:2789
+#: appmain/dlgreportprops.cpp:655 appmain/panelsplit.cpp:347 appmain/reportdoc.cpp:2789
 msgid "Select Source Table"
 msgstr "Pilih Jadual Sumber"
 
@@ -2840,13 +2534,9 @@ msgstr "Kongsi"
 
 #. AI-generated
 #: appmain/dlgshareview.cpp:49
-msgid ""
-"To share your current view, click the button to the Share button.  Paste the"
-" generated link in the location bar to load the view again."
+msgid "To share your current view, click the button to the Share button.  Paste the generated link in the location bar to load the view again."
 msgstr ""
-"Untuk berkongsi pandangan semasa anda, klik butang ke tombol Kongsi. "
-"Tampalkan pautan yang dihasilkan di bar lokasi untuk memuat semula pandangan"
-" lagi."
+"Untuk berkongsi pandangan semasa anda, klik butang ke tombol Kongsi. Tampalkan pautan yang dihasilkan di bar lokasi untuk memuat semula pandangan lagi."
 
 #. AI-generated
 #: appmain/dlgshareview.cpp:87 appmain/tabledoc.cpp:8190
@@ -2864,11 +2554,8 @@ msgid "Please Wait..."
 msgstr "Sila Tunggu..."
 
 #. AI-generated
-#: appmain/dlgwaitforjob.cpp:45 appmain/exportwizard.cpp:870
-#: appmain/exprbuilder.cpp:526 appmain/exprbuilder.cpp:548
-#: appmain/exprbuilder.cpp:1211 appmain/exprbuilder.cpp:1230
-#: appmain/paneljobmgr.cpp:220 appmain/querydoc.cpp:1330
-#: appmain/relationdiagram.cpp:3005 appmain/tabledoc.cpp:6995
+#: appmain/dlgwaitforjob.cpp:45 appmain/exportwizard.cpp:870 appmain/exprbuilder.cpp:526 appmain/exprbuilder.cpp:548 appmain/exprbuilder.cpp:1211
+#: appmain/exprbuilder.cpp:1230 appmain/paneljobmgr.cpp:220 appmain/querydoc.cpp:1330 appmain/relationdiagram.cpp:3005 appmain/tabledoc.cpp:6995
 #: kcl/wizard.cpp:47
 msgid "Cancel"
 msgstr "Batal"
@@ -2885,8 +2572,7 @@ msgid "Go To Line"
 msgstr "Pergi ke Baris"
 
 #. AI-generated
-#: appmain/editordoc.cpp:1402 appmain/querydoc.cpp:491
-#: appmain/reportdoc.cpp:2052
+#: appmain/editordoc.cpp:1402 appmain/querydoc.cpp:491 appmain/reportdoc.cpp:2052
 msgid "Would you like to save the changes made to this document?"
 msgstr "Adakah anda ingin menyimpan perubahan yang dibuat ke dokumen ini?"
 
@@ -2914,8 +2600,7 @@ msgstr "Kolum: %d"
 #. AI-generated
 #: appmain/exportpages.cpp:95
 msgid "Add tables by dragging them from the project panel to the export list."
-msgstr ""
-"Tambah jadual dengan menyeret mereka dari panel projek ke senarai eksport."
+msgstr "Tambah jadual dengan menyeret mereka dari panel projek ke senarai eksport."
 
 #. AI-generated
 #: appmain/exportpages.cpp:98 appmain/exportwizard.cpp:390
@@ -2970,12 +2655,8 @@ msgstr ""
 
 #. AI-generated
 #: appmain/exportpages.cpp:628
-msgid ""
-"Modify the settings below to determine how the text-delimited files should "
-"be written."
-msgstr ""
-"Ubahsuai tetapan di bawah untuk menentukan bagaimana fail batas teks harus "
-"ditulis."
+msgid "Modify the settings below to determine how the text-delimited files should be written."
+msgstr "Ubahsuai tetapan di bawah untuk menentukan bagaimana fail batas teks harus ditulis."
 
 #. AI-generated
 #: appmain/exporttemplate.cpp:100
@@ -3004,12 +2685,8 @@ msgstr "Tetapan Batas Teks"
 
 #. AI-generated
 #: appmain/exportwizard.cpp:118
-msgid ""
-"Please enter the location of the database or directory to which you would "
-"like to export."
-msgstr ""
-"Silakan masukkan lokasi basis data atau direktori ke mana Anda ingin "
-"mengekspor."
+msgid "Please enter the location of the database or directory to which you would like to export."
+msgstr "Silakan masukkan lokasi basis data atau direktori ke mana Anda ingin mengekspor."
 
 #. AI-generated
 #: appmain/exportwizard.cpp:119
@@ -3018,12 +2695,8 @@ msgstr "Eksport sebagai:"
 
 #. AI-generated
 #: appmain/exportwizard.cpp:196
-msgid ""
-"Please enter the connection settings for the database to which you would "
-"like to export."
-msgstr ""
-"Silakan masukkan pengaturan koneksi untuk basis data ke mana Anda ingin "
-"mengekspor."
+msgid "Please enter the connection settings for the database to which you would like to export."
+msgstr "Silakan masukkan pengaturan koneksi untuk basis data ke mana Anda ingin mengekspor."
 
 #. AI-generated
 #: appmain/exportwizard.cpp:212
@@ -3032,12 +2705,8 @@ msgstr "Silakan pilih sumber data ODBC ke mana Anda ingin mengekspor."
 
 #. AI-generated
 #: appmain/exportwizard.cpp:294
-msgid ""
-"The specified location is a folder.  Please specify a valid file location to"
-" continue."
-msgstr ""
-"Lokasi yang ditentukan adalah folder. Silakan tentukan lokasi fail yang sah "
-"untuk teruskan."
+msgid "The specified location is a folder.  Please specify a valid file location to continue."
+msgstr "Lokasi yang ditentukan adalah folder. Silakan tentukan lokasi fail yang sah untuk teruskan."
 
 #. AI-generated
 #: appmain/exportwizard.cpp:307
@@ -3062,27 +2731,18 @@ msgstr "Sovrascrivi"
 
 #. AI-generated
 #: appmain/exportwizard.cpp:358
-msgid ""
-"The specified file path is invalid.  Please specify a valid file path to "
-"continue."
-msgstr ""
-"Il percorso del file specificato non è valido. Si prega di specificare un "
-"percorso file valido per continuare."
+msgid "The specified file path is invalid.  Please specify a valid file path to continue."
+msgstr "Il percorso del file specificato non è valido. Si prega di specificare un percorso file valido per continuare."
 
 #. AI-generated
-#: appmain/exportwizard.cpp:359 appmain/importwizard.cpp:392
-#: appmain/importwizard.cpp:398
+#: appmain/exportwizard.cpp:359 appmain/importwizard.cpp:392 appmain/importwizard.cpp:398
 msgid "Invalid File"
 msgstr "File non valido"
 
 #. AI-generated
 #: appmain/exportwizard.cpp:377
-msgid ""
-"The specified folder path is invalid.  Please specify a valid folder path to"
-" continue."
-msgstr ""
-"Il percorso della cartella specificata non è valido. Si prega di specificare"
-" un valido percorso della cartella per continuare."
+msgid "The specified folder path is invalid.  Please specify a valid folder path to continue."
+msgstr "Il percorso della cartella specificata non è valido. Si prega di specificare un valido percorso della cartella per continuare."
 
 #. AI-generated
 #: appmain/exportwizard.cpp:378
@@ -3091,44 +2751,28 @@ msgstr "Cartella non valida"
 
 #. AI-generated
 #: appmain/exportwizard.cpp:457
-msgid ""
-"Please enter the location of the Microsoft Access file to which you would "
-"like to export."
-msgstr ""
-"Si prega di inserire la posizione del file Microsoft Access in cui si "
-"desidera esportare."
+msgid "Please enter the location of the Microsoft Access file to which you would like to export."
+msgstr "Si prega di inserire la posizione del file Microsoft Access in cui si desidera esportare."
 
 #. AI-generated
-#: appmain/exportwizard.cpp:458 appmain/exportwizard.cpp:467
-#: appmain/exportwizard.cpp:476
+#: appmain/exportwizard.cpp:458 appmain/exportwizard.cpp:467 appmain/exportwizard.cpp:476
 msgid "File:"
 msgstr "File:"
 
 #. AI-generated
 #: appmain/exportwizard.cpp:466
-msgid ""
-"Please enter the location of the Microsoft Excel file to which you would "
-"like to export."
-msgstr ""
-"Si prega di inserire la posizione del file Microsoft Excel in cui si "
-"desidera esportare."
+msgid "Please enter the location of the Microsoft Excel file to which you would like to export."
+msgstr "Si prega di inserire la posizione del file Microsoft Excel in cui si desidera esportare."
 
 #. AI-generated
 #: appmain/exportwizard.cpp:475
-msgid ""
-"Please enter the location of the package file to which you would like to "
-"export."
-msgstr ""
-"Si prega di inserire la posizione del file del pacchetto in cui si desidera "
-"esportare."
+msgid "Please enter the location of the package file to which you would like to export."
+msgstr "Si prega di inserire la posizione del file del pacchetto in cui si desidera esportare."
 
 #. AI-generated
 #: appmain/exportwizard.cpp:484
-msgid ""
-"Please enter the location of the folder to which you would like to export."
-msgstr ""
-"Si prega di inserire la posizione della cartella in cui si desidera "
-"esportare."
+msgid "Please enter the location of the folder to which you would like to export."
+msgstr "Si prega di inserire la posizione della cartella in cui si desidera esportare."
 
 #. AI-generated
 #: appmain/exportwizard.cpp:558 appmain/importwizard.cpp:641
@@ -3141,70 +2785,48 @@ msgid "You must select at least one table to export."
 msgstr "È necessario selezionare almeno una tabella per esportare."
 
 #. AI-generated
-#: appmain/exportwizard.cpp:568 appmain/exportwizard.cpp:681
-#: appmain/exportwizard.cpp:690 appmain/exportwizard.cpp:714
-#: appmain/exportwizard.cpp:796 appmain/exportwizard.cpp:841
-#: appmain/exportwizard.cpp:917 appmain/exportwizard.cpp:1015
-#: appmain/exportwizard.cpp:1025 appmain/exportwizard.cpp:1038
-#: appmain/exportwizard.cpp:1049 appmain/exportwizard.cpp:1084
-#: appmain/exportwizard.cpp:1111 appmain/exportwizard.cpp:1151
-#: appmain/exportwizard.cpp:1203
+#: appmain/exportwizard.cpp:568 appmain/exportwizard.cpp:681 appmain/exportwizard.cpp:690 appmain/exportwizard.cpp:714 appmain/exportwizard.cpp:796
+#: appmain/exportwizard.cpp:841 appmain/exportwizard.cpp:917 appmain/exportwizard.cpp:1015 appmain/exportwizard.cpp:1025 appmain/exportwizard.cpp:1038
+#: appmain/exportwizard.cpp:1049 appmain/exportwizard.cpp:1084 appmain/exportwizard.cpp:1111 appmain/exportwizard.cpp:1151 appmain/exportwizard.cpp:1203
 msgid "Export Wizard"
 msgstr "Assistente di esportazione"
 
 #. AI-generated
 #: appmain/exportwizard.cpp:680
-msgid ""
-"The specified destination folder is invalid.  Please specify a valid "
-"destination folder to continue."
-msgstr ""
-"La cartella di destinazione specificata non è valida. Si prega di "
-"specificare una cartella di destinazione valida per continuare."
+msgid "The specified destination folder is invalid.  Please specify a valid destination folder to continue."
+msgstr "La cartella di destinazione specificata non è valida. Si prega di specificare una cartella di destinazione valida per continuare."
 
 #. AI-generated
 #: appmain/exportwizard.cpp:689
-msgid ""
-"The specified destination folder does not exist.  Would you like to create "
-"it?"
-msgstr ""
-"La cartella di destinazione specificata non esiste. Ti piacerebbe crearla?"
+msgid "The specified destination folder does not exist.  Would you like to create it?"
+msgstr "La cartella di destinazione specificata non esiste. Ti piacerebbe crearla?"
 
 #. AI-generated
 #: appmain/exportwizard.cpp:713
-msgid ""
-"The specified destination folder could not be created.  Please make sure the"
-" specified destination folder is valid."
-msgstr ""
-"La cartella di destinazione specificata non può essere creata. Assicurati "
-"che la cartella di destinazione specificata sia valida."
+msgid "The specified destination folder could not be created.  Please make sure the specified destination folder is valid."
+msgstr "La cartella di destinazione specificata non può essere creata. Assicurati che la cartella di destinazione specificata sia valida."
 
 #. AI-generated
 #: appmain/exportwizard.cpp:795
-msgid ""
-"One or more files specified for export is invalid.  Please rename these "
-"files to continue."
-msgstr ""
-"Uno o più file specificati per l'esportazione non sono validi. Si prega di "
-"rinominare questi file per continuare."
+msgid "One or more files specified for export is invalid.  Please rename these files to continue."
+msgstr "Uno o più file specificati per l'esportazione non sono validi. Si prega di rinominare questi file per continuare."
 
 #. AI-generated
 #: appmain/exportwizard.cpp:840
-msgid ""
-"One or more of the tables no longer exists.  Please remove these tables from"
-" the export to continue."
-msgstr ""
-"Una o più delle tabelle non esiste più. Si prega di rimuovere queste tabelle"
-" dall'esportazione per continuare."
+msgid "One or more of the tables no longer exists.  Please remove these tables from the export to continue."
+msgstr "Una o più delle tabelle non esiste più. Si prega di rimuovere queste tabelle dall'esportazione per continuare."
 
 #. AI-generated
 #: appmain/exportwizard.cpp:863
 #, c-format
 msgid ""
-"One or more of the tables contains fieldnames which are invalid in the export destination.  Would you like to have %s fix these fieldnames when performing the export?\n"
+"One or more of the tables contains fieldnames which are invalid in the export destination.  Would you like to have %s fix these fieldnames when "
+"performing the export?\n"
 "\n"
 "NOTE: Only the exported tables will have their fieldnames changed."
 msgstr ""
-"Una o più delle tabelle contiene nomi di campo non validi nella destinazione di esportazione. Ti piacerebbe avere %s per correggere questi nomi di campo durante l'esportazione?\n"
+"Una o più delle tabelle contiene nomi di campo non validi nella destinazione di esportazione. Ti piacerebbe avere %s per correggere questi nomi di "
+"campo durante l'esportazione?\n"
 "\n"
 "NOTA: Solo le tabelle esportate avranno i loro nomi di campo modificati."
 
@@ -3220,22 +2842,14 @@ msgstr "Correggi i nomi dei campi"
 
 #. AI-generated
 #: appmain/exportwizard.cpp:916
-msgid ""
-"One or more files specified for export already exists.  Would you like to "
-"overwrite these files?"
-msgstr ""
-"Uno o più file specificati per l'esportazione esistono già. Desideri "
-"sovrascrivere questi file?"
+msgid "One or more files specified for export already exists.  Would you like to overwrite these files?"
+msgstr "Uno o più file specificati per l'esportazione esistono già. Desideri sovrascrivere questi file?"
 
 #. AI-generated
 #: appmain/exportwizard.cpp:989
 #, c-format
-msgid ""
-"%s is missing a software component.  To correct this problem, please "
-"reinstall %s."
-msgstr ""
-"%s manca un componente software. Per correggere questo problema, si prega di"
-" reinstallare %s."
+msgid "%s is missing a software component.  To correct this problem, please reinstall %s."
+msgstr "%s manca un componente software. Per correggere questo problema, si prega di reinstallare %s."
 
 #. AI-generated
 #: appmain/exportwizard.cpp:1002
@@ -3284,9 +2898,7 @@ msgstr ""
 #. AI-generated
 #: appmain/exportwizard.cpp:1083
 msgid "One or more of the tables specified for export has an invalid name."
-msgstr ""
-"Una o più delle tabelle specificate per l'esportazione ha un nome non "
-"valido."
+msgstr "Una o più delle tabelle specificate per l'esportazione ha un nome non valido."
 
 #. AI-generated
 #: appmain/exportwizard.cpp:1110
@@ -3299,20 +2911,13 @@ msgstr ""
 
 #. AI-generated
 #: appmain/exportwizard.cpp:1150
-msgid ""
-"One or more of the tables specified for export contains invalid fieldnames."
-msgstr ""
-"Una o più delle tabelle specificate per l'esportazione contiene nomi di "
-"campo non validi."
+msgid "One or more of the tables specified for export contains invalid fieldnames."
+msgstr "Una o più delle tabelle specificate per l'esportazione contiene nomi di campo non validi."
 
 #. AI-generated
 #: appmain/exportwizard.cpp:1202
-msgid ""
-"One or more of the table names specified for export already exists.  Would "
-"you like to overwrite these tables?"
-msgstr ""
-"Uno o più dei nomi delle tabelle specificate per l'esportazione esistono "
-"già. Desideri sovrascrivere queste tabelle?"
+msgid "One or more of the table names specified for export already exists.  Would you like to overwrite these tables?"
+msgstr "Uno o più dei nomi delle tabelle specificate per l'esportazione esistono già. Desideri sovrascrivere queste tabelle?"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:63
@@ -3361,11 +2966,8 @@ msgstr "AVG(input)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:67
-msgid ""
-"An aggregate function returning the average value from its input values"
-msgstr ""
-"Una funzione aggregata che restituisce il valore medio dai suoi valori in "
-"input"
+msgid "An aggregate function returning the average value from its input values"
+msgstr "Una funzione aggregata che restituisce il valore medio dai suoi valori in input"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:68
@@ -3374,12 +2976,8 @@ msgstr "CEILING(numero [, precisione])"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:68
-msgid ""
-"Returns the smallest number, to the specified precision, that is greater "
-"than or equal to the input number"
-msgstr ""
-"Restituisce il numero più piccolo, alla precisione specificata, che è "
-"maggiore o uguale al numero in input"
+msgid "Returns the smallest number, to the specified precision, that is greater than or equal to the input number"
+msgstr "Restituisce il numero più piccolo, alla precisione specificata, che è maggiore o uguale al numero in input"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:69
@@ -3398,12 +2996,8 @@ msgstr "CONTAINS(stringa, stringa di ricerca)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:70
-msgid ""
-"Returns true if the search string is contained in the string, false "
-"otherwise"
-msgstr ""
-"Restituisce vero se la stringa di ricerca è contenuta nella stringa, falso "
-"altrimenti"
+msgid "Returns true if the search string is contained in the string, false otherwise"
+msgstr "Restituisce vero se la stringa di ricerca è contenuta nella stringa, falso altrimenti"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:71
@@ -3412,12 +3006,8 @@ msgstr "COS(numero)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:71
-msgid ""
-"Returns the cosine of a number, where the input number is in units of "
-"radians"
-msgstr ""
-"Restituisce il coseno di un numero, dove il numero in input è in unità di "
-"radianti"
+msgid "Returns the cosine of a number, where the input number is in units of radians"
+msgstr "Restituisce il coseno di un numero, dove il numero in input è in unità di radianti"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:72
@@ -3466,13 +3056,9 @@ msgstr "DAYOFWEEK(data)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:76
-msgid ""
-"Returns the day of the week corresponding to a date as a number between 1 "
-"and 7, where Sunday is the first day of the week"
+msgid "Returns the day of the week corresponding to a date as a number between 1 and 7, where Sunday is the first day of the week"
 msgstr ""
-"Restituisce il giorno della settimana corrispondente ad una data come un "
-"numero compreso tra 1 e 7, dove la domenica è il primo giorno della "
-"settimana"
+"Restituisce il giorno della settimana corrispondente ad una data come un numero compreso tra 1 e 7, dove la domenica è il primo giorno della settimana"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:77
@@ -3482,9 +3068,7 @@ msgstr "EMPTY(valore)"
 #. AI-generated
 #: appmain/exprbuilder.cpp:77
 msgid "Returns true if an input string or date is empty, false otherwise"
-msgstr ""
-"Restituisce vero se una stringa di input o una data è vuota, falso "
-"altrimenti"
+msgstr "Restituisce vero se una stringa di input o una data è vuota, falso altrimenti"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:78
@@ -3503,12 +3087,8 @@ msgstr "FLOOR(numero [, precisione])"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:79
-msgid ""
-"Returns the largest number, to the specified precision, that is less than or"
-" equal to the input number"
-msgstr ""
-"Restituisce il numero maggiore, con la precisione specificata, che è minore "
-"o uguale al numero di input"
+msgid "Returns the largest number, to the specified precision, that is less than or equal to the input number"
+msgstr "Restituisce il numero maggiore, con la precisione specificata, che è minore o uguale al numero di input"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:80
@@ -3537,12 +3117,8 @@ msgstr "IIF(test booleano, valore vero, valore falso)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:82
-msgid ""
-"If the boolean test is true, the function returns the true value, otherwise "
-"it returns the false value"
-msgstr ""
-"Se il test booleano è vero, la funzione restituisce il valore vero, "
-"altrimenti restituisce il valore falso"
+msgid "If the boolean test is true, the function returns the true value, otherwise it returns the false value"
+msgstr "Se il test booleano è vero, la funzione restituisce il valore vero, altrimenti restituisce il valore falso"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:83
@@ -3551,12 +3127,8 @@ msgstr "INITCAP(stringa)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:83
-msgid ""
-"Converts any character in a string that follows a non-letter character to "
-"uppercase"
-msgstr ""
-"Converte in maiuscolo qualsiasi carattere in una stringa che segue un "
-"carattere non lettera"
+msgid "Converts any character in a string that follows a non-letter character to uppercase"
+msgstr "Converte in maiuscolo qualsiasi carattere in una stringa che segue un carattere non lettera"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:84
@@ -3565,12 +3137,8 @@ msgstr "INSTR(stringa, stringa di ricerca [, occorrenza])"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:84 appmain/exprbuilder.cpp:89
-msgid ""
-"Returns the nth occurrence of the search string in the string, starting from"
-" the left side of the string"
-msgstr ""
-"Restituisce l'n-esima occorrenza della stringa di ricerca nella stringa, "
-"partendo dal lato sinistro della stringa"
+msgid "Returns the nth occurrence of the search string in the string, starting from the left side of the string"
+msgstr "Restituisce l'n-esima occorrenza della stringa di ricerca nella stringa, partendo dal lato sinistro della stringa"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:85
@@ -3580,8 +3148,7 @@ msgstr "ISNULL(valore)"
 #. AI-generated
 #: appmain/exprbuilder.cpp:85
 msgid "Returns true if an input string or date is null, false otherwise"
-msgstr ""
-"Restituisce vero se una stringa di input o una data è null, falso altrimenti"
+msgstr "Restituisce vero se una stringa di input o una data è null, falso altrimenti"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:86
@@ -3601,9 +3168,7 @@ msgstr "LEFT(stringa, lunghezza)"
 #. AI-generated
 #: appmain/exprbuilder.cpp:87
 msgid "Returns the leftmost characters of a string to the specified length"
-msgstr ""
-"Restituisce i caratteri più a sinistra di una stringa alla lunghezza "
-"specificata"
+msgstr "Restituisce i caratteri più a sinistra di una stringa alla lunghezza specificata"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:88
@@ -3657,12 +3222,8 @@ msgstr "LPAD(stringa, lunghezza [, lista])"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:93
-msgid ""
-"Adds the characters in the list to the left side of a string until the "
-"string is the specified length"
-msgstr ""
-"Aggiunge i caratteri nella lista al lato sinistro di una stringa fino a "
-"quando la stringa è della lunghezza specificata"
+msgid "Adds the characters in the list to the left side of a string until the string is the specified length"
+msgstr "Aggiunge i caratteri nella lista al lato sinistro di una stringa fino a quando la stringa è della lunghezza specificata"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:94
@@ -3681,11 +3242,8 @@ msgstr "MAX(input)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:95
-msgid ""
-"An aggregate function returning the maximum value from its input values"
-msgstr ""
-"Una funzione aggregata che restituisce il valore massimo dai suoi valori di "
-"input"
+msgid "An aggregate function returning the maximum value from its input values"
+msgstr "Una funzione aggregata che restituisce il valore massimo dai suoi valori di input"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:96
@@ -3694,11 +3252,8 @@ msgstr "MIN(input)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:96
-msgid ""
-"An aggregate function returning the minimum value from its input values"
-msgstr ""
-"Una función de agregación que devuelve el valor mínimo de sus valores de "
-"entrada"
+msgid "An aggregate function returning the minimum value from its input values"
+msgstr "Una función de agregación que devuelve el valor mínimo de sus valores de entrada"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:97
@@ -3778,9 +3333,7 @@ msgstr "RECID()"
 #. AI-generated
 #: appmain/exprbuilder.cpp:104
 msgid "Returns a string that uniquely identifies a record in a project"
-msgstr ""
-"Devuelve una cadena que identifica de manera única un registro en un "
-"proyecto"
+msgstr "Devuelve una cadena que identifica de manera única un registro en un proyecto"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:105
@@ -3789,12 +3342,8 @@ msgstr "RECNO()"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:105
-msgid ""
-"Returns a number indicating the unsorted, absolute position of a record in a"
-" set"
-msgstr ""
-"Devuelve un número que indica la posición absoluta, sin clasificar, de un "
-"registro en un conjunto"
+msgid "Returns a number indicating the unsorted, absolute position of a record in a set"
+msgstr "Devuelve un número que indica la posición absoluta, sin clasificar, de un registro en un conjunto"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:106
@@ -3803,12 +3352,8 @@ msgstr "REGEXP(cadena, cadena de coincidencia)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:106
-msgid ""
-"Returns a portion of the string that matches the regular expression given by"
-" the match string"
-msgstr ""
-"Devuelve una porción de la cadena que coincide con la expresión regular dada"
-" por la cadena de coincidencia"
+msgid "Returns a portion of the string that matches the regular expression given by the match string"
+msgstr "Devuelve una porción de la cadena que coincide con la expresión regular dada por la cadena de coincidencia"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:107
@@ -3817,11 +3362,8 @@ msgstr "REPEAT(cadena, longitud)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:107
-msgid ""
-"Repeats the characters in the string until the specified length is reached"
-msgstr ""
-"Repite los caracteres en la cadena hasta que se alcanza la longitud "
-"especificada"
+msgid "Repeats the characters in the string until the specified length is reached"
+msgstr "Repite los caracteres en la cadena hasta que se alcanza la longitud especificada"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:108
@@ -3830,12 +3372,8 @@ msgstr "REPLACE(cadena, cadena de búsqueda, cadena de reemplazo)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:108
-msgid ""
-"Replaces each occurrence of the search string in the input string with the "
-"corresponding replace string"
-msgstr ""
-"Reemplaza cada aparición de la cadena de búsqueda en la cadena de entrada "
-"con la cadena de reemplazo correspondiente"
+msgid "Replaces each occurrence of the search string in the input string with the corresponding replace string"
+msgstr "Reemplaza cada aparición de la cadena de búsqueda en la cadena de entrada con la cadena de reemplazo correspondiente"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:109
@@ -3854,12 +3392,8 @@ msgstr "RFIND(cadena, cadena de búsqueda [, ocurrencia])"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:110
-msgid ""
-"Returns the nth occurrence of the search string in the string, starting from"
-" the right side of the string"
-msgstr ""
-"Devuelve la enésima ocurrencia de la cadena de búsqueda en la cadena, "
-"comenzando desde el lado derecho de la cadena"
+msgid "Returns the nth occurrence of the search string in the string, starting from the right side of the string"
+msgstr "Devuelve la enésima ocurrencia de la cadena de búsqueda en la cadena, comenzando desde el lado derecho de la cadena"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:111
@@ -3869,9 +3403,7 @@ msgstr "RIGHT(cadena, longitud)"
 #. AI-generated
 #: appmain/exprbuilder.cpp:111
 msgid "Returns the rightmost characters of a string to the specified length"
-msgstr ""
-"Devuelve los caracteres más a la derecha de una cadena a la longitud "
-"especificada"
+msgstr "Devuelve los caracteres más a la derecha de una cadena a la longitud especificada"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:112
@@ -3890,12 +3422,8 @@ msgstr "RPAD(cadena, longitud [, lista])"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:113
-msgid ""
-"Adds the characters in the list to the right side of a string until the "
-"string is the specified length"
-msgstr ""
-"Añade los caracteres de la lista al lado derecho de una cadena hasta que la "
-"cadena tenga la longitud especificada"
+msgid "Adds the characters in the list to the right side of a string until the string is the specified length"
+msgstr "Añade los caracteres de la lista al lado derecho de una cadena hasta que la cadena tenga la longitud especificada"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:114
@@ -3934,11 +3462,8 @@ msgstr "SIN(number)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:117
-msgid ""
-"Returns the sin of a number, where the input number is in units of radians"
-msgstr ""
-"Devuelve el seno de un número, donde el número de entrada está en unidades "
-"de radianes"
+msgid "Returns the sin of a number, where the input number is in units of radians"
+msgstr "Devuelve el seno de un número, donde el número de entrada está en unidades de radianes"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:118
@@ -3957,11 +3482,8 @@ msgstr "STDDEV(input)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:119
-msgid ""
-"An aggregate function returning the standard deviation from its input values"
-msgstr ""
-"Una función de agregación que devuelve la desviación estándar de sus valores"
-" de entrada"
+msgid "An aggregate function returning the standard deviation from its input values"
+msgstr "Una función de agregación que devuelve la desviación estándar de sus valores de entrada"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:120
@@ -3971,9 +3493,7 @@ msgstr "STR(número [, precisión])"
 #. AI-generated
 #: appmain/exprbuilder.cpp:120
 msgid "Rounds a number to a specified precision and returns it as a string"
-msgstr ""
-"Redondea un número a una precisión especificada y lo devuelve como una "
-"cadena"
+msgstr "Redondea un número a una precisión especificada y lo devuelve como una cadena"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:121
@@ -3982,12 +3502,8 @@ msgstr "STRPART(cadena, sección [, delimitador])"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:121
-msgid ""
-"Returns the nth section of a string that is divided into sections by the "
-"delimiter string"
-msgstr ""
-"Restituisce l'n-esima sezione di una stringa che è divisa in sezioni dal "
-"delimitatore di stringa"
+msgid "Returns the nth section of a string that is divided into sections by the delimiter string"
+msgstr "Restituisce l'n-esima sezione di una stringa che è divisa in sezioni dal delimitatore di stringa"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:122
@@ -3996,12 +3512,8 @@ msgstr "SUBSTR(stringa, inizio [, lunghezza])"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:122
-msgid ""
-"Returns a portion of an input string, from the specified start position in "
-"the string to the specified length"
-msgstr ""
-"Restituisce una porzione di una stringa di input, dalla posizione di inizio "
-"specificata nella stringa alla lunghezza specificata"
+msgid "Returns a portion of an input string, from the specified start position in the string to the specified length"
+msgstr "Restituisce una porzione di una stringa di input, dalla posizione di inizio specificata nella stringa alla lunghezza specificata"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:123
@@ -4011,8 +3523,7 @@ msgstr "SUM(input)"
 #. AI-generated
 #: appmain/exprbuilder.cpp:123
 msgid "An aggregate function returning the sum of its input values"
-msgstr ""
-"Una funzione aggregata che restituisce la somma dei suoi valori di input"
+msgstr "Una funzione aggregata che restituisce la somma dei suoi valori di input"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:124
@@ -4021,12 +3532,8 @@ msgstr "TAN(numero)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:124
-msgid ""
-"Returns the tangent of a number, where the input number is in units of "
-"radians"
-msgstr ""
-"Restituisce il tangente di un numero, dove il numero di input è in unità di "
-"radianti"
+msgid "Returns the tangent of a number, where the input number is in units of radians"
+msgstr "Restituisce il tangente di un numero, dove il numero di input è in unità di radianti"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:125
@@ -4035,12 +3542,8 @@ msgstr "TRANSLATE(stringa, ricerca, sostituisci)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:125
-msgid ""
-"Replaces each character in a string that matches a character in the search "
-"list with a character in the replace list"
-msgstr ""
-"Sostituisce ogni carattere in una stringa che corrisponde a un carattere "
-"nella lista di ricerca con un carattere nella lista di sostituzione"
+msgid "Replaces each character in a string that matches a character in the search list with a character in the replace list"
+msgstr "Sostituisce ogni carattere in una stringa che corrisponde a un carattere nella lista di ricerca con un carattere nella lista di sostituzione"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:126
@@ -4049,10 +3552,8 @@ msgstr "TRIM(stringa [, lista])"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:126
-msgid ""
-"Removes each character in the list from the left and right sides of a string"
-msgstr ""
-"Rimuove ogni carattere nella lista dai lati sinistro e destro di una stringa"
+msgid "Removes each character in the list from the left and right sides of a string"
+msgstr "Rimuove ogni carattere nella lista dai lati sinistro e destro di una stringa"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:127
@@ -4081,12 +3582,8 @@ msgstr "VAL(stringa)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:129
-msgid ""
-"Returns a number from a string by interpreting it according to a format "
-"string"
-msgstr ""
-"Restituisce un numero da una stringa interpretandolo secondo una stringa di "
-"formato"
+msgid "Returns a number from a string by interpreting it according to a format string"
+msgstr "Restituisce un numero da una stringa interpretandolo secondo una stringa di formato"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:130
@@ -4096,8 +3593,7 @@ msgstr "VARIANCE(input)"
 #. AI-generated
 #: appmain/exprbuilder.cpp:130
 msgid "An aggregate function returning the variance of its input values"
-msgstr ""
-"Una funzione aggregata che restituisce la varianza dei suoi valori di input"
+msgstr "Una funzione aggregata che restituisce la varianza dei suoi valori di input"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:131
@@ -4106,12 +3602,8 @@ msgstr "WEEK(data)"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:131
-msgid ""
-"Returns the week of the year containing the given date as a number between 1"
-" and 53"
-msgstr ""
-"Restituisce la settimana dell'anno che contiene la data specificata come un "
-"numero tra 1 e 53"
+msgid "Returns the week of the year containing the given date as a number between 1 and 53"
+msgstr "Restituisce la settimana dell'anno che contiene la data specificata come un numero tra 1 e 53"
 
 #. AI-generated
 #: appmain/exprbuilder.cpp:132
@@ -4134,14 +3626,12 @@ msgid "More..."
 msgstr "Altro..."
 
 #. AI-generated
-#: appmain/exprbuilder.cpp:990 appmain/fieldtypechoice.h:42
-#: appmain/fieldtypechoice.h:60 appmain/util.cpp:655 kcl/validcontrol.cpp:91
+#: appmain/exprbuilder.cpp:990 appmain/fieldtypechoice.h:42 appmain/fieldtypechoice.h:60 appmain/util.cpp:655 kcl/validcontrol.cpp:91
 msgid "Invalid"
 msgstr "Non valido"
 
 #. AI-generated
-#: appmain/exprbuilder.cpp:995 appmain/panelreplacerows.cpp:311
-#: kcl/validcontrol.cpp:90
+#: appmain/exprbuilder.cpp:995 appmain/panelreplacerows.cpp:311 kcl/validcontrol.cpp:90
 msgid "Valid"
 msgstr "Valido"
 
@@ -4156,14 +3646,12 @@ msgid "Key Builder"
 msgstr "Costruttore di Chiavi"
 
 #. AI-generated
-#: appmain/fieldlistcontrol.cpp:63 appmain/relationdiagram.cpp:254
-#: kcl/filepanel.cpp:120
+#: appmain/fieldlistcontrol.cpp:63 appmain/relationdiagram.cpp:254 kcl/filepanel.cpp:120
 msgid "Name"
 msgstr "Nome"
 
 #. AI-generated
-#: appmain/fieldlistcontrol.cpp:65 appmain/structuredoc.cpp:588
-#: appmain/transformationdoc.cpp:541
+#: appmain/fieldlistcontrol.cpp:65 appmain/structuredoc.cpp:588 appmain/transformationdoc.cpp:541
 msgid "Width"
 msgstr "Larghezza"
 
@@ -4173,70 +3661,55 @@ msgid "Dec"
 msgstr "Dec"
 
 #. AI-generated
-#: appmain/fieldtypechoice.cpp:43 appmain/fieldtypechoice.h:43
-#: appmain/fieldtypechoice.h:63 appmain/panelcolprops.cpp:119
-#: appmain/panelcolprops.cpp:142 appmain/util.cpp:656
+#: appmain/fieldtypechoice.cpp:43 appmain/fieldtypechoice.h:43 appmain/fieldtypechoice.h:63 appmain/panelcolprops.cpp:119 appmain/panelcolprops.cpp:142
+#: appmain/util.cpp:656
 msgid "Character"
 msgstr "Carattere"
 
 #. AI-generated
-#: appmain/fieldtypechoice.cpp:44 appmain/fieldtypechoice.h:44
-#: appmain/fieldtypechoice.h:69 appmain/panelcolprops.cpp:120
-#: appmain/util.cpp:657
+#: appmain/fieldtypechoice.cpp:44 appmain/fieldtypechoice.h:44 appmain/fieldtypechoice.h:69 appmain/panelcolprops.cpp:120 appmain/util.cpp:657
 msgid "Wide Character"
 msgstr "Carattere Largo"
 
 #. AI-generated
-#: appmain/fieldtypechoice.cpp:45 appmain/fieldtypechoice.h:46
-#: appmain/fieldtypechoice.h:75 appmain/panelcolprops.cpp:121
-#: appmain/paneloptions.cpp:966 appmain/util.cpp:659
+#: appmain/fieldtypechoice.cpp:45 appmain/fieldtypechoice.h:46 appmain/fieldtypechoice.h:75 appmain/panelcolprops.cpp:121 appmain/paneloptions.cpp:966
+#: appmain/util.cpp:659
 msgid "Numeric"
 msgstr "Numerico"
 
 #. AI-generated
-#: appmain/fieldtypechoice.cpp:46 appmain/fieldtypechoice.h:47
-#: appmain/fieldtypechoice.h:78 appmain/panelcolprops.cpp:122
-#: appmain/util.cpp:660
+#: appmain/fieldtypechoice.cpp:46 appmain/fieldtypechoice.h:47 appmain/fieldtypechoice.h:78 appmain/panelcolprops.cpp:122 appmain/util.cpp:660
 msgid "Double"
 msgstr "Doppio"
 
 #. AI-generated
-#: appmain/fieldtypechoice.cpp:47 appmain/fieldtypechoice.h:48
-#: appmain/fieldtypechoice.h:81 appmain/panelcolprops.cpp:123
-#: appmain/util.cpp:661
+#: appmain/fieldtypechoice.cpp:47 appmain/fieldtypechoice.h:48 appmain/fieldtypechoice.h:81 appmain/panelcolprops.cpp:123 appmain/util.cpp:661
 msgid "Integer"
 msgstr "Intero"
 
 #. AI-generated
-#: appmain/fieldtypechoice.cpp:48 appmain/fieldtypechoice.h:49
-#: appmain/fieldtypechoice.h:84 appmain/panelcolprops.cpp:124
-#: appmain/util.cpp:662
+#: appmain/fieldtypechoice.cpp:48 appmain/fieldtypechoice.h:49 appmain/fieldtypechoice.h:84 appmain/panelcolprops.cpp:124 appmain/util.cpp:662
 msgid "Date"
 msgstr "Data"
 
 #. AI-generated
-#: appmain/fieldtypechoice.cpp:49 appmain/fieldtypechoice.h:50
-#: appmain/fieldtypechoice.h:87 appmain/panelcolprops.cpp:125
-#: appmain/util.cpp:663
+#: appmain/fieldtypechoice.cpp:49 appmain/fieldtypechoice.h:50 appmain/fieldtypechoice.h:87 appmain/panelcolprops.cpp:125 appmain/util.cpp:663
 msgid "DateTime"
 msgstr "DataOra"
 
 #. AI-generated
-#: appmain/fieldtypechoice.cpp:50 appmain/fieldtypechoice.h:51
-#: appmain/fieldtypechoice.h:90 appmain/panelcolprops.cpp:126
-#: appmain/paneloptions.cpp:968 appmain/util.cpp:664
+#: appmain/fieldtypechoice.cpp:50 appmain/fieldtypechoice.h:51 appmain/fieldtypechoice.h:90 appmain/panelcolprops.cpp:126 appmain/paneloptions.cpp:968
+#: appmain/util.cpp:664
 msgid "Boolean"
 msgstr "Booleano"
 
 #. AI-generated
-#: appmain/fieldtypechoice.h:41 appmain/transformationdoc.cpp:220
-#: appmain/util.cpp:654
+#: appmain/fieldtypechoice.h:41 appmain/transformationdoc.cpp:220 appmain/util.cpp:654
 msgid "Undefined"
 msgstr "Indefinito"
 
 #. AI-generated
-#: appmain/fieldtypechoice.h:45 appmain/fieldtypechoice.h:72
-#: appmain/util.cpp:658
+#: appmain/fieldtypechoice.h:45 appmain/fieldtypechoice.h:72 appmain/util.cpp:658
 msgid "Binary"
 msgstr "Binario"
 
@@ -4271,27 +3744,20 @@ msgid "List"
 msgstr "Lista"
 
 #. AI-generated
-#: appmain/importpages.cpp:403 appmain/importpages.cpp:534
-#: appmain/importpages.cpp:550 appmain/importwizard.cpp:544
-#: appmain/importwizard.cpp:674 appmain/importwizard.cpp:723
-#: appmain/importwizard.cpp:733 appmain/importwizard.cpp:782
+#: appmain/importpages.cpp:403 appmain/importpages.cpp:534 appmain/importpages.cpp:550 appmain/importwizard.cpp:544 appmain/importwizard.cpp:674
+#: appmain/importwizard.cpp:723 appmain/importwizard.cpp:733 appmain/importwizard.cpp:782
 msgid "Import Wizard"
 msgstr "Assistente di Importazione"
 
 #. AI-generated
 #: appmain/importpages.cpp:533
-msgid ""
-"No items have been selected for import.  Please select at least one item to "
-"continue."
-msgstr ""
-"Non sono stati selezionati elementi per l'importazione. Seleziona almeno un "
-"elemento per continuare."
+msgid "No items have been selected for import.  Please select at least one item to continue."
+msgstr "Non sono stati selezionati elementi per l'importazione. Seleziona almeno un elemento per continuare."
 
 #. AI-generated
 #: appmain/importpages.cpp:549
 msgid "To load an import template, please create or open a project"
-msgstr ""
-"Per caricare un modello di importazione, per favore crea o apri un progetto"
+msgstr "Per caricare un modello di importazione, per favore crea o apri un progetto"
 
 #. AI-generated
 #: appmain/importpages.cpp:654
@@ -4335,45 +3801,28 @@ msgstr "File:"
 
 #. AI-generated
 #: appmain/importwizard.cpp:236
-msgid ""
-"Please enter the connection settings for the database from which you would "
-"like to import."
-msgstr ""
-"Inserisci le impostazioni di connessione per il database da cui desideri "
-"importare."
+msgid "Please enter the connection settings for the database from which you would like to import."
+msgstr "Inserisci le impostazioni di connessione per il database da cui desideri importare."
 
 #. AI-generated
 #: appmain/importwizard.cpp:252
-msgid ""
-"Please select the ODBC data source from which you would like to import."
+msgid "Please select the ODBC data source from which you would like to import."
 msgstr "Seleziona la fonte dati ODBC da cui desideri importare."
 
 #. AI-generated
 #: appmain/importwizard.cpp:391
-msgid ""
-"One of the specified files does not exist or is invalid.  Please choose a "
-"valid file to continue."
-msgstr ""
-"Uno dei file specificati non esiste o non è valido. Si prega di scegliere un"
-" file valido per continuare."
+msgid "One of the specified files does not exist or is invalid.  Please choose a valid file to continue."
+msgstr "Uno dei file specificati non esiste o non è valido. Si prega di scegliere un file valido per continuare."
 
 #. AI-generated
 #: appmain/importwizard.cpp:397
-msgid ""
-"The specified file does not exist or is invalid.  Please choose a valid file"
-" to continue."
-msgstr ""
-"Il file specificato non esiste o non è valido. Si prega di scegliere un file"
-" valido per continuare."
+msgid "The specified file does not exist or is invalid.  Please choose a valid file to continue."
+msgstr "Il file specificato non esiste o non è valido. Si prega di scegliere un file valido per continuare."
 
 #. AI-generated
 #: appmain/importwizard.cpp:467
-msgid ""
-"More than one file type was specified.  Please choose only one file type to "
-"continue."
-msgstr ""
-"È stato specificato più di un tipo di file. Scegli solo un tipo di file per "
-"continuare."
+msgid "More than one file type was specified.  Please choose only one file type to continue."
+msgstr "È stato specificato più di un tipo di file. Scegli solo un tipo di file per continuare."
 
 #. AI-generated
 #: appmain/importwizard.cpp:468
@@ -4382,36 +3831,23 @@ msgstr "Tipi di file multipli"
 
 #. AI-generated
 #: appmain/importwizard.cpp:485
-msgid ""
-"Only one package file can be imported at a time.  Please choose only one "
-"package file to continue."
-msgstr ""
-"Puoi importare solo un file di pacchetto alla volta. Scegli solo un file di "
-"pacchetto per continuare."
+msgid "Only one package file can be imported at a time.  Please choose only one package file to continue."
+msgstr "Puoi importare solo un file di pacchetto alla volta. Scegli solo un file di pacchetto per continuare."
 
 #. AI-generated
-#: appmain/importwizard.cpp:486 appmain/importwizard.cpp:496
-#: appmain/importwizard.cpp:506
+#: appmain/importwizard.cpp:486 appmain/importwizard.cpp:496 appmain/importwizard.cpp:506
 msgid "Too many files"
 msgstr "Troppi file"
 
 #. AI-generated
 #: appmain/importwizard.cpp:495
-msgid ""
-"Only one Microsoft Access file can be imported at a time.  Please choose "
-"only one Microsoft Access file to continue."
-msgstr ""
-"Puoi importare solo un file Microsoft Access alla volta. Scegli solo un file"
-" Microsoft Access per continuare."
+msgid "Only one Microsoft Access file can be imported at a time.  Please choose only one Microsoft Access file to continue."
+msgstr "Puoi importare solo un file Microsoft Access alla volta. Scegli solo un file Microsoft Access per continuare."
 
 #. AI-generated
 #: appmain/importwizard.cpp:505
-msgid ""
-"Only one Microsoft Excel file can be imported at a time.  Please choose only"
-" one Microsoft Excel file to continue."
-msgstr ""
-"Puoi importare solo un file Microsoft Excel alla volta. Scegli solo un file "
-"Microsoft Excel per continuare."
+msgid "Only one Microsoft Excel file can be imported at a time.  Please choose only one Microsoft Excel file to continue."
+msgstr "Puoi importare solo un file Microsoft Excel alla volta. Scegli solo un file Microsoft Excel per continuare."
 
 #. AI-generated
 #: appmain/importwizard.cpp:673
@@ -4424,21 +3860,14 @@ msgstr ""
 
 #. AI-generated
 #: appmain/importwizard.cpp:722
-msgid ""
-"One or more items has the same path as an existing folder in the project.  "
-"Please change the output paths of these items to continue."
+msgid "One or more items has the same path as an existing folder in the project.  Please change the output paths of these items to continue."
 msgstr ""
-"Uno o più elementi hanno lo stesso percorso di una cartella esistente nel "
-"progetto. Cambia i percorsi di output di questi elementi per continuare."
+"Uno o più elementi hanno lo stesso percorso di una cartella esistente nel progetto. Cambia i percorsi di output di questi elementi per continuare."
 
 #. AI-generated
 #: appmain/importwizard.cpp:732
-msgid ""
-"One or more items has the same path as an existing item in the project.  "
-"Would you like to overwrite these items?"
-msgstr ""
-"Uno o più elementi hanno lo stesso percorso di un elemento esistente nel "
-"progetto. Vorresti sovrascrivere questi elementi?"
+msgid "One or more items has the same path as an existing item in the project.  Would you like to overwrite these items?"
+msgstr "Uno o più elementi hanno lo stesso percorso di un elemento esistente nel progetto. Vorresti sovrascrivere questi elementi?"
 
 #. AI-generated
 #: appmain/importwizard.cpp:781
@@ -4451,8 +3880,7 @@ msgid "Save Import Template"
 msgstr "Salva il Modello di Importazione"
 
 #. AI-generated
-#: appmain/jobfindinfiles.cpp:21 appmain/panelfind.cpp:136
-#: appmain/panelfind.cpp:344
+#: appmain/jobfindinfiles.cpp:21 appmain/panelfind.cpp:136 appmain/panelfind.cpp:344
 msgid "Find In Files"
 msgstr "Trova nei File"
 
@@ -4463,12 +3891,8 @@ msgstr "Errore di Runtime Script"
 
 #. AI-generated
 #: appmain/linkbar.cpp:377
-msgid ""
-"Could not find a connection for this bookmark. Please recreate the "
-"connection to continue."
-msgstr ""
-"Non riesco a trovare una connessione per questo segnalibro. Ricrea la "
-"connessione per continuare."
+msgid "Could not find a connection for this bookmark. Please recreate the connection to continue."
+msgstr "Non riesco a trovare una connessione per questo segnalibro. Ricrea la connessione per continuare."
 
 #. AI-generated
 #: appmain/linkbar.cpp:377
@@ -4506,8 +3930,7 @@ msgid "Please enter the name of the folder:"
 msgstr "Inserisci il nome della cartella:"
 
 #. AI-generated
-#: appmain/linkbar.cpp:1215 appmain/linkbar.cpp:1259 appmain/linkbar.cpp:1314
-#: appmain/linkbar.cpp:1375
+#: appmain/linkbar.cpp:1215 appmain/linkbar.cpp:1259 appmain/linkbar.cpp:1314 appmain/linkbar.cpp:1375
 msgid "A item with that name already exists."
 msgstr "Un elemento con quel nome esiste già."
 
@@ -4564,11 +3987,8 @@ msgstr "Selezione Del File"
 
 #. AI-generated
 #: appmain/moduleremoveduprec.cpp:44
-msgid ""
-"Please specify the table on which you would like to remove duplicate "
-"records."
-msgstr ""
-"Specifica la tabella sulla quale desideri rimuovere i record duplicati."
+msgid "Please specify the table on which you would like to remove duplicate records."
+msgstr "Specifica la tabella sulla quale desideri rimuovere i record duplicati."
 
 #. AI-generated
 #: appmain/moduleremoveduprec.cpp:47
@@ -4582,12 +4002,8 @@ msgstr "File di Output:"
 
 #. AI-generated
 #: appmain/moduleremoveduprec.cpp:122 appmain/moduleremoveduprec.cpp:148
-msgid ""
-"You have selected either a folder or more than one data set.  Please select "
-"only one data set."
-msgstr ""
-"Hai selezionato una cartella o più di un set di dati. Seleziona solo un set "
-"di dati."
+msgid "You have selected either a folder or more than one data set.  Please select only one data set."
+msgstr "Hai selezionato una cartella o più di un set di dati. Seleziona solo un set di dati."
 
 #. AI-generated
 #: appmain/moduleremoveduprec.cpp:169
@@ -4602,8 +4018,7 @@ msgstr "Seleziona il File di Output"
 #. AI-generated
 #: appmain/moduleremoveduprec.cpp:227
 msgid "The specified input transaction set could not be opened."
-msgstr ""
-"Não foi possível abrir o conjunto de transações de entrada especificado."
+msgstr "Não foi possível abrir o conjunto de transações de entrada especificado."
 
 #. AI-generated
 #: appmain/moduleremoveduprec.cpp:287
@@ -4611,11 +4026,8 @@ msgid "Duplicate Record Removal"
 msgstr "Remoção de Registro Duplicado"
 
 #. AI-generated
-#: appmain/moduleremoveduprec.cpp:308 appmain/panelgroup.cpp:297
-#: appmain/panelmerge.cpp:142 appmain/panelreplacerows.cpp:106
-#: appmain/panelsplit.cpp:249 appmain/tabledoc.cpp:6025
-#: appmain/tabledoc.cpp:6051 appmain/tabledoc.cpp:7860
-#: appmain/tabledoc.cpp:8184 appmain/tabledoc.cpp:8195
+#: appmain/moduleremoveduprec.cpp:308 appmain/panelgroup.cpp:297 appmain/panelmerge.cpp:142 appmain/panelreplacerows.cpp:106 appmain/panelsplit.cpp:249
+#: appmain/tabledoc.cpp:6025 appmain/tabledoc.cpp:6051 appmain/tabledoc.cpp:7860 appmain/tabledoc.cpp:8184 appmain/tabledoc.cpp:8195
 #: appmain/tabledoc.cpp:8462 appmain/tabledoc.cpp:8488
 msgid "Run"
 msgstr "Executar"
@@ -4652,29 +4064,18 @@ msgstr "Decimais:"
 
 #. AI-generated
 #: appmain/panelcolprops.cpp:949
-msgid ""
-"The specified field name is invalid.  Please choose a different field name."
-msgstr ""
-"O nome do campo especificado é inválido. Por favor, escolha um nome de campo"
-" diferente."
+msgid "The specified field name is invalid.  Please choose a different field name."
+msgstr "O nome do campo especificado é inválido. Por favor, escolha um nome de campo diferente."
 
 #. AI-generated
 #: appmain/panelcolprops.cpp:1014
-msgid ""
-"The field with the specified name already exists.  Please choose a different"
-" field name."
-msgstr ""
-"O campo com o nome especificado já existe. Por favor, escolha um nome de "
-"campo diferente."
+msgid "The field with the specified name already exists.  Please choose a different field name."
+msgstr "O campo com o nome especificado já existe. Por favor, escolha um nome de campo diferente."
 
 #. AI-generated
 #: appmain/panelcolprops.cpp:1073
-msgid ""
-"The structure of the table could not be modified, due to an invalid "
-"parameter."
-msgstr ""
-"A estrutura da tabela não pôde ser modificada, devido a um parâmetro "
-"inválido."
+msgid "The structure of the table could not be modified, due to an invalid parameter."
+msgstr "A estrutura da tabela não pôde ser modificada, devido a um parâmetro inválido."
 
 #. AI-generated
 #: appmain/panelcolprops.cpp:1143
@@ -4743,12 +4144,8 @@ msgstr "Arquivos de Extensão de Aplicativo"
 
 #. AI-generated
 #: appmain/panelextensionmgr.cpp:523
-msgid ""
-"The following extensions were not installed because their extension format "
-"could not be determined:"
-msgstr ""
-"As seguintes extensões não foram instaladas porque o formato de suas "
-"extensões não pôde ser determinado:"
+msgid "The following extensions were not installed because their extension format could not be determined:"
+msgstr "As seguintes extensões não foram instaladas porque o formato de suas extensões não pôde ser determinado:"
 
 #. AI-generated
 #: appmain/panelextensionmgr.cpp:575
@@ -4847,8 +4244,7 @@ msgid "%d Scripts"
 msgstr "%d Scripts"
 
 #. AI-generated
-#: appmain/panelfind.cpp:86 appmain/panelfind.cpp:342
-#: appmain/tabledoc.cpp:6978
+#: appmain/panelfind.cpp:86 appmain/panelfind.cpp:342 appmain/tabledoc.cpp:6978
 msgid "Find"
 msgstr "Buscar"
 
@@ -4994,27 +4390,17 @@ msgstr "Si prega di specificare almeno un campo di output."
 #. AI-generated
 #: appmain/panelgroup.cpp:672
 msgid "The specified group query must return a boolean (true/false) result."
-msgstr ""
-"La query di gruppo specificata deve restituire un risultato booleano "
-"(vero/falso)."
+msgstr "La query di gruppo specificata deve restituire un risultato booleano (vero/falso)."
 
 #. AI-generated
 #: appmain/panelgroup.cpp:717
-msgid ""
-"One or more of the output fields is empty.  Please specify a valid field "
-"name to continue."
-msgstr ""
-"Uno o più dei campi di output sono vuoti. Specificare un nome di campo "
-"valido per continuare."
+msgid "One or more of the output fields is empty.  Please specify a valid field name to continue."
+msgstr "Uno o più dei campi di output sono vuoti. Specificare un nome di campo valido per continuare."
 
 #. AI-generated
 #: appmain/panelgroup.cpp:730
-msgid ""
-"One or more of the input fields is empty.  Please specify an existing field "
-"to continue."
-msgstr ""
-"Uno o più dei campi di input sono vuoti. Si prega di specificare un campo "
-"esistente per continuare."
+msgid "One or more of the input fields is empty.  Please specify an existing field to continue."
+msgstr "Uno o più dei campi di input sono vuoti. Si prega di specificare un campo esistente per continuare."
 
 #. AI-generated
 #: appmain/panelgroup.cpp:743
@@ -5024,38 +4410,27 @@ msgstr "Il campo di input specificato '%s' non esiste."
 
 #. AI-generated
 #: appmain/panelgroup.cpp:763
-msgid ""
-"Parameters for the count function must evaluate to either true or false."
-msgstr ""
-"I parametri per la funzione di conteggio devono essere valutati come vero o "
-"falso."
+msgid "Parameters for the count function must evaluate to either true or false."
+msgstr "I parametri per la funzione di conteggio devono essere valutati come vero o falso."
 
 #. AI-generated
 #: appmain/panelgroup.cpp:780
 msgid "One or more group field definitions has an invalid function type."
-msgstr ""
-"Una o più definizioni di campo di gruppo hanno un tipo di funzione non "
-"valido."
+msgstr "Una o più definizioni di campo di gruppo hanno un tipo di funzione non valido."
 
 #. AI-generated
 #: appmain/panelgroup.cpp:810
 msgid ""
-"Two or more fields have the same output name, or may be conflicting with one"
-" of the fields in the detail output.  Please make sure that the name of each"
-" output field is unique."
+"Two or more fields have the same output name, or may be conflicting with one of the fields in the detail output.  Please make sure that the name of "
+"each output field is unique."
 msgstr ""
-"Due o più campi hanno lo stesso nome di output, o possono essere in "
-"conflitto con uno dei campi nell'output dettagliato. Assicurarsi che il nome"
-" di ciascun campo di output sia unico."
+"Due o più campi hanno lo stesso nome di output, o possono essere in conflitto con uno dei campi nell'output dettagliato. Assicurarsi che il nome di "
+"ciascun campo di output sia unico."
 
 #. AI-generated
 #: appmain/panelgroup.cpp:816
-msgid ""
-"Two or more fields have the same output name.  Please make sure that the "
-"name of each output field is unique."
-msgstr ""
-"Due o più campi hanno lo stesso nome di output. Si prega di assicurarsi che "
-"il nome di ogni campo di output sia unico."
+msgid "Two or more fields have the same output name.  Please make sure that the name of each output field is unique."
+msgstr "Due o più campi hanno lo stesso nome di output. Si prega di assicurarsi che il nome di ogni campo di output sia unico."
 
 #. AI-generated
 #: appmain/panelgroup.cpp:921
@@ -5099,14 +4474,12 @@ msgid "Index Fields"
 msgstr "Campi indice"
 
 #. AI-generated
-#: appmain/panelindex.cpp:273 appmain/panelview.cpp:157
-#: appmain/relationdiagram.cpp:148
+#: appmain/panelindex.cpp:273 appmain/panelview.cpp:157 appmain/relationdiagram.cpp:148
 msgid "Add"
 msgstr "Aggiungi"
 
 #. AI-generated
-#: appmain/panelindex.cpp:286 appmain/panelview.cpp:168
-#: appmain/tabledoc.cpp:8483
+#: appmain/panelindex.cpp:286 appmain/panelview.cpp:168 appmain/tabledoc.cpp:8483
 msgid "Delete"
 msgstr "Elimina"
 
@@ -5132,21 +4505,13 @@ msgstr ""
 
 #. AI-generated
 #: appmain/panelindex.cpp:617
-msgid ""
-"One or more of the index names is invalid.  Please make sure all index names"
-" are valid to continue."
-msgstr ""
-"Uno o più nomi di indice non sono validi. Assicurarsi che tutti i nomi degli"
-" indici siano validi per continuare."
+msgid "One or more of the index names is invalid.  Please make sure all index names are valid to continue."
+msgstr "Uno o più nomi di indice non sono validi. Assicurarsi che tutti i nomi degli indici siano validi per continuare."
 
 #. AI-generated
 #: appmain/panelindex.cpp:626
-msgid ""
-"No fields exist in the selected index.  Please add at least one field to the"
-" index to continue."
-msgstr ""
-"Non esistono campi nell'indice selezionato. Si prega di aggiungere almeno un"
-" campo all'indice per continuare."
+msgid "No fields exist in the selected index.  Please add at least one field to the index to continue."
+msgstr "Non esistono campi nell'indice selezionato. Si prega di aggiungere almeno un campo all'indice per continuare."
 
 #. AI-generated
 #: appmain/panelindex.cpp:649
@@ -5437,23 +4802,17 @@ msgstr "Lavoro #%d"
 
 #. AI-generated
 #: appmain/paneljobscheduler.cpp:1377
-msgid ""
-"One or more of the items dragged from the project panel is an external "
-"object and cannot be added to the command list."
-msgstr ""
-"Uno o più degli oggetti trascinati dal pannello del progetto è un oggetto "
-"esterno e non può essere aggiunto all'elenco dei comandi."
+msgid "One or more of the items dragged from the project panel is an external object and cannot be added to the command list."
+msgstr "Uno o più degli oggetti trascinati dal pannello del progetto è un oggetto esterno e non può essere aggiunto all'elenco dei comandi."
 
 #. AI-generated
 #: appmain/paneljobscheduler.cpp:1415
 msgid ""
-"One or more of the items dragged from the project panel is not a batchable "
-"command.  Only scripts, queries and job templates can been added to a "
+"One or more of the items dragged from the project panel is not a batchable command.  Only scripts, queries and job templates can been added to a "
 "scheduled job."
 msgstr ""
-"Uno o più degli oggetti trascinati dal pannello del progetto non è un "
-"comando utilizzabile in batch. Solo script, query e modelli di lavoro "
-"possono essere aggiunti a un lavoro programmato."
+"Uno o più degli oggetti trascinati dal pannello del progetto non è un comando utilizzabile in batch. Solo script, query e modelli di lavoro possono "
+"essere aggiunti a un lavoro programmato."
 
 #. AI-generated
 #: appmain/panelmarkmgr.cpp:166
@@ -5461,8 +4820,7 @@ msgid "Color"
 msgstr "Colore"
 
 #. AI-generated
-#: appmain/panelmarkmgr.cpp:168 appmain/reportdoc.cpp:4669
-#: appmain/structuredoc.cpp:590
+#: appmain/panelmarkmgr.cpp:168 appmain/reportdoc.cpp:4669 appmain/structuredoc.cpp:590
 msgid "Formula"
 msgstr "Formula"
 
@@ -5575,46 +4933,31 @@ msgstr ""
 
 #. AI-generated
 #: appmain/panelmerge.cpp:255 appmain/panelsplit.cpp:815
-msgid ""
-"You have selected either a folder or more than one table.  Please select "
-"only one table."
-msgstr ""
-"Sie haben entweder einen Ordner oder mehr als eine Tabelle ausgewählt. Bitte"
-" wählen Sie nur eine Tabelle."
+msgid "You have selected either a folder or more than one table.  Please select only one table."
+msgstr "Sie haben entweder einen Ordner oder mehr als eine Tabelle ausgewählt. Bitte wählen Sie nur eine Tabelle."
 
 #. AI-generated
 #: appmain/panelmerge.cpp:266
-msgid ""
-"One or more of the items dragged from the project panel is an external table"
-" and cannot be specified as the output table."
+msgid "One or more of the items dragged from the project panel is an external table and cannot be specified as the output table."
 msgstr ""
-"Eines oder mehr der Elemente, die aus dem Projektpanel gezogen wurden, ist "
-"eine externe Tabelle und kann nicht als Ausgabetabelle angegeben werden."
+"Eines oder mehr der Elemente, die aus dem Projektpanel gezogen wurden, ist eine externe Tabelle und kann nicht als Ausgabetabelle angegeben werden."
 
 #. AI-generated
 #: appmain/panelmerge.cpp:334
-msgid ""
-"One or more of the items dragged from the project panel is an external table"
-" and cannot be added to the output table."
+msgid "One or more of the items dragged from the project panel is an external table and cannot be added to the output table."
 msgstr ""
-"Eines oder mehr der Elemente, die aus dem Projektpanel gezogen wurden, ist "
-"eine externe Tabelle und kann nicht zur Ausgabetabelle hinzugefügt werden."
+"Eines oder mehr der Elemente, die aus dem Projektpanel gezogen wurden, ist eine externe Tabelle und kann nicht zur Ausgabetabelle hinzugefügt werden."
 
 #. AI-generated
 #: appmain/panelmerge.cpp:426
-msgid ""
-"Please specify at least one input table to be added to the output table."
-msgstr ""
-"Bitte geben Sie mindestens eine Eingabetabelle an, die zur Ausgabetabelle "
-"hinzugefügt werden soll."
+msgid "Please specify at least one input table to be added to the output table."
+msgstr "Bitte geben Sie mindestens eine Eingabetabelle an, die zur Ausgabetabelle hinzugefügt werden soll."
 
 #. AI-generated
 #: appmain/panelmerge.cpp:449
 #, c-format
 msgid "'%s' could not be opened.  Please make sure this is a valid table."
-msgstr ""
-"'%s' konnte nicht geöffnet werden. Stellen Sie bitte sicher, dass es sich um"
-" eine gültige Tabelle handelt."
+msgstr "'%s' konnte nicht geöffnet werden. Stellen Sie bitte sicher, dass es sich um eine gültige Tabelle handelt."
 
 #. AI-generated
 #: appmain/panelmerge.cpp:462
@@ -5694,21 +5037,13 @@ msgstr "Automatische Suche nach Updates (empfohlen)"
 
 #. AI-generated
 #: appmain/paneloptions.cpp:565
-msgid ""
-"The current page is not a web document so it cannot be used as your home "
-"page."
-msgstr ""
-"Die aktuelle Seite ist kein Webdokument und kann daher nicht als Startseite "
-"verwendet werden."
+msgid "The current page is not a web document so it cannot be used as your home page."
+msgstr "Die aktuelle Seite ist kein Webdokument und kann daher nicht als Startseite verwendet werden."
 
 #. AI-generated
 #: appmain/paneloptions.cpp:584
-msgid ""
-"Are you sure you want to reset the location and size of all toolbars and "
-"panels?"
-msgstr ""
-"Sind Sie sicher, dass Sie den Standort und die Größe aller Werkzeugleisten "
-"und Panels zurücksetzen möchten?"
+msgid "Are you sure you want to reset the location and size of all toolbars and panels?"
+msgstr "Sind Sie sicher, dass Sie den Standort und die Größe aller Werkzeugleisten und Panels zurücksetzen möchten?"
 
 #. AI-generated
 #: appmain/paneloptions.cpp:585
@@ -5821,8 +5156,7 @@ msgid "HTTP Proxy:"
 msgstr "Proxy HTTP:"
 
 #. AI-generated
-#: appmain/paneloptions.cpp:1538 appmain/paneloptions.cpp:1557
-#: appmain/paneloptions.cpp:1576 appmain/paneloptions.cpp:1595
+#: appmain/paneloptions.cpp:1538 appmain/paneloptions.cpp:1557 appmain/paneloptions.cpp:1576 appmain/paneloptions.cpp:1595
 msgid "Port:"
 msgstr "Porta:"
 
@@ -5972,9 +5306,8 @@ msgstr ""
 "Vuoi continuare?"
 
 #. AI-generated
-#: appmain/paneloptions.cpp:2851 appmain/paneloptions.cpp:2865
-#: appmain/paneloptions.cpp:2879 appmain/paneloptions.cpp:2893
-#: appmain/paneloptions.cpp:2907 appmain/paneloptions.cpp:2921
+#: appmain/paneloptions.cpp:2851 appmain/paneloptions.cpp:2865 appmain/paneloptions.cpp:2879 appmain/paneloptions.cpp:2893 appmain/paneloptions.cpp:2907
+#: appmain/paneloptions.cpp:2921
 msgid "Restore Defaults?"
 msgstr "Ripristinare default?"
 
@@ -6035,9 +5368,7 @@ msgstr "Aggiorna Relazioni"
 
 #. AI-generated
 #: appmain/panelrelationship.cpp:240
-msgid ""
-"Would you like to save your changes and activate the specified "
-"relationships?"
+msgid "Would you like to save your changes and activate the specified relationships?"
 msgstr "Vuoi salvare le tue modifiche e attivare le relazioni specificate?"
 
 #. AI-generated
@@ -6082,30 +5413,18 @@ msgstr "Valore"
 
 #. AI-generated
 #: appmain/panelreplacerows.cpp:359
-msgid ""
-"No field has been selected to update.  Please select a valid field to update"
-" to continue."
-msgstr ""
-"Nessun campo è stato selezionato per l'aggiornamento. Seleziona un campo "
-"valido per continuare."
+msgid "No field has been selected to update.  Please select a valid field to update to continue."
+msgstr "Nessun campo è stato selezionato per l'aggiornamento. Seleziona un campo valido per continuare."
 
 #. AI-generated
 #: appmain/panelreplacerows.cpp:367
-msgid ""
-"The selected field to update does not exist or is invalid.  Please select a "
-"valid field to update to continue."
-msgstr ""
-"Il campo selezionato per l'aggiornamento non esiste o non è valido. "
-"Seleziona un campo valido per continuare."
+msgid "The selected field to update does not exist or is invalid.  Please select a valid field to update to continue."
+msgstr "Il campo selezionato per l'aggiornamento non esiste o non è valido. Seleziona un campo valido per continuare."
 
 #. AI-generated
 #: appmain/panelreplacerows.cpp:375
-msgid ""
-"The replace value is not valid for the selected field.  Please enter a valid"
-" replace value for this field to continue."
-msgstr ""
-"Il valore da sostituire non è valido per il campo selezionato. Inserisci un "
-"valore valido da sostituire per continuare."
+msgid "The replace value is not valid for the selected field.  Please enter a valid replace value for this field to continue."
+msgstr "Il valore da sostituire non è valido per il campo selezionato. Inserisci un valore valido da sostituire per continuare."
 
 #. AI-generated
 #: appmain/panelreplacerows.cpp:384
@@ -6193,12 +5512,8 @@ msgstr "Opzioni di Output"
 
 #. AI-generated
 #: appmain/panelsplit.cpp:360
-msgid ""
-"The source table specified is invalid.  Please specify a valid table to "
-"continue."
-msgstr ""
-"La tavola sorgente specificata non è valida. Specifica una tavola valida per"
-" continuare."
+msgid "The source table specified is invalid.  Please specify a valid table to continue."
+msgstr "La tavola sorgente specificata non è valida. Specifica una tavola valida per continuare."
 
 #. AI-generated
 #: appmain/panelsplit.cpp:400
@@ -6212,12 +5527,8 @@ msgstr "ERRORE"
 
 #. AI-generated
 #: appmain/panelsplit.cpp:826
-msgid ""
-"One or more of the items dragged from the project panel is an external table"
-" and cannot be specified as the source table."
-msgstr ""
-"Uno o più degli elementi trascinati dal pannello del progetto sono tabelle "
-"esterne e non possono essere specificati come tabelle sorgente."
+msgid "One or more of the items dragged from the project panel is an external table and cannot be specified as the source table."
+msgstr "Uno o più degli elementi trascinati dal pannello del progetto sono tabelle esterne e non possono essere specificati come tabelle sorgente."
 
 #. AI-generated
 #: appmain/panelview.cpp:44
@@ -6246,12 +5557,8 @@ msgstr "visualizzazione"
 
 #. AI-generated
 #: appmain/panelview.cpp:663
-msgid ""
-"No fields exist in the selected view.  Please add at least one field to the "
-"view to continue."
-msgstr ""
-"Non esistono campi nella vista selezionata. Aggiungi almeno un campo alla "
-"vista per continuare."
+msgid "No fields exist in the selected view.  Please add at least one field to the view to continue."
+msgstr "Non esistono campi nella vista selezionata. Aggiungi almeno un campo alla vista per continuare."
 
 #. AI-generated
 #: appmain/querydoc.cpp:244
@@ -6288,8 +5595,7 @@ msgid "Criteria"
 msgstr "Criteri"
 
 #. AI-generated
-#: appmain/querydoc.cpp:344 appmain/querydoc.cpp:345 appmain/querydoc.cpp:346
-#: appmain/querydoc.cpp:347 appmain/querydoc.cpp:348
+#: appmain/querydoc.cpp:344 appmain/querydoc.cpp:345 appmain/querydoc.cpp:346 appmain/querydoc.cpp:347 appmain/querydoc.cpp:348
 msgid "Or"
 msgstr "O"
 
@@ -6354,8 +5660,7 @@ msgid "6. Descending"
 msgstr "6. Descendente"
 
 #. AI-generated
-#: appmain/querydoc.cpp:919 appmain/structuredoc.cpp:2178
-#: appmain/transformationdoc.cpp:2087
+#: appmain/querydoc.cpp:919 appmain/structuredoc.cpp:2178 appmain/transformationdoc.cpp:2087
 msgid "&Insert Field"
 msgstr "&Insira Campo"
 
@@ -6365,37 +5670,24 @@ msgid "&Insert Fields"
 msgstr "&Insira Campos"
 
 #. AI-generated
-#: appmain/querydoc.cpp:931 appmain/structuredoc.cpp:2189
-#: appmain/transformationdoc.cpp:2099
+#: appmain/querydoc.cpp:931 appmain/structuredoc.cpp:2189 appmain/transformationdoc.cpp:2099
 msgid "Select &All"
 msgstr "Selecione &Todos"
 
 #. AI-generated
 #: appmain/querydoc.cpp:1106 appmain/relationdiagram.cpp:2343
-msgid ""
-"One or more of the items is a folder.  Folders cannot be added to the "
-"relationship diagram."
-msgstr ""
-"Um ou mais dos itens é uma pasta. Pastas não podem ser adicionadas ao "
-"diagrama de relacionamento."
+msgid "One or more of the items is a folder.  Folders cannot be added to the relationship diagram."
+msgstr "Um ou mais dos itens é uma pasta. Pastas não podem ser adicionadas ao diagrama de relacionamento."
 
 #. AI-generated
 #: appmain/querydoc.cpp:1114 appmain/relationdiagram.cpp:2352
-msgid ""
-"One or more of the items is an external table.  External tables cannot be "
-"added to the relationship diagram."
-msgstr ""
-"Um ou mais dos itens é uma tabela externa. Tabelas externas não podem ser "
-"adicionadas ao diagrama de relacionamento."
+msgid "One or more of the items is an external table.  External tables cannot be added to the relationship diagram."
+msgstr "Um ou mais dos itens é uma tabela externa. Tabelas externas não podem ser adicionadas ao diagrama de relacionamento."
 
 #. AI-generated
 #: appmain/querydoc.cpp:1125 appmain/relationdiagram.cpp:2365
-msgid ""
-"One or more of the items is not a table.  Items that are not tables cannot "
-"be added to the relationship diagram."
-msgstr ""
-"Um ou mais dos itens não é uma tabela. Itens que não são tabelas não podem "
-"ser adicionados ao diagrama de relacionamento."
+msgid "One or more of the items is not a table.  Items that are not tables cannot be added to the relationship diagram."
+msgstr "Um ou mais dos itens não é uma tabela. Itens que não são tabelas não podem ser adicionados ao diagrama de relacionamento."
 
 #. AI-generated
 #: appmain/querydoc.cpp:1141 appmain/relationdiagram.cpp:2394
@@ -6427,18 +5719,12 @@ msgstr "Excluir Relação"
 msgid ""
 "To add output fields to this query, drag in\n"
 "fields from the above tables or double-click here"
-msgstr ""
-"Para adicionar campos de saída a esta consulta, arraste campos das tabelas "
-"acima ou clique duas vezes aqui"
+msgstr "Para adicionar campos de saída a esta consulta, arraste campos das tabelas acima ou clique duas vezes aqui"
 
 #. AI-generated
 #: appmain/querydoc.cpp:1981
-msgid ""
-"A query is already running.  Please wait until the query has finished "
-"running or cancel the job."
-msgstr ""
-"Uma consulta já está sendo executada. Por favor, aguarde até que a consulta "
-"termine de executar ou cancele o trabalho."
+msgid "A query is already running.  Please wait until the query has finished running or cancel the job."
+msgstr "Uma consulta já está sendo executada. Por favor, aguarde até que a consulta termine de executar ou cancele o trabalho."
 
 #. AI-generated
 #: appmain/querydoc.cpp:2157
@@ -6457,12 +5743,8 @@ msgstr "Por favor, especifique no máximo uma tabela de seleção primária."
 
 #. AI-generated
 #: appmain/querydoc.cpp:2289
-msgid ""
-"No query parameters are currently specified.  Please add at least one "
-"parameter to the query definition."
-msgstr ""
-"Nenhum parâmetro de consulta está atualmente especificado. Por favor, "
-"adicione pelo menos um parâmetro à definição de consulta."
+msgid "No query parameters are currently specified.  Please add at least one parameter to the query definition."
+msgstr "Nenhum parâmetro de consulta está atualmente especificado. Por favor, adicione pelo menos um parâmetro à definição de consulta."
 
 #. AI-generated
 #: appmain/querydoc.cpp:2326
@@ -6471,12 +5753,8 @@ msgstr "Um campo de entrada ou fórmula está faltando."
 
 #. AI-generated
 #: appmain/querydoc.cpp:2392
-msgid ""
-"The sort order has an error.  Two or more identical sort specifiers have "
-"been found."
-msgstr ""
-"A ordem de classificação tem um erro. Dois ou mais identificadores de "
-"classificação idênticos foram encontrados."
+msgid "The sort order has an error.  Two or more identical sort specifiers have been found."
+msgstr "A ordem de classificação tem um erro. Dois ou mais identificadores de classificação idênticos foram encontrados."
 
 #. AI-generated
 #: appmain/querydoc.cpp:2437
@@ -6500,12 +5778,8 @@ msgstr "A tabela não pôde ser aberta. Ela pode estar em uso no momento."
 
 #. AI-generated
 #: appmain/relationdiagram.cpp:1331
-msgid ""
-"Multi-field relationships cannot be created at one time.  Please connect "
-"each pair of fields individually."
-msgstr ""
-"Relacionamentos de vários campos não podem ser criados de uma vez. Por "
-"favor, conecte cada par de campos individualmente."
+msgid "Multi-field relationships cannot be created at one time.  Please connect each pair of fields individually."
+msgstr "Relacionamentos de vários campos não podem ser criados de uma vez. Por favor, conecte cada par de campos individualmente."
 
 #. AI-generated
 #: appmain/relationdiagram.cpp:1551
@@ -6518,21 +5792,13 @@ msgstr ""
 
 #. AI-generated
 #: appmain/relationdiagram.cpp:2091
-msgid ""
-"Removing this table from the diagram will remove all relationships "
-"associated with this table.  Would you like to continue?"
-msgstr ""
-"Remover esta tabela do diagrama removerá todos os relacionamentos associados"
-" a esta tabela. Você gostaria de continuar?"
+msgid "Removing this table from the diagram will remove all relationships associated with this table.  Would you like to continue?"
+msgstr "Remover esta tabela do diagrama removerá todos os relacionamentos associados a esta tabela. Você gostaria de continuar?"
 
 #. AI-generated
 #: appmain/relationdiagram.cpp:2429
-msgid ""
-"One or more of the tables was not added because it already exists in the "
-"relationship diagram."
-msgstr ""
-"Uma ou mais das tabelas não foi adicionada porque já existe no diagrama de "
-"relação."
+msgid "One or more of the tables was not added because it already exists in the relationship diagram."
+msgstr "Uma ou mais das tabelas não foi adicionada porque já existe no diagrama de relação."
 
 #. AI-generated
 #: appmain/reportdoc.cpp:648
@@ -6906,8 +6172,7 @@ msgstr "Oggetto previsto, ma mancante."
 #. AI-generated
 #: appmain/scripthost.cpp:1321
 msgid "Object type mismatch (possibly missing 'new' operator)"
-msgstr ""
-"Tipo di oggetto non corrispondente (possibile mancanza dell'operatore 'new')"
+msgstr "Tipo di oggetto non corrispondente (possibile mancanza dell'operatore 'new')"
 
 #. AI-generated
 #: appmain/scripthost.cpp:1325
@@ -6917,25 +6182,16 @@ msgstr "Il termine '%ls' non si traduce in una funzione."
 
 #. AI-generated
 #: appmain/structuredoc.cpp:444
-msgid ""
-"The structure cannot be modified while the table is showing filtered related"
-" records."
-msgstr ""
-"La struttura non può essere modificata mentre la tabella mostra record "
-"correlati filtrati."
+msgid "The structure cannot be modified while the table is showing filtered related records."
+msgstr "La struttura non può essere modificata mentre la tabella mostra record correlati filtrati."
 
 #. AI-generated
 #: appmain/structuredoc.cpp:462
-msgid ""
-"The table you want to modify is currently showing filtered records.  "
-"Modifying the table will remove the filter.  Would you like to continue?"
-msgstr ""
-"La tabella che vuoi modificare sta attualmente mostrando record filtrati. "
-"Modificare la tabella rimuoverà il filtro. Vuoi continuare?"
+msgid "The table you want to modify is currently showing filtered records.  Modifying the table will remove the filter.  Would you like to continue?"
+msgstr "La tabella che vuoi modificare sta attualmente mostrando record filtrati. Modificare la tabella rimuoverà il filtro. Vuoi continuare?"
 
 #. AI-generated
-#: appmain/structuredoc.cpp:511 appmain/tabledoc.cpp:6212
-#: appmain/tabledoc.cpp:6620
+#: appmain/structuredoc.cpp:511 appmain/tabledoc.cpp:6212 appmain/tabledoc.cpp:6620
 #, c-format
 msgid "Modifying Structure of '%s'"
 msgstr "Modifica della Struttura di '%s'"
@@ -6946,14 +6202,12 @@ msgid "Decimals"
 msgstr "Decimali"
 
 #. AI-generated
-#: appmain/structuredoc.cpp:705 appmain/structuredoc.cpp:1617
-#: appmain/transformationdoc.cpp:657 appmain/transformationdoc.cpp:1429
+#: appmain/structuredoc.cpp:705 appmain/structuredoc.cpp:1617 appmain/transformationdoc.cpp:657 appmain/transformationdoc.cpp:1429
 msgid "Would you like to save the changes made to the table's structure?"
 msgstr "Vuoi salvare le modifiche apportate alla struttura della tabella?"
 
 #. AI-generated
-#: appmain/structuredoc.cpp:1148 appmain/textdoc.cpp:1197
-#: appmain/transformationdoc.cpp:1015
+#: appmain/structuredoc.cpp:1148 appmain/textdoc.cpp:1197 appmain/transformationdoc.cpp:1015
 #, c-format
 msgid "Field Count: %d"
 msgstr "Conteggio Campi: %d"
@@ -6969,20 +6223,16 @@ msgstr "Larghezza Record: %d"
 msgid ""
 "To add fields to this table, drag in fields\n"
 "from the Fields Panel or double-click here"
-msgstr ""
-"Per aggiungere campi a questa tabella, trascina i campi dal Pannello Campi o"
-" fai doppio clic qui"
+msgstr "Per aggiungere campi a questa tabella, trascina i campi dal Pannello Campi o fai doppio clic qui"
 
 #. AI-generated
 #: appmain/structuredoc.cpp:1829
 msgid ""
-"One or more of the calculated fields that is selected is new to the table's "
-"structure.  Only calculated fields that already exist in the table's "
+"One or more of the calculated fields that is selected is new to the table's structure.  Only calculated fields that already exist in the table's "
 "structure can be converted to fixed fields."
 msgstr ""
-"Uno o più dei campi calcolati selezionati è nuovo nella struttura della "
-"tabella. Solo i campi calcolati che esistono già nella struttura della "
-"tabella possono essere convertiti in campi fissi."
+"Uno o più dei campi calcolati selezionati è nuovo nella struttura della tabella. Solo i campi calcolati che esistono già nella struttura della tabella "
+"possono essere convertiti in campi fissi."
 
 #. AI-generated
 #: appmain/structuredoc.cpp:2179
@@ -6996,45 +6246,28 @@ msgstr "Converti in Campo Fisso"
 
 #. AI-generated
 #: appmain/structurevalidator.cpp:27
-msgid ""
-"There are no fields in the table structure.  Add at least one field to the "
-"table to continue."
-msgstr ""
-"Non ci sono campi nella struttura della tabella. Aggiungi almeno un campo "
-"alla tabella per continuare."
+msgid "There are no fields in the table structure.  Add at least one field to the table to continue."
+msgstr "Non ci sono campi nella struttura della tabella. Aggiungi almeno un campo alla tabella per continuare."
 
 #. AI-generated
-#: appmain/structurevalidator.cpp:28 appmain/structurevalidator.cpp:38
-#: appmain/structurevalidator.cpp:48 appmain/structurevalidator.cpp:68
+#: appmain/structurevalidator.cpp:28 appmain/structurevalidator.cpp:38 appmain/structurevalidator.cpp:48 appmain/structurevalidator.cpp:68
 msgid "Invalid Table Structure"
 msgstr "Struttura Tabella Invalida"
 
 #. AI-generated
 #: appmain/structurevalidator.cpp:37
-msgid ""
-"The source table structure is invalid or corrupt.  This file cannot be "
-"opened in the Table View."
-msgstr ""
-"La struttura tabella sorgente è invalida o corrotta. Questo file non può "
-"essere aperto nella Visualizzazione Tabella."
+msgid "The source table structure is invalid or corrupt.  This file cannot be opened in the Table View."
+msgstr "La struttura tabella sorgente è invalida o corrotta. Questo file non può essere aperto nella Visualizzazione Tabella."
 
 #. AI-generated
 #: appmain/structurevalidator.cpp:47
-msgid ""
-"Two or more fields have the same name.  Check to make sure all field names "
-"are unique to continue."
-msgstr ""
-"Due o più campi hanno lo stesso nome. Assicurati che tutti i nomi dei campi "
-"siano unici per continuare."
+msgid "Two or more fields have the same name.  Check to make sure all field names are unique to continue."
+msgstr "Due o più campi hanno lo stesso nome. Assicurati che tutti i nomi dei campi siano unici per continuare."
 
 #. AI-generated
 #: appmain/structurevalidator.cpp:57
-msgid ""
-"Two or more tables have the same name.  Check to make sure all table names "
-"are unique to continue."
-msgstr ""
-"Due o più tabelle hanno lo stesso nome. Assicurati che tutti i nomi delle "
-"tabelle siano unici per continuare."
+msgid "Two or more tables have the same name.  Check to make sure all table names are unique to continue."
+msgstr "Due o più tabelle hanno lo stesso nome. Assicurati che tutti i nomi delle tabelle siano unici per continuare."
 
 #. AI-generated
 #: appmain/structurevalidator.cpp:58
@@ -7043,21 +6276,13 @@ msgstr "Nomi Tabelle Duplicati"
 
 #. AI-generated
 #: appmain/structurevalidator.cpp:67
-msgid ""
-"One or more field names are invalid.  Check to make sure all field names are"
-" valid to continue."
-msgstr ""
-"Uno o più nomi dei campi sono invalidi. Assicurati che tutti i nomi dei "
-"campi siano validi per continuare."
+msgid "One or more field names are invalid.  Check to make sure all field names are valid to continue."
+msgstr "Uno o più nomi dei campi sono invalidi. Assicurati che tutti i nomi dei campi siano validi per continuare."
 
 #. AI-generated
 #: appmain/structurevalidator.cpp:77
-msgid ""
-"One or more table names are invalid.  Check to make sure all table names are"
-" valid to continue."
-msgstr ""
-"Uno o più nomi delle tabelle sono invalidi. Assicurati che tutti i nomi "
-"delle tabelle siano validi per continuare."
+msgid "One or more table names are invalid.  Check to make sure all table names are valid to continue."
+msgstr "Uno o più nomi delle tabelle sono invalidi. Assicurati che tutti i nomi delle tabelle siano validi per continuare."
 
 #. AI-generated
 #: appmain/structurevalidator.cpp:78
@@ -7066,12 +6291,8 @@ msgstr "Nomi Tabelle Invalidi"
 
 #. AI-generated
 #: appmain/structurevalidator.cpp:94
-msgid ""
-"One or more formulas has invalid syntax.  Check to make sure all formulas "
-"have valid syntax to continue."
-msgstr ""
-"Una o più formule hanno una sintassi non valida. Assicurati che tutte le "
-"formule abbiano una sintassi valida per continuare."
+msgid "One or more formulas has invalid syntax.  Check to make sure all formulas have valid syntax to continue."
+msgstr "Una o più formule hanno una sintassi non valida. Assicurati che tutte le formule abbiano una sintassi valida per continuare."
 
 #. AI-generated
 #: appmain/structurevalidator.cpp:95 appmain/structurevalidator.cpp:104
@@ -7080,30 +6301,18 @@ msgstr "Formula/e Invalida/e"
 
 #. AI-generated
 #: appmain/structurevalidator.cpp:103
-msgid ""
-"One or more of the formulas has a return type that does not match the field "
-"type.  Would you like to continue?"
-msgstr ""
-"Una o più delle formule ha un tipo di ritorno che non corrisponde al tipo di"
-" campo. Vuoi continuare?"
+msgid "One or more of the formulas has a return type that does not match the field type.  Would you like to continue?"
+msgstr "Una o più delle formule ha un tipo di ritorno che non corrisponde al tipo di campo. Vuoi continuare?"
 
 #. AI-generated
 #: appmain/tabledoc.cpp:1511
-msgid ""
-"The file could not be saved in the specified location. The destination "
-"location may by in use."
-msgstr ""
-"Il file non può essere salvato nella posizione specificata. La posizione di "
-"destinazione potrebbe essere in uso."
+msgid "The file could not be saved in the specified location. The destination location may by in use."
+msgstr "Il file non può essere salvato nella posizione specificata. La posizione di destinazione potrebbe essere in uso."
 
 #. AI-generated
 #: appmain/tabledoc.cpp:1520
-msgid ""
-"The file could not be saved in the specified location. The destination "
-"location may by in use. (2)"
-msgstr ""
-"Il file non può essere salvato nella posizione specificata. La posizione di "
-"destinazione potrebbe essere in uso. (2)"
+msgid "The file could not be saved in the specified location. The destination location may by in use. (2)"
+msgstr "Il file non può essere salvato nella posizione specificata. La posizione di destinazione potrebbe essere in uso. (2)"
 
 #. AI-generated
 #: appmain/tabledoc.cpp:1600 appmain/tabledoc.cpp:1742
@@ -7128,12 +6337,8 @@ msgstr "Senza titolo"
 
 #. AI-generated
 #: appmain/tabledoc.cpp:1854
-msgid ""
-"The file could not be reloaded, because the file is locked or marked as read"
-" only"
-msgstr ""
-"Il file non può essere ricaricato, perché il file è bloccato o "
-"contrassegnato come di sola lettura"
+msgid "The file could not be reloaded, because the file is locked or marked as read only"
+msgstr "Il file non può essere ricaricato, perché il file è bloccato o contrassegnato come di sola lettura"
 
 #. AI-generated
 #: appmain/tabledoc.cpp:1983 appmain/tabledocapi.cpp:32
@@ -7237,12 +6442,8 @@ msgstr "Nome: %s, Tipo: %s, Larghezza: %d, Decimali: %d"
 
 #. AI-generated
 #: appmain/tabledoc.cpp:5211
-msgid ""
-"The database table does not have a primary key specified, which is required "
-"for editing data values."
-msgstr ""
-"La tabella del database non ha una chiave primaria specificata, che è "
-"richiesta per la modifica dei valori dei dati."
+msgid "The database table does not have a primary key specified, which is required for editing data values."
+msgstr "La tabella del database non ha una chiave primaria specificata, che è richiesta per la modifica dei valori dei dati."
 
 #. AI-generated
 #: appmain/tabledoc.cpp:5500
@@ -7250,8 +6451,7 @@ msgid "The date entered was not formatted correctly."
 msgstr "La data inserita non è stata formattata correttamente."
 
 #. AI-generated
-#: appmain/tabledoc.cpp:6046 appmain/toolbars.cpp:186 appmain/toolbars.cpp:198
-#: appmain/toolbars.cpp:249
+#: appmain/tabledoc.cpp:6046 appmain/toolbars.cpp:186 appmain/toolbars.cpp:198 appmain/toolbars.cpp:249
 msgid "Filter"
 msgstr "Filtro"
 
@@ -7400,8 +6600,7 @@ msgid "ASCII/Unicode"
 msgstr "ASCII/Unicode"
 
 #. AI-generated
-#: appmain/textdoc.cpp:270 appmain/textview.cpp:2319
-#: appmain/transformationdoc.cpp:216
+#: appmain/textdoc.cpp:270 appmain/textview.cpp:2319 appmain/transformationdoc.cpp:216
 msgid "EBCDIC"
 msgstr "EBCDIC"
 
@@ -7426,9 +6625,8 @@ msgid "Pipe (|)"
 msgstr "Barra verticale (|)"
 
 #. AI-generated
-#: appmain/textdoc.cpp:278 appmain/textdoc.cpp:283
-#: appmain/transformationdoc.cpp:371 appmain/transformationdoc.cpp:379
-#: appmain/transformationdoc.cpp:392 appmain/transformationdoc.cpp:400
+#: appmain/textdoc.cpp:278 appmain/textdoc.cpp:283 appmain/transformationdoc.cpp:371 appmain/transformationdoc.cpp:379 appmain/transformationdoc.cpp:392
+#: appmain/transformationdoc.cpp:400
 msgid "Other..."
 msgstr "Altro..."
 
@@ -7545,14 +6743,12 @@ msgid "Forward"
 msgstr "Avanti"
 
 #. AI-generated
-#: appmain/toolbars.cpp:194 appmain/toolbars.cpp:204 appmain/toolbars.cpp:245
-#: appmain/toolbars.cpp:255
+#: appmain/toolbars.cpp:194 appmain/toolbars.cpp:204 appmain/toolbars.cpp:245 appmain/toolbars.cpp:255
 msgid "Refresh"
 msgstr "Aggiorna"
 
 #. AI-generated
-#: appmain/toolbars.cpp:195 appmain/toolbars.cpp:205 appmain/toolbars.cpp:246
-#: appmain/toolbars.cpp:256
+#: appmain/toolbars.cpp:195 appmain/toolbars.cpp:205 appmain/toolbars.cpp:246 appmain/toolbars.cpp:256
 msgid "Stop"
 msgstr "Ferma"
 
@@ -7567,8 +6763,7 @@ msgid "Bookmark"
 msgstr "Segnalibro"
 
 #. AI-generated
-#: appmain/toolbars.cpp:199 appmain/toolbars.cpp:209 appmain/toolbars.cpp:250
-#: appmain/toolbars.cpp:260
+#: appmain/toolbars.cpp:199 appmain/toolbars.cpp:209 appmain/toolbars.cpp:250 appmain/toolbars.cpp:260
 msgid "Find Next"
 msgstr "Trova Successivo"
 
@@ -7779,8 +6974,7 @@ msgstr "Questo campo ha un nome non valido"
 #. AI-generated
 #: appmain/transformationdoc.cpp:1804
 msgid "This formula has a return type that does not match the field type"
-msgstr ""
-"Questa formula ha un tipo di ritorno che non corrisponde al tipo di campo"
+msgstr "Questa formula ha un tipo di ritorno che non corrisponde al tipo di campo"
 
 #. AI-generated
 #: appmain/transformationdoc.cpp:1806
@@ -7810,18 +7004,12 @@ msgstr "$C di $M KB scaricati ($p1%)"
 #. AI-generated
 #: appmain/updater.cpp:598 appmain/updater.cpp:701
 #, c-format
-msgid ""
-"There are currently jobs running.  Please update %s after all running jobs "
-"are completed."
-msgstr ""
-"Ci sono attualmente lavori in corso. Aggiorna %s dopo che tutti i lavori in "
-"esecuzione sono stati completati."
+msgid "There are currently jobs running.  Please update %s after all running jobs are completed."
+msgstr "Ci sono attualmente lavori in corso. Aggiorna %s dopo che tutti i lavori in esecuzione sono stati completati."
 
 #. AI-generated
 #: appmain/updater.cpp:606
-msgid ""
-"The update has finished downloading.  Would you like to install the update "
-"now?"
+msgid "The update has finished downloading.  Would you like to install the update now?"
 msgstr "L'aggiornamento è stato scaricato. Vuoi installarlo ora?"
 
 #. AI-generated
@@ -7839,31 +7027,23 @@ msgstr "Una nuova versione di %s è disponibile. Vuoi scaricarla?"
 #. AI-generated
 #: appmain/util.cpp:1346
 msgid ""
-"An object with an invalid name was specified.  Please rename the item(s) to "
-"continue.  Database object names, such as table names, must not be a "
-"reserved keyword, and must not contain any control characters.  For a "
-"listing of reserved keywords and invalid characters, please consult the user"
-" documentation."
+"An object with an invalid name was specified.  Please rename the item(s) to continue.  Database object names, such as table names, must not be a "
+"reserved keyword, and must not contain any control characters.  For a listing of reserved keywords and invalid characters, please consult the user "
+"documentation."
 msgstr ""
-"Un oggetto con un nome non valido è stato specificato. Rinomina "
-"l'articolo(i) per continuare. I nomi degli oggetti del database, come i nomi"
-" delle tabelle, non devono essere una parola chiave riservata e non devono "
-"contenere caratteri di controllo. Per un elenco di parole chiave riservate e"
-" caratteri non validi, consultare la documentazione utente."
+"Un oggetto con un nome non valido è stato specificato. Rinomina l'articolo(i) per continuare. I nomi degli oggetti del database, come i nomi delle "
+"tabelle, non devono essere una parola chiave riservata e non devono contenere caratteri di controllo. Per un elenco di parole chiave riservate e "
+"caratteri non validi, consultare la documentazione utente."
 
 #. AI-generated
 #: appmain/util.cpp:1350
 #, c-format
 msgid ""
-"The object name '%s' is invalid.  Please rename the item to continue.  "
-"Database object names, such as table names, must not be a reserved keyword, "
-"and must not contain any control characters.  For a listing of reserved "
-"keywords and invalid characters, please consult the user documentation."
+"The object name '%s' is invalid.  Please rename the item to continue.  Database object names, such as table names, must not be a reserved keyword, and "
+"must not contain any control characters.  For a listing of reserved keywords and invalid characters, please consult the user documentation."
 msgstr ""
-"Il nome dell'oggetto '%s' non è valido. Rinomina l'articolo per continuare. "
-"I nomi degli oggetti del database, come i nomi delle tabelle, non devono "
-"essere una parola chiave riservata e non devono contenere caratteri di "
-"controllo. Per un elenco di parole chiave riservate e caratteri non validi, "
+"Il nome dell'oggetto '%s' non è valido. Rinomina l'articolo per continuare. I nomi degli oggetti del database, come i nomi delle tabelle, non devono "
+"essere una parola chiave riservata e non devono contenere caratteri di controllo. Per un elenco di parole chiave riservate e caratteri non validi, "
 "consultare la documentazione utente."
 
 #. AI-generated
@@ -7874,29 +7054,21 @@ msgstr "Nome Oggetto Non Valido"
 #. AI-generated
 #: appmain/util.cpp:1367
 msgid ""
-"A field with an invalid name was specified.  Please rename the field to "
-"continue.  A field name must not be a reserved keyword, and must not contain"
-" any control characters.  For a listing of reserved keywords and invalid "
-"characters, please consult the user documentation."
+"A field with an invalid name was specified.  Please rename the field to continue.  A field name must not be a reserved keyword, and must not contain "
+"any control characters.  For a listing of reserved keywords and invalid characters, please consult the user documentation."
 msgstr ""
-"Un campo con un nome non valido è stato specificato. Rinomina il campo per "
-"continuare. Un nome di campo non deve essere una parola chiave riservata, e "
-"non deve contenere caratteri di controllo. Per un elenco di parole chiave "
-"riservate e caratteri non validi, consultare la documentazione utente."
+"Un campo con un nome non valido è stato specificato. Rinomina il campo per continuare. Un nome di campo non deve essere una parola chiave riservata, e "
+"non deve contenere caratteri di controllo. Per un elenco di parole chiave riservate e caratteri non validi, consultare la documentazione utente."
 
 #. AI-generated
 #: appmain/util.cpp:1371
 #, c-format
 msgid ""
-"The field name '%s' is invalid.  Please rename the field to continue.  A "
-"field name must not be a reserved keyword, and must not contain any control "
-"characters.  For a listing of reserved keywords and invalid characters, "
-"please consult the user documentation."
+"The field name '%s' is invalid.  Please rename the field to continue.  A field name must not be a reserved keyword, and must not contain any control "
+"characters.  For a listing of reserved keywords and invalid characters, please consult the user documentation."
 msgstr ""
-"Il nome del campo '%s' non è valido. Rinomina il campo per continuare. Un "
-"nome di campo non deve essere una parola chiave riservata, e non deve "
-"contenere caratteri di controllo. Per un elenco di parole chiave riservate e"
-" caratteri non validi, consultare la documentazione utente."
+"Il nome del campo '%s' non è valido. Rinomina il campo per continuare. Un nome di campo non deve essere una parola chiave riservata, e non deve "
+"contenere caratteri di controllo. Per un elenco di parole chiave riservate e caratteri non validi, consultare la documentazione utente."
 
 #. AI-generated
 #: appmain/util.cpp:1376
@@ -7915,29 +7087,18 @@ msgstr "$c di $m record elaborati ($p1%)"
 
 #. AI-generated
 #: appmain/util.cpp:1767
-msgid ""
-"The specified output path is invalid because it specifies an invalid "
-"filename."
-msgstr ""
-"Il percorso di output specificato non è valido perché specifica un nome di "
-"file non valido."
+msgid "The specified output path is invalid because it specifies an invalid filename."
+msgstr "Il percorso di output specificato non è valido perché specifica un nome di file non valido."
 
 #. AI-generated
 #: appmain/util.cpp:1787
-msgid ""
-"The specified output path is invalid because it specifies a folder that "
-"already exists."
-msgstr ""
-"Il percorso di output specificato non è valido perché specifica una cartella"
-" già esistente."
+msgid "The specified output path is invalid because it specifies a folder that already exists."
+msgstr "Il percorso di output specificato non è valido perché specifica una cartella già esistente."
 
 #. AI-generated
 #: appmain/util.cpp:1796
-msgid ""
-"The specified output file name already exists.  Would you like to overwrite "
-"it?"
-msgstr ""
-"Il nome del file di output specificato esiste già. Vuoi sovrascriverlo?"
+msgid "The specified output file name already exists.  Would you like to overwrite it?"
+msgstr "Il nome del file di output specificato esiste già. Vuoi sovrascriverlo?"
 
 #. AI-generated
 #: appmain/util.cpp:2579
@@ -8088,8 +7249,7 @@ msgstr "Nome del file:"
 #. AI-generated
 #: kcl/gridvalidator.cpp:60
 msgid "This item has the same name as another item in this list"
-msgstr ""
-"Questo elemento ha lo stesso nome di un altro elemento in questo elenco"
+msgstr "Questo elemento ha lo stesso nome di un altro elemento in questo elenco"
 
 #. AI-generated
 #: kcl/gridvalidator.cpp:69
