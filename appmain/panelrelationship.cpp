@@ -21,7 +21,8 @@
 enum
 {
     ID_AddTable = 10000,
-    ID_UpdateRelationships
+    ID_DeleteAllRelationships,
+    ID_UpdateRelationships,
 };
 
 
@@ -78,6 +79,7 @@ void RelDiagramWatcher::onFrameEvent(FrameworkEvent& evt)
 BEGIN_EVENT_TABLE(RelationshipPanel, wxPanel)
     EVT_BUTTON(wxID_CANCEL, RelationshipPanel::onClose)
     EVT_BUTTON(ID_AddTable, RelationshipPanel::onAddTable)
+    EVT_BUTTON(ID_DeleteAllRelationships, RelationshipPanel::onDeleteAllRelationships)
     EVT_BUTTON(ID_UpdateRelationships, RelationshipPanel::onUpdateRelationships)
 END_EVENT_TABLE()
 
@@ -85,6 +87,7 @@ END_EVENT_TABLE()
 RelationshipPanel::RelationshipPanel()
 {
     m_add_button = NULL;
+    m_delete_button = NULL;
     m_update_button = NULL;
     m_diagram = NULL;
     m_changed = false;
@@ -158,8 +161,10 @@ bool RelationshipPanel::initDoc(IFramePtr frame,
 
     // create button sizer
     m_add_button = new wxButton(this, ID_AddTable, _("Add Table..."));
+    m_delete_button = new wxButton(this, ID_DeleteAllRelationships, _("Delete All Relationships"));
     m_update_button = new wxButton(this, ID_UpdateRelationships, _("Update Relationships"));
     m_update_button->Enable(false);
+    m_delete_button->Enable(false);
     
     // this button is created so that the ESC key can be used to
     // close the panel -- it is completely hidden to the user
@@ -169,8 +174,11 @@ bool RelationshipPanel::initDoc(IFramePtr frame,
     wxBoxSizer* button_sizer = new wxBoxSizer(wxHORIZONTAL);
     button_sizer->AddSpacer(FromDIP(5));
     button_sizer->Add(m_add_button, 0, wxALIGN_CENTER);
+    // moved: stretch first, then close, then delete+update on right
     button_sizer->AddStretchSpacer();
     button_sizer->Add(close_button, 0, wxALIGN_CENTER);
+    button_sizer->Add(m_delete_button, 0, wxALIGN_CENTER);
+    button_sizer->AddSpacer(FromDIP(5));
     button_sizer->Add(m_update_button, 0, wxALIGN_CENTER);
     button_sizer->AddSpacer(FromDIP(5));
     button_sizer->SetMinSize(FromDIP(100), FromDIP(31));
@@ -187,6 +195,7 @@ bool RelationshipPanel::initDoc(IFramePtr frame,
 
     m_diagram->load();
     loadRelationships();
+    validateUpdateButton();
 
     // create main sizer
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
@@ -276,6 +285,14 @@ void RelationshipPanel::validateUpdateButton()
         active = false;
 
     m_update_button->Enable(active);
+
+    // enable Delete All only if there are any lines
+    if (m_delete_button)
+    {
+        std::vector<RelationLine*> lines;
+        m_diagram->getLines(wxEmptyString, wxEmptyString, lines);
+        m_delete_button->Enable(!lines.empty());
+    }
 }
 
 void RelationshipPanel::onDiagramUpdated()
@@ -370,6 +387,48 @@ void RelationshipPanel::onLineAdded(RelationLine* line, bool* allowed)
 void RelationshipPanel::onAddTable(wxCommandEvent& evt)
 {
     showAddTableDialog(m_diagram);
+}
+
+void RelationshipPanel::onDeleteAllRelationships(wxCommandEvent& evt)
+{
+    // confirmation prompt
+    int res = appMessageBox(
+        _("Are you sure you want to delete all relationships?\nThis action cannot be undone."),
+        APPLICATION_NAME,
+        wxYES_NO | wxICON_QUESTION | wxCENTER);
+
+    if (res != wxYES)
+        return;
+
+    // remove all relationship lines (leave boxes)
+    xd::IRelationSchemaPtr rels = g_app->getDatabase();
+    if (rels.isOk())
+    {
+        xd::IRelationEnumPtr rel_enum = rels->getRelationEnum(L""); // get all relationships
+        xd::IRelationPtr rel;
+        size_t r, rel_count = rel_enum->size();
+
+        std::vector<std::wstring> rel_ids;
+
+        for (r = 0; r < rel_count; ++r)
+        {
+            rel = rel_enum->getItem(r);
+            if (rel.isOk())
+                rel_ids.push_back(rel->getRelationId());
+        }
+
+        for (r = 0; r < rel_ids.size(); ++r)
+        {
+            rels->deleteRelation(rel_ids[r]);
+        }
+    }
+
+
+    m_diagram->deleteAllLines();
+    m_diagram->refreshBoxes();
+    m_diagram->refresh();
+    m_changed = false;
+    validateUpdateButton();
 }
 
 void RelationshipPanel::onClose(wxCommandEvent& evt)
@@ -689,6 +748,8 @@ void RelationshipPanel::loadRelationships()
     m_diagram->refresh();
 
     if (update_button)
+        validateUpdateButton();
+    else
         validateUpdateButton();
 
     m_changed = false;

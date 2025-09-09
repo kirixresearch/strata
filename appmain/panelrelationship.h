@@ -88,6 +88,7 @@ private:
     
     void onClose(wxCommandEvent& evt);
     void onAddTable(wxCommandEvent& evt);
+    void onDeleteAllRelationships(wxCommandEvent& evt);
     void onUpdateRelationships(wxCommandEvent& evt);
     void onRelationshipJobFinished(jobs::IJobPtr job);
 
@@ -96,6 +97,7 @@ private:
     IDocumentSitePtr m_doc_site;
     RelationDiagram* m_diagram;
     wxButton* m_add_button;
+    wxButton* m_delete_button;
     wxButton* m_update_button;
     bool m_changed;
     bool m_do_save;
