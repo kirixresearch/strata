@@ -18,3 +18,7 @@ if not exist "%SCRIPT_DIR%\zip\postgres-15.10.zip" (
 if not exist "%SCRIPT_DIR%\zip\wxWidgets-3.2.8.zip" (
     curl -L -o "%SCRIPT_DIR%\zip\wxWidgets-3.2.8.zip" https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.8/wxWidgets-3.2.8.zip
 )
+
+if not exist "%SCRIPT_DIR%\zip\wxWidgets-3.3.1.zip" (
+    curl -L -o "%SCRIPT_DIR%\zip\wxWidgets-3.3.1.zip" https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.1/wxWidgets-3.3.1.zip
+)
