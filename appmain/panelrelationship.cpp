@@ -401,7 +401,10 @@ void RelationshipPanel::onDeleteAllRelationships(wxCommandEvent& evt)
         return;
 
     // remove all relationship lines (leave boxes)
-    xd::IRelationSchemaPtr rels = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (!db)
+        return;
+    xd::IRelationSchemaPtr rels = db;
     if (rels.isOk())
     {
         xd::IRelationEnumPtr rel_enum = rels->getRelationEnum(L""); // get all relationships
@@ -414,7 +417,13 @@ void RelationshipPanel::onDeleteAllRelationships(wxCommandEvent& evt)
         {
             rel = rel_enum->getItem(r);
             if (rel.isOk())
+            {
+                // try to delete the relationship's index
+                db->deleteIndex(rel->getLeftTable(), rel->getTag());
+
+                // save the relation id for deletion in the next loop
                 rel_ids.push_back(rel->getRelationId());
+            }
         }
 
         for (r = 0; r < rel_ids.size(); ++r)
