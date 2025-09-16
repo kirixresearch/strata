@@ -3458,14 +3458,13 @@ void DbDoc::onDragDrop(IFsItemPtr target,
         bool dest_ismount = getMountPointHelper(db, dest_folder, dest_cstr, dest_rpath);
         bool cross_mount = (src_ismount != dest_ismount || src_cstr != dest_cstr) ? true : false;
 
-
         std::wstring dest_name = src_name;
         if (g_app->getDbDriver() != L"xdfs" && dest_driver == L"xdfs")
         {
             // if we're saving the file to a filesystem mount and no extension
             // is specified, then automatically add a 'csv' or 'js' extension; this
             // is a usability issue since without the extension, the user usually
-            // ends up adding this as the  first item of business after saving
+            // ends up adding this as the first order of business after saving
             if (getExtensionFromPath(dest_name).length() == 0)
             {
                 IDbObjectFsItemPtr dbobject_item = item;
@@ -3501,6 +3500,17 @@ void DbDoc::onDragDrop(IFsItemPtr target,
             kl::JsonNode params;
             params["input"] = src_path;
             params["output"] = dest_path;
+
+            std::wstring definition_json;
+            if (readStreamTextFile(g_app->getDatabase(), src_path + L".def", definition_json))
+            {
+                kl::JsonNode input_format;
+
+                if (input_format.fromString(definition_json))
+                {
+                    params["input_format"].copyFrom(input_format);
+                }
+            }
 
             job->setParameters(params.toString());
             jobs.push_back(job);

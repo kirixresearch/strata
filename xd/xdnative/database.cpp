@@ -1540,6 +1540,10 @@ bool XdnativeDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
         qp.from = info->input;
         qp.where = info->where;
         qp.order = info->order;
+        if (info->input_format.format != xd::formatDefault)
+        {
+            qp.format = info->input_format;
+        }
 
         iter = query(qp);
         if (iter.isNull())
@@ -1551,7 +1555,6 @@ bool XdnativeDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 
         if (qp.where.empty())
         {
-
             if (finfo->getFlags() & xd::sfFastRowCount)
             {
                 IJobInternalPtr ijob = job;
@@ -1559,6 +1562,8 @@ bool XdnativeDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
                     ijob->setMaxCount(finfo->getRowCount());
             }
         }
+
+        iter->goFirst();  // xdcmnInsert() doesn't do any initial positioning (on purpose)
     }
 
 

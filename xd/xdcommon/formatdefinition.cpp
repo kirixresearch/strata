@@ -253,6 +253,8 @@ bool saveDefinitionToFile(const std::wstring& path, const xd::FormatDefinition& 
 bool loadDefinitionFromFile(const std::wstring& path, xd::FormatDefinition* def)
 {
     std::wstring str = xf_get_file_contents(path);
+    if (str.length() == 0)
+        return false;
     return loadDefinitionFromString(str, def);
 }
 

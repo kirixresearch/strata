@@ -93,6 +93,21 @@ int CopyJob::runJob()
     info.input = params_node["input"].getString();
     info.output = params_node["output"].getString();
 
+    if (params_node.childExists("input_format"))
+    {
+        std::wstring json;
+        if (params_node.isString())
+        {
+            json = params_node["input_format"];
+        }
+        else
+        {
+            json = params_node["input_format"].toString();
+        }
+
+        info.input_format.fromString(json);
+    }
+
     if (params_node.childExists("input_iterator"))
     {
         info.iter_input = (xd::IIterator*)(uintptr_t)(kl::hexToUint64(params_node["input_iterator"].getString()));

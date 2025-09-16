@@ -160,6 +160,8 @@ bool FixedLengthTextIterator::init(FixedLengthTextSet* set, FixedLengthTable* ta
     m_buf = new unsigned char[m_read_ahead_rowcount * m_table_rowwidth];
     m_rowpos_buf = new xd::rowpos_t[m_read_ahead_rowcount];
 
+    updatePosition();
+
     return refreshStructure();
 }
 

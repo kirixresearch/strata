@@ -1280,6 +1280,7 @@ bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
         qp.from = info->input;
         qp.where = info->where;
         qp.order = info->order;
+        qp.format = info->input_format;
 
         iter = query(qp);
         if (iter.isNull())
