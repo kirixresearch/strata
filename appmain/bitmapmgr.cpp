@@ -421,12 +421,40 @@ wxBitmap BitmapMgr::lookupBitmap(const wxString& bitmap_name, int status, int si
     }
 }
 
-wxBitmap BitmapMgr::lookupBitmap(int id,
-                                 int status,
+wxBitmap BitmapMgr::lookupBitmap(int command_id,
+                                 int type,
                                  int size)
 {
-    return lookupBitmap(m_idmap[id], status, size);
+    return lookupBitmap(m_idmap[command_id], type, size);
 }
+
+
+wxBitmapBundle BitmapMgr::lookupBitmapBundle(const wxString& bitmap_name,
+                                             int type,
+                                             int size)
+{
+    wxBitmap bitmap = lookupBitmap(bitmap_name, type, size);
+    if (bitmap.IsOk())
+    {
+        return wxBitmapBundle(bitmap);
+    }
+    else
+    {
+        return wxBitmapBundle();
+    }
+}
+
+
+wxBitmapBundle BitmapMgr::lookupBitmapBundle(int command_id,
+                                             int type,
+                                             int size)
+{
+    return lookupBitmapBundle(m_idmap[command_id], type, size);
+}
+
+
+
+
 
 void BitmapMgr::addIdBitmapMap(int command_id,
                                const wxString& bitmap_name)

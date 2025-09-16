@@ -46,6 +46,7 @@ public:
     char** data;
     wxBitmap bitmap;
     wxBitmap bitmap16;
+    wxBitmapBundle bitmapBundle;
 };
 
 class ZipBundle;
@@ -84,6 +85,14 @@ public:
                           int type = typeNormal,
                           int size = -1);
     
+    wxBitmapBundle lookupBitmapBundle(const wxString& bitmap_name,
+        int type = typeNormal,
+        int size = -1);
+
+    wxBitmapBundle lookupBitmapBundle(int command_id,
+        int type = typeNormal,
+        int size = -1);
+
     void addIdBitmapMap(int command_id, const wxString& bitmap_name);
     
 public:
