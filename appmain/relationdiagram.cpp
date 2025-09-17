@@ -1621,6 +1621,20 @@ bool RelationDiagram::save()
     return true;
 }
 
+static wxString getCaptionFromPath(const wxString& path)
+{
+    wxString caption;
+    int slash_count = caption.Freq('/');
+
+    if (slash_count == 0)
+        caption = path;
+    else if (slash_count == 1 && path.StartsWith(wxT("/")))
+        caption = path.Mid(1);
+    else
+        caption = path;
+    
+    return caption;
+}
 
 bool RelationDiagram::load()
 {
@@ -1674,7 +1688,7 @@ bool RelationDiagram::load()
             if (y > DIAGRAM_SCROLL_HEIGHT-height)
                 y = DIAGRAM_SCROLL_HEIGHT-height;
 
-            wxString caption = path.AfterLast(wxT('/'));
+            wxString caption = getCaptionFromPath(path);
             addBox(path, caption, *wxBLACK, x, y, width, height);
         }
 
@@ -1728,7 +1742,7 @@ bool RelationDiagram::load()
             if (y > DIAGRAM_SCROLL_HEIGHT-height)
                 y = DIAGRAM_SCROLL_HEIGHT-height;
 
-            wxString caption = path.AfterLast(wxT('/'));
+            wxString caption = getCaptionFromPath(path);
             addBox(path, caption, *wxBLACK, x, y, width, height);
         }
 
@@ -2408,7 +2422,7 @@ void RelationDiagram::onTreeDataDropped(wxDragResult& drag_result,
         if (!allow)
             continue;
 
-        wxString caption = path.AfterLast(wxT('/'));
+        wxString caption = getCaptionFromPath(path);
         if (addBox(path, caption, wxColor(0,0,128),
                    pt.x-DRAGDROP_X_OFFSET+viewx,
                    pt.y-DRAGDROP_Y_OFFSET+viewy))

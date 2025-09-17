@@ -418,8 +418,17 @@ void RelationshipPanel::onDeleteAllRelationships(wxCommandEvent& evt)
             rel = rel_enum->getItem(r);
             if (rel.isOk())
             {
-                // try to delete the relationship's index
-                db->deleteIndex(rel->getLeftTable(), rel->getTag());
+                // try to delete the relationship's indexs (on the right table)
+
+                xd::IndexInfoEnum idx_enum = db->getIndexEnum(rel->getRightTable());
+                for (size_t i = 0, n = idx_enum.size(); i < n; ++i)
+                {
+                    xd::IndexInfo idx_info = idx_enum[i];
+                    if (kl::iequals(idx_info.expression, rel->getRightExpression()))
+                    {
+                        db->deleteIndex(rel->getRightTable(), idx_info.name);
+                    }
+                }
 
                 // save the relation id for deletion in the next loop
                 rel_ids.push_back(rel->getRelationId());

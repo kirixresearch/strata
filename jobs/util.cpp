@@ -57,7 +57,7 @@ std::wstring getMountRoot(xd::IDatabasePtr db, const std::wstring _path)
     }
 }
 
-xd::IndexInfo lookupIndex(const xd::IndexInfoEnum& idx_enum, const std::wstring& expr, bool exact_column_order)
+xd::IndexInfo lookupIndex(const xd::IndexInfoEnum& idx_enum, const std::wstring& expr, bool exact_column_order, const std::wstring index_name_prefix)
 {
     if (idx_enum.empty())
         return xd::IndexInfo();
@@ -70,6 +70,17 @@ xd::IndexInfo lookupIndex(const xd::IndexInfoEnum& idx_enum, const std::wstring&
     
     for (i = 0; i < idx_count; ++i)
     {
+        // If a non-empty index_name_prefix is provided, filter by name (case-insensitive)
+        if (!index_name_prefix.empty())
+        {
+            if (idx_enum[i].name.length() <= index_name_prefix.length())
+                continue;
+            if (0 != wcsncasecmp(idx_enum[i].name.c_str(), index_name_prefix.c_str(), index_name_prefix.length()))
+            {
+                continue;
+            }
+        }
+
         std::vector<std::wstring> idx_cols;
         kl::parseDelimitedList(idx_enum[i].expression, idx_cols, L',', true);
 

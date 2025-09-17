@@ -65,6 +65,20 @@ bool RelationshipJob::isInputValid()
     return true;
 }
 
+static void removeSpecialChars(std::wstring& str)
+{
+    for (wchar_t& ch : str)
+    {
+        const bool is_digit = (ch >= L'0' && ch <= L'9');
+        const bool is_upper = (ch >= L'A' && ch <= L'Z');
+        const bool is_lower = (ch >= L'a' && ch <= L'z');
+
+        if (!(is_digit || is_upper || is_lower))
+            ch = L'_';
+    }
+}
+
+
 int RelationshipJob::runJob()
 {
     // make sure we have a valid input
@@ -100,15 +114,28 @@ int RelationshipJob::runJob()
     it_end = relationships.end();
     for (it = relationships.begin(); it != it_end; ++it)
     {
-        std::wstring name = it->getChild("name").getString();
+        std::wstring rel_name = it->getChild("name").getString();
         std::wstring left_path = it->getChild("left_path").getString();
         std::wstring left_expr = it->getChild("left_expression").getString();
         std::wstring right_path = it->getChild("right_path").getString();
         std::wstring right_expr = it->getChild("right_expression").getString();
 
 
-        // get the indexes
+        // if we're on an external database, then move on
+        if (jobs::getMountRoot(m_db, right_path).length() != 0)
+            continue;
+
+        // if the index already exists, then move on
         xd::IndexInfoEnum right_set_indexes = m_db->getIndexEnum(right_path);
+
+        xd::IndexInfo idx = jobs::lookupIndex(right_set_indexes, right_expr, false, L"rel_");
+        if (idx.isOk())
+            continue;
+
+        // make sure we have a unique index name
+        std::wstring index_name = L"rel_" + right_expr;
+        removeSpecialChars(index_name);
+        while (kl::replaceStr(index_name, L"__", L"_", true) > 0);
 
         // make sure we have a unique index name
         std::set<std::wstring, kl::cmp_nocase> index_names;
@@ -117,32 +144,21 @@ int RelationshipJob::runJob()
             index_names.insert(index_info.name);
         }
 
-        if (index_names.find(name) != index_names.end())
+        if (index_names.find(index_name) != index_names.end())
         {
             int suffix = 2;
             std::wstring test;
             do
             {
-                test = name + L"_" + kl::itowstring(suffix);
+                test = index_name + L"_" + kl::itowstring(suffix);
                 ++suffix;
             } while (index_names.find(test) != index_names.end());
-            name = test;
+
+            index_name = test;
         }
 
-
-
-        // if we're on an external database, then move on
-        if (jobs::getMountRoot(m_db, right_path).length() != 0)
-            continue;
-
-        // if the index already exists, then move on
-        xd::IndexInfo idx = jobs::lookupIndex(right_set_indexes, right_expr, false);
-        if (idx.isOk())
-            continue;
-
-
         // quote identifiers
-        std::wstring q_name = xd::quoteIdentifier(m_db, name);
+        std::wstring q_name = xd::quoteIdentifier(m_db, index_name);
         std::wstring q_input = xd::quoteIdentifier(m_db, right_path);
 
         std:: wstring sql;

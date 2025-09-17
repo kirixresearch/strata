@@ -3676,8 +3676,15 @@ xd::IRelationEnumPtr XdnativeDatabase::getRelationEnum(const std::wstring& path)
     vec = new xcm::IVectorImpl<xd::IRelationPtr>;
 
     bool filter_active = path.length() > 0 ? true : false;
-    std::wstring filter_set_id = getSetIdFromPath(path);
-    std::wstring filter_set_path = path;
+    std::wstring filter_set_id;
+    std::wstring filter_set_path;
+
+    if (filter_active)
+    {
+        filter_set_id = getSetIdFromPath(path);
+        filter_set_path = path;
+    }
+
     
 
     INodeValuePtr file;
