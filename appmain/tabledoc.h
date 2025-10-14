@@ -264,6 +264,7 @@ public:
     virtual void hideColumn(int idx) = 0;
     virtual void setFont(const wxFont& font) = 0;
     virtual void reloadSettings(bool redraw) = 0;
+    virtual void showSortPanel(const wxString& def_sort = wxT("")) = 0;
     virtual void showReplacePanel(const wxString& def_condition, const wxString& def_field = wxT("")) = 0;
     virtual void showViewPanel() = 0;
     virtual void showIndexPanel() = 0;

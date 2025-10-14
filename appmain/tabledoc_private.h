@@ -184,6 +184,7 @@ public:
     void deleteRecords(const std::wstring& condition);
     void setFont(const wxFont& font);
     void reloadSettings(bool redraw);
+    void showSortPanel(const wxString& def_sort = wxT(""));
     void showReplacePanel(const wxString& def_condition, const wxString& def_field = wxT(""));
     void showViewPanel();
     void showIndexPanel();

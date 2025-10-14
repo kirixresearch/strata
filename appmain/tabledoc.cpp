@@ -7846,13 +7846,16 @@ void TableDoc::onSetOrderExprEditFinished(KeyBuilderPanel* builder)
 }
 
 
-void TableDoc::onSetOrder(wxCommandEvent& evt)
+void TableDoc::showSortPanel(const wxString& def_sort)
 {
     IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("SortPanel"));
     if (site.isNull())
     {
-        xd::Structure structure = g_app->getDatabase()->describeTable(m_path);
+        xd::IDatabasePtr db = g_app->getDatabase();
+        if (db.isNull())
+            return;
+        xd::Structure structure = db->describeTable(m_path);
         if (structure.isNull())
             return;
 
@@ -7860,36 +7863,47 @@ void TableDoc::onSetOrder(wxCommandEvent& evt)
         panel->setOKText(_("Run"));
         panel->setOverlayText(_("Select fields from the list on the left and\ndrag them here to define the table sort order"));
         site = m_frame->createSite(panel, sitetypeModeless,
-                                   -1, -1, FromDIP(600), FromDIP(360));
+            -1, -1, FromDIP(600), FromDIP(360));
         site->setMinSize(FromDIP(520), FromDIP(300));
         site->setName(wxT("SortPanel"));
         panel->setStructure(structure);
 
         site->setCaption(_("Sort"));
 
-        // set the fields in the sort expression builder based on the selected
-        // fields; note: we used to set the order based on the current sort
-        // order, similar to filter; but then in this panel and the grouping
-        // panel, we added the ability to pre-populate the form based on the
-        // selected fields (consistent also with copy fields and summarize,
-        // which operate on the selected columns) however, this raised the
-        // issue in that if fields were selected, the sort panel would show
-        // those fields, otherwise, it would show the fields in the current
-        // sort order; in use, this dual behavior seemed confusing, so we're
-        // populating the list based on the selected columns, since the panel
-        // is more about setting a new order than a providing a status report
-        // of the current order
-
-        wxString expr = buildSelectedColumnExpression(m_grid);
-        panel->setExpression(expr);
+        if (!def_sort.IsEmpty())
+            panel->setExpression(def_sort);
 
         panel->sigOkPressed.connect(this, &TableDoc::onSetOrderExprEditFinished);
     }
-     else
+    else
     {
         if (!site->getVisible())
             site->setVisible(true);
     }
+}
+
+
+void TableDoc::onSetOrder(wxCommandEvent& evt)
+{
+    if (!m_grid)
+        return;
+
+    // set the fields in the sort expression builder based on the selected
+    // fields; note: we used to set the order based on the current sort
+    // order, similar to filter; but then in this panel and the grouping
+    // panel, we added the ability to pre-populate the form based on the
+    // selected fields (consistent also with copy fields and summarize,
+    // which operate on the selected columns) however, this raised the
+    // issue in that if fields were selected, the sort panel would show
+    // those fields, otherwise, it would show the fields in the current
+    // sort order; in use, this dual behavior seemed confusing, so we're
+    // populating the list based on the selected columns, since the panel
+    // is more about setting a new order than a providing a status report
+    // of the current order
+
+    wxString expr = buildSelectedColumnExpression(m_grid);
+    
+    showSortPanel(expr);
 }
 
 
