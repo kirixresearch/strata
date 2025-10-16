@@ -82,6 +82,9 @@ struct PrefInfo
     bool script_insert_spaces;
     long script_spaces_size;
     long script_tab_size;
+
+    // region preferences
+    wxString region_language;
 };
 
 
@@ -93,6 +96,7 @@ class PrivacyOptionsPage;
 class DatasheetOptionsPage;
 class ReportOptionsPage;
 class ScriptOptionsPage;
+class RegionOptionsPage;
 
 
 class OptionsPanel : public wxPanel,
@@ -143,6 +147,7 @@ private:
     // pages to show/hide in the sizer
     GeneralOptionsPage* m_general_page;
     InternetOptionsPage* m_internet_page;
+    RegionOptionsPage* m_region_page;
     PrivacyOptionsPage* m_privacy_page;
     DatasheetOptionsPage* m_datasheet_page;
     ReportOptionsPage* m_report_page;

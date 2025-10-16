@@ -27,6 +27,7 @@ enum
     // buttonbar button ids
     ID_GeneralOptionsButton = wxID_HIGHEST + 1,
     ID_InternetOptionsButton,
+    ID_RegionOptionsButton,
     ID_PrivacyOptionsButton,
     ID_DatasheetOptionsButton,
     ID_ReportOptionsButton,
@@ -223,6 +224,7 @@ public:
                                                  wxDefaultSize,
                                                  wxRB_GROUP);
         
+
 
         // create open project sizer
         
@@ -2489,8 +2491,114 @@ END_EVENT_TABLE()
 
 
 
+class RegionOptionsPage : public wxPanel
+{
+private:
+    enum
+    {
+        ID_LanguageChoice = wxID_HIGHEST + 1
+    };
 
+    struct LangItem
+    {
+        wxString code;   // stored value
+        wxString label;  // display label
+    };
 
+public:
+    RegionOptionsPage(wxWindow* parent, PrefInfo* pi) : wxPanel(parent), m_pi(pi)
+    {
+        SetWindowStyle(GetWindowStyle() | wxTAB_TRAVERSAL);
+
+        // Build the language list with code+label side-by-side
+        m_lang_items = {
+            { wxT("default"),    _("System Default") }, // index 0
+            { wxT("fr"),         _("French") },
+            { wxT("de"),         _("German") },
+            { wxT("it"),         _("Italian") },
+            { wxT("pt"),         _("Portuguese") },
+            { wxT("es"),         _("Spanish") }
+        };
+
+        m_language_choice = new wxChoice(this, ID_LanguageChoice);
+        for (const auto& item : m_lang_items)
+            m_language_choice->Append(item.label);
+
+        // Initialize selection from prefs
+        initControlValues();
+
+        // Layout: static box titled "Language" containing label + choice on one row
+        wxStaticBox* box = new wxStaticBox(this, -1, _("Language"));
+        wxStaticBoxSizer* sizer = new wxStaticBoxSizer(box, wxVERTICAL);
+        sizer->AddSpacer(10);
+
+        wxStaticText* lang_label = new wxStaticText(this, wxID_ANY, _("Display Language:"));
+        wxBoxSizer* row = new wxBoxSizer(wxHORIZONTAL);
+        row->Add(lang_label, 0, wxALIGN_CENTER_VERTICAL);
+        row->AddSpacer(FromDIP(10));
+        row->Add(m_language_choice, 1, wxALIGN_CENTER_VERTICAL);
+
+        sizer->Add(row, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(10));
+        sizer->AddSpacer(10);
+
+        wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
+        main_sizer->Add(sizer, 0, wxEXPAND);
+        SetSizer(main_sizer);
+        Layout();
+    }
+
+    void initControlValues()
+    {
+        wxString val = m_pi->region_language;
+        if (val.IsEmpty())
+            val = wxT("default");
+
+        int sel = 0;
+        for (size_t i = 0; i < m_lang_items.size(); ++i)
+        {
+            if (m_lang_items[i].code == val)
+            {
+                sel = static_cast<int>(i);
+                break;
+            }
+        }
+        m_language_choice->SetSelection(sel);
+    }
+
+    void serializeValues()
+    {
+        int sel = m_language_choice->GetSelection();
+        if (sel < 0 || static_cast<size_t>(sel) >= m_lang_items.size())
+            sel = 0;
+
+        m_pi->region_language = m_lang_items[sel].code;
+    }
+
+    void onLanguageChanged(wxCommandEvent& evt)
+    {
+        serializeValues();
+    }
+
+    void restoreDefaultPrefs()
+    {
+        wxString def = getAppPrefsDefaultString(wxT("region.language"));
+        if (def.IsEmpty())
+            def = wxT("default");
+        m_pi->region_language = def;
+        initControlValues();
+    }
+
+private:
+    PrefInfo* m_pi;
+    wxChoice* m_language_choice;
+    std::vector<LangItem> m_lang_items;
+
+    DECLARE_EVENT_TABLE()
+};
+
+BEGIN_EVENT_TABLE(RegionOptionsPage, wxPanel)
+    EVT_CHOICE(RegionOptionsPage::ID_LanguageChoice, RegionOptionsPage::onLanguageChanged)
+END_EVENT_TABLE()
 
 
 // OptionsPanel implementation
@@ -2499,6 +2607,7 @@ BEGIN_EVENT_TABLE(OptionsPanel, wxPanel)
     EVT_SIZE(OptionsPanel::onSize)
     EVT_BUTTON(ID_GeneralOptionsButton, OptionsPanel::onButtonBarClicked)
     EVT_BUTTON(ID_InternetOptionsButton, OptionsPanel::onButtonBarClicked)
+    EVT_BUTTON(ID_RegionOptionsButton, OptionsPanel::onButtonBarClicked)
     EVT_BUTTON(ID_PrivacyOptionsButton, OptionsPanel::onButtonBarClicked)
     EVT_BUTTON(ID_DatasheetOptionsButton, OptionsPanel::onButtonBarClicked)
     EVT_BUTTON(ID_ReportOptionsButton, OptionsPanel::onButtonBarClicked)
@@ -2551,8 +2660,9 @@ bool OptionsPanel::initDoc(IFramePtr frame,
     m_datasheet_page = new DatasheetOptionsPage(this, m_pi);
     m_report_page = new ReportOptionsPage(this, m_pi);
     m_script_page = new ScriptOptionsPage(this, m_pi);
-
+    m_region_page = new RegionOptionsPage(this, m_pi);
     
+
     wxSize page_min_size, aggregate_min_size(0,0);
     page_min_size = m_general_page->GetSizer()->GetMinSize();
     aggregate_min_size = page_min_size;
@@ -2577,17 +2687,21 @@ bool OptionsPanel::initDoc(IFramePtr frame,
     aggregate_min_size.x = wxMax(aggregate_min_size.x, page_min_size.x);
     aggregate_min_size.y = wxMax(aggregate_min_size.y, page_min_size.y);
 
+    page_min_size = m_region_page->GetSizer()->GetMinSize();
+    aggregate_min_size.x = wxMax(aggregate_min_size.x, page_min_size.x);
+    aggregate_min_size.y = wxMax(aggregate_min_size.y, page_min_size.y);
+
 
     kcl::ButtonBar* button_bar = new kcl::ButtonBar(this, -1);
     button_bar->setItemMinSize(FromDIP(64), -1);
     
     button_bar->addItem(ID_GeneralOptionsButton, GETBMPMEDIUM(gf_switch),  _("General"));
-    button_bar->addItem(ID_InternetOptionsButton, GETBMPMEDIUM(gf_globe), _("Internet"));
+    button_bar->addItem(ID_InternetOptionsButton, GETBMPMEDIUM(gf_cloud), _("Internet"));
+    button_bar->addItem(ID_RegionOptionsButton, GETBMPMEDIUM(gf_globe), _("Region"));
     button_bar->addItem(ID_PrivacyOptionsButton, GETBMPMEDIUM(gf_lock), _("Privacy"));
     button_bar->addItem(ID_DatasheetOptionsButton, GETBMPMEDIUM(gf_table), _("Datasheet"));
     button_bar->addItem(ID_ReportOptionsButton, GETBMPMEDIUM(gf_report), _("Report"));
     button_bar->addItem(ID_ScriptOptionsButton, GETBMPMEDIUM(gf_script), _("Script"));
-    
 
     wxButton* restore_defaults_button = new wxButton(this,
                                               ID_RestoreDefaultsButton,
@@ -2622,6 +2736,7 @@ bool OptionsPanel::initDoc(IFramePtr frame,
     m_sizer->Add(m_datasheet_page, 1, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
     m_sizer->Add(m_report_page, 1, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
     m_sizer->Add(m_script_page, 1, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
+    m_sizer->Add(m_region_page, 1, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(8));
     m_sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
 
 
@@ -2631,6 +2746,7 @@ bool OptionsPanel::initDoc(IFramePtr frame,
     m_sizer->SetItemMinSize(m_datasheet_page, aggregate_min_size);
     m_sizer->SetItemMinSize(m_report_page, aggregate_min_size);
     m_sizer->SetItemMinSize(m_script_page, aggregate_min_size);
+    m_sizer->SetItemMinSize(m_region_page, aggregate_min_size);
 
     SetSizer(m_sizer);
     SetClientSize(m_sizer->GetMinSize());
@@ -2679,6 +2795,9 @@ void OptionsPanel::loadPrefs(PrefInfo* info)
     info->internet_proxy_socks = getAppPrefsString(wxT("internet.proxy.socks"));
     info->internet_proxy_socks_port = getAppPrefsLong(wxT("internet.proxy.socks_port"));
     info->default_web_browser = getAppPrefsString(wxT("internet.default_web_browser"));
+
+    // region preferences
+    info->region_language = getAppPrefsString(wxT("region.language"));
 
     // privacy preferences
     info->privacy_block_popups = getAppPrefsBoolean(wxT("privacy.popups.block"));
@@ -2753,6 +2872,9 @@ void OptionsPanel::savePrefs(PrefInfo* info)
     prefs->setString(wxT("internet.proxy.socks"), info->internet_proxy_socks);
     prefs->setLong(wxT("internet.proxy.socks_port"), info->internet_proxy_socks_port);
     prefs->setString(wxT("internet.default_web_browser"), info->default_web_browser);
+
+    // region preferences
+    prefs->setString(wxT("region.language"), info->region_language);
 
     // privacy preferences
     m_privacy_page->serializeValues();
@@ -2836,6 +2958,7 @@ void OptionsPanel::onButtonBarClicked(wxCommandEvent& evt)
     int id = evt.GetId();
     m_sizer->Show(m_general_page,   (id == ID_GeneralOptionsButton)   ? true : false, true);
     m_sizer->Show(m_internet_page,  (id == ID_InternetOptionsButton)  ? true : false, true);
+    m_sizer->Show(m_region_page,    (id == ID_RegionOptionsButton)    ? true : false, true);
     m_sizer->Show(m_privacy_page,   (id == ID_PrivacyOptionsButton)   ? true : false, true);
     m_sizer->Show(m_datasheet_page, (id == ID_DatasheetOptionsButton) ? true : false, true);
     m_sizer->Show(m_report_page,    (id == ID_ReportOptionsButton)    ? true : false, true);
@@ -2926,6 +3049,20 @@ void OptionsPanel::onRestoreDefaultsClicked(wxCommandEvent& evt)
                                      g_app->getMainWindow());
         if (res == wxYES)
             m_script_page->restoreDefaultPrefs();
+        
+        return;
+    }
+     else if (m_region_page->IsShown())
+    {
+        int res = appMessageBox(_("Restoring the default region settings will cause you to lose your current settings.\nDo you want to continue?"),
+                                     _("Restore Defaults?"),
+                                     wxYES_NO |
+                                     wxNO_DEFAULT |
+                                     wxICON_EXCLAMATION |
+                                     wxCENTER,
+                                     g_app->getMainWindow());
+        if (res == wxYES)
+            m_region_page->restoreDefaultPrefs();
         
         return;
     }

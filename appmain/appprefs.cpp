@@ -93,7 +93,9 @@ void initDefaultPreferences()
     prefs->setLong(wxT("privacy.cookie.lifetime_policy"), prefKeepCookiesUntilExpired);
     prefs->setLong(wxT("privacy.cookie.lifetime_days"),   90);
     
-    
+    // add default regional preferences
+    prefs->setString(wxT("region.language"), "default");
+
     // add default grid preferences
     #ifdef WIN32
     const wxFont datasheet_font = getDefaultWindowsFont();
@@ -155,7 +157,6 @@ void initDefaultPreferences()
     prefs->setString(wxT("report.font.style"),      default_font.getStyle());
     prefs->setString(wxT("report.font.weight"),     default_font.getWeight());
     prefs->setString(wxT("report.font.underscore"), default_font.getUnderscore());
-    
     
     // add default script preferences
     prefs->setBoolean(wxT("script.show_syntax_highlighting"), true);
