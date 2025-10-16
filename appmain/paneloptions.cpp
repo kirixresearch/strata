@@ -2509,6 +2509,7 @@ public:
     RegionOptionsPage(wxWindow* parent, PrefInfo* pi) : wxPanel(parent), m_pi(pi)
     {
         SetWindowStyle(GetWindowStyle() | wxTAB_TRAVERSAL);
+        m_restart_warning = NULL;
 
         // Build the language list with code+label side-by-side
         m_lang_items = {
@@ -2539,6 +2540,17 @@ public:
         row->Add(m_language_choice, 1, wxALIGN_CENTER_VERTICAL);
 
         sizer->Add(row, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(10));
+
+        // Restart warning (hidden by default, appears after user changes selection)
+        sizer->AddSpacer(FromDIP(6));
+        m_restart_warning = new wxStaticText(this,
+                                             wxID_ANY,
+                                             _("After saving your preferences, please restart the program for language changes to take effect."));
+        m_restart_warning->SetForegroundColour(*wxRED);
+        m_restart_warning->Hide();
+        m_restart_warning->Wrap(FromDIP(400));
+        sizer->Add(m_restart_warning, 0, wxLEFT | wxRIGHT, FromDIP(10));
+
         sizer->AddSpacer(10);
 
         wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
@@ -2563,6 +2575,10 @@ public:
             }
         }
         m_language_choice->SetSelection(sel);
+
+        // Hide warning on initial load
+        if (m_restart_warning)
+            m_restart_warning->Hide();
     }
 
     void serializeValues()
@@ -2576,7 +2592,14 @@ public:
 
     void onLanguageChanged(wxCommandEvent& evt)
     {
+        // Show restart warning only when the user changes the selection
+        wxString before = m_pi->region_language;
         serializeValues();
+        if (m_pi->region_language != before && m_restart_warning)
+        {
+            m_restart_warning->Show();
+            Layout();
+        }
     }
 
     void restoreDefaultPrefs()
@@ -2591,6 +2614,7 @@ public:
 private:
     PrefInfo* m_pi;
     wxChoice* m_language_choice;
+    wxStaticText* m_restart_warning;
     std::vector<LangItem> m_lang_items;
 
     DECLARE_EVENT_TABLE()
