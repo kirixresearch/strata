@@ -395,6 +395,32 @@ bool MainApp::OnInit()
     suppressConsoleLogging();
 #endif
 
+    wxSocketBase::Initialize();
+
+
+    // create an app preferences object for our defaults
+    m_app_default_preferences = createMemoryAppPreferencesObject();
+    if (!m_app_default_preferences)
+    {
+        appMessageBox("Could not create a MemoryAppPreferences object");
+        return false;
+    }
+
+#if APP_GUI==1
+    initDefaultPreferences();
+#endif
+
+
+    // create an app preferences object
+    m_app_preferences = createAppPreferencesObject();
+    if (!m_app_preferences)
+    {
+        appMessageBox("Could not create an AppPreferences object");
+        return FALSE;
+    }
+
+    m_app_preferences->init(APP_COMPANY_KEY, APP_CONFIG_KEY);
+
 
     // initialize i18n (internationalization/language support)
     wxString i18n_base_path;
@@ -403,20 +429,56 @@ bool MainApp::OnInit()
     i18n_base_path += "..";
     i18n_base_path += PATH_SEPARATOR_STR;
     i18n_base_path += "i18n";
-    if (!wxDir::Exists(i18n_base_path))
+
+    bool i18n_folder_found = wxDir::Exists(i18n_base_path);
+    if (!i18n_folder_found)
     {
         // try old location: <bin_dir>/i18n/de
         i18n_base_path = m_install_path;
         i18n_base_path += PATH_SEPARATOR_STR;
         i18n_base_path += "i18n";
+
+        i18n_folder_found = wxDir::Exists(i18n_base_path);
     }
     
+    // try debug mode
+    if (!i18n_folder_found)
+    {
+        i18n_base_path = m_install_path;
+        i18n_base_path += PATH_SEPARATOR_STR;
+        i18n_base_path += "..";
+        i18n_base_path += PATH_SEPARATOR_STR;
+        i18n_base_path += "..";
+        i18n_base_path += PATH_SEPARATOR_STR;
+        i18n_base_path += "appmain";
+        i18n_base_path += PATH_SEPARATOR_STR;
+        i18n_base_path += "i18n";
+
+        i18n_folder_found = wxDir::Exists(i18n_base_path);
+    }
+
+
+    wxString pref_lang = m_app_preferences->getString(wxT("region.language"), wxT("default"));
+    int wxlang = wxLANGUAGE_DEFAULT;
+    pref_lang.MakeLower();
+         if (pref_lang == wxT("fr")) wxlang = wxLANGUAGE_FRENCH;
+    else if (pref_lang == wxT("de")) wxlang = wxLANGUAGE_GERMAN;
+    else if (pref_lang == wxT("it")) wxlang = wxLANGUAGE_ITALIAN;
+    else if (pref_lang == wxT("pt")) wxlang = wxLANGUAGE_PORTUGUESE;
+    else if (pref_lang == wxT("es")) wxlang = wxLANGUAGE_SPANISH;
+    else wxlang = wxLANGUAGE_DEFAULT;
+
+
     m_locale = new wxLocale();
-    m_locale->Init(wxLANGUAGE_DEFAULT);
-    m_locale->AddCatalogLookupPathPrefix(i18n_base_path);
-    m_locale->AddCatalog("messages");
-    
-    wxSocketBase::Initialize();
+    m_locale->Init(wxlang);
+
+    if (i18n_folder_found)
+    {
+        m_locale->AddCatalogLookupPathPrefix(i18n_base_path);
+        m_locale->AddCatalog("messages");
+    }
+
+
 
     #if APP_GUI==1
 
@@ -492,29 +554,6 @@ bool MainApp::OnInit()
     #endif // APP_GUI==1
 
 
-    // create an app preferences object for our defaults
-    m_app_default_preferences = createMemoryAppPreferencesObject();
-    if (!m_app_default_preferences)
-    {
-        appMessageBox("Could not create a MemoryAppPreferences object");
-        return false;
-    }
-
-
-    #if APP_GUI==1
-    initDefaultPreferences();
-    #endif
-    
-    
-    // create an app preferences object
-    m_app_preferences = createAppPreferencesObject();
-    if (!m_app_preferences)
-    {
-        appMessageBox("Could not create an AppPreferences object");
-        return FALSE;
-    }
-
-    m_app_preferences->init(APP_COMPANY_KEY, APP_CONFIG_KEY);
 
 
     // create job queues
