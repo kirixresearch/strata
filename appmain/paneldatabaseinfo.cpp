@@ -60,7 +60,7 @@ bool DatabaseInfoPanel::initDoc(IFramePtr frame,
     m_project_name = g_app->getProjectName();
     
     if (m_project_name.Length() == 0)
-        m_project_name = _("Project");
+        m_project_name = _("Project6");
         
     m_project_name_text->SetValue(m_project_name);
     
