@@ -577,37 +577,6 @@ void MainApp::initWebClient()
 {
     #if APP_GUI==1
     
-    // add some common plugin directories to MOZ_PLUGIN_PATH
-    #ifdef __WXMSW__
-    wxString program_files_dir;
-    if (!::wxGetEnv("ProgramFiles(x86)", &program_files_dir))
-    {
-        ::wxGetEnv("ProgramFiles", &program_files_dir);
-    }
-    if (program_files_dir.Length() == 0 || program_files_dir.Last() != '\\')
-        program_files_dir += "\\";
-    
-    wxString system_dir;
-    TCHAR system_buf[255];
-    ::GetSystemDirectory(system_buf, 255);
-    system_dir = system_buf;
-    if (system_dir.Length() == 0 || system_dir.Last() != '\\')
-        system_dir += "\\";
-
-    
-    wxString dir1 = program_files_dir;
-    dir1 += "Mozilla Firefox\\plugins";
-    wxWebControl::AddPluginPath(dir1);
-    
-    wxString dir2 = system_dir;
-    dir2 += "Macromed\\Flash";
-    wxWebControl::AddPluginPath(dir2);
-    
-    #else
-    #endif
-    
-
-
     // find out web controls engine path
     wxString web_engine_path = m_install_path;
     web_engine_path = web_engine_path.BeforeLast(PATH_SEPARATOR_CHAR);
