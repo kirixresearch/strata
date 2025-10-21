@@ -1270,22 +1270,33 @@ bool AppController::init()
 
 
     // load frame perspective (if any has been saved)
+    wxAuiManager& aui = m_frame->getAuiManager();
 
-    wxSize navigation_best_size = m_frame->getAuiManager().GetPane("NavigationToolbar").best_size;
-    wxSize bookmarks_best_size = m_frame->getAuiManager().GetPane("BookmarksToolbar").best_size;
-    wxSize format_best_size = m_frame->getAuiManager().GetPane("FormatToolbar").best_size;
-    wxSize status_best_size = m_frame->getAuiManager().GetPane("StatusBar").best_size;
+    wxSize navigation_best_size = aui.GetPane("NavigationToolbar").best_size;
+    wxSize bookmarks_best_size = aui.GetPane("BookmarksToolbar").best_size;
+    wxSize format_best_size = aui.GetPane("FormatToolbar").best_size;
+    wxSize status_best_size = aui.GetPane("StatusBar").best_size;
+    
+    wxString caption_project_panel = aui.GetPane("ProjectPanel").caption;
+    wxString caption_fields_panel = aui.GetPane("FieldsPanel").caption;
+    wxString caption_console_panel = aui.GetPane("ConsolePanel").caption;
+    wxString caption_marks_panel = aui.GetPane("MarksPanel").caption;
 
     if (perspective.length() > 0)
     {
-        m_frame->getAuiManager().LoadPerspective(perspective, false);
+        aui.LoadPerspective(perspective, false);
 
         // if a perspective was saved with a lower or higher DPI monitor, the pixel
         // sizes for the toolbar height will be wrong. This fixes this problem.
-        m_frame->getAuiManager().GetPane("NavigationToolbar").BestSize(navigation_best_size);
-        m_frame->getAuiManager().GetPane("BookmarksToolbar").BestSize(bookmarks_best_size);
-        m_frame->getAuiManager().GetPane("FormatToolbar").BestSize(format_best_size);
-        m_frame->getAuiManager().GetPane("StatusBar").BestSize(status_best_size);
+        aui.GetPane("NavigationToolbar").BestSize(navigation_best_size);
+        aui.GetPane("BookmarksToolbar").BestSize(bookmarks_best_size);
+        aui.GetPane("FormatToolbar").BestSize(format_best_size);
+        aui.GetPane("StatusBar").BestSize(status_best_size);
+
+        aui.GetPane("ProjectPanel").Caption(caption_project_panel);
+        aui.GetPane("FieldsPanel").Caption(caption_fields_panel);
+        aui.GetPane("ConsolePanel").Caption(caption_console_panel);
+        aui.GetPane("MarksPanel").Caption(caption_marks_panel);
     }
 
 #if APP_NEW_TOOLBARS == 1
