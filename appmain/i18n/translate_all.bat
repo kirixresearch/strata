@@ -136,11 +136,11 @@ if not exist "%GPT_PO_TRANSLATOR%" (
 rem Run gpt-po-translator
 echo Running gpt-po-translator for %LANG%...
 if defined DETAIL_LANG (
-    echo call "%GPT_PO_TRANSLATOR%" --folder "%WORKDIR_FULL_PATH%" --lang "%LANG%" --bulk --detail-lang "%DETAIL_LANG%"
-    call "%GPT_PO_TRANSLATOR%" --folder "%WORKDIR_FULL_PATH%" --lang "%LANG%" --bulk --detail-lang "%DETAIL_LANG%"
+    echo call "%GPT_PO_TRANSLATOR%" --folder "%WORKDIR_FULL_PATH%" --lang "%LANG%" --bulk --no-ai-comment--detail-lang "%DETAIL_LANG%"
+    call "%GPT_PO_TRANSLATOR%" --folder "%WORKDIR_FULL_PATH%" --lang "%LANG%" --bulk --no-ai-comment --detail-lang "%DETAIL_LANG%"
 ) else (
-    echo call "%GPT_PO_TRANSLATOR%" --folder "%WORKDIR_FULL_PATH%" --lang "%LANG%" --bulk
-    call "%GPT_PO_TRANSLATOR%" --folder "%WORKDIR_FULL_PATH%" --lang "%LANG%" --bulk
+    echo call "%GPT_PO_TRANSLATOR%" --folder "%WORKDIR_FULL_PATH%" --lang "%LANG%" --bulk --no-ai-comment
+    call "%GPT_PO_TRANSLATOR%" --folder "%WORKDIR_FULL_PATH%" --lang "%LANG%" --bulk --no-ai-comment
 )
 set "ERR=%ERRORLEVEL%"
 
