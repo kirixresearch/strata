@@ -539,6 +539,7 @@ int sql2xdType(SQLSMALLINT sql_type)
         case SQL_TYPE_TIMESTAMP:
         case SQL_TIME:
         case SQL_TIMESTAMP:
+        case -155: // SQL_SS_TIMESTAMPOFFSET_STRUCT:
             return xd::typeDateTime;
         case SQL_BIT:
             return xd::typeBoolean;
