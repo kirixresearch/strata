@@ -3911,7 +3911,7 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
         case xd::typeNumeric:
         {
             double d = xd_grid_model->getCellDouble(row, model_col);
-            value = wxString::Format(wxT("%.*f"), colinfo.type, d);
+            value = wxString::Format(wxT("%.*f"), colinfo.scale, d);
             value.Replace(wxT(","), wxT("."));
         }
         break;
