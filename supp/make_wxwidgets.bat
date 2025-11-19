@@ -5,16 +5,15 @@ if "%FrameworkDir%"=="" (
 	goto end
 )
 
+SET UNZIPUTIL=%~dp0\util\unzip
 pushd "%~dp0"
 rmdir wxWidgets /s /q
 mkdir wxWidgets
 pushd wxWidgets
-unzip ..\zip\wxWidgets-3.2.8.zip
+%UNZIPUTIL% ..\zip\wxWidgets-3.2.8.zip
 popd
 
-erase wxWidgets.zip
-
-unzip zip\microsoft.web.webview2.1.0.2210.55.nupkg -d wxWidgets\3rdparty\webview2
+%UNZIPUTIL% zip\microsoft.web.webview2.1.0.2210.55.nupkg -d wxWidgets\3rdparty\webview2
 
 pushd wxWidgets\include\wx\msw
 cscript %~dp0\util\replace.vbs setup.h "wxUSE_WEBVIEW_IE 1" "wxUSE_WEBVIEW_IE 0"

@@ -7,7 +7,7 @@ if "%FrameworkDir%"=="" (
 
 pushd "%~dp0"
 rmdir curl /s /q
-unzip zip\curl.zip
+util\unzip zip\curl.zip
 
 rmdir deps /s /q 2> nul
 mkdir deps\include\openssl

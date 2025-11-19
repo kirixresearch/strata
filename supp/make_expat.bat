@@ -7,7 +7,7 @@ if "%FrameworkDir%"=="" (
 
 pushd "%~dp0"
 rmdir expat /s /q
-unzip zip\expat.zip
+util\unzip zip\expat.zip
 
 pushd expat
 

@@ -7,7 +7,7 @@ if "%FrameworkDir%"=="" (
 
 pushd "%~dp0"
 rmdir libmariadb /s /q
-unzip zip\libmariadb.zip
+util\unzip zip\libmariadb.zip
 
 cd libmariadb
 

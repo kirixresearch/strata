@@ -7,7 +7,7 @@ if "%FrameworkDir%"=="" (
 
 pushd "%~dp0"
 rmdir oracle /s /q
-unzip zip\oracle.zip
+util\unzip zip\oracle.zip
 popd
 
 :end

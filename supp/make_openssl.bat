@@ -7,7 +7,7 @@ if "%FrameworkDir%"=="" (
 
 pushd %~dp0
 rmdir openssl /s /q
-unzip zip\openssl.zip
+util\unzip zip\openssl.zip
 
 cd openssl
 mkdir build

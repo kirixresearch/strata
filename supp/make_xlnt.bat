@@ -7,7 +7,7 @@ if "%FrameworkDir%"=="" (
 
 pushd "%~dp0"
 rmdir xlnt /s /q
-unzip zip\xlnt.zip
+util\unzip zip\xlnt.zip
 
 cd xlnt
 

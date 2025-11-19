@@ -7,7 +7,7 @@ if "%FrameworkDir%"=="" (
 
 pushd "%~dp0"
 rmdir libharu /s /q
-unzip zip\libharu.zip
+util\unzip zip\libharu.zip
 
 pushd libharu
 

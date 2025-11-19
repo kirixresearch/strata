@@ -8,7 +8,7 @@ if "%FrameworkDir%"=="" (
 pushd "%~dp0"
 rmdir postgres /s /q >nul
 rmdir postgres-REL_15_10 /s /q >nul
-unzip zip\postgres-15.10.zip
+util\unzip zip\postgres-15.10.zip
 ren postgres-REL_15_10 postgres
 
 rem if "%PLATFORM%"=="x64" (

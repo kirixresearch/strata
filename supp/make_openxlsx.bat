@@ -7,7 +7,7 @@ if "%FrameworkDir%"=="" (
 
 pushd "%~dp0"
 rmdir openxlsx /s /q
-unzip zip\openxlsx.zip
+util\unzip zip\openxlsx.zip
 
 pushd openxlsx
 

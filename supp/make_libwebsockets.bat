@@ -7,7 +7,7 @@ if "%FrameworkDir%"=="" (
 
 pushd "%~dp0"
 rmdir libwebsockets /s /q
-unzip zip\libwebsockets.zip
+util\unzip zip\libwebsockets.zip
 
 cd libwebsockets
 
