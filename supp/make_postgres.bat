@@ -5,6 +5,8 @@ if "%FrameworkDir%"=="" (
 	goto end
 )
 
+set "PATH=%PATH%;%~dp0util\perl\perl\bin"
+
 pushd "%~dp0"
 rmdir postgres /s /q >nul
 rmdir postgres-REL_15_10 /s /q >nul
